@@ -286,6 +286,10 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_DEBUG   =  "[debug]";
    public static final String MNEMONIC_CLOSE   =  "[close]";
    public static final String MNEMONIC_E_MAIL   =  "[e-mail]";
+   public static final String MNEMONIC_COPY   =  "[copy]";
+   public static final String MNEMONIC_PASTE   =  "[paste]";
+   public static final String MNEMONIC_FILE_TRANSFER   =  "[transfer]";
+
 
    // AID-Generating Keys
    public static final int AID_CLEAR = 0xBD;
