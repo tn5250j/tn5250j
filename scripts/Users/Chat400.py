@@ -1,6 +1,6 @@
 ######################################################################
 #                              chat400                               #
-# Code : PR MOORE jorjun@mac.com                                     #
+# Code : PR MOORE jorjun@mac.com				     #
 # Interface : Patrick Bielen                                         #
 # ================================================================== #
 # Functionality : Script to send/receive messages to '400 users      #
@@ -53,11 +53,24 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         # self.setDefaultCloseOperation(swing.WindowConstants.DISPOSE_ON_CLOSE)
         self.contentPane.setLayout(awt.GridBagLayout())
         self.addWindowListener(self)
+        self.chkFullNames = swing.JCheckBox("Show user's full name", 1)
+        self.chkActive = swing.JCheckBox("Show only Active Users", 1)
         try:
             self.srvNam = _session.getHostName()
         except:
             self.srvNam = ""
         self.as400 = acc.AS400(self.srvNam)
+
+        self.rUsrLst = rsc.RUserList(self.as400)
+        self.rUsrLst.open()
+	self.rUsrLst.waitForComplete()
+	self.usrDct = {}
+	for idx in range(self.rUsrLst.getListLength()):
+            tmp_rUsr = self.rUsrLst.resourceAt(idx)
+            key_usr = tmp_rUsr.getAttributeValue(rsc.RUser.USER_PROFILE_NAME)
+	    tmp_usrText = tmp_rUsr.getAttributeValue(rsc.RUser.TEXT_DESCRIPTION)
+	    self.usrDct[key_usr] = tmp_usrText
+	    
         self.jobLst = rsc.RJobList(self.as400)
         self.jobLst.setSelectionValue(rsc.RJobList.PRIMARY_JOB_STATUSES, \
                                       rsc.RJob.JOB_STATUS_ACTIVE)
@@ -66,7 +79,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         self.jobLst.setSortValue([rsc.RJob.USER_NAME, rsc.RJob.JOB_NAME])
         self.chatTxt = swing.JTextArea(5, 30, lineWrap=1, wrapStyleWord=1)
         self.rpyTxt = swing.JTextArea(10, 30, lineWrap=1, wrapStyleWord=1)
-        self.users = swing.JComboBox(preferredSize=(150, 25), minimumSize=(150, 25))
+        self.users = swing.JComboBox(preferredSize=(175, 25), minimumSize=(150, 25))
         self.polchat = Thread(Poller(self))
 
         self.showGui()
@@ -100,10 +113,24 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
             if not self.intJobs.has_key(key_usr):
                 self.intJobs[key_usr] = tmp_job
         self.jobLst.close()
-        keys=self.intJobs.keys()
+        if self.chkFullNames.isSelected():
+            keys=self.usrDct.keys()
+        else:
+            keys=self.intJobs.keys()
         keys.sort()
-        for  key_usr in keys:
-            self.users.addItem(key_usr)
+        if self.chkFullNames.isSelected():
+            for key_usr in keys:
+                menuItem = self.usrDct[key_usr]
+                if self.chkActive.isSelected():
+                    if self.intJobs.has_key(key_usr):
+                        self.users.addItem(menuItem)
+                else:
+                    if self.intJobs.has_key(key_usr):
+                        menuItem = '* ' + menuItem  # * means profile is running an active job
+                    self.users.addItem(menuItem)
+	else:
+            for key_usr in keys:
+                self.users.addItem(key_usr)
 #**************************
 #   Send message
 #**************************
@@ -164,6 +191,16 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         # Refresh User-List Button
         gbc.insets = awt.Insets(10, 5, 5, 10)
         self.contentPane.add(self.btnRef, gbc)
+        # Full names checkbox
+        gbc.gridx = 0
+        gbc.gridwidth = 3
+        gbc.insets = awt.Insets(5, 0, 0, 0)
+        self.contentPane.add(self.chkFullNames, gbc)
+        # Active Users checkbox
+        gbc.gridx = 0
+        gbc.gridwidth = 3
+        gbc.insets = awt.Insets(0, 0, 5, 0)
+        self.contentPane.add(self.chkActive, gbc)
         # Send Message Button
         gbc.gridx = 0
         gbc.gridwidth = 3
