@@ -226,7 +226,7 @@
     <target name= "dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
     </target>
 
-    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz" description="Create a Zip and TGZ Archives with all the binary files">
+    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-nosubdir-zip, dist-bin-scripting-nosubdir-zip" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
     <target name= "dist-bin-prepare" depends="package"  description="Prepares binary distribution">
@@ -238,12 +238,30 @@
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${build.dir}/${jarname}">
         </copy>
+        <copy todir="${dist.dir}/${dist.base.name}"
+                file="${lib.dir}/jython.jar">
+        </copy>
         </target>
 
     <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
         <zip zipfile="${dist.dir}/${dist.bin.name}.zip"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**">
+        </zip>
+    </target>
+
+    <target name= "dist-bin-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
+        <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
+            basedir="${dist.dir}/${dist.base.name}"
+            includes="**"
+            excludes="jython.jar">
+        </zip>
+    </target>
+
+    <target name= "dist-bin-scripting-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
+        <zip zipfile="${dist.dir}/${dist.bin.name}-scripting-nosubdir.zip"
+            basedir="${dist.dir}/${dist.base.name}"
+            includes="**">
         </zip>
     </target>
 
