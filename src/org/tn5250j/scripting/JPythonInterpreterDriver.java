@@ -18,6 +18,7 @@ import org.python.util.PythonInterpreter;
 import org.python.core.*;
 import org.tn5250j.Session;
 import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -66,8 +67,18 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
             public void run() {
                _interpreter = new PythonInterpreter();
                _interpreter.set("_session",s1);
-               _interpreter.execfile(s2);
-               s1.setMacroRunning(false);
+               try {
+                  _interpreter.execfile(s2);
+               }
+               catch (org.python.core.PySyntaxError pse) {
+                  JOptionPane.showMessageDialog(s1,pse,"Error in script " + s2,JOptionPane.ERROR_MESSAGE);
+               }
+               catch (org.python.core.PyException pse) {
+                  JOptionPane.showMessageDialog(s1,pse,"Error in script " + s2,JOptionPane.ERROR_MESSAGE);
+               }
+               finally {
+                  s1.setMacroRunning(false);
+               }
             }
 
            };

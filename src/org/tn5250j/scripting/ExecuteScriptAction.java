@@ -13,6 +13,7 @@ package org.tn5250j.scripting;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import org.tn5250j.Session;
+import javax.swing.JOptionPane;
 
 public class ExecuteScriptAction extends AbstractAction {
    String _scriptFile;
@@ -31,6 +32,7 @@ public class ExecuteScriptAction extends AbstractAction {
          InterpreterDriverManager.executeScriptFile(ses,_scriptFile);
       }
       catch (InterpreterDriver.InterpreterException ex) {
+         ses.setMacroRunning(false);
          System.out.println(ex);
          ex.printStackTrace();
       }
