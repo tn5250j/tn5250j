@@ -41,6 +41,8 @@ class Poller(Runnable):
 				entry = dq.read(curUsr,-1,"EQ")
 				self.parent.rpyTxt.append(entry.getString()+"\n")
 				self.parent.rpyTxt.setCaretPosition(len(self.parent.rpyTxt.getText()))
+				if self.parent.getState() == swing.JFrame.ICONIFIED:
+					self.parent.state=(swing.JFrame.NORMAL)
 				self.parent.chatTxt.requestFocus()
 				self.parent.show()
 			except:
@@ -165,7 +167,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		try:
 			dq.write(sndUsr, "%s::%s"%(curUsr, chatTxt) )
 			if not curUsr == sndUsr:
-				self.rpyTxt.append("%s>>%s\n"%(curUsr, chatTxt))
+				self.rpyTxt.append("%s -> %s\n%s\n"%(curUsr, sndUsr, chatTxt))
 				self.rpyTxt.setCaretPosition( len(self.rpyTxt.getText()) )
 			self.statusTxt.text='Message send successfull'
 			self.chatTxt.selectAll()
