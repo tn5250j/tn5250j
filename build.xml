@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.6-pre4"/>
+   <property name="version" value="0.5.6-pre5"/>
    <property name="year" value="2001-2002"/>
 
    <property name="source.dir" value="${basedir}/src" />
@@ -74,6 +74,7 @@
          </or>
       </condition>
    </target>
+    
     
     <!-- the ftp task can be used to transfer files to a remote system -->
     <!--
@@ -295,5 +296,47 @@
         <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
         <delete file="${dist.dir}/${dist.src.name}.tar"/>
     </target>
+
+  <!-- Creates an installer for tn5250j -->
+  <target name="generate-installer" depends="dist" description="Creates installer using IzPack"> 
+  
+    <!-- Allows us to use the IzPack Ant task -->
+    <taskdef name="izpack" classpath="${basedir}/lib/compiler.jar"
+             classname="com.izforge.izpack.ant.IzPackTask"/>
+
+    <!-- Copies the files to the dist directory -->
+    <echo message="Copies the image of the distribution to ${dist.dir}"/>
+    <delete dir="${dist.dir}/installer"/>
+    <mkdir dir="${dist.dir}/installer"/>
+    <copy todir="${dist.dir}/installer" includeEmptyDirs="yes">
+      <fileset dir="${basedir}">
+        <include name="bin/**"/>
+        <include name="lib/*.jar"/>
+      </fileset>
+       <fileset dir="${build.dir}">
+          <include name="${jarname}" />
+       </fileset>
+      <fileset dir="${dist.dir}/${dist.base.name}/src/installer/">
+        <include name="**"/>
+      </fileset>
+      <fileset dir="${dist.dir}/${dist.base.name}/src/">
+        <include name="readme.txt"/>
+        <include name="COPYING"/>
+      </fileset>
+      <fileset dir="${lib.dir}">
+        <include name="**"/>
+      </fileset>
+    </copy>
+    
+    <!-- We call IzPack -->
+    <echo message="Makes the installer using IzPack"/>
+    <izpack input="${dist.dir}/installer/install.xml"
+            output="${dist.dir}/tn5250j-install.jar"
+            installerType="standard-kunststoff"
+            basedir="${dist.dir}"
+            izPackDir="/home/jimmy/IzPack/"/>
+    
+   </target>	         
+<!--               izPackDir="${dist.dir}/"/-->
 
 </project>
