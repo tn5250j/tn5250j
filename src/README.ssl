@@ -1,5 +1,18 @@
-tn5250j README for SSL Usage
+tn5250j README for SSL
 ------------------------------------------------------------------------------
+
+Socket Security
+---------------
+TN5250J supports SSL socket connections using SSL version 1, SSL version 2, or 
+TLS.  Right now, the SSL type is configured on the client, but automatic type
+discovery will be supported in a future version.
+
+During SSL handshaking, a custom Trust Manager is used to validate the server's
+certificate.  If the certificate can not be trusted by default Trust Managers,
+(typically when keys have not been signed by a proper CA), then the user will 
+be prompted to accept the certificate.
+
+
 
 Applet Security
 ---------------

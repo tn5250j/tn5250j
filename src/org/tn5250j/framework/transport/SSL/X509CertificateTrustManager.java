@@ -21,10 +21,14 @@ package org.tn5250j.framework.transport.SSL;
  * Boston, MA 02111-1307 USA
  *
  */
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.swing.JOptionPane;
 
 /**
@@ -39,10 +43,11 @@ import javax.swing.JOptionPane;
 public class X509CertificateTrustManager implements X509TrustManager {
 
   KeyStore ks = null;
-  X509TrustManager trustManager = null;
+  TrustManager[] trustManagers;
+  //X509TrustManager trustManager = null;
 
-  public X509CertificateTrustManager(X509TrustManager manager, KeyStore keyStore) {
-    trustManager = manager;
+  public X509CertificateTrustManager(TrustManager[] managers, KeyStore keyStore) {
+    trustManagers = managers;
     ks = keyStore;
   }
 
@@ -56,31 +61,41 @@ public class X509CertificateTrustManager implements X509TrustManager {
    * passed to the constructor, then the user will be prompted to accept the
    * certificate.
    */
-  public void checkServerTrusted(X509Certificate[] chain, String type) throws CertificateException {
+  public void checkServerTrusted(X509Certificate[] chain, String type) 
+  		throws CertificateException {
     try {
-      trustManager.checkServerTrusted(chain,type);
+    	for (int i=0; i<trustManagers.length; i++) {
+    		if (trustManagers[i] instanceof X509TrustManager)
+    			((X509TrustManager)trustManagers[i]).checkServerTrusted(chain,type);
+    	}
       return;
-    }
-    catch (CertificateException ce) {
-      X509Certificate cert = chain[0];
-      String certInfo = "Version: " + cert.getVersion() + "\n";
-      certInfo = certInfo.concat("Serial Number: " + cert.getSerialNumber()+"\n");
-      certInfo = certInfo.concat("Signature Algorithm: " + cert.getSigAlgName()+"\n");
-      certInfo = certInfo.concat("Issuer: " + cert.getIssuerDN().getName()+"\n");
-      certInfo = certInfo.concat("Valid From: " + cert.getNotBefore()+"\n");
-      certInfo = certInfo.concat("Valid To: " + cert.getNotAfter()+"\n");
-      certInfo = certInfo.concat("Subject DN: " + cert.getSubjectDN().getName()+"\n");
-      certInfo = certInfo.concat("Public Key: " + cert.getPublicKey().getFormat()+"\n");
-
-      int accept = JOptionPane.showConfirmDialog(null,certInfo,
-                  "Accept Certificate",javax.swing.JOptionPane.YES_NO_OPTION);
-      if (accept != JOptionPane.YES_OPTION) {
-        throw new java.security.cert.CertificateException("Certificate Not Accepted");
-      }
-    }
+    } catch (CertificateException ce) {
+	      X509Certificate cert = chain[0];
+	      String certInfo = "Version: " + cert.getVersion() + "\n";
+	      certInfo = certInfo.concat("Serial Number: " + cert.getSerialNumber()+"\n");
+	      certInfo = certInfo.concat("Signature Algorithm: " + cert.getSigAlgName()+"\n");
+	      certInfo = certInfo.concat("Issuer: " + cert.getIssuerDN().getName()+"\n");
+	      certInfo = certInfo.concat("Valid From: " + cert.getNotBefore()+"\n");
+	      certInfo = certInfo.concat("Valid To: " + cert.getNotAfter()+"\n");
+	      certInfo = certInfo.concat("Subject DN: " + cert.getSubjectDN().getName()+"\n");
+	      certInfo = certInfo.concat("Public Key: " + cert.getPublicKey().getFormat()+"\n");
+	
+	      int accept = JOptionPane.showConfirmDialog(null,certInfo,
+	                  "Accept Certificate",javax.swing.JOptionPane.YES_NO_OPTION);
+	      if (accept != JOptionPane.YES_OPTION) {
+	        throw new java.security.cert.CertificateException("Certificate Not Accepted");
+	      }
+    	}
   }
 
   public X509Certificate[] getAcceptedIssuers() {
-    return trustManager.getAcceptedIssuers();
+  	ArrayList list = new ArrayList(10);
+	for (int i=0; i<trustManagers.length; i++) {
+		if (trustManagers[i] instanceof X509TrustManager)
+			list.addAll(Arrays.asList(((X509TrustManager)trustManagers[i]).getAcceptedIssuers()));
+	}
+	X509Certificate[] acceptedIssuers = new X509Certificate[list.size()];
+	acceptedIssuers = (X509Certificate[])list.toArray(acceptedIssuers);
+    return acceptedIssuers;
   }
 }

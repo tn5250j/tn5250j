@@ -124,8 +124,8 @@ public class SSLImplementation implements SSLInterface {
       tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(ks);
       trustManagers = tmf.getTrustManagers();
-      X509TrustManager myTrustManager = new X509CertificateTrustManager(
-          ((X509TrustManager)trustManagers[0]),ks);
+      X509TrustManager myTrustManager = 
+      	new X509CertificateTrustManager(trustManagers,ks);
       TrustManager[] newTrustManagers = new TrustManager[1];
       newTrustManagers[0] = myTrustManager;
       trustManagers = newTrustManagers;
