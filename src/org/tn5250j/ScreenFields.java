@@ -73,7 +73,6 @@ public class ScreenFields implements TN5250jConstants {
       }
 
       return false;
-//      return fieldPlane[lastPos];
    }
 
    public boolean isMasterMDT() {
@@ -90,6 +89,10 @@ public class ScreenFields implements TN5250jConstants {
 
    public boolean isCurrentFieldFER() {
       return currentField.isFER();
+   }
+
+   public boolean isCurrentFieldDupEnabled() {
+      return currentField.isDupEnabled();
    }
 
    public boolean isCurrentFieldToUpper() {
@@ -449,7 +452,12 @@ public class ScreenFields implements TN5250jConstants {
                   // we strip out all '\u0020' and less
                   while (len >= 0 &&
 //                     (sb.charAt(len) <= ' ' || sb.charAt(len) >= '\uff20' )) {
-                     (sb.charAt(len) < ' ' || sb.charAt(len) >= '\uff20' )) {
+                     (sb.charAt(len) < ' ' || sb.charAt(len) >= '\uff20')) {
+
+                     // if we have the dup character and dup is enabled then we
+                     //    stop here
+                     if (sb.charAt(len) == 0x1C && sf.isDupEnabled())
+                        break;
 
                      sb.deleteCharAt(len--);
                   }
@@ -493,7 +501,11 @@ public class ScreenFields implements TN5250jConstants {
                            baosp.write(c - '\uff00');
                         }
                         else
-                           baosp.write(codePage.getEBCDIC(' '));
+                           // check for dup character
+                           if (c == 0x1C)
+                              baosp.write(c);
+                           else
+                              baosp.write(codePage.getEBCDIC(' '));
                      }
                      else {
                         if (isSigned && k == len3 - 1) {

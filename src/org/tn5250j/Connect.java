@@ -51,6 +51,8 @@ public class Connect extends JDialog implements ActionListener,
    JButton editButton = null;
    JButton removeButton = null;
    JButton connectButton = null;
+   JButton applyButton = null;
+   JCheckBox showMe = null;
 
    // custom table model
    ConfigureTableModel ctm = null;
@@ -108,14 +110,15 @@ public class Connect extends JDialog implements ActionListener,
       sessions = new JTable(ctm);
 
       // Add enter as default key for connect with this session
-      KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0);
-
-      sessions.registerKeyboardAction(new ActionListener() {
+      Action connect = new AbstractAction("connect") {
             public void actionPerformed(ActionEvent e) {
                doActionConnect();
             }
-         },enter,JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        };
 
+      KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0,false);
+      sessions.getInputMap().put(enter,"connect");
+      sessions.getActionMap().put("connect",connect );
 
       sessions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       sessions.setPreferredScrollableViewportSize(new Dimension(500,200));
@@ -210,7 +213,23 @@ public class Connect extends JDialog implements ActionListener,
                                     sessionOptPanel,
                                     false);
 
-      connectButton = addOptButton(LangTool.getString("ss.optConnect"),"CONNECT",options,false);
+      showMe = new JCheckBox(LangTool.getString("ss.labelShowMe"));
+      if(props.containsKey("emul.showConnectDialog"))
+         showMe.setSelected(true);
+
+      showMe.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            showMe_itemStateChanged(e);
+         }
+      });
+
+      options.add(showMe);
+
+      connectButton = addOptButton(LangTool.getString("ss.optConnect"),
+                                    "CONNECT",options,false);
+
+      applyButton = addOptButton(LangTool.getString("ss.optApply"),
+                                    "APPLY",options,true);
 
       addOptButton(LangTool.getString("ss.optCancel"),"DONE",options);
 
@@ -230,10 +249,14 @@ public class Connect extends JDialog implements ActionListener,
          frameSize.width = screenSize.width;
       setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 
-      // set default selection value as the first row
+      // set default selection value as the first row or default session
       if (sessions.getRowCount() > 0) {
-
-         sessions.getSelectionModel().setSelectionInterval(0,0);
+         int selInterval = 0;
+         for (int x = 0; x < sessions.getRowCount(); x++) {
+            if (((Boolean)ctm.getValueAt(x,2)).booleanValue())
+               selInterval = x;
+         }
+         sessions.getSelectionModel().setSelectionInterval(selInterval,selInterval);
       }
 
       sessions.requestFocus();
@@ -299,6 +322,10 @@ public class Connect extends JDialog implements ActionListener,
       if (e.getActionCommand().equals("CONNECT")) {
          doActionConnect();
       }
+
+      if (e.getActionCommand().equals("APPLY")) {
+         saveProps();
+      }
    }
 
    private void doActionConnect () {
@@ -306,7 +333,13 @@ public class Connect extends JDialog implements ActionListener,
       int selectedRow = rowSM.getMinSelectionIndex();
       connectKey = (String)ctm.getValueAt(selectedRow,0);
       saveProps();
-      setVisible(false);
+
+      // this thread.sleep will get rid of those extra keystrokes that keep
+      //    propogating to other peers.  This is a very annoying bug that
+      //    should be fixed.  This seems to work through 1.4.0 but in 1.4.1
+      //    beta seems to be broken again.  WHY!!!!!
+      try {Thread.sleep(500);}catch(java.lang.InterruptedException ie) {}
+      this.dispose();
 
    }
 
@@ -314,7 +347,8 @@ public class Connect extends JDialog implements ActionListener,
 
       return connectKey;
    }
-      private void saveProps() {
+
+   private void saveProps() {
 
       try {
          FileOutputStream out = new FileOutputStream("sessions");
@@ -353,6 +387,18 @@ public class Connect extends JDialog implements ActionListener,
 
          props.setProperty("emul.interface","MDI");
 
+      }
+
+   }
+
+   void showMe_itemStateChanged(ItemEvent e) {
+
+      if (showMe.isSelected()) {
+         props.setProperty("emul.showConnectDialog","");
+      }
+      else {
+
+         props.remove("emul.showConnectDialog");
       }
 
    }
@@ -409,17 +455,21 @@ public class Connect extends JDialog implements ActionListener,
 
       public Object getValueAt(int row, int col) {
 
-        if (col == 0)
+         if (col == 0)
           return getPropValue(row,null);
-        if (col == 1)
+         if (col == 1)
           return getPropValue(row,"0");
-        if (col == 2) {
+
+         // remember if you change this here you need to change the default
+         //    selection option of the main table to pass in the correct
+         //    column number.
+         if (col == 2) {
           if (getPropValue(row,null).equals(props.getProperty("emul.default","")))
              return new Boolean(true);
           else
              return new Boolean(false);
-        }
-        return null;
+         }
+         return null;
 
       }
 

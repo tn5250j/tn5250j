@@ -144,12 +144,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private final static int ERR_INVALID_SIGN          = 0x11;
    private final static int ERR_NO_ROOM_INSERT        = 0x12;
    private final static int ERR_NUMERIC_ONLY          = 0x09;
+   private final static int ERR_DUP_KEY_NOT_ALLOWED   = 0x19;
    private final static int ERR_NUMERIC_09            = 0x10;
    private final static int ERR_FIELD_MINUS           = 0x16;
    private final static int ERR_MANDITORY_ENTER       = 0x21;
 
    private boolean guiInterface = false;
    protected boolean guiShowUnderline = true;
+   private boolean restrictCursor =false;
+   private Rectangle restriction;
 
    public Screen5250(Gui5250 gui, Properties props) {
 
@@ -184,6 +187,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       numCols = 80;
 
       goto_XY(1,1);  // set initial cursor position
+
+      restriction = new Rectangle(0,0);
 
       errorLineNum = numRows;
       updateCursorLoc = false;
@@ -633,11 +638,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          updateFont = false;
       }
 
-      if (resetAttr)
+      if (resetAttr) {
          for (int y = 0;y < lenScreen; y++) {
             screen[y].setAttribute(screen[y].getCharAttr());
          }
-
+         bi.drawOIA(fmWidth,fmHeight,numRows,numCols,font,colorBg,colorBlue);
+      }
       gui.repaint();
       gui.revalidate();
    }
@@ -664,7 +670,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * Translate the starting point of mouse movement to encompass a full character
     *
     * @param start
-    * @return
+    * @return Point
     */
    public Point translateStart(Point start) {
 
@@ -681,7 +687,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * Translate the ending point of mouse movement to encompass a full character
     *
     * @param end
-    * @return
+    * @return Point
     */
    public Point translateEnd(Point end) {
 
@@ -1252,6 +1258,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          else {
             keysBuffered = true;
             setKBIndicatorOn();
+
             if(bufferedKeys == null){
                bufferedKeys = text;
                return;
@@ -1301,6 +1308,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                   if (bufferedKeys != null) {
                      keysBuffered = true;
                      setKBIndicatorOn();
+
                   }
                   done = true;
                }
@@ -1847,6 +1855,66 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             sessionVT.sendAttentionKey();
             simulated  = true;
             break;
+         case DUP_FIELD :
+            if (screenFields.getCurrentField() != null &&
+               screenFields.withinCurrentField(lastPos)
+               && !screenFields.isCurrentFieldBypassField()) {
+
+               if (screenFields.isCurrentFieldDupEnabled()) {
+                  setCursorOff();
+                  resetDirty(lastPos);
+                  screenFields.getCurrentField().setFieldChar(lastPos,(char)0x1C);
+                  screenFields.setCurrentFieldMDT();
+                  gotoFieldNext();
+                  updateDirty();
+                  setCursorOn();
+                  simulated = true;
+               }
+               else {
+                  displayError(ERR_DUP_KEY_NOT_ALLOWED);
+               }
+            }
+            else {
+               displayError(ERR_CURSOR_PROTECTED);
+            }
+
+            break;
+         case NEW_LINE :
+            if (screenFields.getSize() > 0) {
+               int startRow = getRow(lastPos) + 1;
+               int startPos = lastPos;
+               boolean isthere = false;
+
+               setCursorOff();
+               if (startRow == getRows())
+                  startRow = 0;
+
+               goto_XY(++startRow,1);
+
+
+               if (!isInField()
+                     && screenFields.getCurrentField() != null
+                     && !screenFields.isCurrentFieldBypassField()) {
+                  while (!isInField()
+                           && screenFields.getCurrentField() != null
+                           && !screenFields.isCurrentFieldBypassField()) {
+
+                     // lets keep going
+                     advancePos();
+
+                     // Have we looped the screen?
+                     if (lastPos == startPos) {
+                        // if so then go back to starting point
+                        goto_XY(startPos);
+                        break;
+                     }
+                  }
+               }
+               setCursorOn();
+            }
+            simulated  = true;
+
+            break;
          default :
             System.out.println(" Mnemonic not supported " + mnem);
             break;
@@ -2196,6 +2264,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    public int getRow(int pos) {
 
+//      if (pos == 0)
+//         return 1;
 
       int row = pos / numCols;
 
@@ -2212,6 +2282,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    public int getCol(int pos) {
 
+//      if (pos == 0)
+//         return 1;
+
       int col = pos % (getCols());
       if (col > 0)
          return col;
@@ -2224,7 +2297,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return (row * numCols) + col;
    }
 
-   // Current position is based on offsets of 1,1 not 0,0
+   /**
+    * Current position is based on offsets of 1,1 not 0,0 of the current
+    *    position of the screen
+    *
+    * @return int
+    */
    public int getCurrentPos() {
 
       return lastPos + numCols + 1;
@@ -2237,6 +2315,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *  anybody finds this documention could you please send me a copy.  Please
     *  note that I did not look that hard either.
     *
+    *  @param ec error code
     *
     * 0000:  00 50 73 1D 89 81 00 50 DA 44 C8 45 08 00 45 00 .Ps....P.D.E..E.
     * 0010:  00 36 E9 1C 40 00 80 06 9B F9 C1 A8 33 58 C0 A8 .6..@.......3X..
@@ -2257,7 +2336,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *    I am tired of typing and they should be self explanitory.  Finding them
     *    in the first place was the pain.
     *
-    *  @param ec
     */
    private void displayError (int ec) {
       saveHomePos = homePos;
@@ -2305,57 +2383,117 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return screenFields.isInField((row * numCols) + col,chgToField);
    }
 
+   /**
+    * Gets the length of the screen - number of rows times number of columns
+    *
+    * @return int value of screen length
+    */
    public int getScreenLength() {
 
       return lenScreen;
    }
 
+   /**
+    * Get the number or rows available.
+    *
+    * @return number of rows
+    */
    public int getRows() {
 
       return numRows;
 
    }
 
+   /**
+    * Get the number of columns available.
+    *
+    * @return number of columns
+    */
    public int getCols() {
 
       return numCols;
 
    }
+
+   /**
+    * Get the current row where the cursor is
+    *
+    * @return the cursor current row position 1,1 based
+    */
    public int getCurrentRow() {
 
       return (lastPos / numCols) + 1;
 
    }
 
+   /**
+    * Get the current column where the cursor is
+    *
+    * @return the cursor current column position 1,1 based
+    */
    public int getCurrentCol() {
 
       return (lastPos % numCols) + 1;
 
    }
 
-   // Get the last position
+   /**
+    * The last position of the screen position based 0,0
+    *
+    * @return last position
+    */
    protected int getLastPos() {
 
       return lastPos;
 
    }
 
+   /**
+    * Hotspot More... string
+    *
+    * @return string literal of More...
+    */
    public StringBuffer getHSMore() {
       return hsMore;
    }
 
+   /**
+    * Hotspot Bottom string
+    *
+    * @return string literal of Bottom
+    */
    public StringBuffer getHSBottom() {
       return hsBottom;
    }
 
+   /**
+    * The column separator to be used
+    *
+    * @return column separator to be used
+    *          values:
+    *          0 - line
+    *          1 - dot
+    *          2 - short line
+    */
    public int getColSepLine() {
       return colSepLine;
    }
 
-   public boolean getShowHex() {
+   /**
+    * Should the screen attributes be show in hex
+    *
+    * @return true we should and false we should not
+    */
+   public boolean isShowHex() {
       return showHex;
    }
 
+   /**
+    *
+    * Return the screen represented as a character array
+    *
+    * @return character array containing the text
+    */
    public char[] getScreenAsChars() {
       char[] sac = new char[lenScreen];
       char c;
@@ -2376,6 +2514,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return sac;
    }
 
+   /**
+    * Set the keyboard as locked
+    *
+    * @param k true of false
+    */
    public void setKeyboardLocked (boolean k) {
 //      System.out.println(" lock it " + k);
       keyboardLocked = k;
@@ -2390,13 +2533,23 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Is the keyboard locked or not
+    *
+    * @return locked or not
+    */
    public boolean isKeyboardLocked () {
       return keyboardLocked;
    }
 
-   // this routine is based on offset 1,1 not 0,0
-   //  it will translate to offset 0,0 and call the goto_XY(int pos)
-   //  it is mostly used from external classes that use the 1,1 offset
+   /**
+    *   This routine is based on offset 1,1 not 0,0
+    *   it will translate to offset 0,0 and call the goto_XY(int pos)
+    *   it is mostly used from external classes that use the 1,1 offset
+    *
+    * @param row
+    * @param col
+    */
    public void goto_XY(int row,int col) {
       goto_XY(((row - 1) * numCols) + (col-1));
    }
@@ -2408,12 +2561,18 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       updateCursorLoc();
    }
 
+   /**
+    * Set the cursor on
+    */
    public void setCursorOn() {
       updateCursorLoc = true;
 //      System.out.println("cursor on");
       updateCursorLoc();
    }
 
+   /**
+    * Set the cursor off
+    */
    public void setCursorOff() {
 
       updateCursorLoc();
@@ -2422,6 +2581,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * This returns whether or not any of the fields currently on the screen have
+    * been changed in any way
+    *
+    * @return true or false
+    */
    public boolean isMasterMDT() {
 
       return screenFields.isMasterMDT();
@@ -2532,6 +2697,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (screenFields.isCurrentFieldHighlightedEntry())
          setFieldHighlighted(screenFields.getCurrentField());
+
+   }
+
+   public void setRestrictCursor(int depth, int width) {
+
+      restrictCursor = true;
+//      restriction
 
    }
 
@@ -2695,7 +2867,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-    * Write the title of the window
+    * Write the title of the window that is on the screen
     *
     * @param pos
     * @param depth
@@ -2745,6 +2917,16 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
 
+   /**
+    * Add a field to the field format table.
+    *
+    * @param attr - Field attribute
+    * @param len  - length of field
+    * @param ffw1 - Field format word 1
+    * @param ffw2 - Field format word 2
+    * @param fcw1 - Field control word 1
+    * @param fcw2 - Field control word 2
+    */
    public void addField(int attr, int len, int ffw1, int ffw2, int fcw1, int fcw2) {
 
       lastAttr = attr;
@@ -2885,6 +3067,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //
 //      }
 
+   /**
+    * Return the fields that are contained in the Field Format Table
+    *
+    * @return ScreeFields
+    */
    public ScreenFields getScreenFields() {
       return screenFields;
    }
@@ -3142,7 +3329,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       //          format table
       //    - A default starting address of row 1 column 1.
 
-      if (pendingInsert) {
+      if (pendingInsert && homePos > 0) {
          goto_XY(getRow(homePos),getCol(homePos));
          isInField();   // we now check if we are in a field
       }
@@ -3163,6 +3350,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       if (pendingInsert) {
          homePos = getPos(icX,icY);
       }
+      goto_XY(icX,icY);
+   }
+
+   public void setPendingInsert(boolean flag) {
+      if (homePos != -1)
+         pendingInsert = flag;
    }
 
    /**
@@ -3345,7 +3538,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    /**
     * This routine clears the screen, resets row and column to 0,
     * resets the last attribute to 32, clears the fields, turns insert mode
-    * off.
+    * off, clears/initializes the screen character array.
     */
    public void clearAll() {
 
@@ -3375,7 +3568,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * Clear the screen by setting the initial character and initial
     * attribute to all the positions on the screen
     */
-
    public void clearScreen() {
 
       for (int x = 0; x < lenScreen; x++) {

@@ -16,7 +16,14 @@ Implement support for images on the background. Wishlist for the future
 
 Autologin support request.
 
-Add keybuffering indicator.  RFE from James.
+Fix throttling code that is causing wierd painting problems.  I found it now
+have to make it more intelligent.
+
+Add option for sending partial screen information to file and/or e-mail.
+
+Think about a way to e-mail from file transfer.
+
+Add restore of session sizes in MDI session interface.
 
 Known problems
 --------------
@@ -29,14 +36,45 @@ Special Keys for linux are a real pain.  I have done a lot to the code to enhanc
 and/or find work arounds for this but to no avail.  I will attempt it again later
 when I have some more ideas.
 
-The only solution is to remap the keyboard using xmodmaps and mapping for
+The only solution is to remap the keyboard using xmodmaps and/or mapping for
 special characters using the Map Keys dialog.  I do not like this at all and is
 a huge hack for linux.  If you do not believe me take a look at the Java Bug
 Database for all the problems with this in linux.
 
-
 Enhancements/Change Log
 -----------------------
+12/07/2002  Made the connection dialog highlight the default session selection
+            if one is specified.
+
+            Fixed another problem with sys request dialog pane where the default
+            option was not responding to key strokes.  I have now tested this on
+            windows 1.3.0 through 1.4.0 and linux 1.4.0.  Thanks Irene for the
+            report.
+
+            Added a new button to connection dialog to apply changes.
+
+            Added a new check box to connection dialog to show connection dialog
+            at startup.  If you want the default option to be started without
+            this prompt deselect this box.
+
+11/07/2002  Fixed a problem when changing the colors the separator line in the
+            Operator Information Area was not being repainted.
+
+            Miscellaneous painting problems fixes.
+
+10/07/2002  Added support for two new keys - dup and new line.  Thanks for the
+            request Roy.  You will have to map these two keys if you already
+            have a keymap.
+
+            Added new popup menu item "keyboard" that has the following special
+            key shortcuts:
+               Attention;Error reset;Sys Req;Dup field;help;erase eof;field plus
+               field minus;new line;host print
+
+            display messages is now here as well if there are messages waiting
+
+09/07/2002  Fixed a painting problem with session startup.
+
 05/07/2002  Fixed a connection problem while negotiating environment settings.
             This was causing the session to never connect sometimes.  It would
             stay forever at connecting.  Finally found it!!!

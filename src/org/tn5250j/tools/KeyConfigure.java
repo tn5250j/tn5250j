@@ -37,7 +37,8 @@ import java.text.*;
 import org.tn5250j.tools.CodePage;
 import org.tn5250j.*;
 
-public class KeyConfigure extends JDialog implements ActionListener {
+public class KeyConfigure extends JDialog implements ActionListener,
+                                                         TN5250jConstants {
 
    Properties props;
    JPanel keyPanel = new JPanel();
@@ -55,25 +56,6 @@ public class KeyConfigure extends JDialog implements ActionListener {
    private CodePage codePage;
    private boolean isLinux;
    private boolean isAltGr;
-
-   private static final String keyMnemonic[] = {
-        "[backspace]", "[backtab]", "[up]", "[down]", "[left]",
-        "[right]", "[delete]", "[tab]", "[eof]", "[eraseeof]",
-        "[erasefld]", "[insert]", "[home]", "[keypad0]", "[keypad1]",
-        "[keypad2]", "[keypad3]", "[keypad4]", "[keypad5]", "[keypad6]",
-        "[keypad7]", "[keypad8]", "[keypad9]", "[keypad.]", "[keypad,]",
-        "[keypad-]", "[fldext]", "[field+]", "[field-]", "[bof]",
-        "[enter]","[pf1]","[pf2]","[pf3]","[pf4]",
-        "[pf5]","[pf6]","[pf7]","[pf8]","[pf9]",
-        "[pf10]","[pf11]","[pf12]","[pf13]","[pf14]",
-        "[pf15]","[pf16]","[pf17]","[pf18]","[pf19]",
-        "[pf20]","[pf21]","[pf22]","[pf23]","[pf24]",
-        "[clear]", "[help]", "[pgup]", "[pgdown]", "[rollleft]",
-        "[rollright]", "[hostprint]", "[pa1]", "[pa2]", "[pa3]",
-        "[sysreq]","[reset]","[nextword]", "[prevword]", "[copy]",
-        "[paste]","[attn]","[markup]", "[markdown]", "[markleft]",
-        "[markright]"
-   };
 
    public KeyConfigure(Frame parent, String[] macros, CodePage cp) {
 
@@ -194,7 +176,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
       // This try and catch is to fix a problem in JDK1.4-betas
       try {
          if (!macros && !special) {
-            strokeDesc.setText(mapper.getKeyStrokeDesc(keyMnemonic[index]));
+            strokeDesc.setText(mapper.getKeyStrokeDesc(mnemonicData[index]));
          }
          else {
             if (macros) {
@@ -220,8 +202,8 @@ public class KeyConfigure extends JDialog implements ActionListener {
       lm.clear();
       lm.removeAllElements();
       if (which.equals(LangTool.getString("key.labelKeys"))) {
-         for (int x = 0; x < keyMnemonic.length; x++) {
-            lm.addElement(LangTool.getString("key."+keyMnemonic[x]));
+         for (int x = 0; x < mnemonicData.length; x++) {
+            lm.addElement(LangTool.getString("key."+mnemonicData[x]));
          }
          macros = false;
          special = false;
@@ -378,9 +360,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
    private void removeIt() {
       if (!macros && !special) {
-         mapper.removeKeyStroke(keyMnemonic[functions.getSelectedIndex()]);
+         mapper.removeKeyStroke(mnemonicData[functions.getSelectedIndex()]);
          strokeDesc.setText(mapper.getKeyStrokeDesc(
-                           keyMnemonic[functions.getSelectedIndex()]));
+                           mnemonicData[functions.getSelectedIndex()]));
 
       }
       else {
@@ -406,11 +388,11 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
       if (!macros && !special) {
          if (isLinux)
-            mapper.setKeyStroke(keyMnemonic[functions.getSelectedIndex()],ke,isAltGr);
+            mapper.setKeyStroke(mnemonicData[functions.getSelectedIndex()],ke,isAltGr);
          else
-            mapper.setKeyStroke(keyMnemonic[functions.getSelectedIndex()],ke);
+            mapper.setKeyStroke(mnemonicData[functions.getSelectedIndex()],ke);
          strokeDesc.setText(mapper.getKeyStrokeDesc(
-                           keyMnemonic[functions.getSelectedIndex()]));
+                           mnemonicData[functions.getSelectedIndex()]));
       }
       else {
          if (macros) {

@@ -33,7 +33,11 @@ import java.awt.font.*;
 import java.awt.Font;
 import org.tn5250j.tools.GUIGraphicsUtils;
 
+
 public class ScreenChar {
+
+   // Dup Character array for display output
+   public static final transient char[] dupChar = {'*'};
 
 
    public ScreenChar(Screen5250 s5250) {
@@ -300,7 +304,7 @@ public class ScreenChar {
 
    public final void drawChar(Graphics2D g) {
 
-      if (attributePlace && s.getShowHex()) {
+      if (attributePlace && s.isShowHex()) {
          Font f = g.getFont();
 
          Font k = f.deriveFont(f.getSize2D()/2);
@@ -520,9 +524,15 @@ public class ScreenChar {
                   try {
                      if (useGui)
 
-                        g.drawChars(sChar, 0, 1, x+1, cy -2);
+                        if (sChar[0] == 0x1C)
+                           g.drawChars(dupChar, 0, 1, x+1, cy -2);
+                        else
+                           g.drawChars(sChar, 0, 1, x+1, cy -2);
                      else
-                        g.drawChars(sChar, 0, 1, x, cy -2);
+                        if (sChar[0] == 0x1C)
+                           g.drawChars(dupChar, 0, 1, x, cy -2);
+                        else
+                           g.drawChars(sChar, 0, 1, x, cy -2);
                   }
                   catch (IllegalArgumentException iae) {
                      System.out.println(" ScreenChar iae " + iae.getMessage());

@@ -405,7 +405,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          parseArgs((String)sessions.getProperty(sel), sessionArgs);
       }
 
-      if (sessionArgs == null  || sess.getCount() > 0) {
+      if (sessionArgs == null  || sess.getCount() > 0
+               || sessions.containsKey("emul.showConnectDialog")) {
 
          sel = getConnectSession();
 
@@ -413,12 +414,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
             String selArgs = sessions.getProperty(sel);
             sessionArgs = new String[NUM_PARMS];
             parseArgs(selArgs, sessionArgs);
-//            if (!frame.isVisible())
-//               frame.setVisible(true);
-//            else {
-//               newView();
-//               frame.setVisible(true);
-//            }
 
             newSession(sel,sessionArgs);
          }
@@ -429,10 +424,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       }
       else {
-//         if (!frame.isVisible())
-//            frame.setVisible(true);
-//         else
-//            newView();
 
          newSession(sel,sessionArgs);
 

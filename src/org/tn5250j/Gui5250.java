@@ -735,9 +735,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       char kc = e.getKeyChar();
 //      displayInfo(e,"Typed processed " + keyProcessed);
-      if (Character.isISOControl(kc) || keyProcessed)
-//      if (keyProcessed)
+      if (Character.isISOControl(kc) || keyProcessed) {
          return;
+      }
 //         displayInfo(e,"Typed ");
       String s = "";
 //      if (isLinux) {
@@ -770,7 +770,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
 //      displayInfo(e,"Released " + keyProcessed);
 
-      if (keyProcessed || e.isConsumed())
+      if (Character.isISOControl(e.getKeyChar()) || keyProcessed || e.isConsumed() )
          return;
 
 
@@ -1132,6 +1132,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
            };
          popup.add(action);
 
+         popup.addSeparator();
       }
       else {
 
@@ -1211,26 +1212,100 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          popup.addSeparator();
 
-         action = new AbstractAction(LangTool.getString("popup.systemRequest")) {
-               public void actionPerformed(ActionEvent e) {
-                  vt.systemRequest();
-               }
-           };
-         popup.add(action);
+         JMenu kbMenu = new JMenu(LangTool.getString("popup.keyboard"));
 
-         action = new AbstractAction(LangTool.getString("popup.help")) {
+         popup.add(kbMenu);
+
+         action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
                public void actionPerformed(ActionEvent e) {
-                  vt.sendHelpRequest();
+
+                  mapMeKeys();
                }
            };
-         popup.add(action);
+         kbMenu.add(action);
+
+         kbMenu.addSeparator();
+
+         action = new AbstractAction(LangTool.getString("key.[attn]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[attn]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[reset]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[reset]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[sysreq]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[sysreq]");
+               }
+           };
+         kbMenu.add(action);
+
+         if (screen.isMessageWait()) {
+            action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
+                  public void actionPerformed(ActionEvent e) {
+                     vt.systemRequest('4');
+                  }
+              };
+            kbMenu.add(action);
+         }
+
+         kbMenu.addSeparator();
+
+         action = new AbstractAction(LangTool.getString("key.[dupfield]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[dupfield]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[help]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[help]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[eraseeof]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[eraseeof]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[field+]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[field+]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[field-]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[field-]");
+               }
+           };
+         kbMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("key.[newline]")) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys("[newline]");
+               }
+           };
+         kbMenu.add(action);
 
          action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
                public void actionPerformed(ActionEvent e) {
                   vt.hostPrint(1);
                }
            };
-         popup.add(action);
+         kbMenu.add(action);
 
          if (screen.isMessageWait()) {
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {

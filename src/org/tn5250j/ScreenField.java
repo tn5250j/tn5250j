@@ -214,6 +214,17 @@ public class ScreenField {
       }
    }
 
+   public void setFieldChar(int lastPos, char c) {
+
+      int x = endPos - lastPos + 1;
+      cursorPos = lastPos;
+      while (x-- > 0) {
+         s.screen[cursorPos].setChar(c);
+         s.setDirty(cursorPos);
+         changePos(1);
+      }
+   }
+
    public void resetMDT() {
       mdt = false;
 
@@ -289,6 +300,12 @@ public class ScreenField {
    public boolean isSignedNumeric () {
 
       return (getFieldShift() == 7);
+
+   }
+
+   public boolean isDupEnabled() {
+
+      return (ffw1 & 0x10) == 0x10;
 
    }
 

@@ -153,17 +153,28 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 
          try {
-            screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
+               SwingUtilities.invokeAndWait(
+                  new Runnable () {
+                     public void run() {
+                        screen52.setStatus(screen52.STATUS_SYSTEM,
+                                 screen52.STATUS_VALUE_ON,
+                                 "X - Connecting");
+
+                     }
+                  }
+               );
+
+//            screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
          }
          catch (Exception exc) {
             System.out.println("setStatus(ON) " + exc.getMessage());
-            try {
-               screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
-            }
-            catch (Exception exc2) {
-               System.out.println("setStatus(ON) " + exc2.getMessage());
-
-            }
+//            try {
+//               screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
+//            }
+//            catch (Exception exc2) {
+//               System.out.println("setStatus(ON) " + exc2.getMessage());
+//
+//            }
 
          }
 
@@ -203,18 +214,20 @@ public final class tnvt implements Runnable, TN5250jConstants {
          pthread.start();
 
          try {
-            screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_OFF,null);
+               SwingUtilities.invokeAndWait(
+                  new Runnable () {
+                     public void run() {
+                        screen52.setStatus(screen52.STATUS_SYSTEM,
+                                             screen52.STATUS_VALUE_OFF,
+                                             null);
+                     }
+                  }
+               );
+
+//            screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_OFF,null);
          }
          catch (Exception exc) {
             System.out.println("setStatus(OFF) " + exc.getMessage());
-            try {
-               screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_OFF,null);
-            }
-            catch (Exception exc2) {
-               System.out.println("setStatus(OFF) " + exc2.getMessage());
-
-            }
-
          }
 
          keepTrucking = true;
@@ -515,87 +528,97 @@ public final class tnvt implements Runnable, TN5250jConstants {
     */
    public final void systemRequest(char sr) {
 
-
       if (sr == ' ') {
          JPanel srp = new JPanel();
          srp.setLayout(new BorderLayout());
          JLabel jl = new JLabel("Enter alternate job");
-         JTextField sro = new JTextField();
+         final JTextField sro = new JTextField();
          srp.add(jl,BorderLayout.NORTH);
          srp.add(sro,BorderLayout.CENTER);
          Object[]      message = new Object[1];
          message[0] = srp;
          String[] options = {"SysReq","Cancel"};
 
-         int result = 0;
+         final JOptionPane pane = new JOptionPane(
 
-            result = JOptionPane.showOptionDialog(
-                null,                               // the parent that the dialog blocks
                 message,                           // the dialog message array
-                "System Request",                  // the title of the dialog window
-                JOptionPane.DEFAULT_OPTION,        // option type
                 JOptionPane.QUESTION_MESSAGE,      // message type
+                JOptionPane.DEFAULT_OPTION,        // option type
                 null,                              // optional icon, use null to use the default icon
                 options,                           // options string array, will be made into buttons//
-                sro                                // option that should be made into a default button
-            );
+                options[0]);                       // option that should be made into a default button
 
-            switch(result) {
-               case 0: // Send SysReq
-                  // from rfc1205 section 4.3
-                  // Client sends header with the           000A12A0000004040000FFEF
-                  // System Request bit set.
-                  //
-                  // if we wanted to send an option with it we would need to send
-                  //    it at the end such as the following
-                  //
-                  // byte abyte0[] = new byte[1];    or number of bytes in option
-                  // abyte0[0] = getEBCDIC(option);
+
+         // create a dialog wrapping the pane
+         final JDialog dialog = pane.createDialog(null, // parent frame
+                           "System Request"  // dialog title
+                           );
+
+         // add the listener that will set the focus to
+         // the desired option
+         dialog.addWindowListener( new WindowAdapter() {
+            public void windowOpened( WindowEvent e) {
+               super.windowOpened( e );
+
+               // now we're setting the focus to the desired component
+               // it's not the best solution as it depends on internals
+               // of the OptionPane class, but you can use it temporarily
+               // until the bug gets fixed
+               // also you might want to iterate here thru the set of
+               // the buttons and pick one to call requestFocus() for it
+
+               sro.requestFocus();
+            }
+         });
+         dialog.show();
+
+         // now we can process the value selected
+         String value = (String)pane.getValue();
+
+         if (value.equals(options[0])) {
+            // from rfc1205 section 4.3
+            // Client sends header with the           000A12A0000004040000FFEF
+            // System Request bit set.
+            //
+            // if we wanted to send an option with it we would need to send
+            //    it at the end such as the following
+            //
+            // byte abyte0[] = new byte[1];    or number of bytes in option
+            // abyte0[0] = getEBCDIC(option);
 
 //                  System.out.println("SYSRQS sent");
 
-                  // send option along with system request
-                  if (sro.getText().length() > 0) {
-                     for (int x = 0; x < sro.getText().length(); x++) {
-   //                     System.out.println(sro.getText().charAt(x));
-                        if (sro.getText().charAt(0) == '2') {
-//                           System.out.println("dataq cleared");
-                           dsq.clear();
-                        }
-                        baosp.write(getEBCDIC(sro.getText().charAt(x)));
-                     }
-
-                     try {
-                       writeGDS(4, 0, baosp.toByteArray());
-                     }
-                     catch (IOException ioe) {
-
-                       System.out.println(ioe.getMessage());
-                     }
-                     baosp.reset();
+            // send option along with system request
+            if (sro.getText().length() > 0) {
+               for (int x = 0; x < sro.getText().length(); x++) {
+            //                     System.out.println(sro.getText().charAt(x));
+                  if (sro.getText().charAt(0) == '2') {
+            //                           System.out.println("dataq cleared");
+                     dsq.clear();
                   }
-                  else {    // no option sent with system request
+                  baosp.write(getEBCDIC(sro.getText().charAt(x)));
+               }
 
+               try {
+                 writeGDS(4, 0, baosp.toByteArray());
+               }
+               catch (IOException ioe) {
 
-                     try {
-                       writeGDS(4, 0, null);
-                     }
-                     catch (IOException ioe) {
-
-                       System.out.println(ioe.getMessage());
-                     }
-
-
-
-                  }
-
-                  break;
-               case 1: // Cancel
-      //		      System.out.println("Cancel");
-                  break;
-               default:
-                  break;
+                 System.out.println(ioe.getMessage());
+               }
+               baosp.reset();
             }
+            else {    // no option sent with system request
+
+               try {
+                 writeGDS(4, 0, null);
+               }
+               catch (IOException ioe) {
+
+                 System.out.println(ioe.getMessage());
+               }
+            }
+         }
          controller.requestFocus();
       }
       else {
@@ -889,6 +912,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
 
          try {
+//               SwingUtilities.invokeAndWait(
+//                  new Runnable () {
+//                     public void run() {
+//                        screen52.updateDirty();
+//                     }
+//                  }
+//               );
             screen52.updateDirty();
          }
          catch (Exception exd ) {
@@ -1537,16 +1567,34 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 19:    // IC - Insert Cursor
-               case 20:    // MC - Move Cursor
                   int icX = bk.getNextByte();
                   int icY = bk.getNextByte() & 0xff;
                   if (icX >= 0 &&
                         icX <= saRows &&
                         icY >= 0 &&
-                        icY <= saCols)
+                        icY <= saCols) {
 
 //                     System.out.println(" IC " + icX + " " + icY);
                      screen52.setPendingInsert(true,icX,icY);
+                  }
+                  else {
+                     sendNegResponse(NR_REQUEST_ERROR,0x05,0x01,0x22," IC/IM position invalid ");
+                     error = true;
+                  }
+
+                  break;
+
+               case 20:    // MC - Move Cursor
+                  int imcX = bk.getNextByte();
+                  int imcY = bk.getNextByte() & 0xff;
+                  if (imcX >= 0 &&
+                        imcX <= saRows &&
+                        imcY >= 0 &&
+                        imcY <= saCols) {
+
+//                     System.out.println(" MC " + imcX + " " + imcY);
+                     screen52.setPendingInsert(false,imcX,imcY);
+                  }
                   else {
                      sendNegResponse(NR_REQUEST_ERROR,0x05,0x01,0x22," IC/IM position invalid ");
                      error = true;
@@ -1792,6 +1840,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       if ((byte1 & 0x01) == 0x01) {
          screen52.setMessageLightOn();
       }
+
       if ((byte1 & 0x01) == 0x01 && (byte1 & 0x02) == 0x02) {
          screen52.setMessageLightOn();
       }
@@ -1805,9 +1854,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
       // *** Note *** unless we receive bit 4 on at the same time
       // this seems to work so far
       if ((byte1 & 0x20) == 0x20 && (byte1 & 0x08) == 0x00) {
-         screen52.setPendingInsert(false,1,1);
+         screen52.setPendingInsert(false);
+//         System.out.println(" WTD position no move");
       }
+      else {
 
+         screen52.setPendingInsert(true);
+//         System.out.println(" WTD position move to home" + screen52.homePos +
+//                              " row " + screen52.getRow(screen52.homePos) +
+//                              " col " + screen52.getCol(screen52.homePos) );
+
+      }
       // in enhanced mode we sometimes only receive bit 6 turned on which
       // is reset blinking cursor
       if ((byte1 & 0x20) == 0x20 && enhanced) {
@@ -1869,7 +1926,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         int cols = 0;
                         // pull down not supported yet
                         if ((bk.getNextByte() & 0x80) == 0x80)
-                           cr = true;
+                           cr = true;  // restrict cursor
                         bk.getNextByte(); // get reserved field pos 6
                         bk.getNextByte(); // get reserved field pos 7
                         rows = bk.getNextByte(); // get window depth rows pos 8
@@ -1897,6 +1954,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         int ml = 0;
                         int type = 0;
                         int lastPos = screen52.getLastPos();
+//                        if (cr)
+//                           screen52.setPendingInsert(true,
+//                                          screen52.getCurrentRow(),
+//                                          screen52.getCurrentCol());
                         int mAttr = 0;
                         int cAttr = 0;
 

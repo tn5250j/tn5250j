@@ -35,13 +35,25 @@ public class DataStreamQueue {
       vector = new Vector();
    }
 
+   /**
+    * @todo redo the throttling of large queues that are backed up
+    *       This is the cause of numerous painting bugs.
+    * @return a datastream object from queue
+    * @throws InterruptedException
+    */
    public Object get() throws InterruptedException {
       synchronized (lock) {
          // wait until there is something to read
          while (isEmpty())
             lock.wait();
-         // just something here to try.
-         if (vector.size() >= 10) {
+
+         /**
+          * @todo here is the throttling code to look at
+          *
+          * just something here to try.  OK it works but we need to be a little
+          *     more intelligent with the throttling.
+          */
+         if (vector.size() >= 20) {
             vector.remove(0);
             vector.remove(0);
             vector.remove(0);
@@ -51,6 +63,16 @@ public class DataStreamQueue {
             vector.remove(0);
             vector.remove(0);
             vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+//            System.out.println(vector.size());
          }
             // we have the lock and state we're seeking
          return vector.remove(0);

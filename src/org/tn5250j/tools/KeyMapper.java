@@ -135,6 +135,9 @@ public class KeyMapper {
          mappedKeys.put(new KeyStroker(38, true, false, false, false),"[markup]");
          mappedKeys.put(new KeyStroker(40, true, false, false, false),"[markdown]");
 
+         mappedKeys.put(new KeyStroker(155, true, false, false, false),"[dupfield]");
+         mappedKeys.put(new KeyStroker(17, true, true, false, false),"[newline]");
+
          saveKeyMap();
       }
       else {
