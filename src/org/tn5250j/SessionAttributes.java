@@ -48,12 +48,8 @@ public class SessionAttributes extends JDialog {
    Properties props = null;
    JPanel jpm = new JPanel(new BorderLayout());
 
-   JCheckBox hsCheck;
    JCheckBox kpCheck;
    JCheckBox dceCheck;
-   JTextField connectMacro;
-   JTextField hsMore;
-   JTextField hsBottom;
    JCheckBox defaultPrinter;
 
    ColorAttributesPanel cpp;
@@ -61,6 +57,8 @@ public class SessionAttributes extends JDialog {
    DisplayAttributesPanel display;
    CursorAttributesPanel cuPanel;
    SignoffAttributesPanel signoff;
+   OnConnectAttributesPanel onConnect;
+   HotspotAttributesPanel hotspot;
 
    private SessionConfig changes = null;
    JTree tree = new JTree();
@@ -83,8 +81,6 @@ public class SessionAttributes extends JDialog {
    /**Component initialization*/
    private void jbInit() throws Exception  {
 
-      Dimension ps = null;
-
       // define font panel
       fp = new FontAttributesPanel(changes);
       // define colors panel
@@ -95,23 +91,10 @@ public class SessionAttributes extends JDialog {
       cuPanel = new CursorAttributesPanel(changes);
       // define signoff panel
       signoff = new SignoffAttributesPanel(changes);
-
-      // define onConnect panel
-      final JPanel onConnect = new JPanel();
-      onConnect.setLayout(new BoxLayout(onConnect,BoxLayout.Y_AXIS));
-
-      // define onConnect macro to run
-      JPanel ocMacrop = new JPanel();
-      ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
-
-      connectMacro = new JTextField();
-      connectMacro.setColumns(30);
-
-      // sets the connect macro
-      connectMacro.setText(getStringProperty("connectMacro"));
-
-      ocMacrop.add(connectMacro);
-      onConnect.add(ocMacrop);
+      // define signoff panel
+      onConnect = new OnConnectAttributesPanel(changes);
+      // define signoff panel
+      hotspot = new HotspotAttributesPanel(changes);
 
       // define mouse panel
       final JPanel mouse = new JPanel();
@@ -128,38 +111,6 @@ public class SessionAttributes extends JDialog {
 
       dcep.add(dceCheck);
       mouse.add(dcep);
-
-      // define hotspot panel
-      final JPanel hotspot = new JPanel();
-      hotspot.setLayout(new BoxLayout(hotspot,BoxLayout.Y_AXIS));
-
-      // define hsPanel panel
-      JPanel hsp = new JPanel();
-      hsp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.hsp")));
-      hsCheck = new JCheckBox(LangTool.getString("sa.hsCheck"));
-
-      if (getStringProperty("hotspots").equals("Yes"))
-         hsCheck.setSelected(true);
-
-      hsp.add(hsCheck);
-
-      // define assignment panel
-      JPanel hsap = new JPanel();
-      hsap.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.hsap")));
-      hsap.setLayout(new GridLayout(2,2));
-
-      JLabel moreLabel = new JLabel(LangTool.getString("sa.hsMore"));
-      JLabel bottomLabel = new JLabel(LangTool.getString("sa.hsBottom"));
-      hsMore = new JTextField(getStringProperty("hsMore"));
-      hsBottom = new JTextField(getStringProperty("hsBottom"));
-
-      hsap.add(moreLabel);
-      hsap.add(hsMore);
-      hsap.add(bottomLabel);
-      hsap.add(hsBottom);
-
-      hotspot.add(hsp);
-      hotspot.add(hsap);
 
       // define Key Pad panel
       final JPanel kp = new JPanel();
@@ -508,6 +459,10 @@ public class SessionAttributes extends JDialog {
       cuPanel.applyAttributes();
       // apply the signoff attributes
       signoff.applyAttributes();
+      // apply the on connect attributes
+      onConnect.applyAttributes();
+      // apply the hotspot attributes
+      hotspot.applyAttributes();
 
       if (dceCheck.isSelected()) {
          changes.firePropertyChange(this,"doubleClick",
@@ -522,18 +477,6 @@ public class SessionAttributes extends JDialog {
          setProperty("doubleClick","No");
       }
 
-      if (hsCheck.isSelected()) {
-         changes.firePropertyChange(this,"hotspots",
-                           getStringProperty("hotspots"),
-                           "Yes");
-         setProperty("hotspots","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"hotspots",
-                           getStringProperty("hotspots"),
-                           "No");
-         setProperty("hotspots","No");
-      }
 
 
       if (kpCheck.isSelected()) {
@@ -549,20 +492,6 @@ public class SessionAttributes extends JDialog {
          setProperty("keypad","No");
       }
 
-      changes.firePropertyChange(this,"hsMore",
-                        getStringProperty("hsMore"),
-                        hsMore.getText());
-      setProperty("hsMore",hsMore.getText());
-
-      changes.firePropertyChange(this,"connectMacro",
-                        getStringProperty("connectMacro"),
-                        connectMacro.getText());
-      setProperty("connectMacro",connectMacro.getText());
-
-      changes.firePropertyChange(this,"hsBottom",
-                        getStringProperty("hsBottom"),
-                        hsBottom.getText());
-      setProperty("hsBottom",hsBottom.getText());
 
       if (defaultPrinter.isSelected()) {
          changes.firePropertyChange(this,"defaultPrinter",
