@@ -518,11 +518,11 @@ public class ScreenChar {
                   g.setColor(fg);
 
                   try {
-                  if (useGui)
+                     if (useGui)
 
-                     g.drawChars(sChar, 0, 1, x+1, cy -2);
-                  else
-                     g.drawChars(sChar, 0, 1, x, cy -2);
+                        g.drawChars(sChar, 0, 1, x+1, cy -2);
+                     else
+                        g.drawChars(sChar, 0, 1, x, cy -2);
                   }
                   catch (IllegalArgumentException iae) {
                      System.out.println(" ScreenChar iae " + iae.getMessage());
@@ -540,15 +540,21 @@ public class ScreenChar {
             }
 
             if(colSep) {
-               if(s.getColSepLine()) {
-                  g.setColor(fg);
-                  g.drawLine(x, y, x, y + s.fmHeight - 1);
-                  g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
-               }
-               else {
-                  g.setColor(s.colorSep);
-                  g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-4, x, y + s.fmHeight);
-                  g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4, x + s.fmWidth - 1, y + s.fmHeight);
+               g.setColor(s.colorSep);
+               switch (s.getColSepLine()) {
+                  case 1:
+                     g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-4, x, y + s.fmHeight);
+                     g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4, x + s.fmWidth - 1, y + s.fmHeight);
+                     break;
+                  case 2:
+                     g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-3, x, y + s.fmHeight - (int)s.lm.getLeading()-4);
+                     g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-3, x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4);
+                     break;
+                  default:
+                     g.setColor(fg);
+                     g.drawLine(x, y, x, y + s.fmHeight - 1);
+                     g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
+                     break;
                }
             }
          }
