@@ -1071,7 +1071,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
          defaultProps.load(in);
 
       }
-      catch (IOException ioe) {System.out.println(ioe.getMessage());}
+      catch (IOException ioe) {
+         System.out.println("Information Message: Properties file is being "
+                              + "created for first time use:  File name "
+                              + propFileName);
+      }
       catch (SecurityException se) {
          System.out.println(se.getMessage());
       }

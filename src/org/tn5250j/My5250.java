@@ -80,13 +80,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          Class.forName("org.tn5250j.scripting.JPythonInterpreterDriver");
       }
       catch (java.lang.NoClassDefFoundError ncdfe) {
-         System.out.println("Warning can not find scripting files, scripting "
-                           + "will not be available: "
+         System.out.println("Information Message: Can not find scripting support"
+                           + " files, scripting will not be available: "
                            + "Failed to load interpreter drivers " + ncdfe);
       }
       catch (Exception ex) {
-         System.out.println("Warning can not find scripting files, scripting "
-                           + "will not be available: "
+         System.out.println("Information Message: Can not find scripting support"
+                           + " files, scripting will not be available: "
                            + "Failed to load interpreter drivers " + ex);
       }
 
@@ -705,7 +705,11 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          sessions.load(in);
 
       }
-      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
+      catch (FileNotFoundException fnfe) {
+         System.out.println(" Information Message: " + fnfe.getMessage()
+                           + ".  Default sessions file will"
+                           + " be created for first time use.");
+      }
       catch (IOException ioe) {System.out.println(ioe.getMessage());}
 
    }
