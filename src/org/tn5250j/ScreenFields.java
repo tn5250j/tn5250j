@@ -101,7 +101,10 @@ public class ScreenFields implements TN5250jConstants {
    }
 
    public boolean isCurrentFieldHighlightedEntry() {
-      return currentField.isHiglightedEntry();
+      if (currentField != null)
+         return currentField.isHiglightedEntry();
+      else
+         return false;
    }
 
    public boolean isCurrentFieldAutoEnter() {
@@ -181,7 +184,9 @@ public class ScreenFields implements TN5250jConstants {
       currentField = sf;
 
       // check if the Modified Data Tag was set while creating the field
-      masterMDT = currentField.mdt;
+      if (!masterMDT)
+         masterMDT = currentField.mdt;
+
       return currentField;
 
    }

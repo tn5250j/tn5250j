@@ -659,6 +659,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *
     */
 
+   /**
+    * Translate the starting point of mouse movement to encompass a full character
+    *
+    * @param start
+    * @return
+    */
    public Point translateStart(Point start) {
 
       // because getRowColFromPoint returns position offset as 1,1 we need
@@ -670,6 +676,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Translate the ending point of mouse movement to encompass a full character
+    *
+    * @param end
+    * @return
+    */
    public Point translateEnd(Point end) {
 
       // because getRowColFromPoint returns position offset as 1,1 we need
@@ -880,6 +892,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    /**
     * Sum them
+    *
+    * @param which formatting option to use
+    * @return vector string of numberic values
     */
    protected final Vector sumThem(boolean which) {
 
@@ -1117,7 +1132,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * it is found it will return the value associated from the mnemonicValue
     *
     * @see #sendKeys
-    *
+    * @param mnem string mnemonic value
+    * @return key value of Mnemonic
     */
    private int getMnemonicValue(String mnem) {
 
@@ -1217,7 +1233,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * </table>
     *
     * @param text The string of characters to be sent
-    * @param location Where to send the characters.
     *
     * @see #sendAid
     *
@@ -1230,6 +1245,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          if(text.equals("[reset]") || text.equals("[sysreq]") || text.equals("[attn]")) {
             bufferedKeys = "";
             keysBuffered = false;
+            simulateMnemonic(getMnemonicValue(text));
          }
          else {
             keysBuffered = true;
@@ -1975,8 +1991,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *    posSpace == true  last occurrence of char <= ' '
     *    posSpace == false last occurrence of char > ' '
     *
-    * @param row value of type int - the row to start from
-    * @param row value of type int - col the col to start from
+    * @param pos value of type int - position to start from
     * @param posSpace value of type boolean - specifying to return the position
     *           of the the last space or not
     * @return a value of type int - the screen postion (row * columns) + col
@@ -2233,8 +2248,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *    I am tired of typing and they should be self explanitory.  Finding them
     *    in the first place was the pain.
     *
+    *  @param ec
     */
-
    private void displayError (int ec) {
       saveHomePos = homePos;
       homePos = lastPos + numCols + 1;
@@ -2672,6 +2687,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    /**
     * Write the title of the window
+    *
+    * @param pos
+    * @param depth
+    * @param width
+    * @param orientation
+    * @param monoAttr
+    * @param colorAttr
+    * @param title
     */
    public void writeWindowTitle(int pos, int depth, int width,
                               byte orientation, int monoAttr,
@@ -3026,6 +3049,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       lastPos = pos;
    }
 
+   /**
+    * Draw or redraw the dirty parts of the screen and display them.
+    *
+    * Rectangle dirty holds the dirty area of the screen to be updated.
+    *
+    * If you want to change the screen in anyway you need to set the screen
+    * attributes before calling this routine.
+    */
    public void updateDirty() {
 
       Rectangle r = new Rectangle(dirty);
@@ -3057,10 +3088,24 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       dirty.setBounds(screen[pos].x,screen[pos].y,fmWidth,fmHeight);
    }
 
+   /**
+    * Change the screen position by one column
+    */
    protected void advancePos() {
       changePos(1);
    }
 
+   /**
+    * Change position of the screen by the increment of parameter passed.
+    *
+    * If the position change is under the minimum of the first screen position
+    * then the position is moved to the last row and column of the screen.
+    *
+    * If the position change is over the last row and column of the screen then
+    * cursor is moved to first position of the screen.
+    *
+    * @param i
+    */
    protected void changePos(int i) {
 
       lastPos += i;
@@ -3111,6 +3156,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
    }
 
+   /**
+    * Set the error line number to that of number passed.
+    *
+    * @param line
+    */
    public void setErrorLine (int line) {
 
       if (line == 0 || line > numRows)
@@ -3119,10 +3169,19 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          errorLineNum = line;
    }
 
+   /**
+    * Returns the current error line number
+    *
+    * @return current error line number
+    */
    public int getErrorLine () {
       return errorLineNum;
    }
 
+   /**
+    * Saves off the current error line characters to be used later.
+    *
+    */
    public void saveErrorLine() {
       // if there is already an error line saved then do not save it again
       //  This signifies that there was a previous error and the original error
@@ -3141,6 +3200,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
    }
 
+   /**
+    * Restores the error line characters from the save buffer.
+    *
+    * @see #saveErrorLine()
+    */
    public void restoreErrorLine() {
 
       if (errorLine != null) {
@@ -3185,62 +3249,46 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    public void setStatus(byte attr,byte value,String s) {
 
-      Graphics2D g2d = getWritingArea();
       statusString = s;
 
-      if (g2d == null)
-         return;
-      try {
-         g2d.setColor(colorBg);
-         g2d.fill(sArea);
+      // draw the status information
+      bi.setStatus(attr,value,s,
+                           fmWidth,
+                           fmHeight,
+                           lm,
+                           font,
+                           colorBg,
+                           colorRed,
+                           colorWhite);
 
-         float Y = ((int)sArea.getY() + fmHeight)- (lm.getLeading() + lm.getDescent());
-         switch (attr) {
+      // set environment variables
+      switch (attr) {
 
-            case STATUS_SYSTEM:
-               if (value == STATUS_VALUE_ON) {
-                  statusXSystem =true;
-                  g2d.setColor(colorWhite);
+         case STATUS_SYSTEM:
+            if (value == STATUS_VALUE_ON) {
+               statusXSystem =true;
+            }
+            else
+               statusXSystem = false;
+            break;
 
-                  if (s != null)
-                     g2d.drawString(s,(float)sArea.getX(),Y);
-                  else
-                     g2d.drawString(xSystem,(float)sArea.getX(),Y);
-               }
-               else
-                  statusXSystem = false;
-               break;
-            case STATUS_ERROR_CODE:
-               if (value == STATUS_VALUE_ON) {
-                  g2d.setColor(colorRed);
-
-                  if (s != null)
-                     g2d.drawString(s,(float)sArea.getX(),Y);
-                  else
-                     g2d.drawString(xError,(float)sArea.getX(),Y);
-
-                  statusErrorCode = true;
-                  setKeyboardLocked(true);
-                  Toolkit.getDefaultToolkit().beep();
-               }
-               else {
-                  statusErrorCode = false;
-                  setKeyboardLocked(false);
-                  homePos = saveHomePos;
-                  saveHomePos = 0;
-                  pendingInsert = false;
-               }
-               break;
-
-         }
-         updateImage(sArea.getBounds());
-         g2d.dispose();
-      }
-      catch (Exception e) {
-
-         System.out.println(" setStatus " + e.getMessage());
+         case STATUS_ERROR_CODE:
+            if (value == STATUS_VALUE_ON) {
+               statusErrorCode = true;
+               setKeyboardLocked(true);
+               Toolkit.getDefaultToolkit().beep();
+            }
+            else {
+               statusErrorCode = false;
+               setKeyboardLocked(false);
+               homePos = saveHomePos;
+               saveHomePos = 0;
+               pendingInsert = false;
+            }
+            break;
 
       }
+      updateImage(sArea.getBounds());
    }
 
    public boolean isWithinScreenArea(int x, int y){
@@ -3314,6 +3362,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    /**
     * Returns a pointer to the graphics area that we can draw on
+    *
+    * @return Graphics2D pointer of graphics buffer
     */
    public Graphics2D getDrawingArea(){
 
@@ -3322,6 +3372,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
   /**
     * Returns a pointer to the graphics area that we can write on
+    *
+    * @return Graphics2D pointer of graphics buffer
     */
    public Graphics2D getWritingArea(){
 
@@ -3525,7 +3577,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
      * the screen buffer row column offsets so that the characters that
      * make of the screen are displayed correctly
      *
+     * @param width
+     * @param height
      */
+
    public final void setBounds(int width, int height) {
 
       resizeScreenArea(width,height);
@@ -3557,6 +3612,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
      * the screen buffer row column offsets so that the characters that
      * make of the screen are displayed correctly
      *
+     * @param r
      */
    public final void setBounds(Rectangle r) {
 

@@ -41,7 +41,12 @@ public class DataStreamQueue {
          while (isEmpty())
             lock.wait();
          // just something here to try.
-         if (vector.size() >= 5) {
+         if (vector.size() >= 10) {
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
+            vector.remove(0);
             vector.remove(0);
             vector.remove(0);
             vector.remove(0);

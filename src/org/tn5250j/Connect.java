@@ -42,6 +42,7 @@ public class Connect extends JDialog implements ActionListener,
    JPanel configOptions = new JPanel();
    JPanel sessionPanel = new JPanel();
    JPanel options = new JPanel();
+   JPanel interfacePanel = new JPanel();
    JPanel sessionOpts = new JPanel();
    JPanel sessionOptPanel = new JPanel();
    JTable sessions = null;
@@ -73,6 +74,8 @@ public class Connect extends JDialog implements ActionListener,
    JCheckBox ec = null;
    JCheckBox tc = null;
    JRadioButton sdNormal = null;
+   JRadioButton intTABS = null;
+   JRadioButton intMDI = null;
 
    //  Selection value for connection
    String connectKey = null;
@@ -151,6 +154,36 @@ public class Connect extends JDialog implements ActionListener,
               }
           });
 
+
+      // setup the frame interface panel
+      interfacePanel = new JPanel();
+      TitledBorder tb = BorderFactory.createTitledBorder(
+                              LangTool.getString("conf.labelPresentation"));
+
+      interfacePanel.setBorder(tb);
+
+      ButtonGroup intGroup = new ButtonGroup();
+      intTABS = new JRadioButton(LangTool.getString("conf.labelTABS"));
+      intTABS.setSelected(true);
+      intTABS.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            intTABS_itemStateChanged(e);
+         }
+      });
+      intMDI = new JRadioButton(LangTool.getString("conf.labelMDI"));
+
+      // add the interface options to the group control
+      intGroup.add(intTABS);
+      intGroup.add(intMDI);
+
+      if (props.containsKey("emul.interface")) {
+         if (props.getProperty("emul.interface").equalsIgnoreCase("MDI"))
+            intMDI.setSelected(true);
+      }
+
+      interfacePanel.add(intTABS);
+      interfacePanel.add(intMDI);
+
       //Setup panels
       configOptions.setLayout(borderLayout);
 
@@ -181,11 +214,10 @@ public class Connect extends JDialog implements ActionListener,
 
       addOptButton(LangTool.getString("ss.optCancel"),"DONE",options);
 
-
       // add the panels to our dialog
       getContentPane().add(sessionPanel,BorderLayout.CENTER);
       getContentPane().add(options, BorderLayout.SOUTH);
-
+      getContentPane().add(interfacePanel,BorderLayout.NORTH);
 
       // pack it and center it on the screen
       pack();
@@ -309,6 +341,20 @@ public class Connect extends JDialog implements ActionListener,
       int selectedRow = rowSM.getMinSelectionIndex();
       props.remove(ctm.getValueAt(selectedRow,0));
       ctm.removeSession(selectedRow);
+   }
+
+   void intTABS_itemStateChanged(ItemEvent e) {
+
+      if (intTABS.isSelected()) {
+         props.remove("emul.interface");
+
+      }
+      else {
+
+         props.setProperty("emul.interface","MDI");
+
+      }
+
    }
 
    class ConfigureTableModel extends AbstractTableModel {
@@ -440,4 +486,6 @@ public class Connect extends JDialog implements ActionListener,
       }
 
    }
+
+
 }

@@ -12,8 +12,6 @@ public class DataStreamProducer implements Runnable {
    private byte[] saveStream;
    private DataStreamQueue dsq;
    private tnvt vt;
-//   private boolean waitingForInput;
-//   private boolean invited;
    private byte[] abyte2;
    private FileOutputStream fw;
    private BufferedOutputStream dw;
@@ -56,8 +54,6 @@ public class DataStreamProducer implements Runnable {
       while (!done) {
          try {
 
-//            waitingForInput = false;
-
             byte[] abyte0 = readIncoming();
 
             loadStream(abyte0, 0);
@@ -67,13 +63,11 @@ public class DataStreamProducer implements Runnable {
 //            System.out.println("   DataStreamProducer thread interrupted and stopping " + se.getMessage());
             System.out.println("   DataStreamProducer thread interrupted and stopping ");
             done = true;
-//            vt.disconnect();
          }
 
          catch (IOException ioe) {
 
 //              System.out.println(ioe.getMessage());
-//           invited = true;
            if (me.isInterrupted())
               done = true;
 
@@ -81,7 +75,6 @@ public class DataStreamProducer implements Runnable {
          catch (Exception ex) {
 
            System.out.println(ex.getMessage());
-//           invited = true;
            if (me.isInterrupted())
               done = true;
 

@@ -34,6 +34,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import javax.swing.SwingUtilities;
 import java.awt.Font;
+import java.awt.font.*;
 
 public class GuiGraphicBuffer {
 
@@ -50,6 +51,12 @@ public class GuiGraphicBuffer {
    private int width;
    private int height;
    private Rectangle2D cursor = new Rectangle2D.Float();
+   public final static byte STATUS_SYSTEM       = 1;
+   public final static byte STATUS_ERROR_CODE   = 2;
+   public final static byte STATUS_VALUE_ON     = 1;
+   public final static byte STATUS_VALUE_OFF    = 2;
+   private final static String xSystem = "X - System";
+   private final static String xError = "X - II";
 
    public GuiGraphicBuffer () {
 
@@ -340,6 +347,58 @@ public class GuiGraphicBuffer {
       catch (InterruptedException ie) {
          System.out.println("getWritingarea : " + ie.getMessage());
          return null;
+      }
+   }
+
+   public void setStatus(byte attr,byte value,String s,
+                           int fmWidth,
+                           int fmHeight,
+                           LineMetrics lm,
+                           Font font,
+                           Color colorBg,
+                           Color colorRed,
+                           Color colorWhite) {
+
+      Graphics2D g2d = getWritingArea(font);
+
+      if (g2d == null)
+         return;
+      try {
+         g2d.setColor(colorBg);
+         g2d.fill(sArea);
+
+         float Y = ((int)sArea.getY() + fmHeight)- (lm.getLeading() + lm.getDescent());
+         switch (attr) {
+
+            case STATUS_SYSTEM:
+               if (value == STATUS_VALUE_ON) {
+                  g2d.setColor(colorWhite);
+
+                  if (s != null)
+                     g2d.drawString(s,(float)sArea.getX(),Y);
+                  else
+                     g2d.drawString(xSystem,(float)sArea.getX(),Y);
+               }
+               break;
+            case STATUS_ERROR_CODE:
+               if (value == STATUS_VALUE_ON) {
+                  g2d.setColor(colorRed);
+
+                  if (s != null)
+                     g2d.drawString(s,(float)sArea.getX(),Y);
+                  else
+                     g2d.drawString(xError,(float)sArea.getX(),Y);
+
+               }
+               break;
+
+         }
+         g2d.dispose();
+      }
+      catch (Exception e) {
+
+         System.out.println(" gui graphics setStatus " + e.getMessage());
+
       }
    }
 

@@ -68,6 +68,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private int devSeq = -1;
    private String devName;
    private String devNameUsed;
+   private boolean keepTrucking = true;
 
    private boolean[] dataIncluded;
 
@@ -201,6 +202,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          }
 
+         keepTrucking = true;
          me = new Thread(this);
          me.start();
 
@@ -225,6 +227,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       if (me != null && me.isAlive()) {
          me.interrupt();
+         keepTrucking = false;
          pthread.interrupt();
       }
 
@@ -748,7 +751,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public void run () {
 
-      boolean keepTrucking = true;
 
       while (keepTrucking) {
 

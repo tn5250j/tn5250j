@@ -68,6 +68,10 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       unfocused = createImageIcon("unfocused.gif");
       tnicon = createImageIcon("tnicon.jpg");
 
+      // sets the starting frame type.  At this time there are tabs which is
+      //    default and Multiple Document Interface.
+      startFrameType();
+
       frames = new Vector();
 
       newView();
@@ -182,8 +186,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    static public void main(String[] args) {
 
-      if (isSpecified("-MDI",args))
+      if (isSpecified("-MDI",args)) {
          useMDIFrames = true;
+      }
 
       if (!isSpecified("-nc",args)) {
 
@@ -368,6 +373,16 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       }
       else {
          return null;
+      }
+   }
+
+   static void startFrameType() {
+
+      if (sessions.containsKey("emul.interface")) {
+         String s = (String)sessions.getProperty("emul.interface");
+         if (s.equalsIgnoreCase("MDI"))
+            useMDIFrames = true;
+
       }
    }
 

@@ -14,6 +14,11 @@ large to implement this - 57 pages worth of specs and the such.  Work has begun.
 
 Implement support for images on the background. Wishlist for the future
 
+Fix focus problem on connections screen with screen presentation options for
+jdk 1.4
+
+Autologin support request.
+
 Known problems
 --------------
 This session updating problem is hopefully fixed or at least acceptable now.
@@ -33,6 +38,28 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+28/06/2002  Fixed another problem with restore of changed fields after a popup
+            not being recognized as being change.  Thanks for the report, again,
+            James
+
+            Fixed a bug with keybuffering where if system request, reset, or
+            attention key was not working if their was a long running job like
+            a query.
+
+            Tweaked the interface one more time for long running jobs where the
+            interface was not very responsive at all.
+
+            Fixed a null pointer exception for highlited entry fields.
+
+26/06/2002  Added two new Radio Buttons to the connection screen to choose
+            between Tab or MDI session presentation.  This can be overridden
+            by the -MDI command line switch.
+
+21/06/2002  Fixed a problem with special characters in extract to Open Office
+            documents that was causing it to crash.
+
+20/06/2002  Fixed a hang on the file transfer dialog for multiple member files.
+
 15/06/2002  Added changes to the ant build.xml from Christian Geisert
 
 13/06/2002  Added some fixes for key buffering.
