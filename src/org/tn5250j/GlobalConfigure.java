@@ -54,14 +54,14 @@ public class GlobalConfigure extends ConfigureFactory {
    static private Hashtable registry = new Hashtable();
    static private Hashtable headers = new Hashtable();  //LUC GORRENS
 
-   static final public String SESSIONS = "sessions";
+//   static final public String SESSIONS = "sessions";
    static final public File ses = new File(SESSIONS);
-   static final public String MACROS = "macros";
-   static final public String KEYMAP = "keymap";
+//   static final public String MACROS = "macros";
+//   static final public String KEYMAP = "keymap";
 
    static final private String settingsFile = "tn5250jstartup.cfg";
    private Logger log = Logger.getLogger(this.getClass());
-   
+
    /**
     * The constructor is made protected to allow overriding.
     */
@@ -157,34 +157,34 @@ public class GlobalConfigure extends ConfigureFactory {
            }
            catch (FileNotFoundException fnfe) {
                try {
-                   again = new FileInputStream(settingsDirectory() + settingsFile); 
-                   settings.load(again); 
+                   again = new FileInputStream(settingsDirectory() + settingsFile);
+                   settings.load(again);
                }
                catch (FileNotFoundException fnfea) {
-                   log.info(" Information Message: " 
-                   + fnfea.getMessage() + ".  The file " + settingsFile 
+                   log.info(" Information Message: "
+                   + fnfea.getMessage() + ".  The file " + settingsFile
                    + " will be created for first time use.");
                    checkLegacy();
                    saveSettings();
                }
                catch (IOException ioea) {
-                   log.warn("IO Exception accessing File " 
+                   log.warn("IO Exception accessing File "
                    + settingsFile + " for the following reason : "
                    + ioea.getMessage());
                }
                catch (SecurityException sea) {
-                   log.warn("Security Exception for file " 
+                   log.warn("Security Exception for file "
                    + settingsFile + "  This file can not be "
                    + "accessed because : " + sea.getMessage());
                }
            }
            catch (IOException ioe) {
-               log.warn("IO Exception accessing File " 
+               log.warn("IO Exception accessing File "
                + settingsFile + " for the following reason : "
                + ioe.getMessage());
            }
            catch (SecurityException se) {
-               log.warn("Security Exception for file " 
+               log.warn("Security Exception for file "
                + settingsFile + "  This file can not be "
                + "accessed because : " + se.getMessage());
            }
@@ -197,7 +197,7 @@ public class GlobalConfigure extends ConfigureFactory {
       if (!sd.isDirectory())
          sd.mkdirs();
    }
-   
+
    private void checkLegacy() {
       // we check if the sessions file already exists in the directory
       // if it does exist we are working with an old install so we
@@ -205,7 +205,7 @@ public class GlobalConfigure extends ConfigureFactory {
       // SESSIONS is declared as a string, so we just can use the keyword here.
       if(ses.exists()) {
           int cfc;
-          cfc = JOptionPane.showConfirmDialog(null, 
+          cfc = JOptionPane.showConfirmDialog(null,
           "Dear User,\n\n" +
           "Seems you are using an old version of tn5250j.\n" +
           "In meanwhile the application became multi-user capable,\n" +
@@ -225,7 +225,7 @@ public class GlobalConfigure extends ConfigureFactory {
                copyConfigs(KEYMAP);
           }
           else {
-              JOptionPane.showMessageDialog(null, 
+              JOptionPane.showMessageDialog(null,
               "Dear User,\n\n" +
               "You choosed not to copy the file.\n" +
               "This means the program will end here.\n\n" +
@@ -237,17 +237,17 @@ public class GlobalConfigure extends ConfigureFactory {
           }
       }
    }
-   
+
    private void copyConfigs(String sesFile) {
        /** Copy the config-files to the user's home-dir */
        String srcFile = System.getProperty("user.dir") + File.separator + sesFile;
-       String dest = System.getProperty("user.home") + 
+       String dest = System.getProperty("user.home") +
        File.separator + ".tn5250j" + File.separator + sesFile;
        File rmvFile = new File(sesFile);
        try {
            FileReader r = new FileReader(srcFile);
            BufferedReader b = new BufferedReader(r);
-           
+
            FileWriter w = new FileWriter(dest);
            PrintWriter p = new PrintWriter(w);
            String regel = b.readLine();
@@ -268,7 +268,7 @@ public class GlobalConfigure extends ConfigureFactory {
            catch (ArrayIndexOutOfBoundsException e) {
            }
        }
-       
+
    /**
     * Save the settings for the global configuration
     */

@@ -227,7 +227,7 @@ public class Macronizer {
 
       File directory = new File("scripts");
 
-      File directory2 = new File(GlobalConfigure.instance().getProperty(
+      File directory2 = new File(GlobalConfigure.getInstance().getProperty(
                            "emulator.settingsDirectory") +
                            "scripts");
 

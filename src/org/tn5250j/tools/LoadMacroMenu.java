@@ -101,7 +101,7 @@ public final class LoadMacroMenu {
 
       try {
          conPath = new File("scripts").getCanonicalPath();
-         conPath2 = new File(GlobalConfigure.instance().getProperty(
+         conPath2 = new File(GlobalConfigure.getInstance().getProperty(
                               "emulator.settingsDirectory") +
                               "scripts").getCanonicalPath();
       }
@@ -111,7 +111,7 @@ public final class LoadMacroMenu {
 
       // lets not load the menu again if they point to the same place
       if (!conPath.equals(conPath2))
-         scriptDir(GlobalConfigure.instance().getProperty(
+         scriptDir(GlobalConfigure.getInstance().getProperty(
                               "emulator.settingsDirectory") +
                               "scripts",menu,session);
    }

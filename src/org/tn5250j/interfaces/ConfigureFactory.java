@@ -32,7 +32,11 @@ import java.util.Properties;
  */
 public abstract class ConfigureFactory {
 
-  private static ConfigureFactory  factory;
+   static final public String SESSIONS = "sessions";
+//   static final public File ses = new File(SESSIONS);
+   static final public String MACROS = "macros";
+   static final public String KEYMAP = "keymap";  private static ConfigureFactory  factory;
+
    /**
     * @return An instance of the Configure.
     */
