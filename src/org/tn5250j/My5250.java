@@ -514,9 +514,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          sesProps.put(SSL_TYPE,getParm("-sslType",args));
       }
 
-
-      System.out.println("args IS -------------'"  + args);
-      
+  
       // check if device name is specified
       if (isSpecified("-dn=hostname",args)){
          String dnParam;
@@ -528,11 +526,11 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
           catch(UnknownHostException uhe){
             dnParam = "UNKNOWN_HOST";
           }
-      System.out.println("DNNAME IS -------------'" + dnParam);
+
         sesProps.put(SESSION_DEVICE_NAME ,dnParam);
       }
       else if (isSpecified("-dn",args)){
-      System.out.println("Got param" + getParm("-dn",args));
+
          sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));
       }
          
