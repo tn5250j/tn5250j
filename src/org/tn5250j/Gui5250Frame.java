@@ -72,14 +72,10 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
       this.getContentPane().setLayout(borderLayout1);
 
-      String release = "0";
-      String version = ".5";
-      String subVer= ".3 RC2";
-
       if (sequence > 0)
-         setTitle("tn5250j <" + sequence + "> - " + release + version + subVer);
+         setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
       else
-         setTitle("tn5250j - " + release + version + subVer);
+         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
 
       // update the frame sequences
       frameSeq = sequence++;

@@ -80,24 +80,12 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
       // Install our custom desktop manager
       desktop.setDesktopManager(new MyDesktopMgr());
-//      this.getContentPane().setLayout(borderLayout1);
-
-      String release = "0";
-      String version = ".5";
-      String subVer= ".2a";
 
       if (sequence > 0)
-         setTitle("tn5250j <" + sequence + ">- " + release + version + subVer);
+         setTitle("tn5250j <" + sequence + ">- " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
       else
-         setTitle("tn5250j - " + release + version + subVer);
+         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
 
-//      sessionPane.setBorder(BorderFactory.createEtchedBorder());
-//      sessionPane.setBounds(new Rectangle(78, 57, 5, 5));
-//      sessionPane.setOpaque(false);
-//      sessionPane.setRequestFocusEnabled(false);
-//      sessionPane.setDoubleBuffered(true);
-//      this.getContentPane().add(sessionPane, BorderLayout.CENTER);
-//      sessionPane.addChangeListener(this);
       if (packFrame)
          pack();
       else
@@ -189,7 +177,6 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          }
       }
       else {
-//         desktop.setSelectedFrame(frames[index - 1]);
          try {
             frames[index - 1].setSelected(true);
             frames[index - 1].repaint();
@@ -199,51 +186,15 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          }
 
       }
-//      int index = sessionPane.getSelectedIndex();
-//      sessionPane.setForegroundAt(index,Color.black);
-//      sessionPane.setIconAt(index,unfocused);
-//
-//      if (index == 0) {
-//         sessionPane.setSelectedIndex(sessionPane.getTabCount() - 1);
-//         sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-//         sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
-//
-//      }
-//      else {
-//         sessionPane.setSelectedIndex(--index);
-//         sessionPane.setForegroundAt(index,Color.blue);
-//         sessionPane.setIconAt(index,focused);
-//
-//      }
+
    }
 
    public void setIcons(ImageIcon focused, ImageIcon unfocused) {
 
-//      this.focused = focused;
-//      this.unfocused = unfocused;
    }
 
    public void stateChanged(ChangeEvent e) {
 
-//      JTabbedPane p = (JTabbedPane)e.getSource();
-//      p.setForegroundAt(selectedIndex,Color.black);
-//      p.setIconAt(selectedIndex,unfocused);
-//
-//      Session sg = (Session)p.getComponentAt(selectedIndex);
-//      sg.setVisible(false);
-//
-//      sg = (Session)p.getSelectedComponent();
-//
-//      if (sg == null)
-//         return;
-//
-//      sg.setVisible(true);
-//
-//      sg.requestFocus();
-//
-//      selectedIndex = p.getSelectedIndex();
-//      p.setForegroundAt(selectedIndex,Color.blue);
-//      p.setIconAt(selectedIndex,focused);
 
    }
 
@@ -265,38 +216,16 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
       JInternalFrame[] frames = desktop.getAllFrames();
 
-//      int index = sessionPane.indexOfComponent(targetSession);
-//      System.out.println("session found and closing down " + index);
-//      targetSession.removeSessionListener(this);
-//      targetSession.removeSessionJumpListener(this);
-//      sessionPane.remove(index);
-//
-//      if (index < (sessionPane.getTabCount() - 2)) {
-//         sessionPane.setSelectedIndex(index);
-//         sessionPane.setForegroundAt(index,Color.blue);
-//         sessionPane.setIconAt(index,focused);
-//      }
-//      else {
-//
-//         if (sessionPane.getTabCount() > 0) {
-//            sessionPane.setSelectedIndex(0);
-//            sessionPane.setForegroundAt(0,Color.blue);
-//            sessionPane.setIconAt(0,focused);
-//         }
-//
-//      }
 
    }
 
    public int getSessionViewCount() {
 
-//      return sessionPane.getTabCount();
       return desktop.getAllFrames().length;
    }
 
    public Session getSessionAt( int index) {
 
-//      return (Session)sessionPane.getComponentAt(index);
       JInternalFrame[] frames = desktop.getAllFrames();
 
       return (Session)frames[index].getContentPane();
@@ -304,31 +233,10 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-//      Session ses = (Session)changeEvent.getSource();
-//
-//      switch (changeEvent.getState()) {
-//         case STATE_CONNECTED:
-//
-//            final String d = ses.getAllocDeviceName();
-//            System.out.println(changeEvent.getState() + " " +
-//                        d);
-//            if (d != null) {
-//               final int index = sessionPane.indexOfComponent(ses);
-//               Runnable tc = new Runnable () {
-//                  public void run() {
-//                     sessionPane.setTitleAt(index,d);
-//                  }
-//               };
-//               SwingUtilities.invokeLater(tc);
-//
-//            }
-//            break;
-//      }
    }
 
    public boolean containsSession(Session session) {
 
-//      return (sessionPane.indexOfComponent(session) >= 0);
       return desktop.getIndexOf(session) >= 0;
 
    }
@@ -358,54 +266,52 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 //   //                  displayMessage("Internal frame activated", e);
 //              }
 
-public void internalFrameClosing(InternalFrameEvent e) {
+      public void internalFrameClosing(InternalFrameEvent e) {
                   displayMessage("Internal frame closing", e);
-              }
+               }
 
-              public void internalFrameClosed(InternalFrameEvent e) {
+               public void internalFrameClosed(InternalFrameEvent e) {
                   displayMessage("Internal frame closed", e);
-//                  listenedToWindow = null;
-              }
+               }
 
-              public void internalFrameOpened(InternalFrameEvent e) {
+               public void internalFrameOpened(InternalFrameEvent e) {
                   displayMessage("Internal frame opened", e);
-              }
+               }
 
-              public void internalFrameIconified(InternalFrameEvent e) {
+               public void internalFrameIconified(InternalFrameEvent e) {
                   displayMessage("Internal frame iconified", e);
-              }
+               }
 
-              public void internalFrameDeiconified(InternalFrameEvent e) {
+               public void internalFrameDeiconified(InternalFrameEvent e) {
                   displayMessage("Internal frame deiconified", e);
-              }
+               }
 
-              public void internalFrameActivated(InternalFrameEvent e) {
+               public void internalFrameActivated(InternalFrameEvent e) {
                   displayMessage("Internal frame activated", e);
                   repaint();
-              }
+               }
 
-              public void internalFrameDeactivated(InternalFrameEvent e) {
+               public void internalFrameDeactivated(InternalFrameEvent e) {
                   displayMessage("Internal frame deactivated", e);
-              }
+               }
 
 
-         });
+            });
 
-       }
-              void displayMessage(String prefix, InternalFrameEvent e) {
-                  String s = prefix + ": " + e.getSource();
-//                  display.append(s + newline);
-                  System.out.println(s + '\n');
-              }
+          }
+         void displayMessage(String prefix, InternalFrameEvent e) {
+            String s = prefix + ": " + e.getSource();
+            System.out.println(s + '\n');
+         }
 
 
-       public void paintme() {
-         repaint();
-       }
-      public void update(Graphics g) {
-         paint(g);
-        System.out.println("update");
-      }
+         public void paintme() {
+            repaint();
+         }
+         public void update(Graphics g) {
+            paint(g);
+            System.out.println("update");
+         }
 
    }
 

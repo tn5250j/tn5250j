@@ -502,6 +502,8 @@ public class CharMappings {
          return codePage277_DK;
       if (cp.equals("277-no"))
          return codePage277_NO;
+      if (cp.equals("280"))
+         return codePage280;
       if (cp.equals("284"))
          return codePage284;
       if (cp.equals("285"))

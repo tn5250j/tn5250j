@@ -33,6 +33,8 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+20/5/2002   Fixed a problem with code page 280 for italian.
+
 15/5/2002   Cleaned up some error messages on thread interruptions during session
             shutdown.
 
