@@ -48,7 +48,7 @@ for x in sumVector:
     except:
         pass
     else:
-        print x,str(n);
+        print "%s - %s" % (x,str(n))
         sum += n;
 
 sumDisplay.setText(str(sum))
@@ -56,7 +56,20 @@ sumDisplay.setText(str(sum))
 mySumPane = swing.JPanel()
 mySumPane.add(sumDisplay)
 
-sumFrame = swing.JFrame('Sum Area', visible=1)
+sumFrame = swing.JFrame('Sum Area')
+
 sumFrame.contentPane.add(mySumPane, awt.BorderLayout.CENTER)
 sumFrame.pack()
 
+##Center the window
+screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+frameSize = sumFrame.getSize();
+if frameSize.height > screenSize.height:
+	frameSize.height = screenSize.height;
+if frameSize.width > screenSize.width:
+	frameSize.width = screenSize.width;
+
+sumFrame.setLocation((screenSize.width - frameSize.width) / 2,
+	     (screenSize.height - frameSize.height) / 2)
+
+sumFrame.setVisible(1)
