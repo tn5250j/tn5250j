@@ -25,7 +25,6 @@
  */
 package org.tn5250j.tools;
 
-import org.tn5250j.*;
 import org.tn5250j.event.*;
 import java.awt.*;
 import javax.swing.*;
@@ -307,7 +306,7 @@ public class XTFRFile
 				emailIt = false;
 
 			initializeMonitor();
-			dialog.show();
+			dialog.setVisible(true);
 
 			if (useQuery.isSelected()) {
 
@@ -859,12 +858,12 @@ public class XTFRFile
 			(screenSize.height - frameSize.height) / 2);
 
 		// now show the world what we can do
-		show();
+		setVisible(true);
 
 	}
         
         private void txtONKeyPressed(java.awt.event.KeyEvent evt) {
-            if (evt.getKeyCode() == evt.VK_ENTER) {
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
                 xtfrButton.doClick();
             }
         }

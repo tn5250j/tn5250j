@@ -566,7 +566,7 @@ public class SpoolExporter extends TN5250jFrame {
          public void actionPerformed(ActionEvent e) {
             SpoolExportWizard sew = new SpoolExportWizard(getSpooledFile(row),
                                                             session);
-            sew.show();
+            sew.setVisible(true);
          }
       };
 

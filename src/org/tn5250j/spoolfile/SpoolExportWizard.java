@@ -1100,7 +1100,7 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
          workingThread.interrupt();
          workingThread = null;
       }
-      this.hide();
+      this.setVisible(false);
       this.dispose();
    }
 

@@ -454,7 +454,7 @@ public class Configure implements TN5250jConstants {
       pane.setComponentOrientation(parentComponent.getComponentOrientation());
       dialog = pane.createDialog(parentComponent, title); //, JRootPane.PLAIN_DIALOG);
 
-      dialog.show();
+      dialog.setVisible(true);
 
 
   }

@@ -3,7 +3,6 @@ package org.tn5250j.swing;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.event.*;
 //import org.ohio.*;
 //import org.osohio.common.*;
 import org.tn5250j.*;

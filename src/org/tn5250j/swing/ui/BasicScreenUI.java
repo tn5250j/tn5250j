@@ -1,12 +1,7 @@
 package org.tn5250j.swing.ui;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.font.*;
-import java.awt.geom.*;
-
-import javax.swing.*;
-import javax.swing.border.*;
 
 //import org.ohio.*;
 //import org.osohio.common.OhioConstants;

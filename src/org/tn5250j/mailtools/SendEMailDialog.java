@@ -72,7 +72,7 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
          this.frame = frame;
        }
        public void run() {
-         frame.show();
+         frame.setVisible(true);
        }
          }
 	/**

@@ -1,7 +1,6 @@
 package org.tn5250j.swing;
 
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
 
 import org.tn5250j.*;

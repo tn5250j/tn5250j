@@ -34,7 +34,6 @@ import org.tn5250j.Session5250;
 //import org.tn5250j.Screen5250;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.event.KeyChangeListener;
-import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.tools.system.OperatingSystem;
 
 /**

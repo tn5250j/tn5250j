@@ -24,7 +24,6 @@
 package org.tn5250j.framework.tn5250;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -50,7 +49,6 @@ import org.tn5250j.encoding.CodePage;
 import org.tn5250j.framework.Tn5250jController;
 import org.tn5250j.framework.Tn5250jEvent;
 import org.tn5250j.framework.Tn5250jKeyEvents;
-import org.tn5250j.framework.tn5250.*;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 import org.tn5250j.framework.transport.SocketConnector;
@@ -653,7 +651,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					sro.requestFocus();
 				}
 			});
-			dialog.show();
+			dialog.setVisible(true);
 
 			// now we can process the value selected
 			Object o = pane.getValue();

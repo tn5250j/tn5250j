@@ -144,7 +144,7 @@ public class SqlWizard extends JFrame {
    private void fillQueryTextArea() {
       queryTextArea.append(queryBuilder.getQuery());
 
-      this.hide();
+      this.setVisible(false);
       this.dispose();
    }
 

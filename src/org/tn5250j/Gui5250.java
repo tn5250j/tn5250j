@@ -28,8 +28,6 @@ package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
 import javax.swing.*;
 import java.util.*;
 
@@ -39,7 +37,6 @@ import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
-import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.interfaces.SessionScrollerInterface;

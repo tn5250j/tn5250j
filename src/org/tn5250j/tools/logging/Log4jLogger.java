@@ -84,23 +84,23 @@ public class Log4jLogger extends TN5250jLogger {
       		break;
       		
          case DEBUG:
-            log.getLevel().toLevel(org.apache.log4j.Level.DEBUG_INT);
+            Level.toLevel(org.apache.log4j.Level.DEBUG_INT);
             break;
 
          case INFO:
-            log.getLevel().toLevel(org.apache.log4j.Level.INFO_INT);
+            Level.toLevel(org.apache.log4j.Level.INFO_INT);
             break;
 
          case WARN:
-            log.getLevel().toLevel(org.apache.log4j.Level.WARN_INT);
+            Level.toLevel(org.apache.log4j.Level.WARN_INT);
             break;
 
          case ERROR:
-            log.getLevel().toLevel(org.apache.log4j.Level.ERROR_INT);
+            Level.toLevel(org.apache.log4j.Level.ERROR_INT);
             break;
 
          case FATAL:
-            log.getLevel().toLevel(org.apache.log4j.Level.FATAL_INT);
+            Level.toLevel(org.apache.log4j.Level.FATAL_INT);
             break;
 
       }

@@ -24,9 +24,7 @@
 package org.tn5250j.framework.tn5250;
 
 import java.util.*;
-
 import org.tn5250j.event.ScreenOIAListener;
-import org.tn5250j.framework.tn5250.*;
 
 /**
  * The operator information area of a host session. This area is used to provide

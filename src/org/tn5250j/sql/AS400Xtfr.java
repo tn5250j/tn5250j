@@ -29,7 +29,6 @@ package org.tn5250j.sql;
 import java.util.*;
 import java.io.*;
 import java.text.*;
-import org.tn5250j.*;
 import org.tn5250j.event.*;
 import org.tn5250j.tools.filters.*;
 import java.sql.*;

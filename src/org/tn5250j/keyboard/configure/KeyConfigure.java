@@ -123,7 +123,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
       setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 
       // now show the world what we can do
-      show();
+      setVisible(true);
 
    }
 

@@ -23,8 +23,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
 
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
-
 import org.tn5250j.event.TabClosedListener;
 
 /**

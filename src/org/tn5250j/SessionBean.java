@@ -259,7 +259,7 @@ public class SessionBean
           {
             try
             {
-              Thread.currentThread().sleep(100);
+              Thread.sleep(100);
             }
             catch (InterruptedException ex)
             {
@@ -342,7 +342,7 @@ public class SessionBean
   public Dimension getPreferredSize()
   {
     if (preferredSize == null)
-      this.setPreferredSize(this.deriveOptimalSize(this, this.getFont(), 80, 24));
+      this.setPreferredSize(SessionBean.deriveOptimalSize(this, this.getFont(), 80, 24));
 
     return super.getPreferredSize();
   }

@@ -2,10 +2,8 @@ package org.tn5250j.swing.ui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.font.*;
 import java.beans.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.plaf.*;
 
 //import org.ohio.*;
