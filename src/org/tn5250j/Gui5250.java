@@ -818,6 +818,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                               LangTool.getString("em.optConfigureLabel")};
 
          int result = 0;
+         while (result == 0 || result == 2) {
             result = JOptionPane.showOptionDialog(
                 this.getParent(),                              // the parent that the dialog blocks
                 message,                           // the dialog message array
@@ -867,10 +868,16 @@ public class Gui5250 extends JPanel implements ComponentListener,
                case 1: // Cancel
       //		      System.out.println("Cancel");
                   break;
+               case 2: // Configure SMTP
+                  SMTPConfig smtp = new SMTPConfig(me.frame,"",true);
+                  smtp.setVisible(true);
+                  smtp.dispose();
+      //		      System.out.println("Cancel");
+                  break;
                default:
                   break;
             }
-
+         }
    }
 
    private void doKeyBoundArea(KeyEvent ke,String last) {

@@ -9,9 +9,6 @@ Add support for maintaining macros.
 
 Translate to french.  Still have not done this.  Anybody volunteer?????
 
-Add code behind configure button of Send Screen via e-mail screen to configure
-   the SMTP properties.
-
 Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
 large to implement this - 57 pages worth of specs and the such.  Work has begun.
 
@@ -36,6 +33,10 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+01/5/2002   Added SMTP configuration dialog for Send via E-mail.  Now the 
+            configuration can be done by selecting Configure button from
+            Send via E-mail dialog.
+
 27/4/2002   CVS checkin notifications, updates and bug fixes.  Test CVS again
 
 26/4/2002   Fixed a problem that was happening when sending data to the host.
