@@ -619,7 +619,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          action = new AbstractAction(LangTool.getString("popup.copy")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys(MNEMONIC_COPY);
+                  screen.copyMe();
                   getFocusForMe();
                }
            };
