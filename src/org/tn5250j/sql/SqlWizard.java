@@ -34,6 +34,7 @@ import com.ibm.as400.access.*;
 import java.sql.*;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.My5250;
+import org.tn5250j.tools.system.OperatingSystem;
 
 /**
  *
@@ -107,7 +108,16 @@ public class SqlWizard extends JFrame {
          getContentPane().add(queryBuilder, BorderLayout.CENTER);
          getContentPane().add(panel, BorderLayout.SOUTH);
 
+         Dimension max = new Dimension(OperatingSystem.getScreenBounds().width,
+                                       OperatingSystem.getScreenBounds().height);
+
          pack();
+
+         if (getSize().width > max.width)
+            setSize(max.width,getSize().height);
+
+         if (getSize().height > max.height)
+            setSize(getSize().width,max.height);
 
          //Center the window
          Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -96,8 +96,10 @@ public class AS400Xtfr {
                                                       user,pass);
 
          printFTPInfo("jdbc:as400://" + hostName +
-                                                   ";decimal separator=" +
-                                                   decChar );
+                        ";decimal separator=" +
+                        decChar +
+                        ";extended metadata=true;translate binary=true");
+
          fireInfoEvent();
          printFTPInfo("Connected to " + hostName);
          return true;
