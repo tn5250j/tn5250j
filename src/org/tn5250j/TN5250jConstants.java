@@ -113,9 +113,23 @@ public interface TN5250jConstants {
    public static final int MARK_RIGHT = 1041;
    public static final int DUP_FIELD = 1042;
    public static final int NEW_LINE = 1043;
-   public static final int JUMP_NEXT_SESS = 1044;
-   public static final int JUMP_PREV_SESS = 1045;
-   public static final int OPEN_NEW = 1046;
+   public static final int JUMP_NEXT_SESS = 5000;
+   public static final int JUMP_PREV_SESS = 5001;
+   public static final int OPEN_NEW = 5002;
+   public static final int TOGGLE_CONNECTION = 5003;
+   public static final int HOTSPOTS = 5004;
+   public static final int GUI = 5005;
+   public static final int DSP_MSGS = 5006;
+   public static final int DSP_ATTRIBUTES = 5007;
+   public static final int PRINT_SCREEN = 5008;
+   public static final int CURSOR = 5009;
+   public static final int DEBUG = 5010;
+   public static final int CLOSE = 5011;
+   public static final int TRANSFER = 5012;
+   public static final int E_MAIL = 5013;
+
+
+   // PF Keys
    public static final int PF1 = 0x31;
    public static final int PF2 = 0x32;
    public static final int PF3 = 0x33;
@@ -157,7 +171,10 @@ public interface TN5250jConstants {
         "[rollright]", "[hostprint]", "[pa1]", "[pa2]", "[pa3]",
         "[sysreq]","[reset]","[nextword]", "[prevword]", "[copy]",
         "[paste]","[attn]","[markup]", "[markdown]", "[markleft]",
-        "[markright]","[dupfield]","[newline]","[jumpnext]","[jumpprev]"
+        "[markright]","[dupfield]","[newline]","[jumpnext]","[jumpprev]",
+        "[opennew]","[togcon]","[hotspots]","[gui]","[dspmsgs]",
+        "[dspattr]","[print]","[cursor]","[debug]","[close]",
+        "[transfer]","[e-mail]"
    };
 
    public static final int mnemonicValue[] = {
@@ -176,7 +193,10 @@ public interface TN5250jConstants {
         0xDA, 0xF6, 0x6C, 0x6E, 0x6B,
         1031, 1032, 1033, 1034, 1035,
         1036, 1037, 1038, 1039, 1040,
-        1041, 1042, 1043, 1044, 1045
+        1041, 1042, 1043, 5000, 5001,
+        5002, 5003, 5004, 5005, 5006,
+        5007, 5008, 5009, 5010, 5011,
+        5012, 5013
    };
 
    public static final String MNEMONIC_CLEAR   =  "[clear]";
@@ -255,6 +275,17 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_NEW_LINE   =  "[newline]";
    public static final String MNEMONIC_JUMP_NEXT   =  "[jumpnext]";
    public static final String MNEMONIC_JUMP_PREV   =  "[jumpprev]";
+   public static final String MNEMONIC_OPEN_NEW   =  "[opennew]";
+   public static final String MNEMONIC_TOGGLE_CONNECTION   =  "[togcon]";
+   public static final String MNEMONIC_HOTSPOTS   =  "[hotspots]";
+   public static final String MNEMONIC_GUI   =  "[gui]";
+   public static final String MNEMONIC_DISP_MESSAGES   =  "[dspmsgs]";
+   public static final String MNEMONIC_DISP_ATTRIBUTES   =  "[dspattr]";
+   public static final String MNEMONIC_PRINT_SCREEN   =  "[print]";
+   public static final String MNEMONIC_CURSOR   =  "[cursor]";
+   public static final String MNEMONIC_DEBUG   =  "[debug]";
+   public static final String MNEMONIC_CLOSE   =  "[close]";
+   public static final String MNEMONIC_E_MAIL   =  "[e-mail]";
 
    // AID-Generating Keys
    public static final int AID_CLEAR = 0xBD;

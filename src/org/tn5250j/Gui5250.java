@@ -38,12 +38,14 @@ import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
+import org.tn5250j.event.KeyChangeListener;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
                                                       TN5250jConstants,
                                                       PropertyChangeListener ,
-                                                      RubberBandCanvasIF {
+                                                      RubberBandCanvasIF,
+                                                      KeyChangeListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
    Properties defaultProps = null;
@@ -187,6 +189,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
       jumpn = keyMap.isKeyStrokeDefined("[jumpnext]");
       jumpp = keyMap.isKeyStrokeDefined("[jumpprev]");
 
+      keyMap.addKeyChangeListener(this);
+
       /**
        * this is taken out right now look at the method for description
        */
@@ -227,222 +231,212 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       KeyStroke ks;
 
-//      if (keyCode == KeyEvent.VK_N &&
-//            e.isAltDown() && !e.isControlDown()) {
-//
-//         me.startNewSession();
-//         return;
-//      }
       Action newSession = new AbstractAction("newSession") {
             public void actionPerformed(ActionEvent e) {
-//               System.out.println(" new session ");
                me.startNewSession();
             }
         };
 
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_N,KeyEvent.ALT_MASK);
+      if (!keyMap.isKeyStrokeDefined("[opennew]")) {
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_N,KeyEvent.ALT_MASK);
+      }
+      else {
+         ks = keyMap.getKeyStroke("[opennew]");
+      }
+
       getInputMap().put(ks,"newSession");
       getActionMap().put("newSession",newSession );
 
-//      if (keyCode == KeyEvent.VK_X &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         changeConnection();
-//         return;
-//      }
+      Action chgSession = new AbstractAction("chgSession") {
+            public void actionPerformed(ActionEvent e) {
+               changeConnection();
+            }
+        };
 
-         Action chgSession = new AbstractAction("chgSession") {
-               public void actionPerformed(ActionEvent e) {
-                  changeConnection();
-               }
-           };
+      if (!keyMap.isKeyStrokeDefined("[togcon]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_X,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"chgSession");
-         getActionMap().put("chgSession",chgSession );
-//
-//   //      if (keyCode == KeyEvent.VK_PAGE_UP &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //
-//   //         nextSession();
-//   //         return;
-//   //      }
-//
-         Action nxtSession = new AbstractAction("nxtSession") {
-               public void actionPerformed(ActionEvent e) {
-                  nextSession();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[togcon]");
+      }
+
+      getInputMap().put(ks,"chgSession");
+      getActionMap().put("chgSession",chgSession );
+
+      Action nxtSession = new AbstractAction("nxtSession") {
+            public void actionPerformed(ActionEvent e) {
+               nextSession();
+            }
+        };
+
+      if (!keyMap.isKeyStrokeDefined("[jumpnext]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"nxtSession");
-         getActionMap().put("nxtSession",nxtSession );
-//
-//   //      if (keyCode == KeyEvent.VK_PAGE_DOWN &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //
-//   //         prevSession();
-//   //         return;
-//   //      }
-//
-         Action prevSession = new AbstractAction("prevSession") {
-               public void actionPerformed(ActionEvent e) {
-                  prevSession();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[jumpnext]");
+      }
+
+      getInputMap().put(ks,"nxtSession");
+      getActionMap().put("nxtSession",nxtSession );
+
+      Action prevSession = new AbstractAction("prevSession") {
+            public void actionPerformed(ActionEvent e) {
+               prevSession();
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[jumpprev]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"prevSession");
-         getActionMap().put("prevSession",prevSession );
-//
-//   //      if (keyCode == KeyEvent.VK_S &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //
-//   //         screen.toggleHotSpots();
-//   //         return;
-//   //      }
-//
-         Action hotSpots = new AbstractAction("hotSpots") {
-               public void actionPerformed(ActionEvent e) {
-                  screen.toggleHotSpots();
-                  System.out.println("hotspots");
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[jumpprev]");
+      }
+      getInputMap().put(ks,"prevSession");
+      getActionMap().put("prevSession",prevSession );
+
+      Action hotSpots = new AbstractAction("hotSpots") {
+            public void actionPerformed(ActionEvent e) {
+               screen.toggleHotSpots();
+               System.out.println("hotspots");
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[hotspots]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"hotSpots");
-         getActionMap().put("hotSpots",hotSpots );
-//
-//   //      if (keyCode == KeyEvent.VK_G &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //
-//   //         screen.toggleGUIInterface();
-//   ////         repaint();
-//   //         return;
-//   //      }
-         Action gui = new AbstractAction("gui") {
-               public void actionPerformed(ActionEvent e) {
-                  screen.toggleGUIInterface();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[hotspots]");
+      }
+
+      getInputMap().put(ks,"hotSpots");
+      getActionMap().put("hotSpots",hotSpots );
+
+      Action gui = new AbstractAction("gui") {
+            public void actionPerformed(ActionEvent e) {
+               screen.toggleGUIInterface();
+            }
+        };
+
+      if (!keyMap.isKeyStrokeDefined("[gui]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_G,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"gui");
-         getActionMap().put("gui",gui );
-//
-//   //      if (keyCode == KeyEvent.VK_M &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         vt.systemRequest('4');
-//   //         return;
-//   //      }
-//
-         Action msg = new AbstractAction("msg") {
-               public void actionPerformed(ActionEvent e) {
-                  vt.systemRequest('4');
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[gui]");
+      }
+      getInputMap().put(ks,"gui");
+      getActionMap().put("gui",gui );
+
+      Action msg = new AbstractAction("msg") {
+            public void actionPerformed(ActionEvent e) {
+               vt.systemRequest('4');
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[dspmsgs]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_M,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"msg");
-         getActionMap().put("msg",msg );
-//
-//   //      if (keyCode == KeyEvent.VK_D &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         doAttributes();
-//   //         return;
-//   //      }
-//
-         Action attr = new AbstractAction("attr") {
-               public void actionPerformed(ActionEvent e) {
-                  doAttributes();
+      }
+      else {
+         ks = keyMap.getKeyStroke("[dspmsgs]");
+      }
+      getInputMap().put(ks,"msg");
+      getActionMap().put("msg",msg );
 
-               }
-           };
+      Action attr = new AbstractAction("attr") {
+            public void actionPerformed(ActionEvent e) {
+               doAttributes();
+
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[dspattr]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_D,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"attr");
-         getActionMap().put("attr",attr );
-//
-//   //      if (keyCode == KeyEvent.VK_P &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         screen.printMe();
-//   //         return;
-//   //      }
-//
-         Action print = new AbstractAction("print") {
-               public void actionPerformed(ActionEvent e) {
-                  printMe();
+      }
+      else {
+         ks = keyMap.getKeyStroke("[dspattr]");
+      }
+      getInputMap().put(ks,"attr");
+      getActionMap().put("attr",attr );
 
-               }
-           };
+      Action print = new AbstractAction("print") {
+            public void actionPerformed(ActionEvent e) {
+               printMe();
+
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[print]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"print");
-         getActionMap().put("print",print );
-//
-//   //      if (keyCode == KeyEvent.VK_L &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         screen.crossHair();
-//   //         return;
-//   //      }
-         Action cursor = new AbstractAction("cursor") {
-               public void actionPerformed(ActionEvent e) {
-                  screen.crossHair();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[print]");
+      }
+      getInputMap().put(ks,"print");
+      getActionMap().put("print",print );
+
+      Action cursor = new AbstractAction("cursor") {
+            public void actionPerformed(ActionEvent e) {
+               screen.crossHair();
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[cursor]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_L,KeyEvent.ALT_MASK,false);
-         getInputMap().put(ks,"cursor");
-         getActionMap().put("cursor",cursor );
-//   //
-//   //      if (keyCode == KeyEvent.VK_O &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         vt.toggleDebug();
-//   //         return;
-//   //      }
-         Action debug = new AbstractAction("debug") {
-               public void actionPerformed(ActionEvent e) {
-                  vt.toggleDebug();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[cursor]");
+      }
+      getInputMap().put(ks,"cursor");
+      getActionMap().put("cursor",cursor );
+
+      Action debug = new AbstractAction("debug") {
+            public void actionPerformed(ActionEvent e) {
+               vt.toggleDebug();
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[debug]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"debug");
-         getActionMap().put("debug",debug );
-//   //
-//   //      if (keyCode == KeyEvent.VK_Q &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         closeSession();
-//   //         return;
-//   //      }
-         Action close = new AbstractAction("close") {
-               public void actionPerformed(ActionEvent e) {
-                  closeSession();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[debug]");
+      }
+      getInputMap().put(ks,"debug");
+      getActionMap().put("debug",debug );
+
+      Action close = new AbstractAction("close") {
+            public void actionPerformed(ActionEvent e) {
+               closeSession();
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[close]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"close");
-         getActionMap().put("close",close );
-//   //
-//   //      // file transfer
-//   //      if (keyCode == KeyEvent.VK_T &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         doMeTransfer();
-//   //         return;
-//   //      }
-         Action transfer = new AbstractAction("transfer") {
-               public void actionPerformed(ActionEvent e) {
-                  doMeTransfer();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[close]");
+      }
+      getInputMap().put(ks,"close");
+      getActionMap().put("close",close );
+
+      Action transfer = new AbstractAction("transfer") {
+            public void actionPerformed(ActionEvent e) {
+               doMeTransfer();
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[transfer]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"transfer");
-         getActionMap().put("transfer",transfer );
-//   //
-//   //      // send screen via e-mail
-//   //         if (keyCode == KeyEvent.VK_E &&
-//   //               e.isAltDown() && !e.isControlDown()) {
-//   //            sendScreenEMail();
-//   //            return;
-//   //         }
-//   //
-         Action e_mail = new AbstractAction("e-mail") {
-               public void actionPerformed(ActionEvent e) {
-                  sendScreenEMail();
-               }
-           };
+      }
+      else {
+         ks = keyMap.getKeyStroke("[transfer]");
+      }
+      getInputMap().put(ks,"transfer");
+      getActionMap().put("transfer",transfer );
+
+      Action e_mail = new AbstractAction("e-mail") {
+            public void actionPerformed(ActionEvent e) {
+               sendScreenEMail();
+            }
+        };
+      if (!keyMap.isKeyStrokeDefined("[e-mail]")) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK);
-         getInputMap().put(ks,"e-mail");
-         getActionMap().put("e-mail",e_mail );
+      }
+      else {
+         ks = keyMap.getKeyStroke("[e-mail]");
+      }
+      getInputMap().put(ks,"e-mail");
+      getActionMap().put("e-mail",e_mail );
 //
 //         Action ohshit = new AbstractAction() {
 //               public void actionPerformed(ActionEvent e) {
@@ -496,6 +490,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+   public void onKeyChanged() {
+
+      getInputMap().clear();
+      getActionMap().clear();
+      initKeyBindings();
+
+   }
    /**
     * MyAction is used so that I can attach a string command to the action
     *    I tried using just the default versions but it was not returning
@@ -1351,6 +1352,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          action = new AbstractAction(LangTool.getString("popup.hexMap")) {
                public void actionPerformed(ActionEvent e) {
                   showHexMap();
+                  getFocusForMe();
                }
            };
          popup.add(action);
@@ -1359,6 +1361,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                public void actionPerformed(ActionEvent e) {
 
                   mapMeKeys();
+                  getFocusForMe();
                }
            };
          popup.add(action);
@@ -1366,6 +1369,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          action = new AbstractAction(LangTool.getString("popup.settings")) {
                public void actionPerformed(ActionEvent e) {
                   doAttributes();
+                  getFocusForMe();
                }
            };
          popup.add(action);
@@ -1388,6 +1392,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
             action = new AbstractAction(LangTool.getString("popup.record")) {
                   public void actionPerformed(ActionEvent e) {
                      startRecordingMe();
+                     getFocusForMe();
+
                   }
             };
          }
@@ -1415,6 +1421,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
                public void actionPerformed(ActionEvent e) {
                   doMeTransfer();
+                  getFocusForMe();
                }
            };
          popup.add(action);
@@ -1427,6 +1434,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          action = new AbstractAction(LangTool.getString("popup.email")) {
                public void actionPerformed(ActionEvent e) {
                   sendScreenEMail();
+                  getFocusForMe();
                }
            };
          sendMenu.add(action);
