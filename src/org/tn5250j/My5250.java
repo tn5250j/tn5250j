@@ -41,6 +41,8 @@ import org.tn5250j.framework.Tn5250jController;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.framework.common.Sessions;
 
 public class My5250 implements BootListener,TN5250jConstants,SessionListener,
                                  EmulatorActionListener {
@@ -561,12 +563,22 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       if (isSpecified("-hb",args))
          sesProps.put(SESSION_HEART_BEAT,"1");
 
+      int sessionCount = manager.getSessions().getCount();
+
       Session5250 s2 = manager.openSession(sesProps,propFileName,sel);
       SessionGUI s = new SessionGUI(s2);
 
+
       if (!frame1.isVisible()) {
          splash.updateProgress(++step);
-         if (isSpecified("-noembed",args)) {
+
+         // Here we check if this is the first session created in the system.
+         //  We have to create a frame on initialization for use in other scenarios
+         //  so if this is the first session being added in the system then we
+         //  use the frame that is created and skip the part of creating a new
+         //  view which would increment the count and leave us with an unused
+         //  frame.
+         if (isSpecified("-noembed",args) && sessionCount > 0) {
             newView();
          }
 
