@@ -856,7 +856,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
          rubberband.draw();
       }
 
-      keyPad.repaint();
+      // this was a fix for a keypad drawing problem under JDK1.2/1.3
+      // but caused problems under Linux/JDK1.4
+      //keyPad.repaint();
 
    }
 
