@@ -112,7 +112,7 @@ public final class LoadMacroMenu {
       if(macroFiles == null || macroFiles.length == 0)
          return;
 
-//		MiscUtilities.quicksort(macroFiles,new MiscUtilities.StringICaseCompare());
+      Arrays.sort(macroFiles,new MacroCompare());
 
       for(int i = 0; i < macroFiles.length; i++) {
          File file = macroFiles[i];
@@ -172,5 +172,14 @@ public final class LoadMacroMenu {
          }
       }
    }
+
+	public static class MacroCompare implements Comparator {
+		public int compare(Object one, Object two) {
+         String s1 = one.toString();
+         String s2 = two.toString();
+         return s1.compareToIgnoreCase(s2);
+		}
+
+	}
 
 }
