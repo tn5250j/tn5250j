@@ -77,6 +77,7 @@ public class SessionAttributes extends JDialog {
    JTextField horizontalScale;
    JTextField pointSize;
    JTextField cursorBottOffset;
+   JCheckBox defaultPrinter;
 
    private PropertyChangeSupport changes = null;
 
@@ -207,7 +208,52 @@ public class SessionAttributes extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 JComboBox cb = (JComboBox)e.getSource();
                 String newSelection = (String)cb.getSelectedItem();
-                updateColorSelection(newSelection);
+                if (newSelection.equals(LangTool.getString("sa.bg"))) {
+                  jcc.setColor(getColorProperty("colorBg"));
+                }
+                if (newSelection.equals(LangTool.getString("sa.blue"))) {
+                  jcc.setColor(getColorProperty("colorBlue"));
+                }
+                if (newSelection.equals(LangTool.getString("sa.red"))) {
+                  jcc.setColor(getColorProperty("colorRed"));
+
+                }
+                if (newSelection.equals(LangTool.getString("sa.pink"))) {
+                  jcc.setColor(getColorProperty("colorPink"));
+
+                }
+                if (newSelection.equals(LangTool.getString("sa.green"))) {
+                  jcc.setColor(getColorProperty("colorGreen"));
+
+                }
+                if (newSelection.equals(LangTool.getString("sa.turq"))) {
+                  jcc.setColor(getColorProperty("colorTurq"));
+
+                }
+                if (newSelection.equals(LangTool.getString("sa.yellow"))) {
+                  jcc.setColor(getColorProperty("colorYellow"));
+
+                }
+                if (newSelection.equals(LangTool.getString("sa.white"))) {
+                  jcc.setColor(getColorProperty("colorWhite"));
+                }
+
+                if (newSelection.equals(LangTool.getString("sa.guiField"))) {
+                  jcc.setColor(getColorProperty("colorGUIField",Color.white));
+                }
+                if (newSelection.equals(LangTool.getString("sa.cursorColor"))) {
+                  jcc.setColor(getColorProperty("colorCursor",
+                              getColorProperty("colorBg")));
+                }
+                if (newSelection.equals(LangTool.getString("sa.columnSep"))) {
+                  jcc.setColor(getColorProperty("colorSep",
+                              getColorProperty("colorWhite")));
+                }
+
+                if (newSelection.equals(LangTool.getString("sa.hexAttrColor"))) {
+                  jcc.setColor(getColorProperty("colorHexAttr",
+                              getColorProperty("colorWhite")));
+                }
 
             }
         });
@@ -503,6 +549,22 @@ public class SessionAttributes extends JDialog {
 
       kp.add(kpp);
 
+      // define Printer panel
+      final JPanel pp = new JPanel();
+      pp.setLayout(new BoxLayout(pp,BoxLayout.Y_AXIS));
+
+      // define ppPanel panel
+      JPanel ppp = new JPanel();
+      ppp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.print")));
+      defaultPrinter = new JCheckBox(LangTool.getString("sa.defaultPrinter"));
+
+      if (getStringProperty("defaultPrinter").equals("Yes"))
+         defaultPrinter.setSelected(true);
+
+      ppp.add(defaultPrinter);
+
+      pp.add(ppp);
+
       // define default
       final JPanel jp = new JPanel();
       jp.add(cpp,BorderLayout.CENTER);
@@ -591,6 +653,13 @@ public class SessionAttributes extends JDialog {
                jp.validate();
                jpm.repaint();
             }
+            if (nodeInfo.toString().equals(LangTool.getString("sa.nodePrinter"))) {
+               jp.removeAll();
+               jp.add(pp,BorderLayout.CENTER);
+               jp.setPreferredSize(cpp.getPreferredSize());
+               jp.validate();
+               jpm.repaint();
+            }
 
          }
       });
@@ -634,6 +703,9 @@ public class SessionAttributes extends JDialog {
         top.add(attrib);
 
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeKP"));
+        top.add(attrib);
+
+        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodePrinter"));
         top.add(attrib);
 
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodei18n"));
@@ -802,56 +874,6 @@ public class SessionAttributes extends JDialog {
       }
    }
 
-   private void updateColorSelection(String newSelection) {
-
-       if (newSelection.equals(LangTool.getString("sa.bg"))) {
-         jcc.setColor(getColorProperty("colorBg"));
-       }
-       if (newSelection.equals(LangTool.getString("sa.blue"))) {
-         jcc.setColor(getColorProperty("colorBlue"));
-       }
-       if (newSelection.equals(LangTool.getString("sa.red"))) {
-         jcc.setColor(getColorProperty("colorRed"));
-
-       }
-       if (newSelection.equals(LangTool.getString("sa.pink"))) {
-         jcc.setColor(getColorProperty("colorPink"));
-
-       }
-       if (newSelection.equals(LangTool.getString("sa.green"))) {
-         jcc.setColor(getColorProperty("colorGreen"));
-
-       }
-       if (newSelection.equals(LangTool.getString("sa.turq"))) {
-         jcc.setColor(getColorProperty("colorTurq"));
-
-       }
-       if (newSelection.equals(LangTool.getString("sa.yellow"))) {
-         jcc.setColor(getColorProperty("colorYellow"));
-
-       }
-       if (newSelection.equals(LangTool.getString("sa.white"))) {
-         jcc.setColor(getColorProperty("colorWhite"));
-       }
-
-       if (newSelection.equals(LangTool.getString("sa.guiField"))) {
-         jcc.setColor(getColorProperty("colorGUIField",Color.white));
-       }
-       if (newSelection.equals(LangTool.getString("sa.cursorColor"))) {
-         jcc.setColor(getColorProperty("colorCursor",
-                     getColorProperty("colorBg")));
-       }
-       if (newSelection.equals(LangTool.getString("sa.columnSep"))) {
-         jcc.setColor(getColorProperty("colorSep",
-                     getColorProperty("colorWhite")));
-       }
-
-       if (newSelection.equals(LangTool.getString("sa.hexAttrColor"))) {
-         jcc.setColor(getColorProperty("colorHexAttr",
-                     getColorProperty("colorWhite")));
-       }
-   }
-
    private void applyAttributes() {
 
       if (!getStringProperty("font").equals(
@@ -965,8 +987,6 @@ public class SessionAttributes extends JDialog {
                      Integer.toString(colorSchema.getColorHexAttr().getRGB()));
 
          }
-
-         updateColorSelection(newSelection);
 
       }
       else {
@@ -1306,6 +1326,19 @@ public class SessionAttributes extends JDialog {
                         getStringProperty("cursorBottOffset"),
                         cursorBottOffset.getText());
       setProperty("cursorBottOffset",cursorBottOffset.getText());
+
+      if (defaultPrinter.isSelected()) {
+         changes.firePropertyChange("defaultPrinter",
+                           getStringProperty("defaultPrinter"),
+                           "Yes");
+         setProperty("defaultPrinter","Yes");
+      }
+      else {
+         changes.firePropertyChange("defaultPrinter",
+                           getStringProperty("defaultPrinter"),
+                           "No");
+         setProperty("defaultPrinter","No");
+      }
 
       setProperty("saveme","yes");
 

@@ -1135,9 +1135,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       final Gui5250 g = this;
       JMenuItem mi;
 
-
-      final int pos = screen.getRowColFromPoint(me.getX(),me.getY()) -
-                     (screen.getCols()-1);
+      final int pos = screen.getRowColFromPoint(me.getX(),me.getY());
 
       if (!rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
          action = new AbstractAction(LangTool.getString("popup.copy")) {
@@ -1200,8 +1198,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
             rubberband.getBoundingArea(workR);
             // get the width and height
-            int ePos = screen.getRowColFromPoint(workR.width ,
-                                       workR.height );
+            int ePos = screen.getRowColFromPoint(workR.width + 1 ,
+                                       workR.height + 1 );
 
             popup.addSeparator();
 

@@ -153,6 +153,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private Rectangle restriction;
    private boolean resetRequired;
    private int cursorBottOffset;
+   private boolean defaultPrinter;
 
    public Screen5250(Gui5250 gui, Properties props) {
       this.gui = gui;
@@ -333,6 +334,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (appProps.containsKey("cursorBottOffset")) {
          cursorBottOffset = getIntProperty("cursorBottOffset");
+      }
+
+      if (appProps.containsKey("defaultPrinter")) {
+         if (getStringProperty("defaultPrinter").equals("Yes"))
+            defaultPrinter = true;
+         else
+            defaultPrinter = false;
       }
 
    }
@@ -599,6 +607,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             hotSpots = true;
          else
             hotSpots = false;
+      }
+
+      if (pn.equals("defaultPrinter")) {
+         if (pce.getNewValue().equals("Yes"))
+            defaultPrinter = true;
+         else
+            defaultPrinter = false;
       }
 
       if (pn.equals("hsMore")) {
@@ -4273,7 +4288,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                                                 numCols,
                                                 numRows,
                                                 colorBg,
+                                                defaultPrinter,
                                                 (Session)gui);
+
       printerThread.start();
 
    }

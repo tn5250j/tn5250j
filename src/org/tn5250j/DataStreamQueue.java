@@ -44,8 +44,9 @@ public class DataStreamQueue {
    public Object get() throws InterruptedException {
       synchronized (lock) {
          // wait until there is something to read
-         while (isEmpty())
+         while (isEmpty()) {
             lock.wait();
+         }
 
          /**
           * @todo here is the throttling code to look at
@@ -88,7 +89,7 @@ public class DataStreamQueue {
 
       synchronized (lock) {
          vector.clear();
-         lock.notify();
+         lock.notifyAll();
       }
 
    }
@@ -99,7 +100,7 @@ public class DataStreamQueue {
 //         if (vector.size() > 5)
 //            System.out.println(vector.size());
          // tell waiting threads to wake up
-         lock.notify();
+         lock.notifyAll();
       }
    }
 }

@@ -69,8 +69,10 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
    public Session openSession(Properties sesProps, String configurationResource
                                                 , String sessionName) {
 //                                             throws TN5250jException {
-
-      sesProps.put(SESSION_NAME,sessionName);
+      if(sessionName == null)
+         sesProps.put(SESSION_TERM_NAME,sesProps.getProperty(SESSION_HOST));
+      else
+         sesProps.put(SESSION_TERM_NAME,sessionName);
 
       if (configurationResource == null)
          configurationResource = "";

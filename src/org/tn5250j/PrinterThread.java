@@ -38,12 +38,14 @@ public class PrinterThread extends Thread implements Printable {
    Color colorBg;
    Font font;
    Session session;
+   boolean toDefault;
 
    public PrinterThread (ScreenChar[] sc, Font font, int cols, int rows,
-                           Color colorBg, Session ses) {
+                           Color colorBg, boolean toDefaultPrinter, Session ses) {
       setPriority(1);
       session = ses;
       screen = new ScreenChar[sc.length];
+      toDefault = toDefaultPrinter;
 
       int len = sc.length;
 
@@ -59,7 +61,13 @@ public class PrinterThread extends Thread implements Printable {
    }
 
    public void run () {
-
+// Toolkit tk = Toolkit.getDefaultToolkit();
+//int [][] range = new int[][] {
+//new int[] { 1, 1 }
+//};
+// JobAttributes jobAttributes = new JobAttributes(1, JobAttributes.DefaultSelectionType.ALL, JobAttributes.DestinationType.PRINTER, JobAttributes.DialogType.NONE, "file", 1, 1, JobAttributes.MultipleDocumentHandlingType.SEPARATE_DOCUMENTS_COLLATED_COPIES, range, "HP LaserJet", JobAttributes.SidesType.ONE_SIDED);
+//PrintJob job = tk.getPrintJob(null, "Print", jobAttributes, null);
+//if (job != null) {
       //--- Create a printerJob object
       PrinterJob printJob = PrinterJob.getPrinterJob ();
       printJob.setJobName("tn5250j");

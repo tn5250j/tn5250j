@@ -28,7 +28,7 @@ public interface TN5250jConstants {
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".5";
-   public static final String tn5250jSubVer= ".5beta2";
+   public static final String tn5250jSubVer= ".5beta2a";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
@@ -36,11 +36,8 @@ public interface TN5250jConstants {
    static final int STATE_REMOVE   =  2;
 
    // SESSION Level key value pairs
-   public static final String SESSION_HOST        = "SESSION_HOST";
-   public static final String SESSION_HOST_PORT   =
-                                             "SESSION_HOST_PORT";
-   public static final String SESSION_NAME   =
-                                             "SESSION_HOST_NAME";
+   public static final String SESSION_HOST      = "SESSION_HOST";
+   public static final String SESSION_HOST_PORT ="SESSION_HOST_PORT";
    public static final String SESSION_CONFIG_RESOURCE =
                                               "SESSION_CONFIG_RESOURCE";
    public static final String SESSION_TYPE     = "SESSION_HOST_TYPE";
@@ -51,6 +48,18 @@ public interface TN5250jConstants {
    public static final String SESSION_PROXY_PORT = "SESSION_PROXY_PORT";
    public static final String SESSION_USE_GUI = "SESSION_USE_GUI";
    public static final String SESSION_DEVICE_NAME = "SESSION_DEVICE_NAME";
+   public static final String SESSION_NAMES_REFS = "SESSION_NAMES_REFS";
+   public static final String SESSION_LOCALE = "SESSION_LOCALE";
+   public static final String SESSION_CONFIG_FILE = "SESSION_CONFIG_FILE";
+   public static final String SESSION_TERM_NAME_SYSTEM = "SESSION_TERM_NAME_SYSTEM";
+   public static final String SESSION_TERM_NAME = "SESSION_TERM_NAME";
+
+   public static final String GUI_MDI_TYPE = "GUI_MDI_TYPE";
+   public static final String GUI_FRAME_WIDTH = "GUI_FRAME_WIDTH";
+   public static final String GUI_FRAME_HEIGHT = "GUI_FRAME_HEIGHT";
+   public static final String GUI_NO_TAB = "GUI_NO_TAB";
+   public static final String NO_CHECK_RUNNING = "NO_CHECK_RUNNING";
+   public static final String START_MONITOR_THREAD = "START_MONITOR_THREAD";
 
    // Session JUMP Directions
    static final int JUMP_PREVIOUS   =  0;

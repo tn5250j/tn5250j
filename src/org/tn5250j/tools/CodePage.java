@@ -179,7 +179,7 @@ public class CodePage {
             ascii[cp[i]] = i;
          } while(++i < 256);
 
-         if (codePage.toLowerCase().startsWith("870")) {
+         if (codePage.toLowerCase().startsWith("870-pl")) {
             unicode = uni1250;
             convert = true;
 //            System.out.println("using conversion");

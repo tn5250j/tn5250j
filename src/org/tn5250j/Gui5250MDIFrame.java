@@ -186,6 +186,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          try {
 
             mif.setSelected(true);
+            if (mif.isIcon())
+               mif.setIcon(false);
 
 
          }
@@ -234,6 +236,9 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
       try {
          ((MyInternalFrame)myFrameList.get(index)).setSelected(true);
+            if (((MyInternalFrame)myFrameList.get(index)).isIcon())
+               ((MyInternalFrame)myFrameList.get(index)).setIcon(false);
+
       }
       catch (java.beans.PropertyVetoException e) {
          System.out.println(e.getMessage());
@@ -414,6 +419,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
             public void internalFrameDeiconified(InternalFrameEvent e) {
 //               displayMessage("Internal frame deiconified", e);
+
+               repaint();
             }
 
             public void internalFrameActivated(InternalFrameEvent e) {
@@ -439,6 +446,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
          void hideMe() {
             this.setVisible(false);
+
          }
 
          public int getInternalId() {
@@ -504,6 +512,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
        // implementation keeps the frame from leaving the desktop.
        public void setBoundsForFrame(JComponent f, int x, int y, int w, int h) {
 
+         System.out.println(" we are adjusting ");
          if (f instanceof JInternalFrame == false) {
            super.setBoundsForFrame(f, x, y, w, h); // only deal w/internal frames
          }
