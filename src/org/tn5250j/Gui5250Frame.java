@@ -1,7 +1,7 @@
 package org.tn5250j;
 /**
  * Title: tn5250J
- * Copyright:   Copyright (c) 2001
+ * Copyright:   Copyright (c) 2001-2003
  * Company:
  * @author  Kenneth J. Pouncey
  * @version 0.4
@@ -47,7 +47,8 @@ public class Gui5250Frame extends GUIViewInterface implements
    BorderLayout borderLayout1 = new BorderLayout();
    JTabbedPane sessionPane = new JTabbedPane();
    private int selectedIndex = 0;
-   private boolean embedded = true;
+   private boolean embedded = false;
+   private boolean hideTabBar = false;
 
    //Construct the frame
    public Gui5250Frame(My5250 m) {
@@ -80,9 +81,17 @@ public class Gui5250Frame extends GUIViewInterface implements
       sessionPane.setRequestFocusEnabled(false);
       sessionPane.setDoubleBuffered(false);
 
-      this.getContentPane().add(sessionPane, BorderLayout.CENTER);
+      Properties props = GlobalConfigure.getInstance().
+                           getProperties(GlobalConfigure.SESSIONS);
 
-      sessionPane.addChangeListener(this);
+      if (props.getProperty("emul.hideTabBar","no").equals("yes"))
+         hideTabBar = true;
+
+      if (!hideTabBar) {
+         this.getContentPane().add(sessionPane, BorderLayout.CENTER);
+         sessionPane.addChangeListener(this);
+      }
+
       if (packFrame)
          pack();
       else
@@ -189,6 +198,7 @@ public class Gui5250Frame extends GUIViewInterface implements
    public void stateChanged(ChangeEvent e) {
 
       JTabbedPane p = (JTabbedPane)e.getSource();
+
       p.setForegroundAt(selectedIndex,Color.black);
       p.setIconAt(selectedIndex,unfocused);
 
@@ -211,7 +221,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    public void addSessionView(String tabText,Session session) {
 
-      if (sessionPane.getTabCount() == 0 && !embedded) {
+      if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
 
          this.getContentPane().add(session, BorderLayout.CENTER);
 
@@ -226,18 +236,31 @@ public class Gui5250Frame extends GUIViewInterface implements
       }
       else {
 
-//         if (sessionPane.getTabCount() == 0) {
-//            Session ses = (Session)(this.getContentPane().getComponent(0));
-//            sessionPane.addTab(tabText,focused,ses);
-//            if (ses.getAllocDeviceName() != null)
-//               sessionPane.setTitleAt(0,ses.getAllocDeviceName());
-//            else
-//               sessionPane.setTitleAt(0,ses.getSessionName());
-//
-//            ses.addSessionListener(this);
-//            ses.addSessionJumpListener(this);
-//            this.getContentPane().add(sessionPane, BorderLayout.CENTER);
-//         }
+         if (hideTabBar && sessionPane.getTabCount() == 0 ) {
+            Session ses = null;
+            for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
+
+               if (this.getContentPane().getComponent(x) instanceof Session) {
+                  ses = (Session)(this.getContentPane().getComponent(x));
+                  this.getContentPane().remove(x);
+                  break;
+               }
+            }
+            //ses = (Session)(this.getContentPane().getComponent(0));
+            sessionPane.addTab(tabText,focused,ses);
+            ses.grabFocus();
+            ses.resizeMe();
+            repaint();
+
+            if (ses.getAllocDeviceName() != null)
+               sessionPane.setTitleAt(0,ses.getAllocDeviceName());
+            else
+               sessionPane.setTitleAt(0,ses.getSessionName());
+
+            ses.addSessionListener(this);
+            ses.addSessionJumpListener(this);
+            this.getContentPane().add(sessionPane, BorderLayout.CENTER);
+         }
 
          sessionPane.addTab(tabText,focused,session);
 
@@ -250,6 +273,9 @@ public class Gui5250Frame extends GUIViewInterface implements
 
          session.addSessionListener(this);
          session.addSessionJumpListener(this);
+         session.grabFocus();
+         session.resizeMe();
+         repaint();
       }
    }
 
