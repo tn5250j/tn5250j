@@ -3768,6 +3768,7 @@ public class Screen5250 implements TN5250jConstants{
 
 		oia.setKeyBoardLocked(true);
 		screenFields.clearFFT();
+		planes.initalizeFieldPlanes();
 		pendingInsert = false;
 		homePos = -1;
 	}

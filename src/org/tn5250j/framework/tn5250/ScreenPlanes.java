@@ -49,6 +49,8 @@ public class ScreenPlanes implements TN5250jConstants {
    protected char[] screenExtended;   // extended plane
    protected boolean[] screenIsChanged;
 
+   protected static char[] initArray;   
+
    protected char[] errorLine;
    protected char[] errorLineAttr;
    protected char[] errorLineIsAttr;
@@ -90,6 +92,8 @@ public class ScreenPlanes implements TN5250jConstants {
       screenIsChanged = new boolean[screenSize];
       screenField = new char[screenSize];
 
+      initArray = null;
+      
       initalizePlanes();
    }
 
@@ -229,10 +233,21 @@ public class ScreenPlanes implements TN5250jConstants {
 
       }
       
-      // here we will just copy a plane that has already been initialized
-      //   onto the other planes using arraycopy which will be faster.  I hope.
-      System.arraycopy(screen,0,fieldExtended,0,screenSize);
-      System.arraycopy(screen,0,screenField,0,screenSize);
+      if (initArray == null) {
+         initArray = new char[screenSize];
+         System.arraycopy(screen,0,initArray,0,screenSize);
+        
+      }
+      // here we will just copy the initialized plane onto the other planes 
+      // using arraycopy which will be faster.  I hope.
+      
+      System.arraycopy(initArray,0,fieldExtended,0,screenSize);
+      System.arraycopy(initArray,0,screenField,0,screenSize);
+   }
+
+   protected void initalizeFieldPlanes () {
+      System.arraycopy(initArray,0,fieldExtended,0,screenSize);
+      System.arraycopy(initArray,0,screenField,0,screenSize);
    }
 
    protected final int getWhichGUI(int pos) {
@@ -334,15 +349,6 @@ public class ScreenPlanes implements TN5250jConstants {
 
    }
 
-
-   private void fillExtendedFieldPlane(char[] plane,int start,int len) {
-
-      for (int x = 0; x < len; x++ ) {
-         plane[x] = (char)fieldExtended[start + x];
-      }
-
-
-   }
 
    /**
     * <p>

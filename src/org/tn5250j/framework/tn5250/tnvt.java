@@ -1411,8 +1411,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 				b = bk.getNextByte();
 				if (isAttribute(b)) {
-//					screen52.screen[y].setCharAndAttr(screen52.screen[y]
-//							.getChar(), b, true);
 					planes.setScreenCharAndAttr(y, planes.getChar(y), b, true);
 					la = b;
 
@@ -1467,6 +1465,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					sf = screen52.getScreenFields().setField(attr,
 							screen52.getRow(fPos), screen52.getCol(fPos), fLen,
 							ffw1, ffw2, fcw1, fcw2);
+
+					while (fLen-- > 0) {
+
+						// now we set the field plane attributes
+						planes.setScreenFieldAttr(fPos++,ffw1);
+						
+					}
 
 					if (mdt) {
 						sf.setMDT();
