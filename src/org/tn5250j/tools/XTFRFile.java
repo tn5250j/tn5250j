@@ -63,6 +63,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    JCheckBox useQuery;
    JButton queryWizard;
    JTextArea queryStatement;
+   JButton customize;
 
    JRadioButton intDesc;
    JRadioButton txtDesc;
@@ -79,6 +80,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    XTFRFileFilter KSpreadFilter;
    XTFRFileFilter OOFilter;
    XTFRFileFilter ExcelFilter;
+   XTFRFileFilter DelimitedFilter;
+   XTFRFileFilter FixedWidthFilter;
 //   XTFRFileFilter ExcelWorkbookFilter;
 
    // default file filter used.
@@ -130,6 +133,10 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       OOFilter.setOutputFilterName("org.tn5250j.tools.filters.OpenOfficeOutputFilter");
       ExcelFilter = new XTFRFileFilter("xls", "Excel");
       ExcelFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelOutputFilter");
+      DelimitedFilter = new XTFRFileFilter(new String[] {"csv", "tab"}, "Delimited");
+      DelimitedFilter.setOutputFilterName("org.tn5250j.tools.filters.DelimitedOutputFilter");
+      FixedWidthFilter = new XTFRFileFilter("txt", "Fixed Width");
+      FixedWidthFilter.setOutputFilterName("org.tn5250j.tools.filters.FixedWidthOutputFilter");
 //      ExcelWorkbookFilter = new XTFRFileFilter("xls", "Excel 95 97 XP 2000");
 //      ExcelWorkbookFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelWorkbookOutputFilter");
    }
@@ -273,6 +280,12 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
       }
 
+      if (e.getActionCommand().equals("CUSTOMIZE")) {
+
+         filter.getOutputFilterInstance().setCustomProperties();
+
+      }
+
    }
 
    private char getDecimalChar() {
@@ -334,6 +347,10 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          return OOFilter;
       if (ExcelFilter.isExtensionInList(localFile.getText()))
          return ExcelFilter;
+      if (DelimitedFilter.isExtensionInList(localFile.getText()))
+         return DelimitedFilter;
+      if (FixedWidthFilter.isExtensionInList(localFile.getText()))
+         return FixedWidthFilter;
 //      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
 //         return ExcelWorkbookFilter;
 
@@ -353,6 +370,10 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          return OOFilter;
       if (ExcelFilter.getDescription().equals(desc))
          return ExcelFilter;
+      if (DelimitedFilter.getDescription().equals(desc))
+         return DelimitedFilter;
+      if (FixedWidthFilter.getDescription().equals(desc))
+         return FixedWidthFilter;
 //      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
 //         return ExcelWorkbookFilter;
 
@@ -592,10 +613,31 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       fileFormat.addItem(OOFilter.getDescription());
       fileFormat.addItem(ExcelFilter.getDescription());
       fileFormat.addItem(KSpreadFilter.getDescription());
+      fileFormat.addItem(DelimitedFilter.getDescription());
+      fileFormat.addItem(FixedWidthFilter.getDescription());
+
+      fileFormat.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            JComboBox cb = (JComboBox)e.getSource();
+            filter = getFilterByDescription();
+            if (filter.getOutputFilterInstance().isCustomizable())
+               customize.setEnabled(true);
+            else
+               customize.setEnabled(false);
+         }
+      });
+
+      customize = new JButton(LangTool.getString("xtfr.labelCustomize"));
+      customize.setActionCommand("CUSTOMIZE");
+      customize.addActionListener(this);
+
+      // now make sure we set the customizable button enabled or not
+      // depending on the filter.
+      fileFormat.setSelectedIndex(0);
 
       pcp.add(pffLabel);
       pcp.add(fileFormat);
-      pcp.add(new JLabel());
+      pcp.add(customize);
 
       JLabel pcpLabel = new JLabel(LangTool.getString("xtfr.labelPCFile"));
 
@@ -613,6 +655,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       decimalSeparator = new JComboBox();
       decimalSeparator.addItem(LangTool.getString("xtfr.period"));
       decimalSeparator.addItem(LangTool.getString("xtfr.comma"));
+
       // obtain the decimal separator for the machine locale
       DecimalFormat formatter =
             (DecimalFormat)NumberFormat.getInstance(Locale.getDefault()) ;
