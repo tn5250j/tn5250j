@@ -1,5 +1,6 @@
 /**
- * Title: tn5250J Copyright: Copyright (c) 2001 Company:
+ * Title: tnvt.java 
+ * Copyright: Copyright (c) 2001 Company:
  *
  * @author Kenneth J. Pouncey
  * @version 0.5

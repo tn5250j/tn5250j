@@ -383,4 +383,46 @@ public interface TN5250jConstants {
    public static final byte CMD_ROLL = 0x23; // 35
    public static final byte CMD_READ_SCREEN_TO_PRINT = (byte)0x66; // 102
 
+   // PLANES
+   public static final int PLANE_TEXT   =  1;
+   public static final int PLANE_COLOR   =  2;
+   public static final int PLANE_FIELD   =  4;
+   public static final int PLANE_EXTENDED   =  8;
+   public static final int PLANE_EXTENDED_GRAPHIC   =  16;
+   public static final int PLANE_EXTENDED_FIELD   =  32;
+
+   // COLOR_BG
+   public static final char COLOR_BG_BLACK   =  0;
+   public static final char COLOR_BG_BLUE   =  1;
+   public static final char COLOR_BG_GREEN   =  2;
+   public static final char COLOR_BG_CYAN   =  3;
+   public static final char COLOR_BG_RED   =  4;
+   public static final char COLOR_BG_MAGENTA   =  5;
+   public static final char COLOR_BG_YELLOW   =  6;
+   public static final char COLOR_BG_WHITE   =  7;
+
+   // COLOR_FG
+   public static final char COLOR_FG_BLACK   =  0;
+   public static final char COLOR_FG_BLUE   =  1;
+   public static final char COLOR_FG_GREEN   =  2;
+   public static final char COLOR_FG_CYAN   =  3;
+   public static final char COLOR_FG_RED   =  4;
+   public static final char COLOR_FG_MAGENTA   =  5;
+   public static final char COLOR_FG_YELLOW   =  6;
+   public static final char COLOR_FG_WHITE   =  7;
+   public static final char COLOR_FG_BROWN   =  0xE;
+   public static final char COLOR_FG_GRAY   =  8;
+   public static final char COLOR_FG_LIGHT_BLUE   =  9;
+   public static final char COLOR_FG_LIGHT_GREEN   =  0xA;
+   public static final char COLOR_FG_LIGHT_CYAN   =  0xB;
+   public static final char COLOR_FG_LIGHT_RED   =  0xC;
+   public static final char COLOR_FG_LIGHT_MAGENTA   =  0xD;
+   public static final char COLOR_FG_WHITE_HIGH   =  0xF;
+
+   public static final int EXTENDED_5250_REVERSE   =  0x10;
+   public static final int EXTENDED_5250_UNDERLINE   =  0x08;
+   public static final int EXTENDED_5250_BLINK   =  0x04;
+   public static final int EXTENDED_5250_COL_SEP   =  0x02;
+   public static final int EXTENDED_5250_NON_DSP   =  0x01;
+
 }

@@ -3359,6 +3359,182 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		return sac;
 	}
 
+   /**
+    * <p>
+    *  GetScreen retrieves the various planes associated with the presentation
+    *  space. The data is returned as a linear array of character values in the
+    *  array provided. The array is not terminated by a null character except
+    *  when data is retrieved from the text plane, in which case a single null
+    *  character is appended.
+    *  </p>
+    *  <p>
+    *  The application must supply a buffer for the returned data and the length
+    *  of the buffer. Data is returned starting from the beginning of the
+    *  presentation space and continuing until the buffer is full or the entire
+    *  plane has been copied. For text plane data, the buffer must include one
+    *  extra position for the terminating null character.
+    *  <p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param plane
+    * @return The number of characters copied to the buffer
+    * @throws OhioException
+    */
+   public synchronized int GetScreen(char buffer[], int bufferLength, int plane)
+//                                       throws OhioException {
+                                       {
+      return GetScreen(buffer,bufferLength,0,lenScreen,plane);
+
+   }
+
+   /**
+    * <p>
+    *  GetScreen retrieves the various planes associated with the presentation
+    *  space. The data is returned as a linear array of character values in the
+    *  array provided. The array is not terminated by a null character except
+    *  when data is retrieved from the text plane, in which case a single null
+    *  character is appended.
+    * </p>
+    * <p>
+    * The application must supply a buffer for the returned data and the length
+    * of the buffer. Data is returned starting from the given position and
+    * continuing until the specified number of characters have been copied, the
+    * buffer is full or the entire plane has been copied. For text plane data,
+    * the buffer must include one extra position for the terminating null character.
+    * </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param from
+    * @param length
+    * @param plane
+    * @return The number of characters copied to the buffer
+    * @throws OhioException
+    */
+   public synchronized int GetScreen(char buffer[], int bufferLength, int from,
+                                    int length, int plane)
+//                                    throws OhioException {
+                                    {
+
+      return planes.GetScreen(buffer,bufferLength, from, length, plane);
+   }
+
+   /**
+    * <p>
+    *  GetScreen retrieves the various planes associated with the presentation
+    *  space. The data is returned as a linear array of character values in the
+    *  array provided. The array is not terminated by a null character except
+    *  when data is retrieved from the text plane, in which case a single null
+    *  character is appended.
+    *  </p>
+    *  <p>
+    *  The application must supply a buffer for the returned data and the length
+    *  of the buffer. Data is returned starting from the given coordinates and
+    *  continuing until the specified number of characters have been copied,
+    *  the buffer is full, or the entire plane has been copied. For text plane
+    *  data, the buffer must include one extra position for the terminating null
+    *  character.
+    *  </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param row
+    * @param col
+    * @param length
+    * @param plane
+    * @return The number of characters copied to the buffer.
+    * @throws OhioException
+    */
+   public synchronized int GetScreen(char buffer[], int bufferLength, int row,
+                                       int col, int length, int plane)
+//                                       throws OhioException {
+                                       {
+      // Call GetScreen function after converting row and column to
+      // a position.
+      return planes.GetScreen(buffer,bufferLength, row, col, length, plane);
+   }
+
+   /**
+    * <p>
+    *  GetScreenRect retrieves data from the various planes associated with the
+    *  presentation space. The data is returned as a linear array of character
+    *  values in the buffer provided.
+    *  </p>
+    *
+    * <p>
+    * The application supplies two positions that represent opposing corners of
+    * a rectangle within the presentation space. The starting and ending
+    * positions can have any spatial relationship to each other. The data
+    * returned starts from the row containing the upper-most point to the row
+    * containing the lower-most point, and from the left-most column to the
+    * right-most column.
+    * </p>
+    * <p>
+    * The specified buffer must be at least large enough to contain the number
+    * of characters in the rectangle. If the buffer is too small, no data is
+    * copied and zero is returned by the method. Otherwise, the method returns
+    * the number of characters copied.
+    * </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param startPos
+    * @param endPos
+    * @param plane
+    * @return The number of characters copied to the buffer
+    * @throws OhioException
+    */
+   public synchronized int GetScreenRect(char buffer[], int bufferLength,
+                                             int startPos, int endPos, int plane)
+//                                             throws OhioException {
+                                             {
+      return planes.GetScreenRect(buffer, bufferLength, startPos, endPos, plane);
+
+   }
+
+   /**
+    * <p>
+    *  GetScreenRect retrieves data from the various planes associated with the
+    *  presentation space. The data is returned as a linear array of character
+    *  values in the buffer provided. The buffer is not terminated by a null
+    *  character.
+    * </p>
+    * <p>
+    * The application supplies two coordinates that represent opposing corners
+    * of a rectangle within the presentation space. The starting and ending
+    * coordinates can have any spatial relationship to each other. The data
+    * returned starts from the row containing the upper-most point to the row
+    * containing the lower-most point, and from the left-most column to the
+    * right-most column.
+    * </p>
+    * <p>
+    * The specified buffer must be at least large enough to contain the number
+    * of characters in the rectangle. If the buffer is too small, no data is
+    * copied and zero is returned by the method. Otherwise, the method returns
+    * the number of characters copied.
+    * </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param startRow
+    * @param startCol
+    * @param endRow
+    * @param endCol
+    * @param plane
+    * @return The number characters copied to the buffer
+    * @throws OhioException
+    */
+   public synchronized int GetScreenRect(char buffer[], int bufferLength,
+                                             int startRow, int startCol,
+                                             int endRow, int endCol, int plane)
+//                                             throws OhioException {
+                                             {
+
+      return planes.GetScreenRect(buffer, bufferLength, startRow, startCol, endRow,
+                                    endCol, plane);
+   }
+
 	/**
 	 * This routine is based on offset 1,1 not 0,0 it will translate to offset
 	 * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
@@ -4240,12 +4416,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	public boolean checkHotSpots() {
 
-		boolean retHS = false;
+//		boolean retHS = false;
       // needs to be re implemented
 //		retHS = GUIHotSpots.checkHotSpots(this, screen, numRows, numCols,
 //				lenScreen, fmWidth, fmHeight);
 
-		return retHS;
+//		return retHS;
+	   return planes.checkHotSpots();
 	}
 
 	public void setChar(int cByte) {
@@ -4545,7 +4722,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		if (planes.isErrorLineSaved()) {
          planes.restoreErrorLine();
-//			updateImage(0, screen[r].y, bi.getWidth(), fmHeight);
+         int y = fmHeight * planes.getErrorLine();
+			updateImage(0, y, bi.getWidth(), fmHeight);
 		}
 	}
 

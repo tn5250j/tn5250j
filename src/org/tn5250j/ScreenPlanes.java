@@ -25,7 +25,7 @@
  */
 package org.tn5250j;
 
-public class ScreenPlanes {
+public class ScreenPlanes implements TN5250jConstants {
 
    Screen5250 scr;
    int screenSize;
@@ -39,11 +39,12 @@ public class ScreenPlanes {
 
    protected char[] screen;   // text plane
    protected int[] screenAttr;   // attribute plane
-   protected int[] screenGUI;   // gui plane
+   protected char[] screenGUI;   // gui plane
    protected boolean[] screenIsAttr;
-   protected int[] fieldExtended;
-   protected int[] screenField;
-   protected int[] screenColor;   // color plane
+   protected char[] fieldExtended;
+   protected char[] screenField;
+   protected char[] screenColor;   // color plane
+   protected char[] screenExtended;   // extended plane
    protected boolean[] screenIsChanged;
 
    protected char[] errorLine;
@@ -80,8 +81,10 @@ public class ScreenPlanes {
       screen = new char[screenSize];
       screenAttr = new int[screenSize];
       screenIsAttr = new boolean[screenSize];
-      screenGUI = new int[screenSize];
-      fieldExtended = new int[screenSize];
+      screenGUI = new char[screenSize];
+      screenColor = new char[screenSize];
+      screenExtended = new char[screenSize];
+      fieldExtended = new char[screenSize];
       screenIsChanged = new boolean[screenSize];
 
       initalizePlanes();
@@ -158,6 +161,7 @@ public class ScreenPlanes {
 
       screen[pos] = c;
       screenAttr[pos] = attr;
+      disperseAttribute(pos,attr);
       screenIsAttr[pos] = isAttr;
       screenGUI[pos] = initChar;
 
@@ -167,6 +171,7 @@ public class ScreenPlanes {
 
       screenAttr[pos] = attr;
       screenIsAttr[pos] = isAttr;
+      disperseAttribute(pos,attr);
       screenGUI[pos] = initChar;
 
    }
@@ -175,6 +180,7 @@ public class ScreenPlanes {
 
       screenAttr[pos] = attr;
       screenGUI[pos] = initChar;
+      disperseAttribute(pos,attr);
 
    }
 
@@ -204,7 +210,7 @@ public class ScreenPlanes {
 
       screenIsChanged[pos] = screenGUI[pos] == which ? false : true;
 
-      screenGUI[pos] = which;
+      screenGUI[pos] = (char)which;
 //      if (which == NO_GUI) {
 //        screenGUI[pos] = ;
 //      }
@@ -235,6 +241,518 @@ public class ScreenPlanes {
 
    protected final boolean isUseGui(int pos) {
       return screenGUI[pos] == NO_GUI ? false : true;
+   }
+
+   /**
+    * Return the data associated with the plane that is passed.
+    *
+    * @param from Position from which to start
+    * @param to Position to end
+    * @param plane From which plane to obtain the data
+    * @return Character array containing the data requested
+    */
+   protected synchronized char[] getPlaneData(int from, int to, int plane) {
+
+      int len = to - from;
+
+      char[] planeChars = new char[len + 1];
+
+      switch (plane) {
+         case PLANE_TEXT:
+            System.arraycopy(screen, from, planeChars, 0, len);
+            break;
+         case PLANE_COLOR:
+//            fillColorPlane(planeChars,from,len);
+            System.arraycopy(screenColor, from, planeChars, 0, len);
+            break;
+         case PLANE_EXTENDED:
+            System.arraycopy(screenExtended, from, planeChars, 0, len);
+//            fillExtendedPlane(planeChars,from,len);
+            break;
+         case PLANE_EXTENDED_GRAPHIC:
+            System.arraycopy(screenGUI, from, planeChars, 0, len);
+//            fillExtendedGraphicPlane(screenGUI,from,len);
+            break;
+         case PLANE_EXTENDED_FIELD:
+            System.arraycopy(screenField, from, planeChars, 0, len);
+//            fillExtendedFieldPlane(screenField,from,len);
+            break;
+         default:
+            System.arraycopy(screen, from, planeChars, 0, len);
+
+      }
+      return planeChars;
+
+   }
+
+   /**
+    * Converts a linear presentation space position to its corresponding row.
+    *
+    * @param pos The position to be converted
+    * @return The row which corresponds to the position given
+    * @throws OhioException
+    */
+//   public int convertPosToRow(int pos) throws OhioException {
+   public int convertPosToRow(int pos) {
+
+      return (pos / numCols) + 1;
+
+   }
+
+   /**
+    * Converts a linear presentation space position to its corresponding column.
+    *
+    * @param pos The position to be converted
+    * @return The column which corresponds to the position given
+    * @throws OhioException
+    */
+//   public int convertPosToColumn(int pos) throws OhioException {
+   public int convertPosToColumn(int pos) {
+
+      return (pos % numCols) + 1;
+
+   }
+
+   /**
+    *
+    * Converts a row and column coordinate to its corresponding linear position.
+    *
+    * @param row - The row of the coordinate
+    * @param col - The column of the coordinate
+    * @return The linear position which corresponds to the coordinate given.
+    * @throws OhioException
+    */
+//   public int convertRowColToPos(int row, int col) throws OhioException {
+   public int convertRowColToPos(int row, int col) {
+
+
+      return (row - 1) * numCols + col -1;
+
+   }
+
+   private void fillColorPlane(char[] plane,int start,int len) {
+
+      for (int x = 0; x < len; x++ ) {
+         if (screenIsAttr[start + x])
+            plane[x] = '\u0000';
+         else
+            plane[x] = getColorPlaneCode(screenAttr[start+x]);
+
+      }
+
+
+   }
+
+   private char getColorPlaneCode(int cpc) {
+
+
+      char c = '\u0000';
+
+//      switch (cpc) {
+//         case 32:  // green/normal
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_GREEN & 0xff);
+//            break;
+//
+//         case 33: // green/revers
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_GREEN << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//            break;
+//
+//         case 34: // white normal
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_WHITE & 0xff);
+//
+//            break;
+//
+//         case 35: // white/reverse
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_WHITE << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 36: // green/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_GREEN & 0xff);
+//            break;
+//
+//         case 37: // green/reverse/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_GREEN << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//            break;
+//
+//         case 38: // white/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_WHITE & 0xff);
+//            break;
+//
+//         case 40:
+//         case 42: // red/normal
+//         case 44:
+//         case 46: // red/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_RED & 0xff);
+//            break;
+//
+//         case 41:
+//         case 43: // red/reverse
+//         case 45: // red/reverse
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_RED << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 48:  // turquoise
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_CYAN & 0xff);
+//            break;
+//
+//         case 49:  // turquoise/reverse
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_CYAN << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 50:  // yellow
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_YELLOW & 0xff);
+//
+//            break;
+//
+//         case 51: // yellow/reverse
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_YELLOW << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 52:  // turquoise/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_CYAN & 0xff);
+//            break;
+//
+//         case 53:  // turquoise/underline/reverse
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_CYAN << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 54:  // yellow
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_YELLOW & 0xff);
+//
+//            break;
+//
+//         case 56: // pink
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_MAGENTA & 0xff);
+//
+//            break;
+//
+//         case 57: // pink/reverse
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_MAGENTA << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 58: // blue
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLUE & 0xff);
+//
+//            break;
+//
+//         case 59: // blue
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLUE << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 60: // pink/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_MAGENTA & 0xff);
+//
+//            break;
+//
+//         case 61: // pink/reverse/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_MAGENTA << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//            break;
+//
+//         case 62: // blue/underline
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLUE & 0xff);
+//            break;
+//
+//         default:
+//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
+//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
+//
+//      }
+
+      return c;
+   }
+
+   private void fillExtendedGraphicPlane(char[] plane,int start,int len) {
+
+      for (int x = 0; x < len; x++ ) {
+         plane[x] = (char)screenGUI[start + x];
+      }
+
+
+   }
+
+   private void fillExtendedFieldPlane(char[] plane,int start,int len) {
+
+      for (int x = 0; x < len; x++ ) {
+         plane[x] = (char)fieldExtended[start + x];
+      }
+
+
+   }
+
+   /**
+    * <p>
+    *  GetScreen retrieves the various planes associated with the presentation
+    *  space. The data is returned as a linear array of character values in the
+    *  array provided. The array is not terminated by a null character except
+    *  when data is retrieved from the text plane, in which case a single null
+    *  character is appended.
+    *  </p>
+    *  <p>
+    *  The application must supply a buffer for the returned data and the length
+    *  of the buffer. Data is returned starting from the beginning of the
+    *  presentation space and continuing until the buffer is full or the entire
+    *  plane has been copied. For text plane data, the buffer must include one
+    *  extra position for the terminating null character.
+    *  <p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param plane
+    * @return The number of characters copied to the buffer
+    * @throws OhioException
+    */
+   public synchronized int GetScreen(char buffer[], int bufferLength, int plane)
+//                                       throws OhioException {
+                                       {
+      return GetScreen(buffer,bufferLength,0,screenSize,plane);
+
+   }
+
+   /**
+    * <p>
+    *  GetScreen retrieves the various planes associated with the presentation
+    *  space. The data is returned as a linear array of character values in the
+    *  array provided. The array is not terminated by a null character except
+    *  when data is retrieved from the text plane, in which case a single null
+    *  character is appended.
+    * </p>
+    * <p>
+    * The application must supply a buffer for the returned data and the length
+    * of the buffer. Data is returned starting from the given position and
+    * continuing until the specified number of characters have been copied, the
+    * buffer is full or the entire plane has been copied. For text plane data,
+    * the buffer must include one extra position for the terminating null character.
+    * </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param from
+    * @param length
+    * @param plane
+    * @return The number of characters copied to the buffer
+    * @throws OhioException
+    */
+   public synchronized int GetScreen(char buffer[], int bufferLength, int from,
+                                    int length, int plane)
+//                                    throws OhioException {
+                                    {
+//      if(buffer == null)
+//         throw new OhioException(sessionVT.getSessionConfiguration(),
+//                     OhioScreen.class.getName(), "osohio.screen.ohio00300", 1);
+      if(buffer == null)
+         return 0;
+
+      int min = Math.min(Math.min(buffer.length, bufferLength), screenSize);
+      if ((from + min) > screenSize) {
+         min = screenSize - from;
+      }
+
+      char[] pd = getPlaneData(from,from + min,plane);
+      if(pd != null) {
+         System.arraycopy(pd, 0, buffer, 0, min);
+         return pd.length;
+      }
+
+      return 0;
+   }
+
+   /**
+    * <p>
+    *  GetScreen retrieves the various planes associated with the presentation
+    *  space. The data is returned as a linear array of character values in the
+    *  array provided. The array is not terminated by a null character except
+    *  when data is retrieved from the text plane, in which case a single null
+    *  character is appended.
+    *  </p>
+    *  <p>
+    *  The application must supply a buffer for the returned data and the length
+    *  of the buffer. Data is returned starting from the given coordinates and
+    *  continuing until the specified number of characters have been copied,
+    *  the buffer is full, or the entire plane has been copied. For text plane
+    *  data, the buffer must include one extra position for the terminating null
+    *  character.
+    *  </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param row
+    * @param col
+    * @param length
+    * @param plane
+    * @return The number of characters copied to the buffer.
+    * @throws OhioException
+    */
+   public synchronized int GetScreen(char buffer[], int bufferLength, int row,
+                                       int col, int length, int plane)
+//                                       throws OhioException {
+                                       {
+      // Call GetScreen function after converting row and column to
+      // a position.
+      return GetScreen(buffer,bufferLength, convertRowColToPos(row,col),
+                           length, plane);
+   }
+
+   /**
+    * <p>
+    *  GetScreenRect retrieves data from the various planes associated with the
+    *  presentation space. The data is returned as a linear array of character
+    *  values in the buffer provided.
+    *  </p>
+    *
+    * <p>
+    * The application supplies two positions that represent opposing corners of
+    * a rectangle within the presentation space. The starting and ending
+    * positions can have any spatial relationship to each other. The data
+    * returned starts from the row containing the upper-most point to the row
+    * containing the lower-most point, and from the left-most column to the
+    * right-most column.
+    * </p>
+    * <p>
+    * The specified buffer must be at least large enough to contain the number
+    * of characters in the rectangle. If the buffer is too small, no data is
+    * copied and zero is returned by the method. Otherwise, the method returns
+    * the number of characters copied.
+    * </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param startPos
+    * @param endPos
+    * @param plane
+    * @return The number of characters copied to the buffer
+    * @throws OhioException
+    */
+   protected int GetScreenRect(char buffer[], int bufferLength,
+                                             int startPos, int endPos, int plane)
+//                                             throws OhioException {
+                                             {
+      // We will use the row,col routine here because it is easier to use
+      // row colum than it is for position since I wrote the other first and
+      // am to lazy to implement it here
+      // Maybe it would be faster to do it the other way?
+      int startRow = convertPosToRow(startPos);
+      int startCol = convertPosToColumn(startPos);
+      int endRow = convertPosToRow(endPos);
+      int endCol = convertPosToColumn(endPos);
+      return GetScreenRect(buffer, bufferLength, startRow, startCol,
+                                 endRow, endCol, plane);
+
+   }
+
+   /**
+    * <p>
+    *  GetScreenRect retrieves data from the various planes associated with the
+    *  presentation space. The data is returned as a linear array of character
+    *  values in the buffer provided. The buffer is not terminated by a null
+    *  character.
+    * </p>
+    * <p>
+    * The application supplies two coordinates that represent opposing corners
+    * of a rectangle within the presentation space. The starting and ending
+    * coordinates can have any spatial relationship to each other. The data
+    * returned starts from the row containing the upper-most point to the row
+    * containing the lower-most point, and from the left-most column to the
+    * right-most column.
+    * </p>
+    * <p>
+    * The specified buffer must be at least large enough to contain the number
+    * of characters in the rectangle. If the buffer is too small, no data is
+    * copied and zero is returned by the method. Otherwise, the method returns
+    * the number of characters copied.
+    * </p>
+    *
+    * @param buffer
+    * @param bufferLength
+    * @param startRow
+    * @param startCol
+    * @param endRow
+    * @param endCol
+    * @param plane
+    * @return The number characters copied to the buffer
+    * @throws OhioException
+    */
+   protected int GetScreenRect(char buffer[], int bufferLength,
+                                             int startRow, int startCol,
+                                             int endRow, int endCol, int plane)
+//                                             throws OhioException {
+                                             {
+      // number of bytes obtained
+      int numBytes = 0;
+
+      // lets check the row range.  If they are reversed then we need to
+      // place them in the correct order.
+      if(startRow > endRow) {
+         int r = startRow;
+         startRow = endRow;
+         endRow = r;
+      }
+      // lets check the column range.  If they are reversed then we need to
+      // place them in the correct order.
+      if(startCol > endCol) {
+         int c = startCol;
+         startCol = endCol;
+         endCol = c;
+      }
+      int numCols = (endCol - startCol) + 1;
+      int numRows = (endRow - startRow) + 1;
+
+      // lets make sure it is within the bounds of the character array passed
+      //  if not the return as zero bytes where read as per documentation.
+      if(numCols * numRows <= bufferLength) {
+
+         // make sure it is one larger.  I guess for other languanges to
+         // reference like in C which is terminated by a zero byte at the end
+         // of strings.
+         char cb[] = new char[numCols + 1];
+         int charOffset = 0;
+         int bytes = 0;
+
+         // now let's loop through and get the screen information for
+         //  each row;
+         for(int row = startRow; row <= endRow;) {
+             if((bytes = GetScreen(cb, cb.length, row, startCol, numCols, plane)) != 0) {
+                 System.arraycopy(cb, 0, buffer, charOffset, numCols);
+             }
+             row++;
+             charOffset += numCols;
+             // make sure we count the number of bytes returned
+             numBytes += bytes;
+         }
+
+      }
+
+      return numBytes;
    }
 
 //      public final char getChar() {
@@ -309,200 +827,583 @@ public class ScreenPlanes {
 //         cy = (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading()));
 //      }
 //
-//      public final void setAttribute(int i) {
+
+   public final void disperseAttribute(int pos, int attr) {
+
+//      Screen5250 s = scr;
 //
-//         colSep = false;
-//         underLine = false;
-//         nonDisplay = false;
-//
-//         isChanged = attr == i ? false : true;
-//
-//         attr = i;
-//
-//         if(i == 0)
-//            return;
-//         switch(i) {
-//            case 32: // green normal
-//               fg = s.colorGreen;
-//               bg = s.colorBg;
-//               break;
-//
-//            case 33: // green/revers
-//               fg = s.colorBg;
-//               bg = s.colorGreen;
-//               break;
-//
-//            case 34: // white normal
-//               fg = s.colorWhite;
-//               bg = s.colorBg;
-//               break;
-//
-//            case 35: // white/reverse
-//               fg = s.colorBg;
-//               bg = s.colorWhite;
-//               break;
-//
-//            case 36: // green/underline
-//               fg = s.colorGreen;
-//               bg = s.colorBg;
-//               underLine = true;
-//               break;
-//
-//            case 37: // green/reverse/underline
-//               fg = s.colorBg;
-//               bg = s.colorGreen;
-//               underLine = true;
-//               break;
-//
-//            case 38: // white/underline
-//               fg = s.colorWhite;
-//               bg = s.colorBg;
-//               underLine = true;
-//               break;
-//
-//            case 39:
-//               nonDisplay = true;
-//               break;
-//
-//            case 40:
-//            case 42: // red/normal
-//               fg = s.colorRed;
-//               bg = s.colorBg;
-//               break;
-//
-//            case 41:
-//            case 43: // red/reverse
-//               fg = s.colorBg;
-//               bg = s.colorRed;
-//               break;
-//
-//            case 44:
-//            case 46: // red/underline
-//               fg = s.colorRed;
-//               bg = s.colorBg;
-//               underLine = true;
-//               break;
-//
-//            case 45: // red/reverse/underline
-//               fg = s.colorBg;
-//               bg = s.colorRed;
-//               underLine = true;
-//               break;
-//
-//            case 47:
-//               nonDisplay = true;
-//               break;
-//
-//            case 48:
-//               fg = s.colorTurq;
-//               bg = s.colorBg;
-//               colSep = true;
-//               break;
-//
-//            case 49:
-//               fg = s.colorBg;
-//               bg = s.colorTurq;
-//               colSep = true;
-//               break;
-//
-//            case 50:
-//               fg = s.colorYellow;
-//               bg = s.colorBg;
-//               colSep = true;
-//               break;
-//
-//            case 51:
-//               fg = s.colorBg;
-//               bg = s.colorYellow;
-//               colSep = true;
-//               break;
-//
-//            case 52:
-//               fg = s.colorTurq;
-//               bg = s.colorBg;
-//   //            colSep = true;
-//               underLine = true;
-//               break;
-//
-//            case 53:
-//               fg = s.colorBg;
-//               bg = s.colorTurq;
-//   //            colSep = true;
-//               underLine = true;
-//               break;
-//
-//            case 54:
-//               fg = s.colorYellow;
-//               bg = s.colorBg;
-//   //            colSep = true;
-//               underLine = true;
-//               break;
-//
-//            case 55:
-//               nonDisplay = true;
-//               break;
-//
-//            case 56: // pink
-//               fg = s.colorPink;
-//               bg = s.colorBg;
-//               break;
-//
-//            case 57: // pink/reverse
-//               fg = s.colorBg;
-//               bg = s.colorPink;
-//               break;
-//
-//            case 58: // blue/reverse
-//               fg = s.colorBlue;
-//               bg = s.colorBg;
-//               break;
-//
-//            case 59: // blue
-//               fg = s.colorBg;
-//               bg = s.colorBlue;
-//               break;
-//
-//            case 60: // pink/underline
-//               fg = s.colorPink;
-//               bg = s.colorBg;
-//               underLine = true;
-//               break;
-//
-//            case 61: // pink/reverse/underline
-//               fg = s.colorBg;
-//               bg = s.colorPink;
-//               underLine = true;
-//               break;
-//
-//            case 62: // blue/underline
-//               fg = s.colorBlue;
-//               bg = s.colorBg;
-//               underLine = true;
-//               break;
-//
-//            case 63:  // nondisplay
-//               nonDisplay = true;
-//               break;
-//            default:
-//               fg = s.colorYellow;
-//               break;
-//
-//         }
-//      }
-//
-//      public final boolean isChanged() {
-//         return isChanged;
-//      }
-//
-//      public final String toString() {
-//
-//         return "x >" + x + "< y >" + y + "< char >" + sChar[0]
-//                  + "< char hex >" + Integer.toHexString(sChar[0]) + "< attr >" + attr
-//                  + "< attribute >" + isAttributePlace() + "< isNonDisplayable >"
-//                  + nonDisplay + "< underline >" + underLine + "< colSep >" + colSep
-//                  + "< backGround >" + bg + "< foreGround >" + fg ;
-//
-//      }
+//      boolean colSep = false;
+//      boolean underLine = false;
+//      boolean nonDisplay = false;
+//      java.awt.Color fg;
+//      java.awt.Color bg;
+
+      char c = 0;
+      char cs = 0;
+      char ul = 0;
+      char nd = 0;
+
+      if(attr == 0)
+         return;
+
+      switch(attr) {
+         case 32: // green normal
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_GREEN & 0xff);
+            break;
+
+         case 33: // green/revers
+            c = (COLOR_BG_GREEN << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 34: // white normal
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_WHITE & 0xff);
+            break;
+
+         case 35: // white/reverse
+            c = (COLOR_BG_WHITE << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 36: // green/underline
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_GREEN & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 37: // green/reverse/underline
+            c = (COLOR_BG_GREEN << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 38: // white/underline
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_WHITE & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 39:
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+
+         case 40:
+         case 42: // red/normal
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_RED & 0xff);
+            break;
+
+         case 41:
+         case 43: // red/reverse
+            c = (COLOR_BG_RED << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 44:
+         case 46: // red/underline
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_RED & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 45: // red/reverse/underline
+            c = ( COLOR_BG_RED << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 47:
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+
+         case 48:
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_CYAN & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 49:
+            c = (COLOR_BG_CYAN << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 50:
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_YELLOW & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 51:
+            c = (COLOR_BG_YELLOW << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 52:
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_CYAN & 0xff);
+//            colSep = true;
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 53:
+            c = ( COLOR_BG_CYAN << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+//            colSep = true;
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 54:
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_YELLOW & 0xff);
+//            colSep = true;
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 55:
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+
+         case 56: // pink
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_MAGENTA & 0xff);
+            break;
+
+         case 57: // pink/reverse
+            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 58: // blue/reverse
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_BLUE & 0xff);
+            break;
+
+         case 59: // blue
+            c = ( COLOR_BG_BLUE << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 60: // pink/underline
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_MAGENTA & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 61: // pink/reverse/underline
+            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 62: // blue/underline
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_BLUE & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 63:  // nondisplay
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+         default:
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_YELLOW & 0xff);
+            break;
+
+      }
+
+      screenColor[pos] = c;
+      screenExtended[pos] = (char)(ul | cs | nd);
+   }
+   
+   protected boolean checkHotSpots () {
+   
+   	Screen5250 s = scr;
+   	int lenScreen = scr.getScreenLength();
+   	boolean hs = false;
+	   boolean retHS = false;
+	   StringBuffer hsMore = s.getHSMore();
+	   StringBuffer hsBottom = s.getHSBottom();
+	//   Rectangle2D mArea = new Rectangle2D.Float(0,0,0,0);
+	//   Rectangle2D mwArea = new Rectangle2D.Float(0,0,0,0);
+	//   ArrayList mArray = new ArrayList(10);
+	
+	      for (int x = 0; x < lenScreen; x++) {
+	
+	         hs =false;
+	         if (s.isInField(x,false))
+	            continue;
+	
+	         // First check for PF keys
+	         if (x > 0 && screen[x] == 'F') {
+	            if (screen[x + 1] >= '0' &&
+	                     screen[x + 1] <= '9' &&
+	                      screen[x - 1] <= ' ' &&
+	                      (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0) {
+	
+	               if (screen[x + 2] >= '0' &&
+	                     screen[x + 2] <= '9' &&
+	                      (screen[x + 3] == '=' ||
+	                       screen[x + 3] == '-' ||
+	                       screen[x + 3] == '/') )
+	                  hs = true;
+	               else
+	                  if (   screen[x + 2] == '=' ||
+	                         screen[x + 3] == '-' ||
+	                         screen[x + 3] == '/')
+	                     hs = true;
+	
+	               if (hs) {
+	                  screenGUI[x] = ScreenChar.BUTTON_LEFT;
+	
+	                  int ns = 0;
+	                  int row = x / numCols;
+	                  while (ns < 2 && ++x / numCols == row) {
+	                     if (screen[x] <= ' ')
+	                        ns++;
+	                     else
+	                        ns = 0;
+	                     if (ns <2)
+	                        screenGUI[x] = ScreenChar.BUTTON_MIDDLE;
+	
+	                  }
+	
+	                  // now lets go back and take out gui's that do not belong
+	                  while (screen[--x] <= ' ') {
+	                     screenGUI[x] = ScreenChar.NO_GUI;
+	                  }
+	                  screenGUI[x] = ScreenChar.BUTTON_RIGHT;
+	
+	               }
+	            }
+	         }
+	
+	         // now lets check for menus
+	         if (!hs && x > 0 && x < lenScreen - 2 &&
+	               screen[x] == '.' &&
+	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               (screenExtended[x] & EXTENDED_5250_UNDERLINE) == 0 &&
+	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+	            ) {
+	
+	            int os = 0;
+	            if ((os = isOption(screen,x,lenScreen,2,3,'.') )> 0) {
+	               hs = true;
+	
+	               int stop = x;
+	               int ns = 0;
+	               int row = stop / numCols;
+	
+	               while (++stop / numCols == row &&
+	                            (screen[stop] >= ' ' ||
+	                             screen[stop] == 0x0) ) {
+	
+	                  if (screen[stop] <= ' ') {
+	                     ns++;
+	                  }
+	                  else
+	                     ns = 0;
+	
+	                  if (screen[stop] == '.') {
+	                     int io = 0;
+	                     if ((io = isOption(screen,stop,lenScreen,2,3,'.')) > 0) {
+	
+	                        stop = io;
+	                        break;
+	                     }
+	                  }
+	
+	                  if (ns > 3)
+	                     break;
+	               }
+	
+	               screenGUI[++os] = ScreenChar.BUTTON_LEFT;
+	               s.setDirty(os);
+	
+	               while (++os < stop) {
+	                  screenGUI[os] = ScreenChar.BUTTON_MIDDLE;
+	                  s.setDirty(os);
+	               }
+	
+	               // now lets go back and take out gui's that do not belong
+	               while (screen[--stop] <= ' ') {
+	                  screenGUI[stop] = ScreenChar.NO_GUI;
+	                  s.setDirty(stop);
+	               }
+	               screenGUI[stop] = ScreenChar.BUTTON_RIGHT;
+	               s.setDirty(stop);
+	
+	            }
+	         }
+	
+	         // now lets check for options.
+	         if (!hs && x > 0 && x < lenScreen - 2 &&
+	               screen[x] == '=' &&
+	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               (screenExtended[x] & EXTENDED_5250_UNDERLINE) == 0 &&
+	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+	            ) {
+	
+	            int os = 0;
+	            if ((os = isOption(screen,x,lenScreen,2,2,'=') )> 0) {
+	               hs = true;
+	
+	               int stop = x;
+	               int ns = 0;
+	               int row = stop / numCols;
+	
+	               while (++stop / numCols == row &&
+	                            screen[stop] >= ' ') {
+	
+	                  if (screen[stop] == ' ') {
+	                     ns++;
+	                  }
+	                  else
+	                     ns = 0;
+	
+	                  if (screen[stop] == '=') {
+	                     int io = 0;
+	                     if ((io = isOption(screen,stop,lenScreen,2,2,'=')) > 0) {
+	
+	                        stop = io;
+	                        break;
+	                     }
+	                  }
+	
+	                  if (ns > 2)
+	                     break;
+	               }
+	
+	               screenGUI[++os] = ScreenChar.BUTTON_LEFT;
+	               s.setDirty(os);
+	
+	               while (++os < stop) {
+	                  screenGUI[os] = ScreenChar.BUTTON_MIDDLE;
+	                  s.setDirty(os);
+	
+	               }
+	
+	               // now lets go back and take out gui's that do not belong
+	               while (screen[--stop] <= ' ') {
+	                  screenGUI[stop] = ScreenChar.NO_GUI;
+	                  s.setDirty(stop);
+	
+	               }
+	               screenGUI[stop] = ScreenChar.BUTTON_RIGHT;
+	               s.setDirty(stop);
+	            }
+	         }
+	
+	         // now lets check for More... .
+	
+	         if (!hs && x > 2 && x < lenScreen - hsMore.length() &&
+	               screen[x] == hsMore.charAt(0) &&
+	               screen[x - 1] <= ' ' &&
+	               screen[x - 2] <= ' ' &&
+	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+	            ) {
+	
+	            boolean mFlag = true;
+	            int ms = hsMore.length();
+	            int mc = 0;
+	            while (++mc < ms) {
+	               if (screen[x+mc] != hsMore.charAt(mc)) {
+	                  mFlag = false;
+	                  break;
+	               }
+	
+	            }
+	
+	            if (mFlag) {
+	               hs = true;
+	
+	               screenGUI[x] = ScreenChar.BUTTON_LEFT_DN;
+	
+	               while (--ms > 0) {
+	                  screenGUI[++x] = ScreenChar.BUTTON_MIDDLE_DN;
+	
+	               }
+	               screenGUI[x] = ScreenChar.BUTTON_RIGHT_DN;
+	            }
+	         }
+	
+	         // now lets check for Bottom .
+	         if (!hs && x > 2 && x < lenScreen - hsBottom.length() &&
+	               screen[x] == hsBottom.charAt(0) &&
+	               screen[x - 1]  <= ' ' &&
+	               screen[x - 2] <= ' ' &&
+	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+	            ) {
+	
+	            boolean mFlag = true;
+	            int bs = hsBottom.length();
+	            int bc = 0;
+	            while (++bc < bs) {
+	               if (screen[x+bc] != hsBottom.charAt(bc)) {
+	                  mFlag = false;
+	                  break;
+	               }
+	
+	            }
+	
+	            if (mFlag) {
+	               hs = true;
+	
+	               screenGUI[x] = ScreenChar.BUTTON_LEFT_UP;
+	
+	               while (--bs > 0) {
+	                  screenGUI[++x] = ScreenChar.BUTTON_MIDDLE_UP;
+	
+	               }
+	               screenGUI[x] = ScreenChar.BUTTON_RIGHT_UP;
+	            }
+	         }
+	
+	         // now lets check for HTTP:// .
+	         if (!hs && x > 0 && x < lenScreen - 7 &&
+	               Character.toLowerCase(screen[x]) == 'h' &&
+	               screen[x - 1] <= ' ' &&
+	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+	            ) {
+	
+	            if (Character.toLowerCase(screen[x+1]) == 't' &&
+	                  Character.toLowerCase(screen[x+2]) == 't' &&
+	                  Character.toLowerCase(screen[x+3]) == 'p' &&
+	                  screen[x+4] == ':' &&
+	                  screen[x+5] == '/' &&
+	                  screen[x+6] == '/' ) {
+	
+	               hs = true;
+	
+	               screenGUI[x] = ScreenChar.BUTTON_LEFT_EB;
+	
+	               while (screen[++x] > ' ') {
+	                  screenGUI[x] = ScreenChar.BUTTON_MIDDLE_EB;
+	
+	               }
+	               screenGUI[--x] = ScreenChar.BUTTON_RIGHT_EB;
+	            }
+	         }
+	         if (!retHS && hs)
+	            retHS = true;
+	
+	      }
+	      
+	
+	//      int pos = 0;
+	//
+	//      mArea.setRect(0,0,0,0);
+	//      mwArea.setRect(0,0,0,0);
+	//      for (int k = 0; k < numCols;k++) {
+	////         System.out.println(k);
+	//         pos =k;
+	//         boolean gui = false;
+	//         for (int j=0; j < 19; j++) {
+	//            if (screen[pos].whichGui != ScreenChar.NO_GUI)
+	////                  System.out.print(screen[pos].getChar());
+	//
+	//                  mwArea.setRect(screen[pos].x,
+	//                                    screen[pos].y,
+	//                                    screen[pos].x,
+	//                                    screen[pos].y);
+	//
+	//                  if (mArea.getWidth() == 0) {
+	//                     mArea.setRect(mwArea);
+	//                  }
+	//                  else {
+	//                     double x1 = Math.min(mArea.getX(), mwArea.getX());
+	//                     double x2 = Math.max(mArea.getWidth(), mwArea.getWidth());
+	//                     double y1 = Math.min(mArea.getY(), mwArea.getY());
+	//                     double y2 = Math.max(mArea.getHeight(), mwArea.getHeight());
+	//                     mArea.setRect(x1, y1, x2, y2);
+	//
+	//                  }
+	//            pos += numCols;
+	//         }
+	//      }
+	//
+	//      if (mwArea.getWidth() != 0) {
+	//         System.out.println("Mennu area is " +
+	//                              s.getRow(s.getRowColFromPoint((int)mArea.getX(),(int)mArea.getY())) + "," +
+	//                              s.getCol(s.getRowColFromPoint((int)mArea.getX(),(int)mArea.getY())) + "," +
+	//                              s.getRow(s.getRowColFromPoint(
+	//                                       (int)mArea.getWidth(),
+	//                                       (int)mArea.getHeight())) + "," +
+	//                              s.getCol(s.getRowColFromPoint(
+	//                                       (int)mArea.getWidth(),
+	//                                       (int)mArea.getHeight()) ));
+	//      }
+	
+
+      return retHS;
+	}
+
+	private int isOption(char[] screen,
+	                              int x,
+	                              int lenScreen,
+	                              int numPref,
+	                              int numSuff,
+	                              char suff) {
+	   boolean hs =true;
+	   int sp = x;
+	   int os = 0;
+	   // check to the left for option
+	   while (--sp >=0 &&  screen[sp] <= ' ' ) {
+	
+	      if (x - sp > numPref || screen[sp] == suff||
+	               screen[sp] == '.' ||
+	               screen[sp] == '*') {
+	         hs =false;
+	//         System.out.println(" hs1 false " + screen[sp].getChar() + " " + sp);
+	         break;
+	      }
+	   }
+	
+	   // now lets check for how long the option is it has to be numPref or less
+	   os = sp;
+	   while (hs && --os > 0 && screen[os] > ' ' ) {
+	//      System.out.println(" hs2 length " + (sp-os) + " " + screen[os].getChar());
+	
+	      if (sp - os >= numPref || screen[os] == suff ||
+	               screen[os] == '.' ||
+	               screen[os] == '*') {
+	         hs = false;
+	//         System.out.println(" hs2 false at " + (sp-os) + " " + screen[os].getChar());
+	         break;
+	      }
+	   }
+	   if (sp - os > 1 && !Character.isDigit(screen[os+1])) {
+	      hs = false;
+	   }
+	
+	   sp = x;
+	
+	   if (Character.isDigit(screen[sp+1]))
+	      hs = false;
+	   // now lets make sure there are no more than numSuff spaces after option
+	   while (hs && (++sp < lenScreen && screen[sp] <= ' '
+	                  || screen[sp] == suff )) {
+	      if (sp - x >= numSuff || screen[sp] == suff ||
+	                  screen[sp] == '.' ||
+	               screen[sp] == '*') {
+	         hs =false;
+	//         System.out.println(" hs3 false at " + sp + " " + screen[sp].getChar());
+	         break;
+	      }
+	   }
+	   if (hs && !Character.isLetterOrDigit(screen[sp]))
+	      hs = false;
+	   if (hs) {
+	      return os;
+	   }
+	   return -1;
+	}
 
    public static final int NO_GUI = 0;
    public static final int UPPER_LEFT = 1;
