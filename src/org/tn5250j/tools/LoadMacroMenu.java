@@ -30,7 +30,6 @@ import java.util.*;
 import java.io.*;
 import java.awt.event.*;
 import org.tn5250j.*;
-import org.tn5250j.tools.LangTool;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
 
@@ -51,7 +50,7 @@ public final class LoadMacroMenu {
       menu.addSeparator();
 
 
-      String[] macrosList = macros.getMacroList();
+      String[] macrosList = Macronizer.getMacroList();
 
 
       for (int x = 0; x < macrosList.length; x++) {

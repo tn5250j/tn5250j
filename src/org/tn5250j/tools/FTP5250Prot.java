@@ -36,7 +36,6 @@ import java.awt.*;
 import org.tn5250j.*;
 import org.tn5250j.event.*;
 import org.tn5250j.tools.filters.*;
-import org.tn5250j.tools.LangTool;
 
 public class FTP5250Prot {
 
@@ -887,7 +886,7 @@ public class FTP5250Prot {
                         status.setCurrentRecord(c / recordLength);
                         fireStatusEvent();
                      }
-                     getThread.yield();
+                     Thread.yield();
          //            if ((c / recordLength) == 200)
          //               aborted = true;
                   }

@@ -24,7 +24,6 @@ package org.tn5250j.transport;
  */
 
 import java.net.Socket;
-import org.tn5250j.transport.SSLInterface;
 
 public class SocketConnector {
 
@@ -53,7 +52,7 @@ public class SocketConnector {
       //Using SSL Socket
       SSLInterface o = null;
       try {
-         Class c = this.getClass().forName("org.tn5250j.transport.SSL.SSLImplementation");
+         Class c = Class.forName("org.tn5250j.transport.SSL.SSLImplementation");
          o = (SSLInterface)c.newInstance();
          o.setSSLType(sslType);
          return o.createSSLSocket(destination,port);

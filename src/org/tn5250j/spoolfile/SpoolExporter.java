@@ -156,7 +156,7 @@ public class SpoolExporter extends JFrame {
               }
           });
 
-      rowSM.setSelectionMode(rowSM.SINGLE_SELECTION);
+      rowSM.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
       this.getContentPane().add(scrollPane, BorderLayout.CENTER);
 

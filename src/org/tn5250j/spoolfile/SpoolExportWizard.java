@@ -351,7 +351,7 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
       spooledFileNumber.setText(Integer.toString(splfile.getNumber()));
       number.setText(splfile.getJobNumber());
       systemName.setText(splfile.getSystem().getSystemName());
-      pages.setText(splfile.getIntegerAttribute(splfile.ATTR_PAGES).toString());
+      pages.setText(splfile.getIntegerAttribute(SpooledFile.ATTR_PAGES).toString());
 
       spoolData.add(labelSystem, null);
       spoolData.add(systemName, null);
