@@ -151,7 +151,7 @@ public class FileFieldDef {
          default:
 
             for (int f = startOffset-1;f < end; f++) {
-               sb.append(vt.getASCIIChar(cByte[f] & 0xff));
+               sb.append(vt.ebcdic2uni(cByte[f] & 0xff));
             }
 
       }

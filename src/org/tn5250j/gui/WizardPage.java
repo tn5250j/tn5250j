@@ -80,7 +80,7 @@ public class WizardPage extends JPanel {
       // set layout as a vertical column
       setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 //      setLayout(new BorderLayout());
-      Box pageBox = Box.createVerticalBox();
+//      Box pageBox = Box.createVerticalBox();
       contentPane = new JPanel();
 
       // add the pages contentpane to our wizard page

@@ -260,7 +260,7 @@ public class DataStreamProducer implements Runnable {
 
                h.setLength(0);
             }
-            char ac = codePage.getASCIIChar(abyte0[x]);
+            char ac = codePage.ebcdic2uni(abyte0[x]);
             if (ac < ' ')
                h.append('.');
             else

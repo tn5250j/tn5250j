@@ -29,8 +29,8 @@ import org.tn5250j.tools.*;
 
 public class OpenOfficeOutputFilter implements OutputFilterInterface {
 
-   private int row = 0;
-   StringBuffer sb = new StringBuffer();
+   private int row;
+   StringBuffer sb;
 
    ZipOutputStream fout = null;
 
@@ -42,6 +42,11 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
       fout = new ZipOutputStream(new FileOutputStream(fileName));
       fout.setMethod(ZipOutputStream.DEFLATED);
       writeManifestEntry();
+
+      // initialize work variables
+      row = 0;
+      sb = new StringBuffer();
+
    }
 
    private void writeManifestEntry() {

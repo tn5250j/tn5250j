@@ -368,13 +368,6 @@ public class Wizard extends JPanel implements Serializable {
       return page;
    }
 
-   /* EVAL_START
-   public void addNotify() {
-      super.addNotify();
-      JCEval.setEval(this);
-   }
-    EVAL_END */
-
    /**
     * A listener on the "next" button that is implemented as an anonymous
     * inner class that simply invokes the containing classes "next()"

@@ -82,8 +82,8 @@ public class My5250App extends JApplet implements TN5250jConstants {
 
       manager = new SessionManager();
       Session s = manager.openSession(sesProps,"","Test Applet");
-      this.getContentPane().add(s);
       s.grabFocus();
+      this.getContentPane().add(s);
       s.connect();
 
    }

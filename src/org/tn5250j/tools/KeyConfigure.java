@@ -249,7 +249,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             Set set = new TreeSet();
             for (int x =0;x < 256; x++) {
                char c = codePage.ebcdic2uni(x);
-               char ac = codePage.getASCIIChar(x);
+               char ac = codePage.ebcdic2uni(x);
                if (!Character.isISOControl(c)) {
                   sb.setLength(0);
                   if (Integer.toHexString(ac).length() == 1){
@@ -732,11 +732,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
         * afterward won't show up in the text area.)
         */
        protected void displayInfo(KeyEvent e, String s){
-        String charString, keyCodeString, modString, tmpString,isString;
+
+        String charString, keyCodeString, modString, tmpString,isString,locString;
 
         char c = e.getKeyChar();
         int keyCode = e.getKeyCode();
         int modifiers = e.getModifiers();
+        int location = e.getKeyLocation();
 
         if (Character.isISOControl(c)) {
             charString = "key character = "
@@ -776,6 +778,25 @@ public class KeyConfigure extends JDialog implements ActionListener,
             modString += " (no modifiers)";
         }
 
+        switch (location) {
+            case KeyEvent.KEY_LOCATION_LEFT:
+               locString = "location = " + location + " (LEFT)";
+               break;
+            case KeyEvent.KEY_LOCATION_NUMPAD:
+               locString = "location = " + location + " (NUM_PAD)";
+               break;
+            case KeyEvent.KEY_LOCATION_RIGHT:
+               locString = "location = " + location + " (RIGHT)";
+               break;
+            case KeyEvent.KEY_LOCATION_STANDARD:
+               locString = "location = " + location + " (STANDARD)";
+               break;
+            default:
+               locString = "location = " + location + " (UNKNOWN)";
+               break;
+
+        }
+
         isString = "isKeys = isActionKey (" + e.isActionKey() + ")" +
                          " isAltDown (" + e.isAltDown() + ")" +
                          " isAltGraphDown (" + e.isAltGraphDown() + ")" +
@@ -790,13 +811,14 @@ public class KeyConfigure extends JDialog implements ActionListener,
                            + "    " + charString + newline
                            + "    " + keyCodeString + newline
                            + "    " + modString + newline
+                           + "    " + locString + newline
                            + "    " + isString + newline);
 
        }
 
       private void processVTKeyPressed(KeyEvent e){
 
-//         displayInfo(e,"Pressed ");
+         displayInfo(e,"Pressed ");
          int keyCode = e.getKeyCode();
 
          if (isLinux && keyCode == e.VK_ALT_GRAPH) {
@@ -837,7 +859,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       private void processVTKeyTyped(KeyEvent e){
 
-//          displayInfo(e,"Typed ");
+          displayInfo(e,"Typed ");
          int keycode = e.getKeyCode();
          if (e.isAltDown() ||
             e.isShiftDown() ||
@@ -854,7 +876,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
       }
 
       private void processVTKeyReleased(KeyEvent e){
-//            displayInfo(e,"Released ");
+            displayInfo(e,"Released ");
          if (isLinux && e.getKeyCode() == e.VK_ALT_GRAPH) {
 
             isAltGr = false;

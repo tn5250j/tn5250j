@@ -36,6 +36,7 @@ public class KeyStroker {
    private boolean isAltGrDown;
    private int hashCode;
 
+
    public KeyStroker(int keyCode,
                            boolean isShiftDown,
                            boolean isControlDown,

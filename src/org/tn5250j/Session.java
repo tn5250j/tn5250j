@@ -84,6 +84,10 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
    }
 
+   public String getHostName() {
+      return vt.getHostName();
+   }
+
    public Screen5250 getScreen() {
 
       return screen;

@@ -1,7 +1,5 @@
-package org.tn5250j.tools;
-
 /**
- * Title: tn5250J
+ * Title: Macronizer.java
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -25,9 +23,16 @@ package org.tn5250j.tools;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.tools;
+
+import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
 import java.io.*;
+import javax.swing.*;
+
 import org.tn5250j.Session;
 import org.tn5250j.scripting.InterpreterDriverManager;
 
@@ -150,6 +155,63 @@ public class Macronizer {
       macros.put("macro" + x + "." + name,keyStrokes);
       macrosExist = true;
       saveMacros();
+
+   }
+
+   public static void showRunScriptDialog(Session session) {
+
+      JPanel rsp = new JPanel();
+      rsp.setLayout(new BorderLayout());
+      JLabel jl = new JLabel("Enter script to run");
+      final JTextField rst = new JTextField();
+      rsp.add(jl,BorderLayout.NORTH);
+      rsp.add(rst,BorderLayout.CENTER);
+      Object[]      message = new Object[1];
+      message[0] = rsp;
+      String[] options = {"Run","Cancel"};
+
+      final JOptionPane pane = new JOptionPane(
+             message,                           // the dialog message array
+             JOptionPane.QUESTION_MESSAGE,      // message type
+             JOptionPane.DEFAULT_OPTION,        // option type
+             null,                              // optional icon, use null to use the default icon
+             options,                           // options string array, will be made into buttons//
+             options[0]);                       // option that should be made into a default button
+
+
+      // create a dialog wrapping the pane
+      final JDialog dialog = pane.createDialog(session, // parent frame
+                        "Run Script"  // dialog title
+                        );
+
+      // add the listener that will set the focus to
+      // the desired option
+      dialog.addWindowListener( new WindowAdapter() {
+         public void windowOpened( WindowEvent e) {
+            super.windowOpened( e );
+
+            // now we're setting the focus to the desired component
+            // it's not the best solution as it depends on internals
+            // of the OptionPane class, but you can use it temporarily
+            // until the bug gets fixed
+            // also you might want to iterate here thru the set of
+            // the buttons and pick one to call requestFocus() for it
+
+            rst.requestFocus();
+         }
+      });
+      dialog.show();
+
+      // now we can process the value selected
+      String value = (String)pane.getValue();
+
+      if (value.equals(options[0])) {
+         // send option along with system request
+         if (rst.getText().length() > 0) {
+            invoke(rst.getText(),session);
+         }
+      }
+
 
    }
 

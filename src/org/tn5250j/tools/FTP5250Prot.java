@@ -665,7 +665,7 @@ public class FTP5250Prot {
                   //   we have to offset the buffer by 0 which makes it 164 - 1
                   //   or 163
                   for (int f = 0;f < 10; f++) {
-                     sb.append(vt.getASCIIChar(abyte0[163 + f] & 0xff));
+                     sb.append(vt.ebcdic2uni(abyte0[163 + f] & 0xff));
                   }
 
                   printFTPInfo(sb + " " + packed2int(abyte0,345,5));

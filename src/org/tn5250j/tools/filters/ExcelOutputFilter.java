@@ -31,15 +31,23 @@ public class ExcelOutputFilter implements OutputFilterInterface {
    DataOutputStream fout = null;
 //   BufferedOutputStream fout;
    int row = 0;
-   int rowRecord = 0;
-   StringBuffer sb = new StringBuffer();
+   StringBuffer sb;
    Vector formats;
 
    // create instance of file for output
    public void createFileInstance(String fileName) throws
                               FileNotFoundException {
-      fout = new DataOutputStream(new FileOutputStream(fileName));
+      try {
+         fout = new DataOutputStream(new FileOutputStream(fileName));
+      }
+      catch (Exception e) {
+         System.out.println("create file " + e.getMessage());
+      }
 
+      // initialize work variables
+      row = 0;
+      sb = new StringBuffer();
+      formats = null;
    }
 
    /**
@@ -266,6 +274,9 @@ public class ExcelOutputFilter implements OutputFilterInterface {
       }
       catch (IOException ioe) {
 
+//      catch (Exception e) {
+         System.out.println("header " + ioe.getMessage());
+//      }
 //         printFTPInfo(" error writing header " + ioe.getMessage());
       }
    }

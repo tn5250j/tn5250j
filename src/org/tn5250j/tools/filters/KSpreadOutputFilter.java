@@ -27,8 +27,8 @@ import org.tn5250j.tools.*;
 
 public class KSpreadOutputFilter implements OutputFilterInterface {
 
-   private int row = 0;
-   StringBuffer sb = new StringBuffer();
+   private int row;
+   StringBuffer sb;
 
    PrintStream fout = null;
 
@@ -36,6 +36,10 @@ public class KSpreadOutputFilter implements OutputFilterInterface {
    public void createFileInstance(String fileName) throws
                               FileNotFoundException {
       fout = new PrintStream(new FileOutputStream(fileName));
+
+      // initialize work variables
+      row = 0;
+      sb = new StringBuffer();
    }
 
    /**
