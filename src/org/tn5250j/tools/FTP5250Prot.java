@@ -727,26 +727,6 @@ public class FTP5250Prot {
 
                   members.add(new MemberInfo(sb.toString(),packed2int(abyte0,345,5)));
 
-//                  if (member == null && fileSize == 0) {
-//                     // get current number of records
-//                     fileSize = packed2int(abyte0,345,5);
-//                     status.setFileLength(fileSize);
-//                     member = sb.toString();
-//                     break;
-//                  }
-//                  else {
-//                     if (sb.toString().equalsIgnoreCase(member)) {
-//                        // get current number of records
-//                        fileSize = packed2int(abyte0,345,5);
-//                        status.setFileLength(fileSize);
-//
-//                     }
-//                     else {
-//                        fileSize = packed2int(abyte0,345,5);
-//                        status.setFileLength(fileSize);
-//                     }
-//                  }
-
                   len =0;
 
                }
