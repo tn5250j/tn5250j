@@ -50,6 +50,7 @@ import org.tn5250j.Session5250;
 import org.tn5250j.event.ScreenListener;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.framework.common.*;
 
 
 public class ProtocolBean implements TN5250jConstants {
@@ -75,23 +76,14 @@ public class ProtocolBean implements TN5250jConstants {
       session = new Session5250(sessionProperties, null, sessionName,
          new SessionConfig(configurationResource, sessionName));
       this.sessionProperties = sessionProperties;
-//      session.getScreen().addScreenListener(this);
+      SessionManager.instance().addSession(session);
   }
 
   public Session5250 getSession() {
-     
+
      return session;
-     
+
   }
-//   public void onScreenSizeChanged(int sr, int sc) {
-//
-//   }
-//
-//   public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
-//
-//      String s = new String(session.getScreen().getScreenAsChars());
-//      System.out.println(s);
-//   }
 
   // ===========================================================================
   //               E m u l a t o r   I m p l e m e n t a t i o n
