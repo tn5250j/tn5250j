@@ -33,7 +33,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
 import org.tn5250j.event.*;
@@ -54,7 +54,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    private TN5250jSplashScreen splash;
    private int step;
    private static String jarClassPaths;	
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
    
    My5250 () {
 
@@ -100,6 +100,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          }
          catch(Exception e) {
             try {
+               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (ClassNotFoundException e1) {
                e1.printStackTrace();

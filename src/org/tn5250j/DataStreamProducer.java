@@ -3,7 +3,7 @@ package org.tn5250j;
 import java.io.*;
 import java.net.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.encoding.CodePage;
 
 public class DataStreamProducer implements Runnable {
@@ -20,7 +20,7 @@ public class DataStreamProducer implements Runnable {
    private boolean dumpBytes = false;
    private CodePage codePage;
    
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
    
    public DataStreamProducer(tnvt vt, BufferedInputStream in, DataStreamQueue queue, byte[] init) {
       bin = in;

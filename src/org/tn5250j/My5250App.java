@@ -4,14 +4,14 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.LangTool;
 
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
    private SessionManager manager;
 	
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
    
    /**Get a parameter value*/
    public String getParameter(String key, String def) {

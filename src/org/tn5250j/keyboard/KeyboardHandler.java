@@ -31,6 +31,7 @@ import org.tn5250j.Session;
 import org.tn5250j.Screen5250;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.tnvt;
+import org.tn5250j.tools.system.OperatingSystem;
 import javax.swing.*;
 
 /**
@@ -58,11 +59,13 @@ public abstract class KeyboardHandler extends KeyAdapter implements
       this.session = session;
       this.screen = session.getScreen();
 
-      String os = System.getProperty("os.name");
-      if (os.toLowerCase().indexOf("linux") != -1) {
-         System.out.println("using os " + os);
-         isLinux = true;
-      }
+//      String os = System.getProperty("os.name");
+//      if (os.toLowerCase().indexOf("linux") != -1) {
+//         System.out.println("using os " + os);
+//         isLinux = true;
+//      }
+
+      isLinux = OperatingSystem.isUnix();
 
       keyMap = new KeyMapper();
       KeyMapper.init();
@@ -128,7 +131,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements
    protected tnvt getVT() {
       return session.getVT();
    }
-   
+
    /**
     *  Remove the references to all listeners before closing
     *

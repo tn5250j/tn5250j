@@ -33,7 +33,7 @@ import java.util.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
 
@@ -166,7 +166,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    private boolean drawing;
    private javax.swing.Timer blinker;
 
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
    public Screen5250(Gui5250 gui, SessionConfig config) {
 
@@ -4684,33 +4684,59 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
      * the screen buffer row column offsets so that the characters that
      * make of the screen are displayed correctly
      *
+     *  Changes made by Luc - LDC
+     *  This routine was split into two separate functions.  setBounds and
+     *  repaintScreen.  This allowed a public function called updateScreen
+     *  to be introduced.
+     *
      * @param width
      * @param height
+     *
+     *
      */
 
    public final void setBounds(int width, int height) {
 
       setCursorActive(false);
       resizeScreenArea(width,height);
-      dirty.setBounds(tArea.getBounds());
-      if (gui.getGraphics() != null) {
+      repaintScreen();
+      setCursorActive(true);
+   }
+
+   /**
+    * This method does a complete refresh of the screen.
+    */
+  public final void updateScreen()
+  {
+    repaintScreen();
+    setCursorActive(false);
+    setCursorActive(true);
+  }
+
+  /**
+   * Utility method to share the repaint behaviour between setBounds() and
+   * updateScreen.
+   */
+  private void repaintScreen()
+  {
+    drawing = true;
+    dirty.setBounds(tArea.getBounds());
+    if (gui.getGraphics() != null)
+    {
          // do not forget to null out gg2d before update or else there will
          //    be a very hard to trace screen resize problem
          gg2d = null;
-         // kjp make sure we redraw the screen;
-         drawing = true;
          updateDirty();
-      }
+    }
 
-      // restore statuses that were on the screen before resize
-      if (isStatusErrorCode())
-         setStatus(STATUS_ERROR_CODE,STATUS_VALUE_ON,statusString);
-      if (isXSystem())
-         setStatus(STATUS_SYSTEM,STATUS_VALUE_ON,statusString);
-      if (isMessageWait())
-         setMessageLightOn();
-      setCursorActive(true);
-   }
+    // restore statuses that were on the screen before resize
+    if (isStatusErrorCode())
+       setStatus(STATUS_ERROR_CODE,STATUS_VALUE_ON,statusString);
+    if (isXSystem())
+       setStatus(STATUS_SYSTEM,STATUS_VALUE_ON,statusString);
+    if (isMessageWait())
+       setMessageLightOn();
+  }
 
    /**
      *

@@ -31,7 +31,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.transport.SocketConnector;
@@ -93,7 +93,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private String sslType;
    WTDSFParser sfParser;
 
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
    tnvt (Screen5250 screen52) {
 

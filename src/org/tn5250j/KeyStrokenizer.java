@@ -1,6 +1,6 @@
 package org.tn5250j;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 
 /*
  * @(#)KeyStrokenizer.java
@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 public class KeyStrokenizer {
    
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
    
    public KeyStrokenizer() {
 

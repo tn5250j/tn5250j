@@ -30,14 +30,14 @@ import java.io.*;
 import javax.swing.*;
 import java.awt.Frame;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.Screen5250;
 import org.tn5250j.gui.TN5250jFileChooser;
 
 public class SendScreenToFile {
 
    Screen5250 screen;
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
    //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
    Frame  parent;

@@ -32,7 +32,7 @@ import java.util.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
@@ -52,7 +52,7 @@ public class Gui5250Frame extends GUIViewInterface implements
    private boolean embedded = false;
    private boolean hideTabBar = false;
    public static int count = 0;
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
    
    //Construct the frame
    public Gui5250Frame(My5250 m) {

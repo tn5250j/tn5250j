@@ -30,7 +30,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
@@ -56,7 +56,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
    private JDesktopPane desktop;
    static int openFrameCount = 0;
    private Vector myFrameList;
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
    
    //Construct the frame
    public Gui5250MDIFrame(My5250 m) {

@@ -115,7 +115,16 @@ public class OperatingSystem
     */
    public static final boolean isUnix()
    {
-      return os == UNIX || os == MAC_OS_X;
+      return os == UNIX || os == MAC_OS_X || os == LINUX;
+   } //}}}
+
+   //{{{ isLinux() method
+   /**
+    * Returns if we're running Linux (this does not includ Unixes).
+    */
+   public static final boolean isLinux()
+   {
+      return os == LINUX;
    } //}}}
 
    //{{{ isMacOS() method
@@ -144,7 +153,7 @@ public class OperatingSystem
    {
       return java14;
    }
-   
+
    /**
     * From JavaWorld Tip 66 - http://www.javaworld.com/javaworld/javatips/jw-javatip66.html
     * Display a file in the system browser.  If you want to display a
@@ -194,7 +203,7 @@ public class OperatingSystem
            System.err.println("Caught: " + x);
        }
    }
-   
+
  //}}}
 
    //{{{ Private members
@@ -207,13 +216,14 @@ public class OperatingSystem
     // The default browser under unix.
     private static final String UNIX_PATH = "netscape";
     // The flag to display a url.
-    private static final String UNIX_FLAG = "-remote openURL";   
+    private static final String UNIX_FLAG = "-remote openURL";
    private static final int UNIX = 0x31337;
    private static final int WINDOWS_9x = 0x640;
    private static final int WINDOWS_NT = 0x666;
    private static final int OS2 = 0xDEAD;
    private static final int MAC_OS_X = 0xABC;
    private static final int UNKNOWN = 0xBAD;
+   private static final int LINUX = 0x1337;
 
    private static int os;
    private static boolean java14;
@@ -244,6 +254,10 @@ public class OperatingSystem
          else if(File.separatorChar == '/')
          {
             os = UNIX;
+         }
+         else if(osName.toLowerCase().indexOf("linux") != -1)
+         {
+            os = LINUX;
          }
          else
          {

@@ -34,7 +34,7 @@ import javax.swing.*;
 import java.util.*;
 
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
@@ -76,8 +76,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
    protected KeyboardHandler keyHandler;
    protected SessionScrollerInterface scroller;
 
-   private Logger log = Logger.getLogger(this.getClass());
-   private Logger graphics = Logger.getLogger("GFX");
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+   private TN5250jLogger graphics = TN5250jLogFactory.getLogger("GFX");
    public Gui5250 () {
 
    }

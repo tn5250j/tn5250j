@@ -34,7 +34,7 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.font.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 
 public class GuiGraphicBuffer {
 
@@ -67,7 +67,7 @@ public class GuiGraphicBuffer {
    private boolean resized = false;
    private boolean antialiased;
    
-   private Logger log = Logger.getLogger("GFX");
+   private TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
    
    public GuiGraphicBuffer () {
 

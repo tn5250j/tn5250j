@@ -20,7 +20,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.interfaces.SessionsInterface;
 
 import java.util.*;
@@ -37,7 +37,7 @@ public class Sessions implements SessionsInterface,ActionListener {
    private int count = 0;
    private Timer heartBeater;
    
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
    
    public Sessions() {
 

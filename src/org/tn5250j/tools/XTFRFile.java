@@ -192,7 +192,8 @@ public class XTFRFile
 
 		if (monitor.isCanceled()) {
 			ftpProtocol.setAborted();
-		} else {
+		}
+      else {
 			final int prog = statusevent.getCurrentRecord();
 			final int len = statusevent.getFileLength();
 			Runnable udp = new Runnable() {
@@ -207,7 +208,8 @@ public class XTFRFile
 						if (emailIt)
 							emailMe();
 
-					} else {
+					}
+               else {
 						progressBar.setValue(prog);
 						note.setText(getProgressNote(prog, len));
 					}
@@ -223,7 +225,8 @@ public class XTFRFile
 
 		try {
 			return MessageFormat.format(messageProgress, args);
-		} catch (Exception exc) {
+		}
+      catch (Exception exc) {
 			System.out.println(" getProgressNote: " + exc.getMessage());
 			return "Record " + prog + " of " + len;
 		}

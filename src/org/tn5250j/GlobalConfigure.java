@@ -30,7 +30,7 @@ import java.util.Hashtable;
 import java.io.*;
 import javax.swing.*;
 
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.interfaces.ConfigureFactory;
 
 /**
@@ -61,7 +61,7 @@ public class GlobalConfigure extends ConfigureFactory {
 //   static final public String KEYMAP = "keymap";
 
    static final private String settingsFile = "tn5250jstartup.cfg";
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
    /**
     * The constructor is made protected to allow overriding.

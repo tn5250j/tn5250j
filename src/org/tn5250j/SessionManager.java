@@ -20,7 +20,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
-import org.apache.log4j.Logger;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.interfaces.SessionManagerInterface;
 
 import java.util.*;
@@ -34,7 +34,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
    static private Sessions sessions;
    static private Vector configs;
    
-   private Logger log = Logger.getLogger(this.getClass());
+   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
    /**
     * A handle to the unique SessionManager class
     */
