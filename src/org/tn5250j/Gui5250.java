@@ -38,6 +38,8 @@ import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
+import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.scripting.InterpreterDriverManager;
 
@@ -46,7 +48,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
                                                       TN5250jConstants,
                                                       PropertyChangeListener ,
                                                       RubberBandCanvasIF,
-                                                      KeyChangeListener {
+                                                      KeyChangeListener,
+                                                      SessionListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
    Properties defaultProps = null;
@@ -72,6 +75,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private SessionJumpEvent jumpEvent;
    private boolean macroRunning;
    private boolean stopMacro;
+   private boolean doubleClick;
 
    public Gui5250 () {
 
@@ -151,15 +155,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          public void mouseClicked(MouseEvent e) {
 
-//               if (e.getClickCount() == 2) {
-//
-//                  screen.sendKeys("[enter]");
-//               }
-//               else {
+               if (e.getClickCount() == 2 & doubleClick) {
+
+                  screen.sendKeys("[enter]");
+               }
+               else {
                   screen.moveCursor(e);
                   repaint();
                   getFocusForMe();
-//               }
+               }
          }
 
       });
@@ -214,6 +218,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
       setRubberBand(new TNRubberBand(this));
       this.requestFocus();
       jumpEvent = new SessionJumpEvent(this);
+
+
+      // check if double click sends enter
+      if (getStringProperty("doubleClick").equals("Yes"))
+         doubleClick = true;
+      else
+         doubleClick = false;
 
    }
 
@@ -993,11 +1004,31 @@ public class Gui5250 extends JPanel implements ComponentListener,
          this.validate();
       }
 
+      if (pn.equals("doubleClick")) {
+         if (((String)pce.getNewValue()).equals("Yes")) {
+            doubleClick = true;
+         }
+         else {
+            doubleClick = false;
+         }
+      }
+
       resizeMe();
       repaint();
 
    }
 
+   public void onSessionChanged(SessionChangeEvent changeEvent) {
+
+      switch (changeEvent.getState()) {
+         case STATE_CONNECTED:
+
+            String mac = getStringProperty("connectMacro");
+            if (mac.length() > 0)
+               executeMeMacro(mac);
+            break;
+      }
+   }
 
    protected void setVT(tnvt v) {
 

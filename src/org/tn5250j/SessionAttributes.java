@@ -61,11 +61,14 @@ public class SessionAttributes extends JDialog {
    JRadioButton chHorz;
    JRadioButton chVert;
    JRadioButton chCross;
+   JCheckBox rulerFixed;
    JCheckBox guiCheck;
    JCheckBox guiShowUnderline;
    JCheckBox hsCheck;
    JCheckBox kpCheck;
    JCheckBox dceCheck;
+   JCheckBox signoffCheck;
+   JTextField connectMacro;
    JTextField hsMore;
    JTextField hsBottom;
    Properties schemaProps;
@@ -298,6 +301,60 @@ public class SessionAttributes extends JDialog {
       csp.add(csDot);
       csp.add(csShortLine);
 
+
+      // define show attributs panel
+      JPanel sap = new JPanel();
+      sap.setBorder(
+         BorderFactory.createTitledBorder(LangTool.getString("sa.showAttr")));
+
+      saNormal = new JRadioButton(LangTool.getString("sa.showNormal"));
+      saNormal.setActionCommand("Normal");
+      JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
+      saHex.setActionCommand("Hex");
+
+      // Group the radio buttons.
+      ButtonGroup saGroup = new ButtonGroup();
+      saGroup.add(saNormal);
+      saGroup.add(saHex);
+
+      if (getStringProperty("showAttr").equals("Hex"))
+         saHex.setSelected(true);
+      else
+         saNormal.setSelected(true);
+
+      sap.add(saNormal);
+      sap.add(saHex);
+
+      // define gui panel
+      JPanel cgp = new JPanel();
+      cgp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.cgp")));
+      cgp.setLayout(new AlignLayout(1,5,5));
+//      cgp.setLayout(new BoxLayout(cgp,BoxLayout.Y_AXIS));
+
+      guiCheck = new JCheckBox(LangTool.getString("sa.guiCheck"));
+      guiShowUnderline = new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
+
+      if (getStringProperty("guiInterface").equals("Yes"))
+         guiCheck.setSelected(true);
+
+      // since this is a new property added then it might not exist in existing
+      //    profiles and it should be defaulted to yes.
+      String under = getStringProperty("guiShowUnderline");
+      if (under.equals("Yes") || under.length() == 0)
+         guiShowUnderline.setSelected(true);
+
+      cgp.add(guiCheck);
+      cgp.add(guiShowUnderline);
+
+      display.add(csp);
+      display.add(sap);
+      display.add(cgp);
+
+      // define cursor panel
+      final JPanel cuPanel = new JPanel();
+      cuPanel.setLayout(new BoxLayout(cuPanel,BoxLayout.Y_AXIS));
+
+
       // define cursor size panel
       JPanel crp = new JPanel();
       crp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.crsSize")));
@@ -383,60 +440,50 @@ public class SessionAttributes extends JDialog {
       chp.add(chCross);
 
       // define double click as enter
+      JPanel rulerFPanel = new JPanel();
+      rulerFPanel.setBorder(BorderFactory.createTitledBorder(""));
+
+      rulerFixed = new JCheckBox(LangTool.getString("sa.rulerFixed"));
+
+      rulerFPanel.add(rulerFixed);
+
+      cuPanel.add(crp);
+      cuPanel.add(chp);
+      cuPanel.add(rulerFPanel);
+
+
+      // define onConnect panel
+      final JPanel onConnect = new JPanel();
+      onConnect.setLayout(new BoxLayout(onConnect,BoxLayout.Y_AXIS));
+
+      // define onConnect macro to run
+      JPanel ocMacrop = new JPanel();
+      ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
+
+      connectMacro = new JTextField();
+      connectMacro.setColumns(30);
+
+      // check if double click sends enter
+      connectMacro.setText(getStringProperty("connectMacro"));
+
+      ocMacrop.add(connectMacro);
+      onConnect.add(ocMacrop);
+
+      // define mouse panel
+      final JPanel mouse = new JPanel();
+      mouse.setLayout(new BoxLayout(mouse,BoxLayout.Y_AXIS));
+
+      // define double click as enter
       JPanel dcep = new JPanel();
-      dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.crossHair")));
+      dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.doubleClick")));
 
-      dceCheck = new JCheckBox();
+      dceCheck = new JCheckBox(LangTool.getString("sa.sendEnter"));
 
-      // define show attributs panel
-      JPanel sap = new JPanel();
-      sap.setBorder(
-         BorderFactory.createTitledBorder(LangTool.getString("sa.showAttr")));
+      // check if double click sends enter
+      dceCheck.setSelected(getStringProperty("doubleClick").equals("Yes"));
 
-      saNormal = new JRadioButton(LangTool.getString("sa.showNormal"));
-      saNormal.setActionCommand("Normal");
-      JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
-      saHex.setActionCommand("Hex");
-
-      // Group the radio buttons.
-      ButtonGroup saGroup = new ButtonGroup();
-      saGroup.add(saNormal);
-      saGroup.add(saHex);
-
-      if (getStringProperty("showAttr").equals("Hex"))
-         saHex.setSelected(true);
-      else
-         saNormal.setSelected(true);
-
-      sap.add(saNormal);
-      sap.add(saHex);
-
-      // define gui panel
-      JPanel cgp = new JPanel();
-      cgp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.cgp")));
-      cgp.setLayout(new AlignLayout(1,5,5));
-//      cgp.setLayout(new BoxLayout(cgp,BoxLayout.Y_AXIS));
-
-      guiCheck = new JCheckBox(LangTool.getString("sa.guiCheck"));
-      guiShowUnderline = new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
-
-      if (getStringProperty("guiInterface").equals("Yes"))
-         guiCheck.setSelected(true);
-
-      // since this is a new property added then it might not exist in existing
-      //    profiles and it should be defaulted to yes.
-      String under = getStringProperty("guiShowUnderline");
-      if (under.equals("Yes") || under.length() == 0)
-         guiShowUnderline.setSelected(true);
-
-      cgp.add(guiCheck);
-      cgp.add(guiShowUnderline);
-
-      display.add(crp);
-      display.add(chp);
-      display.add(csp);
-      display.add(sap);
-      display.add(cgp);
+      dcep.add(dceCheck);
+      mouse.add(dcep);
 
       // define hotspot panel
       final JPanel hotspot = new JPanel();
@@ -520,6 +567,14 @@ public class SessionAttributes extends JDialog {
                jpm.repaint();
             }
 
+            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeColors"))) {
+               jp.removeAll();
+               jp.add(cpp,BorderLayout.CENTER);
+               jp.setPreferredSize(cpp.getPreferredSize());
+               jp.validate();
+               jpm.repaint();
+            }
+
             if (nodeInfo.toString().equals(LangTool.getString("sa.nodeDisplay"))) {
                jp.removeAll();
                jp.add(display,BorderLayout.NORTH);
@@ -528,13 +583,30 @@ public class SessionAttributes extends JDialog {
                jpm.repaint();
             }
 
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeColors"))) {
+            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeCursor"))) {
                jp.removeAll();
-               jp.add(cpp,BorderLayout.CENTER);
+               jp.add(cuPanel,BorderLayout.CENTER);
                jp.setPreferredSize(cpp.getPreferredSize());
                jp.validate();
                jpm.repaint();
             }
+
+            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeOnConnect"))) {
+               jp.removeAll();
+               jp.add(onConnect,BorderLayout.CENTER);
+               jp.setPreferredSize(cpp.getPreferredSize());
+               jp.validate();
+               jpm.repaint();
+            }
+
+            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeMouse"))) {
+               jp.removeAll();
+               jp.add(mouse,BorderLayout.CENTER);
+               jp.setPreferredSize(cpp.getPreferredSize());
+               jp.validate();
+               jpm.repaint();
+            }
+
             if (nodeInfo.toString().equals(LangTool.getString("sa.nodeHS"))) {
                jp.removeAll();
                jp.add(hotspot,BorderLayout.CENTER);
@@ -573,7 +645,19 @@ public class SessionAttributes extends JDialog {
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeDisplay"));
         top.add(attrib);
 
+        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeCursor"));
+        top.add(attrib);
+
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeFonts"));
+        top.add(attrib);
+
+        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeSignoff"));
+        top.add(attrib);
+
+        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeOnConnect"));
+        top.add(attrib);
+
+        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeMouse"));
         top.add(attrib);
 
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeHS"));
@@ -1059,6 +1143,18 @@ public class SessionAttributes extends JDialog {
 
       }
 
+      if (rulerFixed.isSelected()) {
+         changes.firePropertyChange("rulerFixed",
+                           getStringProperty("rulerFixed"),
+                           "Yes");
+         setProperty("rulerFixed","Yes");
+      }
+      else {
+         changes.firePropertyChange("rulerFixed",
+                           getStringProperty("rulerFixed"),
+                           "No");
+         setProperty("rulerFixed","No");
+      }
 
       if (saNormal.isSelected()) {
          changes.firePropertyChange("showAttr",
@@ -1144,6 +1240,11 @@ public class SessionAttributes extends JDialog {
                         getStringProperty("hsMore"),
                         hsMore.getText());
       setProperty("hsMore",hsMore.getText());
+
+      changes.firePropertyChange("connectMacro",
+                        getStringProperty("connectMacro"),
+                        connectMacro.getText());
+      setProperty("connectMacro",connectMacro.getText());
 
       changes.firePropertyChange("hsBottom",
                         getStringProperty("hsBottom"),

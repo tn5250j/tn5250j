@@ -144,6 +144,7 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
       Thread ct = new Thread(connectIt);
       ct.setDaemon(true);
       ct.start();
+      addSessionListener(this);
 
    }
 

@@ -77,8 +77,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    private FileOutputStream fw;
    private BufferedOutputStream dw;
-   private boolean signedOn;
+   private boolean firstScreen;
    private char[] signOnSave;
+   private boolean onConnect;
+   private String connectMacro;
 
    tnvt (Screen5250 screen52) {
 
@@ -166,17 +168,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   }
                );
 
-//            screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
          }
          catch (Exception exc) {
             System.out.println("setStatus(ON) " + exc.getMessage());
-//            try {
-//               screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
-//            }
-//            catch (Exception exc2) {
-//               System.out.println("setStatus(ON) " + exc2.getMessage());
-//
-//            }
 
          }
 
@@ -206,8 +200,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          };
 
-         controller.fireSessionChanged(TN5250jConstants.STATE_CONNECTED);
-
          dsq = new DataStreamQueue();
          producer = new DataStreamProducer(this,bin,dsq,abyte0);
          pthread = new Thread(producer);
@@ -226,7 +218,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   }
                );
 
-//            screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_OFF,null);
          }
          catch (Exception exc) {
             System.out.println("setStatus(OFF) " + exc.getMessage());
@@ -275,6 +266,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
             sock.close();
          }
          connected = false;
+         firstScreen = false;
          controller.fireSessionChanged(TN5250jConstants.STATE_DISCONNECTED);
 
       }
@@ -518,7 +510,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public boolean isOnSignoffScreen() {
 
-      if (signedOn) {
+      if (firstScreen) {
          char[] so = screen52.getScreenAsChars();
          int size = signOnSave.length;
          for (int x = 0; x < size; x++) {
@@ -866,9 +858,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
                parseIncoming();
 //               inviteIt =true;
                setInvited();
-               if (!signedOn) {
-                  signedOn = true;
-//                  signOnSave = new char[screen52.getScreenLength()];
+               if (!firstScreen) {
+                  firstScreen = true;
+                  controller.fireSessionChanged(TN5250jConstants.STATE_CONNECTED);
                   signOnSave = screen52.getScreenAsChars();
                   System.out.println("Signon saved");
                }
