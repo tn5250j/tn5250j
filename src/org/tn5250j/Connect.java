@@ -77,6 +77,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.JPasswordField;
+import javax.swing.text.*;
 
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.gui.SortTableModel;
@@ -84,6 +86,7 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.tools.DESSHA1;
 
 public class Connect
 	extends JDialog
@@ -132,6 +135,9 @@ public class Connect
 	BorderLayout borderLayout = new BorderLayout();
 
    TN5250jMultiSelectList accessOptions;
+   // password protection field for access to options list
+   JPasswordField password;
+   JButton setPassButton;
 
 	//  Selection value for connection
 	String connectKey = null;
@@ -450,6 +456,9 @@ public class Connect
 
       accessOptions = new TN5250jMultiSelectList();
 
+      if (props.getProperty("emul.accessDigest") != null)
+         accessOptions.setEnabled(false);
+
       Vector options = OptionAccessFactory.getInstance().getOptions();
 
       // set up a hashtable of option descriptions to options
@@ -475,8 +484,6 @@ public class Connect
       }
 
       accessOptions.setSelectedIndices(si);
-//      accessOptions.setSourceColumnHeader("Active");
-//      accessOptions.setSelectionColumnHeader("In Active");
 
       accessOptions.setSourceHeader(LangTool.getString("ss.labelActive"));
       accessOptions.setSelectionHeader(LangTool.getString("ss.labelRestricted"));
@@ -485,6 +492,59 @@ public class Connect
 		accessPanel.setLayout(new BorderLayout());
 
       accessPanel.add(accessOptions,BorderLayout.CENTER);
+
+      JPanel passPanel = new JPanel();
+
+      Action action = new AbstractAction(LangTool.getString("ss.labelSetPass")) {
+            public void actionPerformed(ActionEvent e) {
+               if (password.getPassword().length > 0) {
+                  try {
+                     DESSHA1 sha = new DESSHA1();
+                     props.setProperty("emul.accessDigest",
+                        sha.digest(new String(password.getPassword()),"tn5205j"));
+                  }
+                  catch (Exception ex) {}
+               }
+            }
+        };
+
+      setPassButton = new JButton(action);
+
+      if (props.getProperty("emul.accessDigest") != null)
+         setPassButton.setEnabled(false);
+
+      passPanel.add(setPassButton);
+
+      password = new JPasswordField(20);
+      password.setDocument(new CheckPasswordDocument());
+
+      passPanel.add(password);
+
+      accessPanel.add(passPanel,BorderLayout.NORTH);
+
+   }
+
+   private void doSomethingEntered() {
+
+      if (props.getProperty("emul.accessDigest") != null) {
+         try {
+            DESSHA1 sha = new DESSHA1();
+//            System.out.println(props.getProperty("emul.accessDigest")
+//                     + " -> " + sha.digest(new String(password.getPassword()),"tn5205j"));
+            if (props.getProperty("emul.accessDigest").equals(
+                  sha.digest(new String(password.getPassword()),"tn5205j"))) {
+               accessOptions.setEnabled(true);
+               setPassButton.setEnabled(true);
+            }
+         }
+         catch (Exception ex) {
+            System.out.println(ex.getMessage());
+         }
+      }
+   }
+
+   private void doNothingEntered() {
+
 
    }
 
@@ -522,7 +582,7 @@ public class Connect
 		JButton button = new JButton(text);
 		button.setEnabled(enabled);
 		button.setActionCommand(ac);
-        button.setPreferredSize(new Dimension(140, 28));
+      button.setPreferredSize(new Dimension(140, 28));
 
 		// we check if there was mnemonic specified and if there was then we
 		//    set it.
@@ -686,6 +746,23 @@ public class Connect
 		}
 
 	}
+
+   public class CheckPasswordDocument extends PlainDocument {
+
+      public void insertString(int offs, String str, AttributeSet a)
+                                                   throws BadLocationException {
+
+         super.insertString(offs, str, a);
+         if (getText(0, getLength()).length() > 0)
+            doSomethingEntered();
+      }
+
+      public void remove(int offs, int len) throws BadLocationException {
+         super.remove(offs, len);
+         if (getText(0, getLength()).length() == 0)
+            doNothingEntered();
+      }
+   }
 
 	class ConfigureTableModel
 		extends AbstractTableModel

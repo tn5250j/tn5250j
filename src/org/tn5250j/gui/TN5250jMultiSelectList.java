@@ -628,10 +628,19 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
     * Enables (or disables) the buttons.
     */
    public void updateButtons() {
-       selectItemButton.setEnabled(!sourceList.isSelectionEmpty());
-       selectAllButton.setEnabled(sourceList.getModel().getSize() > 0);
-       deselectItemButton.setEnabled(!selectionList.isSelectionEmpty());
-       deselectAllButton.setEnabled(selectionList.getModel().getSize() > 0);
+
+      if (!sourceList.isEnabled()) {
+         selectItemButton.setEnabled(false);
+         selectAllButton.setEnabled(false);
+         deselectItemButton.setEnabled(false);
+         deselectAllButton.setEnabled(false);
+      }
+      else {
+         selectItemButton.setEnabled(!sourceList.isSelectionEmpty());
+         selectAllButton.setEnabled(sourceList.getModel().getSize() > 0);
+         deselectItemButton.setEnabled(!selectionList.isSelectionEmpty());
+         deselectAllButton.setEnabled(selectionList.getModel().getSize() > 0);
+      }
    }
 
    /**
@@ -816,6 +825,11 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
        updateView();
    }
 
+   public void setEnabled(boolean enabled) {
+      sourceList.setEnabled(enabled);
+      selectionList.setEnabled(enabled);
+      updateView();
+   }
 
    /**
     * Internal event handler class.
@@ -868,7 +882,7 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
       */
       SelectionButton(String text) {
          super(text);
-         setEnabled(false);
+         this.setEnabled(false);
          setMargin(new Insets(8, 8, 8 ,8));
       }
 
