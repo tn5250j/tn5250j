@@ -714,11 +714,13 @@ public class SessionPopup implements TN5250jConstants {
    }
 
    private void sendMeToFile() {
-      new SendScreenToFile(screen);
+      // Change sent by LUC - LDC to add a parent frame to be passed
+      new SendScreenToFile((Frame)SwingUtilities.getRoot(session),screen);
    }
 
    private void sendMeToImageFile() {
-      new SendScreenImageToFile(session);
+      // Change sent by LUC - LDC to add a parent frame to be passed
+      new SendScreenImageToFile((Frame)SwingUtilities.getRoot(session),session);
    }
 
    public void changeConnection() {

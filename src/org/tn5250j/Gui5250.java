@@ -75,7 +75,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    protected SessionConfig sesConfig;
    protected KeyboardHandler keyHandler;
    protected SessionScrollerInterface scroller;
-   
+
    private Logger log = Logger.getLogger(this.getClass());
    private Logger graphics = Logger.getLogger("GFX");
    public Gui5250 () {
@@ -270,11 +270,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    private void sendMeToFile() {
-      new SendScreenToFile(screen);
+      // Change sent by LUC - LDC to add a parent frame to be passed
+      new SendScreenToFile((JFrame)SwingUtilities.getRoot(this),screen);
    }
 
    private void sendMeToImageFile() {
-      new SendScreenImageToFile((Session)this);
+      // Change sent by LUC - LDC to add a parent frame to be passed
+      new SendScreenImageToFile((JFrame)SwingUtilities.getRoot(this),(Session)this);
    }
    /**
     * This routine allows areas to be bounded by using the keyboard
