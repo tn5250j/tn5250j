@@ -25,6 +25,7 @@ package org.tn5250j.framework.transport.SSL;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.Socket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLContext;
@@ -62,7 +63,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 	SSLContext sslContext = null;
 
 	KeyStore userks = null;
-
+	private String userKsPath;
 	private char[] userksPassword = "changeit".toCharArray();
 
 	KeyManagerFactory userkmf = null;
@@ -82,8 +83,8 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 	public void init(String sslType) {
 		try {
 			logger.debug("Initializing User KeyStore");
-			String userKsPath = System.getProperty("user.home")
-					+ File.separator + ".t5250j" + File.separator + "keystore";
+			userKsPath = System.getProperty("user.home")
+					+ File.separator + ".tn5250j" + File.separator + "keystore";
 			File userKsFile = new File(userKsPath);
 			userks = KeyStore.getInstance(KeyStore.getDefaultType());
 			userks.load(
@@ -194,6 +195,22 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 			if (accept != JOptionPane.YES_OPTION) {
 				throw new java.security.cert.CertificateException(
 						"Certificate Rejected");
+			} else {
+
+					int save = JOptionPane
+					.showConfirmDialog(null, "Remember this certificate?", 
+							"Save Certificate",
+							javax.swing.JOptionPane.YES_NO_OPTION);
+
+					if (save == JOptionPane.YES_OPTION) {
+						try {
+							userks.setCertificateEntry(cert.getSubjectDN().getName(),cert);
+							userks.store(new FileOutputStream(userKsPath),userksPassword);
+						} catch (Exception e) {
+							logger.error("Error saving certificate ["+e.getMessage()+"]");
+							e.printStackTrace();
+						}
+					}
 			}
 		}
 
