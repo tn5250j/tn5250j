@@ -54,6 +54,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
    private boolean packFrame = false;
    private static int sequence;
    private int frameSeq;
+   private boolean embedded = true;
 
    //Construct the frame
    public Gui5250Frame(My5250 m) {
@@ -82,10 +83,12 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
       sessionPane.setBorder(BorderFactory.createEtchedBorder());
       sessionPane.setBounds(new Rectangle(78, 57, 5, 5));
-      sessionPane.setOpaque(false);
+      sessionPane.setOpaque(true);
       sessionPane.setRequestFocusEnabled(false);
-      sessionPane.setDoubleBuffered(true);
+      sessionPane.setDoubleBuffered(false);
+
       this.getContentPane().add(sessionPane, BorderLayout.CENTER);
+
       sessionPane.addChangeListener(this);
       if (packFrame)
          pack();
@@ -163,7 +166,6 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setIconAt(0,focused);
 
       }
-
       ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
 
    }
@@ -186,6 +188,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setIconAt(index,focused);
 
       }
+
       ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
    }
 
@@ -220,19 +223,46 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
    public void addSessionView(String tabText,Session session) {
 
-      sessionPane.addTab(tabText,focused,session);
+      if (sessionPane.getTabCount() == 0 && !embedded) {
 
-      sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.black);
-      sessionPane.setIconAt(sessionPane.getSelectedIndex(),unfocused);
+         this.getContentPane().add(session, BorderLayout.CENTER);
 
-      sessionPane.setSelectedIndex(sessionPane.getTabCount()-1);
-      sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-      sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
+         session.grabFocus();
+         session.resizeMe();
+         repaint();
+         if (packFrame)
+            pack();
+         else
+            validate();
+         embedded = true;
+      }
+      else {
 
-      session.addSessionListener(this);
-      session.addSessionJumpListener(this);
-      session.grabFocus();
+//         if (sessionPane.getTabCount() == 0) {
+//            Session ses = (Session)(this.getContentPane().getComponent(0));
+//            sessionPane.addTab(tabText,focused,ses);
+//            if (ses.getAllocDeviceName() != null)
+//               sessionPane.setTitleAt(0,ses.getAllocDeviceName());
+//            else
+//               sessionPane.setTitleAt(0,ses.getSessionName());
+//
+//            ses.addSessionListener(this);
+//            ses.addSessionJumpListener(this);
+//            this.getContentPane().add(sessionPane, BorderLayout.CENTER);
+//         }
 
+         sessionPane.addTab(tabText,focused,session);
+
+         sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.black);
+         sessionPane.setIconAt(sessionPane.getSelectedIndex(),unfocused);
+
+         sessionPane.setSelectedIndex(sessionPane.getTabCount()-1);
+         sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
+         sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
+
+         session.addSessionListener(this);
+         session.addSessionJumpListener(this);
+      }
    }
 
    public void removeSessionView(Session targetSession) {
@@ -250,7 +280,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setSelectedIndex(index);
          sessionPane.setForegroundAt(index,Color.blue);
          sessionPane.setIconAt(index,focused);
-         ((Session)sessionPane.getComponentAt(index)).grabFocus();
+         ((Session)sessionPane.getComponentAt(index)).requestFocus();
       }
       else {
 
@@ -258,7 +288,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
             sessionPane.setSelectedIndex(0);
             sessionPane.setForegroundAt(0,Color.blue);
             sessionPane.setIconAt(0,focused);
-            ((Session)sessionPane.getComponentAt(0)).grabFocus();
+            ((Session)sessionPane.getComponentAt(0)).requestFocus();
          }
 
       }
@@ -303,4 +333,5 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
       return (sessionPane.indexOfComponent(session) >= 0);
 
    }
+
 }
