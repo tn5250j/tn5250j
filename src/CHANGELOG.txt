@@ -33,6 +33,8 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+15/06/2002  Added changes to the ant build.xml from Christian Geisert
+
 13/06/2002  Added some fixes for key buffering.
 
             Fixed a dump that was being caused by the java e-mail apis not being
