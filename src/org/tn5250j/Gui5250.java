@@ -596,7 +596,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.copyMe();
+                  screen.pasteMe(false);
                   getFocusForMe();
                }
            };
