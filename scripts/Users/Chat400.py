@@ -94,12 +94,11 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		# Form GUI
 		self.contentPane.setLayout(awt.GridBagLayout())
 		self.addWindowListener(self)
-		#self.chkFullNames = swing.JCheckBox("Show user's full name", 1) --Time to get rid??
 		self.chkActive = swing.JCheckBox("Show only Active Users", 1)
 
 		self.chatTxt = swing.JTextArea(5, 30, lineWrap=1, wrapStyleWord=1)
 		self.rpyTxt = swing.JTextArea(10, 30, lineWrap=1, wrapStyleWord=1)
-		self.users = swing.JComboBox(preferredSize=(225, 25), minimumSize=(225, 25))
+		self.users = swing.JComboBox(preferredSize=(250, 25), minimumSize=(250, 25))
 
 		self.showGui()
 
@@ -140,13 +139,14 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			menuItem = key_usr
 			sts = ' '
 			if self.jobDct.has_key(key_usr):
-				sts = '*'
+				if not self.chkActive.isSelected():
+					sts = ' *'
 			try:
 				fullName = self.usrDct[key_usr]
 			except:
 				fullName  = "*NONE"
 			menuItem += ': %s'%(str.ljust(fullName,25))  # Left adjust name into 25 chars max
-			if self.chkActive.isSelected() and sts !="*":   # Active jobs only
+			if self.chkActive.isSelected() and not self.jobDct.has_key(key_usr):   # Active jobs only
 				continue
 
 			menuItem += sts    # N.B. * means profile is running an interactive job
@@ -184,10 +184,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 	def showGui(self):
 		self.rtvIntJobs()
 
-		self.btnRef = swing.JButton("Refresh User-List", \
+		self.btnRef = swing.JButton("Refresh List", \
 									actionPerformed = self.btnActRef, \
-									minimumSize=(135,25), \
-									preferredSize=(135, 25))
+									minimumSize=(100,25), \
+									preferredSize=(100, 25))
 		self.btnRef.setMnemonic('R')
 		self.btnSnd = swing.JButton("Send Message", \
 									actionPerformed = self.btnActSnd)
@@ -210,11 +210,6 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		# Refresh User-List Button
 		gbc.insets = awt.Insets(10, 5, 5, 10)
 		self.contentPane.add(self.btnRef, gbc)
-		# Full names checkbox
-		#gbc.gridx = 0
-		#gbc.gridwidth = 3
-		#gbc.insets = awt.Insets(5, 0, 0, 0)
-		#self.contentPane.add(self.chkFullNames, gbc)
 		# Active Users checkbox
 		gbc.gridx = 0
 		gbc.gridwidth = 3
