@@ -4,7 +4,7 @@ package org.tn5250j.mailtools;
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
- * @version 0.4
+ * @version 0.5
  *
  * Description:
  *
