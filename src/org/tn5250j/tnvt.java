@@ -267,9 +267,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
-						screen52.setStatus(Screen5250.STATUS_SYSTEM,
-								Screen5250.STATUS_VALUE_ON, "X - Connecting");
-
+//						screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//								Screen5250.STATUS_VALUE_ON, "X - Connecting");
+					   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+					         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED,"X - Connecting");
 					}
 				});
 
@@ -324,8 +325,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
-						screen52.setStatus(Screen5250.STATUS_SYSTEM,
-								Screen5250.STATUS_VALUE_OFF, null);
+//						screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//								Screen5250.STATUS_VALUE_OFF, null);
+					   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+					         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 					}
 				});
 
@@ -364,8 +367,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			pthread.interrupt();
 		}
 
-		screen52.setStatus(Screen5250.STATUS_SYSTEM,
-				Screen5250.STATUS_VALUE_ON, "X - Disconnected");
+//		screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//				Screen5250.STATUS_VALUE_ON, "X - Disconnected");
+	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED,"X - Disconnected");
 		screen52.getOIA().setKeyBoardLocked(false);
 		pendingUnlock = false;
 
@@ -456,8 +461,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		if (!enhanced) {
 			screen52.setCursorActive(false);
 		}
-		screen52.setStatus(Screen5250.STATUS_SYSTEM,
-				Screen5250.STATUS_VALUE_ON, null);
+//		screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//				Screen5250.STATUS_VALUE_ON, null);
+	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
 		screen52.getOIA().setKeyBoardLocked(true);
 		pendingUnlock = false;
@@ -488,8 +495,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		if (!enhanced) {
 			screen52.setCursorActive(false);
 		}
-		screen52.setStatus(Screen5250.STATUS_SYSTEM,
-				Screen5250.STATUS_VALUE_ON, null);
+//		screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//				Screen5250.STATUS_VALUE_ON, null);
+	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
 		screen52.getOIA().setKeyBoardLocked(true);
 		pendingUnlock = false;
@@ -768,8 +777,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	 */
 	public final void cancelInvite() {
 
-		screen52.setStatus(Screen5250.STATUS_SYSTEM,
-				Screen5250.STATUS_VALUE_ON, null);
+//		screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//				Screen5250.STATUS_VALUE_ON, null);
+	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
 		// from rfc1205 section 4.3
 		// Server: Sends header with the 000A12A0 00000400 000AFFEF
@@ -797,8 +808,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		}
 
 		screen52.setCursorActive(false);
-		screen52.setStatus(Screen5250.STATUS_SYSTEM,
-				Screen5250.STATUS_VALUE_ON, null);
+//		screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//				Screen5250.STATUS_VALUE_ON, null);
+	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
+		
 		// From client access ip capture
 		// it seems to use an operation code of 3 and 4
 		// also note that the flag field that says reserved is being sent as
@@ -915,8 +929,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 		log.debug("invited");
 		if (!screen52.isStatusErrorCode())
-			screen52.setStatus(Screen5250.STATUS_SYSTEM,
-					Screen5250.STATUS_VALUE_OFF, null);
+//			screen52.setStatus(Screen5250.STATUS_SYSTEM,
+//					Screen5250.STATUS_VALUE_OFF, null);
+	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
 		invited = true;
 	}
