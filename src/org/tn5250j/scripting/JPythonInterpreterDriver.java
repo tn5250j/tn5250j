@@ -28,10 +28,11 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
    private PythonInterpreter _interpreter = new PythonInterpreter();
 
    static {
-      Properties props = new Properties();
-      props.setProperty("python.path", ".");
-      PythonInterpreter.initialize(System.getProperties(), props,
-                        new String[] {""});
+      // the inizialization is being done in the startup program
+//      Properties props = new Properties();
+//      props.setProperty("python.path", ".;jt400.jar");
+//      PythonInterpreter.initialize(System.getProperties(), props,
+//                        new String[] {""});
       _instance = new JPythonInterpreterDriver();
       InterpreterDriverManager.registerDriver(_instance);
    }
