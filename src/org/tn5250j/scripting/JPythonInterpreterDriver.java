@@ -35,13 +35,25 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
       System.setProperty("python.cachedir", 
       System.getProperty("user.home") + File.separator + ".tn5250j" + 
       File.separator);
-      _instance = new JPythonInterpreterDriver();
+      
+//      try {
+        _instance = new JPythonInterpreterDriver();
+//      }
+//      catch (Exception ex) {
+          
+          
+//      }
       InterpreterDriverManager.registerDriver(_instance);
    }
 
    JPythonInterpreterDriver () {
-       
-      _interpreter = new PythonInterpreter();
+
+      try {
+        _interpreter = new PythonInterpreter();
+      }
+      catch (Exception ex) {
+        
+      }
        
    }
    
