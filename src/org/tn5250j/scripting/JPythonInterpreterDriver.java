@@ -19,6 +19,7 @@ import org.python.core.*;
 import org.tn5250j.Session;
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
+import java.util.Properties;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -27,7 +28,10 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
    private PythonInterpreter _interpreter = new PythonInterpreter();
 
    static {
-//      PySystemState.initialize(System.getProperties(),null, new String[] {""});
+      Properties props = new Properties();
+      props.setProperty("python.path", ".");
+      PythonInterpreter.initialize(System.getProperties(), props,
+                        new String[] {""});
       _instance = new JPythonInterpreterDriver();
       InterpreterDriverManager.registerDriver(_instance);
    }
@@ -67,6 +71,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
          Runnable interpretIt = new Runnable() {
             public void run() {
 //               PySystemState.initialize(System.getProperties(),null, new String[] {""},this.getClass().getClassLoader());
+
                _interpreter = new PythonInterpreter();
                _interpreter.set("_session",s1);
                try {
