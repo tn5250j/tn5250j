@@ -698,6 +698,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //      System.out.println("paint from screen");
 
       screen.paintComponent3(g);
+      if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
+         rubberband.erase();
+         rubberband.draw();
+      }
       keyPad.repaint();
 
    }

@@ -35,6 +35,7 @@ public abstract class RubberBand {
    protected Point endPoint;
    private boolean eraseSomething = false;
    private boolean isSomethingBounded = false;
+   private boolean isDragging = false;
 
    private class MouseHandler extends MouseAdapter
    {
@@ -43,12 +44,12 @@ public abstract class RubberBand {
             if (!isSomethingBounded)
                start(canvas.translateStart(e.getPoint()));
             else {
-               if (isSomethingBounded) {
-                  erase();
-                  notifyRubberBandCanvas();
-                  reset();
-                  start(canvas.translateStart(e.getPoint()));
-               }
+//               if (isSomethingBounded) {
+//                  erase();
+//                  notifyRubberBandCanvas();
+//                  reset();
+//                  start(canvas.translateStart(e.getPoint()));
+//               }
             }
          }
 
@@ -56,7 +57,7 @@ public abstract class RubberBand {
       }
 
       public void mouseReleased(MouseEvent e) {
-         erase();
+         isDragging = false;
       }
 
    }
@@ -67,6 +68,18 @@ public abstract class RubberBand {
 
          if(!SwingUtilities.isRightMouseButton(e) && getCanvas().canDrawRubberBand(RubberBand.this)) {
 
+//            if (!isDragging) {
+//
+//               if (isSomethingBounded) {
+//                  erase();
+//                  notifyRubberBandCanvas();
+//                  reset();
+//                  start(canvas.translateStart(e.getPoint()));
+//               }
+//
+//
+//            }
+            isDragging = true;
             erase();
             stop(canvas.translateEnd(e.getPoint()));
             notifyRubberBandCanvas();
@@ -75,6 +88,10 @@ public abstract class RubberBand {
          }
       }
 
+   }
+
+   public boolean isDragging() {
+      return isDragging;
    }
 
    public RubberBand(RubberBandCanvasIF c) {

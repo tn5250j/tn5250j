@@ -1176,10 +1176,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             }
          }
          else {
-            if (gui.rubberband.isAreaSelected()) {
-               gui.rubberband.reset();
-               gui.repaint();
-            }
 
             goto_XY(pos);
             isInField(lastPos);
@@ -4113,6 +4109,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             gg2d = (Graphics2D)gui.getGraphics();
       }
 
+      // check for selected area and erase it before updating screen
+      if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
+         gui.rubberband.erase();
+      }
+
       if (bi == null || gg2d == null) {
          if (bi == null)
              System.out.println("bi was null in update image");
@@ -4142,6 +4143,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //      }
          if (gui.isVisible()) {
             if (height > 0 && width > 0) {
+
+         // We now redraw the selected area rectangle.
+         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
+            gui.rubberband.draw();
+         }
 
          if (!fullRepaint)
             bi.drawImageBuffer(gg2d,x,y,width,height);
