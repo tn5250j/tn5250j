@@ -46,24 +46,25 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    protected Gui5250Frame frame1;
    private String[] sessionArgs = null;
-   private static Properties sysConfig = new Properties(); // Sys configuration
    private static Properties sessions = new Properties();
-   private static Properties sesProps = new Properties();
    private static ImageIcon focused;
    private static ImageIcon unfocused;
    private static ImageIcon tnicon;
-
    private static BootStrapper strapper = null;
-   private SessionManager manager;
+   protected SessionManager manager;
    private static Vector frames;
    private static boolean useMDIFrames;
    private static TN5250jSplashScreen splash;
    private int step;
+   private static String jarClassPaths;
+   public static ClassLoader classLoader;
 
    My5250 () {
 
-      splash = new TN5250jSplashScreen(createImageIcon("tn5250jSplash.jpg"));
-      splash.setSteps(4);
+      classLoader = this.getClass().getClassLoader();
+
+      splash = new TN5250jSplashScreen("tn5250jSplash.jpg");
+      splash.setSteps(5);
       splash.setVisible(true);
 
       focused = createImageIcon("focused.gif");
@@ -76,22 +77,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       catch(Exception e) {
       }
 
+      loadSessions();
       splash.updateProgress(++step);
-      try {
-         Class.forName("org.tn5250j.scripting.JPythonInterpreterDriver");
-      }
-      catch (java.lang.NoClassDefFoundError ncdfe) {
-         System.out.println("Information Message: Can not find scripting support"
-                           + " files, scripting will not be available: "
-                           + "Failed to load interpreter drivers " + ncdfe);
-      }
-      catch (Exception ex) {
-         System.out.println("Information Message: Can not find scripting support"
-                           + " files, scripting will not be available: "
-                           + "Failed to load interpreter drivers " + ex);
-      }
 
-      splash.updateProgress(++step);
+      initJarPaths();
+
+      initScripting();
 
       // sets the starting frame type.  At this time there are tabs which is
       //    default and Multiple Document Interface.
@@ -107,105 +98,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       splash.updateProgress(++step);
 
    }
-
-   /**
-    *
-    * Initialize system configuration
-    */
-   static public void initConfig(String[] args) {
-
-
-
-     // Start loading properties from file
-     loadDefaultSession();
-
-     // Start loading session properties
-     boolean loadDefaultParameters = false;
-
-     if (args.length != 0) {
-       if (args[0].indexOf("-") == -1 & args[0].length() != 0)
-         sesProps.put(SESSION_HOST, args[0]);
-       else{
-         // No host present on the command line. Load it from default session
-         sesProps.put(SESSION_TERM_NAME, getDefaultSession());
-         String[] defaultArgs = new String[NUM_PARMS];
-         parseArgs(sessions.getProperty(sesProps.getProperty(SESSION_TERM_NAME)), defaultArgs);
-         sesProps.put(SESSION_HOST, defaultArgs[0]);
-       }
-     } else {
-         // No parameter has been given in the command line. Load default session
-         sesProps.put(SESSION_TERM_NAME, getDefaultSession());
-         args = new String[NUM_PARMS];
-         parseArgs(sessions.getProperty(sesProps.getProperty(SESSION_TERM_NAME)), args);
-         sesProps.put(SESSION_HOST, args[0]);
-     }
-     if (isSpecified("-MDI",args))
-        sesProps.setProperty(GUI_MDI_TYPE, "1");
-
-     if (isSpecified("-width",args))
-        sesProps.setProperty(GUI_FRAME_WIDTH, getParm("-width",args));
-
-     if (isSpecified("-L",args))
-        sesProps.setProperty(SESSION_LOCALE, getParm("-L",args));
-
-     if (isSpecified("-s",args))
-        sesProps.setProperty(SESSION_NAMES_REFS, getParm("-s",args));
-
-     if (isSpecified("-height",args))
-        sesProps.setProperty(GUI_FRAME_HEIGHT, getParm("-height",args));
-
-     if (isSpecified("-nc",args))
-        sesProps.setProperty(NO_CHECK_RUNNING, "1");
-
-     if (isSpecified("-noembed",args))
-       sesProps.put(GUI_NO_TAB,"1");
-
-     if (isSpecified("-t",args))
-       sesProps.put(SESSION_TERM_NAME_SYSTEM,"1");
-
-     if (isSpecified("-e",args))
-        sesProps.put(SESSION_TN_ENHANCED,"1");
-
-     if (isSpecified("-f",args))
-        sesProps.put(SESSION_CONFIG_FILE,getParm("-f",args));
-
-     if (isSpecified("-p",args)) {
-        sesProps.put(SESSION_HOST_PORT,getParm("-p",args));
-     }
-
-     if (isSpecified("-cp",args))
-        sesProps.put(SESSION_CODE_PAGE ,getParm("-cp",args));
-
-     if (isSpecified("-gui",args))
-        sesProps.put(SESSION_USE_GUI,"1");
-
-     if (isSpecified("-132",args))
-        sesProps.put(SESSION_SCREEN_SIZE,SCREEN_SIZE_27X132_STR);
-     else
-        sesProps.put(SESSION_SCREEN_SIZE,SCREEN_SIZE_24X80_STR);
-
-     // are we to use a socks proxy
-     if (isSpecified("-usp",args)) {
-
-        // socks proxy host argument
-        if (isSpecified("-sph",args)) {
-           sesProps.put(SESSION_PROXY_HOST ,getParm("-sph",args));
-        }
-
-        // socks proxy port argument
-        if (isSpecified("-spp",args))
-           sesProps.put(SESSION_PROXY_PORT ,getParm("-spp",args));
-     }
-
-     if (isSpecified("-dn",args))
-        sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));
-
-     if (isSpecified("-d",args))
-        sesProps.put(START_MONITOR_THREAD ,"1");
-
-
-   }
-
 
    /**
     * Check if there are any other instances of tn5250j running
@@ -312,21 +204,18 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    static public void main(String[] args) {
 
-      // Initialize system configuration
-      initConfig(args);
-
-      if (sesProps.getProperty(GUI_MDI_TYPE) != null) {
+      if (isSpecified("-MDI",args)) {
          useMDIFrames = true;
       }
 
-      if (sesProps.getProperty(NO_CHECK_RUNNING) != null) {
+      if (!isSpecified("-nc",args)) {
 
          if (!checkBootStrapper(args)) {
 
             // if we did not find a running instance and the -d options is
             //    specified start up the bootstrap deamon to allow checking
             //    for running instances
-           if (sesProps.getProperty(START_MONITOR_THREAD) != null) {
+            if (isSpecified("-d",args)) {
                strapper = new BootStrapper();
 
                strapper.start();
@@ -343,34 +232,85 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       if (strapper != null)
          strapper.addBootListener(m);
 
-      int width = m.frame1.getWidth();
-      int height = m.frame1.getHeight();
+      if (args.length > 0) {
 
-      if (sesProps.getProperty(GUI_FRAME_WIDTH) != null) {
-         width = Integer.parseInt(sesProps.getProperty(GUI_FRAME_WIDTH));
+         if (isSpecified("-width",args) ||
+               isSpecified("-height",args)) {
+            int width = m.frame1.getWidth();
+            int height = m.frame1.getHeight();
+
+            if (isSpecified("-width",args)) {
+               width = Integer.parseInt(m.getParm("-width",args));
+            }
+            if (isSpecified("-height",args)) {
+               height = Integer.parseInt(m.getParm("-height",args));
+            }
+
+            m.frame1.setSize(width,height);
+            m.frame1.centerFrame();
+
+
+         }
+
+          /**
+           * @todo this crap needs to be rewritten it is a mess
+           */
+         if (args[0].startsWith("-")) {
+
+            // check if a session parameter is specified on the command line
+            if (isSpecified("-s",args)) {
+
+               String sd = getParm("-s",args);
+               if (sessions.containsKey(sd)) {
+                  sessions.setProperty("emul.default",sd);
+               }
+               else {
+                  args = null;
+               }
+
+            }
+
+            // check if a locale parameter is specified on the command line
+            if (isSpecified("-L",args)) {
+
+               Locale.setDefault(parseLocal(getParm("-L",args)));
+               LangTool.init();
+               if (args[0].startsWith("-")) {
+
+                  m.sessionArgs = null;
+               }
+               else {
+                  m.splash.updateProgress(++m.step);
+                  m.frame1.setVisible(true);
+                  m.splash.setVisible(false);
+                  m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                  LangTool.init();
+                  m.sessionArgs = args;
+               }
+            }
+            else {
+               LangTool.init();
+               if (isSpecified("-s",args))
+                  m.sessionArgs = args;
+               else
+                  m.sessionArgs = null;
+            }
+         }
+         else {
+
+            LangTool.init();
+            m.sessionArgs = args;
+         }
       }
-      if (sesProps.getProperty(GUI_FRAME_HEIGHT) != null) {
-         height = Integer.parseInt(sesProps.getProperty(GUI_FRAME_HEIGHT));
+      else {
+         LangTool.init();
+         m.sessionArgs = null;
       }
 
-      m.frame1.setSize(width,height);
-      m.frame1.centerFrame();
+      if (m.sessionArgs != null) {
 
-      // check if a locale parameter is specified on the command line
-      if (sesProps.getProperty(SESSION_LOCALE) != null) //{
-
-      Locale.setDefault(parseLocal(sesProps.getProperty(SESSION_LOCALE)));
-      m.splash.updateProgress(++m.step);
-      m.frame1.setVisible(true);
-      m.splash.setVisible(false);
-      m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-      LangTool.init();
-
-      if (sesProps.getProperty(SESSION_NAMES_REFS) != null) {
-
-        // Init parameters for multisession configurations
-
+         // BEGIN
+         // 2001/09/19 natural computing MR
          Vector os400_sessions = new Vector();
          Vector session_params = new Vector();
 
@@ -476,9 +416,22 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       int result = 2;
       String sel = "";
 
+      if (sessionArgs != null && !sessionArgs[0].startsWith("-"))
+         sel = sessionArgs[0];
+      else {
+         sel = getDefaultSession();
+      }
+
       Sessions sess = manager.getSessions();
 
-      if (sess.getCount() > 0 || sessions.containsKey("emul.showConnectDialog")) {
+      if (sel != null && sess.getCount() == 0
+                  && sessions.containsKey(sel)){
+         sessionArgs = new String[NUM_PARMS];
+         parseArgs((String)sessions.getProperty(sel), sessionArgs);
+      }
+
+      if (sessionArgs == null  || sess.getCount() > 0
+               || sessions.containsKey("emul.showConnectDialog")) {
 
          sel = getConnectSession();
 
@@ -497,7 +450,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       }
       else {
 
-         newSession(sesProps.getProperty(SESSION_HOST), null);
+         newSession(sel,sessionArgs);
 
       }
    }
@@ -507,16 +460,59 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
 
       // load the new session information from the session property file
-      loadDefaultSession();
+      loadSessions();
       return sc.getConnectKey();
    }
 
    synchronized void newSession(String sel,String[] args) {
 
+      Properties sesProps = new Properties();
 
-      Session s = manager.openSession(sesProps,
-                                      sesProps.getProperty(SESSION_CONFIG_FILE),
-                                      sesProps.getProperty(SESSION_TERM_NAME));
+      String propFileName = null;
+      String session = args[0];
+
+      // Start loading properties
+      sesProps.put(SESSION_HOST,session);
+
+      if (isSpecified("-e",args))
+         sesProps.put(SESSION_TN_ENHANCED,"1");
+
+      if (isSpecified("-p",args)) {
+         sesProps.put(SESSION_HOST_PORT,getParm("-p",args));
+      }
+
+      if (isSpecified("-f",args))
+         propFileName = getParm("-f",args);
+
+      if (isSpecified("-cp",args))
+         sesProps.put(SESSION_CODE_PAGE ,getParm("-cp",args));
+
+      if (isSpecified("-gui",args))
+         sesProps.put(SESSION_USE_GUI,"1");
+
+      if (isSpecified("-132",args))
+         sesProps.put(SESSION_SCREEN_SIZE,SCREEN_SIZE_27X132_STR);
+      else
+         sesProps.put(SESSION_SCREEN_SIZE,SCREEN_SIZE_24X80_STR);
+
+      // are we to use a socks proxy
+      if (isSpecified("-usp",args)) {
+
+         // socks proxy host argument
+         if (isSpecified("-sph",args)) {
+            sesProps.put(SESSION_PROXY_HOST ,getParm("-sph",args));
+         }
+
+         // socks proxy port argument
+         if (isSpecified("-spp",args))
+            sesProps.put(SESSION_PROXY_PORT ,getParm("-spp",args));
+      }
+
+      // check if device name is specified
+      if (isSpecified("-dn",args))
+         sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));
+
+      Session s = manager.openSession(sesProps,propFileName,sel);
 
       if (!frame1.isVisible()) {
          splash.updateProgress(++step);
@@ -525,7 +521,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       }
       else {
-         if (sesProps.getProperty(GUI_NO_TAB) != null) {
+         if (isSpecified("-noembed",args)) {
             splash.updateProgress(++step);
             newView();
             frame1.setVisible(true);
@@ -535,9 +531,14 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          }
       }
 
-      frame1.addSessionView(sesProps.getProperty(SESSION_TERM_NAME),s);
+      if (isSpecified("-t",args))
+         frame1.addSessionView(sel,s);
+      else
+         frame1.addSessionView(session,s);
 
       s.connect();
+
+
    }
 
    void newView() {
@@ -670,7 +671,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       }
    }
 
-   static protected void parseArgs(String theStringList, String[] s) {
+   protected void parseArgs(String theStringList, String[] s) {
       int x = 0;
       StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
       while (tokenizer.hasMoreTokens()) {
@@ -688,7 +689,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       return new Locale(s[0],s[1],s[2]);
    }
 
-   protected static void loadDefaultSession() {
+   protected static void loadSessions() {
 
       FileInputStream in = null;
       try {
@@ -739,14 +740,58 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       URL file=null;
 
       try {
-         ClassLoader cl = this.getClass().getClassLoader();
-         file = cl.getResource(image);
+         file = classLoader.getResource(image);
 
       }
       catch (Exception e) {
          System.err.println(e);
       }
       return new ImageIcon( file);
+   }
+
+   /**
+    * Initializes the scripting environment if the jython interpreter exists
+    * in the classpath
+    */
+   private void initScripting() {
+
+      try {
+         Class.forName("org.tn5250j.scripting.JPythonInterpreterDriver");
+      }
+      catch (java.lang.NoClassDefFoundError ncdfe) {
+         System.out.println("Information Message: Can not find scripting support"
+                           + " files, scripting will not be available: "
+                           + "Failed to load interpreter drivers " + ncdfe);
+      }
+      catch (Exception ex) {
+         System.out.println("Information Message: Can not find scripting support"
+                           + " files, scripting will not be available: "
+                           + "Failed to load interpreter drivers " + ex);
+      }
+
+      splash.updateProgress(++step);
+
+   }
+
+   /**
+    * Sets the jar path for the available jars.
+    * Sets the python.path system variable to make the jython jar available
+    * to scripting process.
+    *
+    */
+   private void initJarPaths() {
+
+      String userDir = System.getProperty("user.dir");
+      if (new File(userDir + File.separator + "jython.jar").exists()) {
+
+         jarClassPaths = userDir + File.separator + "jython.jar";
+      }
+
+      if (jarClassPaths != null)
+         System.setProperty("python.path",jarClassPaths);
+
+      splash.updateProgress(++step);
+
    }
 
    /**
