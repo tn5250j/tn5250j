@@ -75,6 +75,8 @@ class ToolboxCodePage
 
   public static CodePage getCodePage(String encoding)
   {
+    System.err.println("Trying ToolboxCodePage:" + encoding);
+    
     if (CONVERTER_CONSTRUCTOR == null)
       return null;
 
@@ -85,6 +87,7 @@ class ToolboxCodePage
     }
     catch (Throwable t)
     {
+      System.err.println("Error while loading " + CONVERTER_NAME + ": " + t);
       conv = null;
     }
 

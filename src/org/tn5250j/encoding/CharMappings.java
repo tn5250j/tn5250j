@@ -55,7 +55,7 @@ public class CharMappings {
      {
        map.put(encoding, cp);
        return cp;
-     }
+     } 
 
      cp = ToolboxCodePage.getCodePage(encoding);
      if (cp != null)
@@ -73,6 +73,7 @@ public class CharMappings {
 
      // unsupported codepage
      // ==> return default;
+     System.err.println("CodePage" + encoding + " not supported, using default (" + DFT_ENC + ")");
      return NativeCodePage.getCodePage(DFT_ENC);
    }
 

@@ -127,7 +127,7 @@ class NativeCodePage extends CodePage
                b = characterToString(index).getBytes("Cp1141")[0];
 
             } catch (java.io.UnsupportedEncodingException uee) {
-               uee.printStackTrace();
+               System.err.println(uee);
             }
             return b;
          }
@@ -137,7 +137,7 @@ class NativeCodePage extends CodePage
             try {
                b = characterToString(index).getBytes("Cp1140")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
-               uee.printStackTrace();
+               System.err.println(uee);
             }
             return b;
          }
@@ -147,7 +147,7 @@ class NativeCodePage extends CodePage
             try {
                b = characterToString(index).getBytes("Cp1147")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
-               uee.printStackTrace();
+               System.err.println(uee);
             }
             return b;
          }
@@ -157,7 +157,7 @@ class NativeCodePage extends CodePage
             try {
                b = characterToString(index).getBytes("Cp1112")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
-               uee.printStackTrace();
+               System.err.println(uee);
             }
             return b;
          }
@@ -1203,6 +1203,7 @@ class NativeCodePage extends CodePage
 
    static final CodePage getCodePage(String cp)
    {
+      System.err.println("Trying NativeCodePage:" + cp);
       if (cp.equals("37"))
          return new NativeCodePage(cp, codePage37);
       if (cp.equals("37PT"))
@@ -1239,10 +1240,22 @@ class NativeCodePage extends CodePage
          return new NativeCodePage(cp, codePage1025);
       if (cp.equals("1026"))
          return new NativeCodePage(cp, codePage1026);
-      if (cp.equals("1141"))
-         return new NativeCodePage(cp, codePage1141);
-      if (cp.equals("1140"))
-         return new NativeCodePage(cp, codePage1140);
+      if (cp.equals("1141")) {
+         if (isEncodingAvailable("1141")) {
+            return new NativeCodePage(cp, codePage1141);
+         } else {
+            System.err.println("Charset encoding 1141 not available");
+            return null;
+         }
+      }
+      if (cp.equals("1140")) {
+         if (isEncodingAvailable("1140")) {
+            return new NativeCodePage(cp, codePage1140);
+         } else {
+            System.err.println("Charset encoding 1140 not available");
+            return null;
+         }
+      }
       if (cp.equals("1147"))
          return new NativeCodePage(cp, codePage1147);
 
@@ -1267,4 +1280,21 @@ class NativeCodePage extends CodePage
      return String.valueOf(new char[] {c});
    }
 
+   /**
+    * Checks if a charset-encoding is available
+    *
+    * @param encoding Codepage
+    * @return true if the encopding is available
+    *
+    */
+   public static boolean isEncodingAvailable(String encoding) {
+      // I hope there's more elegant way to do this
+      // JDK1.4 only: java.nio.charset.Charset.
+      try {
+         byte b = "dummy".getBytes(encoding)[0];
+      } catch (java.io.UnsupportedEncodingException uee) {
+         return false;
+      }
+      return true;
+   }
 }
