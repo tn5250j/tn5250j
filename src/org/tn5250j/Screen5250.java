@@ -4073,8 +4073,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //         screen[x].setCharAndAttr(' ',initAttr,false);
          screen[x].setUseGUI(ScreenChar.NO_GUI);
       }
-//      dirty.setBounds(tArea.getBounds());
-      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
+      dirty.setBounds(tArea.getBounds());
+//      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
    }
 
    /**
@@ -4087,8 +4087,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          screen[x].setCharAndAttr(' ',initAttr,false);
          screen[x].setUseGUI(ScreenChar.NO_GUI);
       }
-//      dirty.setBounds(tArea.getBounds());
-      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
+      dirty.setBounds(tArea.getBounds());
+//      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
    }
 
    public void restoreScreen() {

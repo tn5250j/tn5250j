@@ -508,7 +508,9 @@ public class Connect
 
 		accessPanel.add(accessOptions, BorderLayout.CENTER);
 
-		JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		JPanel passPanel = new JPanel();
+		passPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
+		passPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10 , 0));
 
 		Action action =
 			new AbstractAction(LangTool.getString("ss.labelSetPass")) {
@@ -528,7 +530,6 @@ public class Connect
 		};
 
 		setPassButton = new JButton(action);
-		setPassButton.setPreferredSize(new Dimension(150, 27));
 
 		if (props.getProperty("emul.accessDigest") != null)
 			setPassButton.setEnabled(false);
@@ -537,7 +538,6 @@ public class Connect
 
 		password = new JPasswordField(15);
 		password.setDocument(new CheckPasswordDocument());
-		password.setPreferredSize(new Dimension(password.getWidth(), 27));
 
 		passPanel.add(password);
 
