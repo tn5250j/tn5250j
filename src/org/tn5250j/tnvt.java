@@ -103,16 +103,16 @@ public final class tnvt implements Runnable, TN5250jConstants {
       this.screen52 = screen52;
       dataIncluded = new boolean[24];
 
-      if (System.getProperties().containsKey("user")) {
-         user = System.getProperties().getProperty("user");
-         if (System.getProperties().containsKey("password"))
-            password = System.getProperties().getProperty("password");
-         if (System.getProperties().containsKey("library"))
-            library = System.getProperties().getProperty("library");
-         if (System.getProperties().containsKey("menu"))
-            initialMenu = System.getProperties().getProperty("menu");
-         if (System.getProperties().containsKey("program"))
-            program = System.getProperties().getProperty("program");
+      if (System.getProperties().containsKey("SESSION_CONNECT_USER")) {
+         user = System.getProperties().getProperty("SESSION_CONNECT_USER");
+         if (System.getProperties().containsKey("SESSION_CONNECT_PASSWORD"))
+            password = System.getProperties().getProperty("SESSION_CONNECT_PASSWORD");
+         if (System.getProperties().containsKey("SESSION_CONNECT_LIBRARY"))
+            library = System.getProperties().getProperty("SESSION_CONNECT_LIBRARY");
+         if (System.getProperties().containsKey("SESSION_CONNECT_MENU"))
+            initialMenu = System.getProperties().getProperty("SESSION_CONNECT_MENU");
+         if (System.getProperties().containsKey("SESSION_CONNECT_PROGRAM"))
+            program = System.getProperties().getProperty("SESSION_CONNECT_PROGRAM");
       }
 
       baosp = new ByteArrayOutputStream();
@@ -127,6 +127,23 @@ public final class tnvt implements Runnable, TN5250jConstants {
    public void setController(Session c) {
 
       controller = c;
+
+      // We will now see if there are any bypass signon parameters to be
+      //    processed.  The system properties override these parameters so
+      //    have precidence if specified.
+      Properties props = controller.getConfiguration().getProperties();
+      if (user == null && props.containsKey("connect.user")) {
+         user = props.getProperty("connect.user");
+         if (props.containsKey("connect.password"))
+            password = props.getProperty("connect.password");
+         if (props.containsKey("connect.library"))
+            library = props.getProperty("connect.library");
+         if (props.containsKey("connect.menu"))
+            initialMenu = props.getProperty("connect.menu");
+         if (props.containsKey("connect.program"))
+            program = props.getProperty("connect.program");
+      }
+
    }
 
    public void setSSLType(String type) {
@@ -406,6 +423,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       baosp.write(aid);
 
       if (dataIncluded(aid))
+
          screen52.getScreenFields().readFormatTable(baosp,readType,codePage);
 
       try {
@@ -1606,10 +1624,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 16:    // TD - Transparent Data
-                  bk.getNextByte();
-                  int j = bk.getNextByte();  // length
-                  while (j-- > 0)
-                     bk.getNextByte();
+                  int j = (bk.getNextByte() & 0xff) << 8 | bk.getNextByte() & 0xff;  // length
                   break;
 
                case 17:    // SBA - set buffer address order (row column)
@@ -1768,6 +1783,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       catch (Exception e) {
          System.out.println("write to display " + e.getMessage());
+         e.printStackTrace();
       };
 
       processCC1(control1);
@@ -2009,6 +2025,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       boolean error = false;
       boolean done = false;
+      boolean windowDefined = false;
       int nextone;
       try {
          int length = (( bk.getNextByte() & 0xff )<< 8 | (bk.getNextByte() & 0xff));
@@ -2052,7 +2069,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                                              ':',
                                              '.',
                                              ':');
-
+                           windowDefined = true;
                            break;
                         }
 
@@ -2160,6 +2177,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                                                       ll,
                                                       bottom,
                                                       lr);
+                                 windowDefined = true;
                               break;
          //
          //  The following shows the input for window with a title
@@ -2182,6 +2200,19 @@ public final class tnvt implements Runnable, TN5250jConstants {
          //      +00F0 4B4B4B4B 7A20110C 2F2040F7 7AF5F37A  ....:€...€ 7:53:
 
                               case 0x10 : // Window title/footer
+                                 if (!windowDefined) {
+                                    screen52.createWindow(rows,cols,1,true,32,58,
+                                                         '.',
+                                                         '.',
+                                                         '.',
+                                                         ':',
+                                                         ':',
+                                                         ':',
+                                                         '.',
+                                                         ':');
+                                    windowDefined = true;
+                                 }
+
                                  byte orientation = bk.getNextByte();
                                  mAttr = bk.getNextByte();
                                  cAttr = bk.getNextByte();
@@ -2212,7 +2243,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                                                             hfBuffer);
                                  break;
                               default:
-                              System.out.println("Invalid Window minor structure");
+                                 System.out.println("Invalid Window minor structure");
                               length = 0;
                               done = true;
                            }
@@ -2721,7 +2752,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
                         }
                         else {
-                           System.out.println(devName);
                            baosp.write(IAC);
                            baosp.write(WILL);
                            baosp.write(NEW_ENVIRONMENT);
