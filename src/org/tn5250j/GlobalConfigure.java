@@ -28,6 +28,7 @@ package org.tn5250j;
 import java.util.Properties;
 import java.util.Hashtable;
 import java.io.*;
+import javax.swing.*;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 
@@ -53,6 +54,7 @@ public class GlobalConfigure extends ConfigureFactory {
    static private Hashtable headers = new Hashtable();  //LUC GORRENS
 
    static final public String SESSIONS = "sessions";
+   static final public File ses = new File(SESSIONS);
    static final public String MACROS = "macros";
    static final public String KEYMAP = "keymap";
 
@@ -142,12 +144,14 @@ public class GlobalConfigure extends ConfigureFactory {
          settings.setProperty("emulator.settingsDirectory",
                                  System.getProperty("emulator.settingsDirectory") +
                                  File.separator);
+         checkDirs();
       }
       else {
 
          try {
             in = new FileInputStream(settingsFile);
             settings.load(in);
+            checkLegacy();
 
          }
          catch (FileNotFoundException fnfe) {
@@ -169,28 +173,95 @@ public class GlobalConfigure extends ConfigureFactory {
                                  + "accessed because : " + se.getMessage());
          }
       }
+   }
 
+   private void checkDirs() {
       // we now check to see if the settings directory is a directory.  If not then we create it
       File sd = new File(settings.getProperty("emulator.settingsDirectory"));
       if (!sd.isDirectory())
          sd.mkdirs();
    }
-
+   
    private void checkLegacy() {
       // we check if the sessions file already exists in the directory
       // if it does exist we are working with an old install so we
       // need to set the settings directory to the users directory
       // SESSIONS is declared as a string, so we just can use the keyword here.
-      File ses = new File(SESSIONS);
       if(ses.exists()) {
-         settings.setProperty("emulator.settingsDirectory", System.getProperty("user.dir") + File.separator);
+          int cfc;
+          settings.setProperty("emulator.settingsDirectory", 
+          System.getProperty("user.dir") + File.separator);
+          cfc = JOptionPane.showConfirmDialog(null, 
+          "Dear User,\n\n" +
+          "Seems you are using an old version of tn5250j.\n" +
+          "In meanwhile the application became multi-user capable,\n" +
+          "which means ALL the config- and settings-files are\n" +
+          "placed in your home-dir to avoid further problems in\n" +
+          "the near future.\n\n" +
+          "You have the choice to choose if you want the files\n" +
+          "to be copied or not, please make your choice !\n\n" +
+          "Shall we copy the files to the new location ?",
+          "Old install detected", JOptionPane.WARNING_MESSAGE,
+          JOptionPane.YES_NO_OPTION);
+          if (cfc == 0) {
+               settings.setProperty("emulator.settingsDirectory", 
+               System.getProperty("user.home") + File.separator + ".tn5250j"  
+               + File.separator);
+               // Here we do a checkdir so we know the destination-dir exists
+               checkDirs();
+               copyConfigs(SESSIONS);
+               copyConfigs(MACROS);
+               copyConfigs(KEYMAP);
+          }
+          else {
+              JOptionPane.showMessageDialog(null, 
+              "Dear User,\n\n" +
+              "You choosed not to copy the file.\n" +
+              "This means the program will end here.\n\n" +
+              "To use this NON-STANDARD behaviour start tn5250j\n" +
+              "with the -Duser.home=<your home dir> parameter\n" +
+              "to avoid this question popping up all the time.",
+              "Using NON-STANDARD behaviour", JOptionPane.WARNING_MESSAGE);
+              System.exit(0);
+          }
       }
       else {
          settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
          System.out.println("User Home = " + System.getProperty("user.home"));
       }
    }
-
+   
+   private void copyConfigs(String sesFile) {
+       /** Copy the config-files to the user's home-dir */
+       String srcFile = System.getProperty("user.dir") + File.separator + sesFile;
+       String dest = System.getProperty("user.home") + 
+       File.separator + ".tn5250j" + File.separator + sesFile;
+       File rmvFile = new File(sesFile);
+       try {
+           FileReader r = new FileReader(srcFile);
+           BufferedReader b = new BufferedReader(r);
+           
+           FileWriter w = new FileWriter(dest);
+           PrintWriter p = new PrintWriter(w);
+           String regel = b.readLine();
+           while (regel != null) {
+               p.println(regel);
+               regel = b.readLine();
+           }
+           b.close();
+           p.close();
+           rmvFile.delete();
+           }
+           catch (FileNotFoundException e) {
+               System.out.println(srcFile + " not found !");
+           }
+           catch (IOException e) {
+               System.out.println("Global io-error !");
+           }
+           catch (ArrayIndexOutOfBoundsException e) {
+           }
+       }
+       
    /**
     * Save the settings for the global configuration
     */
