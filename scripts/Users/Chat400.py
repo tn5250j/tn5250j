@@ -41,21 +41,36 @@ class Poller(Runnable):
                 entry = dq.read(curUsr,-1,"EQ")
                 mail = entry.getString()
                 sndUsr = mail.split(':')[0]
+                if not self.parent.jobDct.has_key(sndUsr):
+                    self.parent.rtvIntJobs()
                 # Split only once do avoid problems text containing more :'s
                 msg = mail.split(':', 1)[1]
+                if msg == 'Logged and ready':
+                    continue
                 self.parent.rpyTxt.append("--== Received from " + sndUsr \
                 + " ==--\n" + msg + "\n")
                 self.parent.rpyTxt.setCaretPosition(len(self.parent.rpyTxt.getText()))
-                if self.parent.getState() == swing.JFrame.ICONIFIED:
-                    self.parent.state=(swing.JFrame.NORMAL)
-                self.parent.chatTxt.requestFocus()
-                self.parent.show()
             except:
                 done=1
                 exc=sys.exc_info()
                 print "Thread interrupted at line ", exc[2].tb_lineno
                 print exc[0]
                 print "type = %s"%type(exc[0])
+            if self.parent.chkActive.isSelected():
+                item = sndUsr + ': ' + self.parent.usrDct[sndUsr]
+            else:
+                if self.parent.jobDct.has_key(sndUsr):
+                    item = sndUsr + ': ' + self.parent.usrDct[sndUsr] + ' *'
+                else:
+                    item = sndUsr + ': ' + self.parent.usrDct[sndUsr]
+            try:
+                self.parent.users.setSelectedItem(item)
+            except:
+                None
+            if self.parent.getState() == swing.JFrame.ICONIFIED:
+                self.parent.state=(swing.JFrame.NORMAL)
+            self.parent.chatTxt.requestFocus()
+            self.parent.show()
 
 #==========================================================================
 class Chat400(swing.JFrame, awt.event.WindowListener):
@@ -121,7 +136,17 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
     def windowDeactivated(self, event):
         None
     def windowOpened(self, event):
-        None
+        keys = self.jobDct.keys()
+        keys.sort()
+        dq = acc.KeyedDataQueue(self.as400, CHATQ)
+        for key_usr in keys:
+            user = key_usr
+            if not dq.exists():
+                dq.create(KEYLEN, 512)
+            try:
+                dq.write(user, "%s:%s"%(curUsr, 'Logged and ready'))
+            except:
+                None
     def windowIconified(self, event):
         None
     def windowDeiconified(self, event):
@@ -131,6 +156,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
     #   Retrieve send-user list
     #**************************
     def rtvIntJobs(self):
+        try:
+            self.users.removeAllItems()
+        except:
+            None
         # Get interactive job list
         self.jobLst.open()
         self.jobLst.waitForComplete()
@@ -146,7 +175,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         keys.sort()
         for key_usr in keys:
             menuItem = key_usr
-            sts = ' '
+            sts = ''
             if self.jobDct.has_key(key_usr):
                 if not self.chkActive.isSelected():
                     sts = ' *'
@@ -187,7 +216,6 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 
     #**************************
     def btnActRef(self, event):
-        self.users.removeAllItems()
         self.rtvIntJobs()
     #**************************
     def showGui(self):
