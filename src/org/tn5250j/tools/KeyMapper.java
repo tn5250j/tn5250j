@@ -336,7 +336,7 @@ public class KeyMapper {
          }
       }
 
-      return KeyStroke.getKeyStroke(0,0);;
+      return KeyStroke.getKeyStroke(0,0);
    }
 
    public final static void removeKeyStroke(String which) {
