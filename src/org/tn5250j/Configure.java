@@ -55,6 +55,7 @@ public class Configure implements TN5250jConstants {
    static JCheckBox noEmbed = null;
    static JCheckBox deamon = null;
    static JCheckBox newJVM = null;
+   static JComboBox sslType = null;
 
    static JTabbedPane confTabs;
 
@@ -77,6 +78,12 @@ public class Configure implements TN5250jConstants {
 
       for (int x = 0; x < availCP.length; x++) {
          cpb.addItem(availCP[x]);
+      }
+
+      sslType = new JComboBox();
+
+      for (int x = 0; x < SSL_TYPES.length; x++) {
+         sslType.addItem(SSL_TYPES[x]);
       }
 
       if (propKey == null) {
@@ -110,6 +117,9 @@ public class Configure implements TN5250jConstants {
          else {
             port = new JTextField("23",5);
          }
+
+         if (isSpecified("-sslType",args))
+            sslType.setSelectedItem(getParm("-sslType",args));
 
          if (isSpecified("-sph",args))
             proxyHost = new JTextField(getParm("-sph",args),20);
@@ -217,6 +227,10 @@ public class Configure implements TN5250jConstants {
 
       addLabelComponent(LangTool.getString("conf.labelDeviceName"),
                            deviceName,
+                           sip);
+
+      addLabelComponent(LangTool.getString("conf.labelSSLType"),
+                           sslType,
                            sip);
 
       // options panel
@@ -402,6 +416,10 @@ public class Configure implements TN5250jConstants {
       if (!LangTool.getString("conf.labelDefault").equals(
                (String)cpb.getSelectedItem()))
          sb.append(" -cp " + (String)cpb.getSelectedItem());
+
+      if (!SSL_TYPE_NONE.equals((String)sslType.getSelectedItem()))
+         sb.append(" -sslType " + (String)sslType.getSelectedItem());
+
       if (ec.isSelected())
          sb.append(" -e" );
 
