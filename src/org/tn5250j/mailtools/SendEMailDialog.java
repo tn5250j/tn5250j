@@ -67,6 +67,8 @@ public class SendEMailDialog {
 	JRadioButton text;
 	JRadioButton graphic;
 	GridBagConstraints gbc;
+	JRadioButton normal;
+	JRadioButton screenshot;
 
 	/**
 	 * Constructor to send the screen information
@@ -336,19 +338,28 @@ public class SendEMailDialog {
 
 		text = new JRadioButton(LangTool.getString("em.text"));
 		graphic = new JRadioButton(LangTool.getString("em.graphic"));
+		normal = new JRadioButton(LangTool.getString("em.normalmail"));
+		screenshot = new JRadioButton(LangTool.getString("em.screenshot"));
 
 		// Group the radio buttons.
 		ButtonGroup tGroup = new ButtonGroup();
 		tGroup.add(text);
 		tGroup.add(graphic);
+		ButtonGroup mGroup = new ButtonGroup();
+		mGroup.add(normal);
+		mGroup.add(screenshot);
 
-		text.setSelected(true);
+		normal.setSelected(true);
+		text.setSelected(false);
+		text.setEnabled(false);
+		graphic.setEnabled(false);
 
 		JLabel screenDump = new JLabel(LangTool.getString("em.screendump"));
 		JLabel tol = new JLabel(LangTool.getString("em.to"));
 		JLabel subl = new JLabel(LangTool.getString("em.subject"));
 		JLabel bodyl = new JLabel(LangTool.getString("em.body"));
 		JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
+		JLabel tom = new JLabel(LangTool.getString("em.typeofmail"));
 
 		toAddress = new JComboBox();
 		toAddress.setPreferredSize(new Dimension(175, 25));
@@ -362,10 +373,16 @@ public class SendEMailDialog {
 		bodyScrollPane.setVerticalScrollBarPolicy(
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		attachmentName = new JTextField(fileName, 30);
+		attachmentName.setText("");
 
 		text.addItemListener(new java.awt.event.ItemListener() {
 			public void itemStateChanged(java.awt.event.ItemEvent e) {
 				setAttachmentName();
+			}
+		});
+		normal.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				setTypeOfMail();
 			}
 		});
 
@@ -378,64 +395,79 @@ public class SendEMailDialog {
 				setToCombo(config.getStringProperty("emailTo"), toAddress);
 			}
 		}
-
+		
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 10, 5, 5);
-		semp.add(screenDump, gbc);
+		semp.add(tom, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.insets = new Insets(0, 5, 5, 5);
-		semp.add(text, gbc);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 15, 5, 5);
+		semp.add(normal, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2; gbc.gridy = 0;
-		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.insets = new Insets(0, 5, 5, 10);
-		semp.add(graphic, gbc);
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 45, 5, 10);
+		semp.add(screenshot, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 10, 5, 5);
+		semp.add(screenDump, gbc);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 1; gbc.gridy = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 15, 5, 5);
+		semp.add(text, gbc);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 2; gbc.gridy = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 45, 5, 10);
+		semp.add(graphic, gbc);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0; gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 10, 5, 5);						
 		semp.add(tol, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 1; gbc.gridy = 1;
+		gbc.gridx = 1; gbc.gridy = 2;
 		gbc.gridwidth = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);		
 		semp.add(toAddress, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.gridx = 0; gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 10, 5, 5);		
 		semp.add(subl, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 1; gbc.gridy = 2;
+		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);		
 		semp.add(subject, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 3;
+		gbc.gridx = 0; gbc.gridy = 4;
 		gbc.gridheight = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 10, 5, 5);		
 		semp.add(bodyl, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 1; gbc.gridy = 3;
+		gbc.gridx = 1; gbc.gridy = 4;
 		gbc.gridwidth = 2; gbc.gridheight = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);		
 		semp.add(bodyScrollPane, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 6;
+		gbc.gridx = 0; gbc.gridy = 7;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 10, 5, 5);		
 		semp.add(fnl, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 1; gbc.gridy = 6;
+		gbc.gridx = 1; gbc.gridy = 7;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);		
@@ -450,10 +482,26 @@ public class SendEMailDialog {
 		if (text.isSelected()) {
 			attachmentName.setText("tn5250j.txt");
 
-		} else {
-
+		} 
+		else if (normal.isSelected()) {
 			attachmentName.setText("tn5250j.png");
-
+		}
+		else {
+			attachmentName.setText("tn5250j.png");
+		}
+	}
+	
+	private void setTypeOfMail() {
+		if (normal.isSelected()) {
+			text.setEnabled(false);
+			graphic.setEnabled(false);
+			attachmentName.setText("");
+		}
+		else {
+			text.setEnabled(true);
+			graphic.setEnabled(true);
+			text.setSelected(true);
+			setAttachmentName();
 		}
 	}
 
