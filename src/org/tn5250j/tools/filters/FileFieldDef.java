@@ -1,7 +1,7 @@
 package org.tn5250j.tools.filters;
 
 /*
- * @(#)iOhioSession.java
+ * @(#)FileFieldDef.java
  * Copyright:    Copyright (c) 2001
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,14 +38,21 @@ public class FileFieldDef {
    private String data;
    private boolean writeField;
    private char decChar;
+   private boolean translateIt;
    private tnvt vt;
+   private StringBuffer sbdata;
 
    public FileFieldDef(tnvt v,char dec) {
       decChar = dec;
       vt = v;
+      translateIt = true;
    }
 
    public String parseData(byte[] cByte) {
+
+      if (!translateIt) {
+         return sbdata.toString();
+      }
 
       StringBuffer sb = new StringBuffer(bufferLength);
 
@@ -160,6 +167,12 @@ public class FileFieldDef {
       return data;
    }
 
+   public void setFieldData(String fd) {
+      if (sbdata == null)
+         sbdata = new StringBuffer(length);
+      sbdata.setLength(0);
+      sbdata.append(fd);
+   }
    public String toString() {
       return fieldName + " " +
                startOffset + " " +
@@ -235,6 +248,10 @@ public class FileFieldDef {
 
       txtDesc = text;
 
+   }
+
+   public void setNeedsTranslation(boolean translate) {
+      translateIt = translate;
    }
 
    public boolean isWriteField () {
