@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001-2003
@@ -24,19 +23,21 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.interfaces.GUIViewInterface;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 
 public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
@@ -259,6 +260,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
             ses.addSessionListener(this);
             ses.addSessionJumpListener(this);
+
             this.getContentPane().add(sessionPane, BorderLayout.CENTER);
          }
 
@@ -273,50 +275,81 @@ public class Gui5250Frame extends GUIViewInterface implements
 
          session.addSessionListener(this);
          session.addSessionJumpListener(this);
+
          session.grabFocus();
          session.resizeMe();
-         repaint();
+         session.repaint();
       }
    }
 
    public void removeSessionView(Session targetSession) {
 
-      int index = sessionPane.indexOfComponent(targetSession);
-      System.out.println("session found and closing down " + index);
-      targetSession.removeSessionListener(this);
-      targetSession.removeSessionJumpListener(this);
-      int tabs = sessionPane.getTabCount();
-      sessionPane.remove(index);
-      tabs--;
+      if (hideTabBar && sessionPane.getTabCount() == 0) {
+         for (int x=0; x < getContentPane().getComponentCount(); x++) {
 
-
-      if (index < tabs) {
-         sessionPane.setSelectedIndex(index);
-         sessionPane.setForegroundAt(index,Color.blue);
-         sessionPane.setIconAt(index,focused);
-         ((Session)sessionPane.getComponentAt(index)).requestFocus();
+            if (getContentPane().getComponent(x) instanceof Session) {
+               getContentPane().remove(x);
+            }
+         }
       }
       else {
 
-         if (tabs > 0) {
-            sessionPane.setSelectedIndex(0);
-            sessionPane.setForegroundAt(0,Color.blue);
-            sessionPane.setIconAt(0,focused);
-            ((Session)sessionPane.getComponentAt(0)).requestFocus();
+         int index = sessionPane.indexOfComponent(targetSession);
+         System.out.println("session found and closing down " + index);
+         targetSession.removeSessionListener(this);
+         targetSession.removeSessionJumpListener(this);
+         int tabs = sessionPane.getTabCount();
+         sessionPane.remove(index);
+         tabs--;
+
+
+         if (index < tabs) {
+            sessionPane.setSelectedIndex(index);
+            sessionPane.setForegroundAt(index,Color.blue);
+            sessionPane.setIconAt(index,focused);
+            ((Session)sessionPane.getComponentAt(index)).requestFocus();
          }
+         else {
 
+            if (tabs > 0) {
+               sessionPane.setSelectedIndex(0);
+               sessionPane.setForegroundAt(0,Color.blue);
+               sessionPane.setIconAt(0,focused);
+               ((Session)sessionPane.getComponentAt(0)).requestFocus();
+            }
+
+         }
       }
-
    }
 
    public int getSessionViewCount() {
 
-      return sessionPane.getTabCount();
+      if (hideTabBar && sessionPane.getTabCount() == 0) {
+         for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
+
+            if (this.getContentPane().getComponent(x) instanceof Session) {
+               return 1;
+            }
+         }
+         return 0;
+      }
+      else
+         return sessionPane.getTabCount();
    }
 
    public Session getSessionAt( int index) {
 
-      return (Session)sessionPane.getComponentAt(index);
+      if (hideTabBar && sessionPane.getTabCount() == 0) {
+         for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
+
+            if (this.getContentPane().getComponent(x) instanceof Session) {
+               return (Session)getContentPane().getComponent(x);
+            }
+         }
+         return null;
+      }
+      else
+         return (Session)sessionPane.getComponentAt(index);
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
@@ -344,7 +377,17 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    public boolean containsSession(Session session) {
 
-      return (sessionPane.indexOfComponent(session) >= 0);
+      if (hideTabBar && sessionPane.getTabCount() == 0) {
+         for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
+
+            if (this.getContentPane().getComponent(x) instanceof Session) {
+               return ((Session)getContentPane().getComponent(x)).equals(session);
+            }
+         }
+         return false;
+      }
+      else
+         return (sessionPane.indexOfComponent(session) >= 0);
 
    }
 
