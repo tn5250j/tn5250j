@@ -81,16 +81,16 @@ public class SignoffAttributesPanel extends AttributesPanel {
       AlignLayout rowcol = new AlignLayout(4,5,5);
       soRegion.setLayout(rowcol);
 
-      soRegion.add(new JLabel("From Row:"));
+      soRegion.add(new JLabel(LangTool.getString("sa.fromRow")));
       fromRow = new JTextField("1",5);
       soRegion.add(fromRow);
-      soRegion.add(new JLabel("From Column:"));
+      soRegion.add(new JLabel(LangTool.getString("sa.fromColumn")));
       fromCol = new JTextField("1",5);
       soRegion.add(fromCol);
-      soRegion.add(new JLabel("To Row:"));
+      soRegion.add(new JLabel(LangTool.getString("sa.toRow")));
       toRow = new JTextField("24",5);
       soRegion.add(toRow);
-      soRegion.add(new JLabel("To Column:"));
+      soRegion.add(new JLabel(LangTool.getString("sa.toColumn")));
       toCol = new JTextField("80",5);
       soRegion.add(toCol);
 
