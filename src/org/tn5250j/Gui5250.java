@@ -441,6 +441,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void toggleDebug() {
       vt.toggleDebug();
+      try {
+         vt.sendHeartBeat();
+      }
+      catch (Exception exc) {
+         System.out.println(exc.getMessage());
+      }
    }
 
    public void startNewSession() {

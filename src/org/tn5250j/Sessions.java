@@ -50,7 +50,7 @@ public class Sessions implements SessionsInterface,ActionListener {
             ses = (Session)sessions.get(x);
             if (ses.isConnected() && ses.isSendKeepAlive()) {
                ses.getVT().sendHeartBeat();
-               System.out.println(" sent heartbeat to " +  ses.getSessionName());
+               //System.out.println(" sent heartbeat to " +  ses.getSessionName());
             }
          }
          catch (Exception ex) {
@@ -58,7 +58,7 @@ public class Sessions implements SessionsInterface,ActionListener {
          }
       }
 
-      System.out.println(" sending heartbeats " +  t);
+      //System.out.println(" sending heartbeats " +  t);
 
    }
 

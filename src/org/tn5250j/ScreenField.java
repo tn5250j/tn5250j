@@ -35,6 +35,7 @@ public class ScreenField {
 
    protected ScreenField setField(int attr, int len, int ffw1, int ffw2,
                      int fcw1, int fcw2) {
+
       return setField(attr,
                s.getCurrentRow() - 1,
                s.getCurrentCol() - 1,

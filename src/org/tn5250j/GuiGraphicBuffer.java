@@ -397,7 +397,6 @@ public class GuiGraphicBuffer {
 //            offLeft = 0;
 //         if (offTop <0 )
 //            offTop = 0;
-
          gg2d.drawImage(bi,null,offLeft,offTop);
          // tell waiting threads to wake up
          lock.notifyAll();

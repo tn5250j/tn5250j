@@ -165,6 +165,7 @@ public class DataStreamProducer implements Runnable {
          if (i == -1) // nothing read!
          {
            done = true;
+            vt.disconnect();
            continue;
          }
 

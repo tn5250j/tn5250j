@@ -97,6 +97,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    private Rectangle workR = new Rectangle();
    private int colSepLine = 0;
    public boolean cursorActive = false;
+   public boolean cursorShown = false;
    private boolean insertMode = false;
    private boolean keyProcessed = false;
    private Rectangle dirty = new Rectangle();
@@ -488,7 +489,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 
    public void actionPerformed(ActionEvent actionevent) {
       if (actionevent.getSource() instanceof javax.swing.Timer) {
-         if (isCursorActive())
+
+//         if (!cursorActive)
+//            return;
+//
+//         if (cursorShown)
+//            setCursorOff();
+//         else
+//            setCursorOn();
+         if (cursorActive)
             setCursorActive(false);
          else
             setCursorActive(true);
@@ -1362,10 +1371,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       setKBIndicatorOff();
    }
 
-   public boolean isCursorActive() {
-      return cursorActive;
-   }
-
    /**
     * Activate the cursor on screen
     *
@@ -1391,6 +1396,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
     */
    public void setCursorOn() {
          updateCursorLoc();
+         cursorShown =false;
    }
 
    /**
@@ -1399,6 +1405,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    public void setCursorOff() {
 
          updateCursorLoc();
+         cursorShown =false;
 //      System.out.println("cursor off " + updateCursorLoc + " " + cursorActive);
 
 

@@ -372,7 +372,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
     protected final void sendHeartBeat()
         throws IOException {
 
-        byte[] b = {(byte)0xff,(byte)0x00};
+        byte[] b = {(byte)0xff,(byte)0xf1};
         bout.write(b);
         bout.flush();
     }
