@@ -23,24 +23,53 @@ package org.tn5250j;
 import org.tn5250j.interfaces.SessionsInterface;
 
 import java.util.*;
+import java.awt.event.*;
+import javax.swing.Timer;
 
 /**
  * Contains a collection of Session objects. This list is a static snapshot
  * of the list of Session objects available at the time of the snapshot.
  */
-public class Sessions implements SessionsInterface {
+public class Sessions implements SessionsInterface,ActionListener {
 
    private Vector sessions = null;
    private int count = 0;
+   private Timer heartBeater;
 
    public Sessions() {
 
       sessions = new Vector();
+   }
+
+   public void actionPerformed(ActionEvent e) {
+
+      String t = new Date(e.getWhen()).toString();
+      Session ses;
+      for (int x = 0; x < sessions.size(); x++) {
+         try {
+            ses = (Session)sessions.get(x);
+            if (ses.isConnected() && ses.isSendKeepAlive()) {
+               ses.getVT().sendHeartBeat();
+               System.out.println(" sent heartbeat to " +  ses.getSessionName());
+            }
+         }
+         catch (Exception ex) {
+            System.out.println(ex.getMessage());
+         }
+      }
+
+      System.out.println(" sending heartbeats " +  t);
 
    }
 
    protected void addSession(Session newSession) {
       sessions.add(newSession);
+      if (newSession.isSendKeepAlive() && heartBeater == null) {
+         heartBeater = new Timer(15000,this);
+//         heartBeater = new Timer(3000,this);
+         heartBeater.start();
+
+      }
       ++count;
    }
 

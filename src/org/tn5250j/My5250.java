@@ -29,10 +29,12 @@ import java.util.*;
 import java.io.*;
 import javax.swing.UIManager;
 import javax.swing.*;
+
 import java.awt.*;
 import java.net.*;
 
 import org.tn5250j.tools.*;
+import org.tn5250j.tools.system.OperatingSystem;
 import org.tn5250j.event.*;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.interfaces.GUIViewInterface;
@@ -48,7 +50,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    protected SessionManager manager;
    private static Vector frames;
    private static boolean useMDIFrames;
-   private static TN5250jSplashScreen splash;
+   private TN5250jSplashScreen splash;
    private int step;
    private static String jarClassPaths;
 
@@ -62,11 +64,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       splash.setSteps(5);
       splash.setVisible(true);
 
-      try  {
-         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      }
-      catch(Exception e) {
-      }
+      loadLookAndFeel();
+
 
       loadSessions();
       splash.updateProgress(++step);
@@ -87,6 +86,33 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       manager = SessionManager.instance();
       splash.updateProgress(++step);
 
+   }
+
+
+   private void loadLookAndFeel() {
+
+      // we only want to try and load the Kunststoff look and feel if it is not
+      //  for the MAC operating system.
+      if (!OperatingSystem.isMacOS()) {
+
+         try  {
+            UIManager.setLookAndFeel("com.incors.plaf.kunststoff.KunststoffLookAndFeel");
+         }
+         catch(Exception e) {
+            try {
+               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException e1) {
+               e1.printStackTrace();
+            } catch (InstantiationException e1) {
+               e1.printStackTrace();
+            } catch (IllegalAccessException e1) {
+               e1.printStackTrace();
+            } catch (UnsupportedLookAndFeelException e1) {
+               e1.printStackTrace();
+            }
+         }
+
+      }
    }
 
    /**
@@ -230,10 +256,10 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
             int height = m.frame1.getHeight();
 
             if (isSpecified("-width",args)) {
-               width = Integer.parseInt(m.getParm("-width",args));
+               width = Integer.parseInt(My5250.getParm("-width",args));
             }
             if (isSpecified("-height",args)) {
-               height = Integer.parseInt(m.getParm("-height",args));
+               height = Integer.parseInt(My5250.getParm("-height",args));
             }
 
             m.frame1.setSize(width,height);
@@ -266,26 +292,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
             }
             LangTool.init();
 
-//            // check if a locale parameter is specified on the command line
-//            if (isSpecified("-L",args)) {
-//
-//               Locale.setDefault(parseLocal(getParm("-L",args)));
-//               LangTool.init();
-//               if (args[0].startsWith("-")) {
-//
-//                  m.sessionArgs = null;
-//               }
-//               else {
-//                  m.splash.updateProgress(++m.step);
-//                  m.frame1.setVisible(true);
-//                  m.splash.setVisible(false);
-//                  m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//                  LangTool.init();
-//                  m.sessionArgs = args;
-//               }
-//            }
-//            else {
-//               LangTool.init();
                if (isSpecified("-s",args))
                   m.sessionArgs = args;
                else
@@ -451,6 +457,28 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       }
    }
 
+   void startDuplicateSession(Session ses) {
+
+      loadSessions();
+      if (ses == null) {
+         Sessions sess = manager.getSessions();
+         for (int x = 0; x < sess.getCount(); x++) {
+
+            if (sess.item(x).isVisible()) {
+
+               ses = sess.item(x);
+               break;
+            }
+         }
+      }
+
+      String selArgs = sessions.getProperty(ses.getSessionName());
+      sessionArgs = new String[NUM_PARMS];
+      parseArgs(selArgs, sessionArgs);
+
+      newSession(ses.getSessionName(),sessionArgs);
+   }
+
    private String getConnectSession () {
 
       Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
@@ -529,6 +557,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
          sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));
       }
+
+      if (isSpecified("-hb",args))
+         sesProps.put(SESSION_HEART_BEAT,"1");
 
       Session s = manager.openSession(sesProps,propFileName,sel);
 
@@ -737,6 +768,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
             break;
          case EmulatorActionEvent.START_NEW_SESSION:
             startNewSession();
+            break;
+         case EmulatorActionEvent.START_DUPLICATE:
+            startDuplicateSession(ses);
             break;
       }
    }

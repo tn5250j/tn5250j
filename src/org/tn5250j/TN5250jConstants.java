@@ -28,7 +28,7 @@ public interface TN5250jConstants {
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".5";
-   public static final String tn5250jSubVer= ".7 pre2";
+   public static final String tn5250jSubVer= ".7 pre3";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
@@ -54,6 +54,7 @@ public interface TN5250jConstants {
    public static final String SESSION_TERM_NAME_SYSTEM = "SESSION_TERM_NAME_SYSTEM";
    public static final String SESSION_TERM_NAME = "SESSION_TERM_NAME";
    public static final String SESSION_IS_APPLET = "SESSION_IS_APPLET";
+   public static final String SESSION_HEART_BEAT = "SESSION_KEEP_ALIVE_ENABLED";
 
    public static final String GUI_MDI_TYPE = "GUI_MDI_TYPE";
    public static final String GUI_FRAME_WIDTH = "GUI_FRAME_WIDTH";
@@ -149,6 +150,9 @@ public interface TN5250jConstants {
    public static final int TRANSFER = 5012;
    public static final int E_MAIL = 5013;
    public static final int RUN_SCRIPT = 5014;
+   public static final int SPOOL_FILE = 5015;
+   public static final int QUICK_MAIL = 5016;
+   public static final int OPEN_SAME = 5017;
 
 
    // PF Keys
@@ -196,7 +200,8 @@ public interface TN5250jConstants {
         "[markright]","[dupfield]","[newline]","[jumpnext]","[jumpprev]",
         "[opennew]","[togcon]","[hotspots]","[gui]","[dspmsgs]",
         "[dspattr]","[print]","[cursor]","[debug]","[close]",
-        "[transfer]","[e-mail]","[runscript]"
+        "[transfer]","[e-mail]","[runscript]","[spoolfile]","[quick-mail]",
+        "[open-same]"
    };
 
    public static final int mnemonicValue[] = {
@@ -218,7 +223,8 @@ public interface TN5250jConstants {
         1041, 1042, 1043, 5000, 5001,
         5002, 5003, 5004, 5005, 5006,
         5007, 5008, 5009, 5010, 5011,
-        5012, 5013, 5014
+        5012, 5013, 5014, 5015, 5016,
+        5017
    };
 
    public static final String MNEMONIC_CLEAR   =  "[clear]";
@@ -312,6 +318,9 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_PASTE   =  "[paste]";
    public static final String MNEMONIC_FILE_TRANSFER   =  "[transfer]";
    public static final String MNEMONIC_RUN_SCRIPT   =  "[runscript]";
+   public static final String MNEMONIC_SPOOL_FILE   =  "[spoolfile]";
+   public static final String MNEMONIC_QUICK_MAIL   =  "[quick-mail]";
+   public static final String MNEMONIC_OPEN_SAME   =  "[open-same]";
 
 
    // AID-Generating Keys

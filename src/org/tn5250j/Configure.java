@@ -56,6 +56,7 @@ public class Configure implements TN5250jConstants {
    static JCheckBox deamon = null;
    static JCheckBox newJVM = null;
    static JComboBox sslType = null;
+   static JCheckBox heartBeat = null;
 
    static JTabbedPane confTabs;
 
@@ -78,6 +79,7 @@ public class Configure implements TN5250jConstants {
       noEmbed = new JCheckBox(LangTool.getString("conf.labelEmbed"));
       deamon = new JCheckBox(LangTool.getString("conf.labelDeamon"));
       newJVM = new JCheckBox(LangTool.getString("conf.labelNewJVM"));
+      heartBeat = new JCheckBox(LangTool.getString("conf.labelHeartBeat"));
 
       cpb = new JComboBox();
       String[] availCP = CharMappings.getAvailableCodePages();
@@ -198,6 +200,11 @@ public class Configure implements TN5250jConstants {
             newJVM.setSelected(true);
          else
             newJVM.setSelected(false);
+
+         if (isSpecified("-hb",args))
+            heartBeat.setSelected(true);
+         else
+            heartBeat.setSelected(false);
       }
 
       //Create main attributes panel
@@ -262,6 +269,10 @@ public class Configure implements TN5250jConstants {
 
       addLabelComponent(LangTool.getString("conf.labelSSLType"),
                            sslType,
+                           sip);
+
+      addLabelComponent("",
+                           heartBeat,
                            sip);
 
       // options panel
@@ -356,17 +367,24 @@ public class Configure implements TN5250jConstants {
       confTabs.addTab(LangTool.getString("conf.tabOptions"),op);
       confTabs.addTab(LangTool.getString("conf.tabProxy"),sprox);
 
+      if (systemName.getText().trim().length() <= 0) {
+         confTabs.setEnabledAt(1,false);
+         confTabs.setEnabledAt(2,false);
+         confTabs.setEnabledAt(3,false);
+      }
+
+
       systemName.setAlignmentX(Component.CENTER_ALIGNMENT);
       systemId.setAlignmentX(Component.CENTER_ALIGNMENT);
       fpn.setAlignmentX(Component.CENTER_ALIGNMENT);
       cpb.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 
       Object[]      message = new Object[1];
       message[0] = confTabs;
 
       options = new JButton[2];
       String title;
-
 
       final String propKey2 = propKey;
 
@@ -408,25 +426,6 @@ public class Configure implements TN5250jConstants {
 
       dialog.show();
 
-//      int result = JOptionPane.showOptionDialog(
-//             parent,                              // the parent that the dialog blocks
-//             message,                           // the dialog message array
-//             title,                             // the title of the dialog window
-//             JOptionPane.DEFAULT_OPTION,        // option type
-//             JOptionPane.PLAIN_MESSAGE,   // message type
-//             null,                              // optional icon, use null to use the default icon
-//             options,                           // options string array, will be made into buttons//
-//             options[0]                         // option that should be made into a default button
-//         );
-//
-//      if (result == 0) {
-//         if (propKey == null) {
-//            props.put(systemName.getText(),toArgString());
-//         }
-//         else {
-//            props.setProperty(systemName.getText(),toArgString());
-//         }
-//      }
 
   }
 
@@ -577,6 +576,9 @@ public class Configure implements TN5250jConstants {
 
       if (newJVM.isSelected())
          sb.append(" -nc ");
+
+      if (heartBeat.isSelected())
+         sb.append(" -hb ");
 
       return sb.toString();
   }

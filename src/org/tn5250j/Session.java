@@ -42,6 +42,7 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    private String sslType;
    private boolean firstScreen;
    private char[] signonSave;
+   private boolean heartBeat = false;
 
    public Session (Properties props, String configurationResource,
                      String sessionName,
@@ -52,6 +53,9 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
       this.sessionName = sessionName;
       sesProps = props;
       sce = new SessionChangeEvent(this);
+
+      if (sesProps.containsKey(SESSION_HEART_BEAT))
+         heartBeat = true;
 
    }
 
@@ -74,6 +78,10 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
       return vt.isConnected();
 
+   }
+
+   protected boolean isSendKeepAlive() {
+      return heartBeat;
    }
 
    public boolean isOnSignOnScreen() {

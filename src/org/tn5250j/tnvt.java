@@ -198,8 +198,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
                SwingUtilities.invokeAndWait(
                   new Runnable () {
                      public void run() {
-                        screen52.setStatus(screen52.STATUS_SYSTEM,
-                                 screen52.STATUS_VALUE_ON,
+                        screen52.setStatus(Screen5250.STATUS_SYSTEM,
+                                 Screen5250.STATUS_VALUE_ON,
                                  "X - Connecting");
 
                      }
@@ -251,15 +251,15 @@ public final class tnvt implements Runnable, TN5250jConstants {
          producer = new DataStreamProducer(this,bin,dsq,abyte0);
          pthread = new Thread(producer);
 //         pthread.setPriority(pthread.MIN_PRIORITY);
-         pthread.setPriority(pthread.NORM_PRIORITY/2);
+         pthread.setPriority(Thread.NORM_PRIORITY/2);
          pthread.start();
 
          try {
                SwingUtilities.invokeAndWait(
                   new Runnable () {
                      public void run() {
-                        screen52.setStatus(screen52.STATUS_SYSTEM,
-                                             screen52.STATUS_VALUE_OFF,
+                        screen52.setStatus(Screen5250.STATUS_SYSTEM,
+                                             Screen5250.STATUS_VALUE_OFF,
                                              null);
                      }
                   }
@@ -299,7 +299,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          pthread.interrupt();
       }
 
-      screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Disconnected");
+      screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_ON,"X - Disconnected");
       screen52.setKeyboardLocked(false);
       pendingUnlock =false;
 
@@ -369,17 +369,25 @@ public final class tnvt implements Runnable, TN5250jConstants {
         bout.flush();
     }
 
+    protected final void sendHeartBeat()
+        throws IOException {
+
+        byte[] b = {(byte)0xff,(byte)0x00};
+        bout.write(b);
+        bout.flush();
+    }
+
    private final void readImmediate(int readType) {
 
       if (screen52.isStatusErrorCode()) {
          screen52.restoreErrorLine();
-         screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_OFF,null);
+         screen52.setStatus(Screen5250.STATUS_ERROR_CODE, Screen5250.STATUS_VALUE_OFF,null);
       }
 
       if (!enhanced) {
          screen52.setCursorActive(false);
       }
-         screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
+         screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_ON,null);
 
       screen52.setKeyboardLocked(true);
       pendingUnlock = false;
@@ -404,13 +412,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       if (screen52.isStatusErrorCode()) {
          screen52.restoreErrorLine();
-         screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_OFF,null);
+         screen52.setStatus(Screen5250.STATUS_ERROR_CODE, Screen5250.STATUS_VALUE_OFF,null);
       }
 
       if (!enhanced) {
          screen52.setCursorActive(false);
       }
-         screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
+         screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_ON,null);
 
       screen52.setKeyboardLocked(true);
       pendingUnlock = false;
@@ -693,7 +701,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
     */
    public final void cancelInvite() {
 
-      screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
+      screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_ON,null);
 
       // from rfc1205 section 4.3
       // Server: Sends header with the          000A12A0 00000400 000AFFEF
@@ -718,11 +726,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       if (screen52.isStatusErrorCode()) {
          screen52.restoreErrorLine();
-         screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_OFF,null);
+         screen52.setStatus(Screen5250.STATUS_ERROR_CODE, Screen5250.STATUS_VALUE_OFF,null);
       }
 
       screen52.setCursorActive(false);
-      screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
+      screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_ON,null);
       // From client access ip capture
       // it seems to use an operation code of 3 and 4
       // also note that the flag field that says reserved is being sent as well
@@ -838,7 +846,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 //      System.out.println("invited");
       if (!screen52.isStatusErrorCode())
-         screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_OFF,null);
+         screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_OFF,null);
 
       invited = true;
    }
@@ -860,7 +868,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          // lets play nicely with the others on the playground
 //         me.yield();
 
-         pthread.yield();
+         Thread.yield();
 
          invited = false;
 
@@ -992,8 +1000,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
 
          // lets play nicely with the others on the playground
-         me.yield();
-         pthread.yield();
+         //me.yield();
+         Thread.yield();
 
 
       }
@@ -1143,6 +1151,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    public final void saveScreen()
         throws IOException  {
 
+
       ByteArrayOutputStream sc = new ByteArrayOutputStream();
       sc.write(4);
       sc.write(0x12);  // 18
@@ -1198,9 +1207,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
          sf = null;
       }
 
-      screen52.getScreenFields().setCurrentField(null);    // set it to null for GC ?
+      // The following two lines of code looks to have caused all sorts of
+      //    problems so for now we have commented them out.
+//      screen52.getScreenFields().setCurrentField(null);    // set it to null for GC ?
+//      screen52.clearTable();
 
-      screen52.clearTable();
       try {
          writeGDS(0, 3, sc.toByteArray());
       }
@@ -1385,6 +1396,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   else {
                      if (screen52.getRows() != 27)
                         screen52.setRowsCols(27,132);
+
                      screen52.clearAll();
 
                   }
@@ -1798,6 +1810,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
          bk.getNextByte(); // flag byte 2
          bk.getNextByte(); // reserved
          bk.getNextByte(); // resequence fields
+
+         screen52.clearTable();
+
+         // well that is the first time I have seen this.  This fixes a problem
+         // with S/36 command line.  Finally got it.
+         if (l <=3)
+            return false;
+
          screen52.setErrorLine(bk.getNextByte()); // error row
 
          int byte1 = 0;
@@ -1844,7 +1864,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //         if (l == 7)
 //            System.out.println(" byte 7 " + Integer.toBinaryString(bk.getNextByte()));
 
-         screen52.clearTable();
          return false;
       }
       else {
@@ -2034,11 +2053,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
                case 0xD9:     // Class Type 0xD9 - Create Window
 
                   switch (bk.getNextByte()) {
-//                     case 0x50:      // Define Selection Field
-//
-//                        defineSelectionField(length);
-//                        done = true;
-//                        break;
+                     case 0x50:      // Define Selection Field
+
+                        defineSelectionField(length);
+                        done = true;
+                        break;
                      case 0x51:      // Create Window
 
                         boolean cr = false;
@@ -2392,7 +2411,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          int cols = bk.getNextByte();    // Text Size - byte 14
          int rows = bk.getNextByte();    // Rows - byte 15
 
-         int maxColChoice = bk.getNextByte();    // byte 16
+         int maxColChoice = bk.getNextByte();    // byte 16 num of column choices
          int padding = bk.getNextByte();    // byte 17
          int numSepChar = bk.getNextByte();    // byte 18
          int ctySepChar = bk.getNextByte();    // byte 19
@@ -2405,9 +2424,15 @@ public final class tnvt implements Runnable, TN5250jConstants {
                               + " col: " + screen52.getCurrentCol()
                               + " type " + typeSelection
                               + " gui " + guiDevice
-                              + "withMnemonic " + withMnemonic
+                              + " withMnemonic " + withMnemonic
                               + " cols " + cols
                               + " rows " + rows);
+         int rowCtr = 0;
+         int chcRowStart = screen52.getCurrentRow();
+         int chcColStart = screen52.getCurrentCol();
+         int colAvail = 0x20;
+         int colSelAvail = 0x20;
+         int fld = 0;
          do {
             minLen = bk.getNextByte();    // Minor Length byte 21
 
@@ -2421,7 +2446,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   int flagCP1 = bk.getNextByte();
 
                   bk.getNextByte(); // mon select cursor avail emphasis - byte4
-                  int colSelAvail = bk.getNextByte();  // -byte 5
+                  colSelAvail = bk.getNextByte();  // -byte 5
 
                   bk.getNextByte(); // mon select cursor - byte 6
                   int colSelCur = bk.getNextByte();  // -byte 7
@@ -2430,7 +2455,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   int colSelNotAvail = bk.getNextByte();  // -byte 9
 
                   bk.getNextByte(); // mon avail emphasis - byte 10
-                  int colAvail = bk.getNextByte();  // -byte 11
+                  colAvail = bk.getNextByte();  // -byte 11
 
                   bk.getNextByte(); // mon select emphasis - byte 12
                   int colSel = bk.getNextByte();  // -byte 13
@@ -2448,12 +2473,20 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
                case 0x10:  // Choice Text minor structure
 
+                  screen52.goto_XY(chcRowStart++,chcColStart);
                   cnt = 5;
                   int flagCT1 = bk.getNextByte();
                   int flagCT2 = bk.getNextByte();
                   int flagCT3 = bk.getNextByte();
                   int mnemOffset = 0;
                   boolean aid = false;
+                  boolean selected = false;
+
+                  // is mnemonic offset specified
+                  if ((flagCT1 & 0x40) == 0x40) {
+                     System.out.println(" selected ");
+                     selected = true;
+                  }
 
                   // is mnemonic offset specified
                   if ((flagCT1 & 0x08) == 8) {
@@ -2487,6 +2520,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
                   String s = "";
                   byte byte0 = 0;
+//                  if (fld++ == 2)
+//                  screen52.addField(colAvail,cols,0x0,0,0,0);
+//                  else
+                  screen52.addField(colAvail,cols,0x20,0,0,0);
                   for (;cnt < minLen; cnt++) {
 
                      byte0 = bk.getNextByte();
@@ -2494,7 +2531,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                      screen52.setChar(ebcdic2uni(byte0));
 
                   }
-                  System.out.println(s);
+                  System.out.println(s + " selected " + selected);
                   break;
                default:
                   for (cnt = 2;cnt < minLen; cnt++) {
@@ -2547,7 +2584,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    private final void writeErrorCode() throws Exception {
       screen52.goto_XY(screen52.getErrorLine(),1); // Skip the control byte
-      screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_ON,null);
+      screen52.setStatus(Screen5250.STATUS_ERROR_CODE, Screen5250.STATUS_VALUE_ON,null);
       screen52.saveErrorLine();
       cursorOn = true;
 
@@ -2557,7 +2594,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       int fromCol = bk.getNextByte() & 0xff;  // from column
       int toCol = bk.getNextByte() & 0xff;  // to column
       screen52.goto_XY(screen52.getErrorLine(),fromCol); // Skip the control byte
-      screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_ON,null);
+      screen52.setStatus(Screen5250.STATUS_ERROR_CODE, Screen5250.STATUS_VALUE_ON,null);
       screen52.saveErrorLine();
       cursorOn = true;
 
