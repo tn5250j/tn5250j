@@ -702,13 +702,20 @@ public class Gui5250 extends JPanel implements ComponentListener,
       // The problem is that these umlauts don't generate a keyPressed event
       // and so keyProcessed is true (even if is hasn't been processed)
       // so we check if it's a letter (with or without shift) and skip return
-      if ((isLinux)  &&  !((Character.isLetter(kc))  && (e.getModifiers() == 0
+      if (isLinux) {
+         if (!((Character.isLetter(kc))  && (e.getModifiers() == 0
             || e.getModifiers() == Event.SHIFT_MASK))) {
 
+            if (Character.isISOControl(kc) || keyProcessed) {
+               return;
+            }
+         }
+      } else {
          if (Character.isISOControl(kc) || keyProcessed) {
             return;
          }
       }
+
 //      displayInfo(e,"Typed processed " + keyProcessed);
       String s = "";
 //      if (isLinux) {
