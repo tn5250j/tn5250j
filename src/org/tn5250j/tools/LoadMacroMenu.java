@@ -30,9 +30,16 @@ import java.util.*;
 import java.io.*;
 import java.awt.event.*;
 import org.tn5250j.*;
+import org.tn5250j.tools.LangTool;
 import org.tn5250j.scripting.ExecuteScriptAction;
 
 public final class LoadMacroMenu {
+
+   private static Vector macroVector;
+
+   static {
+      macroVector = new Vector();
+   }
 
    public static void loadMacros(Session session, Macronizer macros, JMenu menu) {
 
@@ -69,35 +76,101 @@ public final class LoadMacroMenu {
    public static void scriptDir(String pathName, JMenu menu,Session session) {
 
       File root = new File(pathName);
-      File directory;
+
+      try {
+
+         macroVector = new Vector();
+
+         loadScripts(macroVector,root.getCanonicalPath(),root, session);
+         createScriptsMenu(menu,macroVector,0);
+
+      }
+      catch (IOException ioe) {
+         System.out.println(ioe.getMessage());
+
+      }
+
+
+   }
+
+   /**
+    * Recursively read the scripts directory and add them to our macros vector
+    *    holding area
+    *
+    * @param vector
+    * @param path
+    * @param directory
+    */
+   private static void loadScripts(Vector vector,
+                                    String path,
+                                    File directory,
+                                    Session session) {
 
       ExecuteScriptAction action;
 
-      if (root.isDirectory()) {
-         try {
-            directory = new File(root.getCanonicalPath());
-            String[] files = directory.list();
-            for (int x = 0; x < files.length; x++) {
+      File[] macroFiles = directory.listFiles();
+      if(macroFiles == null || macroFiles.length == 0)
+         return;
 
-               File f = new File(directory,files[x]);
-               if (f.isFile()) {
+//		MiscUtilities.quicksort(macroFiles,new MiscUtilities.StringICaseCompare());
 
-                  action = new ExecuteScriptAction(f.getName(),
-                                             f.getAbsolutePath(),
-                                             session) {
-                    };
-                  menu.add(action);
-
-               }
-
-            }
-
+      for(int i = 0; i < macroFiles.length; i++) {
+         File file = macroFiles[i];
+         String fileName = file.getName();
+         if(file.isHidden()) {
+            /* do nothing! */
+            continue;
          }
-         catch (IOException ioe) {
-            System.out.println(ioe.getMessage());
-
+         else if(file.isDirectory()) {
+            Vector submenu = new Vector();
+            submenu.addElement(fileName.replace('_',' '));
+            loadScripts(submenu,path + fileName + '/',file,session);
+            // if we do not want empty directories to show up uncomment this
+            //    line.
+//            if(submenu.size() != 1)
+               vector.addElement(submenu);
+         }
+         else {
+            String fn = fileName.replace('_',' ');
+            int index = fn.lastIndexOf('.');
+            if (index > 0) {
+               fn = fn.substring(0,index);
+            }
+            action = new ExecuteScriptAction(fn,
+                                       file.getAbsolutePath(),
+                                       session) {
+              };
+            vector.addElement(action);
          }
       }
-
    }
+
+   /**
+    * Create the scripts menu(s) from the vector of macros provided
+    *
+    * @param menu
+    * @param vector
+    * @param start
+    */
+   private static void createScriptsMenu(JMenu menu, Vector vector, int start) {
+
+      for (int i = start; i < vector.size(); i++) {
+         Object obj = vector.elementAt(i);
+         if (obj instanceof ExecuteScriptAction) {
+            menu.add((ExecuteScriptAction)obj);
+         }
+         else
+            if (obj instanceof Vector) {
+               Vector subvector = (Vector)obj;
+               String name = (String)subvector.elementAt(0);
+               JMenu submenu = new JMenu(name);
+               createScriptsMenu(submenu,subvector,1);
+               if(submenu.getMenuComponentCount() == 0) {
+                  submenu.add(LangTool.getString("popup.noScripts"));
+               }
+               menu.add(submenu);
+         }
+      }
+   }
+
 }
