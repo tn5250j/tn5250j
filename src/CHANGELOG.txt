@@ -14,11 +14,6 @@ large to implement this - 57 pages worth of specs and the such.  Work has begun.
 
 Implement support for images on the background. Wishlist for the future
 
-Autologin support request.
-
-Fix throttling code that is causing wierd painting problems.  I found it now
-have to make it more intelligent.
-
 Add option for sending partial screen information to file and/or e-mail.
 
 Add restore of session sizes in MDI session interface.
@@ -41,13 +36,13 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
-06/12/2003  Well we have not kept this up to date at all.  Hopefully
+15/02/2004  Well we have not kept this up to date at all.  Hopefully
             we can catch it up to date from now on.
 
             Fixed the bounding area.
             Added kunstoff look and feel - Patrick Bielen
             Added access to functions/operations with password access
-            Added delete macros
+            Added delete macros functionality - Right click on the macro
             Fixed up some of the panels - Patrick Bielen
             Fixed a lot of problems in E-mail - Patrick Bielen
             Added new options to e-mail functions
@@ -55,8 +50,14 @@ Enhancements/Change Log
                - New access to just send quick message with file attachment -
                      Patrick Bielen
                - Send screen image via e-mail - Fixes by Patrick Bielen
-            Added new options to the define the margins for the Print Screen
+            Added new options to define the margins for the Print Screen
                function.
+	    Added auto login support
+	    New splash screen donated by Carlo Daffara from Conecta http://www.conecta.it
+	    Added blinking cursor.  Beta and may leave traces.
+
+	    Well just run it to see all the new stuff.
+
 
 05/09/2002  Lots of clean up for bounding area selection.
 
