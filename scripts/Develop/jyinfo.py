@@ -243,8 +243,6 @@ class SampleModel(TreeModel):
 from org.python.core import PyBeanProperty, PyBeanEventProperty, PyReflectedFunction
 from java.lang.reflect import Modifier
 from java.lang import Object
-import string        
-
 
 def getBeanInfo(bean):
     eventdict = {}
@@ -277,7 +275,7 @@ def parseEventDict(edict):
 def parsePropDict(pdict):
     ppdict = {}
     for key in pdict.keys():        
-        ppdict[key] = [string.split(p.toString())[1] for p in pdict[key]]
+        ppdict[key] = [p.toString().split()[1] for p in pdict[key]]
     return ppdict
 
 def parseMethDict(mdict):
@@ -333,7 +331,7 @@ class InfoFrame(JFrame):
         name = self.text.getText()
         try:
             mod = __import__(name)
-            components = string.split(name, '.')
+            components = name.split('.')
             for comp in components[1:]:
                 mod = getattr(mod, comp)            
         except ImportError:
