@@ -55,7 +55,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private int lastCol;
 	private int lastPos;
 	private int lenScreen;
-	private GuiGraphicBuffer bi;
+	protected GuiGraphicBuffer bi;
 	private KeyStrokenizer strokenizer;
 	private tnvt sessionVT;
 	private int numRows = 0;
@@ -4453,12 +4453,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	protected boolean isStatusErrorCode() {
 
 		return oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR;
-
-	}
-
-	public boolean iisXSystem() {
-
-		return statusXSystem;
 
 	}
 
