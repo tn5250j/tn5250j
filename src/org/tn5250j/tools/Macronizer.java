@@ -122,6 +122,21 @@ public class Macronizer {
       return null;
    }
 
+   public final static void removeMacroByName(String name) {
+
+      Set macroSet = macros.keySet();
+      Iterator macroIterator = macroSet.iterator();
+      String byName = null;
+      while (macroIterator.hasNext()) {
+         byName = (String)macroIterator.next();
+         if (byName.endsWith(name)) {
+            macros.remove(byName);
+            saveMacros();
+            return;
+         }
+      }
+   }
+
    public final static void setMacro(String name, String keyStrokes) {
 
       int x = 0;
@@ -221,3 +236,4 @@ public class Macronizer {
    }
 
 }
+
