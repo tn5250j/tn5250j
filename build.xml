@@ -214,6 +214,12 @@
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${lib.dir}/jython.jar">
         </copy>
+        <!--copy todir="${dist.dir}/${dist.base.name}"
+                file="${lib.dir}/jt400.jar">
+        </copy -->
+        <copy todir="${dist.dir}/${dist.base.name}"
+                file="${lib.dir}/itext.jar">
+        </copy>
         </target>
 
     <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
@@ -227,12 +233,12 @@
         <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
             basedir="${dist.dir}/${dist.base.name}"
             includes="**"
-            excludes="jython.jar">
+            excludes="jython.jar,jt400.jar,itext.jar">
         </zip>
     </target>
 
     <target name= "dist-bin-scripting-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
-        <zip zipfile="${dist.dir}/${dist.bin.name}-scripting-nosubdir.zip"
+        <zip zipfile="${dist.dir}/${dist.bin.name}-full-nosubdir.zip"
             basedir="${dist.dir}/${dist.base.name}"
             includes="**">
         </zip>
