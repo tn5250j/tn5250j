@@ -34,170 +34,189 @@ import org.tn5250j.SessionConfig;
 
 public class DisplayAttributesPanel extends AttributesPanel {
 
-   JRadioButton csLine;
-   JRadioButton csDot;
-   JRadioButton csShortLine;
-   JRadioButton saNormal;
-   JCheckBox guiCheck;
-   JCheckBox guiShowUnderline;
+	JRadioButton csHide;
+	JRadioButton csLine;
+	JRadioButton csDot;
+	JRadioButton csShortLine;
+	JRadioButton saNormal;
+	JCheckBox guiCheck;
+	JCheckBox guiShowUnderline;
 
-   public DisplayAttributesPanel(SessionConfig config ) {
-      super(config,"Display");
-   }
+	public DisplayAttributesPanel(SessionConfig config) {
+		super(config, "Display");
+	}
 
-   /**Component initialization*/
-   public void initPanel() throws Exception  {
+	/**Component initialization*/
+	public void initPanel() throws Exception {
 
-      setLayout(new BorderLayout());
-      contentPane = new JPanel();
-      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
-      add(contentPane,BorderLayout.NORTH);
+		setLayout(new BorderLayout());
+		contentPane = new JPanel();
+		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+		add(contentPane, BorderLayout.NORTH);
 
-      // define column separator panel
-      JPanel csp = new JPanel();
-      TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.cs"));
-      csp.setBorder(tb);
+		// define column separator panel
+		JPanel csp = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		TitledBorder tb =
+			BorderFactory.createTitledBorder(LangTool.getString("sa.cs"));
+		csp.setBorder(tb);
 
-      csLine = new JRadioButton(LangTool.getString("sa.csLine"));
-      csLine.setActionCommand("Line");
-      csDot = new JRadioButton(LangTool.getString("sa.csDot"));
-      csDot.setActionCommand("Dot");
-      csShortLine = new JRadioButton(LangTool.getString("sa.csShortLine"));
-      csShortLine.setActionCommand("ShortLine");
+		csHide = new JRadioButton(LangTool.getString("sa.csHide"));
+		csHide.setActionCommand("Hide");
+		csLine = new JRadioButton(LangTool.getString("sa.csLine"));
+		csLine.setActionCommand("Line");
+		csDot = new JRadioButton(LangTool.getString("sa.csDot"));
+		csDot.setActionCommand("Dot");
+		csShortLine = new JRadioButton(LangTool.getString("sa.csShortLine"));
+		csShortLine.setActionCommand("ShortLine");
 
-      // Group the radio buttons.
-      ButtonGroup csGroup = new ButtonGroup();
-      csGroup.add(csLine);
-      csGroup.add(csDot);
-      csGroup.add(csShortLine);
+		// Group the radio buttons.
+		ButtonGroup csGroup = new ButtonGroup();
+		csGroup.add(csHide);
+		csGroup.add(csLine);
+		csGroup.add(csDot);
+		csGroup.add(csShortLine);
 
-      if (getStringProperty("colSeparator").equals("Dot"))
-         csDot.setSelected(true);
-      else if (getStringProperty("colSeparator").equals("ShortLine"))
-         csShortLine.setSelected(true);
-      else
-         csLine.setSelected(true);
+		if (getStringProperty("colSeparator").equals("Line"))
+					csLine.setSelected(true);
+		else if (getStringProperty("colSeparator").equals("Dot"))
+			csDot.setSelected(true);
+		else if (getStringProperty("colSeparator").equals("ShortLine"))
+			csShortLine.setSelected(true);
+		else
+			csHide.setSelected(true);
 
-      csp.add(csLine);
-      csp.add(csDot);
-      csp.add(csShortLine);
+		csp.add(csHide);
+		csp.add(csLine);
+		csp.add(csDot);
+		csp.add(csShortLine);
 
+		// define show attributs panel
+		JPanel sap = new JPanel();
+		sap.setBorder(
+			BorderFactory.createTitledBorder(
+				LangTool.getString("sa.showAttr")));
 
-      // define show attributs panel
-      JPanel sap = new JPanel();
-      sap.setBorder(
-         BorderFactory.createTitledBorder(LangTool.getString("sa.showAttr")));
+		saNormal = new JRadioButton(LangTool.getString("sa.showNormal"));
+		saNormal.setActionCommand("Normal");
+		JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
+		saHex.setActionCommand("Hex");
 
-      saNormal = new JRadioButton(LangTool.getString("sa.showNormal"));
-      saNormal.setActionCommand("Normal");
-      JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
-      saHex.setActionCommand("Hex");
+		// Group the radio buttons.
+		ButtonGroup saGroup = new ButtonGroup();
+		saGroup.add(saNormal);
+		saGroup.add(saHex);
 
-      // Group the radio buttons.
-      ButtonGroup saGroup = new ButtonGroup();
-      saGroup.add(saNormal);
-      saGroup.add(saHex);
+		if (getStringProperty("showAttr").equals("Hex"))
+			saHex.setSelected(true);
+		else
+			saNormal.setSelected(true);
 
-      if (getStringProperty("showAttr").equals("Hex"))
-         saHex.setSelected(true);
-      else
-         saNormal.setSelected(true);
+		sap.add(saNormal);
+		sap.add(saHex);
 
-      sap.add(saNormal);
-      sap.add(saHex);
+		// define gui panel
+		JPanel cgp = new JPanel();
+		cgp.setBorder(
+			BorderFactory.createTitledBorder(LangTool.getString("sa.cgp")));
+		cgp.setLayout(new AlignLayout(1, 5, 5));
 
-      // define gui panel
-      JPanel cgp = new JPanel();
-      cgp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.cgp")));
-      cgp.setLayout(new AlignLayout(1,5,5));
+		guiCheck = new JCheckBox(LangTool.getString("sa.guiCheck"));
+		guiShowUnderline =
+			new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
 
-      guiCheck = new JCheckBox(LangTool.getString("sa.guiCheck"));
-      guiShowUnderline = new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
+		if (getStringProperty("guiInterface").equals("Yes"))
+			guiCheck.setSelected(true);
 
-      if (getStringProperty("guiInterface").equals("Yes"))
-         guiCheck.setSelected(true);
+		// since this is a new property added then it might not exist in existing
+		//    profiles and it should be defaulted to yes.
+		String under = getStringProperty("guiShowUnderline");
+		if (under.equals("Yes") || under.length() == 0)
+			guiShowUnderline.setSelected(true);
 
-      // since this is a new property added then it might not exist in existing
-      //    profiles and it should be defaulted to yes.
-      String under = getStringProperty("guiShowUnderline");
-      if (under.equals("Yes") || under.length() == 0)
-         guiShowUnderline.setSelected(true);
+		cgp.add(guiCheck);
+		cgp.add(guiShowUnderline);
 
-      cgp.add(guiCheck);
-      cgp.add(guiShowUnderline);
+		contentPane.add(csp);
+		contentPane.add(sap);
+		contentPane.add(cgp);
 
-      contentPane.add(csp);
-      contentPane.add(sap);
-      contentPane.add(cgp);
+	}
 
-   }
+	public void save() {
 
-   public void save() {
+	}
 
-   }
+	public void applyAttributes() {
 
-   public void applyAttributes() {
+		if (csHide.isSelected()) {
+			changes.firePropertyChange(this, "colSeparator",
+				getStringProperty("colSeparator"), "Hide");
+			setProperty("colSeparator", "Hide");
+		}
+		else if (csLine.isSelected()) {
+			changes.firePropertyChange(this, "colSeparator",
+				getStringProperty("colSeparator"), "Line");
+			setProperty("colSeparator", "Line");
+		} 
+		else if (csShortLine.isSelected()) {
+			changes.firePropertyChange(this, "colSeparator",
+				getStringProperty("colSeparator"), "ShortLine");
+			setProperty("colSeparator", "ShortLine");
+		} 
+		else {
+			changes.firePropertyChange(this, "colSeparator",
+				getStringProperty("colSeparator"), "Dot");
+			setProperty("colSeparator", "Dot");
+		}
 
-      if (csLine.isSelected()) {
-         changes.firePropertyChange(this,"colSeparator",
-                           getStringProperty("colSeparator"),
-                           "Line");
-         setProperty("colSeparator","Line");
-      }
-      else if (csShortLine.isSelected()) {
-         changes.firePropertyChange(this,"colSeparator",
-                           getStringProperty("colSeparator"),
-                           "ShortLine");
-         setProperty("colSeparator","ShortLine");
-      }
+		if (saNormal.isSelected()) {
+			changes.firePropertyChange(
+				this,
+				"showAttr",
+				getStringProperty("showAttr"),
+				"Normal");
+			setProperty("showAttr", "Normal");
+		} else {
+			changes.firePropertyChange(
+				this,
+				"showAttr",
+				getStringProperty("showAttr"),
+				"Hex");
+			setProperty("showAttr", "Hex");
 
-      else {
-         changes.firePropertyChange(this,"colSeparator",
-                           getStringProperty("colSeparator"),
-                           "Dot");
-         setProperty("colSeparator","Dot");
+		}
 
-      }
+		if (guiCheck.isSelected()) {
+			changes.firePropertyChange(
+				this,
+				"guiInterface",
+				getStringProperty("guiInterface"),
+				"Yes");
+			setProperty("guiInterface", "Yes");
+		} else {
+			changes.firePropertyChange(
+				this,
+				"guiInterface",
+				getStringProperty("guiInterface"),
+				"No");
+			setProperty("guiInterface", "No");
+		}
 
-      if (saNormal.isSelected()) {
-         changes.firePropertyChange(this,"showAttr",
-                           getStringProperty("showAttr"),
-                           "Normal");
-         setProperty("showAttr","Normal");
-      }
-      else {
-         changes.firePropertyChange(this,"showAttr",
-                           getStringProperty("showAttr"),
-                           "Hex");
-         setProperty("showAttr","Hex");
+		if (guiShowUnderline.isSelected()) {
+			changes.firePropertyChange(
+				this,
+				"guiShowUnderline",
+				getStringProperty("guiShowUnderline"),
+				"Yes");
+			setProperty("guiShowUnderline", "Yes");
+		} else {
+			changes.firePropertyChange(
+				this,
+				"guiShowUnderline",
+				getStringProperty("guiShowUnderline"),
+				"No");
+			setProperty("guiShowUnderline", "No");
+		}
 
-      }
-
-      if (guiCheck.isSelected()) {
-         changes.firePropertyChange(this,"guiInterface",
-                           getStringProperty("guiInterface"),
-                           "Yes");
-         setProperty("guiInterface","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"guiInterface",
-                           getStringProperty("guiInterface"),
-                           "No");
-         setProperty("guiInterface","No");
-      }
-
-      if (guiShowUnderline.isSelected()) {
-         changes.firePropertyChange(this,"guiShowUnderline",
-                           getStringProperty("guiShowUnderline"),
-                           "Yes");
-         setProperty("guiShowUnderline","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"guiShowUnderline",
-                           getStringProperty("guiShowUnderline"),
-                           "No");
-         setProperty("guiShowUnderline","No");
-      }
-
-   }
+	}
 }
