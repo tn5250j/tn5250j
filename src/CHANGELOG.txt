@@ -21,14 +21,6 @@ Known problems
 On some JVM linux machines the keymappings will have to be changed from the
 default that I set up.  This is for JVM supplied by IBM.
 
-Special Keys for linux are a real pain.  I have done a lot to the code to enhance
-and/or find work arounds for this but to no avail.  I will attempt it again later
-when I have some more ideas.
-
-The only solution is to remap the keyboard using xmodmaps and/or mapping for
-special characters using the Map Keys dialog.  I do not like this at all and is
-a huge hack for linux.  If you do not believe me take a look at the Java Bug
-Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
@@ -48,11 +40,11 @@ Enhancements/Change Log
                - Send screen image via e-mail - Fixes by Patrick Bielen
             Added new options to define the margins for the Print Screen
                function.
-            Added auto login suppor
-
+            Added auto login support
             New splash screen donated by Carlo Daffara from Conecta http://www.conecta.it
-
-            Added blinking cursor.  Beta and may leave traces
+            Added blinking cursor.  Beta code and may leave traces
+            Added a new keep alive function to fix some network disconnect
+               problems.
 
             Well just run it to see all the new stuff
 
