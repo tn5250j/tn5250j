@@ -39,6 +39,7 @@ public class SendEMail {
    private String id;
    private String to;
    private String from;
+   private String pers;
    private String cc;
    private String subject;
    private String configFile;
@@ -125,24 +126,6 @@ public class SendEMail {
     */
    private boolean loadConfig(String name) throws Exception {
 
-//      boolean rc = false;
-
-//      SMTPProperties = new java.util.Properties();
-//      if (name == null || name == "")
-//         name = ConfigureFactory.getInstance().settingsDirectory()
-//                                    +  "SMTPProperties.cfg";
-//
-//      try {
-//         FileInputStream in = new FileInputStream(name);
-//
-//         SMTPProperties.load(in);
-//         rc = true;
-//      }
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-//      catch (SecurityException se) {
-//         System.out.println(se.getMessage());
-//      }
-//
       SMTPProperties = ConfigureFactory.getInstance().getProperties("smtp",
                            "SMTPProperties.cfg");
 
@@ -197,8 +180,13 @@ public class SendEMail {
          if (subject != null)
             msg.setSubject(subject.trim());
 
-         if (from != null && from.length() > 0)
-            msg.setFrom(new InternetAddress(from));
+         if (from == null)
+            from = SMTPProperties.getProperty("mail.smtp.from");
+
+         if (from != null && from.length() > 0) {
+         	pers = SMTPProperties.getProperty("mail.smtp.realname");
+         	if (pers != null) msg.setFrom(new InternetAddress(from, pers));
+         }
 
          if (message != null && message.length() > 0) {
             // create and fill the attachment message part
@@ -254,12 +242,6 @@ public class SendEMail {
       catch (SendFailedException sfe) {
          showFailedException(sfe);
       }
-//      catch (AddressException ae) {
-//
-//      }
-//      catch ( MessagingException me) {
-//
-//      }
       return false;
    }
 
@@ -275,8 +257,10 @@ public class SendEMail {
 
       Address[] ia = sfe.getInvalidAddresses();
 
-      for (int x = 0; x < ia.length; x++) {
-         error += "Invalid Address: " + ia[x].toString() + "\n";
+      if (ia != null) {
+         for (int x = 0; x < ia.length; x++) {
+            error += "Invalid Address: " + ia[x].toString() + "\n";
+         }
       }
 
       JTextArea ea = new JTextArea(error,6,50);

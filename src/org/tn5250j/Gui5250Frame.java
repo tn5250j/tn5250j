@@ -49,6 +49,7 @@ public class Gui5250Frame extends GUIViewInterface implements
    private int selectedIndex = 0;
    private boolean embedded = false;
    private boolean hideTabBar = false;
+   public static int count = 0;
 
    //Construct the frame
    public Gui5250Frame(My5250 m) {
@@ -88,7 +89,7 @@ public class Gui5250Frame extends GUIViewInterface implements
          this.getContentPane().add(sessionPane, BorderLayout.CENTER);
       }
 
-      setTitle();
+      if (count == 0) setSessionTitle();
 
       if (packFrame)
          pack();
@@ -172,7 +173,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
             }
             ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
-            setTitle();
+            setSessionTitle();
        }
       });
 
@@ -201,7 +202,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             }
 
             ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
-            setTitle();
+            setSessionTitle();
        }
       });
    }
@@ -228,21 +229,29 @@ public class Gui5250Frame extends GUIViewInterface implements
       p.setForegroundAt(selectedIndex,Color.blue);
       p.setIconAt(selectedIndex,focused);
 
-      setTitle();
+      setSessionTitle();
 
    }
 
-   private void setTitle() {
+   private void setSessionTitle() {
 
-      if (getSessionAt(selectedIndex) != null &&
-                  getSessionAt(selectedIndex).getAllocDeviceName() != null)
-         setTitle(getSessionAt(selectedIndex).getAllocDeviceName());
+      Session ses = getSessionAt(selectedIndex);
 
-      if (sequence - 1 > 0)
-         setTitle(getTitle() + " - tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-      else
-         setTitle(getTitle() + " - tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+      if (ses != null && ses.getAllocDeviceName() != null && ses.isConnected()) {
+         if (sequence - 1 > 0)
+            setTitle(ses.getAllocDeviceName() + " - tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+         else
+            setTitle(ses.getAllocDeviceName() + " - tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+      }
+      else {
 
+         if (sequence - 1 > 0)
+            setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+         else
+            setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+      }
+
+		count +=1;
 
    }
 
@@ -263,7 +272,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             validate();
          embedded = true;
          session.grabFocus();
-         setTitle();
+         setSessionTitle();
       }
       else {
 
@@ -422,7 +431,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                   };
                   SwingUtilities.invokeLater(tc);
                }
-               setTitle();
+               setSessionTitle();
 
             }
             break;
