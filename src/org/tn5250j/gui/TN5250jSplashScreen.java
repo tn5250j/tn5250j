@@ -26,7 +26,7 @@ package org.tn5250j.gui;
  *
  */
 
-import javax.swing.JLabel;
+import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.Cursor;
@@ -49,7 +49,7 @@ public class TN5250jSplashScreen extends Canvas {
    protected Window dialog = null;
    protected Frame f = null;
    protected Image image;
-	private Image offScreenBuffer;
+   private Image offScreenBuffer;
    private Graphics offScreenBufferGraphics;
    private int steps;
    private int progress;
@@ -95,26 +95,27 @@ public class TN5250jSplashScreen extends Canvas {
       }
 //      System.out.println(" here in splash ");
 
-//		MediaTracker tracker = new MediaTracker(this);
-//		tracker.addImage(image,0);
-//
-//		try {
-//			tracker.waitForAll();
-//		}
-//		catch(Exception e) {
-//         System.out.println(e.getMessage());
-//		}
+      MediaTracker tracker = new MediaTracker(this);
+      tracker.addImage(image,0);
+
+      try {
+         tracker.waitForAll();
+      }
+      catch(Exception e) {
+         System.out.println(e.getMessage());
+      }
 
       // create dialog window
       f = new Frame();
       dialog = new Window(f);
       dialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		Dimension s = new Dimension(image.getWidth(this) + 2,
-			image.getHeight(this) + 2);
-		dialog.setSize(s);
+      Dimension s = new Dimension(image.getWidth(this) + 2,
+         image.getHeight(this) + 2);
+      setSize(s);
+      dialog.setLayout(new BorderLayout());
+      dialog.setSize(s);
 
-      dialog.add(this);
-      dialog.validate();
+      dialog.add(this,BorderLayout.CENTER);
       dialog.pack();
 
       // position splash screen
@@ -130,13 +131,7 @@ public class TN5250jSplashScreen extends Canvas {
       }
 
       dialog.setLocation(x, y);
-//      try {
-//         Thread.sleep(1000);
-//      }
-//      catch (InterruptedException i) {
-//         System.out.println(" here " + i.getMessage()  );
-//
-//      }
+      dialog.validate();
 
    }
 
@@ -146,46 +141,64 @@ public class TN5250jSplashScreen extends Canvas {
 
    public synchronized void updateProgress(int prog) {
 
-		progress = prog;
-		repaint();
+      progress = prog;
+      repaint();
 
-		// wait for it to be painted to ensure progress is updated
-		// continuously
-//		try {
-//			wait();
-//		}
-//		catch(InterruptedException ie) {
-//         System.out.println(" updateProgress " + ie.getMessage()  );
-//		}
+      // wait for it to be painted to ensure progress is updated
+      // continuously
+      try {
+         wait();
+      }
+      catch(InterruptedException ie) {
+         System.out.println(" updateProgress " + ie.getMessage()  );
+      }
    }
 
-	public void update(Graphics g) {
-		paint(g);
-	}
+   public void update(Graphics g) {
+      paint(g);
+   }
 
-	public synchronized void paint(Graphics g) {
-		Dimension size = getSize();
+   public synchronized void paint(Graphics g) {
+
+      int inset = 5;
+      int height = 14;
+
+      Dimension size = getSize();
 //      System.out.println(" here in paint ");
-		if(offScreenBuffer == null) {
-			offScreenBuffer = createImage(size.width,size.height);
-			offScreenBufferGraphics = offScreenBuffer.getGraphics();
-		}
+      // create the offscreen buffer if it does not exist
+      if(offScreenBuffer == null) {
+         offScreenBuffer = createImage(size.width,size.height);
+         offScreenBufferGraphics = offScreenBuffer.getGraphics();
+      }
 
-		offScreenBufferGraphics.setColor(Color.black);
-		offScreenBufferGraphics.drawRect(0,0,size.width - 1,size.height - 1);
+      // draw the splash image
+      offScreenBufferGraphics.drawImage(image,1,1,this);
 
-		offScreenBufferGraphics.drawImage(image,1,1,this);
+      // create a raised border around image
+      offScreenBufferGraphics.setColor(new Color(204,204,255));
+      offScreenBufferGraphics.draw3DRect(0,0,size.width - 1,size.height - 1,true);
 
-      offScreenBufferGraphics.draw3DRect(4,image.getHeight(this) - 16,
-                              image.getWidth(this) - 8,15,true);
+      // fill in progress area
+      offScreenBufferGraphics.setColor(new Color(204,204,255).darker());
+      offScreenBufferGraphics.fill3DRect(inset - 1,
+                              image.getHeight(this) - (height +2),
+                              image.getWidth(this) - (inset *2),
+                              height + 1,
+                              false);
 
-      offScreenBufferGraphics.setColor(new Color(206,206,229));
-      offScreenBufferGraphics.fillRect(5,image.getHeight(this) - 15,
-                              ((image.getWidth(this) - 10) / steps) * progress,14);
-		g.drawImage(offScreenBuffer,0,0,this);
+      // draw progress
+      offScreenBufferGraphics.setColor(new Color(204,204,255));
+      offScreenBufferGraphics.fillRect(inset,
+                              image.getHeight(this) - (height +1),
+                              ((image.getWidth(this) - (inset * 2)) / steps) * progress,
+                              height);
 
+      // now lets show the world
+      g.drawImage(offScreenBuffer,0,0,this);
+
+      notify();
 //      System.out.println(" here after paint ");
-	}
+   }
 
    /**
     * This method will show or hide the splash screen.  Once the splash
