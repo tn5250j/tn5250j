@@ -56,7 +56,22 @@ public class DataStreamProducer implements Runnable {
 
             byte[] abyte0 = readIncoming();
 
-            loadStream(abyte0, 0);
+            // WVL - LDC : 16/07/2003 : TR.000345
+            // When the socket has been closed, the reading returns
+            // no bytes (an empty byte arrray).
+            // But the loadStream fails on this, so we check it here!
+            if (abyte0.length > 0)
+            {
+              loadStream(abyte0, 0);
+            }
+            // WVL - LDC : 16/07/2003 : TR.000345
+            // Returning no bytes means the input buffer has
+            // reached end-of-stream, so we do a disconnect!
+            else
+            {
+              done = true;
+              vt.disconnect();
+            }
 
          }
          catch (SocketException se) {
@@ -141,6 +156,17 @@ public class DataStreamProducer implements Runnable {
 
       while(!done) {
          i = bin.read();
+
+         // WVL - LDC : 16/07/2003 : TR.000345
+         // The inStream return -1 when end-of-stream is reached. This
+         // happens e.g. when the connection is closed from the AS/400.
+         // So we stop in this case!
+         // ==> an empty byte array is returned from this method.
+         if (i == -1) // nothing read!
+         {
+           done = true;
+           continue;
+         }
 
          // We use the values instead of the static values IAC and EOR
          //    because they are defined as bytes.
