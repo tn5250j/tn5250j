@@ -228,21 +228,21 @@ public class ScreenChar {
          case 52:
             fg = s.colorTurq;
             bg = s.colorBg;
-            colSep = true;
+//            colSep = true;
             underLine = true;
             break;
 
          case 53:
             fg = s.colorBg;
             bg = s.colorTurq;
-            colSep = true;
+//            colSep = true;
             underLine = true;
             break;
 
          case 54:
             fg = s.colorYellow;
             bg = s.colorBg;
-            colSep = true;
+//            colSep = true;
             underLine = true;
             break;
 
@@ -288,7 +288,7 @@ public class ScreenChar {
             underLine = true;
             break;
 
-         case 63:
+         case 63:  // nondisplay
             nonDisplay = true;
             break;
          default:

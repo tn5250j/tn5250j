@@ -2,6 +2,7 @@ package org.tn5250j;
 
 import java.io.*;
 import java.net.*;
+import org.tn5250j.tools.CodePage;
 
 public class DataStreamProducer implements Runnable {
 
@@ -14,6 +15,10 @@ public class DataStreamProducer implements Runnable {
 //   private boolean waitingForInput;
 //   private boolean invited;
    private byte[] abyte2;
+   private FileOutputStream fw;
+   private BufferedOutputStream dw;
+   private boolean dumpBytes = false;
+   private CodePage codePage;
 
    public DataStreamProducer(tnvt vt, BufferedInputStream in, DataStreamQueue queue, byte[] init) {
       bin = in;
@@ -192,68 +197,119 @@ public class DataStreamProducer implements Runnable {
             vt.negotiate(baosin.toByteArray());
          }
 
-//         if (dumpBytes) {
-//            dump(baosin.toByteArray());
-//         }
+         if (dumpBytes) {
+            dump(baosin.toByteArray());
+         }
 
         return baosin.toByteArray();
     }
 
-//      public void dump (byte[] abyte0) {
-//         try {
+   protected final void toggleDebug (CodePage cp) {
+
+      if (codePage == null)
+         codePage = cp;
+
+      dumpBytes = !dumpBytes;
+      if (dumpBytes) {
+
+         try {
+            if (fw == null) {
+               fw = new FileOutputStream("log.txt");
+               dw = new BufferedOutputStream(fw);
+            }
+         }
+         catch (FileNotFoundException fnfe) {
+            System.out.println(fnfe.getMessage());
+         }
+
+      }
+      else {
+
+         try {
+
+            if (dw != null)
+               dw.close();
+            if (fw != null)
+               fw.close();
+            dw = null;
+            fw = null;
+            codePage = null;
+         }
+         catch(IOException ioe) {
+
+            System.out.println(ioe.getMessage());
+         }
+      }
+
+      System.out.println("Data Stream output is now " + dumpBytes);
+   }
+
+   public void dump (byte[] abyte0) {
+      try {
+
+         System.out.print("\n Buffer Dump of data from AS400: ");
+         dw.write("\r\n Buffer Dump of data from AS400: ".getBytes());
+
+         StringBuffer h = new StringBuffer();
+         for (int x = 0; x < abyte0.length; x++) {
+            if (x % 16 == 0) {
+               System.out.println("  " + h.toString());
+               dw.write(("  " + h.toString() + "\r\n").getBytes());
+
+               h.setLength(0);
+               h.append("+0000");
+               h.setLength(5 - Integer.toHexString(x).length());
+               h.append(Integer.toHexString(x).toUpperCase());
+
+               System.out.print(h.toString());
+               dw.write(h.toString().getBytes());
+
+               h.setLength(0);
+            }
+            char ac = codePage.getASCIIChar(abyte0[x]);
+            if (ac < ' ')
+               h.append('.');
+            else
+               h.append(ac);
+            if (x % 4 == 0) {
+               System.out.print(" ");
+               dw.write((" ").getBytes());
+
+            }
+
+            if (Integer.toHexString(abyte0[x] & 0xff).length() == 1){
+               System.out.print("0" + Integer.toHexString(abyte0[x] & 0xff).toUpperCase());
+               dw.write(("0" + Integer.toHexString(abyte0[x] & 0xff).toUpperCase()).getBytes());
+
+            }
+            else {
+               System.out.print(Integer.toHexString(abyte0[x] & 0xff).toUpperCase());
+               dw.write((Integer.toHexString(abyte0[x] & 0xff).toUpperCase()).getBytes());
+            }
+
+         }
+         System.out.println();
+         dw.write("\r\n".getBytes());
+
+         dw.flush();
+      }
+      catch(EOFException _ex) { }
+      catch(Exception _ex) {
+         System.out.println("Cannot dump from host\n\r");
+      }
+
+   }
+
+//      public void dumpBytes() {
+//         byte shit[] = bk.buffer;
+//         for (int i = 0;i < shit.length;i++)
+//            System.out.println(i + ">" + shit[i] + "< - ascii - >" + getASCIIChar(shit[i]) + "<");
+//      }
 //
-//            System.out.print("\n Buffer Dump of data from AS400: ");
-//            dw.write("\r\n Buffer Dump of data from AS400: ".getBytes());
-//
-//            StringBuffer h = new StringBuffer();
-//            for (int x = 0; x < abyte0.length; x++) {
-//               if (x % 16 == 0) {
-//                  System.out.println("  " + h.toString());
-//                  dw.write(("  " + h.toString() + "\r\n").getBytes());
-//
-//                  h.setLength(0);
-//                  h.append("+0000");
-//                  h.setLength(5 - Integer.toHexString(x).length());
-//                  h.append(Integer.toHexString(x).toUpperCase());
-//
-//                  System.out.print(h.toString());
-//                  dw.write(h.toString().getBytes());
-//
-//                  h.setLength(0);
-//               }
-//               char ac = getASCIIChar(abyte0[x]);
-//               if (ac < ' ')
-//                  h.append('.');
-//               else
-//                  h.append(ac);
-//               if (x % 4 == 0) {
-//                  System.out.print(" ");
-//                  dw.write((" ").getBytes());
-//
-//               }
-//
-//               if (Integer.toHexString(abyte0[x] & 0xff).length() == 1){
-//                  System.out.print("0" + Integer.toHexString(abyte0[x] & 0xff).toUpperCase());
-//                  dw.write(("0" + Integer.toHexString(abyte0[x] & 0xff).toUpperCase()).getBytes());
-//
-//               }
-//               else {
-//                  System.out.print(Integer.toHexString(abyte0[x] & 0xff).toUpperCase());
-//                  dw.write((Integer.toHexString(abyte0[x] & 0xff).toUpperCase()).getBytes());
-//               }
-//
-//            }
-//            System.out.println();
-//            dw.write("\r\n".getBytes());
-//
-//            dw.flush();
-//   //         dw.close();
-//         }
-//         catch(EOFException _ex) { }
-//         catch(Exception _ex) {
-//            System.out.println("Cannot dump from host\n\r");
-//         }
-//
+//      public void dumpHexBytes(byte[] abyte) {
+//         byte shit[] = abyte;
+//         for (int i = 0;i < shit.length;i++)
+//            System.out.println(i + ">" + shit[i] + "< hex >" + Integer.toHexString((shit[i] & 0xff)));
 //      }
 
 }

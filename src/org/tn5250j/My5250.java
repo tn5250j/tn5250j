@@ -41,19 +41,19 @@ import org.tn5250j.event.*;
 import java.net.*;
 
 
-public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
-                                                    SessionListener {
+public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
-   private boolean packFrame = false;
    protected Gui5250Frame frame;
-   private int selectedIndex = 0;
-   Vector sessionsV;
-   String[] sessionArgs = null;
-   static Properties sessions = new Properties();
-   ImageIcon focused = null;
-   ImageIcon unfocused = null;
-   static BootStrapper strapper = null;
+   private String[] sessionArgs = null;
+   private static Properties sessions = new Properties();
+   private static ImageIcon focused;
+   private static ImageIcon unfocused;
+   private static ImageIcon tnicon;
+
+   private static BootStrapper strapper = null;
    private SessionManager manager;
+   private static Vector frames;
+
 
    My5250 () {
       try  {
@@ -62,27 +62,16 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
       catch(Exception e) {
       }
 
-      frame = new Gui5250Frame(this);
       loadSessions();
-      int width = 600;
-      int height = 500;
-
-      if (sessions.containsKey("emul.width"))
-         width = Integer.parseInt(sessions.getProperty("emul.width"));
-      if (sessions.containsKey("emul.height"))
-         height = Integer.parseInt(sessions.getProperty("emul.height"));
-
-      frame.setSize(width,height);
-
-      centerFrame();
-
-      frame.sessionPane.addChangeListener(this);
 
       focused = createImageIcon("focused.gif");
       unfocused = createImageIcon("unfocused.gif");
-      ImageIcon tnicon = createImageIcon("tnicon.jpg");
-      frame.setIconImage(tnicon.getImage());
-      sessionsV = new Vector();
+      tnicon = createImageIcon("tnicon.jpg");
+
+      frames = new Vector();
+
+      newView();
+
       setDefaultLocale();
       manager = new SessionManager();
       manager.setController(this);
@@ -108,6 +97,9 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
                opts = args[x] + " ";
          }
          out.println(opts);
+         out.flush();
+         out.close();
+         boot.close();
          return true;
 
       }
@@ -229,7 +221,7 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
             }
 
             m.frame.setSize(width,height);
-            m.centerFrame();
+            m.frame.centerFrame();
 
 
          }
@@ -333,26 +325,6 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
 
    }
 
-   private void centerFrame() {
-
-      if (packFrame)
-         frame.pack();
-      else
-         frame.validate();
-
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = frame.getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-      frame.setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
-
-
-   }
-
    private void setDefaultLocale () {
 
       if (sessions.containsKey("emul.locale")) {
@@ -423,8 +395,12 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
             String selArgs = sessions.getProperty(sel);
             sessionArgs = new String[NUM_PARMS];
             parseArgs(selArgs, sessionArgs);
-            if (!frame.isVisible())
-               frame.setVisible(true);
+//            if (!frame.isVisible())
+//               frame.setVisible(true);
+//            else {
+//               newView();
+//               frame.setVisible(true);
+//            }
 
             newSession(sel,sessionArgs);
          }
@@ -435,8 +411,10 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
 
       }
       else {
-         if (!frame.isVisible())
-            frame.setVisible(true);
+//         if (!frame.isVisible())
+//            frame.setVisible(true);
+//         else
+//            newView();
 
          newSession(sel,sessionArgs);
 
@@ -450,28 +428,6 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
       // load the new session information from the session property file
       loadSessions();
       return sc.getConnectKey();
-   }
-
-   public void onSessionChanged(SessionChangeEvent changeEvent) {
-
-      Session ses = (Session)changeEvent.getSource();
-      System.out.println(changeEvent.getState() + " " +
-                        ses.getAllocDeviceName());
-
-      if (changeEvent.getState() == STATE_CONNECTED) {
-         final String d = ses.getAllocDeviceName();
-
-         if (d != null) {
-            final int index = frame.sessionPane.indexOfComponent(ses);
-            Runnable tc = new Runnable () {
-               public void run() {
-                  frame.sessionPane.setTitleAt(index,d);
-               }
-            };
-            SwingUtilities.invokeLater(tc);
-
-         }
-      }
    }
 
    synchronized void newSession(String sel,String[] args) {
@@ -524,124 +480,90 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
 
       Session s = manager.openSession(sesProps,propFileName,sel);
 
+      if (!frame.isVisible())
+         frame.setVisible(true);
+      else {
+         if (isSpecified("-noembed",args)) {
+            newView();
+            frame.setVisible(true);
+         }
+      }
+
       if (isSpecified("-t",args))
-         frame.sessionPane.addTab(sel,focused,s);
+         frame.addSessionView(sel,s);
       else
-         frame.sessionPane.addTab(session,focused,s);
+         frame.addSessionView(session,s);
 
-      frame.sessionPane.setForegroundAt(frame.sessionPane.getSelectedIndex(),Color.black);
-      frame.sessionPane.setIconAt(frame.sessionPane.getSelectedIndex(),unfocused);
-
-
-      frame.sessionPane.setSelectedIndex(frame.sessionPane.getTabCount()-1);
-      frame.sessionPane.setForegroundAt(frame.sessionPane.getSelectedIndex(),Color.blue);
-      frame.sessionPane.setIconAt(frame.sessionPane.getSelectedIndex(),focused);
-      s.addSessionListener(this);
       s.connect();
 
 
    }
 
-   public void stateChanged(ChangeEvent e) {
+   void newView() {
 
-      JTabbedPane p = (JTabbedPane)e.getSource();
-      p.setForegroundAt(selectedIndex,Color.black);
-      p.setIconAt(selectedIndex,unfocused);
+      int width = 600;
+      int height = 500;
 
-      Session sg = (Session)p.getComponentAt(selectedIndex);
-      sg.setVisible(false);
+      if (sessions.containsKey("emul.width"))
+         width = Integer.parseInt(sessions.getProperty("emul.width"));
+      if (sessions.containsKey("emul.height"))
+         height = Integer.parseInt(sessions.getProperty("emul.height"));
 
-      sg = (Session)p.getSelectedComponent();
-      sg.setVisible(true);
+      frame = new Gui5250Frame(this, frames.size());
+      frame.setSize(width,height);
+      frame.centerFrame();
+      frame.setIconImage(tnicon.getImage());
+      frame.setIcons(focused,unfocused);
 
-      sg.requestFocus();
-
-      selectedIndex = p.getSelectedIndex();
-      p.setForegroundAt(selectedIndex,Color.blue);
-      p.setIconAt(selectedIndex,focused);
-
-   }
-
-   public void nextSession() {
-
-      int index = frame.sessionPane.getSelectedIndex();
-      frame.sessionPane.setForegroundAt(index,Color.black);
-      frame.sessionPane.setIconAt(index,unfocused);
-
-      if (index < frame.sessionPane.getTabCount() - 1) {
-         frame.sessionPane.setSelectedIndex(++index);
-         frame.sessionPane.setForegroundAt(index,Color.blue);
-         frame.sessionPane.setIconAt(index,focused);
-
-      }
-      else {
-         frame.sessionPane.setSelectedIndex(0);
-         frame.sessionPane.setForegroundAt(0,Color.blue);
-         frame.sessionPane.setIconAt(0,focused);
-
-      }
+      frames.add(frame);
 
    }
 
-   public void prevSession() {
+   void closingDown(Session targetSession) {
 
-      int index = frame.sessionPane.getSelectedIndex();
-      frame.sessionPane.setForegroundAt(index,Color.black);
-      frame.sessionPane.setIconAt(index,unfocused);
-
-      if (index == 0) {
-         frame.sessionPane.setSelectedIndex(frame.sessionPane.getTabCount() - 1);
-         frame.sessionPane.setForegroundAt(frame.sessionPane.getSelectedIndex(),Color.blue);
-         frame.sessionPane.setIconAt(frame.sessionPane.getSelectedIndex(),focused);
-
-      }
-      else {
-         frame.sessionPane.setSelectedIndex(--index);
-         frame.sessionPane.setForegroundAt(index,Color.blue);
-         frame.sessionPane.setIconAt(index,focused);
-
-      }
+      closingDown(getParentView(targetSession));
    }
 
-   void closingDown() {
-
-      closingDown(frame);
-   }
-
-   void closingDown(JFrame gui) {
+   void closingDown(Gui5250Frame view) {
 
       Session jf = null;
-      tnvt tvt = null;
+//      tnvt tvt = null;
       Sessions sess = manager.getSessions();
 
-      System.out.println("number of active sessions we have " + sessionsV.size());
+//      System.out.println("number of active sessions we have " + sessionsV.size());
+      System.out.println("number of active sessions we have " + sess.getCount());
       int x = 0;
-      while (sess.getCount() > 0) {
 
-         jf = sess.item(0);
+      while (view.getSessionViewCount() > 0) {
+
+         jf = view.getSessionAt(0);
 
          System.out.println("session found and closing down");
          manager.closeSession(jf);
+         view.removeSessionView(jf);
          System.out.println("disconnecting socket");
          System.out.println("socket closed");
          jf = null;
 
       }
 
+      frames.remove(view);
+      view.dispose();
+
       System.out.println("number of active sessions we have after shutting down " + sess.getCount());
 
       try {
          FileOutputStream out = new FileOutputStream("sessions");
          // save off the width and height to be restored later
-         sessions.setProperty("emul.width",Integer.toString(gui.getWidth()));
-         sessions.setProperty("emul.height",Integer.toString(gui.getHeight()));
+         sessions.setProperty("emul.width",Integer.toString(view.getWidth()));
+         sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
 
          sessions.store(out,"------ Defaults --------");
       }
       catch (FileNotFoundException fnfe) {}
       catch (IOException ioe) {}
 
-      if (sessionsV.size() == 0) {
+      if (sess.getCount() == 0) {
          if (strapper != null) {
             strapper.interrupt();
          }
@@ -649,6 +571,28 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
       }
 
 
+   }
+
+   protected void closeSession(Session targetSession) {
+
+      Gui5250Frame f = getParentView(targetSession);
+      int tabs = f.getSessionViewCount();
+      Sessions sessions = manager.getSessions();
+      Session session = null;
+
+      if (tabs > 1) {
+
+         if ((sessions.item(targetSession)) != null) {
+
+            f.removeSessionView(targetSession);
+            manager.closeSession(targetSession);
+            targetSession = null;
+
+         }
+      }
+      else {
+         closingDown(f);
+      }
    }
 
    protected void parseArgs(String theStringList, String[] s) {
@@ -682,39 +626,30 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
 
    }
 
-   protected void closeSession(Session targetSession) {
+   public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-      int tabs = frame.sessionPane.getTabCount();
-      Sessions sessions = manager.getSessions();
-      Session session = null;
+      Session ses = (Session)changeEvent.getSource();
 
-      if (tabs > 1) {
-
-         if ((sessions.item(targetSession)) != null) {
-
-            int index = frame.sessionPane.indexOfComponent(targetSession);
-            System.out.println("session found and closing down " + index);
-            frame.sessionPane.remove(index);
-            manager.closeSession(targetSession);
-            targetSession = null;
-            if (index < (tabs - 2)) {
-               frame.sessionPane.setSelectedIndex(index);
-               frame.sessionPane.setForegroundAt(index,Color.blue);
-               frame.sessionPane.setIconAt(index,focused);
-            }
-            else {
-
-               frame.sessionPane.setSelectedIndex(0);
-               frame.sessionPane.setForegroundAt(0,Color.blue);
-               frame.sessionPane.setIconAt(0,focused);
-
-            }
-
-         }
+      switch (changeEvent.getState()) {
+         case STATE_REMOVE:
+            closeSession(ses);
+            break;
       }
-      else {
-         closingDown(frame);
+   }
+
+
+   public Gui5250Frame getParentView(Session session) {
+
+      Gui5250Frame f = null;
+
+      for (int x = 0; x < frames.size(); x++) {
+         f = (Gui5250Frame)frames.get(x);
+         if (f.containsSession(session))
+            return f;
       }
+
+      return null;
+
    }
 
    /**

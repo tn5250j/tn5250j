@@ -427,7 +427,8 @@ public class ScreenFields implements TN5250jConstants {
 
                   // we strip out all '\u0020' and less
                   while (len >= 0 &&
-                     (sb.charAt(len) <= ' ' || sb.charAt(len) >= '\uff20' )) {
+//                     (sb.charAt(len) <= ' ' || sb.charAt(len) >= '\uff20' )) {
+                     (sb.charAt(len) < ' ' || sb.charAt(len) >= '\uff20' )) {
 
                      sb.deleteCharAt(len--);
                   }
@@ -436,14 +437,14 @@ public class ScreenFields implements TN5250jConstants {
 
 //               System.out.println("field " + sf.toString());
 //               System.out.println(">" + sb.toString() + "<");
-
 //               System.out.println(" field is all nulls");
-               if (sf.isSignedNumeric() && sb.charAt(sb.length() - 1) == '-') {
+               if (sf.isSignedNumeric() && sb.length() > 0 && sb.charAt(sb.length() - 1) == '-') {
                   isSigned = true;
                   sb.setLength(sb.length() - 1);
                }
 
                int len3 = sb.length();
+
                if (len3 > 0 || (readType == CMD_READ_MDT_FIELDS ||
                        readType == CMD_READ_MDT_IMMEDIATE_ALT)) {
 

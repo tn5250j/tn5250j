@@ -91,7 +91,6 @@ public class BootStrapper extends Thread {
                               new InputStreamReader(
                               socket.getInputStream()));
 
-         String inputLine, outputLine;
          bootEvent = new BootEvent(this,in.readLine());
 
          System.out.println(bootEvent.getNewSessionOptions());

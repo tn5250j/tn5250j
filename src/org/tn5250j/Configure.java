@@ -52,6 +52,9 @@ public class Configure implements TN5250jConstants {
    static JCheckBox useProxy = null;
    static JTextField proxyHost = null;
    static JTextField proxyPort = null;
+   static JCheckBox noEmbed = null;
+   static JCheckBox deamon = null;
+   static JCheckBox newJVM = null;
 
    static JTabbedPane confTabs;
 
@@ -64,6 +67,9 @@ public class Configure implements TN5250jConstants {
       useProxy = new JCheckBox(LangTool.getString("conf.labelUseProxy"));
       sdNormal = new JRadioButton(LangTool.getString("conf.label24"));
       JRadioButton sdBig = new JRadioButton(LangTool.getString("conf.label27"));
+      noEmbed = new JCheckBox(LangTool.getString("conf.labelEmbed"));
+      deamon = new JCheckBox(LangTool.getString("conf.labelDeamon"));
+      newJVM = new JCheckBox(LangTool.getString("conf.labelNewJVM"));
 
       cpb = new JComboBox();
       String[] availCP = CharMappings.getAvailableCodePages();
@@ -85,6 +91,7 @@ public class Configure implements TN5250jConstants {
          ec.setSelected(true);
          tc.setSelected(true);
          sdNormal.setSelected(true);
+         deamon.setSelected(true);
 
       }
       else {
@@ -145,6 +152,21 @@ public class Configure implements TN5250jConstants {
             useProxy.setSelected(true);
          else
             useProxy.setSelected(false);
+
+         if (isSpecified("-noembed",args))
+            noEmbed.setSelected(true);
+         else
+            noEmbed.setSelected(false);
+
+         if (isSpecified("-d",args))
+            deamon.setSelected(true);
+         else
+            deamon.setSelected(false);
+
+         if (isSpecified("-nc",args))
+            newJVM.setSelected(true);
+         else
+            newJVM.setSelected(false);
       }
 
       //Create main attributes panel
@@ -161,6 +183,18 @@ public class Configure implements TN5250jConstants {
 
       addLabelComponent(LangTool.getString("conf.labelSystemName"),
                            systemName,
+                           snp);
+
+      addLabelComponent(" ",
+                           noEmbed,
+                           snp);
+
+      addLabelComponent(" ",
+                           deamon,
+                           snp);
+
+      addLabelComponent(" ",
+                           newJVM,
                            snp);
 
       //System Id panel
@@ -394,6 +428,15 @@ public class Configure implements TN5250jConstants {
       if (proxyPort.getText() != null)
          if (proxyPort.getText().length() > 0)
             sb.append(" -spp " + proxyPort.getText());
+
+      if (noEmbed.isSelected())
+         sb.append(" -noembed ");
+
+      if (deamon.isSelected())
+         sb.append(" -d ");
+
+      if (newJVM.isSelected())
+         sb.append(" -nc ");
 
       return sb.toString();
   }

@@ -111,6 +111,9 @@ The following sections are available:
                     A new frame will be created within another instance
                     of JVM
 
+    -noembed-> Do not add a new session tab but open in new frame.  Default
+               is embed so add a new session tab in the visible frame.
+
     -usp ----> Use Socks Proxy
     -sph ----> Socks Proxy Host
     -spp ----> Socks Proxy Port

@@ -28,6 +28,7 @@ public interface TN5250jConstants {
    // STATE
    static final int STATE_DISCONNECTED   =  0;
    static final int STATE_CONNECTED   =  1;
+   static final int STATE_REMOVE   =  2;
 
    // SESSION Level key value pairs
    public static final String SESSION_HOST        = "OS_OHIO_SESSION_HOST";
@@ -45,6 +46,10 @@ public interface TN5250jConstants {
    public static final String SESSION_PROXY_PORT = "SESSION_PROXY_PORT";
    public static final String SESSION_USE_GUI = "SESSION_USE_GUI";
    public static final String SESSION_DEVICE_NAME = "SESSION_DEVICE_NAME";
+
+   // Session JUMP Directions
+   static final int JUMP_PREVIOUS   =  0;
+   static final int JUMP_NEXT   =  1;
 
 //   // OS_OHIO_SESSION_TYPE type of sessions
 //   public static final String OS_OHIO_SESSION_TYPE_5250_STR   = "2";

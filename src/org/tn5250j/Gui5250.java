@@ -36,9 +36,12 @@ import java.text.*;
 import java.beans.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.event.SessionJumpListener;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
+                                                      TN5250jConstants,
                                                       PropertyChangeListener ,
                                                       RubberBandCanvasIF {
 
@@ -62,6 +65,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
    String newMacName;
    boolean isLinux;
    boolean isAltGr;
+   private Vector listeners = null;
+   private SessionJumpEvent jumpEvent;
 
    public Gui5250 () {
 
@@ -201,7 +206,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    	setRubberBand(new TNRubberBand(this));
       this.requestFocus();
-
+      jumpEvent = new SessionJumpEvent(this);
 
    }
 
@@ -814,7 +819,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          int result = 0;
             result = JOptionPane.showOptionDialog(
-                me.frame,                              // the parent that the dialog blocks
+                this.getParent(),                              // the parent that the dialog blocks
                 message,                           // the dialog message array
                 LangTool.getString("em.title"),    // the title of the dialog window
                 JOptionPane.DEFAULT_OPTION,        // option type
@@ -927,7 +932,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                            LangTool.getString("cs.optCancel")};
 
       int result = JOptionPane.showOptionDialog(
-             me.frame,                              // the parent that the dialog blocks
+             this.getParent(),            // the parent that the dialog blocks
              message,                           // the dialog message array
              LangTool.getString("cs.title"),    // the title of the dialog window
              JOptionPane.DEFAULT_OPTION,        // option type
@@ -941,7 +946,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          closeMe();
       }
       if (result == 1) {
-         me.closingDown();
+         me.closingDown((Session)this);
       }
 
    }
@@ -1056,14 +1061,32 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    protected void nextSession() {
 
-      me.nextSession();
+      fireSessionJump(JUMP_NEXT);
 
    }
 
    protected void prevSession() {
 
-      me.prevSession();
+      fireSessionJump(JUMP_PREVIOUS);
 
+   }
+
+   /**
+    * Notify all registered listeners of the onSessionJump event.
+    *
+    * @param dir  The direction to jump.
+    */
+   protected void fireSessionJump(int dir) {
+
+   	if (listeners != null) {
+	      int size = listeners.size();
+	      for (int i = 0; i < size; i++) {
+	         SessionJumpListener target =
+                    (SessionJumpListener)listeners.elementAt(i);
+            jumpEvent.setJumpDirection(dir);
+	         target.onSessionJump(jumpEvent);
+	      }
+   	}
    }
 
    public void sendNegResponse2(int ec) {
@@ -1083,7 +1106,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                            LangTool.getString("messages.saveSettings"),
                            args);
 
-         int result = JOptionPane.showConfirmDialog(this,message);
+         int result = JOptionPane.showConfirmDialog(getParent(),message);
 
          if (result == JOptionPane.OK_OPTION) {
             try {
@@ -1124,7 +1147,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       SessionAttributes sa = new SessionAttributes(propFileName,
                                        defaultProps,
-                                       me.frame);
+                                       (Frame)me.frame);
       sa.addPropertyChangeListener(screen);
       sa.addPropertyChangeListener(this);
       sa.showIt();
@@ -1565,7 +1588,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       int result = 0;
       result = JOptionPane.showOptionDialog(
-          null,                               // the parent that the dialog blocks
+          me.frame,                               // the parent that the dialog blocks
           message,                           // the dialog message array
           LangTool.getString("hm.title"),    // the title of the dialog window
           JOptionPane.DEFAULT_OPTION,        // option type
@@ -1646,6 +1669,34 @@ public class Gui5250 extends JPanel implements ComponentListener,
       paint(g);
 
    }
+
+   /**
+    * Add a SessionJumpListener to the listener list.
+    *
+    * @param listener  The SessionListener to be added
+    */
+   public synchronized void addSessionJumpListener(SessionJumpListener listener) {
+
+      if (listeners == null) {
+          listeners = new java.util.Vector(3);
+      }
+      listeners.addElement(listener);
+
+   }
+
+   /**
+    * Remove a SessionJumpListener from the listener list.
+    *
+    * @param listener  The SessionJumpListener to be removed
+    */
+   public synchronized void removeSessionJumpListener(SessionJumpListener listener) {
+      if (listeners == null) {
+          return;
+      }
+      listeners.removeElement(listener);
+
+   }
+
    /**
     *
     * RubberBanding start code

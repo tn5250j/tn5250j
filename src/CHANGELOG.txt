@@ -36,6 +36,39 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+26/4/2002   Fixed a problem that was happening when sending data to the host.
+            on a READ_MDT_FIELDS command 0x52 when should send blanks instead of
+            a field with no length.  I was saying truncate all letters less than
+            or equal to spaces.  Now it is all characters less than spacess.
+
+17/4/2002   Fixed a problem with the boot strap deamon.  The writers were not
+            being flushed and sockets were not be shutdown correctly thus
+            causing problems at times.
+
+            Fixed the debug logging.  It was broken in the last release.
+
+            Fixed a problem with string index out of bounds for signed numeric
+            fields.  Where the hell did that come from?????
+
+16/4/2002   Changed some color attributes for turquoise and yellow to be inline
+            with client access.  CA does not follow the document definitions but
+            after a few questions of why they are different from client access
+            I decided to change to be exactly like client access.
+
+            Added new options to session configuration.
+
+               description                command line option
+               -----------------          -------------------
+               Open in new frame          -embed
+               Session start monitoring   -d
+               Start in new JVM           -nc
+
+            For more information about these command line options please read
+            secion 2a. of README.txt file.
+
+15/4/2002   Started work on opening sessions in their own frames.  This can be
+            accomplished by a new command line parameter of -noembed.
+
 12/4/2002   Update Spanish literals
 
             Fixed a cursor repositioning problem on screen restores.
