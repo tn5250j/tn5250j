@@ -25,47 +25,31 @@ package org.tn5250j.settings;
  *
  */
 
-import java.awt.*;
 import java.awt.event.*;
+import java.net.*;
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.util.*;
-import java.io.*;
-import java.net.*;
-import java.text.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class ColorAttributesPanel extends JPanel {
+public class ColorAttributesPanel extends AttributesPanel {
 
    JComboBox colorSchemaList;
    JComboBox colorList;
    JColorChooser jcc;
    Schema colorSchema;
-   Properties props;
    Properties schemaProps;
 
-   private SessionConfig changes = null;
 
    public ColorAttributesPanel(SessionConfig config ) {
-      super();
-      changes = config;
-      props = config.getProperties();
-
-      try {
-         jbInit();
-      }
-      catch(Exception e) {
-         e.printStackTrace();
-      }
+      super(config);
    }
 
    /**Component initialization*/
-   private void jbInit() throws Exception  {
-
-      // define colors panel
-      setLayout(new BorderLayout());
+   protected void initPanel() throws Exception  {
 
       JPanel cp = new JPanel();
       cp.setLayout(new BorderLayout());
@@ -178,62 +162,39 @@ public class ColorAttributesPanel extends JPanel {
 
    }
 
-   protected final String getStringProperty(String prop) {
+//   protected final int getIntProperty(String prop) {
+//
+//      return Integer.parseInt((String)props.get(prop));
+//
+//   }
 
-      if (props.containsKey(prop))
-         return (String)props.get(prop);
-      else
-         return "";
+//   protected final Color getColorProperty(String prop) {
+//
+//      if (props.containsKey(prop)) {
+//         Color c = new Color(getIntProperty(prop));
+//         return c;
+//      }
+//      else
+//         return null;
+//
+//   }
+//
+//   protected final Color getColorProperty(String prop, Color defColor) {
+//
+//      if (props.containsKey(prop)) {
+//         Color c = new Color(getIntProperty(prop));
+//         return c;
+//      }
+//      else
+//         return defColor;
+//
+//   }
 
-   }
-
-   protected final String getStringProperty(String prop,String defaultValue) {
-
-      if (props.containsKey(prop)) {
-         String p = (String)props.get(prop);
-         if (p.length() > 0)
-            return p;
-         else
-            return defaultValue;
-      }
-      else
-         return defaultValue;
-
-   }
-
-   protected final int getIntProperty(String prop) {
-
-      return Integer.parseInt((String)props.get(prop));
-
-   }
-
-   protected final Color getColorProperty(String prop) {
-
-      if (props.containsKey(prop)) {
-         Color c = new Color(getIntProperty(prop));
-         return c;
-      }
-      else
-         return null;
-
-   }
-
-   protected final Color getColorProperty(String prop, Color defColor) {
-
-      if (props.containsKey(prop)) {
-         Color c = new Color(getIntProperty(prop));
-         return c;
-      }
-      else
-         return defColor;
-
-   }
-
-   protected final void setProperty(String key, String val) {
-
-      props.setProperty(key,val);
-
-   }
+//   protected final void setProperty(String key, String val) {
+//
+//      props.setProperty(key,val);
+//
+//   }
 
    public void applyAttributes() {
 

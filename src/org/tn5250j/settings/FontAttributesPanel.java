@@ -37,33 +37,19 @@ import java.text.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class FontAttributesPanel extends JPanel {
+public class FontAttributesPanel extends AttributesPanel {
 
    JComboBox fontsList;
    JTextField verticalScale;
    JTextField horizontalScale;
    JTextField pointSize;
 
-   Properties props;
-   Properties schemaProps;
-
-   private SessionConfig changes = null;
-
    public FontAttributesPanel(SessionConfig config ) {
-      super();
-      changes = config;
-      props = config.getProperties();
-
-      try {
-         jbInit();
-      }
-      catch(Exception e) {
-         e.printStackTrace();
-      }
+      super(config);
    }
 
    /**Component initialization*/
-   private void jbInit() throws Exception  {
+   void initPanel() throws Exception  {
 
       // fonts
       Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
@@ -112,41 +98,6 @@ public class FontAttributesPanel extends JPanel {
 
       add(flp,BorderLayout.NORTH);
       add(fsp,BorderLayout.SOUTH);
-
-   }
-
-   protected final String getStringProperty(String prop) {
-
-      if (props.containsKey(prop))
-         return (String)props.get(prop);
-      else
-         return "";
-
-   }
-
-   protected final String getStringProperty(String prop,String defaultValue) {
-
-      if (props.containsKey(prop)) {
-         String p = (String)props.get(prop);
-         if (p.length() > 0)
-            return p;
-         else
-            return defaultValue;
-      }
-      else
-         return defaultValue;
-
-   }
-
-   protected final int getIntProperty(String prop) {
-
-      return Integer.parseInt((String)props.get(prop));
-
-   }
-
-   protected final void setProperty(String key, String val) {
-
-      props.setProperty(key,val);
 
    }
 
