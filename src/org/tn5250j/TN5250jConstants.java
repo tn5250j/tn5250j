@@ -87,7 +87,7 @@ public interface TN5250jConstants {
    public static final int SCREEN_SIZE_24X80   = 0;
    public static final int SCREEN_SIZE_27X132   = 1;
 
-   public static final int NUM_PARMS = 15;
+   public static final int NUM_PARMS = 20;
 
    // mnemonic value constants
    public static final int BACK_SPACE = 1001;
