@@ -80,7 +80,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private FileOutputStream fw;
    private BufferedOutputStream dw;
    private boolean firstScreen;
-   private char[] signOnSave;
    private boolean onConnect;
    private String connectMacro;
    private String sslType;
@@ -524,23 +523,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
    }
 
-   public boolean isOnSignoffScreen() {
-
-      if (firstScreen) {
-         char[] so = screen52.getScreenAsChars();
-         int size = signOnSave.length;
-         for (int x = 0; x < size; x++) {
-
-            if (signOnSave[x] != so[x]) {
-               System.out.println(" not on signon screen ");
-               return false;
-            }
-         }
-      }
-
-      return true;
-   }
-
    public final void systemRequest() {
       systemRequest(' ');
    }
@@ -884,8 +866,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
                if (!firstScreen) {
                   firstScreen = true;
                   controller.fireSessionChanged(TN5250jConstants.STATE_CONNECTED);
-                  signOnSave = screen52.getScreenAsChars();
-                  System.out.println("Signon saved");
                }
                break;
             case 4:
