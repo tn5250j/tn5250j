@@ -13,4 +13,11 @@
 ######################################################################
 
 from java.lang import *
-Runtime.getRuntime().exec('calc.exe')
+hostOs = System.getProperty('os.name')
+cmd = 'unknown'
+if (hostOs.startswith('Mac OS X') ):
+	cmd = 'open /Applications/Calculator.app'
+else:
+	cmd = 'calc.exe'
+print cmd
+Runtime.getRuntime().exec(cmd)
