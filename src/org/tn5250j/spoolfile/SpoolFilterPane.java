@@ -65,5 +65,19 @@ public class SpoolFilterPane extends JTabbedPane {
 
    }
 
+   /**
+    * Reset the values in the current panel to default values
+    */
+   public void resetCurrent() {
+      ((QueueFilterInterface)this.getSelectedComponent()).reset();
+   }
 
+   /**
+    * Reset the values in all filter panels to default values
+    */
+   public void resetAll() {
+      for (int x = 0; x < this.getTabCount(); x++) {
+         ((QueueFilterInterface)this.getComponent(x)).reset();
+      }
+   }
 }

@@ -28,11 +28,16 @@ package org.tn5250j.spoolfile;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 import java.io.*;
 import com.ibm.as400.access.*;
 import com.ibm.as400.vaccess.*;
 import org.tn5250j.tools.*;
+import org.tn5250j.event.WizardListener;
+import org.tn5250j.event.WizardEvent;
+import org.tn5250j.gui.Wizard;
+import org.tn5250j.gui.WizardPage;
 import org.tn5250j.My5250;
 import org.tn5250j.mailtools.SendEMailDialog;
 import com.lowagie.text.pdf.*;
@@ -41,7 +46,7 @@ import com.lowagie.text.*;
 /**
  *
  */
-public class SpoolExportWizard extends JFrame {
+public class SpoolExportWizard extends JFrame implements WizardListener {
 
    JPanel contentPane;
    JLabel statusBar = new JLabel();
@@ -70,13 +75,31 @@ public class SpoolExportWizard extends JFrame {
    JComboBox cvtType;
    JTextField pcPathInfo;
    JTextField ifsPathInfo;
+   JButton pcSave;
 
    JRadioButton pc;
    JRadioButton ifs;
    JRadioButton email;
 
+   // PDF Properties
+   JTextField title;
+   JTextField subject;
+   JTextField author;
+
+   // PDF Options
+   JTextField fontSize;
+   JComboBox pageSize;
+   JRadioButton portrait;
+   JRadioButton landscape;
+
    // Spooled File
    SpooledFile splfile;
+
+   JPanel two;
+
+   // Wizard
+   Wizard wizard;
+   JButton nextButton;
 
    // pdf variables
    private PdfWriter bos;
@@ -107,9 +130,113 @@ public class SpoolExportWizard extends JFrame {
    private void jbInit() throws Exception  {
 
       setIconImage(My5250.tnicon.getImage());
-      contentPane = (JPanel) this.getContentPane();
+
+      wizard = new Wizard();
+
+      wizard.addWizardListener(this);
+
+      this.getContentPane().add(wizard);
+
+      WizardPage page;
+
+      page = new WizardPage(WizardPage.NEXT |
+                       WizardPage.FINISH |
+                       WizardPage.CANCEL |
+                       WizardPage.HELP);
+
+      page.setName("Spool Export Wizard - 1");
+
+      setTitle(page.getName());
+
+      // get the next button so we can set it enabled or disabled depending
+      // on output type.
+      nextButton = page.getNextButton();
+
+      page.getContentPane().add(pageOne(), BorderLayout.CENTER);
+
+      wizard.add(page);
+
+      page = new WizardPage(WizardPage.PREVIOUS |
+                       WizardPage.FINISH |
+                       WizardPage.CANCEL |
+                       WizardPage.HELP);
+      page.setName("Spool Export Wizard - 2");
+
+      page.getContentPane().add(pageTwo(), BorderLayout.CENTER);
+      wizard.add(page);
+
+      pack();
+
+      //Center the window
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension frameSize = getSize();
+      if (frameSize.height > screenSize.height)
+         frameSize.height = screenSize.height;
+      if (frameSize.width > screenSize.width)
+         frameSize.width = screenSize.width;
+
+      setLocation((screenSize.width - frameSize.width) / 2,
+                     (screenSize.height - frameSize.height) / 2);
+
+   }
+
+   private JPanel pageTwo () {
+
+      two = new JPanel();
+
+      two.setLayout(new BorderLayout());
+
+      JPanel docProps = new JPanel();
+
+      docProps.setBorder(BorderFactory.createTitledBorder("PDF Properties"));
+      docProps.setLayout(new AlignLayout(2,5,5));
+
+      docProps.add(new JLabel("Title"));
+      docProps.add(title = new JTextField(40));
+      docProps.add(new JLabel("Subject"));
+      docProps.add(subject = new JTextField(40));
+      docProps.add(new JLabel("Author"));
+      docProps.add(author = new JTextField(40));
+
+      JPanel options = new JPanel();
+
+      options.setBorder(BorderFactory.createTitledBorder("Options"));
+      options.setLayout(new AlignLayout(2,5,5));
+
+      options.add(new JLabel("Font Size"));
+      options.add(fontSize = new JTextField(5));
+
+      options.add(new JLabel("Page Size"));
+      options.add(pageSize = new JComboBox());
+
+      pageSize.addItem("A3");
+      pageSize.addItem("A4");
+      pageSize.addItem("A5");
+      pageSize.addItem("LETTER");
+      pageSize.addItem("LEGAL");
+      pageSize.addItem("LEDGER");
+
+      options.add(portrait = new JRadioButton("Portrait"));
+      options.add(landscape = new JRadioButton("Landscape"));
+
+      ButtonGroup orientation = new ButtonGroup();
+      orientation.add(portrait);
+      orientation.add(landscape);
+
+      landscape.setSelected(true);
+
+      two.add(docProps,BorderLayout.NORTH);
+      two.add(options,BorderLayout.CENTER);
+//      two.add(statusBar,BorderLayout.SOUTH);
+
+      return two;
+   }
+
+   private JPanel pageOne () throws Exception {
+
+      contentPane = new JPanel();
+
       contentPane.setLayout(borderLayout1);
-      this.setTitle("Spooled File Export Wizard");
       statusBar.setText(" ");
       statusBar.setBorder(BorderFactory.createEtchedBorder());
 
@@ -162,7 +289,7 @@ public class SpoolExportWizard extends JFrame {
 
       JPanel spoolInfo = new JPanel();
 
-      AlignLayout alignMe2 = new AlignLayout(2,5,5);
+      AlignLayout alignMe2 = new AlignLayout(3,5,5);
       spoolInfo.setLayout(alignMe2);
       spoolInfo.setBorder(BorderFactory.createTitledBorder("Export To Information"));
 
@@ -171,24 +298,45 @@ public class SpoolExportWizard extends JFrame {
       cvtType.addItem(LangTool.getString("spool.toPDF"));
       cvtType.addItem(LangTool.getString("spool.toText"));
 
+      cvtType.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            if (((String)cvtType.getSelectedItem()).equals(LangTool.getString("spool.toText")))
+               nextButton.setEnabled(false);
+            else
+               nextButton.setEnabled(true);
+         }
+      });
+
       spoolInfo.add(new JLabel(LangTool.getString("spool.labelFormat")));
       spoolInfo.add(cvtType);
+      spoolInfo.add(new JLabel(""));
 
       pc = new JRadioButton(LangTool.getString("spool.labelPCPath"));
       pcPathInfo = new JTextField(30);
 
+      pcSave = new JButton("...");
+
+      pcSave.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            getPCFile();
+         }
+      });
+
       spoolInfo.add(pc);
       spoolInfo.add(pcPathInfo);
+      spoolInfo.add(pcSave);
 
       ifs = new JRadioButton(LangTool.getString("spool.labelIFSPath"));
       ifsPathInfo = new JTextField(30);
 
       spoolInfo.add(ifs);
       spoolInfo.add(ifsPathInfo);
+      spoolInfo.add(new JLabel(""));
 
       email = new JRadioButton(LangTool.getString("spool.labelEmail"));
 
       spoolInfo.add(email);
+      spoolInfo.add(new JLabel(""));
       spoolInfo.add(new JLabel(""));
 
       ButtonGroup bg = new ButtonGroup();
@@ -218,48 +366,19 @@ public class SpoolExportWizard extends JFrame {
 
       spoolOptions.add(spoolInfo,BorderLayout.CENTER);
 
-      JPanel buttonPanel = new JPanel();
-
-      JButton next = new JButton(LangTool.getString("spool.buttonNext"));
-      JButton previous = new JButton(LangTool.getString("spool.buttonPrev"));
-      JButton convert = new JButton(LangTool.getString("spool.buttonConvert"));
-
-      previous.setEnabled(false);
-
-      next.addActionListener(new java.awt.event.ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            doExport();
-         }
-      });
-
-      buttonPanel.add(previous);
-      buttonPanel.add(next);
-
-      spoolOptions.add(buttonPanel,BorderLayout.SOUTH);
-
-      pack();
-
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-
-      setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
-
+      return contentPane;
    }
 
    private void doItemStateChanged(ItemEvent e) {
 
       pcPathInfo.setEnabled(false);
       ifsPathInfo.setEnabled(false);
+      pcSave.setEnabled(false);
 
       if (e.getStateChange() == ItemEvent.SELECTED) {
          if (pc.isSelected()) {
             pcPathInfo.setEnabled(true);
+            pcSave.setEnabled(true);
             pcPathInfo.grabFocus();
          }
 
@@ -268,6 +387,47 @@ public class SpoolExportWizard extends JFrame {
             ifsPathInfo.grabFocus();
          }
       }
+   }
+
+   private boolean pagesValid() {
+
+      if (pc.isSelected()) {
+         if (pcPathInfo.getText().length() == 0)
+            getPCFile();
+         if (pcPathInfo.getText().length() == 0)
+            return false;
+      }
+
+      return true;
+   }
+
+   /**
+    * Get the local file from a file chooser
+    */
+   private void getPCFile() {
+
+      String workingDir = System.getProperty("user.dir");
+      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
+
+      // set the file filters for the file chooser
+      ExportFileFilter filter;
+
+      if (((String)cvtType.getSelectedItem()).equals(LangTool.getString("spool.toPDF")))
+         filter = new ExportFileFilter("pdf","PDF Files");
+      else
+         filter = new ExportFileFilter("txt","Text Files");
+
+      pcFileChooser.addChoosableFileFilter(filter );
+//
+      int ret = pcFileChooser.showSaveDialog(this);
+
+      // check to see if something was actually chosen
+      if (ret == JFileChooser.APPROVE_OPTION) {
+         File file = pcFileChooser.getSelectedFile();
+         pcPathInfo.setText(filter.setExtension(file));
+
+      }
+
    }
 
    //Overridden so we can exit when window is closed
@@ -280,6 +440,9 @@ public class SpoolExportWizard extends JFrame {
    }
 
    private void doExport() {
+
+      if (!pagesValid())
+         return;
 
       Thread cvt = null;
 
@@ -538,8 +701,9 @@ public class SpoolExportWizard extends JFrame {
          if (cvtType.getSelectedIndex() == 0)
             suffix = ".pdf";
 
-         if (email.isSelected()) {
+         String fileName = pcPathInfo.getText().trim();
 
+         if (email.isSelected()) {
             File dir = new File(System.getProperty("user.dir"));
             File f = File.createTempFile(number.getText().trim(),suffix,dir);
 
@@ -548,10 +712,9 @@ public class SpoolExportWizard extends JFrame {
             conicalPath = f.getCanonicalPath();
             f.deleteOnExit();
             fw = new FileOutputStream(f);
-
          }
          else
-            fw = new FileOutputStream(spooledFile.getText().trim() + suffix);
+            fw = new FileOutputStream(fileName);
 
          if (cvtType.getSelectedIndex() > 0)
             return;
@@ -560,14 +723,59 @@ public class SpoolExportWizard extends JFrame {
             document = new Document();
 
             bos = PdfWriter.getInstance(document,fw);
-//            document.setPageSize(new Rectangle(0.0f,
-//                                                0.0f,
-//                                                getPointFromInches(13),
-//                                                getPointFromInches(11)));
 
             BaseFont bf = BaseFont.createFont("Courier", "Cp1252", false);
-            font = new com.lowagie.text.Font(bf, 8, com.lowagie.text.Font.NORMAL);
-            document.setPageSize(PageSize.A3.rotate());
+            font = new com.lowagie.text.Font(bf, 9, com.lowagie.text.Font.NORMAL);
+
+            if (author.getText().length() > 0)
+               document.addAuthor(author.getText());
+            if (title.getText().length() > 0)
+               document.addTitle(title.getText());
+            if (subject.getText().length() > 0)
+               document.addSubject(subject.getText());
+
+            String ps = (String)pageSize.getSelectedItem();
+            if (ps.equals("A3")) {
+               if (portrait.isSelected())
+                  document.setPageSize(PageSize.A3);
+               else
+                  document.setPageSize(PageSize.A3.rotate());
+
+            }
+
+            if (ps.equals("A4")) {
+               if (portrait.isSelected())
+                  document.setPageSize(PageSize.A4);
+               else
+                  document.setPageSize(PageSize.A4.rotate());
+            }
+
+            if (ps.equals("A5")) {
+               if (portrait.isSelected())
+                  document.setPageSize(PageSize.A5);
+               else
+                  document.setPageSize(PageSize.A5.rotate());
+            }
+            if (ps.equals("LETTER")) {
+               if (portrait.isSelected())
+                  document.setPageSize(PageSize.LETTER);
+               else
+                  document.setPageSize(PageSize.LETTER.rotate());
+            }
+            if (ps.equals("LEGAL")) {
+               if (portrait.isSelected())
+                  document.setPageSize(PageSize.LEGAL);
+               else
+                  document.setPageSize(PageSize.LEGAL.rotate());
+            }
+            if (ps.equals("LEDGER")) {
+               if (portrait.isSelected())
+                  document.setPageSize(PageSize.LEDGER);
+               else
+                  document.setPageSize(PageSize.LEDGER.rotate());
+            }
+
+
          }
       }
       catch(IOException _ex) {
@@ -585,9 +793,72 @@ public class SpoolExportWizard extends JFrame {
          document.close();
          document = null;
 
+   }
 
+   public void nextBegin(WizardEvent e) {
+      System.out.println(e.getCurrentPage().getName() + " Next Begin");
+//      WizardPage wiz = (WizardPage)e.getNewPage();
+//      JPanel pan = ((JPanel)wiz.getContentPane());
+//      pan.add(statusBar,BorderLayout.SOUTH);
+//      pan.invalidate();
+//      pan.validate();
+//      pan.repaint();
+//      setTitle(e.getCurrentPage().getName());
+      two.add(statusBar,BorderLayout.SOUTH);
+   }
+
+   public void nextComplete(WizardEvent e) {
+      System.out.println(e.getCurrentPage().getName() + " Next Complete");
+      setTitle(e.getNewPage().getName());
 
    }
 
+   public void previousBegin(WizardEvent e){
+      System.out.println(e.getCurrentPage().getName() + " Prev Begin");
+//      WizardPage wiz = (WizardPage)e.getNewPage();
+//      JPanel pan = ((JPanel)wiz.getContentPane());
+//      pan.add(statusBar,BorderLayout.SOUTH);
+//      pan.invalidate();
+//      pan.validate();
+//      pan.repaint();
+      contentPane.add(statusBar,BorderLayout.SOUTH);
+   }
+
+   public void previousComplete(WizardEvent e) {
+      System.out.println(e.getCurrentPage().getName() + " Prev Complete");
+      setTitle(e.getNewPage().getName());
+   }
+
+   public void finished(WizardEvent e) {
+      System.out.println("It is finished!");
+      doExport();
+      //      closeWizard();
+   }
+
+   public void canceled(WizardEvent e) {
+      System.out.println("It is canceled!");
+      this.hide();
+      this.dispose();
+   }
+
+   public void help(WizardEvent e) {
+      System.out.println(e.getCurrentPage().getName());
+   }
+
+
+    /**
+     * This is to fix
+     * Bug Id - 4416982
+     * Synopsis JFileChooser does not use its resources to size itself initially
+     */
+   class MyFileChooser extends JFileChooser {
+      MyFileChooser(String dir) {
+         super(dir);
+      }
+
+      public Dimension getPreferredSize() {
+         return getLayout().preferredLayoutSize(this);
+      }
+   }
 
 }

@@ -1,6 +1,6 @@
 package org.tn5250j.spoolfile;
 /**
- * Title: SpoolExporter.java
+ * Title: UserTabPanel.java
  * Copyright:   Copyright (c) 2002
  * Company:
  * @author  Kenneth J. Pouncey
@@ -30,7 +30,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import org.tn5250j.tools.AlignLayout;
 
-public class UserTabPanel extends JPanel {
+public class UserTabPanel extends JPanel implements QueueFilterInterface {
 
    JRadioButton all;
    JRadioButton select;
@@ -73,6 +73,17 @@ public class UserTabPanel extends JPanel {
       add(user);
 
       setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+   }
+
+   /**
+    * Reset to default value(s)
+    */
+   public void reset() {
+
+      user.setEnabled(true);
+      user.setText("*CURRENT");
+      select.setSelected(true);
 
    }
 

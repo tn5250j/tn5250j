@@ -208,7 +208,19 @@ public class SpoolExporter extends JFrame {
       });
 
       bp.add(reset);
+
+      reset.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            filter.resetCurrent();
+         }
+      });
+
       bp.add(resetAll);
+      resetAll.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            filter.resetAll();
+         }
+      });
 
       fp.add(filter,BorderLayout.CENTER);
       fp.add(bp,BorderLayout.SOUTH);

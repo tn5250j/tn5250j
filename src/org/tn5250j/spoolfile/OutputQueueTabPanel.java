@@ -30,7 +30,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import org.tn5250j.tools.*;
 
-public class OutputQueueTabPanel extends JPanel implements ActionListener {
+public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface {
 
    JRadioButton all;
    JRadioButton select;
@@ -59,7 +59,6 @@ public class OutputQueueTabPanel extends JPanel implements ActionListener {
             select_itemStateChanged(e);
          }
       });
-      select.addActionListener(this);
 
       library = new JTextField(10);
       queue = new JTextField(10);
@@ -81,8 +80,15 @@ public class OutputQueueTabPanel extends JPanel implements ActionListener {
 
    }
 
-   public final void actionPerformed(ActionEvent actionevent) {
-      String s = actionevent.getActionCommand();
+   /**
+    * Reset to default value(s)
+    */
+   public void reset() {
+
+      library.setText("");
+      queue.setText("");
+      all.setSelected(true);
+
    }
 
    void select_itemStateChanged(ItemEvent e) {
