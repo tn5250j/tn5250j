@@ -33,6 +33,7 @@ import com.ibm.as400.vaccess.*;
 import com.ibm.as400.access.*;
 import java.sql.*;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.My5250;
 import org.tn5250j.tools.system.OperatingSystem;
 
@@ -72,7 +73,7 @@ public class SqlWizard extends JFrame {
 
       try {
 
-         setIconImage(My5250.tnicon.getImage());
+         setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
 
          // set title
          setTitle(LangTool.getString("xtfr.wizardTitle"));
