@@ -150,7 +150,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
 
       macros = new Macronizer();
-      macros.init();
+      Macronizer.init();
 
       keyPad.addActionListener(this);
       if (sesConfig.getStringProperty("keypad").equals("Yes"))
@@ -867,7 +867,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                };
             }
             macMenu.add(action);
-            if (macros.isMacrosExist()) {
+            if (Macronizer.isMacrosExist()) {
                // this will add a sorted list of the macros to the macro menu
                addMacros(macMenu);
             }
