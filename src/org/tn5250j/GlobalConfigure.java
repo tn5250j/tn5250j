@@ -178,22 +178,17 @@ public class GlobalConfigure extends ConfigureFactory {
    }
 
    private void checkLegacy() {
-
       // we check if the sessions file already exists in the directory
       // if it does exist we are working with an old install so we
       // need to set the settings directory to the users directory
-      File ses = new File("sessions");
-
+      // SESSIONS is declared as a string, so we just can use the keyword here.
+      File ses = new File(SESSIONS);
       if(ses.exists()) {
-
          settings.setProperty("emulator.settingsDirectory", System.getProperty("user.dir") + File.separator);
-
       }
       else {
-
          settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
          System.out.println("User Home = " + System.getProperty("user.home"));
-
       }
    }
 
