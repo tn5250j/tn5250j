@@ -176,7 +176,8 @@
     <!-- =================================================================== -->
     <target name="run" depends="dist-run-prepare" description="Run the program">
         <java jar="${dist-run.dir}/${jarname}"
-              fork="yes">
+              fork="yes"
+              dir="${dist-run.dir}">
           <classpath>
             <fileset dir="${dist-run.dir}" >
               <include name="*.jar" />
