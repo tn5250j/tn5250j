@@ -44,7 +44,10 @@ public class SendEMail {
    private String subject;
    private String configFile;
    private String message;
+   private String attachment;
+   private String attachmentName;
    private String fileName;
+
    // SMTP Properties file
    java.util.Properties SMTPProperties;
 
@@ -78,15 +81,38 @@ public class SendEMail {
    public String getConfigFile() {
       return configFile;
    }
+
+   public void setAttachment(String text) {
+      this.attachment = text;
+   }
+
+   public String getAttachment() {
+      return attachment;
+   }
+
    public void setMessage(String text) {
       this.message = text;
    }
+
    public String getMessage() {
       return message;
    }
+
+   public void setAttachmentName(String desc) {
+
+      attachmentName = desc;
+   }
+
+   public String getAttachmentName() {
+
+      return attachmentName;
+
+   }
+
    public void setFileName(String name) {
       this.fileName = name;
    }
+
    public String getFileName() {
       return fileName;
    }
@@ -130,6 +156,8 @@ public class SendEMail {
       subject=null;
       configFile=null;
       message=null;
+      attachment = null;
+      attachmentName = null;
       fileName=null;
    }
 
@@ -144,6 +172,9 @@ public class SendEMail {
 
          Session session = Session.getDefaultInstance(SMTPProperties, null);
          session.setDebug(false);
+
+         // create the Multipart and its parts to it
+         Multipart mp = new MimeMultipart();
 
          Message msg = new MimeMessage(session);
          InternetAddress[] toAddrs = null, ccAddrs = null;
@@ -162,27 +193,55 @@ public class SendEMail {
          if (from != null && from.length() > 0)
             msg.setFrom(new InternetAddress(from));
 
+         if (message != null && message.length() > 0) {
+            // create and fill the attachment message part
+            MimeBodyPart mbp = new MimeBodyPart();
+            mbp.setText(message,"us-ascii");
+            mp.addBodyPart(mbp);
+         }
+
          msg.setSentDate(new Date());
 
-       // create and fill the first message part
-       MimeBodyPart mbp = new MimeBodyPart();
+         if (attachment != null && attachment.length() > 0) {
+            // create and fill the attachment message part
+            MimeBodyPart abp = new MimeBodyPart();
 
-       mbp.setText(message,"us-ascii");
+            abp.setText(attachment,"us-ascii");
 
-       if (fileName == null || fileName.length() == 0)
-          mbp.setFileName("tn5250j.txt");
-       else
-         mbp.setFileName(fileName);
+            if (attachmentName == null || attachmentName.length() == 0)
+               abp.setFileName("tn5250j.txt");
+            else
+               abp.setFileName(attachmentName);
+            mp.addBodyPart(abp);
 
-       // create the Multipart and its parts to it
-       Multipart mp = new MimeMultipart();
-       mp.addBodyPart(mbp);
+         }
 
-       // add the Multipart to the message
-       msg.setContent(mp);
+         if (fileName != null && fileName.length() > 0) {
+            // create and fill the attachment message part
+            MimeBodyPart fbp = new MimeBodyPart();
 
-       // send the message
-       Transport.send(msg);
+            fbp.setText("File sent using tn5250j","us-ascii");
+
+            if (attachmentName == null || attachmentName.length() == 0)
+               fbp.setFileName("tn5250j.txt");
+            else
+               fbp.setFileName(attachmentName);
+
+             // Get the attachment
+             DataSource source = new FileDataSource(fileName);
+
+             // Set the data handler to the attachment
+             fbp.setDataHandler(new DataHandler(source));
+
+            mp.addBodyPart(fbp);
+
+         }
+
+         // add the Multipart to the message
+         msg.setContent(mp);
+
+         // send the message
+         Transport.send(msg);
       }
       catch (Exception mex) {
          System.out.println(mex.toString());

@@ -137,6 +137,8 @@ public class KeyMapper {
 
          mappedKeys.put(new KeyStroker(155, true, false, false, false),"[dupfield]");
          mappedKeys.put(new KeyStroker(17, true, true, false, false),"[newline]");
+         mappedKeys.put(new KeyStroker(34, false, false, true, false),"[jumpnext]");
+         mappedKeys.put(new KeyStroker(33, false, false, true, false),"[jumpprev]");
 
          saveKeyMap();
       }
@@ -287,6 +289,22 @@ public class KeyMapper {
       }
 
       return LangTool.getString("key.dead");
+   }
+
+   public final static boolean isKeyStrokeDefined(String which) {
+
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which))
+            return true;
+      }
+
+      return false;
    }
 
    public final static void removeKeyStroke(String which) {

@@ -28,7 +28,7 @@ public interface TN5250jConstants {
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".5";
-   public static final String tn5250jSubVer= ".4";
+   public static final String tn5250jSubVer= ".4b";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
@@ -113,6 +113,9 @@ public interface TN5250jConstants {
    public static final int MARK_RIGHT = 1041;
    public static final int DUP_FIELD = 1042;
    public static final int NEW_LINE = 1043;
+   public static final int JUMP_NEXT_SESS = 1044;
+   public static final int JUMP_PREV_SESS = 1045;
+   public static final int OPEN_NEW = 1046;
    public static final int PF1 = 0x31;
    public static final int PF2 = 0x32;
    public static final int PF3 = 0x33;
@@ -154,7 +157,7 @@ public interface TN5250jConstants {
         "[rollright]", "[hostprint]", "[pa1]", "[pa2]", "[pa3]",
         "[sysreq]","[reset]","[nextword]", "[prevword]", "[copy]",
         "[paste]","[attn]","[markup]", "[markdown]", "[markleft]",
-        "[markright]","[dupfield]","[newline]"
+        "[markright]","[dupfield]","[newline]","[jumpnext]","[jumpprev]"
    };
 
    public static final int mnemonicValue[] = {
@@ -173,7 +176,7 @@ public interface TN5250jConstants {
         0xDA, 0xF6, 0x6C, 0x6E, 0x6B,
         1031, 1032, 1033, 1034, 1035,
         1036, 1037, 1038, 1039, 1040,
-        1041, 1042, 1043
+        1041, 1042, 1043, 1044, 1045
    };
 
    public static final String MNEMONIC_CLEAR   =  "[clear]";
@@ -250,6 +253,8 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_MARK_DOWN   =  "[markdown]";
    public static final String MNEMONIC_DUP_FIELD   =  "[dupfield]";
    public static final String MNEMONIC_NEW_LINE   =  "[newline]";
+   public static final String MNEMONIC_JUMP_NEXT   =  "[jumpnext]";
+   public static final String MNEMONIC_JUMP_PREV   =  "[jumpprev]";
 
    // AID-Generating Keys
    public static final int AID_CLEAR = 0xBD;

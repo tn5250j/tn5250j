@@ -37,10 +37,9 @@ If you list the directory where the my5250.jar file is you should see 4 files
 with the extension .jar.  If this is not true then go to step one of Deployment
 and start again.
 
-
-3. Now restart emulator and press alt-e or send screen -> via e-mail from popup 
-window.  If the files can be found you will receive an error message.
-
+3.  Now when selecting any e-mail functions you will have to configure the
+properties first.  There will be a button to configure this before sending
+e-mails.
 
 Deployment with JavaWebStart
 ----------------------------
@@ -61,10 +60,10 @@ I have included my sample .jnlp file that I use for deploying in JavaWebStart.
        <information>
          <title>tn5250j</title>
          <vendor>Kenneth J. Pouncey</vendor>
-		 <homepage href="http://sourceforge.net/tn5250j"/>
-		 <description>tn5250j - 5250 emulator written in java</description>
-		 <description kind="short">tn5250j - 5250 emulator</description>
-		 <icon href="tnicon.jpg"/>
+       <homepage href="http://sourceforge.net/tn5250j"/>
+       <description>tn5250j - 5250 emulator written in java</description>
+       <description kind="short">tn5250j - 5250 emulator</description>
+       <icon href="tnicon.jpg"/>
          <offline-allowed/>
        </information>
        <security>
@@ -93,8 +92,12 @@ Using emulator to send screen shots via e-mail
 
       To:
       Subject:
+      Message:
+      Attachment Name:
 
 2.  Press the Send button or Cancel.
+
+3.  Press the Configure button to configure the e-mail attributes.
 
 
 If you have any questions or suggestions please let me know.  If you have code

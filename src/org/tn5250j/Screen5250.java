@@ -1913,7 +1913,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                setCursorOn();
             }
             simulated  = true;
-
+            break;
+         case JUMP_NEXT_SESS :
+            gui.nextSession();
+            simulated = true;
+            break;
+         case JUMP_PREV_SESS :
+            gui.prevSession();
+            simulated = true;
             break;
          default :
             System.out.println(" Mnemonic not supported " + mnem);

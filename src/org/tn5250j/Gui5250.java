@@ -67,6 +67,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
    boolean isAltGr;
    private Vector listeners = null;
    private SessionJumpEvent jumpEvent;
+   private boolean jumpn;
+   private boolean jumpp;
 
    public Gui5250 () {
 
@@ -182,10 +184,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
       keyMap = new KeyMapper();
       keyMap.init();
 
+      jumpn = keyMap.isKeyStrokeDefined("[jumpnext]");
+      jumpp = keyMap.isKeyStrokeDefined("[jumpprev]");
+
       /**
        * this is taken out right now look at the method for description
        */
-//      initKeyBindings();
+      initKeyBindings();
 
       macros = new Macronizer();
       macros.init();
@@ -230,6 +235,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //      }
       Action newSession = new AbstractAction("newSession") {
             public void actionPerformed(ActionEvent e) {
+//               System.out.println(" new session ");
                me.startNewSession();
             }
         };
@@ -244,248 +250,248 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //         return;
 //      }
 
-      Action chgSession = new AbstractAction("chgSession") {
-            public void actionPerformed(ActionEvent e) {
-               changeConnection();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_X,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"chgSession");
-      getActionMap().put("chgSession",chgSession );
-
-//      if (keyCode == KeyEvent.VK_PAGE_UP &&
-//            e.isAltDown() && !e.isControlDown()) {
+         Action chgSession = new AbstractAction("chgSession") {
+               public void actionPerformed(ActionEvent e) {
+                  changeConnection();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_X,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"chgSession");
+         getActionMap().put("chgSession",chgSession );
 //
-//         nextSession();
-//         return;
-//      }
-
-      Action nxtSession = new AbstractAction("nxtSession") {
-            public void actionPerformed(ActionEvent e) {
-               nextSession();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"nxtSession");
-      getActionMap().put("nxtSession",nxtSession );
-
-//      if (keyCode == KeyEvent.VK_PAGE_DOWN &&
-//            e.isAltDown() && !e.isControlDown()) {
+//   //      if (keyCode == KeyEvent.VK_PAGE_UP &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //
+//   //         nextSession();
+//   //         return;
+//   //      }
 //
-//         prevSession();
-//         return;
-//      }
-
-      Action prevSession = new AbstractAction("prevSession") {
-            public void actionPerformed(ActionEvent e) {
-               prevSession();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"prevSession");
-      getActionMap().put("prevSession",prevSession );
-
-//      if (keyCode == KeyEvent.VK_S &&
-//            e.isAltDown() && !e.isControlDown()) {
+         Action nxtSession = new AbstractAction("nxtSession") {
+               public void actionPerformed(ActionEvent e) {
+                  nextSession();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"nxtSession");
+         getActionMap().put("nxtSession",nxtSession );
 //
-//         screen.toggleHotSpots();
-//         return;
-//      }
-
-      Action hotSpots = new AbstractAction("hotSpots") {
-            public void actionPerformed(ActionEvent e) {
-               screen.toggleHotSpots();
-               System.out.println("hotspots");
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"hotSpots");
-      getActionMap().put("hotSpots",hotSpots );
-
-//      if (keyCode == KeyEvent.VK_G &&
-//            e.isAltDown() && !e.isControlDown()) {
+//   //      if (keyCode == KeyEvent.VK_PAGE_DOWN &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //
+//   //         prevSession();
+//   //         return;
+//   //      }
 //
-//         screen.toggleGUIInterface();
-////         repaint();
-//         return;
-//      }
-      Action gui = new AbstractAction("gui") {
-            public void actionPerformed(ActionEvent e) {
-               screen.toggleGUIInterface();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_G,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"gui");
-      getActionMap().put("gui",gui );
+         Action prevSession = new AbstractAction("prevSession") {
+               public void actionPerformed(ActionEvent e) {
+                  prevSession();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"prevSession");
+         getActionMap().put("prevSession",prevSession );
+//
+//   //      if (keyCode == KeyEvent.VK_S &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //
+//   //         screen.toggleHotSpots();
+//   //         return;
+//   //      }
+//
+         Action hotSpots = new AbstractAction("hotSpots") {
+               public void actionPerformed(ActionEvent e) {
+                  screen.toggleHotSpots();
+                  System.out.println("hotspots");
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"hotSpots");
+         getActionMap().put("hotSpots",hotSpots );
+//
+//   //      if (keyCode == KeyEvent.VK_G &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //
+//   //         screen.toggleGUIInterface();
+//   ////         repaint();
+//   //         return;
+//   //      }
+         Action gui = new AbstractAction("gui") {
+               public void actionPerformed(ActionEvent e) {
+                  screen.toggleGUIInterface();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_G,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"gui");
+         getActionMap().put("gui",gui );
+//
+//   //      if (keyCode == KeyEvent.VK_M &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         vt.systemRequest('4');
+//   //         return;
+//   //      }
+//
+         Action msg = new AbstractAction("msg") {
+               public void actionPerformed(ActionEvent e) {
+                  vt.systemRequest('4');
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_M,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"msg");
+         getActionMap().put("msg",msg );
+//
+//   //      if (keyCode == KeyEvent.VK_D &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         doAttributes();
+//   //         return;
+//   //      }
+//
+         Action attr = new AbstractAction("attr") {
+               public void actionPerformed(ActionEvent e) {
+                  doAttributes();
 
-//      if (keyCode == KeyEvent.VK_M &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         vt.systemRequest('4');
-//         return;
-//      }
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_D,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"attr");
+         getActionMap().put("attr",attr );
+//
+//   //      if (keyCode == KeyEvent.VK_P &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         screen.printMe();
+//   //         return;
+//   //      }
+//
+         Action print = new AbstractAction("print") {
+               public void actionPerformed(ActionEvent e) {
+                  printMe();
 
-      Action msg = new AbstractAction("msg") {
-            public void actionPerformed(ActionEvent e) {
-               vt.systemRequest('4');
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_M,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"msg");
-      getActionMap().put("msg",msg );
-
-//      if (keyCode == KeyEvent.VK_D &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         doAttributes();
-//         return;
-//      }
-
-      Action attr = new AbstractAction("attr") {
-            public void actionPerformed(ActionEvent e) {
-               doAttributes();
-
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_D,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"attr");
-      getActionMap().put("attr",attr );
-
-//      if (keyCode == KeyEvent.VK_P &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         screen.printMe();
-//         return;
-//      }
-
-      Action print = new AbstractAction("print") {
-            public void actionPerformed(ActionEvent e) {
-               printMe();
-
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"print");
-      getActionMap().put("print",print );
-
-//      if (keyCode == KeyEvent.VK_L &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         screen.crossHair();
-//         return;
-//      }
-      Action cursor = new AbstractAction("cursor") {
-            public void actionPerformed(ActionEvent e) {
-               screen.crossHair();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_L,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"cursor");
-      getActionMap().put("cursor",cursor );
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"print");
+         getActionMap().put("print",print );
 //
-//      if (keyCode == KeyEvent.VK_O &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         vt.toggleDebug();
-//         return;
-//      }
-      Action debug = new AbstractAction("debug") {
-            public void actionPerformed(ActionEvent e) {
-               vt.toggleDebug();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"debug");
-      getActionMap().put("debug",debug );
-//
-//      if (keyCode == KeyEvent.VK_Q &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         closeSession();
-//         return;
-//      }
-      Action close = new AbstractAction("close") {
-            public void actionPerformed(ActionEvent e) {
-               closeSession();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"close");
-      getActionMap().put("close",close );
-//
-//      // file transfer
-//      if (keyCode == KeyEvent.VK_T &&
-//            e.isAltDown() && !e.isControlDown()) {
-//         doMeTransfer();
-//         return;
-//      }
-      Action transfer = new AbstractAction("transfer") {
-            public void actionPerformed(ActionEvent e) {
-               doMeTransfer();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"transfer");
-      getActionMap().put("transfer",transfer );
-//
-//      // send screen via e-mail
-//         if (keyCode == KeyEvent.VK_E &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            sendScreenEMail();
-//            return;
-//         }
-//
-      Action e_mail = new AbstractAction("e-mail") {
-            public void actionPerformed(ActionEvent e) {
-               sendScreenEMail();
-            }
-        };
-      ks = KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK);
-      getInputMap().put(ks,"e-mail");
-      getActionMap().put("e-mail",e_mail );
-
-      Action ohshit = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-               System.out.println(e.getActionCommand());
-            }
-        };
-//         HashMap hm = keyMap.getKeyMap();
-//
-//         Collection v = hm.values();
-//         Set o = hm.keySet();
-//         Iterator k = o.iterator();
-//         Iterator i = v.iterator();
-//
-//         while (k.hasNext()) {
-//            KeyStroker ksr = (KeyStroker)k.next();
-//            String keyVal = (String)i.next();
-//            Action ohshit = new AbstractAction(keyVal) {
-//               public void actionPerformed(ActionEvent e) {
-//                  System.out.println("action command :" + e);
-//               }
-//            };
-//            int mask = 0;
-//            if (ksr.isAltDown())
-//               mask |= KeyEvent.ALT_MASK;
-//            if (ksr.isControlDown())
-//               mask |= KeyEvent.CTRL_MASK;
-//            if (ksr.isShiftDown())
-//               mask |= KeyEvent.SHIFT_MASK;
-//            if (ksr.isAltGrDown())
-//               mask |= KeyEvent.META_MASK;
-//
-//            ohshit.putValue(Action.NAME, keyVal);
-//
-//            ks = KeyStroke.getKeyStroke(ksr.getKeyCode(),mask);
-//
-//            System.out.println(keyVal + " " + ks);
-//            getInputMap().put(ks,keyVal);
-//            getActionMap().put(keyVal,new MyAction(keyVal) );
-//
-//   //         if (keyVal.equals(which)) {
-//   //            mappedKeys.remove(ks);
-//   //            mappedKeys.put(new KeyStroker(ke.getKeyCode(),
-//   //                                          ke.isShiftDown(),
-//   //                                          ke.isControlDown(),
-//   //                                          ke.isAltDown(),
-//   //                                          isAltGr),keyVal);
+//   //      if (keyCode == KeyEvent.VK_L &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         screen.crossHair();
+//   //         return;
+//   //      }
+         Action cursor = new AbstractAction("cursor") {
+               public void actionPerformed(ActionEvent e) {
+                  screen.crossHair();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_L,KeyEvent.ALT_MASK,false);
+         getInputMap().put(ks,"cursor");
+         getActionMap().put("cursor",cursor );
+//   //
+//   //      if (keyCode == KeyEvent.VK_O &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         vt.toggleDebug();
+//   //         return;
+//   //      }
+         Action debug = new AbstractAction("debug") {
+               public void actionPerformed(ActionEvent e) {
+                  vt.toggleDebug();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"debug");
+         getActionMap().put("debug",debug );
+//   //
+//   //      if (keyCode == KeyEvent.VK_Q &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         closeSession();
+//   //         return;
+//   //      }
+         Action close = new AbstractAction("close") {
+               public void actionPerformed(ActionEvent e) {
+                  closeSession();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"close");
+         getActionMap().put("close",close );
+//   //
+//   //      // file transfer
+//   //      if (keyCode == KeyEvent.VK_T &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         doMeTransfer();
+//   //         return;
+//   //      }
+         Action transfer = new AbstractAction("transfer") {
+               public void actionPerformed(ActionEvent e) {
+                  doMeTransfer();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"transfer");
+         getActionMap().put("transfer",transfer );
+//   //
+//   //      // send screen via e-mail
+//   //         if (keyCode == KeyEvent.VK_E &&
+//   //               e.isAltDown() && !e.isControlDown()) {
+//   //            sendScreenEMail();
 //   //            return;
 //   //         }
-//      }
+//   //
+         Action e_mail = new AbstractAction("e-mail") {
+               public void actionPerformed(ActionEvent e) {
+                  sendScreenEMail();
+               }
+           };
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK);
+         getInputMap().put(ks,"e-mail");
+         getActionMap().put("e-mail",e_mail );
+//
+//         Action ohshit = new AbstractAction() {
+//               public void actionPerformed(ActionEvent e) {
+//                  System.out.println(e.getActionCommand());
+//               }
+//           };
+//   //         HashMap hm = keyMap.getKeyMap();
+//   //
+//   //         Collection v = hm.values();
+//   //         Set o = hm.keySet();
+//   //         Iterator k = o.iterator();
+//   //         Iterator i = v.iterator();
+//   //
+//   //         while (k.hasNext()) {
+//   //            KeyStroker ksr = (KeyStroker)k.next();
+//   //            String keyVal = (String)i.next();
+//   //            Action ohshit = new AbstractAction(keyVal) {
+//   //               public void actionPerformed(ActionEvent e) {
+//   //                  System.out.println("action command :" + e);
+//   //               }
+//   //            };
+//   //            int mask = 0;
+//   //            if (ksr.isAltDown())
+//   //               mask |= KeyEvent.ALT_MASK;
+//   //            if (ksr.isControlDown())
+//   //               mask |= KeyEvent.CTRL_MASK;
+//   //            if (ksr.isShiftDown())
+//   //               mask |= KeyEvent.SHIFT_MASK;
+//   //            if (ksr.isAltGrDown())
+//   //               mask |= KeyEvent.META_MASK;
+//   //
+//   //            ohshit.putValue(Action.NAME, keyVal);
+//   //
+//   //            ks = KeyStroke.getKeyStroke(ksr.getKeyCode(),mask);
+//   //
+//   //            System.out.println(keyVal + " " + ks);
+//   //            getInputMap().put(ks,keyVal);
+//   //            getActionMap().put(keyVal,new MyAction(keyVal) );
+//   //
+//   //   //         if (keyVal.equals(which)) {
+//   //   //            mappedKeys.remove(ks);
+//   //   //            mappedKeys.put(new KeyStroker(ke.getKeyCode(),
+//   //   //                                          ke.isShiftDown(),
+//   //   //                                          ke.isControlDown(),
+//   //   //                                          ke.isAltDown(),
+//   //   //                                          isAltGr),keyVal);
+//   //   //            return;
+//   //   //         }
+//   //      }
 
 
    }
@@ -580,6 +586,22 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
     }
 
+   protected boolean emulatorAction(KeyStroke ks, KeyEvent e){
+//					int condition, boolean pressed) {
+//	InputMap map = getInputMap(condition, false);
+      InputMap map = getInputMap();
+      ActionMap am = getActionMap();
+
+      if(map != null && am != null && isEnabled()) {
+         Object binding = map.get(ks);
+         Action action = (binding == null) ? null : am.get(binding);
+         if (action != null) {
+            return true;
+         }
+      }
+      return false;
+   }
+
    private void processVTKeyPressed(KeyEvent e){
 
       keyProcessed = true;
@@ -602,100 +624,108 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          return;
       }
+
 //      displayInfo(e,"Pressed " + keyProcessed);
 
-      if (keyCode == KeyEvent.VK_N &&
-            e.isAltDown() && !e.isControlDown()) {
+      KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(),e.getModifiers(),false);
+      if (emulatorAction(ks,e)) {
 
-         me.startNewSession();
          return;
       }
+//				    (pressed ? false:true));
 
-      if (keyCode == KeyEvent.VK_X &&
-            e.isAltDown() && !e.isControlDown()) {
-         changeConnection();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_PAGE_UP &&
-            e.isAltDown() && !e.isControlDown()) {
-
-         nextSession();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_PAGE_DOWN &&
-            e.isAltDown() && !e.isControlDown()) {
-
-         prevSession();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_S &&
-            e.isAltDown() && !e.isControlDown()) {
-
-         screen.toggleHotSpots();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_G &&
-            e.isAltDown() && !e.isControlDown()) {
-
-         screen.toggleGUIInterface();
-//         repaint();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_M &&
-            e.isAltDown() && !e.isControlDown()) {
-         vt.systemRequest('4');
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_D &&
-            e.isAltDown() && !e.isControlDown()) {
-         doAttributes();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_P &&
-            e.isAltDown() && !e.isControlDown()) {
-         screen.printMe();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_L &&
-            e.isAltDown() && !e.isControlDown()) {
-         screen.crossHair();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_O &&
-            e.isAltDown() && !e.isControlDown()) {
-         vt.toggleDebug();
-         return;
-      }
-
-      if (keyCode == KeyEvent.VK_Q &&
-            e.isAltDown() && !e.isControlDown()) {
-         closeSession();
-         return;
-      }
-
-      // file transfer
-      if (keyCode == KeyEvent.VK_T &&
-            e.isAltDown() && !e.isControlDown()) {
-         doMeTransfer();
-         return;
-      }
-
-      // send screen via e-mail
-      if (keyCode == KeyEvent.VK_E &&
-            e.isAltDown() && !e.isControlDown()) {
-         sendScreenEMail();
-         return;
-      }
-
+//         if (keyCode == KeyEvent.VK_N &&
+//               e.isAltDown() && !e.isControlDown()) {
+//
+//            me.startNewSession();
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_X &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            changeConnection();
+//            return;
+//         }
+//
+//         if (!jumpn && keyCode == KeyEvent.VK_PAGE_UP &&
+//               e.isAltDown() && !e.isControlDown()) {
+//
+//            nextSession();
+//            return;
+//         }
+//
+//         if (!jumpp && keyCode == KeyEvent.VK_PAGE_DOWN &&
+//               e.isAltDown() && !e.isControlDown()) {
+//
+//            prevSession();
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_S &&
+//               e.isAltDown() && !e.isControlDown()) {
+//
+//            screen.toggleHotSpots();
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_G &&
+//               e.isAltDown() && !e.isControlDown()) {
+//
+//            screen.toggleGUIInterface();
+//   //         repaint();
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_M &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            vt.systemRequest('4');
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_D &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            doAttributes();
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_P &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            screen.printMe();
+//            return;
+//         }
+//
+//   //      if (keyCode == KeyEvent.VK_L &&
+//   //            e.isAltDown() && !e.isControlDown()) {
+//   //         screen.crossHair();
+//   //         return;
+//   //      }
+//
+//         if (keyCode == KeyEvent.VK_O &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            vt.toggleDebug();
+//            return;
+//         }
+//
+//         if (keyCode == KeyEvent.VK_Q &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            closeSession();
+//            return;
+//         }
+//
+//         // file transfer
+//         if (keyCode == KeyEvent.VK_T &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            doMeTransfer();
+//            return;
+//         }
+//
+//         // send screen via e-mail
+//         if (keyCode == KeyEvent.VK_E &&
+//               e.isAltDown() && !e.isControlDown()) {
+//            sendScreenEMail();
+//            return;
+//         }
+//
 
 //      if (!keyMap.isEqualLast(e))
       if (isLinux)
@@ -738,7 +768,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       if (Character.isISOControl(kc) || keyProcessed) {
          return;
       }
-//         displayInfo(e,"Typed ");
+//      displayInfo(e,"Typed processed " + keyProcessed);
       String s = "";
 //      if (isLinux) {
 //         lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
@@ -768,11 +798,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          isAltGr = false;
       }
-//      displayInfo(e,"Released " + keyProcessed);
 
       if (Character.isISOControl(e.getKeyChar()) || keyProcessed || e.isConsumed() )
          return;
 
+//      displayInfo(e,"Released " + keyProcessed);
 
       String s = keyMap.getKeyStrokeText(e);
 
@@ -1411,27 +1441,38 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          popup.addSeparator();
 
-         if (vt.isConnected()) {
-            action = new AbstractAction(LangTool.getString("popup.disconnect")) {
-                  public void actionPerformed(ActionEvent e) {
-                     vt.disconnect();
-                     getFocusForMe();
-                  }
-              };
-         }
-         else {
-
-            action = new AbstractAction(LangTool.getString("popup.connect")) {
-                  public void actionPerformed(ActionEvent e) {
-                     vt.connect();
-                     getFocusForMe();
-                  }
-              };
-
-
-         }
-         popup.add(action);
       }
+
+      action = new AbstractAction(LangTool.getString("popup.connections")) {
+            public void actionPerformed(ActionEvent e) {
+               doConnections();
+            }
+        };
+
+      popup.add(action);
+
+      popup.addSeparator();
+
+      if (vt.isConnected()) {
+         action = new AbstractAction(LangTool.getString("popup.disconnect")) {
+               public void actionPerformed(ActionEvent e) {
+                  changeConnection();
+                  getFocusForMe();
+               }
+           };
+      }
+      else {
+
+         action = new AbstractAction(LangTool.getString("popup.connect")) {
+               public void actionPerformed(ActionEvent e) {
+                  changeConnection();
+                  getFocusForMe();
+               }
+           };
+
+
+      }
+      popup.add(action);
 
       action = new AbstractAction(LangTool.getString("popup.close")) {
             public void actionPerformed(ActionEvent e) {
@@ -1446,6 +1487,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+   private void doConnections() {
+
+      me.startNewSession();
+   }
 
    private void doMeTransfer() {
 

@@ -38,6 +38,7 @@ import java.io.*;
 import java.beans.*;
 import java.text.MessageFormat;
 import org.tn5250j.tools.filters.*;
+import org.tn5250j.mailtools.SendEMailDialog;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -58,6 +59,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    JRadioButton txtDesc;
 
    boolean fieldsSelected;
+   boolean emailIt;
    tnvt vt;
    XTFRFileFilter htmlFilter;
    XTFRFileFilter KSpreadFilter;
@@ -126,6 +128,9 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
                   progressBar.setValue(len);
                   label.setText(LangTool.getString("xtfr.labelComplete"));
                   note.setText(getTransferredNote(len));
+                  if (emailIt)
+                     emailMe();
+
                }
                else {
                   progressBar.setValue(prog);
@@ -148,6 +153,13 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          System.out.println(" getProgressNote: " + exc.getMessage());
          return "Record " + prog + " of " + len;
       }
+   }
+
+   private void emailMe() {
+
+      SendEMailDialog semd = new SendEMailDialog((Frame)(this.getParent())
+                                 ,localFile.getText());
+
    }
 
    private String getTransferredNote(int len) {
@@ -192,7 +204,13 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
    public void actionPerformed(ActionEvent e) {
 
-      if (e.getActionCommand().equals("XTFR")) {
+      if (e.getActionCommand().equals("XTFR")
+                  || e.getActionCommand().equals("EMAIL")) {
+
+         if (e.getActionCommand().equals("EMAIL"))
+            emailIt = true;
+         else
+            emailIt = false;
 
          initializeMonitor();
          dialog.show();
@@ -211,6 +229,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
             disconnect();
          }
+
       }
 
       if (e.getActionCommand().equals("BROWSEPC")) {
@@ -484,6 +503,11 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       xtfrButton.addActionListener(this);
       xtfrButton.setActionCommand("XTFR");
       op.add(xtfrButton);
+
+      JButton emailButton = new JButton(LangTool.getString("xtfr.labelXTFREmail"));
+      emailButton.addActionListener(this);
+      emailButton.setActionCommand("EMAIL");
+      op.add(emailButton);
 
       mp.add(sp,BorderLayout.CENTER);
       mp.add(op,BorderLayout.SOUTH);

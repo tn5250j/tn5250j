@@ -43,6 +43,9 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+15/07/2002  Added a message area for option message text to be attached to the
+            e-mail.
+
 12/07/2002  Made the connection dialog highlight the default session selection
             if one is specified.
 
