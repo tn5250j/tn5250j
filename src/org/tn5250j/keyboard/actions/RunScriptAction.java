@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.Session;
 import org.tn5250j.keyboard.KeyMapper;
+import org.tn5250j.tools.Macronizer;
 
 /**
  * Display session attributes
@@ -47,6 +48,7 @@ public class RunScriptAction extends EmulatorAction implements TN5250jConstants 
    }
 
    public void actionPerformed(ActionEvent e) {
-     session.runScript();
+     Macronizer.showRunScriptDialog(session);
+     session.getFocusForMe();
    }
 }
