@@ -98,7 +98,8 @@ public class Connect
 	JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
 	JPanel interfacePanel = new JPanel();
 	JPanel sessionOpts = new JPanel();
-	JPanel sessionOptPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+	JPanel sessionOptPanel =
+		new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
 	JPanel emulOptPanel = new JPanel();
 	JPanel emptyPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 	JPanel accessPanel = new JPanel();
@@ -134,10 +135,10 @@ public class Connect
 	Border etchedBorder = BorderFactory.createEtchedBorder();
 	BorderLayout borderLayout = new BorderLayout();
 
-   TN5250jMultiSelectList accessOptions;
-   // password protection field for access to options list
-   JPasswordField password;
-   JButton setPassButton;
+	TN5250jMultiSelectList accessOptions;
+	// password protection field for access to options list
+	JPasswordField password;
+	JButton setPassButton;
 
 	//  Selection value for connection
 	String connectKey = null;
@@ -177,10 +178,12 @@ public class Connect
 
 		optionTabs.addChangeListener(this);
 
-		optionTabs.addTab(LangTool.getString("ss.labelConnections"),sessionPanel);
+		optionTabs.addTab(
+			LangTool.getString("ss.labelConnections"),
+			sessionPanel);
 		optionTabs.addTab(LangTool.getString("ss.labelOptions1"), emulOptPanel);
 
-      createAccessPanel();
+		createAccessPanel();
 		optionTabs.addTab(LangTool.getString("ss.labelOptions2"), accessPanel);
 
 		// add the panels to our dialog
@@ -239,12 +242,15 @@ public class Connect
 			.getTitleAt(index)
 			.equals(LangTool.getString("ss.labelConnections"))) {
 			connectButton.setEnabled(false);
-			this.setTitle(LangTool.getString("ss.title") + " - " +
-				LangTool.getString("ss.labelOptions1"));
-			}
-		else {
-			this.setTitle(LangTool.getString("ss.title") + " - " +
-				LangTool.getString("ss.labelConnections"));
+			this.setTitle(
+				LangTool.getString("ss.title")
+					+ " - "
+					+ LangTool.getString("ss.labelOptions1"));
+		} else {
+			this.setTitle(
+				LangTool.getString("ss.title")
+					+ " - "
+					+ LangTool.getString("ss.labelConnections"));
 			connectButton.setEnabled(true);
 		}
 	}
@@ -409,17 +415,20 @@ public class Connect
 		}
 
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 0;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(10, 10, 5, 10);
 		interfacePanel.add(intTABS, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 27, 5, 10);
 		interfacePanel.add(hideTabBar, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.gridx = 0;
+		gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 10, 10, 10);
 		interfacePanel.add(intMDI, gbc);
@@ -427,8 +436,8 @@ public class Connect
 
 		// create show me panel
 		JPanel showMePanel = new JPanel();
-		TitledBorder smb = BorderFactory.createTitledBorder(
-			LangTool.getString("ss.title"));
+		TitledBorder smb =
+			BorderFactory.createTitledBorder(LangTool.getString("ss.title"));
 		smb.setTitleJustification(TitledBorder.CENTER);
 
 		showMePanel.setBorder(smb);
@@ -452,101 +461,114 @@ public class Connect
 		contentPane.add(showMePanel);
 	}
 
-   private void createAccessPanel() {
+	private void createAccessPanel() {
 
-      accessOptions = new TN5250jMultiSelectList();
+		accessOptions = new TN5250jMultiSelectList();
 
-      if (props.getProperty("emul.accessDigest") != null)
-         accessOptions.setEnabled(false);
+		if (props.getProperty("emul.accessDigest") != null)
+			accessOptions.setEnabled(false);
 
-      Vector options = OptionAccessFactory.getInstance().getOptions();
+		Vector options = OptionAccessFactory.getInstance().getOptions();
 
-      // set up a hashtable of option descriptions to options
-      Hashtable ht = new Hashtable(options.size());
-      for (int x = 0; x < options.size(); x++) {
-         ht.put(LangTool.getString("key."+options.get(x)),options.get(x));
-      }
+		// set up a hashtable of option descriptions to options
+		Hashtable ht = new Hashtable(options.size());
+		for (int x = 0; x < options.size(); x++) {
+			ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
+		}
 
-      // get the sorted descriptions of the options
-      Vector descriptions = OptionAccessFactory.getInstance().getOptionDescriptions();
+		// get the sorted descriptions of the options
+		Vector descriptions =
+			OptionAccessFactory.getInstance().getOptionDescriptions();
 
-      // set the option descriptions
-      accessOptions.setListData(descriptions);
+		// set the option descriptions
+		accessOptions.setListData(descriptions);
 
-      // we now mark the invalid options
-      int num = OptionAccessFactory.getInstance().getNumberOfRestrictedOptions();
-      int[] si = new int[num];
-      int i = 0;
-      for (int x = 0;x < descriptions.size();x++) {
-         if (!OptionAccessFactory.getInstance().isValidOption(
-                  (String)ht.get(descriptions.get(x))  ) )
-            si[i++] = x;
-      }
+		// we now mark the invalid options
+		int num =
+			OptionAccessFactory.getInstance().getNumberOfRestrictedOptions();
+		int[] si = new int[num];
+		int i = 0;
+		for (int x = 0; x < descriptions.size(); x++) {
+			if (!OptionAccessFactory
+				.getInstance()
+				.isValidOption((String) ht.get(descriptions.get(x))))
+				si[i++] = x;
+		}
 
-      accessOptions.setSelectedIndices(si);
+		accessOptions.setSelectedIndices(si);
 
-      accessOptions.setSourceHeader(LangTool.getString("ss.labelActive"));
-      accessOptions.setSelectionHeader(LangTool.getString("ss.labelRestricted"));
+		accessOptions.setSourceHeader(LangTool.getString("ss.labelActive"));
+		accessOptions.setSelectionHeader(
+			LangTool.getString("ss.labelRestricted"));
 
 		// create emulator options panel
 		accessPanel.setLayout(new BorderLayout());
+		accessPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 5));
 
-      accessPanel.add(accessOptions,BorderLayout.CENTER);
+		accessPanel.add(accessOptions, BorderLayout.CENTER);
 
-      JPanel passPanel = new JPanel();
+		JPanel passPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-      Action action = new AbstractAction(LangTool.getString("ss.labelSetPass")) {
-            public void actionPerformed(ActionEvent e) {
-               if (password.getPassword().length > 0) {
-                  try {
-                     DESSHA1 sha = new DESSHA1();
-                     props.setProperty("emul.accessDigest",
-                        sha.digest(new String(password.getPassword()),"tn5205j"));
-                  }
-                  catch (Exception ex) {}
-               }
-            }
-        };
+		Action action =
+			new AbstractAction(LangTool.getString("ss.labelSetPass")) {
+			public void actionPerformed(ActionEvent e) {
+				if (password.getPassword().length > 0) {
+					try {
+						DESSHA1 sha = new DESSHA1();
+						props.setProperty(
+							"emul.accessDigest",
+							sha.digest(
+								new String(password.getPassword()),
+								"tn5205j"));
+					} catch (Exception ex) {
+					}
+				}
+			}
+		};
 
-      setPassButton = new JButton(action);
+		setPassButton = new JButton(action);
+		setPassButton.setPreferredSize(new Dimension(150, 27));
 
-      if (props.getProperty("emul.accessDigest") != null)
-         setPassButton.setEnabled(false);
+		if (props.getProperty("emul.accessDigest") != null)
+			setPassButton.setEnabled(false);
 
-      passPanel.add(setPassButton);
+		passPanel.add(setPassButton);
 
-      password = new JPasswordField(20);
-      password.setDocument(new CheckPasswordDocument());
+		password = new JPasswordField(15);
+		password.setDocument(new CheckPasswordDocument());
+		password.setPreferredSize(new Dimension(password.getWidth(), 27));
 
-      passPanel.add(password);
+		passPanel.add(password);
 
-      accessPanel.add(passPanel,BorderLayout.NORTH);
+		accessPanel.add(passPanel, BorderLayout.NORTH);
 
-   }
+	}
 
-   private void doSomethingEntered() {
+	private void doSomethingEntered() {
 
-      if (props.getProperty("emul.accessDigest") != null) {
-         try {
-            DESSHA1 sha = new DESSHA1();
-//            System.out.println(props.getProperty("emul.accessDigest")
-//                     + " -> " + sha.digest(new String(password.getPassword()),"tn5205j"));
-            if (props.getProperty("emul.accessDigest").equals(
-                  sha.digest(new String(password.getPassword()),"tn5205j"))) {
-               accessOptions.setEnabled(true);
-               setPassButton.setEnabled(true);
-            }
-         }
-         catch (Exception ex) {
-            System.out.println(ex.getMessage());
-         }
-      }
-   }
+		if (props.getProperty("emul.accessDigest") != null) {
+			try {
+				DESSHA1 sha = new DESSHA1();
+				//            System.out.println(props.getProperty("emul.accessDigest")
+				//                     + " -> " + sha.digest(new String(password.getPassword()),"tn5205j"));
+				if (props
+					.getProperty("emul.accessDigest")
+					.equals(
+						sha.digest(
+							new String(password.getPassword()),
+							"tn5205j"))) {
+					accessOptions.setEnabled(true);
+					setPassButton.setEnabled(true);
+				}
+			} catch (Exception ex) {
+				System.out.println(ex.getMessage());
+			}
+		}
+	}
 
-   private void doNothingEntered() {
+	private void doNothingEntered() {
 
-
-   }
+	}
 
 	private void createButtonOptions() {
 
@@ -582,7 +604,7 @@ public class Connect
 		JButton button = new JButton(text);
 		button.setEnabled(enabled);
 		button.setActionCommand(ac);
-      button.setPreferredSize(new Dimension(140, 28));
+		button.setPreferredSize(new Dimension(140, 28));
 
 		// we check if there was mnemonic specified and if there was then we
 		//    set it.
@@ -663,35 +685,36 @@ public class Connect
 
 	private void saveProps() {
 
-      setOptionAccess();
+		setOptionAccess();
 
 		ConfigureFactory.getInstance().saveSettings(
 			GlobalConfigure.SESSIONS,
 			"------ Session Information --------");
 
-      OptionAccessFactory.getInstance().reload();
+		OptionAccessFactory.getInstance().reload();
 	}
 
-   private void setOptionAccess() {
+	private void setOptionAccess() {
 
-      Vector options = OptionAccessFactory.getInstance().getOptions();
+		Vector options = OptionAccessFactory.getInstance().getOptions();
 
-      // set up a hashtable of option descriptions to options
-      Hashtable ht = new Hashtable(options.size());
-      for (int x = 0; x < options.size(); x++) {
-         ht.put(LangTool.getString("key."+options.get(x)),options.get(x));
-      }
+		// set up a hashtable of option descriptions to options
+		Hashtable ht = new Hashtable(options.size());
+		for (int x = 0; x < options.size(); x++) {
+			ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
+		}
 
-      // get the sorted descriptions of the options
-      Vector descriptions = OptionAccessFactory.getInstance().getOptionDescriptions();
+		// get the sorted descriptions of the options
+		Vector descriptions =
+			OptionAccessFactory.getInstance().getOptionDescriptions();
 
-      Object[] restrict = accessOptions.getSelectedValues();
-      String s = "";
-      for (int x = 0; x < restrict.length; x++) {
-         s +=ht.get(restrict[x]) + ";";
-      }
-      props.setProperty("emul.restricted",s);
-   }
+		Object[] restrict = accessOptions.getSelectedValues();
+		String s = "";
+		for (int x = 0; x < restrict.length; x++) {
+			s += ht.get(restrict[x]) + ";";
+		}
+		props.setProperty("emul.restricted", s);
+	}
 
 	private void addLabelComponent(
 		String text,
@@ -747,22 +770,22 @@ public class Connect
 
 	}
 
-   public class CheckPasswordDocument extends PlainDocument {
+	public class CheckPasswordDocument extends PlainDocument {
 
-      public void insertString(int offs, String str, AttributeSet a)
-                                                   throws BadLocationException {
+		public void insertString(int offs, String str, AttributeSet a)
+			throws BadLocationException {
 
-         super.insertString(offs, str, a);
-         if (getText(0, getLength()).length() > 0)
-            doSomethingEntered();
-      }
+			super.insertString(offs, str, a);
+			if (getText(0, getLength()).length() > 0)
+				doSomethingEntered();
+		}
 
-      public void remove(int offs, int len) throws BadLocationException {
-         super.remove(offs, len);
-         if (getText(0, getLength()).length() == 0)
-            doNothingEntered();
-      }
-   }
+		public void remove(int offs, int len) throws BadLocationException {
+			super.remove(offs, len);
+			if (getText(0, getLength()).length() == 0)
+				doNothingEntered();
+		}
+	}
 
 	class ConfigureTableModel
 		extends AbstractTableModel

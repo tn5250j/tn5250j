@@ -38,7 +38,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
-import java.lang.Math;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -56,6 +55,7 @@ import javax.swing.*;
 import java.util.Vector;
 
 import org.tn5250j.tools.FixedCenterLayout;
+import org.tn5250j.tools.LangTool;
 
 /**
  *  A multiselection list component.  It is a proxy class wrapping a JList
@@ -166,10 +166,15 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
 
       buttonPanel = new JPanel();
       buttonPanel.setLayout(new FlowLayout());
-      selectItemButton = initButton(new SelectionButton(SELECT_ITEM), "Add selected");		// Needs localization!
-      selectAllButton = initButton(new SelectionButton(SELECT_ALL), "Add all");				// Needs localization!
-      deselectItemButton = initButton(new SelectionButton(DESELECT_ITEM), "Remove selected");	// Needs localization!
-      deselectAllButton = initButton(new SelectionButton(DESELECT_ALL), "Remove all");		// Needs localization!
+      buttonPanel.setBorder(BorderFactory.createEmptyBorder(11, 0, 0, 0));
+      selectItemButton = initButton(new SelectionButton(SELECT_ITEM), 
+		LangTool.getString("oaa.AddSelected"));
+      selectAllButton = initButton(new SelectionButton(SELECT_ALL), 
+		LangTool.getString("oaa.AddAll"));
+      deselectItemButton = initButton(new SelectionButton(DESELECT_ITEM), 
+		LangTool.getString("oaa.RemoveSelected"));
+      deselectAllButton = initButton(new SelectionButton(DESELECT_ALL), 
+		LangTool.getString("oaa.RemoveAll"));
 
       Dimension dimButton = getButtonSize();
       buttonPanel.setPreferredSize(new Dimension(dimButton.width, 4*dimButton.height));
@@ -336,7 +341,7 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
    public void setSourceHeader(String header) {
 
       sourceHeader = header;
-      sourcePanel.add(new JLabel(header),BorderLayout.NORTH);
+      sourcePanel.add(new JLabel(header, JLabel.CENTER),BorderLayout.NORTH);
 
    }
 
@@ -347,7 +352,7 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
    public void setSelectionHeader(String header) {
 
       selectionHeader = header;
-      selectionPanel.add(new JLabel(header),BorderLayout.NORTH);
+      selectionPanel.add(new JLabel(header, JLabel.CENTER),BorderLayout.NORTH);
 
    }
 
