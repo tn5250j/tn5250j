@@ -67,7 +67,6 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 				key_usr = tmp_rUsr.getAttributeValue(rsc.RUser.USER_PROFILE_NAME)
 				tmp_usrText = tmp_rUsr.getAttributeValue(rsc.RUser.TEXT_DESCRIPTION)
 				self.usrDct[key_usr] = tmp_usrText
-				print key_usr, tmp_usrText
 		rUsrLst.close()
 		
 # Interactive job list		
@@ -133,14 +132,14 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			try:
 				fullName = self.usrDct[key_usr]
 			except:
-				fullName  = "*Can't find"
+				fullName  = "- No description available"
 			if self.chkFullNames.isSelected(): # Show Full names
 				menuItem += ': %s'%(fullName)
 			if self.chkActive.isSelected():   # Active jobs only
 				if not self.jobDct.has_key(key_usr):
 					continue
 				sts = '*'
-			menuItem = sts + menuItem	# N.B. * means profile is running an active job
+			menuItem = menuItem	+ sts # N.B. * means profile is running an active job
 			self.users.addItem(menuItem)
 #**************************
 #	Send message
@@ -148,10 +147,9 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 	def btnActSnd(self, event):
 		cmd = acc.CommandCall(self.as400)
 		curUsr = self.as400.getUserId()
-		try:
-			sndUsr = self.jobDct[self.users.getSelectedItem() ].getAttributeValue(rsc.RJob.USER_NAME)
-		except:
-			sndUsr = curUsr
+		selected = self.users.getSelectedItem()
+		usr =selected.split(':')[0]
+		sndUsr = self.jobDct[usr].getAttributeValue(rsc.RJob.USER_NAME)
 		chatTxt = self.chatTxt.getText()
 		dq = acc.KeyedDataQueue(self.as400, CHATQ)
 		if not dq.exists():
