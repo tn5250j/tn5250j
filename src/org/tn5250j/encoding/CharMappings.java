@@ -37,10 +37,23 @@ public class CharMappings {
 // EXAMPLE *** recode -v -h ebcdic-cp-es > ebcdic284.txt
 
    public static final String DFT_ENC = "37";
+   public static final int NATIVE_CP = 0;
+   public static final int TOOLBOX_CP = 1;
+
 
    public static String[] getAvailableCodePages()
    {
       return  NativeCodePage.acp;
+   }
+
+   public static String[] getAvailableCodePages(int which)
+   {
+      switch (which) {
+         case TOOLBOX_CP:
+            return ToolboxCodePage.acp;
+         default:
+            return getAvailableCodePages();
+      }
    }
 
    public static CodePage getCodePage(String encoding)
@@ -55,7 +68,7 @@ public class CharMappings {
      {
        map.put(encoding, cp);
        return cp;
-     } 
+     }
 
      cp = ToolboxCodePage.getCodePage(encoding);
      if (cp != null)
