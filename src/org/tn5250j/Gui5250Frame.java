@@ -81,8 +81,8 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       sessionPane.addChangeListener(this);
 
-      Properties props = GlobalConfigure.getInstance().
-                           getProperties(GlobalConfigure.SESSIONS);
+      Properties props = ConfigureFactory.getInstance().
+                           getProperties(ConfigureFactory.SESSIONS);
 
       if (props.getProperty("emul.hideTabBar","no").equals("yes"))
          hideTabBar = true;
