@@ -6,12 +6,18 @@ public class FTPStatusEvent extends EventObject {
 
    public FTPStatusEvent(Object obj){
       super(obj);
-
    }
 
    public FTPStatusEvent(Object obj, String s) {
       super(obj);
       message = s;
+      messageType = OK;
+   }
+
+   public FTPStatusEvent(Object obj, String s, int messageType) {
+      super(obj);
+      message = s;
+      this.messageType = messageType;
    }
 
    public String getMessage() {
@@ -20,6 +26,14 @@ public class FTPStatusEvent extends EventObject {
 
    public void setMessage(String s) {
       message = s;
+   }
+
+   public int getMessageType() {
+      return messageType;
+   }
+
+   public void setMessageType(int type) {
+      messageType = type;
    }
 
    public int getFileLength() {
@@ -43,4 +57,11 @@ public class FTPStatusEvent extends EventObject {
    private String message;
    private int fileLength;
    private int currentRecord;
+   private int messageType;
+
+   static final int OK = 0;
+   static final int ERROR = 1;
+   static final int ERROR_NULLS_ALLOWED = 2;
+
+
 }
