@@ -31,11 +31,17 @@ import java.lang.reflect.*;
 class ToolboxCodePage
      extends CodePage
 {
+
   ToolboxCodePage(String encoding, Object converter)
   {
     super(encoding);
     this.converter = converter;
   }
+
+   public static String[] getAvailableCodePages()
+   {
+      return  NativeCodePage.acp;
+   }
 
   public char ebcdic2uni (int index)
   {
@@ -136,4 +142,91 @@ class ToolboxCodePage
     TOBYTES_METHOD        = toBytes_method;
     TOSTRING_METHOD       = toString_method;
   }
+
+
+    static final String[] acp = {
+         "Big5",
+         "Cp037",
+         "Cp273",
+         "Cp277",
+         "Cp278",
+         "Cp280",
+         "Cp284",
+         "Cp285",
+         "Cp297",
+         "Cp420",
+         "Cp424",
+         "Cp437",
+         "Cp500",
+         "Cp737",
+         "Cp775",
+         "Cp838",
+         "Cp850",
+         "Cp852",
+         "Cp855",
+         "Cp856",
+         "Cp857",
+         "Cp858",
+         "Cp860",
+         "Cp861",
+         "Cp862",
+         "Cp863",
+         "Cp864",
+         "Cp865",
+         "Cp866",
+         "Cp868",
+         "Cp869",
+         "Cp870",
+         "Cp871",
+         "Cp874",
+         "Cp875",
+         "Cp918",
+         "Cp921",
+         "Cp922",
+         "Cp923",  // IBM Latin-9.
+         "Cp930",
+         "Cp933",
+         "Cp935",
+         "Cp937",
+         "Cp939",
+         "Cp942",
+         "Cp943",
+         "Cp948",
+         "Cp949",
+         "Cp950",
+         "Cp964",
+         "Cp970",
+         "Cp1006",
+         "Cp1025",
+         "Cp1026",
+         "Cp1046",
+         "Cp1097",
+         "Cp1098",
+         "Cp1112",
+         "Cp1122",
+         "Cp1123",
+         "Cp1124",
+         "Cp1140",
+         "Cp1141",
+         "Cp1142",
+         "Cp1143",
+         "Cp1144",
+         "Cp1145",
+         "Cp1146",
+         "Cp1147",
+         "Cp1148",
+         "Cp1149",
+         "Cp1252",
+         "Cp1250",
+         "Cp1251",
+         "Cp1253",
+         "Cp1254",
+         "Cp1255",
+         "Cp1256",
+         "Cp1257",
+         "Cp1258",
+         "Cp1381",
+         "Cp1383",
+         "Cp33722"};
+
 }
