@@ -406,6 +406,7 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
       else {
          sel = getDefaultSession();
       }
+
       Sessions sess = manager.getSessions();
 
       if (sel != null && sess.getCount() == 0
@@ -427,6 +428,11 @@ public class My5250 implements ChangeListener,BootListener,TN5250jConstants,
 
             newSession(sel,sessionArgs);
          }
+         else {
+            if (sess.getCount() == 0)
+               System.exit(0);
+         }
+
       }
       else {
          if (!frame.isVisible())

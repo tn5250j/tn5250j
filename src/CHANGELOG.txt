@@ -36,6 +36,11 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+11/4/2002   Fixed a problem where the program would never end if there are no
+            sessions active and the session connection dialog is cancelled.
+
+            Updated Polish translations.  Thanks Janusz Sobczak
+
 10/4/2002   Added support for mandatory enter fields.
 
             Updated Dutch translation.  Thanks to Patrick Bielen
