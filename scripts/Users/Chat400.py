@@ -157,7 +157,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		try:
 			dq.write(sndUsr, "%s::%s"%(curUsr, chatTxt) )
 			if not curUsr == sndUsr:
-				self.rpyTxt.append("[%s]>>%s\n"%(curUsr, chatTxt))
+				self.rpyTxt.append("%s>>%s\n"%(curUsr, chatTxt))
 				self.rpyTxt.setCaretPosition( len(self.rpyTxt.getText()) )
 			self.statusTxt.text='Message send successfull'
 			self.chatTxt.selectAll()
