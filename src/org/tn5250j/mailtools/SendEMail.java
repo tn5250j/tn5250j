@@ -1,4 +1,3 @@
-package org.tn5250j.mailtools;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,7 +23,7 @@ package org.tn5250j.mailtools;
  * Boston, MA 02111-1307 USA
  *
  */
-
+package org.tn5250j.mailtools;
 
 import java.util.Hashtable;
 import java.io.*;
@@ -37,6 +36,7 @@ import javax.activation.*;
 import javax.swing.*;
 
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 public class SendEMail {
 
@@ -128,25 +128,33 @@ public class SendEMail {
     * @return true if the configuration file was loaded
     */
    private boolean loadConfig(String name) throws Exception {
-      boolean rc = false;
 
-      SMTPProperties = new java.util.Properties();
-      if (name == null || name == "")
-         name = "SMTPProperties.cfg";
+//      boolean rc = false;
 
-      try {
-         FileInputStream in = new FileInputStream(name);
+//      SMTPProperties = new java.util.Properties();
+//      if (name == null || name == "")
+//         name = ConfigureFactory.getInstance().settingsDirectory()
+//                                    +  "SMTPProperties.cfg";
+//
+//      try {
+//         FileInputStream in = new FileInputStream(name);
+//
+//         SMTPProperties.load(in);
+//         rc = true;
+//      }
+//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
+//      catch (SecurityException se) {
+//         System.out.println(se.getMessage());
+//      }
+//
+      SMTPProperties = ConfigureFactory.getInstance().getProperties("smtp",
+                           "SMTPProperties.cfg");
 
-         SMTPProperties.load(in);
-         rc = true;
-      }
-      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-      catch (SecurityException se) {
-         System.out.println(se.getMessage());
-      }
-
-      return rc;
-    }
+      if (SMTPProperties.size() > 0)
+         return true;
+      else
+         return false;
+   }
 
    // clean-up -- this should be called by the JSP Container...
    public void release() {
@@ -251,10 +259,10 @@ public class SendEMail {
          showFailedException(sfe);
       }
 //      catch (AddressException ae) {
-//      
+//
 //      }
 //      catch ( MessagingException me) {
-//      
+//
 //      }
       return false;
    }

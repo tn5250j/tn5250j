@@ -179,7 +179,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    void jbInit() throws Exception {
 
       if (!config.isPropertyExists("font")) {
-         font = new Font("dialoginput",Font.BOLD,14);
+         font = new Font("dialoginput",Font.PLAIN,14);
          config.setProperty("font","dialoginput");
       }
       else {
@@ -3468,6 +3468,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             int l = sf.length;
 
             boolean f = true;
+
+            if (l >= lenScreen)
+               l = lenScreen - 1;
 
             if (l > 1) {
                while (l-- > 0) {

@@ -36,6 +36,7 @@ import java.text.*;
 import java.beans.*;
 
 import org.tn5250j.tools.*;
+import org.tn5250j.encoding.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;

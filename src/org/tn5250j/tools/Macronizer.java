@@ -34,7 +34,9 @@ import java.io.*;
 import javax.swing.*;
 
 import org.tn5250j.Session;
+import org.tn5250j.GlobalConfigure;
 import org.tn5250j.scripting.InterpreterDriverManager;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 public class Macronizer {
 
@@ -42,53 +44,57 @@ public class Macronizer {
    private static Properties macros;
    private static boolean macrosExist;
 
+//   public static void init() {
+//      if (macros != null)
+//         return;
+//
+//      init();
+//
+//   }
+
    public static void init() {
-      if (macros != null)
-         return;
-
-      init("macros");
-
-   }
-
-   public static void init(String macroFileName) {
 
       if (macros != null)
          return;
 
-      macroName = macroFileName;
+//      macros = new Properties();
 
-      macros = new Properties();
-
-      macrosExist = loadMacros(macros);
+      macrosExist = loadMacros();
 
    }
 
-   private static boolean loadMacros(Properties macs) {
+   private static boolean loadMacros() {
 
-      FileInputStream in = null;
-      try {
-         in = new FileInputStream(macroName);
-         macs.load(in);
+//      FileInputStream in = null;
+//      try {
+//         in = new FileInputStream(ConfigureFactory.getInstance().settingsDirectory()
+//                                    +  macroName);
+//         macs.load(in);
+//         return true;
+//      }
+//      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
+//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
+//      catch (SecurityException se) {
+//         System.out.println(se.getMessage());
+//      }
+      macros = ConfigureFactory.getInstance().getProperties(GlobalConfigure.MACROS);
+      if (macros != null && macros.size() > 0)
          return true;
-      }
-      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
-      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-      catch (SecurityException se) {
-         System.out.println(se.getMessage());
-      }
 
       return checkScripts();
    }
 
    private final static void saveMacros() {
 
-      try {
-         FileOutputStream out = new FileOutputStream(macroName);
-         macros.store(out,"------ Macros --------");
-      }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
-
+      ConfigureFactory.getInstance().saveSettings(
+               GlobalConfigure.MACROS,"------ Macros --------");
+//      try {
+//         FileOutputStream out = new FileOutputStream(macroName);
+//         macros.store(out,"------ Macros --------");
+//      }
+//      catch (FileNotFoundException fnfe) {}
+//      catch (IOException ioe) {}
+//
 
    }
 

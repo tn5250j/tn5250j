@@ -2,7 +2,7 @@ package org.tn5250j;
 
 import java.io.*;
 import java.net.*;
-import org.tn5250j.tools.CodePage;
+import org.tn5250j.encoding.CodePage;
 
 public class DataStreamProducer implements Runnable {
 

@@ -1,5 +1,3 @@
-package org.tn5250j;
-
 /*
  * @(#)SessionConfig.java
  * Copyright:    Copyright (c) 2001
@@ -20,6 +18,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.util.*;
 import javax.swing.*;
@@ -32,6 +31,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 /**
  * A host session configuration object
@@ -161,6 +161,8 @@ public class SessionConfig implements TN5250jConstants {
          configurationResource = "TN5250JDefaults.props";
 
       try {
+//         FileInputStream in = new FileInputStream(((GlobalConfigure)ConfigureFactory.getInstance()).settingsDirectory()
+//                                    +  configurationResource);
          FileInputStream in = new FileInputStream(configurationResource);
          //InputStream in = getClass().getClassLoader().getResourceAsStream(propFileName);
          sesProps.load(in);

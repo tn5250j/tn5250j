@@ -42,6 +42,7 @@ import org.tn5250j.tools.*;
 import org.tn5250j.event.*;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
@@ -61,6 +62,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    public static ClassLoader classLoader;
 
    My5250 () {
+
+      GlobalConfigure configure = (GlobalConfigure)ConfigureFactory.getInstance();
 
       classLoader = this.getClass().getClassLoader();
 
@@ -725,19 +728,21 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    protected static void loadSessions() {
 
-      FileInputStream in = null;
-      try {
-         in = new FileInputStream("sessions");
-         sessions.load(in);
-
-      }
-      catch (FileNotFoundException fnfe) {
-         System.out.println(" Information Message: " + fnfe.getMessage()
-                           + ".  Default sessions file will"
-                           + " be created for first time use.");
-      }
-      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-
+//      FileInputStream in = null;
+//      try {
+//         in = new FileInputStream(ConfigureFactory.getInstance()).settingsDirectory()
+//                                    +  "sessions");
+//         sessions.load(in);
+//
+//      }
+//      catch (FileNotFoundException fnfe) {
+//         System.out.println(" Information Message: " + fnfe.getMessage()
+//                           + ".  Default sessions file will"
+//                           + " be created for first time use.");
+//      }
+//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
+      sessions = ((GlobalConfigure)ConfigureFactory.getInstance()).getProperties(
+                     GlobalConfigure.SESSIONS);
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
@@ -817,7 +822,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
     */
    private void initJarPaths() {
 
-      jarClassPaths = "." + File.pathSeparator + "jython.jar"
+      jarClassPaths = System.getProperty("python.path")
+                        + File.pathSeparator + "jython.jar"
                         + File.pathSeparator + "jt400.jar"
                         + File.pathSeparator + "itext.jar";
 

@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,6 +23,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.awt.*;
 import javax.swing.*;
@@ -33,8 +33,10 @@ import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
+
 import org.tn5250j.tools.*;
 import org.tn5250j.gui.*;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 public class Connect extends JDialog implements ActionListener,
                                                    TN5250jConstants {
@@ -85,7 +87,9 @@ public class Connect extends JDialog implements ActionListener,
 
    public Connect(Frame frame, String title, Properties prop) {
       super(frame, title, true);
-      props = prop;
+//      props = prop;
+      props = ConfigureFactory.getInstance().getProperties(GlobalConfigure.SESSIONS);
+
       try {
          jbInit();
       }
@@ -365,14 +369,15 @@ public class Connect extends JDialog implements ActionListener,
 
    private void saveProps() {
 
-      try {
-         FileOutputStream out = new FileOutputStream("sessions");
-            // save off the width and height to be restored later
-         props.store(out,"------ Session Information --------");
-      }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
-
+//      try {
+//         FileOutputStream out = new FileOutputStream("sessions");
+//            // save off the width and height to be restored later
+//         props.store(out,"------ Session Information --------");
+//      }
+//      catch (FileNotFoundException fnfe) {}
+//      catch (IOException ioe) {}
+      ConfigureFactory.getInstance().saveSettings(GlobalConfigure.SESSIONS,
+                  "------ Session Information --------");
 
    }
 

@@ -1,5 +1,3 @@
-package org.tn5250j.tools;
-
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -25,11 +23,16 @@ package org.tn5250j.tools;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.tools;
+
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.io.*;
-import org.tn5250j.event.KeyChangeListener;
 import javax.swing.KeyStroke;
+
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.event.KeyChangeListener;
+import org.tn5250j.GlobalConfigure;
 
 public class KeyMapper {
 
@@ -40,23 +43,25 @@ public class KeyMapper {
    private static Vector listeners;
 
    public static void init() {
+//      if (mappedKeys != null)
+//         return;
+//
+//      init("keymap");
+//
+//   }
+//
+//   public static void init(String map) {
+
       if (mappedKeys != null)
          return;
 
-      init("keymap");
-
-   }
-
-   public static void init(String map) {
-
-      if (mappedKeys != null)
-         return;
-
-      keyMapName = map;
+//      keyMapName = map;
       mappedKeys = new HashMap(60);
       workStroke = new KeyStroker(0, false, false, false,false);
 
-      Properties keys = new Properties();
+//      Properties keys = new Properties();
+      Properties keys = ConfigureFactory.getInstance().getProperties(
+                           GlobalConfigure.KEYMAP);
 
       if (!loadKeyStrokes(keys)) {
          // keycode shift control alternate
@@ -155,20 +160,24 @@ public class KeyMapper {
 
    private static boolean loadKeyStrokes(Properties keystrokes) {
 
-      FileInputStream in = null;
-      try {
-         in = new FileInputStream(keyMapName);
-         //InputStream in = KeyMapper.class.getClassLoader().getResourceAsStream(keyMapName);
-         keystrokes.load(in);
+//      FileInputStream in = null;
+//      try {
+//         in = new FileInputStream(ConfigureFactory.getInstance().settingsDirectory()
+//                                    +  keyMapName);
+//         //InputStream in = KeyMapper.class.getClassLoader().getResourceAsStream(keyMapName);
+//         keystrokes.load(in);
+//         return true;
+//      }
+//      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
+//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
+//      catch (SecurityException se) {
+//         System.out.println(se.getMessage());
+//      }
+      keystrokes = ConfigureFactory.getInstance().getProperties(GlobalConfigure.KEYMAP);
+      if (keystrokes != null && keystrokes.size() > 0)
          return true;
-      }
-      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
-      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-      catch (SecurityException se) {
-         System.out.println(se.getMessage());
-      }
-
-      return false;
+      else
+         return false;
    }
 
    private static void parseKeyStrokes(Properties keystrokes) {
@@ -231,9 +240,10 @@ public class KeyMapper {
 
    protected final static void saveKeyMap() {
 
-      Properties map = new Properties();
-      try {
-         FileOutputStream out = new FileOutputStream(keyMapName);
+      Properties map = ConfigureFactory.getInstance().getProperties(GlobalConfigure.KEYMAP);
+
+//      try {
+//         FileOutputStream out = new FileOutputStream(keyMapName);
          // save off the width and height to be restored later
          Collection v = mappedKeys.values();
          Set o = mappedKeys.keySet();
@@ -246,13 +256,15 @@ public class KeyMapper {
             map.put((String)i.next(),ks.toString());
          }
 
-         map.store(out,"------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------");
-      }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
-      catch (SecurityException se) {
-         System.out.println(se.getMessage());
-      }
+         ConfigureFactory.getInstance().saveSettings(GlobalConfigure.KEYMAP,
+         "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------");
+//         map.store(out,"------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------");
+//      }
+//      catch (FileNotFoundException fnfe) {}
+//      catch (IOException ioe) {}
+//      catch (SecurityException se) {
+//         System.out.println(se.getMessage());
+//      }
 
 
    }

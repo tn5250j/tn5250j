@@ -34,7 +34,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import java.text.*;
-import org.tn5250j.tools.CodePage;
+import org.tn5250j.encoding.CodePage;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.*;
 

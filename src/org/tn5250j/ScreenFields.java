@@ -26,7 +26,7 @@ package org.tn5250j;
  */
 
 import java.io.ByteArrayOutputStream;
-import org.tn5250j.tools.CodePage;
+import org.tn5250j.encoding.CodePage;
 
 public class ScreenFields implements TN5250jConstants {
 
@@ -527,7 +527,7 @@ public class ScreenFields implements TN5250jConstants {
                            if (c == 0x1C)
                               baosp.write(c);
                            else
-                              baosp.write(codePage.getEBCDIC(' '));
+                              baosp.write(codePage.uni2ebcdic(' '));
                      }
                      else {
                         if (isSigned && k == len3 - 1) {

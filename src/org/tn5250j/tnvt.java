@@ -34,7 +34,8 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.lang.reflect.*;
-import org.tn5250j.tools.CodePage;
+import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.transport.SocketConnector;
 
 public final class tnvt implements Runnable, TN5250jConstants {
@@ -615,7 +616,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                //    it at the end such as the following
                //
                // byte abyte0[] = new byte[1];    or number of bytes in option
-               // abyte0[0] = getEBCDIC(option);
+               // abyte0[0] = codePage.uni2ebcdic(option);
 
    //                  System.out.println("SYSRQS sent");
 
@@ -627,7 +628,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                //                           System.out.println("dataq cleared");
                         dsq.clear();
                      }
-                     baosp.write(getEBCDIC(sro.getText().charAt(x)));
+                     baosp.write(codePage.uni2ebcdic(sro.getText().charAt(x)));
                   }
 
                   try {
@@ -655,7 +656,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       else {
 
-         baosp.write(getEBCDIC(sr));
+         baosp.write(codePage.uni2ebcdic(sr));
 
          try {
             writeGDS(4, 0, baosp.toByteArray());
@@ -1116,7 +1117,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
             //LDC: Check to see if it is an displayable character. If not,
             //  do not convert the character.
             //  The characters on screen are in unicode
-            //sa[sac++] = (byte)getEBCDIC(screen52.screen[y].getChar());
+            //sa[sac++] = (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
             char ch = screen52.screen[y].getChar();
             byte byteCh = (byte) ch;
             if (isDataUnicode(ch))
@@ -2597,13 +2598,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
       abyte0[27] = 0;      //       ""
       abyte0[28] = 0;      //       ""
       abyte0[29] = 1;      // Device type - 0x01 5250 Emulator
-      abyte0[30] = getEBCDIC('5');  // Device type character
-      abyte0[31] = getEBCDIC('2');  //          ""
-      abyte0[32] = getEBCDIC('5');  //          ""
-      abyte0[33] = getEBCDIC('1');  //          ""
-      abyte0[34] = getEBCDIC('0');  //          ""
-      abyte0[35] = getEBCDIC('1');  //          ""
-      abyte0[36] = getEBCDIC('1');  //          ""
+      abyte0[30] = codePage.uni2ebcdic('5');  // Device type character
+      abyte0[31] = codePage.uni2ebcdic('2');  //          ""
+      abyte0[32] = codePage.uni2ebcdic('5');  //          ""
+      abyte0[33] = codePage.uni2ebcdic('1');  //          ""
+      abyte0[34] = codePage.uni2ebcdic('0');  //          ""
+      abyte0[35] = codePage.uni2ebcdic('1');  //          ""
+      abyte0[36] = codePage.uni2ebcdic('1');  //          ""
 
       abyte0[37] = 2;      // Keyboard Id - 0x02 Standard Keyboard
       abyte0[38] = 0;      // extended keyboard id
@@ -2861,15 +2862,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public final void setCodePage(String cp) {
 
-      if (this.codePage == null) {
-         codePage = new CodePage(cp);
-      }
-      else {
-
-         codePage.setCodePage(cp);
-
-      }
-
+      codePage = CharMappings.getCodePage(cp);
    }
 
    public final CodePage getCodePage() {
@@ -2881,15 +2874,21 @@ public final class tnvt implements Runnable, TN5250jConstants {
       return screen52.getPreferredSize();
    }
 
-   public byte getEBCDIC(int index) {
-      return codePage.getEBCDIC(index);
-
-   }
-
-   public char getEBCDICChar(int index) {
-      return codePage.getEBCDICChar(index);
-
-   }
+   /**
+    * KJP - 20/02/2003 taken out
+    */
+//   public byte getEBCDIC(int index) {
+//      return codePage.getEBCDIC(index);
+//
+//   }
+//
+   /**
+    * KJP - 20/02/2003 taken out
+    */
+//   public char getEBCDICChar(int index) {
+//      return codePage.getEBCDICChar(index);
+//
+//   }
 
 //      /**
 //       * LDC - 13/02/2003 -
