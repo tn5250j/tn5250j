@@ -34,6 +34,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import org.tn5250j.tools.*;
+import org.tn5250j.gui.*;
 
 public class Connect extends JDialog implements ActionListener,
                                                    TN5250jConstants {
@@ -107,7 +108,7 @@ public class Connect extends JDialog implements ActionListener,
       ctm = new ConfigureTableModel();
 
       // create a table using our custom table model
-      sessions = new JTable(ctm);
+      sessions = new JSortTable(ctm);
 
       // Add enter as default key for connect with this session
       Action connect = new AbstractAction("connect") {
@@ -403,16 +404,50 @@ public class Connect extends JDialog implements ActionListener,
 
    }
 
-   class ConfigureTableModel extends AbstractTableModel {
+   class ConfigureTableModel extends AbstractTableModel implements SortTableModel {
 
       final String[] cols = {
                   LangTool.getString("conf.tableColA"),
                   LangTool.getString("conf.tableColB"),
                   LangTool.getString("conf.tableColC")};
 
+      Vector mySort = new Vector();
+      int sortedColumn = 0;
+      boolean isAscending = true;
+
       public ConfigureTableModel() {
          super();
+         resetSorted();
+      }
 
+      private void resetSorted() {
+
+         Enumeration e = props.keys();
+         mySort.clear();
+         int x = 0;
+         String ses = null;
+         while (e.hasMoreElements()) {
+            ses = (String)e.nextElement();
+
+            if (!ses.startsWith("emul.")) {
+               mySort.add(ses);
+            }
+         }
+
+         sortColumn(sortedColumn,isAscending);
+      }
+
+      public boolean isSortable(int col) {
+         if (col == 0)
+            return true;
+         else
+            return false;
+      }
+
+      public void sortColumn(int col, boolean ascending) {
+         sortedColumn = col;
+         isAscending = ascending;
+         Collections.sort(mySort, new SessionComparator(col, ascending));
       }
 
       public int getColumnCount() {
@@ -425,18 +460,7 @@ public class Connect extends JDialog implements ActionListener,
       }
 
       public int getRowCount() {
-         Enumeration e = props.keys();
-         int x = 0;
-         String ses = null;
-         while (e.hasMoreElements()) {
-            ses = (String)e.nextElement();
-
-            if (!ses.startsWith("emul.")) {
-               x++;
-            }
-         }
-
-        return x;
+         return mySort.size();
       }
 
       /*
@@ -456,18 +480,18 @@ public class Connect extends JDialog implements ActionListener,
       public Object getValueAt(int row, int col) {
 
          if (col == 0)
-          return getPropValue(row,null);
+            return getPropValue(row,null);
          if (col == 1)
-          return getPropValue(row,"0");
+            return getPropValue(row,"0");
 
          // remember if you change this here you need to change the default
          //    selection option of the main table to pass in the correct
          //    column number.
          if (col == 2) {
-          if (getPropValue(row,null).equals(props.getProperty("emul.default","")))
-             return new Boolean(true);
-          else
-             return new Boolean(false);
+            if (getPropValue(row,null).equals(props.getProperty("emul.default","")))
+               return new Boolean(true);
+            else
+               return new Boolean(false);
          }
          return null;
 
@@ -482,7 +506,8 @@ public class Connect extends JDialog implements ActionListener,
          //no matter where the cell appears onscreen.
          if (col == 2) {
              return true;
-         } else {
+         }
+         else {
              return false;
          }
       }
@@ -499,43 +524,119 @@ public class Connect extends JDialog implements ActionListener,
 
       private String getPropValue(int row,String param) {
 
-         Enumeration e = props.keys();
-         int x = 0;
          String prop = "";
          String[] args = new String[NUM_PARMS];
          String ses = null;
 
-         while (e.hasMoreElements() && x <=row) {
-            ses = (String)e.nextElement();
+         prop = (String)mySort.get(row);
 
-            if (!ses.startsWith("emul.")) {
-               prop = ses;
-               x++;
-            }
-         }
          if (param == null)
-          return prop;
+            return prop;
          else {
-          Configure.parseArgs(props.getProperty(prop),args);
-          if (param.equals("0"))
-            return args[0];
+            Configure.parseArgs(props.getProperty(prop),args);
+            if (param.equals("0"))
+               return args[0];
          }
          return null;
       }
 
       public void addSession() {
+         resetSorted();
          fireTableRowsInserted(props.size()-1,props.size()-1);
       }
 
       public void chgSession(int row) {
+         resetSorted();
          fireTableRowsUpdated(row,row);
       }
 
       public void removeSession(int row) {
+         resetSorted();
          fireTableRowsDeleted(row,row);
       }
 
    }
 
+   public class SessionComparator implements Comparator {
+      protected int index;
+      protected boolean ascending;
 
+      public SessionComparator(int index, boolean ascending) {
+         this.index = index;
+         this.ascending = ascending;
+      }
+
+      public int compare(Object one, Object two) {
+
+         if (one instanceof String &&
+             two instanceof String) {
+
+            String s1 = one.toString();
+            String s2 = two.toString();
+            int result = 0;
+
+            if (ascending)
+               result = s1.compareTo(s2);
+            else
+               result = s2.compareTo(s1);
+
+            if (result < 0) {
+               return -1;
+            }
+            else
+               if (result > 0) {
+                  return 1;
+               }
+               else
+                  return 0;
+         }
+         else {
+
+            if (one instanceof Boolean &&
+                  two instanceof Boolean) {
+               boolean bOne = ((Boolean)one).booleanValue();
+               boolean bTwo = ((Boolean)two).booleanValue();
+
+               if (ascending) {
+                  if (bOne == bTwo) {
+                     return 0;
+                  }
+                  else
+                     if (bOne) { // Define false < true
+                        return 1;
+                     }
+                     else {
+                        return -1;
+                     }
+               }
+               else {
+                  if (bOne == bTwo) {
+                     return 0;
+                  }
+                  else
+                     if (bTwo) { // Define false < true
+                        return 1;
+                     }
+                     else {
+                        return -1;
+                     }
+                  }
+               }
+               else {
+                  if (one instanceof Comparable &&
+                      two instanceof Comparable) {
+                  Comparable cOne = (Comparable)one;
+                  Comparable cTwo = (Comparable)two;
+                  if (ascending) {
+                     return cOne.compareTo(cTwo);
+                  }
+                  else {
+                     return cTwo.compareTo(cOne);
+                  }
+               }
+            }
+            return 1;
+         }
+      }
+   }
 }

@@ -1949,7 +1949,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             screenFields.withinCurrentField(lastPos)
             && !screenFields.isCurrentFieldBypassField()) {
 
-            int fs = screenFields.getCurrentFieldShift();
             switch (screenFields.getCurrentFieldShift()) {
                case 0:  // Alpha shift
                case 2:  // Numeric Shift
