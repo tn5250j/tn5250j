@@ -163,7 +163,8 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setIconAt(0,focused);
 
       }
-      sessionPane.getComponent(sessionPane.getSelectedIndex()).requestFocus();
+
+      ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
 
    }
 
@@ -185,7 +186,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setIconAt(index,focused);
 
       }
-      sessionPane.getComponent(sessionPane.getSelectedIndex()).requestFocus();
+      ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
    }
 
    public void setIcons(ImageIcon focused, ImageIcon unfocused) {
@@ -209,8 +210,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          return;
 
       sg.setVisible(true);
-
-      sg.requestFocus();
+      sg.grabFocus();
 
       selectedIndex = p.getSelectedIndex();
       p.setForegroundAt(selectedIndex,Color.blue);
@@ -231,6 +231,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
       session.addSessionListener(this);
       session.addSessionJumpListener(this);
+      session.grabFocus();
 
    }
 
@@ -249,7 +250,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setSelectedIndex(index);
          sessionPane.setForegroundAt(index,Color.blue);
          sessionPane.setIconAt(index,focused);
-         ((Session)sessionPane.getComponentAt(index)).requestFocus();
+         ((Session)sessionPane.getComponentAt(index)).grabFocus();
       }
       else {
 
@@ -257,7 +258,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
             sessionPane.setSelectedIndex(0);
             sessionPane.setForegroundAt(0,Color.blue);
             sessionPane.setIconAt(0,focused);
-            ((Session)sessionPane.getComponentAt(0)).requestFocus();
+            ((Session)sessionPane.getComponentAt(0)).grabFocus();
          }
 
       }
