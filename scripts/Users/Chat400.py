@@ -7,9 +7,8 @@
 # Functionality : Script to send/receive messages to AS/400 users    #
 # Discussions	: tn5250j-scripting@lists.sourceforge.net            #
 ######################################################################
-import sys
-import string as str
 
+import sys
 from java.lang import *
 import com.ibm.as400.access as acc
 import com.ibm.as400.resource as rsc
@@ -74,7 +73,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		for idx in range(rUsrLst.getListLength()):
 				tmp_rUsr = rUsrLst.resourceAt(idx)
 				key_usr = tmp_rUsr.getAttributeValue(rsc.RUser.USER_PROFILE_NAME)
-				if key_usr.startswith('Q'):
+				if key_usr.startswith('Q') or key_usr == 'FAXSTAR':
 					continue
 				tmp_usrText = tmp_rUsr.getAttributeValue(rsc.RUser.TEXT_DESCRIPTION)
 				self.usrDct[key_usr] = tmp_usrText
@@ -144,8 +143,8 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			try:
 				fullName = self.usrDct[key_usr]
 			except:
-				fullName  = "*NONE"
-			menuItem += ': %s'%(str.ljust(fullName,25))  # Left adjust name into 25 chars max
+				fullName  = "Not Defined"
+			menuItem += ': %s' %fullName
 			if self.chkActive.isSelected() and not self.jobDct.has_key(key_usr):   # Active jobs only
 				continue
 
@@ -252,24 +251,7 @@ if not isRunning == '1':
 	try:
 		server = _session.getHostName()
 		name = _session.getAllocDeviceName()
-	except:
-		None
-	try:
-		from LogOn import *
-		login = LogOn()
-		login.txt1.setText(server)
-		login.txt2.setText(name)
-		if server == '':
-			login.txt1.requestFocus()
-		elif name == '':
-			login.txt2.requestFocus()
-		else:
-			login.txt3.requestFocus()
-		login.show()
-		server = login.txt1.getText()
-		name = login.txt2.getText()
-		passw = login.txt3.getText()
-		login.dispose()
+		#passw = 'password'
 	except:
 		None
 	chatter=Chat400()
