@@ -34,18 +34,43 @@ import java.io.*;
 public class SessionManager implements SessionManagerInterface, TN5250jConstants {
 
    Sessions sessions;
-   My5250 me;
    Vector configs;
+   /**
+    * A handle to the unique SessionManager class
+    */
+   static private SessionManager _instance;
 
-   public SessionManager() {
+   /**
+    * The constructor is made protected to allow overriding.
+    */
+   protected SessionManager() {
+
+      if (_instance == null) {
+         // initialize the settings information
+         initialize();
+         // set our instance to this one.
+         _instance = this;
+      }
+   }
+
+   /**
+    *
+    * @return The unique instance of this class.
+    */
+   static public SessionManager instance() {
+
+      if (_instance == null) {
+         _instance = new SessionManager();
+      }
+      return _instance;
+
+   }
+
+   private void initialize() {
 
       sessions = new Sessions();
       configs = new Vector(3);
-   }
 
-   public void setController(My5250 m) {
-
-      me = m;
    }
 
    public Sessions getSessions() {
@@ -99,27 +124,12 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
          configs.add(useConfig);
       }
 
-      Session newSession = new Session(me,sesProps,configurationResource,
+      Session newSession = new Session(sesProps,configurationResource,
                                           sessionName,useConfig);
       sessions.addSession(newSession);
       useConfig.addSessionConfigListener(newSession);
       return newSession;
 
    }
-
-
-//   protected static void loadConfigurationResource2(Properties props,
-//                                                   String resourceName) {
-//
-//      FileInputStream in = null;
-//      try {
-//         in = new FileInputStream(resourceName);
-//         props.load(in);
-//
-//      }
-//      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-//
-//   }
 
 }
