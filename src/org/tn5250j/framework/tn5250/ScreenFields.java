@@ -402,6 +402,25 @@ public class ScreenFields implements TN5250jConstants {
       return fields;
    }
 
+   public ScreenField getFirstInputField() {
+
+		if (sizeFields <= 0)
+			return null;
+
+      int f = 0;
+      ScreenField sf = screenFields[f];
+
+      while (sf.isBypassField() && f++ < sizeFields) {
+         sf = screenFields[f];
+      }
+
+      if (sf.isBypassField())
+         return null;
+      else
+         return sf;
+
+   }
+
    public void gotoFieldNext() {
 
       // sanity check - we where getting null pointers after a restore of screen

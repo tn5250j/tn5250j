@@ -520,21 +520,22 @@ public class ScreenField {
     */
    public void setString(String text) {
 
-//      int y = length;
-//      cursorPos = startPos;
-//      int len = text.length();
-//      char[] c = text.toCharArray();
-//      char tc = ' ';
-//      for (int x = 0; x < y; x++) {
-//         tc = ' ';
-//         if (x < len) {
-//            tc = c[x];
-//         }
-//         data[x] = tc;
-         s.setScreenData(text,startPos);
-//         changePos(1);
-//      }
+      int y = length;
+      cursorPos = startPos;
+      int len = text.length();
+      char[] c = text.toCharArray();
+      char tc = ' ';
 
+      for (int x = 0; x < y; x++) {
+         tc = ' ';
+         if (x < len) {
+            tc = c[x];
+         }
+         s.getPlanes().setChar(cursorPos,tc);
+         changePos(1);
+      }
+      setMDT();
+      s.getScreenFields().setMasterMDT();
    }
 
    public String toString() {

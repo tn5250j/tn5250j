@@ -2645,6 +2645,10 @@ public class Screen5250 implements TN5250jConstants{
                                     endCol, plane);
    }
 
+   public synchronized boolean[] getActiveAidKeys() {
+      return sessionVT.getActiveAidKeys();
+   }
+
    protected synchronized void setScreenData(String text, int location) {
 //                                             throws OhioException {
 
@@ -2672,7 +2676,6 @@ public class Screen5250 implements TN5250jConstants{
                }
 
                planes.screen[pos + x] = text.charAt(x);
-//               screenFields.getCurrentField().setFieldChar(pos+x,text.charAt(x));
                setDirty(pos + x);
             }
          }
