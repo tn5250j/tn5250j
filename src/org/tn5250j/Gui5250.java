@@ -1021,12 +1021,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
       else
          screen.setSRIndicatorOff();
 
-      stopMacro = false;
+      stopMacro = !macroRunning;
    }
 
    public void setStopMacroRequested () {
-      setMacroRunning(true);
-      macroRunning = false;
+      setMacroRunning(false);
    }
 
    public void sendNegResponse2(int ec) {
@@ -1135,7 +1134,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.pasteMe(false);
+                  screen.sendKeys(MNEMONIC_PASTE);
                   getFocusForMe();
                }
            };
@@ -1155,7 +1154,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          action = new AbstractAction(LangTool.getString("popup.copy")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.copyMe();
+                  screen.sendKeys(MNEMONIC_COPY);
                   getFocusForMe();
                }
            };
@@ -1164,7 +1163,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.pasteMe(false);
+                  screen.sendKeys(MNEMONIC_PASTE);
                   getFocusForMe();
                }
            };
