@@ -1,20 +1,20 @@
 /*
  * @(#)TN5250jTabbedPane.java Copyright: Copyright (c) 2001
  * @author Kenneth J. Pouncey
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this software; see the file COPYING. If not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *  
+ *
  */
 package org.tn5250j.gui;
 
@@ -28,10 +28,10 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import org.tn5250j.event.TabClosedListener;
 
 /**
- * 
+ *
  * This class provides an instance of the a JTabbedPane that paints a closable
  * (X) on each tab when the cursor enters a tab.
- * 
+ *
  */
 public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
 																					MouseMotionListener{
@@ -41,8 +41,8 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
    // the region that the X is drawn in the tab
    Rectangle closeRect;
    // closable tab listener.
-   private Vector closeListeners;   
-   
+   private Vector closeListeners;
+
    public TN5250jTabbedPane() {
       super();
 //      this.setUI(new MyBasicTabbedPaneUI());
@@ -50,65 +50,74 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
       addMouseMotionListener(this);
    }
 
-   public void mouseClicked(MouseEvent e) {
+  public void addTab(String title, Component component, Icon extraIcon) {
+    super.addTab(title, new CloseTabIcon(extraIcon), component);
+  }
+
+  public void setIconAt(Icon extraIcon, int index) {
+    super.setIconAt(index, new CloseTabIcon(extraIcon));
+  }
+
+  public void mouseClicked(MouseEvent e) {
       int tabNumber = getUI().tabForCoordinate(this, e.getX(), e.getY());
       if (tabNumber < 0)
          return;
       if (closeRect.contains(e.getX(), e.getY())) {
          //the tab is being closed
          fireTabClosed(tabNumber);
-         
+
       }
    }
 
    public void mouseDragged(MouseEvent e) {
-      
+
    }
-   
+
    public void mouseMoved(MouseEvent e) {
-      
+
       int stabNumber = getUI().tabForCoordinate(this, e.getX(), e.getY());
-      
+
       if (stabNumber >= 0) {
-         
+
          if (stabNumber != tabNumber) {
-            
+
             repaint();
          }
-         
+
          tabNumber = stabNumber;
 
          Rectangle tabRect = getUI().getTabBounds(this,tabNumber);
-      
+
 //         System.out.println(tabNumber + " " + tabRect.x
 //               								+ " " + tabRect.y
 //               								+ " " + tabRect.width
 //               								+ " " + tabRect.height);
-         
+
          Graphics g = this.getGraphics();
-         closeRect = new Rectangle(tabRect.x + tabRect.width - 18,tabRect.y,16,16);
+
+         closeRect =((CloseTabIcon)getIconAt(tabNumber)).getBounds();
 
          if (closeRect.contains(e.getX(), e.getY()))
-            paintClosableX(g,tabRect.x + tabRect.width - 18,tabRect.y,Color.red);
+            paintClosableX(g,closeRect.x ,closeRect.y,Color.red);
          else
-            paintClosableX(g,tabRect.x + tabRect.width - 18,tabRect.y,Color.black);
-         
+            paintClosableX(g,closeRect.x ,closeRect.y,Color.black);
+
       }
-      
+
       else {
          repaint();
       }
    }
 
    private void paintClosableX(Graphics g, int x, int y, Color x_color) {
-      
+
       int x_pos = x;
       int y_pos = y;
 
       Color col = g.getColor();
 
       g.setColor(x_color);
-      
+
       int y_p = y + 2;
       g.drawLine(x + 1, y_p, x + 12, y_p);
       g.drawLine(x + 1, y_p + 13, x + 12, y_p + 13);
@@ -121,11 +130,11 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
       g.drawLine(x + 10, y_p + 4, x + 4, y_p + 10);
       g.drawLine(x + 9, y_p + 3, x + 3, y_p + 9);
       g.setColor(col);
-      
+
    }
    public void mouseEntered(MouseEvent e) {
 
-      
+
    }
 
    public void mouseExited(MouseEvent e) {
@@ -167,7 +176,7 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
       closeListeners.removeElement(listener);
 
    }
-   
+
    public void fireTabClosed(int tabToClose) {
       if (closeListeners != null) {
          int size = closeListeners.size();
@@ -177,44 +186,61 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
             target.tabClosed(tabToClose);
          }
       }
-      
-      
+
+
    }
-   
+
    /**
-    * 
-    * This makes sure the icon and label are left justified in the tabs
+    * The class which generates the 'X' icon for the tabs. The constructor
+    * accepts an icon which is extra to the 'X' icon, so you can have tabs
+    * like in JBuilder. This value is null if no extra icon is required.
     */
-   class MyBasicTabbedPaneUI extends BasicTabbedPaneUI {
+   class CloseTabIcon implements Icon {
+     private int x_pos;
+     private int y_pos;
+     private int width;
+     private int height;
+     private Icon fileIcon;
 
-      // not supported right now but maybe in the future.  Right now text is
-      // on the right and the icon is on the left with both left justified in
-      // in the tab.  Not changeble.
-      
-      private int horizontalTextPosition = SwingUtilities.RIGHT;
+     public CloseTabIcon(Icon fileIcon) {
+       this.fileIcon=fileIcon;
+       width=16;
+       height=16;
+     }
 
-      public MyBasicTabbedPaneUI() {
-      }
+     public void paintIcon(Component c, Graphics g, int x, int y) {
+       this.x_pos=x;
+       this.y_pos=y;
+       Color col=g.getColor();
+       g.setColor(Color.black);
+       int y_p=y+2;
+       g.drawLine(x+1, y_p, x+12, y_p);
+       g.drawLine(x+1, y_p+13, x+12, y_p+13);
+       g.drawLine(x, y_p+1, x, y_p+12);
+       g.drawLine(x+13, y_p+1, x+13, y_p+12);
+       g.drawLine(x+3, y_p+3, x+10, y_p+10);
+       g.drawLine(x+3, y_p+4, x+9, y_p+10);
+       g.drawLine(x+4, y_p+3, x+10, y_p+9);
+       g.drawLine(x+10, y_p+3, x+3, y_p+10);
+       g.drawLine(x+10, y_p+4, x+4, y_p+10);
+       g.drawLine(x+9, y_p+3, x+3, y_p+9);
+       g.setColor(col);
+       if (fileIcon != null) {
+         fileIcon.paintIcon(c, g, x+width, y_p);
+       }
+     }
 
-      public MyBasicTabbedPaneUI(int horTextPosition) {
-         horizontalTextPosition = horTextPosition;
-      }
+     public int getIconWidth() {
+       return width + (fileIcon != null? fileIcon.getIconWidth() : 0);
+     }
 
-      protected void layoutLabel(int tabPlacement, FontMetrics metrics,
-            int tabIndex, String title, Icon icon, Rectangle tabRect,
-            Rectangle iconRect, Rectangle textRect, boolean isSelected) {
+     public int getIconHeight() {
+       return height;
+     }
 
-         textRect.x = 0; 
-         textRect.y = 0;
-         iconRect.x = 0; 
-         iconRect.y = 0;
-         
-         SwingUtilities.layoutCompoundLabel((JComponent) tabPane, metrics,
-               title, icon, SwingUtilities.CENTER, SwingUtilities.LEFT,
-               SwingUtilities.CENTER, horizontalTextPosition, tabRect,
-               iconRect, textRect, textIconGap + 2);
-
-      }
+     public Rectangle getBounds() {
+       return new Rectangle(x_pos, y_pos, width, height);
+     }
    }
 
 }
