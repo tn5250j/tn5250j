@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,12 +23,14 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.event.*;
 import java.util.*;
+import java.util.jar.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.encoding.*;
@@ -45,6 +46,7 @@ public class Configure implements TN5250jConstants {
    static JTextField deviceName = null;
    static JTextField  fpn = null;
    static JComboBox  cpb = null;
+   static JCheckBox  jtb = null;
    static JCheckBox ec = null;
    static JCheckBox tc = null;
    static JCheckBox sdn = null;
@@ -81,8 +83,17 @@ public class Configure implements TN5250jConstants {
       newJVM = new JCheckBox(LangTool.getString("conf.labelNewJVM"));
       heartBeat = new JCheckBox(LangTool.getString("conf.labelHeartBeat"));
 
+      jtb = new JCheckBox("AS/400 Toolbox");
+      jtb.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            doCPStateChanged(e);
+         }
+      });
+
       cpb = new JComboBox();
-      String[] availCP = CharMappings.getAvailableCodePages();
+
+      String[] availCP = getAvailableCodePages();
+
       cpb.addItem(LangTool.getString("conf.labelDefault"));
 
       for (int x = 0; x < availCP.length; x++) {
@@ -106,6 +117,7 @@ public class Configure implements TN5250jConstants {
 
          ec.setSelected(true);
          tc.setSelected(true);
+         jtb.setSelected(false);
          sdNormal.setSelected(true);
          deamon.setSelected(true);
 
@@ -144,8 +156,20 @@ public class Configure implements TN5250jConstants {
             fpn = new JTextField(getParm("-f",args),20);
          else
             fpn = new JTextField(20);
-         if (isSpecified("-cp",args))
-            cpb.setSelectedItem(getParm("-cp",args));
+         if (isSpecified("-cp",args)) {
+            String codepage = getParm("-cp",args);
+            String[] acps = CharMappings.getAvailableCodePages();
+            jtb.setSelected(true);
+            for (int x = 0; x < acps.length; x++) {
+
+               if (acps[x].equals(codepage))
+                  jtb.setSelected(false);
+
+            }
+            cpb.setSelectedItem(codepage);
+
+         }
+
          if (isSpecified("-e",args))
             ec.setSelected(true);
          else
@@ -205,6 +229,12 @@ public class Configure implements TN5250jConstants {
             heartBeat.setSelected(true);
          else
             heartBeat.setSelected(false);
+
+         if (isSpecified("-hb",args))
+            heartBeat.setSelected(true);
+         else
+            heartBeat.setSelected(false);
+
       }
 
       //Create main attributes panel
@@ -308,11 +338,12 @@ public class Configure implements TN5250jConstants {
 
       // code page panel
       JPanel cp = new JPanel();
-      BoxLayout cpLayout = new BoxLayout(cp,BoxLayout.Y_AXIS);
+      BoxLayout cpLayout = new BoxLayout(cp,BoxLayout.X_AXIS);
       cp.setLayout(cpLayout);
       cp.setBorder(BorderFactory.createTitledBorder(
                         LangTool.getString("conf.labelCodePage")));
       cp.add(cpb);
+      cp.add(jtb);
 
       // emulation mode panel
       JPanel ep = new JPanel();
@@ -429,6 +460,22 @@ public class Configure implements TN5250jConstants {
 
   }
 
+
+  /**
+   * Return the list of availble code pages depending on which character
+   * mapping flag is set.
+   *
+   * @return list of available code pages
+   *
+   */
+   private static String[] getAvailableCodePages() {
+
+      if (jtb.isSelected())
+         return CharMappings.getAvailableCodePages(CharMappings.TOOLBOX_CP);
+      else
+         return CharMappings.getAvailableCodePages();
+   }
+
   /**
    * React to the configuration action button to perform to Add or Edit the
    * entry
@@ -460,6 +507,22 @@ public class Configure implements TN5250jConstants {
          if (sdn.isSelected()) {
             deviceName.setEnabled(false);
          }
+      }
+   }
+
+   /**
+    * Available Code Page selection state change
+    *
+    * @param e Item event to react to changes
+    */
+   private static void doCPStateChanged(ItemEvent e) {
+
+      String[] availCP = getAvailableCodePages();
+      cpb.removeAllItems();
+      cpb.addItem(LangTool.getString("conf.labelDefault"));
+
+      for (int x = 0; x < availCP.length; x++) {
+         cpb.addItem(availCP[x]);
       }
    }
 
