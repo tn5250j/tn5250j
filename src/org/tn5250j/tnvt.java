@@ -35,7 +35,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.lang.reflect.*;
 import org.tn5250j.tools.CodePage;
-import ca.stevekennedy.tn5250j.ssl.SocketConnector;
+//import ca.stevekennedy.tn5250j.ssl.SocketConnector;
 
 public final class tnvt implements Runnable, TN5250jConstants {
 
@@ -175,9 +175,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          }
 
-//         sock = new Socket(s, port);
+         sock = new Socket(s, port);
          //smk - For SSL compability
-         sock = new SocketConnector().createSocket(s,port);
+//         sock = new SocketConnector().createSocket(s,port);
          if (sock == null)
             System.out.println("I did not get a socket");
          connected = true;
