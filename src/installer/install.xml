@@ -3,7 +3,7 @@
         <appname>tn5250j</appname>
         <appversion>0.5.6</appversion>
         <authors>
-            <author name="Kenneth J. Pouncey" email="kjp1@users.sourceforge.net"/>
+            <author email="kjp1@users.sourceforge.net" name="Kenneth J. Pouncey"/>
         </authors>
         <url>http://tn5250j.sourceforge.net</url>
     </info>
@@ -18,6 +18,7 @@
         <res src="installer/COPYING" id="LicencePanel.licence"/>
         <res src="installer/readme.txt" id="InfoPanel.info"/>
         <res src="installer/installShortcutSpec.xml" id="shortcutSpec.xml"/>
+        <res src="installer/installer.url" id="WebInstallers.url"/>
     </resources>
     <panels>
         <panel classname="HelloPanel"/>
@@ -43,13 +44,9 @@
             <file targetdir="$INSTALL_PATH/lib" src="installer/jythonlib.jar"/>
         </pack>
         <pack name="PDF Generation" required="no">
-            <description>Scripting using jython - http://www.jython.org</description>
+            <description>Enables PDF Generation of spool files - http://itext.sourceforge.net</description>
             <file targetdir="$INSTALL_PATH/lib" src="installer/itext.jar"/>
         </pack>
-        <!--pack name="JTOpen Toolbox" required="no">
-            <description>Scripting using jython - http://www.jython.org</description>
-            <file targetdir="$INSTALL_PATH/lib" src="installer/jt400.jar"/>
-        </pack-->
     </packs>
     <native name="ShellLink.dll" type="izpack"/>
 </installation>
