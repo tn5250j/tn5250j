@@ -159,6 +159,11 @@ public class Connect extends JDialog implements ActionListener,
           });
 
 
+      // create emulator options panel
+      JPanel emulOptPanel = new JPanel();
+      emulOptPanel.setLayout(new BorderLayout());
+
+
       // setup the frame interface panel
       interfacePanel = new JPanel();
       TitledBorder tb = BorderFactory.createTitledBorder(
@@ -188,6 +193,27 @@ public class Connect extends JDialog implements ActionListener,
       interfacePanel.add(intTABS);
       interfacePanel.add(intMDI);
 
+      // create show me panel
+      JPanel showMePanel = new JPanel();
+      TitledBorder smb = BorderFactory.createTitledBorder("");
+
+      showMePanel.setBorder(smb);
+
+      showMe = new JCheckBox(LangTool.getString("ss.labelShowMe"));
+      if(props.containsKey("emul.showConnectDialog"))
+         showMe.setSelected(true);
+
+      showMe.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            showMe_itemStateChanged(e);
+         }
+      });
+
+      showMePanel.add(showMe);
+
+      emulOptPanel.add(interfacePanel,BorderLayout.NORTH);
+      emulOptPanel.add(showMePanel,BorderLayout.SOUTH);
+
       //Setup panels
       configOptions.setLayout(borderLayout);
 
@@ -214,18 +240,6 @@ public class Connect extends JDialog implements ActionListener,
                                     sessionOptPanel,
                                     false);
 
-      showMe = new JCheckBox(LangTool.getString("ss.labelShowMe"));
-      if(props.containsKey("emul.showConnectDialog"))
-         showMe.setSelected(true);
-
-      showMe.addItemListener(new java.awt.event.ItemListener() {
-         public void itemStateChanged(ItemEvent e) {
-            showMe_itemStateChanged(e);
-         }
-      });
-
-      options.add(showMe);
-
       connectButton = addOptButton(LangTool.getString("ss.optConnect"),
                                     "CONNECT",options,false);
 
@@ -237,7 +251,7 @@ public class Connect extends JDialog implements ActionListener,
       // add the panels to our dialog
       getContentPane().add(sessionPanel,BorderLayout.CENTER);
       getContentPane().add(options, BorderLayout.SOUTH);
-      getContentPane().add(interfacePanel,BorderLayout.NORTH);
+      getContentPane().add(emulOptPanel,BorderLayout.NORTH);
 
       // pack it and center it on the screen
       pack();

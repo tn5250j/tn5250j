@@ -151,6 +151,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private boolean restrictCursor =false;
    private Rectangle restriction;
    private final Object kblock = new Object();
+   private boolean resetRequired;
 
    public Screen5250(Gui5250 gui, Properties props) {
       this.gui = gui;
@@ -1256,8 +1257,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     */
    public void sendKeys(String text) {
 
-      if (text == null) {
-         return;
+//      if (text == null) {
+//         return;
+//      }
+
+      if (isStatusErrorCode() && !resetRequired) {
+            resetError();
+            if (!cursorActive)
+               setCursorOn();
       }
 
       if (keyboardLocked) {
@@ -1386,6 +1393,17 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public void sendAid(int aidKey) {
 
       sessionVT.sendAidKey(aidKey);
+   }
+
+   /**
+    * Restores the error line and sets the error mode off.
+    *
+    */
+   public void resetError() {
+
+      restoreErrorLine();
+      setStatus(STATUS_ERROR_CODE,STATUS_VALUE_OFF,"");
+
    }
 
    protected boolean simulateMnemonic(int mnem){
@@ -1861,8 +1879,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             break;
          case RESET :
             if (isStatusErrorCode()) {
-               restoreErrorLine();
-               setStatus(STATUS_ERROR_CODE,STATUS_VALUE_OFF,"");
+               resetError();
                isInField(lastPos);
                updateDirty();
                setCursorOn();
@@ -1960,9 +1977,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    protected boolean simulateKeyStroke(char c){
 
-      if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
-         return false;
-      }
+//      if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
+//         if (resetRequired)
+//            return false;
+//         else
+//            resetError();
+//      }
 
       boolean updateField = false;
       boolean numericError = false;

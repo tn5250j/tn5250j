@@ -71,7 +71,8 @@ public class Macronizer {
       catch (SecurityException se) {
          System.out.println(se.getMessage());
       }
-      return false;
+
+      return checkScripts();
    }
 
    private final static void saveMacros() {
@@ -87,7 +88,6 @@ public class Macronizer {
    }
 
    public final static boolean isMacrosExist() {
-
       return macrosExist;
    }
 
@@ -169,8 +169,13 @@ public class Macronizer {
             System.err.println(ex);
          }
       }
+   }
+   private static boolean checkScripts() {
 
+      File directory = new File("scripts");
 
+      return directory.isDirectory();
 
    }
+
 }

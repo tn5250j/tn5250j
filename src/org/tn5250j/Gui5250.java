@@ -663,7 +663,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
          lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
       else
          lastKeyStroke = keyMap.getKeyStrokeText(e);
-//      System.out.println("lastKeyStroke " + lastKeyStroke);
+
+      //System.out.println("lastKeyStroke " + lastKeyStroke);
 
       if (lastKeyStroke != null && !lastKeyStroke.equals("null")) {
 
