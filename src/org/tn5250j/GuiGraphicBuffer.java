@@ -2036,7 +2036,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          color = new char[size];
          extended =new char[size];
          graphic = new char[size];
-         field = null;
+         field = new char[size];
 
          if (size == lenScreen) {
 	         screen.GetScreen(text, size, PLANE_TEXT);
@@ -2045,6 +2045,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	         screen.GetScreen(color, size, PLANE_COLOR);
 	         screen.GetScreen(extended, size, PLANE_EXTENDED);
 	         screen.GetScreen(graphic, size, PLANE_EXTENDED_GRAPHIC);
+	         screen.GetScreen(field, size, PLANE_FIELD);
          }
          else {
 	         screen.GetScreenRect(text, size, startRow, startCol, endRow, endCol, PLANE_TEXT);
@@ -2053,6 +2054,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	         screen.GetScreenRect(color, size, startRow, startCol, endRow, endCol, PLANE_COLOR);
 	         screen.GetScreenRect(extended, size, startRow, startCol, endRow, endCol, PLANE_EXTENDED);
 	         screen.GetScreenRect(graphic, size, startRow, startCol, endRow, endCol, PLANE_EXTENDED_GRAPHIC);
+	         screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, PLANE_FIELD);
          }
       }
 
