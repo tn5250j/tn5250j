@@ -80,11 +80,30 @@ public class My5250App extends JApplet implements TN5250jConstants {
       else
          LangTool.init();
 
+      loadSystemProperty("SESSION_CONNECT_USER");
+      loadSystemProperty("SESSION_CONNECT_PASSWORD");
+      loadSystemProperty("SESSION_CONNECT_PROGRAM");
+      loadSystemProperty("SESSION_CONNECT_LIBRARY");
+      loadSystemProperty("SESSION_CONNECT_MENU");
+
       manager = new SessionManager();
-      Session s = manager.openSession(sesProps,"","Test Applet");
-      s.grabFocus();
+      final Session s = manager.openSession(sesProps,"","Test Applet");
+
       this.getContentPane().add(s);
+
       s.connect();
+      SwingUtilities.invokeLater(new Runnable() {
+         public void run() {
+            s.grabFocus();
+         }
+      });
+
+   }
+
+   private void loadSystemProperty(String param) {
+
+      if (isSpecified(param))
+         System.getProperties().put(param,getParameter(param));
 
    }
 
