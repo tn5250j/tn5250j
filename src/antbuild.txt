@@ -69,7 +69,7 @@ call %ANT_HOME%\bin\ant -buildfile build.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
    ----------------------------------------------
 
 !*** NOTE FOR JAVA 1.4 ***
-use the compile-dep (and/or all-dep) command line parameter supported by the build.xml file.
+use the compile-dep command line parameter supported by the build.xml file.
 This will allow the compilation of the source using deprecation options!
 *** NOTE FOR JAVA 1.4 ***
 
@@ -81,7 +81,6 @@ supports execute the following:
 7. Main targets:
 
    all               Clean, Compile, Jar
-   all-dep           Clean, Compile-dep, Jar
    clean             Cleanup your workspace (delete build-directory, ...)
    compile           Compile your source-files
    compile-dep       Compile your source-files with deprecation turned on
