@@ -66,7 +66,29 @@ public final class LoadMacroMenu {
                   ses.executeMeMacro(e);
                }
            };
-         menu.add(action);
+
+         JMenuItem mi = menu.add(action);
+
+         final Gui5250 ji = (Gui5250)session;
+         mi.addMouseListener(new MouseAdapter() {
+
+            public void mouseReleased(MouseEvent e) {
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  doOptionsPopup(e,ses);
+               }
+            }
+
+            public void mousePressed(MouseEvent e) {
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  doOptionsPopup(e,ses);
+               }
+            }
+            public void mouseClicked(MouseEvent e) {
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  doOptionsPopup(e,ses);
+               }
+            }
+       });
 
       }
 
@@ -90,6 +112,24 @@ public final class LoadMacroMenu {
          scriptDir(GlobalConfigure.instance().getProperty(
                               "emulator.settingsDirectory") +
                               "scripts",menu,session);
+   }
+
+   private static void doOptionsPopup(MouseEvent e, Session session) {
+
+      JPopupMenu j = new JPopupMenu("test");
+      Action action = new AbstractAction("Delete " + ((JMenuItem)e.getSource()).getText()) {
+               public void actionPerformed(ActionEvent e) {
+                  StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
+                  macro.delete(0,"Delete".length()+1);
+                  Macronizer.removeMacroByName(macro.toString());
+               }
+           };
+
+      j.add(action);
+      j.add(new JMenuItem("Execute "+ ((JMenuItem)e.getSource()).getText()));
+      MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem)e.getSource(),e,session);
+      GUIGraphicsUtils.positionPopup(session,j,et.getX(),et.getY());
+
    }
 
    public static void scriptDir(String pathName, JMenu menu,Session session) {
@@ -118,6 +158,7 @@ public final class LoadMacroMenu {
     * @param vector
     * @param path
     * @param directory
+    * @param session
     */
    private static void loadScripts(Vector vector,
                                     String path,
@@ -174,10 +215,13 @@ public final class LoadMacroMenu {
     */
    private static void createScriptsMenu(JMenu menu, Vector vector, int start) {
 
+      JPopupMenu jpop = new JPopupMenu();
+      jpop.add("Delete");
+
       for (int i = start; i < vector.size(); i++) {
          Object obj = vector.elementAt(i);
          if (obj instanceof ExecuteScriptAction) {
-            menu.add((ExecuteScriptAction)obj);
+            JMenuItem mi = menu.add((ExecuteScriptAction)obj);
          }
          else
             if (obj instanceof Vector) {
