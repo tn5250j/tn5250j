@@ -4006,11 +4006,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 
     //LDC - 12/02/2003 - check if we must repaint it
     if (drawing == false) return;
+    //LDC - 18/02/2003 - only update the screen when the window is showing
+    if (this.gui.isShowing())
+    {
       Rectangle r = new Rectangle(dirty);
 
 
       // update the image
       updateImage(r);
+    }
       // update dirty to show that we have already painted that region of the
       //   screen so do not do it again.
 //      int height = (int)(tArea.getHeight() - dirty.height);
