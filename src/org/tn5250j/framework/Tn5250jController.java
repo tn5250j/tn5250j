@@ -41,13 +41,13 @@ import org.tn5250j.GlobalConfigure;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.SessionGUI;
 import org.tn5250j.Session5250;
-import org.tn5250j.SessionManager;
-import org.tn5250j.Sessions;
+import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+import org.tn5250j.framework.common.Sessions;
 
 
 public class Tn5250jController extends Thread implements TN5250jConstants {

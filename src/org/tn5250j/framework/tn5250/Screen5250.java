@@ -271,14 +271,8 @@ public class Screen5250 implements TN5250jConstants{
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 		StringBuffer s = new StringBuffer();
 
-		// lets get the bounding area using a rectangle that we have already
-		// allocated
-//		gui.getBoundingArea(workR);
-//
-//		gui.rubberband.reset();
-//		gui.repaint();
-
       workR.setBounds(area);
+
 		log.debug("Copying" + workR);
 
 		// loop through all the screen characters to send them to the clip board
@@ -291,11 +285,9 @@ public class Screen5250 implements TN5250jConstants{
 			i = workR.y;
 			while (t-- > 0) {
 				// only copy printable characters (in this case >= ' ')
-//				char c = screen[getPos(m - 1, i - 1)].getChar();
 				char c = planes.getChar(getPos(m - 1, i - 1));
-//				if (c >= ' ' && !screen[getPos(m - 1, i - 1)].nonDisplay)
-            // TODO: change me here to implement the nondisplay check later
-				if (c >= ' ')
+				if (c >= ' ' && (planes.screenExtended[getPos(m - 1, i - 1)] & EXTENDED_5250_NON_DSP)
+                              == 0)
 					s.append(c);
 				else
 					s.append(' ');
@@ -305,7 +297,20 @@ public class Screen5250 implements TN5250jConstants{
 			s.append('\n');
 			m++;
 		}
+
+      // uncomment the next block of code when we implement the copy append
+      //  functionality.  This was a test just to see if it was possible.
+//      String trString = "";
+//      try {
+//      trString= (String)(cb.getContents(this).getTransferData(DataFlavor.stringFlavor));
+//      }
+//      catch (Exception e) {
+//         System.out.println(e.getMessage());
+//      }
+//		StringSelection contents = new StringSelection(trString + s.toString());
+
 		StringSelection contents = new StringSelection(s.toString());
+
 		cb.setContents(contents, null);
 
 	}
@@ -549,17 +554,26 @@ public class Screen5250 implements TN5250jConstants{
 		return sumVector;
 	}
 
-	public void moveCursor(MouseEvent e, int pos) {
+   /**
+    * This will move the screen cursor based on the mouse event.
+    *
+    * I do not think the checks here for the gui characters should be here but
+    * will leave them here for now until we work out the interaction.  This
+    * should be up to the gui frontend in my opinion.
+    *
+    * @param e
+    * @param pos
+    */
+	public boolean moveCursor(MouseEvent e, int pos) {
 
 		if (!oia.isKeyBoardLocked()) {
 
 			if (pos < 0)
-				return;
+				return false;
 			// because getRowColFromPoint returns offset of 1,1 we need to
 			//    translate to offset 0,0
 			//         pos -= (numCols + 1);
 
-//			int g = screen[pos].getWhichGUI();
          int g = planes.getWhichGUI(pos);
 
 			// lets check for hot spots
@@ -569,19 +583,14 @@ public class Screen5250 implements TN5250jConstants{
 				switch (g) {
 				case BUTTON_RIGHT:
 				case BUTTON_MIDDLE:
-//					while (screen[--pos].getWhichGUI() != BUTTON_LEFT) {
 					while (planes.getWhichGUI(--pos) != BUTTON_LEFT) {
 					}
 				case BUTTON_LEFT:
-//					if (screen[pos].getChar() == 'F') {
 					if (planes.getChar(pos) == 'F') {
 						pos++;
 					} else
 						aidFlag = false;
 
-//					if (screen[pos + 1].getChar() != '='
-//							&& screen[pos + 1].getChar() != '.'
-//							&& screen[pos + 1].getChar() != '/') {
 					if (planes.getChar(pos + 1) != '='
 							&& planes.getChar(pos + 1) != '.'
 							&& planes.getChar(pos + 1) != '/') {
@@ -592,11 +601,8 @@ public class Screen5250 implements TN5250jConstants{
 						aid.append(planes.getChar(pos));
 						aid.append(planes.getChar(pos + 1));
 					} else {
-//						log.debug(" Hotspot clicked!!! we will send character "
-//								+ screen[pos].getChar());
 						log.debug(" Hotspot clicked!!! we will send character "
 								+ planes.getChar(pos));
-						//
 						aid.append(planes.getChar(pos));
 					}
 					break;
@@ -660,7 +666,11 @@ public class Screen5250 implements TN5250jConstants{
 					}
 
 				}
-			} else {
+            // return back to the calling routine that the cursor was not moved
+            // but something else here was done like aid keys or the such
+            return false;
+			}
+         else {
 				// this is a note to not execute this code here when we
 				// implement
 				//   the remain after edit function option.
@@ -670,119 +680,15 @@ public class Screen5250 implements TN5250jConstants{
 //				} else {
 					goto_XY(pos);
 					isInField(lastPos);
+
+               // return back to the calling object that the cursor was indeed
+               //  moved with in the screen object
+               return true;
 //				}
 			}
 		}
-//		gui.requestFocus();
+      return false;
 	}
-
-//      /**
-//       *
-//       *
-//       * @param x
-//       * @param y
-//       * @return
-//       */
-//      public int getPosFromView(int x, int y) {
-//
-//         // we have to translate the point into a an upper left 0,0 based format
-//         // to get the position into the character array which is 0,0 based.
-//         // we take the point of x,y and subtract the screen offsets.
-//
-//         x -= bi.offLeft;
-//         y -= bi.offTop;
-//
-//         if (x > tArea.getMaxX())
-//            x = (int) tArea.getMaxX() - 1;
-//         if (y > tArea.getMaxY())
-//            y = (int) tArea.getMaxY() - 1;
-//         if (x < tArea.getMinX())
-//            x = 0;
-//         if (y < tArea.getMinY())
-//            y = 0;
-//
-//         //      int s = fmWidth * numCols; // image length in pixels
-//         //      int t = s - x; // image length minus the x point
-//         //      int u = t / fmWidth; //
-//         //      int v = numCols - u; //
-//
-//         int s0 = y / fmHeight;
-//         int s1 = x / fmWidth;
-//
-//         //      System.out.println("row " + s0 + ", column " + s1 + " pos " +
-//         // getPos(s0,s1));
-//         //      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
-//         // fmHeight))),
-//         //                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-//         //                  );
-//         return getPos(s0, s1);
-//
-//      }
-//
-//      /**
-//       * Return the row column based on the screen x,y position coordinates
-//       *
-//       * It will calculate a 0,0 based row and column based on the screen point
-//       * coordinate.
-//       *
-//       * @param x
-//       *            screen x position
-//       * @param y
-//       *            screen y position
-//       *
-//       * @return screen array position based 0,0 so position row 1 col 3 would be
-//       *         2
-//       */
-//      public int getRowColFromPoint(int x, int y) {
-//
-//         if (x > tArea.getMaxX())
-//            x = (int) tArea.getMaxX() - 1;
-//         if (y > tArea.getMaxY())
-//            y = (int) tArea.getMaxY() - 1;
-//         if (x < tArea.getMinX())
-//            x = 0;
-//         if (y < tArea.getMinY())
-//            y = 0;
-//
-//         //      int s = fmWidth * numCols; // image length in pixels
-//         //      int t = s - x; // image length minus the x point
-//         //      int u = t / fmWidth; //
-//         //      int v = numCols - u; //
-//
-//         int s0 = y / fmHeight;
-//         int s1 = x / fmWidth;
-//
-//         //      System.out.println("row " + s0 + ", column " + s1 + " pos " +
-//         // getPos(s0,s1));
-//         //      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
-//         // fmHeight))),
-//         //                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-//         //                  );
-//         return getPos(s0, s1);
-//
-//         //      return 0;
-//      }
-//
-//      /**
-//       * This will return the screen coordinates of a row and column.
-//       *
-//       * @param r
-//       * @param c
-//       * @param point
-//       */
-//      public void getPointFromRowCol(int r, int c, Point point) {
-//
-//         // here the x + y coordinates of the row and column are obtained from
-//         // the character array which is based on a upper left 0,0 coordinate
-//         //  we will then add to that the offsets to get the screen position point
-//         //  x,y coordinates. Maybe change this to a translate routine method or
-//         //  something.
-//   //		point.x = screen[getPos(r, c)].x + bi.offLeft;
-//   //		point.y = screen[getPos(r, c)].y + bi.offTop;
-//         point.x = (fmWidth * c) + bi.offLeft;
-//         point.y = (fmHeight * r) + bi.offTop;
-//
-//      }
 
 	public void setVT(tnvt v) {
 
@@ -2620,25 +2526,6 @@ public class Screen5250 implements TN5250jConstants{
 	}
 
 	/**
-	 * The column separator to be used
-	 *
-	 * @return column separator to be used values: 0 - line 1 - dot 2 - short
-	 *         line 3 - do not show column separator
-	 */
-//	public int getColSepLine() {
-//		return colSepLine;
-//	}
-
-	/**
-	 * Should the screen attributes be show in hex
-	 *
-	 * @return true we should and false we should not
-	 */
-//	public boolean isShowHex() {
-//		return showHex;
-//	}
-
-	/**
 	 * Return the whole screen represented as a character array
 	 *
 	 * @return character array containing the text
@@ -2653,10 +2540,8 @@ public class Screen5250 implements TN5250jConstants{
 		char c;
 
 		for (int x = 0; x < lenScreen; x++) {
-//			c = screen[x].getChar();
          c = planes.getChar(x);
 			// only draw printable characters (in this case >= ' ')
-//			if ((c >= ' ') && (!screen[x].isAttributePlace())) {
 			if ((c >= ' ') && (!planes.isAttributePlace(x))) {
 				sac[x] = c;
             // TODO: implement the underline check here
@@ -2680,10 +2565,8 @@ public class Screen5250 implements TN5250jConstants{
 		char c;
 
 		for (int x = 0; x < lenScreen; x++) {
-//			c = screen[x].getChar();
          c = planes.getChar(x);
 			// only draw printable characters (in this case >= ' ')
-//			if ((c >= ' ') && (!screen[x].isAttributePlace())) {
 			if ((c >= ' ') && (!planes.isAttributePlace(x))) {
 				sac[x] = c;
             // TODO: implement the underline check here
@@ -2695,6 +2578,24 @@ public class Screen5250 implements TN5250jConstants{
 
 		return sac;
 	}
+
+   public char[] getData(int startRow, int startCol, int endRow, int endCol, int plane) {
+      try {
+         int from = getPos(startRow,startCol);
+         int to = getPos(endRow,endCol);
+         if (from > to) {
+
+            int f = from;
+            to = f;
+            from = f;
+         }
+         return planes.getPlaneData(from,to,plane);
+      }
+      catch (Exception oe) {
+         return null;
+      }
+
+   }
 
    /**
     * <p>

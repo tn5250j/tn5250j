@@ -1283,26 +1283,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 		for (int y = 0; y < len; y++) { // save the screen data
 
-//			if (screen52.screen[y].isAttributePlace()) {
-//				la = screen52.screen[y].getCharAttr();
-//				sa[sac++] = (byte) la;
-//			} else {
-//				if (screen52.screen[y].getCharAttr() != la) {
-//					la = screen52.screen[y].getCharAttr();
-//					sac--;
-//					sa[sac++] = (byte) la;
-//				}
-//				//LDC: Check to see if it is an displayable character. If not,
-//				//  do not convert the character.
-//				//  The characters on screen are in unicode
-//				//sa[sac++] =
-//				// (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
-//				char ch = screen52.screen[y].getChar();
-//				byte byteCh = (byte) ch;
-//				if (isDataUnicode(ch))
-//					byteCh = this.uni2ebcdic(ch);
-//				sa[sac++] = byteCh;
-//			}
 			if (planes.isAttributePlace(y)) {
 				la = planes.getCharAttr(y);
 				sa[sac++] = (byte) la;

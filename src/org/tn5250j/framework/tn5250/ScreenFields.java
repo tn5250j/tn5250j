@@ -48,7 +48,7 @@ public class ScreenFields implements TN5250jConstants {
       screenFields = new ScreenField[256];
    }
 
-   public void clearFFT() {
+   protected void clearFFT() {
 
       sizeFields = nextField = fieldIds = 0;
       cpfExists = false;   // clear the cursor progression fields flag
@@ -267,15 +267,20 @@ public class ScreenFields implements TN5250jConstants {
       return sizeFields;
    }
 
-   public boolean isInField(int pos) {
+   public int getFieldCount() {
+
+      return sizeFields;
+   }
+
+   protected boolean isInField(int pos) {
       return isInField(pos,true);
    }
 
-   public boolean isInField() {
+   protected boolean isInField() {
       return isInField(screen.getLastPos(),true);
    }
 
-   public boolean isInField(int pos, boolean chgToField) {
+   protected boolean isInField(int pos, boolean chgToField) {
 
       ScreenField sf;
 
@@ -296,7 +301,98 @@ public class ScreenFields implements TN5250jConstants {
 
    }
 
+   /**
+    * Searches the collection for the target string and returns the iOhioField
+    * object containing that string.  The string must be totally contained
+    * within the field to be considered a match.
+    *
+    * @param targetString The target string.
+    * @param startPos The row and column where to start the search. The position
+    *                 is inclusive (for example, row 1, col 1 means that
+    *                 position 1,1 will be used as the starting location and
+    *                 1,1 will be included in the search).
+    * @param length The length from startPos to include in the search.
+    * @param dir An OHIO_DIRECTION value:
+    *
+    * <table BORDER COLS=3 WIDTH="50%" >
+    * <tr><th>Constant </th><th>Value</th>
+    *                            <th>Description</th></tr>
+    * <tr><td>OS_OHIO_DIRECTION_FORWARD </td><td>0</td>
+    *                            <td>Forward (beginning towards end)</td></tr>
+    * <tr><td>OS_OHIO_DIRECTION_BACKWARD </td><td>1</td>
+    *                            <td>Backward (end towards beginning)</td></tr>
+    * </table>
+    *       Constant Value Description
+    *       ignoreCase - Indicates whether the search is case sensitive.
+    *       True means that case will be ignored. False means the search will
+    *       be case sensitive.
+    * @return If found, an iOhioField object containing the target string. If
+    *         not found, returns a null.
+    */
+   public ScreenField findByString (String targetString,
+                                             int startPos,
+                                             int length,
+                                             int dir,
+                                             boolean ignoreCase) {
+
+      // first lets check if the string exists in the screen space
+//      iOhioPosition pos = screen.findString(targetString, startPos, length,
+//                                             dir, ignoreCase);
+
+      // if it does exist then lets search the fields by the position that
+      //  was found and return the results of that search.
+//      if (pos != null) {
+         return findByPosition(startPos);
+//      }
+
+      //return null;
+
+   }
+
+   /**
+    * Searches the collection for the target position and returns the ScreenField
+    * object containing that position.
+    *
+    * @param targetPosition The target row and column expressed as a linear
+    *          position within the presentation space.
+    *
+    * @return If found, a ScreenField object containing the target position.
+    *         If not found, returns a null.
+    */
+   public ScreenField findByPosition(int targetPosition) {
+
+      ScreenField sf = null;
+
+      for (int x = 0;x < sizeFields; x++) {
+
+         sf = screenFields[x];
+
+         if (sf.withinField(targetPosition)) {
+            return sf;
+         }
+
+      }
+
+      return null;
+   }
+
+   /**
+    * Searches the collection for the target position and returns the ScreenField
+    * object containing that position.
+    *
+    * @param row The beginning row to start search with in the presentation space.
+    * @param col The beginning column to start search with in the presentation space.
+    *
+    * @return If found, a ScreenField object containing the target position.
+    *         If not found, returns a null.
+    */
+   public ScreenField findByPosition(int row, int col) {
+
+      return findByPosition(screen.getPos(row,col));
+   }
+
    public ScreenField[] getFields () {
+
       ScreenField[] fields = new ScreenField[sizeFields];
       for (int x = 0; x < sizeFields; x++) {
 
