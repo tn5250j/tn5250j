@@ -1296,6 +1296,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
                case CMD_SAVE_SCREEN:   // 0x02 2 Save Screen
                case 3:   // 0x03 3 Save Partial Screen
+//                  System.out.println("save screen partial");
                   saveScreen();
                   break;
 
@@ -1311,6 +1312,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
                case CMD_RESTORE_SCREEN:   // 0x12 18 Restore Screen
                case 13:   // 0x13 19 Restore Partial Screen
+                  System.out.println("restore screen partial");
                   restoreScreen();
                   break;
 

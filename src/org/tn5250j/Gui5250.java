@@ -4,7 +4,7 @@ package org.tn5250j;
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
- * @version 0.4
+ * @version 0.5
  *
  * Description:
  *
@@ -39,6 +39,7 @@ import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.KeyChangeListener;
+import org.tn5250j.scripting.InterpreterDriverManager;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
@@ -424,6 +425,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                sendScreenEMail();
             }
         };
+
       if (!keyMap.isKeyStrokeDefined(MNEMONIC_E_MAIL)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK);
       }
@@ -432,6 +434,22 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
       getInputMap().put(ks,MNEMONIC_E_MAIL);
       getActionMap().put(MNEMONIC_E_MAIL,e_mail );
+
+      Action runScript = new AbstractAction(MNEMONIC_RUN_SCRIPT) {
+            public void actionPerformed(ActionEvent e) {
+               runScript();
+            }
+        };
+
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_RUN_SCRIPT)) {
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_R,KeyEvent.ALT_MASK);
+      }
+      else {
+         ks = keyMap.getKeyStroke(MNEMONIC_RUN_SCRIPT);
+      }
+      getInputMap().put(ks,MNEMONIC_RUN_SCRIPT);
+      getActionMap().put(MNEMONIC_RUN_SCRIPT,runScript );
+
 //
 //         Action ohshit = new AbstractAction() {
 //               public void actionPerformed(ActionEvent e) {
@@ -1406,19 +1424,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
          macMenu.add(action);
          if (macros.isMacrosExist()) {
-
-            macMenu.addSeparator();
-
-            String[] macrosList = macros.getMacroList();
-            for (int x = 0; x < macrosList.length; x++) {
-               action = new AbstractAction(macrosList[x]) {
-                     public void actionPerformed(ActionEvent e) {
-                        executeMeMacro(e);
-                     }
-                 };
-               macMenu.add(action);
-
-            }
+            // this will add a sorted list of the macros to the macro menu
+            addMacros(macMenu);
          }
 
          popup.add(macMenu);
@@ -1498,6 +1505,34 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       popup.show(me.getComponent(),
                me.getX(),me.getY());
+
+   }
+
+   private void addMacros(JMenu menu) {
+
+      Vector mv = new Vector();
+      Action action;
+
+      menu.addSeparator();
+
+      String[] macrosList = macros.getMacroList();
+
+
+      for (int x = 0; x < macrosList.length; x++) {
+         mv.add(macrosList[x]);
+      }
+
+      Collections.sort(mv);
+
+      for (int x = 0; x < mv.size(); x++) {
+         action = new AbstractAction((String)mv.get(x)) {
+               public void actionPerformed(ActionEvent e) {
+                  executeMeMacro(e);
+               }
+           };
+         menu.add(action);
+
+      }
 
    }
 
@@ -1615,9 +1650,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void executeMeMacro(ActionEvent ae) {
 
       executeMeMacro(ae.getActionCommand());
-//      String keys = macros.getMacroByName(ae.getActionCommand());
-//      if (keys != null)
-//         screen.sendKeys(keys);
 
    }
 
@@ -1672,6 +1704,71 @@ public class Gui5250 extends JPanel implements ComponentListener,
             recordBuffer = new StringBuffer();
          }
       }
+   }
+
+   private void runScript () {
+
+         JPanel rsp = new JPanel();
+         rsp.setLayout(new BorderLayout());
+         JLabel jl = new JLabel("Enter script to run");
+         final JTextField rst = new JTextField();
+         rsp.add(jl,BorderLayout.NORTH);
+         rsp.add(rst,BorderLayout.CENTER);
+         Object[]      message = new Object[1];
+         message[0] = rsp;
+         String[] options = {"Run","Cancel"};
+
+         final JOptionPane pane = new JOptionPane(
+
+                message,                           // the dialog message array
+                JOptionPane.QUESTION_MESSAGE,      // message type
+                JOptionPane.DEFAULT_OPTION,        // option type
+                null,                              // optional icon, use null to use the default icon
+                options,                           // options string array, will be made into buttons//
+                options[0]);                       // option that should be made into a default button
+
+
+         // create a dialog wrapping the pane
+         final JDialog dialog = pane.createDialog(null, // parent frame
+                           "Run Script"  // dialog title
+                           );
+
+         // add the listener that will set the focus to
+         // the desired option
+         dialog.addWindowListener( new WindowAdapter() {
+            public void windowOpened( WindowEvent e) {
+               super.windowOpened( e );
+
+               // now we're setting the focus to the desired component
+               // it's not the best solution as it depends on internals
+               // of the OptionPane class, but you can use it temporarily
+               // until the bug gets fixed
+               // also you might want to iterate here thru the set of
+               // the buttons and pick one to call requestFocus() for it
+
+               rst.requestFocus();
+            }
+         });
+         dialog.show();
+
+         // now we can process the value selected
+         String value = (String)pane.getValue();
+
+         if (value.equals(options[0])) {
+            // send option along with system request
+            if (rst.getText().length() > 0) {
+               try {
+                  InterpreterDriverManager.executeScriptFile((Session)this,"scripts" +
+                        File.separatorChar + rst.getText());
+               }
+               catch (Exception ex) {
+                  System.err.println(ex);
+               }
+            }
+         }
+         getFocusForMe();
+
+
    }
 
    private void showHexMap() {

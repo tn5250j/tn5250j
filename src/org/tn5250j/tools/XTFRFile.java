@@ -128,6 +128,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
                   progressBar.setValue(len);
                   label.setText(LangTool.getString("xtfr.labelComplete"));
                   note.setText(getTransferredNote(len));
+                  monitor.setDone();
                   if (emailIt)
                      emailMe();
 
@@ -654,6 +655,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
     */
    private class ProgressOptionPane extends JOptionPane {
 
+      Object[] option;
+
       ProgressOptionPane(Object messageList,Object[] cancelOption) {
          super(messageList,
                JOptionPane.INFORMATION_MESSAGE,
@@ -661,8 +664,12 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
                null,
                cancelOption,
                null);
+         option = cancelOption;
       }
 
+      public void setDone() {
+//         option[0] = "Done";
+      }
 
       public int getMaxCharactersPerLineCount() {
          return 60;

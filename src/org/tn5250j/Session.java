@@ -26,6 +26,7 @@ import org.tn5250j.*;
 import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.scripting.InterpreterDriverManager;
 import java.util.*;
 import javax.swing.*;
 
@@ -143,7 +144,6 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
       Thread ct = new Thread(connectIt);
       ct.setDaemon(true);
       ct.start();
-//      fireSessionChanged(STATE_CONNECTED);
 
    }
 
@@ -151,7 +151,6 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
       connected = false;
       vt.disconnect();
-//      fireSessionChanged(STATE_DISCONNECTED);
 
    }
 
@@ -162,15 +161,15 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
     */
    protected void fireSessionChanged(int state) {
 
-   	if (listeners != null) {
-	      int size = listeners.size();
-	      for (int i = 0; i < size; i++) {
-	         SessionListener target =
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            SessionListener target =
                     (SessionListener)listeners.elementAt(i);
             sce.setState(state);
-	         target.onSessionChanged(sce);
-	      }
-   	}
+            target.onSessionChanged(sce);
+         }
+      }
    }
 
    /**

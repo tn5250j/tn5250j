@@ -252,6 +252,16 @@ public class ScreenFields implements TN5250jConstants {
 
    }
 
+   public ScreenField[] getFields () {
+      ScreenField[] fields = new ScreenField[sizeFields];
+      for (int x = 0; x < sizeFields; x++) {
+
+         fields[x] = screenFields[x];
+      }
+
+      return fields;
+   }
+
    public void gotoFieldNext() {
 
       // sanity check - we where getting null pointers after a restore of screen

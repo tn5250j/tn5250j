@@ -72,6 +72,7 @@ public class SendEMailDialog {
 
          Object[]      message = new Object[1];
          message[0] = semp;
+
          String[] options = {LangTool.getString("em.optSendLabel"),
                               LangTool.getString("em.optCancelLabel"),
                               LangTool.getString("em.optConfigureLabel")};

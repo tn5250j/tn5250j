@@ -36,7 +36,7 @@ public interface TN5250jConstants {
    static final int STATE_REMOVE   =  2;
 
    // SESSION Level key value pairs
-   public static final String SESSION_HOST        = "OS_OHIO_SESSION_HOST";
+   public static final String SESSION_HOST        = "SESSION_HOST";
    public static final String SESSION_HOST_PORT   =
                                              "SESSION_HOST_PORT";
    public static final String SESSION_NAME   =
@@ -127,6 +127,7 @@ public interface TN5250jConstants {
    public static final int CLOSE = 5011;
    public static final int TRANSFER = 5012;
    public static final int E_MAIL = 5013;
+   public static final int RUN_SCRIPT = 5014;
 
 
    // PF Keys
@@ -174,7 +175,7 @@ public interface TN5250jConstants {
         "[markright]","[dupfield]","[newline]","[jumpnext]","[jumpprev]",
         "[opennew]","[togcon]","[hotspots]","[gui]","[dspmsgs]",
         "[dspattr]","[print]","[cursor]","[debug]","[close]",
-        "[transfer]","[e-mail]"
+        "[transfer]","[e-mail]","[runscript]"
    };
 
    public static final int mnemonicValue[] = {
@@ -196,7 +197,7 @@ public interface TN5250jConstants {
         1041, 1042, 1043, 5000, 5001,
         5002, 5003, 5004, 5005, 5006,
         5007, 5008, 5009, 5010, 5011,
-        5012, 5013
+        5012, 5013, 5014
    };
 
    public static final String MNEMONIC_CLEAR   =  "[clear]";
@@ -289,6 +290,7 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_COPY   =  "[copy]";
    public static final String MNEMONIC_PASTE   =  "[paste]";
    public static final String MNEMONIC_FILE_TRANSFER   =  "[transfer]";
+   public static final String MNEMONIC_RUN_SCRIPT   =  "[runscript]";
 
 
    // AID-Generating Keys

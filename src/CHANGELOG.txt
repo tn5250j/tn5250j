@@ -43,6 +43,13 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+25/07/2002  Add the macros in ascending order.  This and the session sorting
+            have been needed for a long time.  Thanks Roy for the request.
+
+            Added new italian translations from Maurizio.  Thanks
+
+24/07/2002  Added a sorted session table to the connection screen.
+
 23/07/2002  Added all predefined short cuts to a short cuts menu off of the
             keyboard menu item.
 
