@@ -168,11 +168,7 @@ public class ScreenFields implements TN5250jConstants {
 
       sizeFields++;
 
-
-      // set the field id if it is not a bypass field
-      // this is used for cursor progression
-      if (!sf.isBypassField())
-         sf.setFieldId(++fieldIds);
+      sf.setFieldId(++fieldIds);
 
       // check if the cursor progression field flag should be set.
 //      if ((fcw1 & 0x88) == 0x88)
