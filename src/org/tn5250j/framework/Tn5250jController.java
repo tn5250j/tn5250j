@@ -188,9 +188,9 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 	}
 
 	public void handleEvent(Tn5250jEvent e) {
-		log.info("Received event: " + e.getClass().toString());
+		log.debug("Received event: " + e.getClass().toString());
 		if (e instanceof Tn5250jKeyEvents) {
-			log.info("Keys: " + ((Tn5250jKeyEvents) e).getKeystrokes());
+			log.debug("Keys: " + ((Tn5250jKeyEvents) e).getKeystrokes());
 		}
 		eventList.add(e);
 		synchronized (eventList) {
