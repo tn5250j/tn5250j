@@ -67,8 +67,6 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
          }
       }
 
-      rb.append ('\n');
-
       fout.println(rb);
 
    }
@@ -79,27 +77,18 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
    public void writeHeader(String fileName, String host,
                                  ArrayList ffd, char decChar) {
 
-      try {
-
-         FileFieldDef f;
-         StringBuffer sb = new StringBuffer();
-         //  loop through each of the fields and write out the field name for
-         //    each selected field
-         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef)ffd.get(x);
-            if (f.isWriteField()) {
-               sb.append(f.getFieldName() + delimiter);
-            }
+      FileFieldDef f;
+      StringBuffer sb = new StringBuffer();
+      //  loop through each of the fields and write out the field name for
+      //    each selected field
+      for (int x = 0; x < ffd.size(); x++) {
+         f = (FileFieldDef)ffd.get(x);
+         if (f.isWriteField()) {
+            sb.append(f.getFieldName() + delimiter);
          }
-
-         fout.write (sb.toString().getBytes());
-         fout.write ('\n');
-
       }
-      catch (IOException ioe) {
 
-//         printFTPInfo(" error writing header " + ioe.getMessage());
-      }
+      fout.println (sb.toString().toCharArray());
    }
 
 

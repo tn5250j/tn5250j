@@ -29,8 +29,6 @@ import javax.swing.*;
 public class FixedWidthOutputFilter implements OutputFilterInterface {
 
    PrintStream fout = null;
-//   String delimiter = ",";
-//   String stringQualifier = "\"";
    StringBuffer sb = new StringBuffer();
 
    // create instance of file for output
@@ -47,7 +45,6 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
       FileFieldDef f;
 
       // write out the html record information for each field that is selected
-
       for (int x = 0; x < ffd.size(); x++) {
          f = (FileFieldDef)ffd.get(x);
          if (f.isWriteField()) {
@@ -57,12 +54,9 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
 
                case 'P':
                case 'S':
-//                  rb.append(f.parseData(cByte).trim() + delimiter);
                   rb.append(getFixedLength(cByte,f));
                   break;
                default:
-//                  rb.append(stringQualifier + f.parseData(cByte).trim() + stringQualifier + delimiter);
-//                  rb.append(f.parseData(cByte));
                   rb.append(getFixedLength(cByte,f));
                   break;
 
@@ -70,12 +64,17 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
          }
       }
 
-      rb.append ('\n');
-
       fout.println(rb);
 
    }
 
+   /**
+    * Return the field in fixed width field.
+    *
+    * @param cByte
+    * @param f
+    * @return
+    */
    private String getFixedLength(byte[] cByte,FileFieldDef f) {
 
       sb.setLength(0);
@@ -84,13 +83,12 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
 
          case 'P':
          case 'S':
-   //                  rb.append(f.parseData(cByte).trim() + delimiter);
             sb.append(f.parseData(cByte));
+            formatNumeric(sb);
             while (sb.length() < f.getFieldLength())
                sb.insert(0,' ');
             break;
          default:
-   //                  rb.append(stringQualifier + f.parseData(cByte).trim() + stringQualifier + delimiter);
             sb.append(f.parseData(cByte));
             while (sb.length() < f.getFieldLength())
                sb.append(' ');
@@ -103,33 +101,70 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
 
    }
 
+   private void formatNumeric(StringBuffer sb) {
+
+      if (sb.length() == 0) {
+         sb.append('0');
+         return;
+      }
+
+      int len = sb.length();
+      int counter = 0;
+      boolean done = false;
+      boolean neg = false;
+
+      while (!done && counter < len) {
+
+         switch (sb.charAt(counter)) {
+
+            case '0':
+            case '+':
+            case ' ':
+               sb.setCharAt(counter,' ');
+               break;
+            case '-' :
+               sb.setCharAt(counter,' ');
+               neg = true;
+               break;
+            default :
+               done = true;
+               break;
+         }
+
+         if (!done)
+            counter++;
+      }
+
+      if (counter > 0)
+         counter--;
+
+      if (neg)
+         sb.setCharAt(counter,'-');
+
+      if (sb.length() == 0) {
+         sb.append('0');
+      }
+
+   }
+
    /**
     * Write the html header of the output file
     */
    public void writeHeader(String fileName, String host,
                                  ArrayList ffd, char decChar) {
 
-      try {
-
-         FileFieldDef f;
-         StringBuffer sb = new StringBuffer();
-         //  loop through each of the fields and write out the field name for
-         //    each selected field
-         for (int x = 0; x < ffd.size(); x++) {
-            f = (FileFieldDef)ffd.get(x);
-            if (f.isWriteField()) {
-               sb.append(f.getFieldName());
-            }
-         }
-
-         fout.write (sb.toString().getBytes());
-         fout.write ('\n');
-
-      }
-      catch (IOException ioe) {
-
-//         printFTPInfo(" error writing header " + ioe.getMessage());
-      }
+//      FileFieldDef f;
+//      StringBuffer sb = new StringBuffer();
+//      //  loop through each of the fields and write out the field name for
+//      //    each selected field
+//      for (int x = 0; x < ffd.size(); x++) {
+//         f = (FileFieldDef)ffd.get(x);
+//         if (f.isWriteField()) {
+//            sb.append(f.getFieldName());
+//         }
+//      }
+//
+//      fout.println (sb.toString().toCharArray());
    }
 
 
@@ -149,7 +184,6 @@ public class FixedWidthOutputFilter implements OutputFilterInterface {
 
    public void setCustomProperties() {
 
-//      new DelimitedDialog(new JFrame());
    }
 
 }
