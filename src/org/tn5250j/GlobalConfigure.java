@@ -58,9 +58,7 @@ public class GlobalConfigure extends ConfigureFactory {
    static final public String MACROS = "macros";
    static final public String KEYMAP = "keymap";
 
-   static final private String settingsFile = 
-   System.getProperty("user.home") + File.separator + ".tn5250j" + 
-   File.separator + "tn5250jstartup.cfg";
+   static final private String settingsFile = "tn5250jstartup.cfg";
 
    /**
     * The constructor is made protected to allow overriding.
@@ -136,44 +134,59 @@ public class GlobalConfigure extends ConfigureFactory {
     */
    private void loadSettings() {
 
-      FileInputStream in = null;
-      settings = new Properties();
+       FileInputStream in = null;
+       FileInputStream again = null;
+       settings = new Properties();
 
-      // here we will check for a system property is provided first.
-      if (System.getProperties().containsKey("emulator.settingsDirectory")) {
-         settings.setProperty("emulator.settingsDirectory",
-                                 System.getProperty("emulator.settingsDirectory") +
-                                 File.separator);
-         checkDirs();
-      }
-      else {
-
-         try {
-            in = new FileInputStream(settingsFile);
-            settings.load(in);
-            checkLegacy();
-
-         }
-         catch (FileNotFoundException fnfe) {
-
-            System.out.println(" Information Message: " + fnfe.getMessage()
-                              + ".  The file " + settingsFile + " will"
-                              + " be created for first time use.");
-            checkLegacy();
-            saveSettings();
-         }
-         catch (IOException ioe) {
-            System.out.println("IO Exception accessing File " + settingsFile
-                                 + " for the following reason : "
-                                 + ioe.getMessage());
-         }
-         catch (SecurityException se) {
-            System.out.println("Security Exception for file " + settingsFile
-                                 + "  This file can not be "
-                                 + "accessed because : " + se.getMessage());
-         }
-      }
-   }
+       // here we will check for a system property is provided first.
+       if (System.getProperties().containsKey("emulator.settingsDirectory")) {
+           settings.setProperty("emulator.settingsDirectory",
+           System.getProperty("emulator.settingsDirectory") +
+           File.separator);
+           checkDirs();
+       }
+       else {
+           try {
+               in = new FileInputStream(settingsFile);
+               settings.load(in);
+           }
+           catch (FileNotFoundException fnfe) {
+               try {
+                   again = new FileInputStream(System.getProperty("user.home") 
+                   + File.separator + ".tn5250j" + File.separator 
+                   + settingsFile); 
+                   settings.load(again); 
+               }
+               catch (FileNotFoundException fnfea) {
+                   System.out.println(" Information Message: " 
+                   + fnfea.getMessage() + ".  The file " + settingsFile 
+                   + " will be created for first time use.");
+                   checkLegacy();
+                   saveSettings();
+               }
+               catch (IOException ioea) {
+                   System.out.println("IO Exception accessing File " 
+                   + settingsFile + " for the following reason : "
+                   + ioea.getMessage());
+               }
+               catch (SecurityException sea) {
+                   System.out.println("Security Exception for file " 
+                   + settingsFile + "  This file can not be "
+                   + "accessed because : " + sea.getMessage());
+               }
+           }
+           catch (IOException ioe) {
+               System.out.println("IO Exception accessing File " 
+               + settingsFile + " for the following reason : "
+               + ioe.getMessage());
+           }
+           catch (SecurityException se) {
+               System.out.println("Security Exception for file " 
+               + settingsFile + "  This file can not be "
+               + "accessed because : " + se.getMessage());
+           }
+       }
+    }
 
    private void checkDirs() {
       // we now check to see if the settings directory is a directory.  If not then we create it
@@ -189,8 +202,6 @@ public class GlobalConfigure extends ConfigureFactory {
       // SESSIONS is declared as a string, so we just can use the keyword here.
       if(ses.exists()) {
           int cfc;
-          settings.setProperty("emulator.settingsDirectory", 
-          System.getProperty("user.dir") + File.separator);
           cfc = JOptionPane.showConfirmDialog(null, 
           "Dear User,\n\n" +
           "Seems you are using an old version of tn5250j.\n" +
@@ -219,8 +230,8 @@ public class GlobalConfigure extends ConfigureFactory {
               "You choosed not to copy the file.\n" +
               "This means the program will end here.\n\n" +
               "To use this NON-STANDARD behaviour start tn5250j\n" +
-              "with the -Duser.home=<your home dir> parameter\n" +
-              "to avoid this question popping up all the time.",
+              "with -Demulator.settingsDirectory=<settings-dir> \n" +
+              "as a parameter to avoid this question all the time.",
               "Using NON-STANDARD behaviour", JOptionPane.WARNING_MESSAGE);
               System.exit(0);
           }
