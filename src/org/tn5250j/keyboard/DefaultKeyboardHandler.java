@@ -47,11 +47,11 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 
    public boolean isKeyStrokeDefined(String accelKey) {
 
-      return keyMap.isKeyStrokeDefined(accelKey);
+      return KeyMapper.isKeyStrokeDefined(accelKey);
    }
 
    public KeyStroke getKeyStroke(String accelKey) {
-      return keyMap.getKeyStroke(accelKey);
+      return KeyMapper.getKeyStroke(accelKey);
    }
 
     /*
@@ -183,7 +183,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 //      displayInfo(e,"Pressed " + keyProcessed);
       int keyCode = e.getKeyCode();
 
-      if (isLinux && keyCode == e.VK_ALT_GRAPH) {
+      if (isLinux && keyCode == KeyEvent.VK_ALT_GRAPH) {
 
          isAltGr = true;
       }
@@ -196,10 +196,10 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 //         return;
 //      }
 
-      if (      keyCode == e.VK_CAPS_LOCK ||
-            keyCode == e.VK_SHIFT ||
-            keyCode == e.VK_ALT ||
-            keyCode == e.VK_ALT_GRAPH
+      if (      keyCode == KeyEvent.VK_CAPS_LOCK ||
+            keyCode == KeyEvent.VK_SHIFT ||
+            keyCode == KeyEvent.VK_ALT ||
+            keyCode == KeyEvent.VK_ALT_GRAPH
          ) {
 //         displayInfo(e,"Pressed ");
 
@@ -216,9 +216,9 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       }
 
       if (isLinux)
-         lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
+         lastKeyStroke = KeyMapper.getKeyStrokeText(e,isAltGr);
       else
-         lastKeyStroke = keyMap.getKeyStrokeText(e);
+         lastKeyStroke = KeyMapper.getKeyStrokeText(e);
 
       //System.out.println("lastKeyStroke " + lastKeyStroke);
 
@@ -300,7 +300,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
    private void processVTKeyReleased(KeyEvent e){
 
 
-      if (isLinux && e.getKeyCode() == e.VK_ALT_GRAPH) {
+      if (isLinux && e.getKeyCode() == KeyEvent.VK_ALT_GRAPH) {
 
          isAltGr = false;
       }
@@ -310,7 +310,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 
 //      displayInfo(e,"Released " + keyProcessed);
 
-      String s = keyMap.getKeyStrokeText(e);
+      String s = KeyMapper.getKeyStrokeText(e);
 
       if (s != null) {
 

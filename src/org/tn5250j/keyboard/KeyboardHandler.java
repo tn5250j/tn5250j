@@ -64,9 +64,9 @@ public abstract class KeyboardHandler extends KeyAdapter implements
       }
 
       keyMap = new KeyMapper();
-      keyMap.init();
+      KeyMapper.init();
 
-      keyMap.addKeyChangeListener(this);
+      KeyMapper.addKeyChangeListener(this);
 
       // initialize the keybingings of the components InputMap
       initKeyBindings();

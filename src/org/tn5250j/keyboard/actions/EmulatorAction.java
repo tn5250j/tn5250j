@@ -55,19 +55,19 @@ public abstract class EmulatorAction extends AbstractAction {
 
    protected void setKeyStroke(String action, KeyStroke ks, KeyMapper keyMap) {
 
-      if (keyMap.isKeyStrokeDefined(action)) {
+      if (KeyMapper.isKeyStrokeDefined(action)) {
 //         ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
 //      }
 //      else {
-         ks = keyMap.getKeyStroke(action);
+         ks = KeyMapper.getKeyStroke(action);
       }
 
       session.getInputMap().put(ks,action);
       session.getActionMap().put(action, this );
 
       // check for alternate
-      if (keyMap.isKeyStrokeDefined(action + ".alt2")) {
-         ks = keyMap.getKeyStroke(action + ".alt2");
+      if (KeyMapper.isKeyStrokeDefined(action + ".alt2")) {
+         ks = KeyMapper.getKeyStroke(action + ".alt2");
          session.getInputMap().put(ks,action);
          session.getActionMap().put(action,this );
       }
