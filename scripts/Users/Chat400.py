@@ -1,6 +1,6 @@
 ######################################################################
 #                              chat400                               #
-# Code : PR MOORE jorjun@mac.com				     #
+# Code : PR MOORE jorjun@mac.com                                     #
 # Interface : Patrick Bielen                                         #
 # ================================================================== #
 # Functionality : Script to send/receive messages to '400 users      #
@@ -56,9 +56,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         try:
             self.srvNam = _session.getHostName()
         except:
-            self.srvNam = "as400.stafa.nl"
-            # self.srvNam = "195.173.245.207"
-            # self.srvNam = "v400y.virtual400.net"
+            self.srvNam = ""
         self.as400 = acc.AS400(self.srvNam)
         self.jobLst = rsc.RJobList(self.as400)
         self.jobLst.setSelectionValue(rsc.RJobList.PRIMARY_JOB_STATUSES, \
@@ -123,7 +121,6 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         try:
             dq.write(sndUsr, "%s::%s"%(curUsr, chatTxt) )
             if not curUsr == sndUsr:
-                #self.rpyTxt.append("[%s]>>%s\n"%(curUsr, chatTxt) , 0 )
                 self.rpyTxt.append("[%s]>>%s\n"%(curUsr, chatTxt))
                 self.rpyTxt.setCaretPosition( len(self.rpyTxt.getText()) )
             self.statusTxt.text='Message send successfull'
