@@ -25,10 +25,13 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
 
    static {
       // the inizialization is being done in the startup program
-//      Properties props = new Properties();
-//      props.setProperty("python.path", ".;jt400.jar");
-//      PythonInterpreter.initialize(System.getProperties(), props,
-//                        new String[] {""});
+      //      Properties props = new Properties();
+      //      props.setProperty("python.path", ".;jt400.jar");
+      //      PythonInterpreter.initialize(System.getProperties(), props,
+      //                        new String[] {""});
+      System.setProperty("python.cachedir", 
+      System.getProperty("user.home") + File.separator + ".tn5250j" + 
+      File.separator);
       _instance = new JPythonInterpreterDriver();
       InterpreterDriverManager.registerDriver(_instance);
    }
