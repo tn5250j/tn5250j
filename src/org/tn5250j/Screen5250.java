@@ -47,7 +47,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		ActionListener {
 
 	private ScreenFields screenFields;
-	private int errorLineNum;
 	public Font font;
 	private int lastAttr;
 	private int lastRow;
@@ -105,7 +104,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private String bufferedKeys;
 	private boolean updateFont;
 	public boolean pendingInsert = false;
-	private Gui5250 gui;
+	protected Gui5250 gui;
 	protected int cursorSize = 0;
 	private boolean hotSpots = false;
 	private boolean showHex = false;
@@ -229,7 +228,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		restriction = new Rectangle(0, 0);
 
-		errorLineNum = numRows;
 		updateCursorLoc = false;
 		FontRenderContext frc = new FontRenderContext(font.getTransform(),
 				true, true);
@@ -283,7 +281,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //			screen[y].setCharAndAttr(' ', initAttr, false);
 //			screen[y].setRowCol(getRow(y), getCol(y));
 //		}
-		errorLineNum = numRows;
 
       planes.setSize(rows);
 
@@ -4675,10 +4672,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public void setErrorLine(int line) {
 
-		if (line == 0 || line > numRows)
-			errorLineNum = numRows;
-		else
-			errorLineNum = line;
+		planes.setErrorLine(line);
 	}
 
 	/**
@@ -4687,27 +4681,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * @return current error line number
 	 */
 	public int getErrorLine() {
-		return errorLineNum;
+		return planes.getErrorLine();
 	}
 
 	/**
 	 * Saves off the current error line characters to be used later.
 	 *
 	 */
-	public void saveErrorLine() {
-//		// if there is already an error line saved then do not save it again
-//		//  This signifies that there was a previous error and the original error
-//		//  line was not restored yet.
-//		if (errorLine == null) {
-//			errorLine = new ScreenChar[numCols];
-//			int r = getPos(errorLineNum - 1, 0);
-//
-//			for (int x = 0; x < numCols; x++) {
-//				errorLine[x] = new ScreenChar(this);
-//				errorLine[x].setCharAndAttr(screen[r + x].getChar(), screen[r
-//						+ x].getCharAttr(), false);
-//			}
-//		}
+	protected void saveErrorLine() {
       planes.saveErrorLine();
 	}
 
@@ -4716,11 +4697,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 *
 	 * @see #saveErrorLine()
 	 */
-	public void restoreErrorLine() {
+	protected void restoreErrorLine() {
 
 		if (planes.isErrorLineSaved()) {
          planes.restoreErrorLine();
-         int y = fmHeight * planes.getErrorLine();
+         int y = fmHeight * (planes.getErrorLine()-1);
 			updateImage(0, y, bi.getWidth(), fmHeight);
 		}
 	}
@@ -4859,7 +4840,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		return bi.getDrawingArea();
 	}
 
-	protected synchronized void updateImage(int x, int y, int width, int height) {
+	protected void updateImage(int x, int y, int width, int height) {
 
 		if (gg2d == null) {
 			//System.out.println("was null");

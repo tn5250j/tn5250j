@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.font.*;
+import javax.swing.JPanel;
 
 import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.ScreenListener;
@@ -210,8 +211,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       	int row = screen.getRow(screen.getLastPos());
       	int col = screen.getCol(screen.getLastPos());
 
-      	int fmHeight = rowHeight;
-      	int fmWidth = columnWidth;
       	int botOffset = screen.cursorBottOffset;
       	int cursorSize = screen.cursorSize;
       	boolean insertMode = screen.insertMode;
@@ -577,6 +576,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                      - (screen.lm.getLeading() + screen.lm.getDescent());
                g2d.setColor(screen.colorYellow);
                g2d.drawString("KB", (float) kbArea.getX(), Y);
+               
                screen.updateImage(kbArea.getBounds());
                g2d.dispose();
             }
@@ -716,11 +716,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
    protected class Data {
 
 
-      public Data(char[] text, char[] color, char[] extended) {
+      public Data(char[] text, char[] attr, char[] color, char[] extended, char[] graphic) {
          this.text = text;
          this.color = color;
          this.extended = extended;
-         this.graphic = null;
+         this.graphic = graphic;
+         this.attr = attr;
          this.field = null;
       }
 
@@ -731,17 +732,20 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
          endCol++;
          int size = ((endCol - startCol) + 1) * ((endRow - startRow) +1);
          text = new char[size];
+         attr = new char[size];
          color = new char[size];
          extended =new char[size];
          graphic = new char[size];
          field = null;
          screen.GetScreenRect(text, size, startRow, startCol, endRow, endCol, PLANE_TEXT);
+         screen.GetScreenRect(attr, size, startRow, startCol, endRow, endCol, PLANE_ATTR);
          screen.GetScreenRect(color, size, startRow, startCol, endRow, endCol, PLANE_COLOR);
          screen.GetScreenRect(extended, size, startRow, startCol, endRow, endCol, PLANE_EXTENDED);
          screen.GetScreenRect(graphic, size, startRow, startCol, endRow, endCol, PLANE_EXTENDED_GRAPHIC);
       }
 
       public char[] text;
+      public char[] attr;
       public char[] color;
       public char[] extended;
       public final char[] graphic;
@@ -775,7 +779,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       ScreenPlanes planes = s.planes;
 
 //      int attr = planes.getCharAttr(pos);
-      int attr = planes.getCharAttr(s.getPos(row,col));
+      int attr = updateRect.attr[pos];
       sChar[0] = updateRect.text[pos];
       setDrawAttr(pos);
       boolean attributePlace = planes.isAttributePlace(s.getPos(row,col));

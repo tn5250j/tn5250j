@@ -38,9 +38,9 @@ public class ScreenPlanes implements TN5250jConstants {
    private static final char initChar = 0;
 
    protected char[] screen;   // text plane
-   protected int[] screenAttr;   // attribute plane
+   protected char[] screenAttr;   // attribute plane
    protected char[] screenGUI;   // gui plane
-   protected boolean[] screenIsAttr;
+   protected char[] screenIsAttr;
    protected char[] fieldExtended;
    protected char[] screenField;
    protected char[] screenColor;   // color plane
@@ -48,8 +48,8 @@ public class ScreenPlanes implements TN5250jConstants {
    protected boolean[] screenIsChanged;
 
    protected char[] errorLine;
-   protected int[] errorLineAttr;
-   protected boolean[] errorLineIsAttr;
+   protected char[] errorLineAttr;
+   protected char[] errorLineIsAttr;
 
    public ScreenPlanes(Screen5250 s5250, int size) {
 
@@ -79,8 +79,8 @@ public class ScreenPlanes implements TN5250jConstants {
 
       screenSize = numRows * numCols;
       screen = new char[screenSize];
-      screenAttr = new int[screenSize];
-      screenIsAttr = new boolean[screenSize];
+      screenAttr = new char[screenSize];
+      screenIsAttr = new char[screenSize];
       screenGUI = new char[screenSize];
       screenColor = new char[screenSize];
       screenExtended = new char[screenSize];
@@ -119,8 +119,8 @@ public class ScreenPlanes implements TN5250jConstants {
       //  line was not restored yet.
       if (errorLine == null) {
          errorLine = new char[numCols];
-         errorLineAttr = new int[numCols];
-         errorLineIsAttr = new boolean[numCols];
+         errorLineAttr = new char[numCols];
+         errorLineIsAttr = new char[numCols];
 
          int r = scr.getPos(errorLineNum-1,0);
 
@@ -145,7 +145,8 @@ public class ScreenPlanes implements TN5250jConstants {
 			for (int x = 0; x < numCols - 1; x++) {
 //				screen[r + x].setCharAndAttr(errorLine[x].getChar(),
 //						errorLine[x].getCharAttr(), false);
-            this.setScreenCharAndAttr(r+x,errorLine[x],errorLineAttr[x],errorLineIsAttr[x]);
+            setScreenCharAndAttr(r+x,errorLine[x],errorLineAttr[x],
+                  					(errorLineIsAttr[x] == '1' ? true : false));
 			}
 			errorLine = null;
 			errorLineAttr = null;
@@ -154,23 +155,23 @@ public class ScreenPlanes implements TN5250jConstants {
 	}
 
    protected boolean isErrorLineSaved() {
-      return errorLine == null ? true : false;
+      return errorLine == null ? false : true;
    }
 
    protected void setScreenCharAndAttr(int pos, char c, int attr, boolean isAttr) {
 
       screen[pos] = c;
-      screenAttr[pos] = attr;
+      screenAttr[pos] = (char)attr;
       disperseAttribute(pos,attr);
-      screenIsAttr[pos] = isAttr;
+      screenIsAttr[pos] = (isAttr ? '1' : '0');
       screenGUI[pos] = initChar;
 
    }
 
    protected void setScreenAttr(int pos, int attr, boolean isAttr) {
 
-      screenAttr[pos] = attr;
-      screenIsAttr[pos] = isAttr;
+      screenAttr[pos] = (char)attr;
+      screenIsAttr[pos] = isAttr ? '1' : '0';
       disperseAttribute(pos,attr);
       screenGUI[pos] = initChar;
 
@@ -178,7 +179,7 @@ public class ScreenPlanes implements TN5250jConstants {
 
    protected void setScreenAttr(int pos, int attr) {
 
-      screenAttr[pos] = attr;
+      screenAttr[pos] = (char)attr;
       screenGUI[pos] = initChar;
       disperseAttribute(pos,attr);
 
@@ -189,7 +190,7 @@ public class ScreenPlanes implements TN5250jConstants {
       //      if (isChanged)
       //         System.out.println(sChar[0] + " - " + c);
       screen[pos] = c;
-      if (screenIsAttr[pos])
+      if (screenIsAttr[pos] == '1')
          setScreenCharAndAttr(pos,c,32,false);
 
    }
@@ -203,7 +204,7 @@ public class ScreenPlanes implements TN5250jConstants {
    }
 
    protected final boolean isAttributePlace(int pos) {
-      return screenIsAttr[pos];
+      return screenIsAttr[pos] == '1' ? true : false;
    }
 
    public final void setUseGUI(int pos, int which) {
@@ -260,6 +261,9 @@ public class ScreenPlanes implements TN5250jConstants {
       switch (plane) {
          case PLANE_TEXT:
             System.arraycopy(screen, from, planeChars, 0, len);
+            break;
+         case PLANE_ATTR:
+            System.arraycopy(screenAttr, from, planeChars, 0, len);
             break;
          case PLANE_COLOR:
 //            fillColorPlane(planeChars,from,len);
@@ -330,176 +334,6 @@ public class ScreenPlanes implements TN5250jConstants {
 
    }
 
-   private void fillColorPlane(char[] plane,int start,int len) {
-
-      for (int x = 0; x < len; x++ ) {
-         if (screenIsAttr[start + x])
-            plane[x] = '\u0000';
-         else
-            plane[x] = getColorPlaneCode(screenAttr[start+x]);
-
-      }
-
-
-   }
-
-   private char getColorPlaneCode(int cpc) {
-
-
-      char c = '\u0000';
-
-//      switch (cpc) {
-//         case 32:  // green/normal
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_GREEN & 0xff);
-//            break;
-//
-//         case 33: // green/revers
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_GREEN << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//            break;
-//
-//         case 34: // white normal
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_WHITE & 0xff);
-//
-//            break;
-//
-//         case 35: // white/reverse
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_WHITE << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 36: // green/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_GREEN & 0xff);
-//            break;
-//
-//         case 37: // green/reverse/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_GREEN << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//            break;
-//
-//         case 38: // white/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_WHITE & 0xff);
-//            break;
-//
-//         case 40:
-//         case 42: // red/normal
-//         case 44:
-//         case 46: // red/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_RED & 0xff);
-//            break;
-//
-//         case 41:
-//         case 43: // red/reverse
-//         case 45: // red/reverse
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_RED << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 48:  // turquoise
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_CYAN & 0xff);
-//            break;
-//
-//         case 49:  // turquoise/reverse
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_CYAN << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 50:  // yellow
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_YELLOW & 0xff);
-//
-//            break;
-//
-//         case 51: // yellow/reverse
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_YELLOW << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 52:  // turquoise/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_CYAN & 0xff);
-//            break;
-//
-//         case 53:  // turquoise/underline/reverse
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_CYAN << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 54:  // yellow
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_YELLOW & 0xff);
-//
-//            break;
-//
-//         case 56: // pink
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_MAGENTA & 0xff);
-//
-//            break;
-//
-//         case 57: // pink/reverse
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_MAGENTA << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 58: // blue
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLUE & 0xff);
-//
-//            break;
-//
-//         case 59: // blue
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLUE << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 60: // pink/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_MAGENTA & 0xff);
-//
-//            break;
-//
-//         case 61: // pink/reverse/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_MAGENTA << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//            break;
-//
-//         case 62: // blue/underline
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLUE & 0xff);
-//            break;
-//
-//         default:
-//            c = (OhioConstants.OS_OHIO_COLOR_BG_BLACK << 8 & 0xff00) |
-//            (OhioConstants.OS_OHIO_COLOR_FG_BLACK & 0xff);
-//
-//      }
-
-      return c;
-   }
-
-   private void fillExtendedGraphicPlane(char[] plane,int start,int len) {
-
-      for (int x = 0; x < len; x++ ) {
-         plane[x] = (char)screenGUI[start + x];
-      }
-
-
-   }
 
    private void fillExtendedFieldPlane(char[] plane,int start,int len) {
 
