@@ -725,7 +725,14 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             bos = PdfWriter.getInstance(document,fw);
 
             BaseFont bf = BaseFont.createFont("Courier", "Cp1252", false);
-            font = new com.lowagie.text.Font(bf, 9, com.lowagie.text.Font.NORMAL);
+
+            float size = 9.0f;
+
+            if (fontSize.getText().length() > 0) {
+               size = Float.valueOf(fontSize.getText()).floatValue();
+            }
+
+            font = new com.lowagie.text.Font(bf, size, com.lowagie.text.Font.NORMAL);
 
             if (author.getText().length() > 0)
                document.addAuthor(author.getText());
