@@ -31,12 +31,16 @@ import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -49,6 +53,7 @@ import javax.swing.JTextField;
 import org.tn5250j.Screen5250;
 import org.tn5250j.Session;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
@@ -69,6 +74,8 @@ public class SendEMailDialog {
 	GridBagConstraints gbc;
 	JRadioButton normal;
 	JRadioButton screenshot;
+	JButton browse;
+	
 
 	/**
 	 * Constructor to send the screen information
@@ -126,7 +133,8 @@ public class SendEMailDialog {
 							sem.setMessage(bodyText.getText());
 
 						if (attachmentName.getText().length() > 0)
-							sem.setAttachmentName(attachmentName.getText());
+							//sem.setAttachmentName(attachmentName.getText());
+							sem.setAttachmentName(fileName);
 
 						if (text.isSelected()) {
 
@@ -168,10 +176,15 @@ public class SendEMailDialog {
 									session,
 									f);
 								sem.setFileName(f.getName());
-							} catch (Exception ex) {
+							} 
+							catch (Exception ex) {
 								System.out.println(ex.getMessage());
 							}
-
+														
+						}
+						else if (attachmentName.getText().length() > 0) {
+							File f = new File(attachmentName.getText());
+							sem.setFileName(f.toString());
 						}
 
 						// send the information
@@ -397,20 +410,28 @@ public class SendEMailDialog {
 			}
 		}
 		
+		browse = new JButton(LangTool.getString("em.choosefile"));
+		browse.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				browse_actionPerformed(e);
+			}
+		});
+		
+		semp.setBorder(BorderFactory.createEtchedBorder());
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(0, 10, 5, 5);
+		gbc.insets = new Insets(5, 10, 5, 5);
 		semp.add(tom, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(0, 15, 5, 5);
+		gbc.insets = new Insets(5, 15, 5, 5);
 		semp.add(normal, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2; gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(0, 45, 5, 10);
+		gbc.insets = new Insets(5, 45, 5, 10);
 		semp.add(screenshot, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 1;
@@ -471,25 +492,42 @@ public class SendEMailDialog {
 		gbc.gridx = 1; gbc.gridy = 7;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 10);		
+		gbc.insets = new Insets(5, 5, 5, 5);		
 		semp.add(attachmentName, gbc);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 1; gbc.gridy = 8;
+		gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.insets = new Insets(5, 5, 10, 10);		
+		semp.add(browse, gbc);		
 
 		return semp;
 
+	}
+	
+	private void browse_actionPerformed(ActionEvent e) {
+		String workingDir = System.getProperty("user.dir");
+		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+
+		int ret = pcFileChooser.showOpenDialog(new JFrame());
+
+		// check to see if something was actually chosen
+		if (ret == JFileChooser.APPROVE_OPTION) {
+		   File file = pcFileChooser.getSelectedFile();
+		   fileName = file.getName();
+		   attachmentName.setText(file.toString());
+		}
 	}
 
 	private void setAttachmentName() {
 
 		if (text.isSelected()) {
 			attachmentName.setText("tn5250j.txt");
-
 		} 
-		else if (normal.isSelected()) {
-			attachmentName.setText("tn5250j.png");
-		}
 		else {
 			attachmentName.setText("tn5250j.png");
 		}
+		browse.setEnabled(false);
 	}
 	
 	private void setTypeOfMail() {
@@ -497,12 +535,14 @@ public class SendEMailDialog {
 			text.setEnabled(false);
 			graphic.setEnabled(false);
 			attachmentName.setText("");
+			browse.setEnabled(true);
 		}
 		else {
 			text.setEnabled(true);
 			graphic.setEnabled(true);
 			text.setSelected(true);
 			setAttachmentName();
+			browse.setEnabled(false);
 		}
 	}
 

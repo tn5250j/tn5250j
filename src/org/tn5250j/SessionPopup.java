@@ -370,6 +370,15 @@ public class SessionPopup implements TN5250jConstants {
          JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
          popup.add(sendMenu);
 
+		action = new AbstractAction(LangTool.getString("popup.quickmail")) {
+					   public void actionPerformed(ActionEvent e) {
+						  sendScreenEMail();
+						 session.getFocusForMe();
+					   }
+				   };
+
+		sendMenu.add(action);
+
 
          action = new AbstractAction(LangTool.getString("popup.email")) {
                public void actionPerformed(ActionEvent e) {
