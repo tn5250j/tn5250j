@@ -425,6 +425,66 @@ public interface TN5250jConstants {
    public static final int EXTENDED_5250_COL_SEP   =  0x02;
    public static final int EXTENDED_5250_NON_DSP   =  0x01;
 
+   public static final char ATTR_32 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_GREEN & 0xff);
+   public static final char ATTR_33 = (COLOR_BG_GREEN << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_34 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_WHITE & 0xff);
+   public static final char ATTR_35 = (COLOR_BG_WHITE << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_36 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_GREEN & 0xff);
+   public static final char ATTR_37 = (COLOR_BG_GREEN << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_38 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_WHITE & 0xff);
+   public static final char ATTR_40 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_RED & 0xff);
+   public static final char ATTR_41 = (COLOR_BG_RED << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_42 = (COLOR_BG_BLACK << 8 & 0xff00) |
+														(COLOR_FG_RED & 0xff);
+   public static final char ATTR_43 = (COLOR_BG_RED << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+
+   public static final char ATTR_44 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_RED & 0xff);
+   public static final char ATTR_45 = ( COLOR_BG_RED << 8 & 0xff00) |
+   													( COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_46 = (COLOR_BG_BLACK << 8 & 0xff00) |
+														(COLOR_FG_RED & 0xff);
+
+   public static final char ATTR_48 = (COLOR_BG_BLACK << 8 & 0xff00) |
+      												(COLOR_FG_CYAN & 0xff);
+   public static final char ATTR_49 = (COLOR_BG_CYAN << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_50 = (COLOR_BG_BLACK << 8 & 0xff00) |
+   													(COLOR_FG_YELLOW & 0xff);
+
+   public static final char ATTR_51 = (COLOR_BG_YELLOW << 8 & 0xff00) |
+   													(COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_52 = ( COLOR_BG_BLACK << 8 & 0xff00) |
+   													( COLOR_FG_CYAN & 0xff);
+   public static final char ATTR_53 = ( COLOR_BG_CYAN << 8 & 0xff00) |
+   													( COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_54 = ( COLOR_BG_BLACK << 8 & 0xff00) |
+   													( COLOR_FG_YELLOW & 0xff);
+   public static final char ATTR_56 = ( COLOR_BG_BLACK << 8 & 0xff00) |
+   													( COLOR_FG_MAGENTA & 0xff);
+   public static final char ATTR_57 = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
+   													( COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_58 = ( COLOR_BG_BLACK << 8 & 0xff00) |
+   													( COLOR_FG_BLUE & 0xff);
+   public static final char ATTR_59 = ( COLOR_BG_BLUE << 8 & 0xff00) |
+   													( COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_60 = ( COLOR_BG_BLACK << 8 & 0xff00) |
+   													( COLOR_FG_MAGENTA & 0xff);
+   public static final char ATTR_61 = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
+   													( COLOR_FG_BLACK & 0xff);
+   public static final char ATTR_62 = ( COLOR_BG_BLACK << 8 & 0xff00) |
+   													( COLOR_FG_BLUE & 0xff);
+   
    public static final int NO_GUI = 0;
    public static final int UPPER_LEFT = 1;
    public static final int UPPER = 2;

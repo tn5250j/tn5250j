@@ -233,40 +233,33 @@ public class ScreenPlanes implements TN5250jConstants {
 
       switch(attr) {
          case 32: // green normal
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_GREEN & 0xff);
+            c = ATTR_32;
             break;
 
          case 33: // green/revers
-            c = (COLOR_BG_GREEN << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
+            c = ATTR_33;
             break;
 
          case 34: // white normal
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_WHITE & 0xff);
+            c = ATTR_34;
             break;
 
          case 35: // white/reverse
-            c = (COLOR_BG_WHITE << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
+            c = ATTR_35;
             break;
 
          case 36: // green/underline
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_GREEN & 0xff);
+            c = ATTR_36;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 37: // green/reverse/underline
-            c = (COLOR_BG_GREEN << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
+            c = ATTR_37;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 38: // white/underline
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_WHITE & 0xff);
+            c = ATTR_38;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
@@ -276,26 +269,22 @@ public class ScreenPlanes implements TN5250jConstants {
 
          case 40:
          case 42: // red/normal
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_RED & 0xff);
+            c = ATTR_40;
             break;
 
          case 41:
          case 43: // red/reverse
-            c = (COLOR_BG_RED << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
+            c = ATTR_41;
             break;
 
          case 44:
          case 46: // red/underline
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_RED & 0xff);
+            c = ATTR_44;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 45: // red/reverse/underline
-            c = ( COLOR_BG_RED << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
+            c = ATTR_45;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
@@ -304,46 +293,39 @@ public class ScreenPlanes implements TN5250jConstants {
             break;
 
          case 48:
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_CYAN & 0xff);
+            c = ATTR_48;
             cs = EXTENDED_5250_COL_SEP;
             break;
 
          case 49:
-            c = (COLOR_BG_CYAN << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
+            c = ATTR_49;
             cs = EXTENDED_5250_COL_SEP;
             break;
 
          case 50:
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_YELLOW & 0xff);
+            c = ATTR_50;
             cs = EXTENDED_5250_COL_SEP;
             break;
 
          case 51:
-            c = (COLOR_BG_YELLOW << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
+            c = ATTR_51;
             cs = EXTENDED_5250_COL_SEP;
             break;
 
          case 52:
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_CYAN & 0xff);
+            c = ATTR_52;
 //            colSep = true;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 53:
-            c = ( COLOR_BG_CYAN << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
+            c = ATTR_53;
 //            colSep = true;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 54:
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_YELLOW & 0xff);
+            c = ATTR_54;
 //            colSep = true;
             ul = EXTENDED_5250_UNDERLINE;
             break;
@@ -353,40 +335,33 @@ public class ScreenPlanes implements TN5250jConstants {
             break;
 
          case 56: // pink
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_MAGENTA & 0xff);
+            c = ATTR_56;
             break;
 
          case 57: // pink/reverse
-            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
+            c = ATTR_57;
             break;
 
          case 58: // blue/reverse
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_BLUE & 0xff);
+            c = ATTR_58;
             break;
 
          case 59: // blue
-            c = ( COLOR_BG_BLUE << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
+            c = ATTR_59;
             break;
 
          case 60: // pink/underline
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_MAGENTA & 0xff);
+            c = ATTR_60;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 61: // pink/reverse/underline
-            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
+            c = ATTR_61;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
          case 62: // blue/underline
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_BLUE & 0xff);
+            c = ATTR_62;
             ul = EXTENDED_5250_UNDERLINE;
             break;
 
