@@ -39,6 +39,7 @@ import org.tn5250j.gui.*;
 import org.tn5250j.interfaces.ConfigureFactory;
 
 public class Connect extends JDialog implements ActionListener,
+                                                   ChangeListener,
                                                    TN5250jConstants {
 
    // panels to be displayed
@@ -48,6 +49,8 @@ public class Connect extends JDialog implements ActionListener,
    JPanel interfacePanel = new JPanel();
    JPanel sessionOpts = new JPanel();
    JPanel sessionOptPanel = new JPanel();
+   JPanel emulOptPanel = new JPanel();
+
    JTable sessions = null;
 
    // button needing global access
@@ -55,7 +58,6 @@ public class Connect extends JDialog implements ActionListener,
    JButton removeButton = null;
    JButton connectButton = null;
    JButton applyButton = null;
-   JCheckBox showMe = null;
 
    // custom table model
    ConfigureTableModel ctm = null;
@@ -70,24 +72,22 @@ public class Connect extends JDialog implements ActionListener,
    Properties props = null;
 
    // property input structures
-   JTextField systemName = null;
-   JTextField systemId = null;
-   JTextField port = null;
-   JTextField deviceName = null;
-   JTextField  fpn = null;
-   JComboBox  cpb = null;
-   JCheckBox ec = null;
-   JCheckBox tc = null;
-   JRadioButton sdNormal = null;
    JRadioButton intTABS = null;
    JRadioButton intMDI = null;
+   JCheckBox hideTabBar = null;
+   JCheckBox showMe = null;
+
+   // create some reusable borders and layouts
+   Border etchedBorder = BorderFactory.createEtchedBorder();
+   BorderLayout borderLayout = new BorderLayout();
 
    //  Selection value for connection
    String connectKey = null;
 
    public Connect(Frame frame, String title, Properties prop) {
+
       super(frame, title, true);
-//      props = prop;
+
       props = ConfigureFactory.getInstance().getProperties(GlobalConfigure.SESSIONS);
 
       try {
@@ -102,11 +102,70 @@ public class Connect extends JDialog implements ActionListener,
 
       // make it non resizable
       setResizable(true);
+
       this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-      // create some reusable borders and layouts
-      Border etchedBorder = BorderFactory.createEtchedBorder();
-      BorderLayout borderLayout = new BorderLayout();
+      // create sessions panel
+      createSessionsPanel();
+
+      // create emulator options panel
+      createEmulatorOptionsPanel();
+
+      // create the button options
+      createButtonOptions();
+
+      JTabbedPane optionTabs = new JTabbedPane();
+
+      optionTabs.addChangeListener(this);
+
+      optionTabs.addTab(LangTool.getString("ss.labelConnections"),sessionPanel);
+      optionTabs.addTab(LangTool.getString("ss.labelOptions1"),emulOptPanel);
+
+      // add the panels to our dialog
+      getContentPane().add(optionTabs,BorderLayout.CENTER);
+      getContentPane().add(options, BorderLayout.SOUTH);
+
+      // pack it and center it on the screen
+      pack();
+
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension frameSize = getSize();
+      if (frameSize.height > screenSize.height)
+         frameSize.height = screenSize.height;
+      if (frameSize.width > screenSize.width)
+         frameSize.width = screenSize.width;
+
+      setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+
+      // set default selection value as the first row or default session
+      if (sessions.getRowCount() > 0) {
+         int selInterval = 0;
+         for (int x = 0; x < sessions.getRowCount(); x++) {
+            if (((Boolean)ctm.getValueAt(x,2)).booleanValue())
+               selInterval = x;
+         }
+         sessions.getSelectionModel().setSelectionInterval(selInterval,selInterval);
+      }
+
+      sessions.requestFocus();
+
+      // now show the world what we and they can do
+      this.setVisible(true);
+
+   }
+
+   public void stateChanged(ChangeEvent e) {
+
+      JTabbedPane p = (JTabbedPane)e.getSource();
+      int index = p.getSelectedIndex();
+      if (!p.getTitleAt(index).equals(LangTool.getString("ss.labelConnections")))
+         connectButton.setEnabled(false);
+      else
+         connectButton.setEnabled(true);
+   }
+
+   private void createSessionsPanel() {
+
 
       // get an instance of our table model
       ctm = new ConfigureTableModel();
@@ -133,6 +192,19 @@ public class Connect extends JDialog implements ActionListener,
       scrollPane = new JScrollPane(sessions);
       scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+      // This will make the connect dialog react to two clicks instead of having
+      //  to click on the selection and then clicking twice
+      sessions.addMouseListener(new MouseAdapter() {
+
+         public void mouseClicked(MouseEvent event) {
+            if (event.getClickCount() == 2) {
+               doActionConnect();
+            }
+         }
+
+
+      });
 
       //Setup our selection model listener
       rowSM = sessions.getSelectionModel();
@@ -162,62 +234,6 @@ public class Connect extends JDialog implements ActionListener,
               }
           });
 
-
-      // create emulator options panel
-      JPanel emulOptPanel = new JPanel();
-      emulOptPanel.setLayout(new BorderLayout());
-
-
-      // setup the frame interface panel
-      interfacePanel = new JPanel();
-      TitledBorder tb = BorderFactory.createTitledBorder(
-                              LangTool.getString("conf.labelPresentation"));
-
-      interfacePanel.setBorder(tb);
-
-      ButtonGroup intGroup = new ButtonGroup();
-      intTABS = new JRadioButton(LangTool.getString("conf.labelTABS"));
-      intTABS.setSelected(true);
-      intTABS.addItemListener(new java.awt.event.ItemListener() {
-         public void itemStateChanged(ItemEvent e) {
-            intTABS_itemStateChanged(e);
-         }
-      });
-      intMDI = new JRadioButton(LangTool.getString("conf.labelMDI"));
-
-      // add the interface options to the group control
-      intGroup.add(intTABS);
-      intGroup.add(intMDI);
-
-      if (props.containsKey("emul.interface")) {
-         if (props.getProperty("emul.interface").equalsIgnoreCase("MDI"))
-            intMDI.setSelected(true);
-      }
-
-      interfacePanel.add(intTABS);
-      interfacePanel.add(intMDI);
-
-      // create show me panel
-      JPanel showMePanel = new JPanel();
-      TitledBorder smb = BorderFactory.createTitledBorder("");
-
-      showMePanel.setBorder(smb);
-
-      showMe = new JCheckBox(LangTool.getString("ss.labelShowMe"));
-      if(props.containsKey("emul.showConnectDialog"))
-         showMe.setSelected(true);
-
-      showMe.addItemListener(new java.awt.event.ItemListener() {
-         public void itemStateChanged(ItemEvent e) {
-            showMe_itemStateChanged(e);
-         }
-      });
-
-      showMePanel.add(showMe);
-
-      emulOptPanel.add(interfacePanel,BorderLayout.NORTH);
-      emulOptPanel.add(showMePanel,BorderLayout.SOUTH);
-
       //Setup panels
       configOptions.setLayout(borderLayout);
 
@@ -244,6 +260,93 @@ public class Connect extends JDialog implements ActionListener,
                                     sessionOptPanel,
                                     false);
 
+
+   }
+
+   private void createEmulatorOptionsPanel() {
+
+      // create emulator options panel
+      emulOptPanel.setLayout(new BorderLayout());
+
+      JPanel contentPane = new JPanel();
+      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+
+      emulOptPanel.add(contentPane,BorderLayout.NORTH);
+
+      // setup the frame interface panel
+      interfacePanel = new JPanel();
+      interfacePanel.setLayout(new AlignLayout(2,5,5));
+
+      TitledBorder tb = BorderFactory.createTitledBorder(
+                              LangTool.getString("conf.labelPresentation"));
+
+      interfacePanel.setBorder(tb);
+
+      ButtonGroup intGroup = new ButtonGroup();
+
+      // create the checkbox for hiding the tab bar when only one tab exists
+      hideTabBar = new JCheckBox(LangTool.getString("conf.labelHideTabBar"));
+
+      hideTabBar.setSelected(false);
+      if (props.containsKey("emul.hideTabBar")) {
+         if (props.getProperty("emul.hideTabBar").equals("yes"))
+            hideTabBar.setSelected(true);
+      }
+
+      hideTabBar.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            hideTabBar_itemStateChanged(e);
+         }
+      });
+
+      intTABS = new JRadioButton(LangTool.getString("conf.labelTABS"));
+      intTABS.setSelected(true);
+      intTABS.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            intTABS_itemStateChanged(e);
+         }
+      });
+      intMDI = new JRadioButton(LangTool.getString("conf.labelMDI"));
+
+      // add the interface options to the group control
+      intGroup.add(intTABS);
+      intGroup.add(intMDI);
+
+      if (props.containsKey("emul.interface")) {
+         if (props.getProperty("emul.interface").equalsIgnoreCase("MDI"))
+            intMDI.setSelected(true);
+      }
+
+      interfacePanel.add(intTABS);
+      interfacePanel.add(hideTabBar);
+      interfacePanel.add(intMDI);
+      interfacePanel.add(new JLabel());
+
+      // create show me panel
+      JPanel showMePanel = new JPanel();
+      TitledBorder smb = BorderFactory.createTitledBorder("");
+
+      showMePanel.setBorder(smb);
+
+      showMe = new JCheckBox(LangTool.getString("ss.labelShowMe"));
+      if(props.containsKey("emul.showConnectDialog"))
+         showMe.setSelected(true);
+
+      showMe.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            showMe_itemStateChanged(e);
+         }
+      });
+
+      showMePanel.add(showMe);
+
+      contentPane.add(interfacePanel);
+      contentPane.add(showMePanel);
+
+   }
+
+   private void createButtonOptions() {
+
       connectButton = addOptButton(LangTool.getString("ss.optConnect"),
                                     "CONNECT",options,false);
 
@@ -251,36 +354,6 @@ public class Connect extends JDialog implements ActionListener,
                                     "APPLY",options,true);
 
       addOptButton(LangTool.getString("ss.optCancel"),"DONE",options);
-
-      // add the panels to our dialog
-      getContentPane().add(sessionPanel,BorderLayout.CENTER);
-      getContentPane().add(options, BorderLayout.SOUTH);
-      getContentPane().add(emulOptPanel,BorderLayout.NORTH);
-
-      // pack it and center it on the screen
-      pack();
-
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-      setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-
-      // set default selection value as the first row or default session
-      if (sessions.getRowCount() > 0) {
-         int selInterval = 0;
-         for (int x = 0; x < sessions.getRowCount(); x++) {
-            if (((Boolean)ctm.getValueAt(x,2)).booleanValue())
-               selInterval = x;
-         }
-         sessions.getSelectionModel().setSelectionInterval(selInterval,selInterval);
-      }
-
-      sessions.requestFocus();
-      // now show the world what we and they can do
-      this.setVisible(true);
 
    }
 
@@ -349,6 +422,8 @@ public class Connect extends JDialog implements ActionListener,
 
    private void doActionConnect () {
 
+      setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
       int selectedRow = rowSM.getMinSelectionIndex();
       connectKey = (String)ctm.getValueAt(selectedRow,0);
       saveProps();
@@ -357,7 +432,10 @@ public class Connect extends JDialog implements ActionListener,
       //    propogating to other peers.  This is a very annoying bug that
       //    should be fixed.  This seems to work through 1.4.0 but in 1.4.1
       //    beta seems to be broken again.  WHY!!!!!
-      try {Thread.sleep(500);}catch(java.lang.InterruptedException ie) {}
+      //try {Thread.sleep(500);}catch(java.lang.InterruptedException ie) {}
+
+      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
       this.dispose();
 
    }
@@ -369,13 +447,6 @@ public class Connect extends JDialog implements ActionListener,
 
    private void saveProps() {
 
-//      try {
-//         FileOutputStream out = new FileOutputStream("sessions");
-//            // save off the width and height to be restored later
-//         props.store(out,"------ Session Information --------");
-//      }
-//      catch (FileNotFoundException fnfe) {}
-//      catch (IOException ioe) {}
       ConfigureFactory.getInstance().saveSettings(GlobalConfigure.SESSIONS,
                   "------ Session Information --------");
 
@@ -401,13 +472,24 @@ public class Connect extends JDialog implements ActionListener,
 
       if (intTABS.isSelected()) {
          props.remove("emul.interface");
+         hideTabBar.setEnabled(true);
 
       }
       else {
 
          props.setProperty("emul.interface","MDI");
+         hideTabBar.setEnabled(false);
 
       }
+
+   }
+
+   void hideTabBar_itemStateChanged(ItemEvent e) {
+
+      if (hideTabBar.isSelected())
+         props.setProperty("emul.hideTabBar","yes");
+      else
+         props.remove("emul.hideTabBar");
 
    }
 

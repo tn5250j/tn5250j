@@ -27,12 +27,14 @@ package org.tn5250j;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.text.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
+
 import org.tn5250j.tools.*;
 import org.tn5250j.encoding.*;
 
@@ -61,7 +63,13 @@ public class Configure implements TN5250jConstants {
 
    static JTabbedPane confTabs;
 
-   public static void doEntry(Frame parent, String propKey, Properties props) {
+   static JDialog dialog = null;
+
+   static Object[] options;
+
+   public static void doEntry(Frame parent, String propKey, Properties props2) {
+
+      props = props2;
 
       confTabs = new JTabbedPane();
 
@@ -103,6 +111,11 @@ public class Configure implements TN5250jConstants {
          sdNormal.setSelected(true);
          deamon.setSelected(true);
 
+         newJVM.setEnabled(false);
+         noEmbed.setEnabled(false);
+         deamon.setEnabled(false);
+
+         systemName.setDocument(new SomethingEnteredDocument());
       }
       else {
 
@@ -355,40 +368,89 @@ public class Configure implements TN5250jConstants {
       Object[]      message = new Object[1];
       message[0] = confTabs;
 
-      String[] options = new String[2];
+      options = new JButton[2];
       String title;
 
-      if (propKey == null) {
-         options[0] = LangTool.getString("conf.optAdd");
+
+      final String propKey2 = propKey;
+
+      if (propKey2 == null) {
+         Action add = new AbstractAction(LangTool.getString("conf.optAdd")) {
+            public void actionPerformed(ActionEvent e) {
+               doConfigureAction(propKey2);
+            }
+         };
+         options[0] = new JButton(add);
+         ((JButton)options[0]).setEnabled(false);
          title = LangTool.getString("conf.addEntryATitle");
       }
       else {
-         options[0] = LangTool.getString("conf.optEdit");
+         Action edit = new AbstractAction(LangTool.getString("conf.optEdit")) {
+            public void actionPerformed(ActionEvent e) {
+               doConfigureAction(propKey2);
+            }
+         };
+         options[0] = new JButton(edit);
          title = LangTool.getString("conf.addEntryETitle");
       }
-      options[1] = LangTool.getString("conf.optCancel");
 
-      int result = JOptionPane.showOptionDialog(
-             parent,                              // the parent that the dialog blocks
-             message,                           // the dialog message array
-             title,                             // the title of the dialog window
-             JOptionPane.DEFAULT_OPTION,        // option type
-             JOptionPane.PLAIN_MESSAGE,   // message type
-             null,                              // optional icon, use null to use the default icon
-             options,                           // options string array, will be made into buttons//
-             options[0]                         // option that should be made into a default button
-         );
+      Action cancel = new AbstractAction(LangTool.getString("conf.optCancel")) {
+         public void actionPerformed(ActionEvent e) {
+            dialog.dispose();
+         }
+      };
+      options[1] = new JButton(cancel);
 
-      if (result == 0) {
-         if (propKey == null) {
-            props.put(systemName.getText(),toArgString());
-         }
-         else {
-            props.setProperty(systemName.getText(),toArgString());
-         }
-      }
+      JOptionPane             pane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE,
+                                                       JOptionPane.DEFAULT_OPTION, null,
+                                                       options, options[0]);
+
+      Component parentComponent = parent;
+      pane.setInitialValue(options[0]);
+      pane.setComponentOrientation(parentComponent.getComponentOrientation());
+      dialog = pane.createDialog(parentComponent, title); //, JRootPane.PLAIN_DIALOG);
+
+      dialog.show();
+
+//      int result = JOptionPane.showOptionDialog(
+//             parent,                              // the parent that the dialog blocks
+//             message,                           // the dialog message array
+//             title,                             // the title of the dialog window
+//             JOptionPane.DEFAULT_OPTION,        // option type
+//             JOptionPane.PLAIN_MESSAGE,   // message type
+//             null,                              // optional icon, use null to use the default icon
+//             options,                           // options string array, will be made into buttons//
+//             options[0]                         // option that should be made into a default button
+//         );
+//
+//      if (result == 0) {
+//         if (propKey == null) {
+//            props.put(systemName.getText(),toArgString());
+//         }
+//         else {
+//            props.setProperty(systemName.getText(),toArgString());
+//         }
+//      }
 
   }
+
+  /**
+   * React to the configuration action button to perform to Add or Edit the
+   * entry
+   *
+   * @param e - key to act upon
+   */
+   private static void doConfigureAction(String propKey) {
+
+      if (propKey == null) {
+         props.put(systemName.getText(),toArgString());
+      }
+      else {
+         props.setProperty(systemName.getText(),toArgString());
+      }
+      dialog.dispose();
+
+   }
 
    /**
     * React on the state change for radio buttons
@@ -436,6 +498,29 @@ public class Configure implements TN5250jConstants {
 
       }
       return false;
+   }
+
+   private static void doSomethingEntered() {
+
+      confTabs.setEnabledAt(1,true);
+      confTabs.setEnabledAt(2,true);
+      confTabs.setEnabledAt(3,true);
+      ((JButton)options[0]).setEnabled(true);
+      newJVM.setEnabled(true);
+      noEmbed.setEnabled(true);
+      deamon.setEnabled(true);
+   }
+
+   private static void doNothingEntered() {
+
+      confTabs.setEnabledAt(1,false);
+      confTabs.setEnabledAt(2,false);
+      confTabs.setEnabledAt(3,false);
+      ((JButton)options[0]).setEnabled(false);
+      newJVM.setEnabled(false);
+      noEmbed.setEnabled(false);
+      deamon.setEnabled(false);
+
    }
 
   private static String toArgString() {
@@ -508,4 +593,20 @@ public class Configure implements TN5250jConstants {
       }
    }
 
+   public static class SomethingEnteredDocument extends PlainDocument {
+
+      public void insertString(int offs, String str, AttributeSet a)
+                                                   throws BadLocationException {
+
+         super.insertString(offs, str, a);
+         if (getText(0, getLength()).length() > 0)
+            doSomethingEntered();
+      }
+
+      public void remove(int offs, int len) throws BadLocationException {
+         super.remove(offs, len);
+         if (getText(0, getLength()).length() == 0)
+            doNothingEntered();
+      }
+   }
 }
