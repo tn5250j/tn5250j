@@ -32,7 +32,6 @@ import javax.swing.KeyStroke;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.event.KeyChangeListener;
-import org.tn5250j.GlobalConfigure;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
 import org.tn5250j.interfaces.OptionAccessFactory;
@@ -115,7 +114,7 @@ public class KeyMapper {
       workStroke = newKeyStroker(0, false, false, false,false,KeyStroker.KEY_LOCATION_STANDARD);
 
       Properties keys = ConfigureFactory.getInstance().getProperties(
-                           GlobalConfigure.KEYMAP);
+                           ConfigureFactory.KEYMAP);
 
       if (!loadKeyStrokes(keys)) {
          // keycode shift control alternate
@@ -299,7 +298,7 @@ public class KeyMapper {
 
    private static boolean loadKeyStrokes(Properties keystrokes) {
 
-      keystrokes = ConfigureFactory.getInstance().getProperties(GlobalConfigure.KEYMAP);
+      keystrokes = ConfigureFactory.getInstance().getProperties(ConfigureFactory.KEYMAP);
       if (keystrokes != null && keystrokes.size() > 0)
          return true;
       else
@@ -377,7 +376,7 @@ public class KeyMapper {
 
    public final static void saveKeyMap() {
 
-      Properties map = ConfigureFactory.getInstance().getProperties(GlobalConfigure.KEYMAP);
+      Properties map = ConfigureFactory.getInstance().getProperties(ConfigureFactory.KEYMAP);
 
       map.clear();
 
@@ -392,7 +391,7 @@ public class KeyMapper {
          map.put((String)i.next(),ks.toString());
       }
 
-      ConfigureFactory.getInstance().saveSettings(GlobalConfigure.KEYMAP,
+      ConfigureFactory.getInstance().saveSettings(ConfigureFactory.KEYMAP,
       "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown,location --------");
    }
 
