@@ -123,7 +123,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 				self.jobDct[key_usr] = tmp_job
 		self.jobLst.close()
 		
-		keys = self.jobDct.keys()
+		keys = self.usrDct.keys()
 		keys.sort()
 		for key_usr in keys:
 			menuItem = key_usr
@@ -135,12 +135,13 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			if self.chkFullNames.isSelected(): # Show Full names
 				menuItem += ': %s'%(fullName)
 			if self.chkActive.isSelected():   # Active jobs only
-				if not self.jobDct.has_key(key_usr):
-					continue
+				if self.jobDct.has_key(key_usr):
+					self.users.addItem(menuItem)
 			else:
-				sts = '*'
-			menuItem = menuItem	+ sts # N.B. * means profile is running an active job
-			self.users.addItem(menuItem)
+				if self.jobDct.has_key(key_usr):
+					sts = '*'
+				menuItem = menuItem	+ sts # N.B. * means profile is running an active job
+				self.users.addItem(menuItem)
 #**************************
 #	Send message
 #**************************
