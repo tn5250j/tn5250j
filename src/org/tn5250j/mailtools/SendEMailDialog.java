@@ -164,7 +164,7 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
 
 							StringBuffer sb = new StringBuffer();
 //							char[] s = screen.getScreenAsChars();
-							int c = screen.getCols();
+							int c = screen.getColumns();
 							int l = screen.getRows() * c;
 
 							int col = 0;

@@ -147,7 +147,7 @@ public final class iOhioPosition {
     this.screen.addScreenListener(this);
 
     this.rows         = screen.getRows();
-    this.columns      = screen.getCols();
+    this.columns      = screen.getColumns();
 
   }
 
@@ -391,7 +391,7 @@ public final class iOhioPosition {
 		int lc = 0;
 //      int lenScreen = screen.getScreenLength();
 //		int lr = screen.getPos(sr,sc);
-      int numCols = screen.getCols();
+      int numCols = screen.getColumns();
 
 
       updateRect = new Data (sr,sc,er,ec);

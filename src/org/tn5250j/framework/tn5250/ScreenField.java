@@ -51,7 +51,7 @@ public class ScreenField {
 
 //      startRow = row;
 //      startCol = col;
-      startPos = (row * s.getCols()) + col;
+      startPos = (row * s.getColumns()) + col;
       endPos = startPos + length -1;
       cursorProg = 0;
       fieldId = 0;
@@ -154,12 +154,12 @@ public class ScreenField {
 
    public int getCursorRow() {
 
-      return cursorPos / s.getCols();
+      return cursorPos / s.getColumns();
    }
 
    public int getCursorCol() {
 
-      return cursorPos % s.getCols();
+      return cursorPos % s.getColumns();
    }
 
    protected void changePos(int i) {
@@ -175,7 +175,7 @@ public class ScreenField {
       getKeyPos(endPos);
       int x = length;
       text.setLength(x);
-      int nc = s.getCols();
+      int nc = s.getColumns();
       while (x-- > 0) {
 
          // here we manipulate the unicode characters a little for attributes
@@ -397,7 +397,7 @@ public class ScreenField {
 
    protected int getKeyPos(int row1, int col1) {
 
-      int x = ((row1 * s.getCols()) + col1);
+      int x = ((row1 * s.getColumns()) + col1);
       int y = x - startPos();
       cursorPos = x;
 
@@ -437,7 +437,7 @@ public class ScreenField {
     */
    public int startRow() {
 
-      return startPos / s.getCols();
+      return startPos / s.getColumns();
 
    }
 
@@ -448,7 +448,7 @@ public class ScreenField {
     */
    public int startCol() {
 
-      return startPos % s.getCols();
+      return startPos % s.getColumns();
 
    }
 

@@ -1264,7 +1264,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private final void readScreen() throws IOException {
 
 		int rows = screen52.getRows();
-		int cols = screen52.getCols();
+		int cols = screen52.getColumns();
 		boolean att = false;
 		int off = 0;
 		byte abyte0[] = new byte[rows * cols];
@@ -1315,7 +1315,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		sc.write(0); // 18
 
 		sc.write((byte) screen52.getRows()); // store the current size
-		sc.write((byte) screen52.getCols()); //    ""
+		sc.write((byte) screen52.getColumns()); //    ""
 
 		int cp = screen52.getCurrentPos(); // save off current position
 		sc.write((byte) (cp >> 8 & 0xff)); //    ""
@@ -1325,7 +1325,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		sc.write((byte) (screen52.homePos & 0xff)); //    ""
 
 		int rows = screen52.getRows(); // store the current size
-		int cols = screen52.getCols(); //    ""
+		int cols = screen52.getColumns(); //    ""
 		byte[] sa = new byte[rows * cols];
 		fillScreenArray(sa, rows, cols);
 
@@ -1726,7 +1726,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		byte control0 = 0;
 		byte control1 = 0;
 		int saRows = screen52.getRows();
-		int saCols = screen52.getCols();
+		int saCols = screen52.getColumns();
 
 		try {
 			if (controlsExist) {
@@ -1759,7 +1759,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 						// a little intelligence here I hope
 						if (row == 1 && col == 2 && toRow == screen52.getRows()
-								&& toCol == screen52.getCols())
+								&& toCol == screen52.getColumns())
 
 							screen52.clearScreen();
 						else {
@@ -1769,8 +1769,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 								//repeat = getASCIIChar(repeat);
 							}
 
-							int times = ((toRow * screen52.getCols()) + toCol)
-									- ((row * screen52.getCols()) + col);
+							int times = ((toRow * screen52.getColumns()) + toCol)
+									- ((row * screen52.getColumns()) + col);
 							while (times-- >= 0) {
 								screen52.setChar(repeat);
 							}
@@ -1801,12 +1801,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					// a little intelligence here I hope
 					if (EArow == 1 && EAcol == 2
 							&& toEARow == screen52.getRows()
-							&& toEACol == screen52.getCols())
+							&& toEACol == screen52.getColumns())
 
 						screen52.clearScreen();
 					else {
-						int times = ((toEARow * screen52.getCols()) + toEACol)
-								- ((EArow * screen52.getCols()) + EAcol);
+						int times = ((toEARow * screen52.getColumns()) + toEACol)
+								- ((EArow * screen52.getColumns()) + EAcol);
 						while (times-- >= 0) {
 							screen52.setChar(EAAttr);
 						}
@@ -1829,7 +1829,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					int saCol = bk.getNextByte() & 0xff;
 					// make sure it is in bounds
 					if (saRow >= 0 && saRow <= screen52.getRows() && saCol >= 0
-							&& saCol <= screen52.getCols()) {
+							&& saCol <= screen52.getColumns()) {
 						screen52.setCursor(saRow, saCol); // now set screen
 														// position for output
 

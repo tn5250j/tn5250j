@@ -2091,7 +2091,7 @@ public class Screen5250 implements TN5250jConstants{
 		//      if (pos == 0)
 		//         return 1;
 
-		int col = pos % (getCols());
+		int col = pos % (getColumns());
 		if (col > 0)
 			return col;
 		else
@@ -2339,7 +2339,7 @@ public class Screen5250 implements TN5250jConstants{
 	 *
 	 * @return number of columns
 	 */
-	public int getCols() {
+	public int getColumns() {
 
 		return numCols;
 
@@ -3127,7 +3127,7 @@ public class Screen5250 implements TN5250jConstants{
 
 		StringBuffer sb = new StringBuffer();
 		char[] s = getScreenAsChars();
-		int c = getCols();
+		int c = getColumns();
 		int l = getRows() * c;
 		int col = 0;
 		for (int x = 0; x < l; x++, col++) {
