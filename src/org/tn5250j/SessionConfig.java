@@ -128,6 +128,11 @@ public class SessionConfig implements TN5250jConstants {
 
    }
 
+   public void setModified() {
+
+      sesProps.setProperty("saveme","");
+   }
+
    public void saveSessionProps(java.awt.Container parent) {
 
       if (sesProps.containsKey("saveme")) {
