@@ -1158,8 +1158,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
                               fcw1,
                               fcw2);
 
-               if (mdt)
+               if (mdt){
                   sf.setMDT();
+                  screen52.getScreenFields().setMasterMDT();
+               }
 
 //               System.out.println("/nRestored ");
 //               System.out.println(sf.toString());

@@ -80,6 +80,10 @@ public class ScreenFields implements TN5250jConstants {
       return masterMDT;
    }
 
+   public void setMasterMDT() {
+      masterMDT = true;
+   }
+
    public boolean isCurrentField() {
       return currentField == null;
    }
