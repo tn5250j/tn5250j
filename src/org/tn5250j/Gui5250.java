@@ -47,6 +47,7 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.keyboard.DefaultKeyboardHandler;
+import org.tn5250j.keyboard.configure.KeyConfigure;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
@@ -71,7 +72,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private boolean macroRunning;
    private boolean stopMacro;
    private boolean doubleClick;
-   private SessionConfig sesConfig;
+   protected SessionConfig sesConfig;
    private KeyboardHandler keyHandler;
 
    public Gui5250 () {
@@ -304,7 +305,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          );
 
       if (result == 0) {
-         if (!((Session)this).isOnSignonScreen()) {
+         if (!((Session)this).isOnSignOnScreen()) {
 
             if (confirmClose()) {
                closeMe();
