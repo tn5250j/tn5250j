@@ -38,7 +38,11 @@ class Poller(Runnable):
         while not done:
             try:
                 entry = dq.read(curUsr,-1,"EQ")
-                self.parent.rpyTxt.append(entry.getString()+"\n")
+                mail = entry.getString()
+                sndUsr = mail.split(':')[0]
+                msg = mail.split(':')[1]
+                self.parent.rpyTxt.append("--== Received from " + sndUsr \
+                + " ==--\n" + msg + "\n")
                 self.parent.rpyTxt.setCaretPosition(len(self.parent.rpyTxt.getText()))
                 if self.parent.getState() == swing.JFrame.ICONIFIED:
                     self.parent.state=(swing.JFrame.NORMAL)
@@ -107,6 +111,11 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         self.dispose()
     def windowClosing(self, event):
         System.setProperty("chat400", "0")
+        self.sessionManager = _session.getSessionManager()
+        self.sessions = self.sessionManager.getSessions()
+        self.sessList = self.sessions.getSessionsList()
+        for x in self.sessList:
+            self.sessionManager.closeSession(x)
     def windowActivated(self, event):
         None
     def windowDeactivated(self, event):
@@ -165,9 +174,9 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         if not dq.exists():
             dq.create(KEYLEN, 512)
         try:
-            dq.write(sndUsr, "%s::%s"%(curUsr, chatTxt) )
+            dq.write(sndUsr, "%s:%s"%(curUsr, chatTxt) )
             if not curUsr == sndUsr:
-                self.rpyTxt.append("%s -> %s\n%s\n"%(curUsr, sndUsr, chatTxt))
+                self.rpyTxt.append("%s -->> %s\n%s\n"%(curUsr, sndUsr, chatTxt))
                 self.rpyTxt.setCaretPosition( len(self.rpyTxt.getText()) )
             self.statusTxt.text='Message send successfull'
             self.chatTxt.selectAll()
