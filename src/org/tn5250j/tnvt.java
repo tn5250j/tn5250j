@@ -1434,7 +1434,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public void sendNegResponse2(int ec) {
 
-      screen52.setPrehelpState(true);
+      screen52.setPrehelpState(true,true,false);
       baosp.write(0x00);
       baosp.write(ec);
 

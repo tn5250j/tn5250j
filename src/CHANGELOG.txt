@@ -41,6 +41,12 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+07/08/2002  Fixed the NULL error problem with keys strokes I think.
+
+            Fixed the keybuffering to work correctly with reset.
+            
+06/08/2002  Fixed a problem with macros not ending themselves.
+
 04/08/2002  Added to send via e-mail where if the smtp configuration file
             already exists then the option will read edit config instead of
             always config

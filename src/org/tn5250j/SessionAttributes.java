@@ -125,11 +125,6 @@ public class SessionAttributes extends JDialog {
 
       flp.add(fontsList);
 
-//      NumberFormat nf = NumberFormat.getNumberInstance();
-//      ((DecimalFormat)nf).setPositiveSuffix(" ");
-//      ((DecimalFormat)nf).setMaximumFractionDigits(1);
-//      ((DecimalFormat)nf).setMinimumFractionDigits(1);
-
       JPanel fsp = new JPanel();
       fsp.setLayout(new AlignLayout(2,5,5));
       tb = BorderFactory.createTitledBorder(LangTool.getString("sa.scaleLabel"));

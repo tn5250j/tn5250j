@@ -1,13 +1,11 @@
 package org.tn5250j;
+
 /**
- * Title: tn5250J
- * Copyright:   Copyright (c) 2001
- * Company:
- * @author  Kenneth J. Pouncey
- * @version 0.5
  *
- * Description:
- *
+ * <p>Title: Screen5250.jar</p>
+ * <p>Description: Main interface to draw the graphical image of the screen</p>
+ * <p>Copyright: Copyright (c) 2000 - 2002</p>
+ * <p>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -22,15 +20,15 @@ package org.tn5250j;
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
- *
+ * </p>
+ * @author Kenneth J. Pouncey
+ * @version 0.5
  */
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.border.*;
-
 import java.awt.font.*;
 import java.awt.geom.*;
 import java.text.*;
@@ -41,7 +39,6 @@ import java.awt.print.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
 import org.tn5250j.tools.*;
-
 
 public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
@@ -1153,9 +1150,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
-   protected void setPrehelpState(boolean setErrorCode) {
+   protected void setPrehelpState(boolean setErrorCode,
+                                    boolean lockKeyboard,
+                                    boolean unlockIfLocked) {
       statusErrorCode = setErrorCode;
-      setKeyboardLocked(setErrorCode);
+      if (isKeyboardLocked() && unlockIfLocked)
+         setKeyboardLocked(false);
+      else
+         setKeyboardLocked(lockKeyboard);
       bufferedKeys = null;
       keysBuffered = false;
       setKBIndicatorOff();
@@ -1348,7 +1350,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * @param aidKey The aid key to be sent to the host
     *
     * @see #sendKeys
-    * @see #AID_CLEAR
+    * @see TN5250jConstants#AID_CLEAR
     * @see #AID_ENTER
     * @see #AID_HELP
     * @see #AID_ROLL_UP
@@ -1863,8 +1865,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                setStatus(STATUS_ERROR_CODE,STATUS_VALUE_OFF,"");
                isInField(lastPos);
                updateDirty();
+               setCursorOn();
             }
-            setKBIndicatorOff();
+            else {
+               setPrehelpState(false,isKeyboardLocked(),false);
+            }
             simulated = true;
             break;
          case COPY :
@@ -2343,26 +2348,35 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *  anybody finds this documention could you please send me a copy.  Please
     *  note that I did not look that hard either.
     *
-    *  @param ec error code
-    *
+    * <p>
     * 0000:  00 50 73 1D 89 81 00 50 DA 44 C8 45 08 00 45 00 .Ps....P.D.E..E.
+    * </p><p>
     * 0010:  00 36 E9 1C 40 00 80 06 9B F9 C1 A8 33 58 C0 A8 .6..@.......3X..
+    * </p><p>
     * 0020:  C0 02 06 0E 00 17 00 52 6E 88 73 40 DE CB 50 18 .......Rn.s@..P.
+    * </p><p>
     * 0030:  20 12 3C 53 00 00 00 0C 12 A0 00 00 04 01 00 00  .<S............
+    * </p><p>
     * 0040:  00 05 FF EF                                     ....
     * ----------||
     *    The 00 XX is the code to be sent.  I found the following
     *
-    *     ERR_CURSOR_PROTECTED      = 0x05;
-    *     ERR_INVALID_SIGN          = 0x11;
-    *     ERR_NO_ROOM_INSERT        = 0x12;
-    *     ERR_NUMERIC_ONLY          = 0x09;
-    *     ERR_NUMERIC_09            = 0x10;
-    *     ERR_FIELD_MINUS           = 0x16;
-    *     ERR_MANDITORY_ENTER       = 0x21;
+    * <table BORDER COLS=2 WIDTH="50%" >
     *
+    * <tr><td>    ERR_CURSOR_PROTECTED</td><td> 0x05</td></tr>
+    * <tr><td>    ERR_INVALID_SIGN</td><td> 0x11</td></tr>
+    * <tr><td>    ERR_NO_ROOM_INSERT</td><td> 0x12</td></tr>
+    * <tr><td>    ERR_NUMERIC_ONLY</td><td> 0x09</td></tr>
+    * <tr><td>    ERR_NUMERIC_09</td><td> 0x10</td></tr>
+    * <tr><td>    ERR_FIELD_MINUS</td><td> 0x16</td></tr>
+    * <tr><td>    ERR_MANDITORY_ENTER</td><td> 0x21</td></tr>
+    *
+    * </table>
     *    I am tired of typing and they should be self explanitory.  Finding them
     *    in the first place was the pain.
+    * </p>
+    *
+    *  @param ec error code
     *
     */
    private void displayError (int ec) {
@@ -2388,26 +2402,71 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return guiInterface;
    }
 
+   /**
+    * Convinience class to return if the cursor is in a field or not.
+    *
+    * @return true or false
+    */
+
    public boolean isInField() {
 
       return isInField(lastPos,true);
    }
 
+   /**
+    *
+    * Convinience class to return if the position that is passed is in a field
+    * or not.  If it is then the chgToField parameter will change the current
+    * field to this field where the position indicates
+    *
+    * @param pos
+    * @param chgToField
+    * @return true or false
+    */
    public boolean isInField(int pos, boolean chgToField) {
 
       return screenFields.isInField(pos,chgToField);
    }
 
+   /**
+    *
+    * Convinience class to return if the position that is passed is in a field
+    * or not.  If it is then the field at this position becomes the current
+    * working field
+    *
+    * @param pos
+    * @return true or false
+    */
    public boolean isInField(int pos) {
 
       return screenFields.isInField(pos,true);
    }
 
+   /**
+    * Convinience class to return if the position at row and column that is
+    * passed is in a field or not.  If it is then the field at this position
+    * becomes the current working field.
+    *
+    * @param row
+    * @param col
+    * @return true or false
+    */
    public boolean isInField(int row, int col) {
 
       return isInField(row,col,true);
    }
 
+   /**
+    *
+    * Convinience class to return if the position at row and column that is
+    * passed is in a field or not.  If it is then the chgToField parameter will
+    * change the current field to this field where the row and column indicates.
+    *
+    * @param row
+    * @param col
+    * @param chgToField
+    * @return true or false
+    */
    public boolean isInField(int row, int col, boolean chgToField) {
       return screenFields.isInField((row * numCols) + col,chgToField);
    }
@@ -2467,7 +2526,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-    * The last position of the screen position based 0,0
+    * The last position of the cursor on the screen
+    *    - Note - position is based 0,0
     *
     * @return last position
     */
@@ -2544,7 +2604,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-    * Set the keyboard as locked
+    * Set the keyboard as locked or not depending on the value passed
     *
     * @param k true of false
     */
@@ -2614,9 +2674,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    /**
     * This returns whether or not any of the fields currently on the screen have
-    * been changed in any way
+    * been changed in any way.
+    *
+    * Convinience class to ScreenFields
     *
     * @return true or false
+    * @see org#tn5250j#ScreenFields
     */
    public boolean isMasterMDT() {
 
@@ -2624,6 +2687,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Set the current working field to the field number specified.
+    *
+    * @param f - numeric field number on the screen
+    * @return true or false whether it was sucessful
+    */
    public boolean gotoField(int f) {
 
       int sizeFields = screenFields.getSize();
@@ -2641,6 +2710,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return gotoField(screenFields.getCurrentField());
    }
 
+   /**
+    * Convenience method to set the field object passed as the currect working
+    * screen field
+    *
+    * @param f
+    * @return true or false whether it was sucessful
+    * @see org.tn5250j.ScreenField
+    */
    protected boolean gotoField(ScreenField f) {
       if (f != null) {
          goto_XY(f.startPos());
@@ -2652,6 +2729,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Convenience class to position the cursor to the next word on the screen
+    *
+    */
    private void gotoNextWord() {
 
       int pos = lastPos;
@@ -2681,6 +2762,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Convenience class to position the cursor to the previous word on the screen
+    *
+    */
    private void gotoPrevWord() {
 
       int pos = lastPos;
@@ -2708,6 +2793,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Convinience class to position to the next field on the screen.
+    *
+    * @see org.tn5250j.ScreenFields
+    */
    private void gotoFieldNext() {
 
       if (screenFields.isCurrentFieldHighlightedEntry())
@@ -2719,6 +2809,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          setFieldHighlighted(screenFields.getCurrentField());
    }
 
+   /**
+    * Convinience class to position to the previous field on the screen.
+    *
+    * @see org.tn5250j.ScreenFields
+    */
    private void gotoFieldPrev() {
 
       if (screenFields.isCurrentFieldHighlightedEntry())
@@ -2731,6 +2826,16 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Used to restrict the cursor to a particular position on the screen.
+    *   Used in combination with windows to restrict the cursor to the active
+    *   window show on the screen.
+    *
+    *    Not supported yet.  Please implement me :-(
+    *
+    * @param depth
+    * @param width
+    */
    public void setRestrictCursor(int depth, int width) {
 
       restrictCursor = true;
@@ -2738,6 +2843,24 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Creates a window on the screen
+    *
+    * @param depth
+    * @param width
+    * @param type
+    * @param gui
+    * @param monoAttr
+    * @param colorAttr
+    * @param ul
+    * @param upper
+    * @param ur
+    * @param left
+    * @param right
+    * @param ll
+    * @param bottom
+    * @param lr
+    */
    public void createWindow(int depth, int width, int type, boolean gui,
                               int monoAttr, int colorAttr,
                               int ul, int upper, int ur, int left, int right,
@@ -2857,6 +2980,18 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Creates a scroll bar on the screen using the parameters provided.
+    *
+    *    ** we only support vertical scroll bars at the time.
+    *
+    * @param flag - type to draw - vertical or horizontal
+    * @param totalRowScrollable
+    * @param totalColScrollable
+    * @param sliderRowPos
+    * @param sliderColPos
+    * @param sbSize
+    */
    public void createScrollBar(int flag, int totalRowScrollable,
                                  int totalColScrollable,
                                  int sliderRowPos,
@@ -3101,12 +3236,18 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    /**
     * Return the fields that are contained in the Field Format Table
     *
-    * @return ScreeFields
+    * @return ScreenFields object
+    * @see org.tn5250j.ScreenFields
     */
    public ScreenFields getScreenFields() {
       return screenFields;
    }
 
+   /**
+    * Redraw the fields on the screen.
+    *    Used for gui enhancement to redraw the fields when toggling
+    *
+    */
    public void drawFields() {
 
       ScreenField sf;
@@ -3153,6 +3294,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Draws the field on the screen.  Used to redraw or change the attributes
+    * of the field.
+    *
+    * @param sf - Field to be redrawn
+    * @see org.tn5250j.ScreenField.java
+    */
    public void drawField(ScreenField sf) {
 
       int pos = sf.startPos();
@@ -3166,6 +3314,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Set the field to be displayed as highlighted.
+    *
+    * @param sf - Field to be highlighted
+    */
    public void setFieldHighlighted(ScreenField sf) {
 
       int pos = sf.startPos();
@@ -3181,6 +3334,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    * Draw the field as un higlighted.  This is used to reset the field
+    * presentation on the screen after the field is exited.
+    *
+    * @param sf - Field to be unhighlighted
+    */
    public void unsetFieldHighlighted(ScreenField sf) {
 
       int pos = sf.startPos();
@@ -3534,11 +3693,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
          case STATUS_ERROR_CODE:
             if (value == STATUS_VALUE_ON) {
-               setPrehelpState(true);
+               setPrehelpState(true,true,false);
                Toolkit.getDefaultToolkit().beep();
             }
             else {
-               setPrehelpState(false);
+               setPrehelpState(false,true,true);
                homePos = saveHomePos;
                saveHomePos = 0;
                pendingInsert = false;
@@ -3739,6 +3898,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   /**
+    *
+    */
    private void updateCursorLoc() {
 
       if (updateCursorLoc) {
@@ -3759,7 +3921,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-     * Method: checkOffScreenImage <p>
      *
      * This routine will make sure we have something to draw on
      *
@@ -3789,7 +3950,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
-
+   /**
+    * Convinience method to resize the screen area such as when the parent frame
+    * is resized.
+    *
+    * @param width
+    * @param height
+    */
    private final void resizeScreenArea(int width, int height) {
 
       Font k = null;
@@ -3824,6 +3991,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
    }
 
+   /**
+    * Draw the Operator Information Area for feedback
+    */
    private void drawOIA() {
 
 
@@ -3841,7 +4011,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-     * Method: setBounds <p>
      *
      * This routine will calculate the new image size that will be displayed
      * when the frame that holds it is resized.
@@ -3876,7 +4045,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-     * Method: setBounds <p>
      *
      * This routine will calculate the new image size that will be displayed
      * when the frame that holds it is resized.
@@ -3893,7 +4061,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-     * Method: getPreferredSize <p>
      *
      * This routine returns the preferred size of the component that wants
      * to be displayed
@@ -3908,7 +4075,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
-     * Method: printMe <p>
      *
      * This routine is responsible for setting up a PrinterJob on this
      * component and initiating the print session.
