@@ -6,8 +6,8 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.7-pre3"/>
-   <property name="year" value="2001-2003"/>
+   <property name="version" value="0.5.7"/>
+   <property name="year" value="2001-2004"/>
 
    <property name="source.dir" value="${basedir}/src" />
    <property name="build.dir" value="${basedir}/build" />
@@ -376,15 +376,15 @@
     <!-- We call IzPack -->
     <echo message="Makes the installer using IzPack"/>
     <izpack input="${dist.dir}/installer/install.xml"
-            output="${dist.dir}/tn5250j-install.jar"
-            installerType="standard-kunststoff"
+            output="${dist.dir}/tn5250j-install-${version}.jar"
+            installerType="standard"
             basedir="${dist.dir}"
             izPackDir="/home/jimmy/IzPack/"/>
 
     <echo message="Makes the web installer using IzPack"/>
     <izpack input="${dist.dir}/installer/install.xml"
-            output="${dist.dir}/tn5250j_install_web.jar"
-            installerType="web-kunststoff"
+            output="${dist.dir}/tn5250j-install-web-${version}.jar"
+            installerType="web"
             basedir="${dist.dir}"
             izPackDir="/home/jimmy/IzPack/"/>
 
