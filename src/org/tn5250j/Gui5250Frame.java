@@ -38,6 +38,7 @@ import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
