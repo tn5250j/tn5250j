@@ -227,17 +227,17 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
             dq.create(KEYLEN, 512)
         try:
             if not sndUsr == "ALL TRASH":
-            dq.write(sndUsr, "%s:%s"%(curUsr, chatTxt) )
+            	dq.write(sndUsr, "%s:%s"%(curUsr, chatTxt) )
             if not curUsr == sndUsr:
                 self.rpyTxt.append("%s -->> %s\n%s\n"%(curUsr, sndUsr, chatTxt))
                 self.rpyTxt.setCaretPosition( len(self.rpyTxt.getText()) )
-            if not sndUsr == "AFVAL":
-		self.statusTxt.text='Message Sended.'
-	    else:
-		self.rpyTxt.append("MESSAGE IS SENDED TO TRASHCAN !!!")
-		self.rpyTxt.append("\nALWAYS PAY ATTENTION WHO YOU'RE SENDING TO !!!!\n")
+            if not sndUsr == "ALL TRASH":
+				self.statusTxt.text='Message Sended.'
+            else:
+                self.rpyTxt.append("MESSAGE IS SENDED TO TRASHCAN !!!")
+                self.rpyTxt.append("\nALWAYS PAY ATTENTION WHO YOU'RE SENDING TO !!!!\n")
                 self.rpyTxt.setCaretPosition( len(self.rpyTxt.getText()) )
-		self.statusTxt.text='Message sended to trashcan - Pay Attention Please !'
+                self.statusTxt.text='Message sended to trashcan - Pay Attention Please !'
             self.chatTxt.selectAll()
             self.chatTxt.cut()
         except:
