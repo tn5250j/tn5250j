@@ -28,6 +28,7 @@ import java.awt.print.*;
 import java.awt.*;
 import java.awt.font.*;
 import org.tn5250j.Session;
+import org.tn5250j.SessionConfig;
 
 public class PrinterThread extends Thread implements Printable {
 
@@ -38,6 +39,7 @@ public class PrinterThread extends Thread implements Printable {
    Font font;
    Session session;
    boolean toDefault;
+   SessionConfig config;
 
    public PrinterThread (ScreenChar[] sc, Font font, int cols, int rows,
                            Color colorBg, boolean toDefaultPrinter, Session ses) {
@@ -46,6 +48,8 @@ public class PrinterThread extends Thread implements Printable {
       setPriority(1);
       session = ses;
       session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      config = ses.getConfiguration();
+
       screen = new ScreenChar[sc.length];
       toDefault = toDefaultPrinter;
 
@@ -82,6 +86,52 @@ public class PrinterThread extends Thread implements Printable {
          pf.setOrientation(PageFormat.LANDSCAPE);
       else
          pf.setOrientation(PageFormat.PORTRAIT);
+
+
+      if (numCols != 132) {
+         if (config.getStringProperty("print.portWidth").length() != 0 &&
+               config.getStringProperty("print.portHeight").length() != 0 &&
+               config.getStringProperty("print.portImageWidth").length() != 0 &&
+               config.getStringProperty("print.portImageHeight").length() != 0 &&
+               config.getStringProperty("print.portImage.X").length() != 0 &&
+               config.getStringProperty("print.portImage.Y").length() != 0) {
+
+            Paper paper = pf.getPaper();
+
+            paper.setSize(
+               Double.parseDouble(config.getStringProperty("print.portWidth")),
+               Double.parseDouble(config.getStringProperty("print.portHeight")));
+
+            paper.setImageableArea(
+               Double.parseDouble(config.getStringProperty("print.portImage.X")),
+               Double.parseDouble(config.getStringProperty("print.portImage.Y")),
+               Double.parseDouble(config.getStringProperty("print.portImageWidth")),
+               Double.parseDouble(config.getStringProperty("print.portImageHeight")));
+            pf.setPaper(paper);
+         }
+      }
+      else {
+
+         if (config.getStringProperty("print.landWidth").length() != 0 &&
+               config.getStringProperty("print.landHeight").length() != 0 &&
+               config.getStringProperty("print.landImageWidth").length() != 0 &&
+               config.getStringProperty("print.landImageHeight").length() != 0 &&
+               config.getStringProperty("print.landImage.X").length() != 0 &&
+               config.getStringProperty("print.landImage.Y").length() != 0) {
+
+            Paper paper = pf.getPaper();
+
+            paper.setSize(
+               Double.parseDouble(config.getStringProperty("print.landWidth")),
+               Double.parseDouble(config.getStringProperty("print.landHeight")));
+
+            paper.setImageableArea(
+               Double.parseDouble(config.getStringProperty("print.landImage.X")),
+               Double.parseDouble(config.getStringProperty("print.landImage.Y")),
+               Double.parseDouble(config.getStringProperty("print.landImageWidth")),
+               Double.parseDouble(config.getStringProperty("print.landImageHeight")));
+         }
+      }
 
       //--- Set the printable class to this one since we
       //--- are implementing the Printable interface
@@ -165,7 +215,7 @@ public class PrinterThread extends Thread implements Printable {
             l = k.getLineMetrics("Wy",f);
 
             if (
-                  (w < (int)k.getStringBounds("W",f).getWidth() + 1) ||
+                  (w < (int)k.getStringBounds("W",f).getWidth()) ||
                      h < (int)(k.getStringBounds("g",f).getHeight() +
                            l.getDescent() + l.getLeading())
 
@@ -183,7 +233,7 @@ public class PrinterThread extends Thread implements Printable {
          g2.setFont(k);
 
          // get the width and height of the character bounds
-         int w1 = (int)k.getStringBounds("W",f).getWidth() + 1;
+         int w1 = (int)k.getStringBounds("W",f).getWidth();
          int h1 = (int)(k.getStringBounds("g",f).getHeight() +
                      l.getDescent() + l.getLeading());
          int x;
@@ -193,7 +243,7 @@ public class PrinterThread extends Thread implements Printable {
          for (int m = 0;m < numRows; m++)
             for (int i = 0; i < numCols; i++) {
                x = w1 * i;
-               y = h1 * m;
+               y = h1 * (m + 1);
 
                // only draw printable characters (in this case >= ' ')
                if (screen[getPos(m,i)].getChar() >= ' ' && !screen[getPos(m,i)].nonDisplay) {
