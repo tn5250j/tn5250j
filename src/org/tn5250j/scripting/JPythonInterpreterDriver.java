@@ -23,16 +23,16 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
 
    private static JPythonInterpreterDriver _instance;
 
-   private PythonInterpreter _interpreter;
+   private static PythonInterpreter _interpreter;
 
    static {
        
       try {
-        _interpreter = new PythonInterpreter()      
+        _interpreter = new PythonInterpreter();
       }
       catch (Exception ex ) {
       
-         System.out.println(ex.getMessage())
+         System.out.println(ex.getMessage());
       }
       // the inizialization is being done in the startup program
       //      Properties props = new Properties();
