@@ -5,6 +5,10 @@ because I could not find a 5250 emulator of Linux with the enhanced functions
 like graphical windows, cursor progression, continued edit fields, masked edit
 fields etc.....
 
+Changes since 0.5.7 pre release 3
+------------------------------------------------------------------------------
+Fixed problems with Field Exit on certain fields.
+
 Changes since 0.5.7 pre release 2
 ------------------------------------------------------------------------------
 
