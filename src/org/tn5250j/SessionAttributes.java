@@ -1,6 +1,5 @@
-package org.tn5250j;
 /**
- * Title: tn5250J
+ * Title: SessionAttributes.java
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -24,6 +23,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -48,22 +48,13 @@ public class SessionAttributes extends JDialog {
    Properties props = null;
    JPanel jpm = new JPanel(new BorderLayout());
 
-   JCheckBox kpCheck;
-   JCheckBox dceCheck;
-   JCheckBox defaultPrinter;
-
-   ColorAttributesPanel cpp;
-   FontAttributesPanel fp;
-   DisplayAttributesPanel display;
-   CursorAttributesPanel cuPanel;
-   SignoffAttributesPanel signoff;
-   OnConnectAttributesPanel onConnect;
-   HotspotAttributesPanel hotspot;
-
    private SessionConfig changes = null;
-   JTree tree = new JTree();
 
-   public SessionAttributes(Frame parent, SessionConfig config ) {
+   JTree tree = new JTree();
+   CardLayout cardLayout;
+   JPanel jp;
+
+   public SessionAttributes(JFrame parent, SessionConfig config ) {
       super(parent);
 
       this.fileName = config.getConfigurationResource();
@@ -81,74 +72,10 @@ public class SessionAttributes extends JDialog {
    /**Component initialization*/
    private void jbInit() throws Exception  {
 
-      // define font panel
-      fp = new FontAttributesPanel(changes);
-      // define colors panel
-      cpp = new ColorAttributesPanel(changes);
-      // define display panel
-      display = new DisplayAttributesPanel(changes);
-      // define cursor panel
-      cuPanel = new CursorAttributesPanel(changes);
-      // define signoff panel
-      signoff = new SignoffAttributesPanel(changes);
-      // define signoff panel
-      onConnect = new OnConnectAttributesPanel(changes);
-      // define signoff panel
-      hotspot = new HotspotAttributesPanel(changes);
-
-      // define mouse panel
-      final JPanel mouse = new JPanel();
-      mouse.setLayout(new BoxLayout(mouse,BoxLayout.Y_AXIS));
-
-      // define double click as enter
-      JPanel dcep = new JPanel();
-      dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.doubleClick")));
-
-      dceCheck = new JCheckBox(LangTool.getString("sa.sendEnter"));
-
-      // check if double click sends enter
-      dceCheck.setSelected(getStringProperty("doubleClick").equals("Yes"));
-
-      dcep.add(dceCheck);
-      mouse.add(dcep);
-
-      // define Key Pad panel
-      final JPanel kp = new JPanel();
-      kp.setLayout(new BoxLayout(kp,BoxLayout.Y_AXIS));
-
-      // define kpPanel panel
-      JPanel kpp = new JPanel();
-      kpp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.kpp")));
-      kpCheck = new JCheckBox(LangTool.getString("sa.kpCheck"));
-
-      if (getStringProperty("keypad").equals("Yes"))
-         kpCheck.setSelected(true);
-
-      kpp.add(kpCheck);
-
-      kp.add(kpp);
-
-      // define Printer panel
-      final JPanel pp = new JPanel();
-      pp.setLayout(new BoxLayout(pp,BoxLayout.Y_AXIS));
-
-      // define ppPanel panel
-      JPanel ppp = new JPanel();
-      ppp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.print")));
-      defaultPrinter = new JCheckBox(LangTool.getString("sa.defaultPrinter"));
-
-      if (getStringProperty("defaultPrinter").equals("Yes"))
-         defaultPrinter.setSelected(true);
-
-      ppp.add(defaultPrinter);
-
-      pp.add(ppp);
-
       // define default
-      final JPanel jp = new JPanel();
-
-      jp.add(cpp,BorderLayout.CENTER);
-      jp.setPreferredSize(cpp.getPreferredSize());
+      jp = new JPanel();
+      cardLayout = new CardLayout();
+      jp.setLayout(cardLayout);
 
       //Create the nodes.
       DefaultMutableTreeNode top = new DefaultMutableTreeNode(fileName);
@@ -172,85 +99,9 @@ public class SessionAttributes extends JDialog {
 
             Object nodeInfo = node.getUserObject();
 
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeFonts"))) {
-               jp.removeAll();
-               jp.add(fp,BorderLayout.NORTH);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
+            showPanel(nodeInfo);
 
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeColors"))) {
-               jp.removeAll();
-               jp.add(cpp,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
             }
-
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeDisplay"))) {
-               jp.removeAll();
-               jp.add(display,BorderLayout.NORTH);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeCursor"))) {
-               jp.removeAll();
-               jp.add(cuPanel,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeSignoff"))) {
-               jp.removeAll();
-               jp.add(signoff,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeOnConnect"))) {
-               jp.removeAll();
-               jp.add(onConnect,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeMouse"))) {
-               jp.removeAll();
-               jp.add(mouse,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeHS"))) {
-               jp.removeAll();
-               jp.add(hotspot,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeKP"))) {
-               jp.removeAll();
-               jp.add(kp,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-            if (nodeInfo.toString().equals(LangTool.getString("sa.nodePrinter"))) {
-               jp.removeAll();
-               jp.add(pp,BorderLayout.CENTER);
-               jp.setPreferredSize(cpp.getPreferredSize());
-               jp.validate();
-               jpm.repaint();
-            }
-
-         }
       });
 
 
@@ -262,46 +113,35 @@ public class SessionAttributes extends JDialog {
       jpm.add(jp,BorderLayout.EAST);
       jpm.add(jsp,BorderLayout.WEST);
 
+      cardLayout.first(jp);
+
+   }
+
+   private void showPanel(Object node) {
+
+      cardLayout.show(jp,node.toString());
    }
 
    private void createNodes(DefaultMutableTreeNode top) {
-        DefaultMutableTreeNode attrib = null;
+      createNode(top,new ColorAttributesPanel(changes));
+      createNode(top,new DisplayAttributesPanel(changes));
+      createNode(top,new CursorAttributesPanel(changes));
+      createNode(top,new FontAttributesPanel(changes));
+      createNode(top,new SignoffAttributesPanel(changes));
+      createNode(top,new OnConnectAttributesPanel(changes));
+      createNode(top,new MouseAttributesPanel(changes));
+      createNode(top,new HotspotAttributesPanel(changes));
+      createNode(top,new KeypadAttributesPanel(changes));
+      createNode(top,new PrinterAttributesPanel(changes));
 
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeColors"));
-//        attrib = new DefaultMutableTreeNode(cpp);
-        top.add(attrib);
+   }
 
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeDisplay"));
-        top.add(attrib);
+   private void createNode(DefaultMutableTreeNode top, AttributesPanel ap) {
 
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeCursor"));
-        top.add(attrib);
+      top.add(new DefaultMutableTreeNode(ap));
+      jp.add(ap,ap.toString());
 
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeFonts"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeSignoff"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeOnConnect"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeMouse"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeHS"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeKP"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodePrinter"));
-        top.add(attrib);
-
-        attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodei18n"));
-        top.add(attrib);
-
-    }
+   }
 
    protected final String getStringProperty(String prop) {
 
@@ -409,7 +249,6 @@ public class SessionAttributes extends JDialog {
    private void doOptionStuff(JOptionPane optionPane) {
 
       String result = (String)optionPane.getValue();
-//      System.out.println("result > " + result);
 
       if (LangTool.getString("sa.optApply").equals(result)) {
 
@@ -434,78 +273,16 @@ public class SessionAttributes extends JDialog {
 
    private void applyAttributes() {
 
-//      DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
-//      Enumeration e = root.children();
-//      while (e.hasMoreElements())
-//         System.out.println(e.nextElement());
-//      (DefaultMutableTreeNode)tree.getModel().getRoot()
-//         for (int x = 0; x < compa.length; x ++) {
-//
-//            if (compa[x] instanceof org.tn5250j.settings.AttributesPanel) {
-//               System.out.println(compa.length + " " + x);
-//
-//   //            ((AttributesPanel)compa[x])
-//            }
-//         }
-
-
-      // apply the font attributes
-      fp.applyAttributes();
-      // apply the color attributes
-      cpp.applyAttributes();
-      // apply the display attributes
-      display.applyAttributes();
-      // apply the cursor attributes
-      cuPanel.applyAttributes();
-      // apply the signoff attributes
-      signoff.applyAttributes();
-      // apply the on connect attributes
-      onConnect.applyAttributes();
-      // apply the hotspot attributes
-      hotspot.applyAttributes();
-
-      if (dceCheck.isSelected()) {
-         changes.firePropertyChange(this,"doubleClick",
-                           getStringProperty("doubleClick"),
-                           "Yes");
-         setProperty("doubleClick","Yes");
+      DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+      Enumeration e = root.children();
+      Object child;
+      while (e.hasMoreElements()) {
+         child = e.nextElement();
+         Object obj = ((DefaultMutableTreeNode)child).getUserObject();
+         if (obj instanceof AttributesPanel) {
+            ((AttributesPanel)obj).applyAttributes();
+         }
       }
-      else {
-         changes.firePropertyChange(this,"doubleClick",
-                           getStringProperty("doubleClick"),
-                           "No");
-         setProperty("doubleClick","No");
-      }
-
-
-
-      if (kpCheck.isSelected()) {
-         changes.firePropertyChange(this,"keypad",
-                           getStringProperty("keypad"),
-                           "Yes");
-         setProperty("keypad","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"keypad",
-                           getStringProperty("keypad"),
-                           "No");
-         setProperty("keypad","No");
-      }
-
-
-      if (defaultPrinter.isSelected()) {
-         changes.firePropertyChange(this,"defaultPrinter",
-                           getStringProperty("defaultPrinter"),
-                           "Yes");
-         setProperty("defaultPrinter","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"defaultPrinter",
-                           getStringProperty("defaultPrinter"),
-                           "No");
-         setProperty("defaultPrinter","No");
-      }
-
 
       setProperty("saveme","yes");
 
@@ -513,6 +290,19 @@ public class SessionAttributes extends JDialog {
 
    private void saveProps() {
 
+      DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+      Enumeration e = root.children();
+      Object child;
+      while (e.hasMoreElements()) {
+         child = e.nextElement();
+         Object obj = ((DefaultMutableTreeNode)child).getUserObject();
+         if (obj instanceof AttributesPanel) {
+            ((AttributesPanel)obj).save();
+         }
+      }
+
+      // note for kjp
+      // this needs to be a call to the configuration object to save it's objects
       try {
          FileOutputStream out = new FileOutputStream(fileName);
          props.store(out,"------ Defaults --------");
