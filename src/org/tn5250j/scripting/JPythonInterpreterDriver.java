@@ -23,9 +23,17 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
 
    private static JPythonInterpreterDriver _instance;
 
-   private PythonInterpreter _interpreter = new PythonInterpreter();
+   private PythonInterpreter _interpreter;
 
    static {
+       
+      try {
+        _interpreter = new PythonInterpreter()      
+      }
+      catch (Exception ex ) {
+      
+         System.out.println(ex.getMessage())
+      }
       // the inizialization is being done in the startup program
       //      Properties props = new Properties();
       //      props.setProperty("python.path", ".;jt400.jar");
