@@ -61,6 +61,7 @@ public class FTP5250Prot {
    private char decChar;
    private OutputFilterInterface ofi;
    private Vector members;
+   private Thread getThread;
 
    public FTP5250Prot (tnvt v) {
       vt = v;
@@ -117,10 +118,13 @@ public class FTP5250Prot {
     */
    public void disconnect() {
       try {
-         executeCommand("QUIT");
-         ftpOutputStream.close();
-         ftpInputStream.close();
-         ftpConnectionSocket.close();
+         if (isConnected()) {
+            executeCommand("QUIT");
+            ftpOutputStream.close();
+            ftpInputStream.close();
+            ftpConnectionSocket.close();
+            connected = false;
+         }
       }
       catch(Exception _ex) { }
    }
@@ -857,13 +861,17 @@ public class FTP5250Prot {
                      fireStatusEvent();
                   }
                   else {
-                     parseResponse();
+                     if (!aborted)
+                        parseResponse();
                   }
                   writeFooter();
 //                  parseResponse();
                   printFTPInfo("Transfer complete!");
 
                }
+            }
+            catch(InterruptedIOException iioe) {
+               printFTPInfo("Interrupted! " + iioe.getMessage());
             }
             catch(Exception _ex) {
                printFTPInfo("Error! " + _ex);
@@ -881,12 +889,13 @@ public class FTP5250Prot {
                   writeFooter();
                }
                catch(Exception _ex) { }
-            }
 
+               disconnect();
+            }
          }
       };
 
-      Thread getThread = new Thread(getRun);
+      getThread = new Thread(getRun);
       getThread.start();
 
       return flag;
@@ -964,6 +973,9 @@ public class FTP5250Prot {
    private String parseResponse() {
       try {
 
+         if (ftpInputStream == null)
+            return "0000 Response Invalid";
+
          String response = ftpInputStream.readLine();
          String response2 = response;
          boolean append = true;
@@ -992,6 +1004,17 @@ public class FTP5250Prot {
 
          return lastResponse;
       }
+//      catch (InterruptedIOException iioe) {
+//
+//         try {
+//            ftpInputStream.close();
+//         }
+//         catch (IOException ieo) {
+//
+//         }
+//         return "0000 Response Invalid";
+//
+//      }
       catch(Exception exception) {
          System.out.println(exception);
          exception.printStackTrace();

@@ -1,7 +1,7 @@
 package org.tn5250j.tools;
 
 /**
- * Title: tn5250J
+ * Title: XTFRFile.java
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -42,10 +42,14 @@ import org.tn5250j.mailtools.SendEMailDialog;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import org.tn5250j.sql.AS400Xtfr;
+import org.tn5250j.sql.SqlWizard;
 
-public class XTFRFile extends JDialog implements ActionListener, FTPStatusListener {
+public class XTFRFile extends JDialog implements ActionListener, FTPStatusListener,
+                                                   ItemListener {
 
    FTP5250Prot ftpProtocol;
+   AS400Xtfr axtfr;
 
    JTextField user;
    JPasswordField password;
@@ -54,17 +58,28 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    JTextField localFile;
    JRadioButton allFields;
    JRadioButton selectedFields;
+   JComboBox decimalSeparator;
+   JComboBox fileFormat;
+   JCheckBox useQuery;
+   JButton queryWizard;
+   JTextArea queryStatement;
 
    JRadioButton intDesc;
    JRadioButton txtDesc;
 
+   JPanel as400QueryP;
+   JPanel as400FieldP;
+   JPanel as400p;
+
    boolean fieldsSelected;
    boolean emailIt;
+
    tnvt vt;
    XTFRFileFilter htmlFilter;
    XTFRFileFilter KSpreadFilter;
    XTFRFileFilter OOFilter;
    XTFRFileFilter ExcelFilter;
+//   XTFRFileFilter ExcelWorkbookFilter;
 
    // default file filter used.
    XTFRFileFilter fileFilter;
@@ -76,17 +91,22 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    JLabel note;
    ProgressOptionPane monitor;
    JDialog dialog;
-   JComboBox decimalSeparator;
+   XTFRFileFilter filter;
 
    static String messageProgress;
 
    public XTFRFile (Frame parent,tnvt pvt) {
       super(parent);
+      setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       vt = pvt;
       ftpProtocol = new FTP5250Prot(vt);
       ftpProtocol.addFTPStatusListener(this);
+      axtfr = new AS400Xtfr(vt);
+      axtfr.addFTPStatusListener(this);
+
       createProgressMonitor();
-      getXTFRInfo();
+      initFileFilters();
+      initXTFRInfo();
 
       addWindowListener(new WindowAdapter() {
 
@@ -96,20 +116,22 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          }
 
       });
-      setFileFilters();
 
       messageProgress = LangTool.getString("xtfr.messageProgress");
+      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
    }
 
-   private void setFileFilters() {
+   private void initFileFilters() {
       htmlFilter = new XTFRFileFilter(new String[] {"html", "htm"}, "Hyper Text Markup Language");
       htmlFilter.setOutputFilterName("org.tn5250j.tools.filters.HTMLOutputFilter");
       KSpreadFilter = new XTFRFileFilter("ksp", "KSpread KDE Spreadsheet");
       KSpreadFilter.setOutputFilterName("org.tn5250j.tools.filters.KSpreadOutputFilter");
-      OOFilter = new XTFRFileFilter("sxc", "OpenOffice 6");
+      OOFilter = new XTFRFileFilter("sxc", "OpenOffice");
       OOFilter.setOutputFilterName("org.tn5250j.tools.filters.OpenOfficeOutputFilter");
       ExcelFilter = new XTFRFileFilter("xls", "Excel");
       ExcelFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelOutputFilter");
+//      ExcelWorkbookFilter = new XTFRFileFilter("xls", "Excel 95 97 XP 2000");
+//      ExcelWorkbookFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelWorkbookOutputFilter");
    }
 
    public void statusReceived(FTPStatusEvent statusevent) {
@@ -216,21 +238,33 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          initializeMonitor();
          dialog.show();
 
-         if (ftpProtocol.connect(systemName.getText(),21)) {
+         if (useQuery.isSelected()) {
 
-            if (ftpProtocol.login(user.getText(),new String(password.getPassword()))) {
-               // this will execute in it's own thread and will send a
-               //    fileInfoReceived(FTPStatusEvent statusevent) event when
-               //    finished without an error.
-               ftpProtocol.setDecimalChar(getDecimalChar());
-               ftpProtocol.getFileInfo(hostFile.getText(),intDesc.isSelected());
-            }
+            axtfr.login(user.getText(),new String(password.getPassword()));
+            // this will execute in it's own thread and will send a
+            //    fileInfoReceived(FTPStatusEvent statusevent) event when
+            //    finished without an error.
+            axtfr.setDecimalChar(getDecimalChar());
+            axtfr.connect(systemName.getText());
+
+
          }
          else {
+            if (ftpProtocol.connect(systemName.getText(),21)) {
 
-            disconnect();
+               if (ftpProtocol.login(user.getText(),new String(password.getPassword()))) {
+                  // this will execute in it's own thread and will send a
+                  //    fileInfoReceived(FTPStatusEvent statusevent) event when
+                  //    finished without an error.
+                  ftpProtocol.setDecimalChar(getDecimalChar());
+                  ftpProtocol.getFileInfo(hostFile.getText(),intDesc.isSelected());
+               }
+            }
+            else {
+
+               disconnect();
+            }
          }
-
       }
 
       if (e.getActionCommand().equals("BROWSEPC")) {
@@ -254,7 +288,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       label.setText(LangTool.getString("xtfr.labelInProgress"));
       note.setText(LangTool.getString("xtfr.labelFileInfo"));
       progressBar.setStringPainted(false);
-      monitor.setValue(null);
+      monitor.reset();
 
    }
 
@@ -270,15 +304,28 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       progressBar.setMaximum(ftpProtocol.getFileSize());
       progressBar.setStringPainted(true);
 
-      fileFilter = getFilterByExtension();
+      fileFilter = getFilterByDescription();
 
-      ftpProtocol.setOutputFilter(fileFilter.getOutputFilterInstance());
-      ftpProtocol.getFile(hostFile.getText(),
-                           fileFilter.setExtension(localFile.getText()));
+      if (useQuery.isSelected()) {
 
+         axtfr.setOutputFilter(fileFilter.getOutputFilterInstance());
+         axtfr.getFile(hostFile.getText(),
+                              fileFilter.setExtension(localFile.getText()),
+                              queryStatement.getText().trim());
+
+      }
+      else {
+         ftpProtocol.setOutputFilter(fileFilter.getOutputFilterInstance());
+
+         ftpProtocol.getFile(hostFile.getText(),
+                              fileFilter.setExtension(localFile.getText()));
+      }
    }
 
    private XTFRFileFilter getFilterByExtension() {
+
+      if (filter != null && filter.isExtensionInList(localFile.getText()))
+         return filter;
 
       if (KSpreadFilter.isExtensionInList(localFile.getText()))
          return KSpreadFilter;
@@ -286,6 +333,27 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          return OOFilter;
       if (ExcelFilter.isExtensionInList(localFile.getText()))
          return ExcelFilter;
+//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
+//         return ExcelWorkbookFilter;
+
+      return htmlFilter;
+   }
+
+   private XTFRFileFilter getFilterByDescription() {
+
+      String desc = (String)fileFormat.getSelectedItem();
+
+//      if (filter.getDescription().equals(desc))
+//         return filter;
+
+      if (KSpreadFilter.getDescription().equals(desc))
+         return KSpreadFilter;
+      if (OOFilter.getDescription().equals(desc))
+         return OOFilter;
+      if (ExcelFilter.getDescription().equals(desc))
+         return ExcelFilter;
+//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
+//         return ExcelWorkbookFilter;
 
       return htmlFilter;
    }
@@ -314,16 +382,22 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       contentPane.add(panel, BorderLayout.NORTH);
       contentPane.add(new JScrollPane(taskOutput), BorderLayout.CENTER);
 
-      Object[] cancelOption = new Object[1];
-      cancelOption[0] = UIManager.getString("OptionPane.cancelButtonText");
+      monitor = new ProgressOptionPane(contentPane);
 
-      monitor = new ProgressOptionPane(contentPane,cancelOption);
-//      taskOutput.setColumns(monitor.getMaxCharactersPerLineCount());
       taskOutput.setRows(6);
 
       dialog = monitor.createDialog(this,LangTool.getString("xtfr.progressTitle"));
 
 
+   }
+
+   private void startWizard() {
+
+      SqlWizard wizard = new SqlWizard(systemName.getText().trim(),
+                                       user.getText(),
+                                       new String(password.getPassword()));
+
+      wizard.setQueryTextArea(queryStatement);
    }
 
    /**
@@ -335,17 +409,16 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
 
       // set the file filters for the file chooser
-      pcFileChooser.addChoosableFileFilter(ExcelFilter);
-      pcFileChooser.addChoosableFileFilter(KSpreadFilter);
-      pcFileChooser.addChoosableFileFilter(OOFilter);
-      pcFileChooser.addChoosableFileFilter(htmlFilter);
+      filter = getFilterByDescription();
+
+      pcFileChooser.addChoosableFileFilter(filter);
 
       int ret = pcFileChooser.showSaveDialog(this);
 
       // check to see if something was actually chosen
       if (ret == JFileChooser.APPROVE_OPTION) {
          File file = pcFileChooser.getSelectedFile();
-         XTFRFileFilter filter = null;
+         filter = null;
          if (pcFileChooser.getFileFilter() instanceof XTFRFileFilter )
             filter = (XTFRFileFilter)pcFileChooser.getFileFilter();
          else
@@ -361,7 +434,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
     * Creates the dialog components for prompting the user for the information
     * of the transfer
     */
-   private void getXTFRInfo() {
+   private void initXTFRInfo() {
 
       // create some reusable borders and layouts
       BorderLayout borderLayout = new BorderLayout();
@@ -377,12 +450,16 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       sp.setBorder(etchedBorder);
 
       // host panel for as400
-      JPanel as400p = new JPanel();
+      as400p = new JPanel();
       as400p.setBorder(BorderFactory.createTitledBorder(
                                     LangTool.getString("xtfr.labelAS400")));
 
+      as400p.setLayout(new BorderLayout());
+
+      JPanel as400HostP = new JPanel();
+
       AlignLayout as400pLayout = new AlignLayout();
-      as400p.setLayout(as400pLayout);
+      as400HostP.setLayout(as400pLayout);
 
       // system name panel
       JLabel snpLabel = new JLabel(LangTool.getString("xtfr.labelSystemName"));
@@ -390,24 +467,24 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       systemName = new JTextField(vt.getHostName());
       systemName.setColumns(30);
 
-      as400p.add(snpLabel);
-      as400p.add(systemName);
+      as400HostP.add(snpLabel);
+      as400HostP.add(systemName);
 
       // host file name panel
       JLabel hfnpLabel = new JLabel(LangTool.getString("xtfr.labelHostFile"));
       hostFile = new JTextField();
       hostFile.setColumns(30);
 
-      as400p.add(hfnpLabel);
-      as400p.add(hostFile);
+      as400HostP.add(hfnpLabel);
+      as400HostP.add(hostFile);
 
       // user id panel
       JLabel idpLabel = new JLabel(LangTool.getString("xtfr.labelUserId"));
 
       user = new JTextField();
       user.setColumns(15);
-      as400p.add(idpLabel);
-      as400p.add(user);
+      as400HostP.add(idpLabel);
+      as400HostP.add(user);
 
       // password panel
       JLabel pwpLabel = new JLabel(LangTool.getString("xtfr.labelPassword"));
@@ -415,8 +492,40 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       password = new JPasswordField();
       password.setColumns(15);
 
-      as400p.add(pwpLabel);
-      as400p.add(password);
+      as400HostP.add(pwpLabel);
+      as400HostP.add(password);
+
+      // Query Wizard
+      useQuery = new JCheckBox(LangTool.getString("xtfr.labelUseQuery"));
+      queryWizard = new JButton(LangTool.getString("xtfr.labelQueryWizard"));
+
+      queryWizard.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            startWizard();
+         }
+      });
+
+      queryWizard.setEnabled(false);
+
+      useQuery.addItemListener(this);
+
+      as400HostP.add(useQuery);
+      as400HostP.add(queryWizard);
+
+      as400p.add(as400HostP,BorderLayout.CENTER);
+
+      as400QueryP = new JPanel();
+      as400QueryP.setLayout(new BorderLayout());
+
+      queryStatement = new JTextArea(5,40);
+      JScrollPane scrollPane = new JScrollPane(queryStatement);
+      queryStatement.setLineWrap(true);
+      as400QueryP.add(scrollPane,BorderLayout.CENTER);
+
+      as400FieldP = new JPanel();
+
+      AlignLayout as400fLayout = new AlignLayout();
+      as400FieldP.setLayout(as400fLayout);
 
       // Field Selection panel
       JLabel fieldsLabel = new JLabel(LangTool.getString("xtfr.labelFields"));
@@ -430,10 +539,10 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       fieldGroup.add(allFields);
       fieldGroup.add(selectedFields);
 
-      as400p.add(fieldsLabel);
+      as400FieldP.add(fieldsLabel);
       fgPanel.add(allFields);
       fgPanel.add(selectedFields);
-      as400p.add(fgPanel);
+      as400FieldP.add(fgPanel);
 
       // Field Text Description panel
       JLabel textDescLabel = new JLabel(LangTool.getString("xtfr.labelTxtDesc"));
@@ -447,21 +556,37 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       txtDescGroup.add(txtDesc);
       txtDescGroup.add(intDesc);
 
-      as400p.add(textDescLabel);
+      as400FieldP.add(textDescLabel);
       tdPanel.add(txtDesc);
       tdPanel.add(intDesc);
-      as400p.add(tdPanel);
+      as400FieldP.add(tdPanel);
+
+      as400p.add(as400HostP,BorderLayout.CENTER);
+      as400p.add(as400FieldP,BorderLayout.SOUTH);
 
       // pc panel for pc information
       JPanel pcp = new JPanel();
       pcp.setBorder(BorderFactory.createTitledBorder(
                                     LangTool.getString("xtfr.labelpc")));
-      pcp.setLayout(new BorderLayout());
 
-      // panel for pc file information
-      JPanel pcf = new JPanel();
+      AlignLayout pcLayout = new AlignLayout(3,5,5);
+
+      pcp.setLayout(pcLayout);
+
+      JLabel pffLabel = new JLabel(LangTool.getString("xtfr.labelFileFormat"));
+      fileFormat = new JComboBox();
+
+      fileFormat.addItem(htmlFilter.getDescription());
+      fileFormat.addItem(OOFilter.getDescription());
+      fileFormat.addItem(ExcelFilter.getDescription());
+      fileFormat.addItem(KSpreadFilter.getDescription());
+
+      pcp.add(pffLabel);
+      pcp.add(fileFormat);
+      pcp.add(new JLabel());
 
       JLabel pcpLabel = new JLabel(LangTool.getString("xtfr.labelPCFile"));
+
       localFile = new JTextField();
       localFile.setColumns(30);
 
@@ -469,13 +594,10 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       browsePC.setActionCommand("BROWSEPC");
       browsePC.addActionListener(this);
 
+      pcp.add(pcpLabel);
+      pcp.add(localFile);
+      pcp.add(browsePC);
 
-      pcf.add(pcpLabel);
-      pcf.add(localFile);
-      pcf.add(browsePC);
-
-      // panel for decimal separator information
-      JPanel pcd = new JPanel();
       decimalSeparator = new JComboBox();
       decimalSeparator.addItem(LangTool.getString("xtfr.period"));
       decimalSeparator.addItem(LangTool.getString("xtfr.comma"));
@@ -488,12 +610,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       else
          decimalSeparator.setSelectedIndex(1);
 
-//      JLabel pcpLabel = new JLabel(LangTool.getString("xtfr.labelPCFile"));
-      pcd.add(new JLabel(LangTool.getString("xtfr.labelDecimal")));
-      pcd.add(decimalSeparator);
-
-      pcp.add(pcf,BorderLayout.NORTH);
-      pcp.add(pcd,BorderLayout.SOUTH);
+      pcp.add(new JLabel(LangTool.getString("xtfr.labelDecimal")));
+      pcp.add(decimalSeparator);
 
       sp.add(as400p,BorderLayout.NORTH);
       sp.add(pcp,BorderLayout.SOUTH);
@@ -532,6 +650,25 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       // now show the world what we can do
       show();
 
+   }
+
+   /** Listens to the use query check boxe */
+   public void itemStateChanged(ItemEvent e) {
+      Object source = e.getItemSelectable();
+      if (source == useQuery) {
+         if (useQuery.isSelected()) {
+            queryWizard.setEnabled(true);
+            as400p.remove(as400FieldP);
+            as400p.add(as400QueryP,BorderLayout.SOUTH);
+         }
+         else {
+            queryWizard.setEnabled(false);
+            as400p.remove(as400QueryP);
+            as400p.add(as400FieldP,BorderLayout.SOUTH);
+         }
+         this.validate();
+         this.repaint();
+      }
    }
 
    private void selectFields() {
@@ -655,20 +792,32 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
     */
    private class ProgressOptionPane extends JOptionPane {
 
-      Object[] option;
+      ProgressOptionPane(Object messageList) {
 
-      ProgressOptionPane(Object messageList,Object[] cancelOption) {
          super(messageList,
                JOptionPane.INFORMATION_MESSAGE,
                JOptionPane.DEFAULT_OPTION,
                null,
-               cancelOption,
+               new Object[] {UIManager.getString("OptionPane.cancelButtonText")},
                null);
-         option = cancelOption;
+         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
       }
 
       public void setDone() {
-//         option[0] = "Done";
+         Object[] option = this.getOptions();
+         option[0] = LangTool.getString("xtfr.tableDone");
+         this.setOptions(option);
+         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+      }
+
+      public void reset() {
+
+         Object[] option = this.getOptions();
+         option[0] = UIManager.getString("OptionPane.cancelButtonText");
+         this.setOptions(option);
+         monitor.setValue(null);
+
       }
 
       public int getMaxCharactersPerLineCount() {
@@ -719,9 +868,10 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          addPropertyChangeListener(new PropertyChangeListener() {
              public void propertyChange(PropertyChangeEvent event) {
                  if(dialog.isVisible() &&
-                    event.getSource() == ProgressOptionPane.this &&
-                    (event.getPropertyName().equals(VALUE_PROPERTY) ||
-                     event.getPropertyName().equals(INPUT_VALUE_PROPERTY))){
+                     event.getSource() == ProgressOptionPane.this &&
+                     (event.getPropertyName().equals(VALUE_PROPERTY) ||
+                        event.getPropertyName().equals(INPUT_VALUE_PROPERTY))){
+                     ftpProtocol.setAborted();
                      dialog.setVisible(false);
                      dialog.dispose();
                  }
