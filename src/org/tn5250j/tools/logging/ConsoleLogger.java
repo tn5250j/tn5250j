@@ -40,7 +40,8 @@ public class ConsoleLogger extends TN5250jLogger {
 
    // printing methods:
    public void debug(Object message) {
-      System.out.println("DEBUG ["+clazz+"] "+ message);
+      if (isDebugEnabled())
+         System.out.println("DEBUG ["+clazz+"] "+ message);
    }
 
    public void info(Object message) {
