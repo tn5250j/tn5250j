@@ -30,7 +30,6 @@ import java.awt.event.*;
 import org.tn5250j.Session;
 import org.tn5250j.Screen5250;
 import org.tn5250j.event.KeyChangeListener;
-import org.tn5250j.tools.KeyMapper;
 import org.tn5250j.tnvt;
 import javax.swing.*;
 

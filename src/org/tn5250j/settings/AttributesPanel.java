@@ -117,7 +117,7 @@ public abstract class AttributesPanel extends JPanel {
 
    }
 
-   protected final Color getColorProperty(String prop, Color defColor) {
+   protected Color getColorProperty(String prop, Color defColor) {
 
       if (changes.isPropertyExists(prop)) {
          Color c = new Color(changes.getIntegerProperty(prop));
@@ -126,6 +126,16 @@ public abstract class AttributesPanel extends JPanel {
       else
          return defColor;
 
+   }
+
+   protected Rectangle getRectangleProperty(String key) {
+
+      return changes.getRectangleProperty(key);
+   }
+
+   protected void setRectangleProperty(String key, Rectangle rect) {
+
+      changes.setRectangleProperty(key,rect);
    }
 
    protected final void setProperty(String key, String val) {

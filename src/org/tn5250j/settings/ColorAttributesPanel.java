@@ -452,6 +452,8 @@ public class ColorAttributesPanel extends AttributesPanel {
 
       try {
          ClassLoader cl = this.getClass().getClassLoader();
+         if (cl == null)
+            cl = ClassLoader.getSystemClassLoader();
          file = cl.getResource("tn5250jSchemas.properties");
          schemaProps.load(file.openStream());
       }
