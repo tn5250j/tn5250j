@@ -95,17 +95,7 @@ public class SessionScroller implements SessionScrollerInterface, TN5250jConstan
             _instance = this;
          }
 
-//
-//         constructor2 = stroker_class.getConstructor(new Class[] {KeyEvent.class,
-//                                                                  boolean.class});
-//
-//         constructor3 = stroker_class.getConstructor(new Class[] {int.class,
-//                                                                  boolean.class,
-//                                                                  boolean.class,
-//                                                                  boolean.class,
-//                                                                  boolean.class,
-//                                                                  int.class});
-//
+
       }
       catch (Throwable t) {
          _instance = this;
@@ -115,9 +105,7 @@ public class SessionScroller implements SessionScrollerInterface, TN5250jConstan
 
       _instance.addMouseWheelListener(session);
       return _instance;
-//      NEW_SCROLLER = constructor1;
-//      NEW_STROKER2 = constructor2;
-//      NEW_STROKER3 = constructor3;
+
    }
 
    public void addMouseWheelListener(Session ses) {
