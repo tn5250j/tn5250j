@@ -66,7 +66,12 @@ The following sections are available:
 =======================
 2)  java -jar tn5250j.jar
 
-    Select the configure button to define sessions when the session selection
+    On first invocation of the emulator there where be some warning messages
+    that will be output to the console.  These are to inform you that defaults
+    files are being setup for you for first run.
+
+    You will be presented with a Connections screen for defining sessions.
+    Select the add button to define sessions when the session selection
     window is displayed.
            or
     java -jar tn5250j.jar host -p port
@@ -421,7 +426,7 @@ Selected columns and Selected rows - shows the status of the selection.  We use
             this to count the characters of a selection.  Note these two entries
             will only show up if there is a bounded area specified.
 
-Sum Area1   This option will only show up if there was a bounded area selected
+Sum Area -  This option will only show up if there was a bounded area selected
             for example copy and paste.
 
             You can select two different formats to parse numbers.  The Grouping
@@ -507,7 +512,7 @@ Redhat 7.2
    ---
  - JDK 1.3.x, JDK 1.4 Sun JDK
 
- The 1.4 beta 3 on windows and linux is closing the gap between consistency !!!!!
+ The 1.4 on windows and linux is closing the gap between consistency !!!!!
 
    IBM
    ---
@@ -565,6 +570,9 @@ Didac Lopez
 Ricardo Fermin
 Patrick Bielen
 Christian Geisert
+Robert Groenewegen
+Roy Ginsburg
+James Johnson
 
 Without their constant testing and feedback there would be a lot more bugs.
 
