@@ -240,8 +240,11 @@ public class SessionAttributes extends JDialog {
                         prop.equals(JOptionPane.INPUT_VALUE_PROPERTY)))
                    {
 
+                     saOptionPane.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
                      doOptionStuff(saOptionPane);
 
+                     saOptionPane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                    }
                }
            });
