@@ -283,10 +283,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   public boolean isOnSignoffScreen() {
-      return vt.isOnSignoffScreen();
-   }
-
    public void closeSession() {
 
       Object[]      message = new Object[1];
@@ -308,7 +304,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          );
 
       if (result == 0) {
-         if (!isOnSignoffScreen()) {
+         if (!((Session)this).isOnSignonScreen()) {
 
             if (confirmClose()) {
                closeMe();

@@ -32,6 +32,7 @@ import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 /**
  * A host session configuration object
@@ -166,36 +167,54 @@ public class SessionConfig implements TN5250jConstants {
 
       try {
          if (loadDefaults) {
-            Properties schemaProps = new Properties();
-            java.net.URL file=null;
-
-            ClassLoader cl = this.getClass().getClassLoader();
-            if (cl == null)
-               cl = ClassLoader.getSystemClassLoader();
-            file = cl.getResource("tn5250jSchemas.properties");
-            schemaProps.load(file.openStream());
-            // we will now load the default schema
-            String prefix = schemaProps.getProperty("schemaDefault");
-            sesProps.setProperty("colorBg",schemaProps.getProperty(prefix + ".colorBg"));
-            sesProps.setProperty("colorRed",schemaProps.getProperty(prefix + ".colorRed"));
-            sesProps.setProperty("colorTurq",schemaProps.getProperty(prefix + ".colorTurq"));
-            sesProps.setProperty("colorCursor",schemaProps.getProperty(prefix + ".colorCursor"));
-            sesProps.setProperty("colorGUIField",schemaProps.getProperty(prefix + ".colorGUIField"));
-            sesProps.setProperty("colorWhite",schemaProps.getProperty(prefix + ".colorWhite"));
-            sesProps.setProperty("colorYellow",schemaProps.getProperty(prefix + ".colorYellow"));
-            sesProps.setProperty("colorGreen",schemaProps.getProperty(prefix + ".colorGreen"));
-            sesProps.setProperty("colorPink",schemaProps.getProperty(prefix + ".colorPink"));
-            sesProps.setProperty("colorBlue",schemaProps.getProperty(prefix + ".colorBlue"));
-            sesProps.setProperty("colorSep",schemaProps.getProperty(prefix + ".colorSep"));
-            sesProps.setProperty("colorHexAttr",schemaProps.getProperty(prefix + ".colorHexAttr"));
-
-
+            loadDefaults(sesProps);
          }
          else {
             FileInputStream in = new FileInputStream(configurationResource);
             sesProps.load(in);
+            if (sesProps.size() == 0)
+               loadDefaults(sesProps);
          }
 
+      }
+      catch (IOException ioe) {
+         System.out.println("Information Message: Properties file is being "
+                              + "created for first time use:  File name "
+                              + configurationResource);
+         loadDefaults(sesProps);
+      }
+      catch (SecurityException se) {
+         System.out.println(se.getMessage());
+      }
+
+   }
+
+   private void loadDefaults(Properties sesProps) {
+
+      try {
+         Properties schemaProps = new Properties();
+         java.net.URL file=null;
+
+         ClassLoader cl = this.getClass().getClassLoader();
+         if (cl == null)
+            cl = ClassLoader.getSystemClassLoader();
+         file = cl.getResource("tn5250jSchemas.properties");
+         schemaProps.load(file.openStream());
+         // we will now load the default schema
+         String prefix = schemaProps.getProperty("schemaDefault");
+         sesProps.setProperty("colorBg",schemaProps.getProperty(prefix + ".colorBg"));
+         sesProps.setProperty("colorRed",schemaProps.getProperty(prefix + ".colorRed"));
+         sesProps.setProperty("colorTurq",schemaProps.getProperty(prefix + ".colorTurq"));
+         sesProps.setProperty("colorCursor",schemaProps.getProperty(prefix + ".colorCursor"));
+         sesProps.setProperty("colorGUIField",schemaProps.getProperty(prefix + ".colorGUIField"));
+         sesProps.setProperty("colorWhite",schemaProps.getProperty(prefix + ".colorWhite"));
+         sesProps.setProperty("colorYellow",schemaProps.getProperty(prefix + ".colorYellow"));
+         sesProps.setProperty("colorGreen",schemaProps.getProperty(prefix + ".colorGreen"));
+         sesProps.setProperty("colorPink",schemaProps.getProperty(prefix + ".colorPink"));
+         sesProps.setProperty("colorBlue",schemaProps.getProperty(prefix + ".colorBlue"));
+         sesProps.setProperty("colorSep",schemaProps.getProperty(prefix + ".colorSep"));
+         sesProps.setProperty("colorHexAttr",schemaProps.getProperty(prefix + ".colorHexAttr"));
+         sesProps.setProperty("font",GUIGraphicsUtils.getDefaultFont());
       }
       catch (IOException ioe) {
          System.out.println("Information Message: Properties file is being "
@@ -205,6 +224,7 @@ public class SessionConfig implements TN5250jConstants {
       catch (SecurityException se) {
          System.out.println(se.getMessage());
       }
+
 
    }
 

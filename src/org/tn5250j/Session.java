@@ -67,6 +67,10 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
    }
 
+   public boolean isOnSignonScreen() {
+      return vt.isOnSignoffScreen();
+   }
+
    public String getSessionName() {
       return sessionName;
    }
