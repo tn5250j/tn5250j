@@ -446,6 +446,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
    public void startNewSession() {
       fireEmulatorAction(EmulatorActionEvent.START_NEW_SESSION);
    }
+
+   public void startDuplicateSession() {
+      fireEmulatorAction(EmulatorActionEvent.START_DUPLICATE);
+   }
+
    public void sendAidKey(int whichOne) {
 
       vt.sendAidKey(whichOne);
@@ -590,12 +595,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
       new SessionPopup((Session)this,me);
 
 
-   }
-
-
-   protected void doConnections() {
-
-      fireEmulatorAction(EmulatorActionEvent.START_NEW_SESSION);
    }
 
    public void doMeSpool() {

@@ -151,6 +151,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       new CopyAction(session,keyMap);
       new SpoolWorkAction(session,keyMap);
       new QuickEmailAction(session,keyMap);
+      new OpenSameAction(session,keyMap);
 
    }
 

@@ -350,7 +350,6 @@ public class SessionPopup implements TN5250jConstants {
    		   sendMenu.add(createMenuItem(action,MNEMONIC_QUICK_MAIL));
          }
 
-
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_E_MAIL)) {
 
             action = new AbstractAction(LangTool.getString("popup.email")) {
@@ -387,7 +386,7 @@ public class SessionPopup implements TN5250jConstants {
 
          action = new AbstractAction(LangTool.getString("popup.connections")) {
                public void actionPerformed(ActionEvent e) {
-                  session.doConnections();
+                  session.startNewSession();
                }
            };
 

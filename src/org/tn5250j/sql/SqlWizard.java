@@ -33,7 +33,6 @@ import javax.swing.*;
 import com.ibm.as400.vaccess.*;
 import com.ibm.as400.access.*;
 import java.sql.*;
-import org.tn5250j.My5250;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.system.OperatingSystem;
@@ -125,7 +124,9 @@ public class SqlWizard extends JFrame {
          //Center the window
          Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
          Dimension frameSize = getSize();
-   		frameSize.height = (Integer.parseInt(My5250.sessions.getProperty("emul.height"))-100);
+		Rectangle sb = OperatingSystem.getScreenBounds();
+
+   		frameSize.height = (sb.height - 100);
          if (frameSize.height > screenSize.height)
             frameSize.height = screenSize.height;
          if (frameSize.width > screenSize.width)

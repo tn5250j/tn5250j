@@ -529,7 +529,7 @@ public class XTFRFile
 		as400p.add(snpLabel, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 0;
-		gbc.gridwidth = 2;		
+		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);
 		as400p.add(systemName,gbc);
@@ -545,7 +545,7 @@ public class XTFRFile
 		gbc.gridx = 1; gbc.gridy = 1;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 10);		
+		gbc.insets = new Insets(5, 5, 5, 10);
 		as400p.add(hostFile, gbc);
 		JLabel idpLabel = new JLabel(LangTool.getString("xtfr.labelUserId"));
 		gbc = new GridBagConstraints();
@@ -558,7 +558,7 @@ public class XTFRFile
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 5);				
+		gbc.insets = new Insets(5, 5, 5, 5);
 		as400p.add(user, gbc);
 		// password panel
 		JLabel pwpLabel = new JLabel(LangTool.getString("xtfr.labelPassword"));
@@ -572,15 +572,16 @@ public class XTFRFile
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 5);		
+		gbc.insets = new Insets(5, 5, 5, 5);
 		as400p.add(password, gbc);
 		// Query Wizard
 		useQuery = new JCheckBox(LangTool.getString("xtfr.labelUseQuery"));
 		useQuery.addItemListener(this);
+
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 4;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 10, 5, 5);		
+		gbc.insets = new Insets(5, 10, 5, 5);
 		as400p.add(useQuery, gbc);
 		//query button
 		queryWizard = new JButton(LangTool.getString("xtfr.labelQueryWizard"));
@@ -594,7 +595,7 @@ public class XTFRFile
 		gbc.gridx = 1; gbc.gridy = 4;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(0, 5, 0, 5);		
+		gbc.insets = new Insets(0, 5, 0, 5);
 		as400p.add(queryWizard, gbc);
 		// Field Selection panel
 		fieldsLabel = new JLabel(LangTool.getString("xtfr.labelFields"));
@@ -609,14 +610,14 @@ public class XTFRFile
 		gbc.gridx = 1; gbc.gridy = 5;
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(0, 5, 0, 5);
-		as400p.add(allFields, gbc);		
+		as400p.add(allFields, gbc);
 		selectedFields =
 			new JRadioButton(LangTool.getString("xtfr.labelSelectedFields"));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2; gbc.gridy = 5;
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(0, 5, 0, 10);
-		as400p.add(selectedFields, gbc);				
+		as400p.add(selectedFields, gbc);
 		ButtonGroup fieldGroup = new ButtonGroup();
 		fieldGroup.add(allFields);
 		fieldGroup.add(selectedFields);
@@ -634,13 +635,13 @@ public class XTFRFile
 		gbc.gridx = 1; gbc.gridy = 6;
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(0, 5, 5, 5);
-		as400p.add(txtDesc, gbc);		
+		as400p.add(txtDesc, gbc);
 		intDesc = new JRadioButton(LangTool.getString("xtfr.labelTxtDescInt"));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2; gbc.gridy = 6;
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(0, 5, 5, 10);
-		as400p.add(intDesc, gbc);	
+		as400p.add(intDesc, gbc);
 		ButtonGroup txtDescGroup = new ButtonGroup();
 		txtDescGroup.add(txtDesc);
 		txtDescGroup.add(intDesc);
@@ -743,7 +744,7 @@ public class XTFRFile
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 5, 5, 5);
-		pcp.add(decimalSeparator, gbc);		
+		pcp.add(decimalSeparator, gbc);
 
 		sp.add(as400p, BorderLayout.NORTH);
 		sp.add(pcp, BorderLayout.SOUTH);
@@ -770,6 +771,15 @@ public class XTFRFile
 		//      this.setModal(true);
 		this.setTitle(LangTool.getString("xtfr.title"));
 
+		//QueryPanel when Use Query selected
+		as400QueryP = new JPanel();
+		as400QueryP.setLayout(new BorderLayout());
+
+		queryStatement = new JTextArea(2, 40);
+		JScrollPane scrollPane = new JScrollPane(queryStatement);
+		queryStatement.setLineWrap(true);
+		as400QueryP.add(scrollPane, BorderLayout.CENTER);
+
 		initXTFRFields();
 
 		// pack it and center it on the screen
@@ -783,15 +793,6 @@ public class XTFRFile
 		setLocation(
 			(screenSize.width - frameSize.width) / 2,
 			(screenSize.height - frameSize.height) / 2);
-			
-		//QueryPanel when Use Query selected
-		as400QueryP = new JPanel();
-		as400QueryP.setLayout(new BorderLayout());
-
-		queryStatement = new JTextArea(2, 40);
-		JScrollPane scrollPane = new JScrollPane(queryStatement);
-		queryStatement.setLineWrap(true);
-		as400QueryP.add(scrollPane, BorderLayout.CENTER);
 
 		// now show the world what we can do
 		show();
@@ -933,12 +934,12 @@ public class XTFRFile
 				gbc.gridx = 1; gbc.gridy = 5;
 				gbc.anchor = GridBagConstraints.CENTER;
 				gbc.insets = new Insets(0, 5, 0, 5);
-				as400p.add(allFields, gbc);		
+				as400p.add(allFields, gbc);
 				gbc = new GridBagConstraints();
 				gbc.gridx = 2; gbc.gridy = 5;
 				gbc.anchor = GridBagConstraints.CENTER;
 				gbc.insets = new Insets(0, 5, 0, 10);
-				as400p.add(selectedFields, gbc);				
+				as400p.add(selectedFields, gbc);
 				// Field Text Description panel
 				gbc = new GridBagConstraints();
 				gbc.gridx = 0; gbc.gridy = 6;
@@ -950,12 +951,12 @@ public class XTFRFile
 				gbc.gridx = 1; gbc.gridy = 6;
 				gbc.anchor = GridBagConstraints.CENTER;
 				gbc.insets = new Insets(0, 5, 5, 5);
-				as400p.add(txtDesc, gbc);		
+				as400p.add(txtDesc, gbc);
 				gbc = new GridBagConstraints();
 				gbc.gridx = 2; gbc.gridy = 6;
 				gbc.anchor = GridBagConstraints.CENTER;
 				gbc.insets = new Insets(0, 5, 5, 10);
-				as400p.add(intDesc, gbc);	
+				as400p.add(intDesc, gbc);
 			}
 			this.validate();
 			this.repaint();
