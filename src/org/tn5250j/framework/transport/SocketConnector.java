@@ -52,7 +52,7 @@ public class SocketConnector {
       //Using SSL Socket
       SSLInterface o = null;
       try {
-         Class c = Class.forName("org.tn5250j.transport.SSL.SSLImplementation");
+         Class c = Class.forName("org.tn5250j.framework.transport.SSL.SSLImplementation");
          o = (SSLInterface)c.newInstance();
          o.setSSLType(sslType);
          return o.createSSLSocket(destination,port);
