@@ -43,6 +43,20 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+22/07/2002  Added changes from Maurizio to add an all-dep build target to the
+            ant build.xml file.
+
+            Added changes to the antbuild.txt file from Maurizio.
+
+            Fixed session jumping for MDI interface.
+
+21/07/2002  Added short cuts accelerators to popup menus.
+
+            Another attempt at fixing a NULL error on keybuffering.
+
+19/07/2002  Added short cuts to key mapping screen so now you are able to remap
+            these keys as well.
+
 15/07/2002  Added a message area for option message text to be attached to the
             e-mail.
 

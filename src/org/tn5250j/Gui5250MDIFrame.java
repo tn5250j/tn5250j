@@ -1,10 +1,10 @@
 package org.tn5250j;
 /**
- * Title: tn5250J
+ * Title: Gui5250MDIFrame.java
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
- * @version 0.4
+ * @version 0.5
  *
  * Description:
  *
@@ -57,6 +57,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
    private int sequence;
    private JDesktopPane desktop;
    static int openFrameCount = 0;
+   private Vector myFrameList;
 
    //Construct the frame
    public Gui5250MDIFrame(My5250 m) {
@@ -78,6 +79,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       // Install our custom desktop manager
       desktop.setDesktopManager(new MyDesktopMgr());
       setContentPane(desktop);
+      myFrameList = new Vector(3);
 
       if (sequence > 0)
          setTitle("tn5250j <" + sequence + ">- " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
@@ -138,74 +140,88 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
       JInternalFrame miv = desktop.getSelectedFrame();
 
+      if (miv == null)
+         return;
+
       int index = desktop.getIndexOf(miv);
+
+      if (index == -1)
+         return;
 
       MyInternalFrame mix = (MyInternalFrame)frames[index];
 
       int seq = mix.getInternalId();
       index  = 0;
 
-      for (int x = 0; x < frames.length; x++){
-         MyInternalFrame mif = (MyInternalFrame)frames[x];
-         System.out.println(" current index " + x + " count " + frames.length + " has focus " +
-                        mif.isActive() + " title " + mif.getTitle());
-         if (mif.getInternalId() > seq) {
-            index = x;
+      for (int x = 0; x < myFrameList.size(); x++) {
+
+         MyInternalFrame mif = (MyInternalFrame)myFrameList.get(x);
+//         System.out.println(" current index " + x + " count " + frames.length + " has focus " +
+//                        mif.isActive() + " title " + mif.getTitle() + " seq " + seq +
+//                        " id " + mif.getInternalId());
+
+         if (mix.equals(mif)) {
+            index = x + 1;
             break;
          }
       }
 
-      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
-      if (index < desktop.getComponentCount() - 1) {
-         try {
-            frames[index].setSelected(true);
-         }
-         catch (java.beans.PropertyVetoException e) {
-            System.out.println(e.getMessage());
-         }
-      }
-      else {
-         try {
-            frames[0].setSelected(true);
-         }
-         catch (java.beans.PropertyVetoException e) {
-            System.out.println(e.getMessage());
-         }
-
+      if (index > myFrameList.size() - 1) {
+         index = 0;
       }
 
+      try {
+         ((MyInternalFrame)myFrameList.get(index)).setSelected(true);
+      }
+      catch (java.beans.PropertyVetoException e) {
+         System.out.println(e.getMessage());
+      }
+//      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
 
    }
 
    private void prevSession() {
 
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
-      JInternalFrame miv = (JInternalFrame)desktop.getSelectedFrame();
-//      int index = desktop.getIndexOf(miv);
-      int index = selectedIndex;
+      JInternalFrame miv = desktop.getSelectedFrame();
 
-      if (index == 0) {
-//         desktop.setSelectedFrame(frames[frames.length - 1]);
-         try {
-            frames[frames.length - 1].setSelected(true);
-            frames[frames.length - 1].repaint();
-            selectedIndex = frames.length -1;
-         }
-         catch (java.beans.PropertyVetoException e) {
-            System.out.println(e.getMessage());
+      if (miv == null)
+         return;
+
+      int index = desktop.getIndexOf(miv);
+
+      if (index == -1)
+         return;
+
+      MyInternalFrame mix = (MyInternalFrame)frames[index];
+
+      int seq = mix.getInternalId();
+      index  = 0;
+
+      for (int x = 0; x < myFrameList.size(); x++) {
+
+         MyInternalFrame mif = (MyInternalFrame)myFrameList.get(x);
+//         System.out.println(" current index " + x + " count " + frames.length + " has focus " +
+//                        mif.isActive() + " title " + mif.getTitle() + " seq " + seq +
+//                        " id " + mif.getInternalId());
+
+         if (mix.equals(mif)) {
+            index = x - 1;
+            break;
          }
       }
-      else {
-         try {
-            frames[index - 1].setSelected(true);
-            frames[index - 1].repaint();
-            selectedIndex--;
-         }
-         catch (java.beans.PropertyVetoException e) {
-            System.out.println(e.getMessage());
-         }
 
+      if (index < 0) {
+         index = myFrameList.size() - 1;
       }
+
+      try {
+         ((MyInternalFrame)myFrameList.get(index)).setSelected(true);
+      }
+      catch (java.beans.PropertyVetoException e) {
+         System.out.println(e.getMessage());
+      }
+//      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
 
    }
 
@@ -223,6 +239,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       MyInternalFrame frame = new MyInternalFrame();
       frame.setVisible(true);
       desktop.add(frame);
+      myFrameList.add(frame);
       selectedIndex = desktop.getComponentCount();
       frame.setContentPane(session);
       try {
@@ -245,8 +262,20 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       System.out.println("session found and closing down " + index);
       targetSession.removeSessionListener(this);
       targetSession.removeSessionJumpListener(this);
-
+      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      MyInternalFrame mif = (MyInternalFrame)frames[index];
+//      System.out.println(" num of frames before removal " + myFrameList.size());
+      myFrameList.remove(mif);
+//      System.out.println(" num of frames left " + myFrameList.size());
       desktop.remove(index);
+//      if (myFrameList.size() > 0)
+//         try {
+//            ((MyInternalFrame)myFrameList.get(1)).setSelected(true);
+//         }
+//         catch (java.beans.PropertyVetoException e) {
+//            System.out.println(e.getMessage());
+//         }
+
       this.repaint();
 
    }
