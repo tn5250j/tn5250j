@@ -29,7 +29,6 @@ package org.tn5250j.mailtools;
 import javax.swing.*;
 import java.io.*;
 import java.awt.*;
-import javax.mail.*;
 import java.util.*;
 
 import org.tn5250j.Screen5250;
@@ -270,36 +269,6 @@ public class SendEMailDialog {
       SMTPConfig smtp = new SMTPConfig(parent,"",true);
       smtp.setVisible(true);
       smtp.dispose();
-
-   }
-
-   /**
-    * Show the error list from the e-mail API if there are errors
-    *
-    * @param parent
-    * @param sfe
-    */
-   private void showFailedException(Frame parent, SendFailedException sfe) {
-
-      String error = sfe.getMessage() + "\n";
-
-      Address[] ia = sfe.getInvalidAddresses();
-
-      for (int x = 0; x < ia.length; x++) {
-         error += "Invalid Address: " + ia[x].toString() + "\n";
-      }
-
-      JTextArea ea = new JTextArea(error,6,50);
-      JScrollPane errorScrollPane = new JScrollPane(ea);
-      errorScrollPane.setHorizontalScrollBarPolicy(
-      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      errorScrollPane.setVerticalScrollBarPolicy(
-      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-      JOptionPane.showMessageDialog(parent,
-                                       errorScrollPane,
-                                       LangTool.getString("em.titleConfirmation"),
-                                       JOptionPane.ERROR_MESSAGE);
-
 
    }
 

@@ -167,7 +167,7 @@ public class SendEMail {
    /**
     * This method processes the send request from the compose form
     */
-   public boolean send() throws Exception, AddressException, MessagingException {
+   public boolean send() throws Exception {
 
       try {
          if(!loadConfig(configFile))
@@ -250,6 +250,12 @@ public class SendEMail {
       catch (SendFailedException sfe) {
          showFailedException(sfe);
       }
+//      catch (AddressException ae) {
+//      
+//      }
+//      catch ( MessagingException me) {
+//      
+//      }
       return false;
    }
 
