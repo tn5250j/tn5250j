@@ -40,6 +40,7 @@ import java.net.*;
 import java.text.*;
 
 import org.tn5250j.tools.*;
+import org.tn5250j.settings.*;
 
 public class SessionAttributes extends JDialog {
 
@@ -47,10 +48,7 @@ public class SessionAttributes extends JDialog {
    Properties props = null;
    Gui5250 gui = null;
    JPanel jpm = new JPanel(new BorderLayout());
-   JComboBox fontsList;
-   JComboBox colorSchemaList;
-   JComboBox colorList;
-   JColorChooser jcc;
+
    JRadioButton csLine;
    JRadioButton csDot;
    JRadioButton csShortLine;
@@ -74,23 +72,20 @@ public class SessionAttributes extends JDialog {
    JTextField hsBottom;
    Properties schemaProps;
    Schema colorSchema;
-   JTextField verticalScale;
-   JTextField horizontalScale;
-   JTextField pointSize;
    JTextField cursorBottOffset;
    JCheckBox defaultPrinter;
 
-   private PropertyChangeSupport changes = null;
+   ColorAttributesPanel cpp;
+   FontAttributesPanel fp;
 
-//   public SessionAttributes(String fileName, Properties props, Frame parent) {
+   private SessionConfig changes = null;
+
    public SessionAttributes(Frame parent, SessionConfig config ) {
       super(parent);
 
-//      this.fileName = fileName;
-//      this.props = props;
       this.fileName = config.getConfigurationResource();
       this.props = config.getProperties();
-//      this.gui = gui;
+      changes = config;
 
       try {
          jbInit();
@@ -103,171 +98,13 @@ public class SessionAttributes extends JDialog {
    /**Component initialization*/
    private void jbInit() throws Exception  {
 
-      changes = new PropertyChangeSupport(this);
 
       Dimension ps = null;
-      // fonts
-      Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-      // define fonts panel
-      final JPanel fp = new JPanel();
 
-      fp.setLayout(new BorderLayout());
-
-      JPanel flp = new JPanel();
-      TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.font"));
-      flp.setBorder(tb);
-
-
-      fontsList = new JComboBox();
-
-      String font = getStringProperty("font");
-
-      for (int x = 0; x < fonts.length; x++) {
-         if (fonts[x].getFontName().indexOf('.') < 0)
-            fontsList.addItem(fonts[x].getFontName());
-      }
-
-      fontsList.setSelectedItem(font);
-
-      flp.add(fontsList);
-
-      JPanel fsp = new JPanel();
-      fsp.setLayout(new AlignLayout(2,5,5));
-      tb = BorderFactory.createTitledBorder(LangTool.getString("sa.scaleLabel"));
-      fsp.setBorder(tb);
-
-
-      verticalScale = new JTextField("1.2",5);
-      horizontalScale = new JTextField("1.0",5);
-      pointSize = new JTextField("0",5);
-      if (getStringProperty("fontScaleWidth").length() != 0)
-         horizontalScale.setText(getStringProperty("fontScaleWidth"));
-      if (getStringProperty("fontScaleHeight").length() != 0)
-         verticalScale.setText(getStringProperty("fontScaleHeight"));
-      if (getStringProperty("fontPointSize").length() != 0)
-         pointSize.setText(getStringProperty("fontPointSize"));
-      fsp.add(new JLabel(LangTool.getString("sa.fixedPointSize")));
-      fsp.add(pointSize);
-      fsp.add(new JLabel(LangTool.getString("sa.horScaleLabel")));
-      fsp.add(horizontalScale);
-      fsp.add(new JLabel(LangTool.getString("sa.vertScaleLabel")));
-      fsp.add(verticalScale);
-
-      fp.add(flp,BorderLayout.NORTH);
-      fp.add(fsp,BorderLayout.SOUTH);
-
+      // define font panel
+      fp = new FontAttributesPanel(changes);
       // define colors panel
-      final JPanel cpp = new JPanel();
-      cpp.setLayout(new BorderLayout());
-
-      JPanel cp = new JPanel();
-      cp.setLayout(new BorderLayout());
-
-      JPanel cschp = new JPanel();
-      tb = BorderFactory.createTitledBorder(LangTool.getString("sa.colorSchema"));
-      cschp.setBorder(tb);
-      colorSchemaList = new JComboBox();
-      loadSchemas(colorSchemaList);
-
-      colorSchemaList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox)e.getSource();
-                Object obj = cb.getSelectedItem();
-                if (obj instanceof Schema) {
-
-                  System.out.println(" we got a schema ");
-                  colorSchema = (Schema)obj;
-                }
-                else {
-                  colorSchema = null;
-                }
-
-            }
-        });
-
-
-      cschp.add(colorSchemaList);
-
-      tb = BorderFactory.createTitledBorder(LangTool.getString("sa.colors"));
-      cp.setBorder(tb);
-      colorList = new JComboBox();
-      colorList.addItem(LangTool.getString("sa.bg"));
-      colorList.addItem(LangTool.getString("sa.blue"));
-      colorList.addItem(LangTool.getString("sa.red"));
-      colorList.addItem(LangTool.getString("sa.pink"));
-      colorList.addItem(LangTool.getString("sa.green"));
-      colorList.addItem(LangTool.getString("sa.turq"));
-      colorList.addItem(LangTool.getString("sa.yellow"));
-      colorList.addItem(LangTool.getString("sa.white"));
-      colorList.addItem(LangTool.getString("sa.guiField"));
-      colorList.addItem(LangTool.getString("sa.cursorColor"));
-      colorList.addItem(LangTool.getString("sa.columnSep"));
-      colorList.addItem(LangTool.getString("sa.hexAttrColor"));
-
-      jcc = new JColorChooser();
-
-      // set the default color for display as that being for back ground
-      jcc.setColor(getColorProperty("colorBg"));
-      colorList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox)e.getSource();
-                String newSelection = (String)cb.getSelectedItem();
-                if (newSelection.equals(LangTool.getString("sa.bg"))) {
-                  jcc.setColor(getColorProperty("colorBg"));
-                }
-                if (newSelection.equals(LangTool.getString("sa.blue"))) {
-                  jcc.setColor(getColorProperty("colorBlue"));
-                }
-                if (newSelection.equals(LangTool.getString("sa.red"))) {
-                  jcc.setColor(getColorProperty("colorRed"));
-
-                }
-                if (newSelection.equals(LangTool.getString("sa.pink"))) {
-                  jcc.setColor(getColorProperty("colorPink"));
-
-                }
-                if (newSelection.equals(LangTool.getString("sa.green"))) {
-                  jcc.setColor(getColorProperty("colorGreen"));
-
-                }
-                if (newSelection.equals(LangTool.getString("sa.turq"))) {
-                  jcc.setColor(getColorProperty("colorTurq"));
-
-                }
-                if (newSelection.equals(LangTool.getString("sa.yellow"))) {
-                  jcc.setColor(getColorProperty("colorYellow"));
-
-                }
-                if (newSelection.equals(LangTool.getString("sa.white"))) {
-                  jcc.setColor(getColorProperty("colorWhite"));
-                }
-
-                if (newSelection.equals(LangTool.getString("sa.guiField"))) {
-                  jcc.setColor(getColorProperty("colorGUIField",Color.white));
-                }
-                if (newSelection.equals(LangTool.getString("sa.cursorColor"))) {
-                  jcc.setColor(getColorProperty("colorCursor",
-                              getColorProperty("colorBg")));
-                }
-                if (newSelection.equals(LangTool.getString("sa.columnSep"))) {
-                  jcc.setColor(getColorProperty("colorSep",
-                              getColorProperty("colorWhite")));
-                }
-
-                if (newSelection.equals(LangTool.getString("sa.hexAttrColor"))) {
-                  jcc.setColor(getColorProperty("colorHexAttr",
-                              getColorProperty("colorWhite")));
-                }
-
-            }
-        });
-
-
-      cp.add(colorList,BorderLayout.NORTH);
-      cp.add(jcc,BorderLayout.CENTER);
-
-      cpp.add(cschp,BorderLayout.NORTH);
-      cpp.add(cp,BorderLayout.CENTER);
+      cpp = new ColorAttributesPanel(changes);
 
       // define display panel
       final JPanel display = new JPanel();
@@ -275,7 +112,7 @@ public class SessionAttributes extends JDialog {
 
       // define column separator panel
       JPanel csp = new JPanel();
-      tb = BorderFactory.createTitledBorder(LangTool.getString("sa.cs"));
+      TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.cs"));
       csp.setBorder(tb);
 
       csLine = new JRadioButton(LangTool.getString("sa.csLine"));
@@ -483,7 +320,7 @@ public class SessionAttributes extends JDialog {
       connectMacro = new JTextField();
       connectMacro.setColumns(30);
 
-      // check if double click sends enter
+      // sets the connect macro
       connectMacro.setText(getStringProperty("connectMacro"));
 
       ocMacrop.add(connectMacro);
@@ -504,6 +341,23 @@ public class SessionAttributes extends JDialog {
 
       dcep.add(dceCheck);
       mouse.add(dcep);
+
+      // define signoff panel
+      final JPanel signoff = new JPanel();
+      signoff.setLayout(new BoxLayout(signoff,BoxLayout.Y_AXIS));
+
+      // define double click as enter
+      JPanel soConfirm = new JPanel();
+      soConfirm.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("sa.titleSignoff")));
+
+      signoffCheck = new JCheckBox(LangTool.getString("sa.confirmSignoff"));
+
+      // check if double click sends enter
+      signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
+
+      soConfirm.add(signoffCheck);
+      signoff.add(soConfirm);
 
       // define hotspot panel
       final JPanel hotspot = new JPanel();
@@ -571,6 +425,7 @@ public class SessionAttributes extends JDialog {
 
       // define default
       final JPanel jp = new JPanel();
+
       jp.add(cpp,BorderLayout.CENTER);
       jp.setPreferredSize(cpp.getPreferredSize());
 
@@ -622,6 +477,14 @@ public class SessionAttributes extends JDialog {
             if (nodeInfo.toString().equals(LangTool.getString("sa.nodeCursor"))) {
                jp.removeAll();
                jp.add(cuPanel,BorderLayout.CENTER);
+               jp.setPreferredSize(cpp.getPreferredSize());
+               jp.validate();
+               jpm.repaint();
+            }
+
+            if (nodeInfo.toString().equals(LangTool.getString("sa.nodeSignoff"))) {
+               jp.removeAll();
+               jp.add(signoff,BorderLayout.CENTER);
                jp.setPreferredSize(cpp.getPreferredSize());
                jp.validate();
                jpm.repaint();
@@ -779,15 +642,15 @@ public class SessionAttributes extends JDialog {
       return props;
    }
 
-   public void addPropertyChangeListener(PropertyChangeListener l) {
+//   public void addPropertyChangeListener(PropertyChangeListener l) {
+//
+//      changes.addPropertyChangeListener(l);
+//   }
 
-      changes.addPropertyChangeListener(l);
-   }
-
-   public void removePropertyChangeListener(PropertyChangeListener l) {
-
-      changes.removePropertyChangeListener(l);
-   }
+//   public void removePropertyChangeListener(PropertyChangeListener l) {
+//
+//      changes.removePropertyChangeListener(l);
+//   }
 
    public void showIt() {
 
@@ -880,270 +743,26 @@ public class SessionAttributes extends JDialog {
 
    private void applyAttributes() {
 
-      if (!getStringProperty("font").equals(
-               (String)fontsList.getSelectedItem())
-         ) {
-         changes.firePropertyChange("font",
-                           getStringProperty("font"),
-                           (String)fontsList.getSelectedItem());
-
-         setProperty("font",(String)fontsList.getSelectedItem());
-      }
-
-      String newSelection = (String)colorList.getSelectedItem();
-
-      if (colorSchema != null) {
-
-         if (!getColorProperty("colorBg").equals(colorSchema.getColorBg())) {
-            changes.firePropertyChange("colorBg",
-                           getColorProperty("colorBg"),
-                           colorSchema.getColorBg());
-
-            setProperty("colorBg",Integer.toString(colorSchema.getColorBg().getRGB()));
-
-         }
-         if (!getColorProperty("colorBlue").equals(colorSchema.getColorBlue())) {
-            changes.firePropertyChange("colorBlue",
-                           getColorProperty("colorBlue"),
-                           colorSchema.getColorBlue());
-            setProperty("colorBlue",Integer.toString(colorSchema.getColorBlue().getRGB()));
-
-         }
-         if (!getColorProperty("colorRed").equals(colorSchema.getColorRed())) {
-            changes.firePropertyChange("colorRed",
-                           getColorProperty("colorRed"),
-                           colorSchema.getColorRed());
-            setProperty("colorRed",Integer.toString(colorSchema.getColorRed().getRGB()));
-
-         }
-         if (!getColorProperty("colorPink").equals(colorSchema.getColorPink())) {
-            changes.firePropertyChange("colorPink",
-                           getColorProperty("colorPink"),
-                           colorSchema.getColorPink());
-            setProperty("colorPink",Integer.toString(colorSchema.getColorPink().getRGB()));
-
-         }
-         if (!getColorProperty("colorGreen").equals(colorSchema.getColorGreen())) {
-            changes.firePropertyChange("colorGreen",
-                           getColorProperty("colorGreen"),
-                           colorSchema.getColorGreen());
-
-            setProperty("colorGreen",Integer.toString(colorSchema.getColorGreen().getRGB()));
-
-         }
-         if (!getColorProperty("colorTurq").equals(colorSchema.getColorTurq())) {
-            changes.firePropertyChange("colorTurq",
-                           getColorProperty("colorTurq"),
-                           colorSchema.getColorTurq());
-
-            setProperty("colorTurq",Integer.toString(colorSchema.getColorTurq().getRGB()));
-
-         }
-
-         if (!getColorProperty("colorYellow").equals(colorSchema.getColorYellow())) {
-            changes.firePropertyChange("colorYellow",
-                           getColorProperty("colorYellow"),
-                           colorSchema.getColorYellow());
-            setProperty("colorYellow",Integer.toString(colorSchema.getColorYellow().getRGB()));
-
-         }
-         if (!getColorProperty("colorWhite").equals(colorSchema.getColorWhite())) {
-            changes.firePropertyChange("colorWhite",
-                           getColorProperty("colorWhite"),
-                           colorSchema.getColorWhite());
-
-            setProperty("colorWhite",Integer.toString(colorSchema.getColorWhite().getRGB()));
-
-         }
-         if (!getColorProperty("colorGUIField").equals(colorSchema.getColorGuiField())) {
-            changes.firePropertyChange("colorGUIField",
-                           getColorProperty("colorGUIField"),
-                           colorSchema.getColorGuiField());
-
-            setProperty("colorGUIField",Integer.toString(colorSchema.getColorGuiField().getRGB()));
-
-         }
-         if (!getColorProperty("colorCursor").equals(colorSchema.getColorCursor())) {
-            changes.firePropertyChange("colorCursor",
-                           getColorProperty("colorCursor"),
-                           colorSchema.getColorCursor());
-
-            setProperty("colorCursor",Integer.toString(colorSchema.getColorCursor().getRGB()));
-
-         }
-
-         if (!getColorProperty("colorSep").equals(colorSchema.getColorSeparator())) {
-            changes.firePropertyChange("colorSep",
-                           getColorProperty("colorSep"),
-                           colorSchema.getColorSeparator());
-
-            setProperty("colorSep",
-                     Integer.toString(colorSchema.getColorSeparator().getRGB()));
-
-         }
-
-         if (!getColorProperty("colorHexAttr").equals(colorSchema.getColorHexAttr())) {
-            changes.firePropertyChange("colorHexAttr",
-                           getColorProperty("colorHexAttr"),
-                           colorSchema.getColorHexAttr());
-
-            setProperty("colorHexAttr",
-                     Integer.toString(colorSchema.getColorHexAttr().getRGB()));
-
-         }
-
-      }
-      else {
-
-         Color nc = jcc.getColor();
-         if (newSelection.equals(LangTool.getString("sa.bg"))) {
-            if (!getColorProperty("colorBg").equals(nc)) {
-               changes.firePropertyChange("colorBg",
-                              getColorProperty("colorBg"),
-                              nc);
-
-               setProperty("colorBg",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.blue"))) {
-            if (!getColorProperty("colorBlue").equals(nc)) {
-               changes.firePropertyChange("colorBlue",
-                              getColorProperty("colorBlue"),
-                              nc);
-               setProperty("colorBlue",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.red"))) {
-            if (!getColorProperty("colorRed").equals(nc)) {
-               changes.firePropertyChange("colorRed",
-                              getColorProperty("colorRed"),
-                              nc);
-               setProperty("colorRed",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.pink"))) {
-            if (!getColorProperty("colorPink").equals(nc)) {
-               changes.firePropertyChange("colorPink",
-                              getColorProperty("colorPink"),
-                              nc);
-               setProperty("colorPink",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.green"))) {
-            if (!getColorProperty("colorGreen").equals(nc)) {
-               changes.firePropertyChange("colorGreen",
-                              getColorProperty("colorGreen"),
-                              nc);
-
-               setProperty("colorGreen",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.turq"))) {
-            if (!getColorProperty("colorTurq").equals(nc)) {
-               changes.firePropertyChange("colorTurq",
-                              getColorProperty("colorTurq"),
-                              nc);
-
-               setProperty("colorTurq",Integer.toString(nc.getRGB()));
-
-            }
-
-         }
-         if (newSelection.equals(LangTool.getString("sa.yellow"))) {
-            if (!getColorProperty("colorYellow").equals(nc)) {
-               changes.firePropertyChange("colorYellow",
-                              getColorProperty("colorYellow"),
-                              nc);
-               setProperty("colorYellow",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.white"))) {
-            if (!getColorProperty("colorWhite").equals(nc)) {
-               changes.firePropertyChange("colorWhite",
-                              getColorProperty("colorWhite"),
-                              nc);
-
-               setProperty("colorWhite",Integer.toString(nc.getRGB()));
-
-            }
-         }
-
-         if (newSelection.equals(LangTool.getString("sa.guiField"))) {
-            if (!getColorProperty("colorGUIField").equals(nc)) {
-               changes.firePropertyChange("colorGUIField",
-                              getColorProperty("colorGUIField"),
-                              nc);
-
-               setProperty("colorGUIField",Integer.toString(nc.getRGB()));
-
-            }
-         }
-
-         if (newSelection.equals(LangTool.getString("sa.cursorColor"))) {
-            if (!getColorProperty("colorCursor").equals(nc)) {
-               changes.firePropertyChange("colorCursor",
-                              getColorProperty("colorCursor"),
-                              nc);
-
-               setProperty("colorCursor",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.columnSep"))) {
-            if (!getColorProperty("colorSep").equals(nc)) {
-               changes.firePropertyChange("colorSep",
-                              getColorProperty("colorSep"),
-                              nc);
-
-               setProperty("colorSep",Integer.toString(nc.getRGB()));
-
-            }
-         }
-         if (newSelection.equals(LangTool.getString("sa.cursorColor"))) {
-            if (!getColorProperty("colorCursor").equals(nc)) {
-               changes.firePropertyChange("colorCursor",
-                              getColorProperty("colorCursor"),
-                              nc);
-
-               setProperty("colorCursor",Integer.toString(nc.getRGB()));
-
-            }
-         }
-
-         if (newSelection.equals(LangTool.getString("sa.hexAttrColor"))) {
-            if (!getColorProperty("colorHexAttr").equals(nc)) {
-               changes.firePropertyChange("colorHexAttr",
-                              getColorProperty("colorHexAttr"),
-                              nc);
-
-               setProperty("colorHexAttr",Integer.toString(nc.getRGB()));
-
-            }
-         }
-
-      }
+      // apply the font attributes
+      fp.applyAttributes();
+      // apply the color attributes
+      cpp.applyAttributes();
 
       if (csLine.isSelected()) {
-         changes.firePropertyChange("colSeparator",
+         changes.firePropertyChange(this,"colSeparator",
                            getStringProperty("colSeparator"),
                            "Line");
          setProperty("colSeparator","Line");
       }
       else if (csShortLine.isSelected()) {
-         changes.firePropertyChange("colSeparator",
+         changes.firePropertyChange(this,"colSeparator",
                            getStringProperty("colSeparator"),
                            "ShortLine");
          setProperty("colSeparator","ShortLine");
       }
 
       else {
-         changes.firePropertyChange("colSeparator",
+         changes.firePropertyChange(this,"colSeparator",
                            getStringProperty("colSeparator"),
                            "Dot");
          setProperty("colSeparator","Dot");
@@ -1151,20 +770,20 @@ public class SessionAttributes extends JDialog {
       }
 
       if (cFull.isSelected()) {
-         changes.firePropertyChange("cursorSize",
+         changes.firePropertyChange(this,"cursorSize",
                            getStringProperty("cursorSize"),
                            "Full");
          setProperty("cursorSize","Full");
 
       }
       if (cHalf.isSelected()) {
-         changes.firePropertyChange("cursorSize",
+         changes.firePropertyChange(this,"cursorSize",
                            getStringProperty("cursorSize"),
                            "Half");
          setProperty("cursorSize","Half");
       }
       if (cLine.isSelected()) {
-         changes.firePropertyChange("cursorSize",
+         changes.firePropertyChange(this,"cursorSize",
                            getStringProperty("cursorSize"),
                            "Line");
 
@@ -1172,7 +791,7 @@ public class SessionAttributes extends JDialog {
       }
 
       if (chNone.isSelected()) {
-         changes.firePropertyChange("crossHair",
+         changes.firePropertyChange(this,"crossHair",
                            getStringProperty("crossHair"),
                            "None");
          setProperty("crossHair","None");
@@ -1180,7 +799,7 @@ public class SessionAttributes extends JDialog {
       }
 
       if (chHorz.isSelected()) {
-         changes.firePropertyChange("crossHair",
+         changes.firePropertyChange(this,"crossHair",
                            getStringProperty("crossHair"),
                            "Horz");
          setProperty("crossHair","Horz");
@@ -1188,7 +807,7 @@ public class SessionAttributes extends JDialog {
       }
 
       if (chVert.isSelected()) {
-         changes.firePropertyChange("crossHair",
+         changes.firePropertyChange(this,"crossHair",
                            getStringProperty("crossHair"),
                            "Vert");
          setProperty("crossHair","Vert");
@@ -1196,7 +815,7 @@ public class SessionAttributes extends JDialog {
       }
 
       if (chCross.isSelected()) {
-         changes.firePropertyChange("crossHair",
+         changes.firePropertyChange(this,"crossHair",
                            getStringProperty("crossHair"),
                            "Both");
          setProperty("crossHair","Both");
@@ -1204,26 +823,26 @@ public class SessionAttributes extends JDialog {
       }
 
       if (rulerFixed.isSelected()) {
-         changes.firePropertyChange("rulerFixed",
+         changes.firePropertyChange(this,"rulerFixed",
                            getStringProperty("rulerFixed"),
                            "Yes");
          setProperty("rulerFixed","Yes");
       }
       else {
-         changes.firePropertyChange("rulerFixed",
+         changes.firePropertyChange(this,"rulerFixed",
                            getStringProperty("rulerFixed"),
                            "No");
          setProperty("rulerFixed","No");
       }
 
       if (saNormal.isSelected()) {
-         changes.firePropertyChange("showAttr",
+         changes.firePropertyChange(this,"showAttr",
                            getStringProperty("showAttr"),
                            "Normal");
          setProperty("showAttr","Normal");
       }
       else {
-         changes.firePropertyChange("showAttr",
+         changes.firePropertyChange(this,"showAttr",
                            getStringProperty("showAttr"),
                            "Hex");
          setProperty("showAttr","Hex");
@@ -1231,52 +850,52 @@ public class SessionAttributes extends JDialog {
       }
 
       if (dceCheck.isSelected()) {
-         changes.firePropertyChange("doubleClick",
+         changes.firePropertyChange(this,"doubleClick",
                            getStringProperty("doubleClick"),
                            "Yes");
          setProperty("doubleClick","Yes");
       }
       else {
-         changes.firePropertyChange("doubleClick",
+         changes.firePropertyChange(this,"doubleClick",
                            getStringProperty("doubleClick"),
                            "No");
          setProperty("doubleClick","No");
       }
 
       if (guiCheck.isSelected()) {
-         changes.firePropertyChange("guiInterface",
+         changes.firePropertyChange(this,"guiInterface",
                            getStringProperty("guiInterface"),
                            "Yes");
          setProperty("guiInterface","Yes");
       }
       else {
-         changes.firePropertyChange("guiInterface",
+         changes.firePropertyChange(this,"guiInterface",
                            getStringProperty("guiInterface"),
                            "No");
          setProperty("guiInterface","No");
       }
 
       if (guiShowUnderline.isSelected()) {
-         changes.firePropertyChange("guiShowUnderline",
+         changes.firePropertyChange(this,"guiShowUnderline",
                            getStringProperty("guiShowUnderline"),
                            "Yes");
          setProperty("guiShowUnderline","Yes");
       }
       else {
-         changes.firePropertyChange("guiShowUnderline",
+         changes.firePropertyChange(this,"guiShowUnderline",
                            getStringProperty("guiShowUnderline"),
                            "No");
          setProperty("guiShowUnderline","No");
       }
 
       if (hsCheck.isSelected()) {
-         changes.firePropertyChange("hotspots",
+         changes.firePropertyChange(this,"hotspots",
                            getStringProperty("hotspots"),
                            "Yes");
          setProperty("hotspots","Yes");
       }
       else {
-         changes.firePropertyChange("hotspots",
+         changes.firePropertyChange(this,"hotspots",
                            getStringProperty("hotspots"),
                            "No");
          setProperty("hotspots","No");
@@ -1284,64 +903,77 @@ public class SessionAttributes extends JDialog {
 
 
       if (kpCheck.isSelected()) {
-         changes.firePropertyChange("keypad",
+         changes.firePropertyChange(this,"keypad",
                            getStringProperty("keypad"),
                            "Yes");
          setProperty("keypad","Yes");
       }
       else {
-         changes.firePropertyChange("keypad",
+         changes.firePropertyChange(this,"keypad",
                            getStringProperty("keypad"),
                            "No");
          setProperty("keypad","No");
       }
 
-      changes.firePropertyChange("hsMore",
+      changes.firePropertyChange(this,"hsMore",
                         getStringProperty("hsMore"),
                         hsMore.getText());
       setProperty("hsMore",hsMore.getText());
 
-      changes.firePropertyChange("connectMacro",
+      changes.firePropertyChange(this,"connectMacro",
                         getStringProperty("connectMacro"),
                         connectMacro.getText());
       setProperty("connectMacro",connectMacro.getText());
 
-      changes.firePropertyChange("hsBottom",
+      changes.firePropertyChange(this,"hsBottom",
                         getStringProperty("hsBottom"),
                         hsBottom.getText());
       setProperty("hsBottom",hsBottom.getText());
 
-      changes.firePropertyChange("fontScaleHeight",
-                        getStringProperty("fontScaleHeight"),
-                        verticalScale.getText());
-      setProperty("fontScaleHeight",verticalScale.getText());
+//      changes.firePropertyChange(this,"fontScaleHeight",
+//                        getStringProperty("fontScaleHeight"),
+//                        verticalScale.getText());
+//      setProperty("fontScaleHeight",verticalScale.getText());
+//
+//      changes.firePropertyChange(this,"fontScaleWidth",
+//                        getStringProperty("fontScaleWidth"),
+//                        horizontalScale.getText());
+//      setProperty("fontScaleWidth",horizontalScale.getText());
+//
+//      changes.firePropertyChange(this,"fontPointSize",
+//                        getStringProperty("fontPointSize"),
+//                        pointSize.getText());
+//      setProperty("fontPointSize",pointSize.getText());
 
-      changes.firePropertyChange("fontScaleWidth",
-                        getStringProperty("fontScaleWidth"),
-                        horizontalScale.getText());
-      setProperty("fontScaleWidth",horizontalScale.getText());
-
-      changes.firePropertyChange("fontPointSize",
-                        getStringProperty("fontPointSize"),
-                        pointSize.getText());
-      setProperty("fontPointSize",pointSize.getText());
-
-      changes.firePropertyChange("cursorBottOffset",
+      changes.firePropertyChange(this,"cursorBottOffset",
                         getStringProperty("cursorBottOffset"),
                         cursorBottOffset.getText());
       setProperty("cursorBottOffset",cursorBottOffset.getText());
 
       if (defaultPrinter.isSelected()) {
-         changes.firePropertyChange("defaultPrinter",
+         changes.firePropertyChange(this,"defaultPrinter",
                            getStringProperty("defaultPrinter"),
                            "Yes");
          setProperty("defaultPrinter","Yes");
       }
       else {
-         changes.firePropertyChange("defaultPrinter",
+         changes.firePropertyChange(this,"defaultPrinter",
                            getStringProperty("defaultPrinter"),
                            "No");
          setProperty("defaultPrinter","No");
+      }
+
+      if (signoffCheck.isSelected()) {
+         changes.firePropertyChange(this,"confirmSignoff",
+                           getStringProperty("confirmSignoff"),
+                           "Yes");
+         setProperty("confirmSignoff","Yes");
+      }
+      else {
+         changes.firePropertyChange(this,"confirmSignoff",
+                           getStringProperty("confirmSignoff"),
+                           "No");
+         setProperty("confirmSignoff","No");
       }
 
       setProperty("saveme","yes");
