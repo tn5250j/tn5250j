@@ -203,6 +203,16 @@ The following sections are available:
 
              This option will also change the session name to that
              of the allocated device name.
+             
+       -dn=hostname  ---->  this works as the -dn option, but instead
+                            sets the name automatically to the hostname.
+                            This is useful in webstart applications so 
+                            that the devicename is set to the name of 
+                            the machine automatically.
+                       
+                For example: If my machine is pluto, the -dn=hostname 
+                             option is equivalent to -dn pluto.
+                             
 
     -MDI ----> Use the MDI interface represented by JInternalFrames instead of
                tabs.
