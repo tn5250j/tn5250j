@@ -15,6 +15,7 @@ import com.ibm.as400.access as acc
 import com.ibm.as400.resource as rsc
 from javax import swing
 import java.awt as awt
+import java
 
 global server, curUsr, name, passw
 #**************************************************************************
@@ -303,6 +304,13 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         self.polchat.start()
 
         self.show()
+        
+def fillWithValues(row,col,width,sb):
+    sPos = ((row - 1) * screen.getCols()) + (col - 1)
+    while width > 0:
+        sb.append(screenChars[sPos])
+        sPos += 1
+        width -= 1
 
 try:
     server = _session.getHostName()
@@ -311,12 +319,15 @@ except:
     None
 ready = 0
 while not ready:
-    if _session.isOnSignonScreen():
+    screen = _session.getScreen()
+    logon = java.lang.StringBuffer()
+    screenChars = screen.getScreenAsChars()
+    logon.setLength(0)
+    fillWithValues(24, 41, 35, logon)
+    if logon.toString() == "(C) COPYRIGHT IBM CORP. 1980, 2000.":
         time.sleep(2)
     else:
         ready = 1
-# Take some time to give the user time to logon
-time.sleep(5)
 isRunning = System.getProperty("chat400")
 if not isRunning == curUsr:
     System.setProperty("chat400", curUsr)
