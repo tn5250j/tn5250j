@@ -29,9 +29,11 @@ import javax.swing.*;
 import java.util.*;
 import java.io.*;
 import java.awt.event.*;
+
 import org.tn5250j.*;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
+import org.tn5250j.tools.LangTool;
 
 public final class LoadMacroMenu {
 
@@ -118,11 +120,12 @@ public final class LoadMacroMenu {
 
       Action action;
 
-      JPopupMenu j = new JPopupMenu("test");
-      action = new AbstractAction("Delete " + ((JMenuItem)e.getSource()).getText()) {
+      JPopupMenu j = new JPopupMenu("Macro Options");
+      action = new AbstractAction(LangTool.getString("popup.delete")
+                     + " " + ((JMenuItem)e.getSource()).getText()) {
          public void actionPerformed(ActionEvent e) {
             StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
-            macro.delete(0,"Delete".length()+1);
+            macro.delete(0,LangTool.getString("popup.delete").length()+1);
             Macronizer.removeMacroByName(macro.toString());
          }
       };
@@ -130,10 +133,11 @@ public final class LoadMacroMenu {
       j.add(action);
 
       final Session ses = session;
-      action = new AbstractAction("Execute " + ((JMenuItem)e.getSource()).getText()) {
+      action = new AbstractAction(LangTool.getString("popup.execute")
+                     + " " + ((JMenuItem)e.getSource()).getText()) {
          public void actionPerformed(ActionEvent e) {
             StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
-            macro.delete(0,"Execute".length()+1);
+            macro.delete(0,LangTool.getString("popup.execute").length()+1);
             Macronizer.invoke(macro.toString(),ses);
          }
       };
