@@ -11,6 +11,8 @@
 
 package org.tn5250j.scripting;
 
+import java.io.File;
+
 import org.python.util.PythonInterpreter;
 import org.python.core.*;
 import org.tn5250j.Session;
