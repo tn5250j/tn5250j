@@ -145,6 +145,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private final static int ERR_DUP_KEY_NOT_ALLOWED   = 0x19;
    private final static int ERR_NUMERIC_09            = 0x10;
    private final static int ERR_FIELD_MINUS           = 0x16;
+   private final static int ERR_ENTER_NO_ALLOWED      = 0x20;
    private final static int ERR_MANDITORY_ENTER       = 0x21;
 
    private boolean guiInterface = false;
@@ -1681,7 +1682,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          case AID_ROLL_LEFT :
          case AID_ROLL_RIGHT :
 
-            sendAid(mnem);
+            if (!screenFields.isCanSendAid()) {
+               displayError(ERR_ENTER_NO_ALLOWED);
+            }
+            else
+               sendAid(mnem);
             simulated  = true;
 
             break;
@@ -2414,15 +2419,17 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             case 5:
 //               System.out.println("Right adjust, zero fill " + screenFields.getCurrentField().getAdjustment());
                rightAdjustField('0');
-
+               sf.setRightAdjusted();
                break;
             case 6:
 //               System.out.println("Right adjust, blank fill " + screenFields.getCurrentField().getAdjustment());
                rightAdjustField(' ');
+               sf.setRightAdjusted();
 
                break;
             case 7:
                System.out.println("Mandatory fill " +screenFields.getCurrentField().getAdjustment());
+               sf.setManditoryEntered();
                break;
 
 
@@ -2620,6 +2627,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * <tr><td>    ERR_NUMERIC_ONLY</td><td> 0x09</td></tr>
     * <tr><td>    ERR_NUMERIC_09</td><td> 0x10</td></tr>
     * <tr><td>    ERR_FIELD_MINUS</td><td> 0x16</td></tr>
+    * <tr><td>    ERR_ENTER_NOT_ALLOWED</td><td> 0x20</td></tr>
     * <tr><td>    ERR_MANDITORY_ENTER</td><td> 0x21</td></tr>
     *
     * </table>

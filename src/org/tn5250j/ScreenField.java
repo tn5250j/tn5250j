@@ -92,6 +92,24 @@ public class ScreenField {
 
       this.ffw1 = ffw1;
       this.ffw2 = ffw2;
+
+      int adj = getAdjustment();
+
+      if (adj  > 0) {
+         checkCanSend = true;
+
+         switch (adj) {
+
+            case 5:
+            case 6:
+               rightAdjd = false;
+               break;
+            case 7:
+               manditoried = false;
+               break;
+         }
+
+      }
       mdt = (ffw1 & 0x8 ) == 0x8;
 //      if (mdt)
 //         s.masterMDT = true;
@@ -225,6 +243,15 @@ public class ScreenField {
       }
    }
 
+   protected void setRightAdjusted() {
+      rightAdjd = true;
+   }
+
+   protected void setManditoryEntered() {
+
+      manditoried = true;
+   }
+
    protected void resetMDT() {
       mdt = false;
 
@@ -303,6 +330,12 @@ public class ScreenField {
 
    }
 
+   public boolean isNumeric () {
+
+      return (getFieldShift() == 3);
+
+   }
+
    public boolean isDupEnabled() {
 
       return (ffw1 & 0x10) == 0x10;
@@ -331,6 +364,27 @@ public class ScreenField {
 
       return (fcw1 & 0x86) == 0x86 && (fcw2 == 2);
 
+   }
+
+   protected boolean isCanSend() {
+
+      int adj = getAdjustment();
+
+      if (adj  > 0) {
+
+         switch (adj) {
+
+            case 5:
+            case 6:
+               return rightAdjd;
+            case 7:
+               return manditoried;
+            default:
+               return true;
+         }
+
+      }
+      return true;
    }
 
    protected int getKeyPos(int row1, int col1) {
@@ -408,6 +462,9 @@ public class ScreenField {
             ") is bypass field = " + isBypassField() +
             ") is autoenter = " + isAutoEnter() +
             ") is manditoryenter = " + isMandatoryEnter() +
+            ") is field exit required = " + isFER() +
+            ") is Numeric = " + isNumeric() +
+            ") is Signed Numeric = " + isSignedNumeric() +
             ") is cursor progression = " + (fcw1 == 0x88) +
             ") next progression field = " + fcw2 +
             ") field id " + fieldId +
@@ -421,6 +478,10 @@ public class ScreenField {
    int startPos = 0;
    int endPos = 0;
    boolean mdt = false;
+   protected boolean checkCanSend;
+   protected boolean rightAdjd;
+   protected boolean manditoried;
+   boolean canSend = true;
    int attr = 0;
    int length = 0;
    int ffw1 = 0;

@@ -39,6 +39,7 @@ public class ScreenFields implements TN5250jConstants {
    private int fieldIds;
    private Screen5250 screen;
    private boolean masterMDT;
+   protected boolean currentModified;
 
    public ScreenFields(Screen5250 s) {
 
@@ -67,6 +68,7 @@ public class ScreenFields implements TN5250jConstants {
 
          if (lastPos == sf.startPos()) {
             currentField = sf;
+            currentModified = false;
             return true;
          }
 
@@ -134,6 +136,39 @@ public class ScreenFields implements TN5250jConstants {
       return currentField.isContinuedLast();
    }
 
+   public boolean isCurrentFieldModified() {
+      return currentModified;
+   }
+
+   /**
+    * This routine is used to check if we can send the Aid key to the host
+    *
+    * Taken from Section  16.2.1.2 Enter/Rec Adv Key
+    *
+    * In the normal unlocked state, when the workstation operator presses the
+    * Enter/Rec Adv key:
+    *
+    * 1. The 5494 checks for the completion of mandatory-fill, self-check, and
+    *    right-adjust fields when in an active field. (An active field is one in
+    *    which the workstation operator has begun entering data.) If the
+    *    requirements of the field have not been satisfied, an error occurs.
+    *
+    * @return
+    *
+    */
+   public boolean isCanSendAid() {
+      if (currentField != null &&
+
+            currentField.getAdjustment() > 0 &&
+            currentModified &&
+            !currentField.isCanSend())
+
+         return false;
+      else
+         return true;
+
+   }
+
    protected void saveCurrentField() {
       saveCurrent = currentField;
    }
@@ -148,6 +183,7 @@ public class ScreenFields implements TN5250jConstants {
 
    protected void setCurrentFieldMDT() {
       currentField.setMDT();
+      currentModified = true;
       masterMDT = true;
    }
 
@@ -191,6 +227,8 @@ public class ScreenFields implements TN5250jConstants {
       // check if the Modified Data Tag was set while creating the field
       if (!masterMDT)
          masterMDT = currentField.mdt;
+
+      currentModified = false;
 
       return currentField;
 
@@ -245,6 +283,8 @@ public class ScreenFields implements TN5250jConstants {
          if (sf.withinField(pos)) {
 
             if (chgToField) {
+               if (!currentField.equals(sf))
+                  currentModified = false;
                currentField = sf;
             }
             return true;
@@ -311,6 +351,7 @@ public class ScreenFields implements TN5250jConstants {
                }
             }  while ( !done && lastPos != savPos);
          }
+         currentModified = false;
          screen.setCursorOn();
 
       }
@@ -362,6 +403,8 @@ public class ScreenFields implements TN5250jConstants {
             currentField = sf;
             screen.gotoField(currentField);
          }
+
+         currentModified = false;
 
       }
    }
@@ -442,6 +485,7 @@ public class ScreenFields implements TN5250jConstants {
             }
          }
          currentField = sf;
+         currentModified = false;
          screen.gotoField(currentField);
       }
    }
