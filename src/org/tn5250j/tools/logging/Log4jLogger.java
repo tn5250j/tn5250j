@@ -54,6 +54,10 @@ public class Log4jLogger extends TN5250jLogger {
 
    }
 
+   public void warn(Object message, Throwable throw1) {
+      log.warn(message, throw1);
+   }
+
    public void error(Object message) {
       log.error(message);
 
@@ -64,4 +68,8 @@ public class Log4jLogger extends TN5250jLogger {
 
    }
 
+   public boolean isDebugEnabled() {
+      return log.isDebugEnabled();
+   }
+ 
 }

@@ -42,8 +42,12 @@ public abstract class TN5250jLogger extends TN5250jLogFactory {
 
    abstract public void warn(Object message);
 
+   abstract public void warn(Object message, Throwable obj1);
+
    abstract public void error(Object message);
 
    abstract public void fatal(Object message);
 
+   abstract public boolean isDebugEnabled();
+   
 }
