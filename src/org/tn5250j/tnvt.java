@@ -1,4 +1,4 @@
-package org.tn5250j;
+
 
 /**
  * Title: tn5250J Copyright: Copyright (c) 2001 Company:
@@ -22,6 +22,8 @@ package org.tn5250j;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *  
  */
+package org.tn5250j; 
+ 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -2935,13 +2937,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	protected final boolean negotiate(byte abyte0[]) throws IOException {
 		int i = 0;
 
-		// from server negotiations
-		if (abyte0[i] == IAC) { // -1
 
-			while (i < abyte0.length && abyte0[i++] == -1)
-				//         while(i < abyte0.length && (abyte0[i] == -1 || abyte0[i++] ==
-				// 0x20))
-				switch (abyte0[i++]) {
+		// from server negotiations
+      if(abyte0[i] == IAC) { // -1
+
+         while(i < abyte0.length && abyte0[i++] == -1)
+//         while(i < abyte0.length && (abyte0[i] == -1 || abyte0[i++] == 0x20))
+            switch(abyte0[i++]) {
 
 				// we will not worry about what it WONT do
 				case WONT: // -4
@@ -2950,7 +2952,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 				case DO: //-3
 
-					switch (abyte0[i]) {
+                  // not sure why but since moving to V5R2 we are receiving a
+                  //   DO with no option when connecting a second session with
+                  //   device name.  Can not find the cause at all.  If anybody
+                  //   is interested please debug this until then this works.
+                  if (i < abyte0.length) {
+                     switch(abyte0[i]) {
 					case TERMINAL_TYPE: // 24
 						baosp.write(IAC);
 						baosp.write(WILL);
@@ -2980,8 +2987,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 						break;
 
 					case TIMING_MARK: // 6 rfc860
-					//                        System.out.println("Timing Mark Received and notifying "
-					// +
+   //                        System.out.println("Timing Mark Received and notifying " +
 					//                        "the server that we will not do it");
 						baosp.write(IAC);
 						baosp.write(WONT);
@@ -2999,7 +3005,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 							writeByte(baosp.toByteArray());
 							baosp.reset();
 
-						} else {
+                           }
+                           else {
 							baosp.write(IAC);
 							baosp.write(WILL);
 							baosp.write(NEW_ENVIRONMENT);
@@ -3018,13 +3025,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 						break;
 					}
+                 }
 
 					i++;
 					break;
 
 				case WILL:
 
-					switch (abyte0[i]) {
+                 switch(abyte0[i]) {
 					case OPT_END_OF_RECORD: // 25
 						baosp.write(IAC);
 						baosp.write(DO);
@@ -3048,19 +3056,18 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 				case SB: // -6
 
-					if (abyte0[i] == NEW_ENVIRONMENT && abyte0[i + 1] == 1) {
+                  if(abyte0[i] == NEW_ENVIRONMENT && abyte0[i + 1] == 1) {
 						negNewEnvironment();
 
-						while (++i < abyte0.length && abyte0[i + 1] != IAC)
-							;
+                     while (++i < abyte0.length && abyte0[i + 1] != IAC);
 					}
 
-					if (abyte0[i] == TERMINAL_TYPE && abyte0[i + 1] == 1) {
+                  if(abyte0[i] == TERMINAL_TYPE && abyte0[i + 1] == 1) {
 						baosp.write(IAC);
 						baosp.write(SB);
 						baosp.write(TERMINAL_TYPE);
 						baosp.write(QUAL_IS);
-						if (!support132)
+                     if(!support132)
 							baosp.write("IBM-3179-2".getBytes());
 						else
 							baosp.write("IBM-3477-FC".getBytes());
@@ -3075,7 +3082,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					break;
 				}
 			return true;
-		} else {
+      }
+      else {
 			return false;
 		}
 	}
