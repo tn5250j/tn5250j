@@ -41,6 +41,23 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+06/12/2003  Well we have not kept this up to date at all.  Hopefully
+            we can catch it up to date from now on.
+
+            Fixed the bounding area.
+            Added kunstoff look and feel - Patrick Bielen
+            Added access to functions/operations with password access
+            Added delete macros
+            Fixed up some of the panels - Patrick Bielen
+            Fixed a lot of problems in E-mail - Patrick Bielen
+            Added new options to e-mail functions
+               - New output to image .png
+               - New access to just send quick message with file attachment -
+                     Patrick Bielen
+               - Send screen image via e-mail - Fixes by Patrick Bielen
+            Added new options to the define the margins for the Print Screen
+               function.
+
 05/09/2002  Lots of clean up for bounding area selection.
 
 04/09/2002  Added support to map scripts to the Key Mapping
