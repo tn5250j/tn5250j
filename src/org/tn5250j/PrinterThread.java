@@ -1,11 +1,34 @@
 package org.tn5250j;
-
+/**
+ * Title: PrinterThread
+ * Copyright:   Copyright (c) 2001
+ * Company:
+ * @author  Kenneth J. Pouncey
+ * @version 0.5
+ *
+ * Description:
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ */
 import java.awt.print.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.font.*;
-
-
+import org.tn5250j.Session;
 
 public class PrinterThread extends Thread implements Printable {
 
@@ -14,11 +37,12 @@ public class PrinterThread extends Thread implements Printable {
    int numRows;
    Color colorBg;
    Font font;
+   Session session;
 
    public PrinterThread (ScreenChar[] sc, Font font, int cols, int rows,
-                           Color colorBg) {
+                           Color colorBg, Session ses) {
       setPriority(1);
-
+      session = ses;
       screen = new ScreenChar[sc.length];
 
       int len = sc.length;
@@ -50,11 +74,19 @@ public class PrinterThread extends Thread implements Printable {
       //--- cancel the print job
       if (printJob.printDialog()) {
          try {
+            // we do this because of loosing focus with jdk 1.4.0
+            session.requestFocus();
             printJob.print();
          } catch (Exception PrintException) {
             PrintException.printStackTrace();
          }
       }
+      else {
+         // we do this because of loosing focus with jdk 1.4.0
+         session.requestFocus();
+      }
+
+      session = null;
 
       int len = screen.length;
 
@@ -87,7 +119,8 @@ public class PrinterThread extends Thread implements Printable {
 
          //--- Create a graphic2D object and set the default parameters
          g2 = (Graphics2D) g;
-         g2.setColor (colorBg);
+//         g2.setColor (colorBg);
+         g2.setColor (Color.black);
 
          //--- Translate the origin to be (0,0)
          g2.translate (pageFormat.getImageableX (), pageFormat.getImageableY ());

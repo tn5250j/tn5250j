@@ -1342,8 +1342,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
                s = strokenizer.nextKeyStroke();
                if (s.length() == 1) {
-
                   simulateKeyStroke(s.charAt(0));
+                  setCursorOn();
                }
                else {
 
@@ -2700,6 +2700,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public void setCursorOn() {
       updateCursorLoc = true;
 //      System.out.println("cursor on");
+      if (!keysBuffered)
       updateCursorLoc();
    }
 
@@ -4124,7 +4125,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
      */
    public final void printMe() {
 
-      Thread printerThread = new PrinterThread(screen,font,numCols,numRows,colorBg);
+      Thread printerThread = new PrinterThread(screen,
+                                                font,
+                                                numCols,
+                                                numRows,
+                                                colorBg,
+                                                (Session)gui);
       printerThread.start();
 
    }
