@@ -40,7 +40,16 @@
         <pack name="Scripting" required="no">
             <description>Scripting using jython - http://www.jython.org</description>
             <file targetdir="$INSTALL_PATH/lib" src="installer/jython.jar"/>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/jythonlib.jar"/>
         </pack>
+        <pack name="PDF Generation" required="no">
+            <description>Scripting using jython - http://www.jython.org</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/itext.jar"/>
+        </pack>
+        <!--pack name="JTOpen Toolbox" required="no">
+            <description>Scripting using jython - http://www.jython.org</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/jt400.jar"/>
+        </pack-->
     </packs>
     <native name="ShellLink.dll" type="izpack"/>
 </installation>
