@@ -32,6 +32,7 @@ import java.awt.event.*;
 import org.tn5250j.*;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.scripting.ExecuteScriptAction;
+import org.tn5250j.scripting.InterpreterDriverManager;
 
 public final class LoadMacroMenu {
 
@@ -131,16 +132,18 @@ public final class LoadMacroMenu {
                vector.addElement(submenu);
          }
          else {
-            String fn = fileName.replace('_',' ');
-            int index = fn.lastIndexOf('.');
-            if (index > 0) {
-               fn = fn.substring(0,index);
+            if (InterpreterDriverManager.isScriptSupported(fileName)) {
+               String fn = fileName.replace('_',' ');
+               int index = fn.lastIndexOf('.');
+               if (index > 0) {
+                  fn = fn.substring(0,index);
+               }
+               action = new ExecuteScriptAction(fn,
+                                          file.getAbsolutePath(),
+                                          session) {
+                 };
+               vector.addElement(action);
             }
-            action = new ExecuteScriptAction(fn,
-                                       file.getAbsolutePath(),
-                                       session) {
-              };
-            vector.addElement(action);
          }
       }
    }
