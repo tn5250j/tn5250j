@@ -65,7 +65,8 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 				tmp_rUsr = rUsrLst.resourceAt(idx)
 				key_usr = tmp_rUsr.getAttributeValue(rsc.RUser.USER_PROFILE_NAME)
 				tmp_usrText = tmp_rUsr.getAttributeValue(rsc.RUser.TEXT_DESCRIPTION)
-				self.usrDct[key_usr] = tmp_usrText
+				if not key_usr.startswith('Q'):
+					self.usrDct[key_usr] = tmp_usrText
 		rUsrLst.close()
 		
 # Interactive job list		
@@ -87,7 +88,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 
 		self.chatTxt = swing.JTextArea(5, 30, lineWrap=1, wrapStyleWord=1)
 		self.rpyTxt = swing.JTextArea(10, 30, lineWrap=1, wrapStyleWord=1)
-		self.users = swing.JComboBox(preferredSize=(175, 25), minimumSize=(150, 25))
+		self.users = swing.JComboBox(preferredSize=(225, 25), minimumSize=(225, 25))
 
 		self.showGui()
 
