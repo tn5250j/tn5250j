@@ -39,6 +39,7 @@ import java.awt.print.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
 import org.tn5250j.tools.*;
+import org.tn5250j.tools.system.OperatingSystem;
 
 public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
@@ -155,6 +156,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private boolean defaultPrinter;
    private SessionConfig config;
    private boolean rulerFixed;
+
+   private boolean fullRepaint;
 //   private Image tileimage;
 
    //LDC - 12/02/2003 -  boolean: true: it must be repainted
@@ -181,6 +184,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    void jbInit() throws Exception {
+
+      // damn I hate putting this in but it is the only way to get
+      //  it to work correctly.  What a pain in the ass.
+      if (OperatingSystem.isMacOS() && OperatingSystem.hasJava14())
+         fullRepaint = true;
 
       if (!config.isPropertyExists("font")) {
          font = new Font("Courier New",Font.PLAIN,14);
@@ -4105,8 +4113,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       if (gui.isVisible()) {
          if (height > 0 && width > 0) {
 
-            bi.drawImageBuffer(gg2d,x,y,width,height);
-//      gui.repaint();
+            if (!fullRepaint)
+               bi.drawImageBuffer(gg2d,x,y,width,height);
+            else
+               gui.repaint();
 
 //            System.out.println(" something went right finally " + gui.isVisible() +
 //                           " height " + height + " width " + width);
