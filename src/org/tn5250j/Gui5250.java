@@ -69,7 +69,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private boolean stopMacro;
    private boolean doubleClick;
    protected SessionConfig sesConfig;
-   private KeyboardHandler keyHandler;
+   protected KeyboardHandler keyHandler;
 
    public Gui5250 () {
 
@@ -344,7 +344,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
    }
 
-   private void getFocusForMe() {
+   protected void getFocusForMe() {
       this.grabFocus();
    }
 
@@ -541,6 +541,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
       return stopMacro;
    }
 
+   public boolean isSessionRecording() {
+
+      return keyHandler.isRecording();
+   }
+
    public void setMacroRunning(boolean mr) {
       macroRunning = mr;
       if (macroRunning)
@@ -586,460 +591,497 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void doPopup (MouseEvent me) {
 
-      JMenuItem menuItem;
-      Action action;
-      popup = new JPopupMenu();
-      final Gui5250 g = this;
-      JMenuItem mi;
-
-      final int pos = screen.getPosFromView(me.getX(),me.getY());
-
-      if (!rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
-         action = new AbstractAction(LangTool.getString("popup.copy")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.copyField(pos);
-                  getFocusForMe();
-               }
-           };
-
-         popup.add(createMenuItem(action,MNEMONIC_COPY));
-
-
-         action = new AbstractAction(LangTool.getString("popup.paste")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.pasteMe(false);
-                  getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,MNEMONIC_PASTE));
-
-         action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.pasteMe(true);
-                  getFocusForMe();
-               }
-           };
-         popup.add(action);
-
-         popup.addSeparator();
-      }
-      else {
-
-         action = new AbstractAction(LangTool.getString("popup.copy")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.copyMe();
-                  getFocusForMe();
-               }
-           };
-
-         popup.add(createMenuItem(action,MNEMONIC_COPY));
-
-         action = new AbstractAction(LangTool.getString("popup.paste")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys(MNEMONIC_PASTE);
-                  getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,MNEMONIC_PASTE));
-
-         action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.pasteMe(true);
-                  getFocusForMe();
-               }
-           };
-         popup.add(action);
-
-         Rectangle workR = new Rectangle();
-         if (rubberband.isAreaSelected()) {
-
-            // get the bounded area of the selection
-            screen.getBoundingArea(workR);
-
-            popup.addSeparator();
-
-            menuItem = new JMenuItem(LangTool.getString("popup.selectedColumns")
-                              + " " + workR.width);
-            menuItem.setArmed(false);
-            popup.add(menuItem);
-
-            menuItem = new JMenuItem(LangTool.getString("popup.selectedRows")
-                              + " " + workR.height);
-            menuItem.setArmed(false);
-            popup.add(menuItem);
-
-            JMenu sumMenu = new JMenu(LangTool.getString("popup.calc"));
-            popup.add(sumMenu);
-
-            action = new AbstractAction(LangTool.getString("popup.calcGroupCD")) {
-               public void actionPerformed(ActionEvent e) {
-                  sumArea(true);
-               }
-            };
-            sumMenu.add(action);
-
-            action = new AbstractAction(LangTool.getString("popup.calcGroupDC")) {
-               public void actionPerformed(ActionEvent e) {
-                  sumArea(false);
-               }
-            };
-            sumMenu.add(action);
-
-         }
-
-         popup.addSeparator();
-
-         action = new AbstractAction(LangTool.getString("popup.printScreen")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.printMe();
-                  getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,MNEMONIC_PRINT_SCREEN));
-
-         popup.addSeparator();
-
-         JMenu kbMenu = new JMenu(LangTool.getString("popup.keyboard"));
-
-         popup.add(kbMenu);
-
-         action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
-               public void actionPerformed(ActionEvent e) {
-
-                  mapMeKeys();
-               }
-           };
-         kbMenu.add(action);
-
-         kbMenu.addSeparator();
-
-         action = new AbstractAction(LangTool.getString("key.[attn]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[attn]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_ATTN));
-
-         action = new AbstractAction(LangTool.getString("key.[reset]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[reset]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_RESET));
-
-         action = new AbstractAction(LangTool.getString("key.[sysreq]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[sysreq]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_SYSREQ));
-
-         if (screen.isMessageWait()) {
-            action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
-                  public void actionPerformed(ActionEvent e) {
-                     vt.systemRequest('4');
-                  }
-              };
-
-            kbMenu.add(createMenuItem(action,MNEMONIC_DISP_MESSAGES));
-         }
-
-         kbMenu.addSeparator();
-
-         action = new AbstractAction(LangTool.getString("key.[dupfield]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[dupfield]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_DUP_FIELD));
-
-         action = new AbstractAction(LangTool.getString("key.[help]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[help]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_HELP));
-
-         action = new AbstractAction(LangTool.getString("key.[eraseeof]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[eraseeof]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_ERASE_EOF));
-
-         action = new AbstractAction(LangTool.getString("key.[field+]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[field+]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_PLUS));
-
-
-         action = new AbstractAction(LangTool.getString("key.[field-]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[field-]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_MINUS));
-
-
-         action = new AbstractAction(LangTool.getString("key.[newline]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[newline]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_NEW_LINE));
-
-
-         action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
-               public void actionPerformed(ActionEvent e) {
-                  vt.hostPrint(1);
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_PRINT));
-
-         createShortCutItems(kbMenu);
-
-         if (screen.isMessageWait()) {
-            action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
-                  public void actionPerformed(ActionEvent e) {
-                     vt.systemRequest('4');
-                  }
-              };
-            popup.add(createMenuItem(action,MNEMONIC_DISP_MESSAGES));
-         }
-
-         popup.addSeparator();
-
-         action = new AbstractAction(LangTool.getString("popup.hexMap")) {
-               public void actionPerformed(ActionEvent e) {
-                  showHexMap();
-                  getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,""));
-
-         action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
-               public void actionPerformed(ActionEvent e) {
-
-                  mapMeKeys();
-                  getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,""));
-
-         action = new AbstractAction(LangTool.getString("popup.settings")) {
-               public void actionPerformed(ActionEvent e) {
-                  doAttributes();
-                  getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,MNEMONIC_DISP_ATTRIBUTES));
-
-
-         popup.addSeparator();
-
-         if (isMacroRunning()) {
-            action = new AbstractAction(LangTool.getString("popup.stopScript")) {
-                  public void actionPerformed(ActionEvent e) {
-                     setStopMacroRequested();
-                  }
-              };
-            popup.add(action);
-         }
-         else {
-
-            JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
-
-            if (keyHandler.isRecording()) {
-               action = new AbstractAction(LangTool.getString("popup.stop")) {
-                     public void actionPerformed(ActionEvent e) {
-                        stopRecordingMe();
-                        getFocusForMe();
-                     }
-               };
-
-            }
-            else {
-               action = new AbstractAction(LangTool.getString("popup.record")) {
-                     public void actionPerformed(ActionEvent e) {
-                        startRecordingMe();
-                        getFocusForMe();
-
-                     }
-               };
-            }
-            macMenu.add(action);
-            if (Macronizer.isMacrosExist()) {
-               // this will add a sorted list of the macros to the macro menu
-               addMacros(macMenu);
-            }
-            popup.add(macMenu);
-         }
-
-         popup.addSeparator();
-
-         JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
-
-         action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
-               public void actionPerformed(ActionEvent e) {
-                  doMeTransfer();
-                  getFocusForMe();
-               }
-           };
-
-         xtfrMenu.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
-
-         action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
-               public void actionPerformed(ActionEvent e) {
-                  doMeSpool();
-                  getFocusForMe();
-               }
-           };
-
-         xtfrMenu.add(action);
-
-         popup.add(xtfrMenu);
-
-         JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
-         popup.add(sendMenu);
-
-
-         action = new AbstractAction(LangTool.getString("popup.email")) {
-               public void actionPerformed(ActionEvent e) {
-                  sendScreenEMail();
-                  getFocusForMe();
-               }
-           };
-
-         sendMenu.add(createMenuItem(action,MNEMONIC_E_MAIL));
-
-         action = new AbstractAction(LangTool.getString("popup.file")) {
-               public void actionPerformed(ActionEvent e) {
-                  sendMeToFile();
-               }
-           };
-
-         sendMenu.add(action);
-
-         action = new AbstractAction(LangTool.getString("popup.toImage")) {
-               public void actionPerformed(ActionEvent e) {
-                  sendMeToImageFile();
-               }
-           };
-
-         sendMenu.add(action);
-
-         popup.addSeparator();
-
-      }
-
-      action = new AbstractAction(LangTool.getString("popup.connections")) {
-            public void actionPerformed(ActionEvent e) {
-               doConnections();
-            }
-        };
-
-      popup.add(createMenuItem(action,MNEMONIC_OPEN_NEW));
-
-      popup.addSeparator();
-
-      if (vt.isConnected()) {
-         action = new AbstractAction(LangTool.getString("popup.disconnect")) {
-               public void actionPerformed(ActionEvent e) {
-                  changeConnection();
-                  getFocusForMe();
-               }
-           };
-      }
-      else {
-
-         action = new AbstractAction(LangTool.getString("popup.connect")) {
-               public void actionPerformed(ActionEvent e) {
-                  changeConnection();
-                  getFocusForMe();
-               }
-           };
-
-
-      }
-      popup.add(createMenuItem(action,MNEMONIC_TOGGLE_CONNECTION));
-
-      action = new AbstractAction(LangTool.getString("popup.close")) {
-            public void actionPerformed(ActionEvent e) {
-               closeSession();
-            }
-        };
-
-      popup.add(createMenuItem(action,MNEMONIC_CLOSE));
-
-      GUIGraphicsUtils.positionPopup(me.getComponent(),popup,
-               me.getX(),me.getY());
+      new SessionPopup((Session)this,me);
+
+//      JMenuItem menuItem;
+//      Action action;
+//      popup = new JPopupMenu();
+//      final Gui5250 g = this;
+//      JMenuItem mi;
+//
+//      final int pos = screen.getPosFromView(me.getX(),me.getY());
+//
+//      if (!rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
+//         action = new AbstractAction(LangTool.getString("popup.copy")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.copyField(pos);
+//                  getFocusForMe();
+//               }
+//           };
+//
+//         popup.add(createMenuItem(action,MNEMONIC_COPY));
+//
+//
+//         action = new AbstractAction(LangTool.getString("popup.paste")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.pasteMe(false);
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(createMenuItem(action,MNEMONIC_PASTE));
+//
+//         action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.pasteMe(true);
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(action);
+//
+//         popup.addSeparator();
+//      }
+//      else {
+//
+//         action = new AbstractAction(LangTool.getString("popup.copy")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.copyMe();
+//                  getFocusForMe();
+//               }
+//           };
+//
+//         popup.add(createMenuItem(action,MNEMONIC_COPY));
+//
+//         action = new AbstractAction(LangTool.getString("popup.paste")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys(MNEMONIC_PASTE);
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(createMenuItem(action,MNEMONIC_PASTE));
+//
+//         action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.pasteMe(true);
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(action);
+//
+//         Rectangle workR = new Rectangle();
+//         if (rubberband.isAreaSelected()) {
+//
+//            // get the bounded area of the selection
+//            screen.getBoundingArea(workR);
+//
+//            popup.addSeparator();
+//
+//            menuItem = new JMenuItem(LangTool.getString("popup.selectedColumns")
+//                              + " " + workR.width);
+//            menuItem.setArmed(false);
+//            popup.add(menuItem);
+//
+//            menuItem = new JMenuItem(LangTool.getString("popup.selectedRows")
+//                              + " " + workR.height);
+//            menuItem.setArmed(false);
+//            popup.add(menuItem);
+//
+//            JMenu sumMenu = new JMenu(LangTool.getString("popup.calc"));
+//            popup.add(sumMenu);
+//
+//            action = new AbstractAction(LangTool.getString("popup.calcGroupCD")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  sumArea(true);
+//               }
+//            };
+//            sumMenu.add(action);
+//
+//            action = new AbstractAction(LangTool.getString("popup.calcGroupDC")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  sumArea(false);
+//               }
+//            };
+//            sumMenu.add(action);
+//
+//         }
+//
+//         popup.addSeparator();
+//
+//         action = new AbstractAction(LangTool.getString("popup.printScreen")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.printMe();
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(createMenuItem(action,MNEMONIC_PRINT_SCREEN));
+//
+//         popup.addSeparator();
+//
+//         JMenu kbMenu = new JMenu(LangTool.getString("popup.keyboard"));
+//
+//         popup.add(kbMenu);
+//
+//         action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
+//               public void actionPerformed(ActionEvent e) {
+//
+//                  mapMeKeys();
+//               }
+//           };
+//         kbMenu.add(action);
+//
+//         kbMenu.addSeparator();
+//
+//         action = new AbstractAction(LangTool.getString("key.[attn]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[attn]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_ATTN));
+//
+//         action = new AbstractAction(LangTool.getString("key.[reset]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[reset]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_RESET));
+//
+//         action = new AbstractAction(LangTool.getString("key.[sysreq]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[sysreq]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_SYSREQ));
+//
+//         if (screen.isMessageWait()) {
+//            action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
+//                  public void actionPerformed(ActionEvent e) {
+//                     vt.systemRequest('4');
+//                  }
+//              };
+//
+//            kbMenu.add(createMenuItem(action,MNEMONIC_DISP_MESSAGES));
+//         }
+//
+//         kbMenu.addSeparator();
+//
+//         action = new AbstractAction(LangTool.getString("key.[dupfield]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[dupfield]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_DUP_FIELD));
+//
+//         action = new AbstractAction(LangTool.getString("key.[help]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[help]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_HELP));
+//
+//         action = new AbstractAction(LangTool.getString("key.[eraseeof]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[eraseeof]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_ERASE_EOF));
+//
+//         action = new AbstractAction(LangTool.getString("key.[field+]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[field+]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_PLUS));
+//
+//
+//         action = new AbstractAction(LangTool.getString("key.[field-]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[field-]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_MINUS));
+//
+//
+//         action = new AbstractAction(LangTool.getString("key.[newline]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[newline]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_NEW_LINE));
+//
+//
+//         action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  vt.hostPrint(1);
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_PRINT));
+//
+//         createShortCutItems(kbMenu);
+//
+//         if (screen.isMessageWait()) {
+//            action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
+//                  public void actionPerformed(ActionEvent e) {
+//                     vt.systemRequest('4');
+//                  }
+//              };
+//            popup.add(createMenuItem(action,MNEMONIC_DISP_MESSAGES));
+//         }
+//
+//         popup.addSeparator();
+//
+//         action = new AbstractAction(LangTool.getString("popup.hexMap")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  showHexMap();
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(createMenuItem(action,""));
+//
+//         action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
+//               public void actionPerformed(ActionEvent e) {
+//
+//                  mapMeKeys();
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(createMenuItem(action,""));
+//
+//         action = new AbstractAction(LangTool.getString("popup.settings")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  doAttributes();
+//                  getFocusForMe();
+//               }
+//           };
+//         popup.add(createMenuItem(action,MNEMONIC_DISP_ATTRIBUTES));
+//
+//
+//         popup.addSeparator();
+//
+//         if (isMacroRunning()) {
+//            action = new AbstractAction(LangTool.getString("popup.stopScript")) {
+//                  public void actionPerformed(ActionEvent e) {
+//                     setStopMacroRequested();
+//                  }
+//              };
+//            popup.add(action);
+//         }
+//         else {
+//
+//            JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
+//
+//            if (keyHandler.isRecording()) {
+//               action = new AbstractAction(LangTool.getString("popup.stop")) {
+//                     public void actionPerformed(ActionEvent e) {
+//                        stopRecordingMe();
+//                        getFocusForMe();
+//                     }
+//               };
+//
+//            }
+//            else {
+//               action = new AbstractAction(LangTool.getString("popup.record")) {
+//                     public void actionPerformed(ActionEvent e) {
+//                        startRecordingMe();
+//                        getFocusForMe();
+//
+//                     }
+//               };
+//            }
+//            macMenu.add(action);
+//            if (Macronizer.isMacrosExist()) {
+//               // this will add a sorted list of the macros to the macro menu
+//               addMacros(macMenu);
+//            }
+//            popup.add(macMenu);
+//         }
+//
+//         popup.addSeparator();
+//
+//         JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
+//
+//         action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  doMeTransfer();
+//                  getFocusForMe();
+//               }
+//           };
+//
+//         xtfrMenu.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
+//
+//         action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  doMeSpool();
+//                  getFocusForMe();
+//               }
+//           };
+//
+//         xtfrMenu.add(action);
+//
+//         popup.add(xtfrMenu);
+//
+//         JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
+//         popup.add(sendMenu);
+//
+//
+//         action = new AbstractAction(LangTool.getString("popup.email")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  sendScreenEMail();
+//                  getFocusForMe();
+//               }
+//           };
+//
+//         sendMenu.add(createMenuItem(action,MNEMONIC_E_MAIL));
+//
+//         action = new AbstractAction(LangTool.getString("popup.file")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  sendMeToFile();
+//               }
+//           };
+//
+//         sendMenu.add(action);
+//
+//         action = new AbstractAction(LangTool.getString("popup.toImage")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  sendMeToImageFile();
+//               }
+//           };
+//
+//         sendMenu.add(action);
+//
+//         popup.addSeparator();
+//
+//      }
+//
+//      action = new AbstractAction(LangTool.getString("popup.connections")) {
+//            public void actionPerformed(ActionEvent e) {
+//               doConnections();
+//            }
+//        };
+//
+//      popup.add(createMenuItem(action,MNEMONIC_OPEN_NEW));
+//
+//      popup.addSeparator();
+//
+//      if (vt.isConnected()) {
+//         action = new AbstractAction(LangTool.getString("popup.disconnect")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  changeConnection();
+//                  getFocusForMe();
+//               }
+//           };
+//      }
+//      else {
+//
+//         action = new AbstractAction(LangTool.getString("popup.connect")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  changeConnection();
+//                  getFocusForMe();
+//               }
+//           };
+//
+//
+//      }
+//      popup.add(createMenuItem(action,MNEMONIC_TOGGLE_CONNECTION));
+//
+//      action = new AbstractAction(LangTool.getString("popup.close")) {
+//            public void actionPerformed(ActionEvent e) {
+//               closeSession();
+//            }
+//        };
+//
+//      popup.add(createMenuItem(action,MNEMONIC_CLOSE));
+//
+//      GUIGraphicsUtils.positionPopup(me.getComponent(),popup,
+//               me.getX(),me.getY());
 
    }
 
-   private void addMacros(JMenu menu) {
+//   private void addMacros(JMenu menu) {
+//
+//      LoadMacroMenu.loadMacros((Session)this,macros,menu);
+//   }
+//
+//   private JMenuItem createMenuItem(Action action, String accelKey) {
+//      JMenuItem mi;
+//
+//      mi =new JMenuItem();
+//      mi.setAction(action);
+//      if (keyHandler.isKeyStrokeDefined(accelKey))
+//         mi.setAccelerator(keyHandler.getKeyStroke(accelKey));
+//      else {
+//
+//         InputMap map = getInputMap();
+//         KeyStroke[] allKeys = map.allKeys();
+//         for (int x = 0; x < allKeys.length; x++) {
+//
+//            if (((String)map.get(allKeys[x])).equals(accelKey)) {
+//               mi.setAccelerator(allKeys[x]);
+//               break;
+//            }
+//         }
+//
+//      }
+//
+//      final Gui5250 ji = this;
+//       mi.addMouseListener(new MouseAdapter() {
+//           public void mouseReleased(MouseEvent e) {
+//               if (SwingUtilities.isRightMouseButton(e)) {
+//                  JPopupMenu j = new JPopupMenu("test");
+//                  j.add(new JMenuItem("Delete"));
+//
+//      MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem)e.getSource(),e,ji);
+//      GUIGraphicsUtils.positionPopup(ji,j,
+//               et.getX(),et.getY());
+//
+//               }
+//           }
+//
+//           public void mousePressed(MouseEvent e) {
+//               if (SwingUtilities.isRightMouseButton(e)) {
+//                  JPopupMenu j = new JPopupMenu("test");
+//                  j.add(new JMenuItem("Delete"));
+//      MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem)e.getSource(),e,ji);
+//      GUIGraphicsUtils.positionPopup(ji,j,
+//               et.getX(),et.getY());
+//               }
+//           }
+//           public void mouseClicked(MouseEvent e) {
+//               if (SwingUtilities.isRightMouseButton(e)) {
+//                  JPopupMenu j = new JPopupMenu("test");
+//                  j.add(new JMenuItem("Delete"));
+//      MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem)e.getSource(),e,ji);
+//      GUIGraphicsUtils.positionPopup(ji,j,
+//               et.getX(),et.getY());
+//               }
+//           }
+//       });
+//
+//      return mi;
+//   }
+//
+//   private void createShortCutItems(JMenu menu) {
+//
+//      JMenuItem mi;
+//      JMenu sm = new JMenu(LangTool.getString("popup.shortCuts"));
+//      menu.addSeparator();
+//      menu.add(sm);
+//
+//      InputMap map = getInputMap();
+//      KeyStroke[] allKeys = map.allKeys();
+//      ActionMap aMap = getActionMap();
+//
+//      for (int x = 0; x < allKeys.length; x++) {
+//
+//         mi =new JMenuItem();
+//         Action a = aMap.get((String)map.get(allKeys[x]));
+//         mi.setAction(a);
+//         mi.setText(LangTool.getString("key." + (String)map.get(allKeys[x])));
+//         mi.setAccelerator(allKeys[x]);
+//         sm.add(mi);
+//      }
+//   }
 
-      LoadMacroMenu.loadMacros((Session)this,macros,menu);
-   }
-
-   private JMenuItem createMenuItem(Action action, String accelKey) {
-      JMenuItem mi;
-
-      mi =new JMenuItem();
-      mi.setAction(action);
-      if (keyHandler.isKeyStrokeDefined(accelKey))
-         mi.setAccelerator(keyHandler.getKeyStroke(accelKey));
-      else {
-
-         InputMap map = getInputMap();
-         KeyStroke[] allKeys = map.allKeys();
-         for (int x = 0; x < allKeys.length; x++) {
-
-            if (((String)map.get(allKeys[x])).equals(accelKey)) {
-               mi.setAccelerator(allKeys[x]);
-               break;
-            }
-         }
-
-      }
-      return mi;
-   }
-
-   private void createShortCutItems(JMenu menu) {
-
-      JMenuItem mi;
-      JMenu sm = new JMenu(LangTool.getString("popup.shortCuts"));
-      menu.addSeparator();
-      menu.add(sm);
-
-      InputMap map = getInputMap();
-      KeyStroke[] allKeys = map.allKeys();
-      ActionMap aMap = getActionMap();
-
-      for (int x = 0; x < allKeys.length; x++) {
-
-         mi =new JMenuItem();
-         Action a = aMap.get((String)map.get(allKeys[x]));
-         mi.setAction(a);
-         mi.setText(LangTool.getString("key." + (String)map.get(allKeys[x])));
-         mi.setAccelerator(allKeys[x]);
-         sm.add(mi);
-      }
-   }
-
-   private void doConnections() {
+   protected void doConnections() {
 
       fireEmulatorAction(EmulatorActionEvent.START_NEW_SESSION);
    }
 
-   public void doMeTransfer() {
-
-      XTFRFile xtrf = new XTFRFile((JFrame)SwingUtilities.getRoot(this),
-                                    vt,(Session)this);
-
-   }
-
+//   public void doMeTransfer() {
+//
+//      XTFRFile xtrf = new XTFRFile((JFrame)SwingUtilities.getRoot(this),
+//                                    vt,(Session)this);
+//
+//   }
+//
    public void doMeSpool() {
 
       try {
@@ -1055,62 +1097,61 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
 
    }
+//
+//   private void sumArea(boolean which) {
+//
+//
+//      Vector sumVector = screen.sumThem(which);
+//      Iterator l = sumVector.iterator();
+//      double sum = 0.0;
+//      double inter = 0.0;
+//      while (l.hasNext()) {
+//
+//         inter = 0.0;
+//         try {
+//            inter = ((Double)l.next()).doubleValue();
+//         }
+//         catch (Exception e) {
+//            System.out.println(e.getMessage());
+//         }
+//         System.out.println(inter);
+//
+//         sum += inter;
+//
+//      }
+//      System.out.println("Vector sum " + sum);
+//      sumVector = null;
+//      l = null;
+//
+//      // obtain the decimal format for parsing
+//      DecimalFormat df =
+//            (DecimalFormat)NumberFormat.getInstance() ;
+//
+//      DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
+//
+//      if (which) {
+//         dfs.setDecimalSeparator('.');
+//         dfs.setGroupingSeparator(',');
+//      }
+//      else {
+//         dfs.setDecimalSeparator(',');
+//         dfs.setGroupingSeparator('.');
+//      }
+//
+//      df.setDecimalFormatSymbols(dfs);
+//      df.setMinimumFractionDigits(6);
+//
+//      JOptionPane.showMessageDialog(null,
+//                                    df.format(sum),
+//                                    LangTool.getString("popup.calc"),
+//                                    JOptionPane.INFORMATION_MESSAGE);
+//
+//   }
 
-   private void sumArea(boolean which) {
-
-
-      Vector sumVector = screen.sumThem(which);
-      Iterator l = sumVector.iterator();
-      double sum = 0.0;
-      double inter = 0.0;
-      while (l.hasNext()) {
-
-         inter = 0.0;
-         try {
-            inter = ((Double)l.next()).doubleValue();
-         }
-         catch (Exception e) {
-            System.out.println(e.getMessage());
-         }
-         System.out.println(inter);
-
-         sum += inter;
-
-      }
-      System.out.println("Vector sum " + sum);
-      sumVector = null;
-      l = null;
-
-      // obtain the decimal format for parsing
-      DecimalFormat df =
-            (DecimalFormat)NumberFormat.getInstance() ;
-
-      DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
-
-      if (which) {
-         dfs.setDecimalSeparator('.');
-         dfs.setGroupingSeparator(',');
-      }
-      else {
-         dfs.setDecimalSeparator(',');
-         dfs.setGroupingSeparator('.');
-      }
-
-      df.setDecimalFormatSymbols(dfs);
-      df.setMinimumFractionDigits(6);
-
-      JOptionPane.showMessageDialog(null,
-                                    df.format(sum),
-                                    LangTool.getString("popup.calc"),
-                                    JOptionPane.INFORMATION_MESSAGE);
-
-   }
-
-   private void closeMe() {
+   protected void closeMe() {
 
       fireEmulatorAction(EmulatorActionEvent.CLOSE_SESSION);
 
-//      keyMap.removeKeyChangeListener(this);
    }
 
    public void executeMeMacro(ActionEvent ae) {
@@ -1125,21 +1166,21 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   private void mapMeKeys() {
-      KeyConfigure kc;
+//   private void mapMeKeys() {
+//      KeyConfigure kc;
+//
+//      Frame parent = (JFrame)SwingUtilities.getRoot(this);
+//
+//      if (Macronizer.isMacrosExist()) {
+//         String[] macrosList = Macronizer.getMacroList();
+//         kc = new KeyConfigure(parent,macrosList,vt.getCodePage());
+//      }
+//      else
+//         kc = new KeyConfigure(parent,null,vt.getCodePage());
+//
+//   }
 
-      Frame parent = (JFrame)SwingUtilities.getRoot(this);
-
-      if (Macronizer.isMacrosExist()) {
-         String[] macrosList = Macronizer.getMacroList();
-         kc = new KeyConfigure(parent,macrosList,vt.getCodePage());
-      }
-      else
-         kc = new KeyConfigure(parent,null,vt.getCodePage());
-
-   }
-
-   private void stopRecordingMe() {
+   protected void stopRecordingMe() {
       if (keyHandler.getRecordBuffer().length() > 0) {
          Macronizer.setMacro(newMacName,keyHandler.getRecordBuffer());
          System.out.println(keyHandler.getRecordBuffer());
@@ -1148,7 +1189,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       keyHandler.stopRecording();
    }
 
-   private void startRecordingMe() {
+   protected void startRecordingMe() {
 
       String macName = (String)JOptionPane.showInputDialog(null,
                                         LangTool.getString("macro.message"),
@@ -1164,104 +1205,104 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
    }
 
-   public void runScript () {
-
-      Macronizer.showRunScriptDialog((Session)this);
-      getFocusForMe();
-
-   }
-
-   private void showHexMap() {
-
-      JPanel srp = new JPanel();
-      srp.setLayout(new BorderLayout());
-      DefaultListModel listModel = new DefaultListModel();
-      StringBuffer sb = new StringBuffer();
-
-      // we will use a collator here so that we can take advantage of the locales
-      Collator collator = Collator.getInstance();
-      CollationKey key = null;
-
-      Set set = new TreeSet();
-      for (int x =0;x < 256; x++) {
-         char c = vt.ebcdic2uni(x);
-//         char ac = vt.getASCIIChar(x);
-         char ac = vt.ebcdic2uni(x);
-         if (!Character.isISOControl(ac)) {
-            sb.setLength(0);
-            if (Integer.toHexString(ac).length() == 1){
-               sb.append("0x0" + Integer.toHexString(ac).toUpperCase());
-            }
-            else {
-               sb.append("0x" + Integer.toHexString(ac).toUpperCase());
-            }
-
-            sb.append(" - " + c);
-            key = collator.getCollationKey(sb.toString());
-
-            set.add(key);
-         }
-      }
-
-      Iterator iterator = set.iterator();
-      while (iterator.hasNext()) {
-         CollationKey keyc = (CollationKey)iterator.next();
-         listModel.addElement(keyc.getSourceString());
-     }
-
-      //Create the list and put it in a scroll pane
-      JList hm = new JList(listModel);
-
-      hm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-      hm.setSelectedIndex(0);
-      JScrollPane listScrollPane = new JScrollPane(hm);
-      listScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-      listScrollPane.setSize(40,100);
-      srp.add(listScrollPane,BorderLayout.CENTER);
-      Object[]      message = new Object[1];
-      message[0] = srp;
-      String[] options = {LangTool.getString("hm.optInsert"),
-                           LangTool.getString("hm.optCancel")};
-
-      int result = 0;
-
-      JFrame parent = (JFrame)SwingUtilities.getRoot(this);
-
-      result = JOptionPane.showOptionDialog(
-          parent,   // the parent that the dialog blocks
-          message,                           // the dialog message array
-          LangTool.getString("hm.title"),    // the title of the dialog window
-          JOptionPane.DEFAULT_OPTION,        // option type
-          JOptionPane.INFORMATION_MESSAGE,      // message type
-          null,                              // optional icon, use null to use the default icon
-          options,                           // options string array, will be made into buttons//
-          options[0]                         // option that should be made into a default button
-      );
-
-      switch(result) {
-         case 0: // Insert character
-            String k = "";
-            if (((String)hm.getSelectedValue()).length() > 8)
-               k += ((String)hm.getSelectedValue()).charAt(9);
-            else
-               k += ((String)hm.getSelectedValue()).charAt(7);
-            screen.sendKeys(k);
-            break;
-         case 1: // Cancel
-//		      System.out.println("Cancel");
-            break;
-         default:
-            break;
-      }
-
-
-   }
-
-   public void printMe() {
-
-      screen.printMe();
-      getFocusForMe();
-   }
+//   public void runScript () {
+//
+//      Macronizer.showRunScriptDialog((Session)this);
+//      getFocusForMe();
+//
+//   }
+//
+//   private void showHexMap() {
+//
+//      JPanel srp = new JPanel();
+//      srp.setLayout(new BorderLayout());
+//      DefaultListModel listModel = new DefaultListModel();
+//      StringBuffer sb = new StringBuffer();
+//
+//      // we will use a collator here so that we can take advantage of the locales
+//      Collator collator = Collator.getInstance();
+//      CollationKey key = null;
+//
+//      Set set = new TreeSet();
+//      for (int x =0;x < 256; x++) {
+//         char c = vt.ebcdic2uni(x);
+////         char ac = vt.getASCIIChar(x);
+//         char ac = vt.ebcdic2uni(x);
+//         if (!Character.isISOControl(ac)) {
+//            sb.setLength(0);
+//            if (Integer.toHexString(ac).length() == 1){
+//               sb.append("0x0" + Integer.toHexString(ac).toUpperCase());
+//            }
+//            else {
+//               sb.append("0x" + Integer.toHexString(ac).toUpperCase());
+//            }
+//
+//            sb.append(" - " + c);
+//            key = collator.getCollationKey(sb.toString());
+//
+//            set.add(key);
+//         }
+//      }
+//
+//      Iterator iterator = set.iterator();
+//      while (iterator.hasNext()) {
+//         CollationKey keyc = (CollationKey)iterator.next();
+//         listModel.addElement(keyc.getSourceString());
+//     }
+//
+//      //Create the list and put it in a scroll pane
+//      JList hm = new JList(listModel);
+//
+//      hm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//      hm.setSelectedIndex(0);
+//      JScrollPane listScrollPane = new JScrollPane(hm);
+//      listScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//      listScrollPane.setSize(40,100);
+//      srp.add(listScrollPane,BorderLayout.CENTER);
+//      Object[]      message = new Object[1];
+//      message[0] = srp;
+//      String[] options = {LangTool.getString("hm.optInsert"),
+//                           LangTool.getString("hm.optCancel")};
+//
+//      int result = 0;
+//
+//      JFrame parent = (JFrame)SwingUtilities.getRoot(this);
+//
+//      result = JOptionPane.showOptionDialog(
+//          parent,   // the parent that the dialog blocks
+//          message,                           // the dialog message array
+//          LangTool.getString("hm.title"),    // the title of the dialog window
+//          JOptionPane.DEFAULT_OPTION,        // option type
+//          JOptionPane.INFORMATION_MESSAGE,      // message type
+//          null,                              // optional icon, use null to use the default icon
+//          options,                           // options string array, will be made into buttons//
+//          options[0]                         // option that should be made into a default button
+//      );
+//
+//      switch(result) {
+//         case 0: // Insert character
+//            String k = "";
+//            if (((String)hm.getSelectedValue()).length() > 8)
+//               k += ((String)hm.getSelectedValue()).charAt(9);
+//            else
+//               k += ((String)hm.getSelectedValue()).charAt(7);
+//            screen.sendKeys(k);
+//            break;
+//         case 1: // Cancel
+////		      System.out.println("Cancel");
+//            break;
+//         default:
+//            break;
+//      }
+//
+//
+//   }
+//
+//   public void printMe() {
+//
+//      screen.printMe();
+//      getFocusForMe();
+//   }
 
    public void resizeMe() {
 
@@ -1482,3 +1523,494 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 }
 
+
+/**
+ * Title: Macronizer.java
+ * Copyright:   Copyright (c) 2001
+ * Company:
+ * @author  Kenneth J. Pouncey
+ * @version 0.1
+ *
+ * Description:
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ */
+package org.tn5250j.tools;
+
+import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.*;
+import java.io.*;
+import javax.swing.*;
+
+import org.tn5250j.Session;
+import org.tn5250j.GlobalConfigure;
+import org.tn5250j.scripting.InterpreterDriverManager;
+import org.tn5250j.interfaces.ConfigureFactory;
+
+public class Macronizer {
+
+   private static String macroName;
+   private static Properties macros;
+   private static boolean macrosExist;
+
+   public static void init() {
+
+      if (macros != null)
+         return;
+
+      macrosExist = loadMacros();
+
+   }
+
+   private static boolean loadMacros() {
+
+      macros = ConfigureFactory.getInstance().getProperties(GlobalConfigure.MACROS);
+      if (macros != null && macros.size() > 0)
+         return true;
+
+      return checkScripts();
+   }
+
+   private final static void saveMacros() {
+
+      ConfigureFactory.getInstance().saveSettings(
+               GlobalConfigure.MACROS,"------ Macros --------");
+   }
+
+   public final static boolean isMacrosExist() {
+      return macrosExist;
+   }
+
+   public final static int getNumOfMacros() {
+
+      return macros.size();
+
+   }
+
+   public final static String[] getMacroList() {
+
+      String[] macroList = new String[macros.size()];
+      Set macroSet = macros.keySet();
+      Iterator macroIterator = macroSet.iterator();
+      String byName = null;
+      int x = 0;
+      while (macroIterator.hasNext()) {
+         byName = (String)macroIterator.next();
+         int period = byName.indexOf(".");
+         macroList[x++] = byName.substring(period+1);
+      }
+
+      return macroList;
+   }
+
+   public final static String getMacroByNumber(int num) {
+      String mac = "macro" + num + ".";
+
+      Set macroSet = macros.keySet();
+      Iterator macroIterator = macroSet.iterator();
+      String byNum = null;
+      while (macroIterator.hasNext()) {
+         byNum = (String)macroIterator.next();
+         if (byNum.startsWith(mac)) {
+            return (String)macros.get(byNum);
+         }
+      }
+      return null;
+   }
+
+   public final static String getMacroByName(String name) {
+
+      Set macroSet = macros.keySet();
+      Iterator macroIterator = macroSet.iterator();
+      String byName = null;
+      while (macroIterator.hasNext()) {
+         byName = (String)macroIterator.next();
+         if (byName.endsWith(name)) {
+            return (String)macros.get(byName);
+         }
+      }
+      return null;
+   }
+
+   public final static void removeMacroByName(String name) {
+
+      Set macroSet = macros.keySet();
+      Iterator macroIterator = macroSet.iterator();
+      String byName = null;
+      while (macroIterator.hasNext()) {
+         byName = (String)macroIterator.next();
+         if (byName.endsWith(name)) {
+            macros.remove(byName);
+            saveMacros();
+            return;
+         }
+      }
+   }
+
+   public final static void setMacro(String name, String keyStrokes) {
+
+      int x = 0;
+
+      while (getMacroByNumber(++x) != null) {}
+      macros.put("macro" + x + "." + name,keyStrokes);
+      macrosExist = true;
+      saveMacros();
+
+   }
+
+   public static void showRunScriptDialog(Session session) {
+
+      JPanel rsp = new JPanel();
+      rsp.setLayout(new BorderLayout());
+      JLabel jl = new JLabel("Enter script to run");
+      final JTextField rst = new JTextField();
+      rsp.add(jl,BorderLayout.NORTH);
+      rsp.add(rst,BorderLayout.CENTER);
+      Object[]      message = new Object[1];
+      message[0] = rsp;
+      String[] options = {"Run","Cancel"};
+
+      final JOptionPane pane = new JOptionPane(
+             message,                           // the dialog message array
+             JOptionPane.QUESTION_MESSAGE,      // message type
+             JOptionPane.DEFAULT_OPTION,        // option type
+             null,                              // optional icon, use null to use the default icon
+             options,                           // options string array, will be made into buttons//
+             options[0]);                       // option that should be made into a default button
+
+
+      // create a dialog wrapping the pane
+      final JDialog dialog = pane.createDialog(session, // parent frame
+                        "Run Script"  // dialog title
+                        );
+
+      // add the listener that will set the focus to
+      // the desired option
+      dialog.addWindowListener( new WindowAdapter() {
+         public void windowOpened( WindowEvent e) {
+            super.windowOpened( e );
+
+            // now we're setting the focus to the desired component
+            // it's not the best solution as it depends on internals
+            // of the OptionPane class, but you can use it temporarily
+            // until the bug gets fixed
+            // also you might want to iterate here thru the set of
+            // the buttons and pick one to call requestFocus() for it
+
+            rst.requestFocus();
+         }
+      });
+      dialog.show();
+
+      // now we can process the value selected
+      String value = (String)pane.getValue();
+
+      if (value.equals(options[0])) {
+         // send option along with system request
+         if (rst.getText().length() > 0) {
+            invoke(rst.getText(),session);
+         }
+      }
+
+
+   }
+
+   public final static void invoke (String macro, Session session) {
+
+      String keys = getMacroByName(macro);
+      if (keys != null)
+         session.getScreen().sendKeys(keys);
+      else {
+         try {
+            if (!macro.endsWith(".py"))
+               macro = macro + ".py";
+            InterpreterDriverManager.executeScriptFile((Session)session,"scripts" +
+                  File.separatorChar + macro);
+         }
+         catch (Exception ex) {
+            System.err.println(ex);
+         }
+      }
+   }
+   private static boolean checkScripts() {
+
+      File directory = new File("scripts");
+
+      File directory2 = new File(GlobalConfigure.instance().getProperty(
+                           "emulator.settingsDirectory") +
+                           "scripts");
+
+
+      return directory.isDirectory() || directory2.isDirectory();
+
+   }
+
+}
+
+package org.tn5250j.tools;
+/**
+ * Title: tn5250J
+ * Copyright:   Copyright (c) 2001
+ * Company:
+ * @author  Kenneth J. Pouncey
+ * @version 0.5
+ *
+ * Description:
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ */
+
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.awt.event.*;
+import org.tn5250j.*;
+import org.tn5250j.scripting.ExecuteScriptAction;
+import org.tn5250j.scripting.InterpreterDriverManager;
+
+public final class LoadMacroMenu {
+
+   private static Vector macroVector;
+
+   static {
+      macroVector = new Vector();
+   }
+
+   public static void loadMacros(Session session, Macronizer macros, JMenu menu) {
+
+      final Session ses = session;
+      Vector mv = new Vector();
+      Action action;
+
+      menu.addSeparator();
+
+
+      String[] macrosList = Macronizer.getMacroList();
+
+
+      for (int x = 0; x < macrosList.length; x++) {
+         mv.add(macrosList[x]);
+      }
+
+      Collections.sort(mv);
+
+
+      for (int x = 0; x < mv.size(); x++) {
+         action = new AbstractAction((String)mv.get(x)) {
+               public void actionPerformed(ActionEvent e) {
+                  ses.executeMeMacro(e);
+               }
+           };
+
+         JMenuItem mi = menu.add(action);
+
+         final Gui5250 ji = (Gui5250)session;
+         mi.addMouseListener(new MouseAdapter() {
+
+            public void mouseReleased(MouseEvent e) {
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  doOptionsPopup(e,ses);
+               }
+            }
+
+            public void mousePressed(MouseEvent e) {
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  doOptionsPopup(e,ses);
+               }
+            }
+            public void mouseClicked(MouseEvent e) {
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  doOptionsPopup(e,ses);
+               }
+            }
+       });
+
+      }
+
+      scriptDir("scripts",menu,session);
+
+      String conPath = "";
+      String conPath2 = "";
+
+      try {
+         conPath = new File("scripts").getCanonicalPath();
+         conPath2 = new File(GlobalConfigure.instance().getProperty(
+                              "emulator.settingsDirectory") +
+                              "scripts").getCanonicalPath();
+      }
+      catch (IOException ioe ) {
+
+      }
+
+      // lets not load the menu again if they point to the same place
+      if (!conPath.equals(conPath2))
+         scriptDir(GlobalConfigure.instance().getProperty(
+                              "emulator.settingsDirectory") +
+                              "scripts",menu,session);
+   }
+
+   private static void doOptionsPopup(MouseEvent e, Session session) {
+
+      JPopupMenu j = new JPopupMenu("test");
+      Action action = new AbstractAction("Delete " + ((JMenuItem)e.getSource()).getText()) {
+               public void actionPerformed(ActionEvent e) {
+                  StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
+                  macro.delete(0,"Delete".length()+1);
+                  Macronizer.removeMacroByName(macro.toString());
+               }
+           };
+
+      j.add(action);
+      j.add(new JMenuItem("Execute "+ ((JMenuItem)e.getSource()).getText()));
+      MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem)e.getSource(),e,session);
+      GUIGraphicsUtils.positionPopup(session,j,et.getX(),et.getY());
+
+   }
+
+   public static void scriptDir(String pathName, JMenu menu,Session session) {
+
+      File root = new File(pathName);
+
+      try {
+
+         macroVector = new Vector();
+
+         loadScripts(macroVector,root.getCanonicalPath(),root, session);
+         createScriptsMenu(menu,macroVector,0);
+
+      }
+      catch (IOException ioe) {
+         System.out.println(ioe.getMessage());
+
+      }
+
+   }
+
+   /**
+    * Recursively read the scripts directory and add them to our macros vector
+    *    holding area
+    *
+    * @param vector
+    * @param path
+    * @param directory
+    * @param session
+    */
+   private static void loadScripts(Vector vector,
+                                    String path,
+                                    File directory,
+                                    Session session) {
+
+      ExecuteScriptAction action;
+
+      File[] macroFiles = directory.listFiles();
+      if(macroFiles == null || macroFiles.length == 0)
+         return;
+
+      Arrays.sort(macroFiles,new MacroCompare());
+
+      for(int i = 0; i < macroFiles.length; i++) {
+         File file = macroFiles[i];
+         String fileName = file.getName();
+         if(file.isHidden()) {
+            /* do nothing! */
+            continue;
+         }
+         else if(file.isDirectory()) {
+            Vector submenu = new Vector();
+            submenu.addElement(fileName.replace('_',' '));
+            loadScripts(submenu,path + fileName + '/',file,session);
+            // if we do not want empty directories to show up uncomment this
+            //    line.
+//            if(submenu.size() != 1)
+               vector.addElement(submenu);
+         }
+         else {
+            if (InterpreterDriverManager.isScriptSupported(fileName)) {
+               String fn = fileName.replace('_',' ');
+               int index = fn.lastIndexOf('.');
+               if (index > 0) {
+                  fn = fn.substring(0,index);
+               }
+               action = new ExecuteScriptAction(fn,
+                                          file.getAbsolutePath(),
+                                          session) {
+                 };
+               vector.addElement(action);
+            }
+         }
+      }
+   }
+
+   /**
+    * Create the scripts menu(s) from the vector of macros provided
+    *
+    * @param menu
+    * @param vector
+    * @param start
+    */
+   private static void createScriptsMenu(JMenu menu, Vector vector, int start) {
+
+      JPopupMenu jpop = new JPopupMenu();
+      jpop.add("Delete");
+
+      for (int i = start; i < vector.size(); i++) {
+         Object obj = vector.elementAt(i);
+         if (obj instanceof ExecuteScriptAction) {
+            JMenuItem mi = menu.add((ExecuteScriptAction)obj);
+//            mi.
+//            mi.add(jpop);
+         }
+         else
+            if (obj instanceof Vector) {
+               Vector subvector = (Vector)obj;
+               String name = (String)subvector.elementAt(0);
+               JMenu submenu = new JMenu(name);
+               createScriptsMenu(submenu,subvector,1);
+               if(submenu.getMenuComponentCount() == 0) {
+                  submenu.add(LangTool.getString("popup.noScripts"));
+               }
+               menu.add(submenu);
+         }
+      }
+   }
+
+   public static class MacroCompare implements Comparator {
+      public int compare(Object one, Object two) {
+         String s1 = one.toString();
+         String s2 = two.toString();
+         return s1.compareToIgnoreCase(s2);
+      }
+
+   }
+
+}
