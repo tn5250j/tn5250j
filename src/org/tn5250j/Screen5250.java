@@ -90,6 +90,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private Rectangle2D pArea; // position area (cursor etc..)
    private Rectangle2D mArea; // message area
    private Rectangle2D iArea; // insert indicator
+   private Rectangle2D kbArea; // keybuffer indicator
 
    private char char0 = 0;
    private static final int initAttr = 32;
@@ -1245,10 +1246,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          if(text.equals("[reset]") || text.equals("[sysreq]") || text.equals("[attn]")) {
             bufferedKeys = "";
             keysBuffered = false;
+            setKBIndicatorOff();
             simulateMnemonic(getMnemonicValue(text));
          }
          else {
             keysBuffered = true;
+            setKBIndicatorOn();
             if(bufferedKeys == null){
                bufferedKeys = text;
                return;
@@ -1265,6 +1268,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          if (keysBuffered) {
             text = bufferedKeys + text;
             keysBuffered = false;
+            setKBIndicatorOff();
             bufferedKeys = "";
          }
          // check to see if position is in a field and if it is then change
@@ -1294,8 +1298,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                }
                if (keyboardLocked) {
                   bufferedKeys = strokenizer.getUnprocessedKeyStroked();
-                  if (bufferedKeys != null)
+                  if (bufferedKeys != null) {
                      keysBuffered = true;
+                     setKBIndicatorOn();
+                  }
                   done = true;
                }
             }
@@ -1822,11 +1828,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             simulated = true;
             break;
          case RESET :
-            restoreErrorLine();
-            setStatus(STATUS_ERROR_CODE,STATUS_VALUE_OFF,"");
-            isInField(lastPos);
+            if (isStatusErrorCode()) {
+               restoreErrorLine();
+               setStatus(STATUS_ERROR_CODE,STATUS_VALUE_OFF,"");
+               isInField(lastPos);
+               updateDirty();
+            }
+            setKBIndicatorOff();
             simulated = true;
-            updateDirty();
             break;
          case COPY :
             copyMe();
@@ -3218,6 +3227,30 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
    }
 
+   public void setKBIndicatorOn() {
+
+      Graphics2D g2d = getWritingArea();
+      float Y = (fmHeight * (numRows + 2))- (lm.getLeading() + lm.getDescent());
+      g2d.setColor(colorYellow);
+      g2d.drawString("KB",(float)kbArea.getX(),Y);
+//      messageLight = true;
+      updateImage(kbArea.getBounds());
+      g2d.dispose();
+
+   }
+
+   public void setKBIndicatorOff() {
+
+      Graphics2D g2d = getWritingArea();
+
+      g2d.setColor(colorBg);
+      g2d.fill(kbArea);
+//      messageLight = false;
+      updateImage(kbArea.getBounds());
+      g2d.dispose();
+
+   }
+
    public void setMessageLightOn() {
 
       Graphics2D g2d = getWritingArea();
@@ -3510,6 +3543,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          sArea = new Rectangle2D.Float(0,0,0,0);
          pArea = new Rectangle2D.Float(0,0,0,0);
          mArea = new Rectangle2D.Float(0,0,0,0);
+         kbArea = new Rectangle2D.Float(0,0,0,0);
 
          // Draw Operator Information Area
          drawOIA();
@@ -3564,6 +3598,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       sArea.setRect(bi.getStatusArea());
       pArea.setRect(bi.getPositionArea());
       mArea.setRect(bi.getMessageArea());
+      kbArea.setRect(bi.getKBIndicatorArea());
 
    }
 

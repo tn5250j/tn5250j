@@ -16,6 +16,8 @@ Implement support for images on the background. Wishlist for the future
 
 Autologin support request.
 
+Add keybuffering indicator.  RFE from James.
+
 Known problems
 --------------
 This session updating problem is hopefully fixed or at least acceptable now.
@@ -35,6 +37,21 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+05/07/2002  Fixed a connection problem while negotiating environment settings.
+            This was causing the session to never connect sometimes.  It would
+            stay forever at connecting.  Finally found it!!!
+
+            Fixed a problem with reset key resetting the emulator and unlocking
+            the keyboard when there was a process running instead of an error
+            condition.
+
+            Added keybuffering/type ahead indicator.
+
+04/07/2002  Fixed a problem with focus on system request text box.  The text box
+            now gets the focus on all jdk versions.  Thanks for report wolfgang.
+
+            Made session full screen on MDI interface when starting.
+
 03/07/2002  Added a another color schema which is the Default Green on
             Black.
 

@@ -62,6 +62,15 @@ public class DataStreamQueue {
       return vector.isEmpty();
    }
 
+   public void clear() {
+
+      synchronized (lock) {
+         vector.clear();
+         lock.notify();
+      }
+
+   }
+
    public void put(Object o) {
       synchronized (lock) {
          vector.addElement(o);

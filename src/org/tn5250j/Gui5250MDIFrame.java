@@ -230,6 +230,12 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       } catch (java.beans.PropertyVetoException e) {}
       session.addSessionListener(this);
       session.addSessionJumpListener(this);
+      try {
+         frame.setMaximum(true);
+      }
+      catch (java.beans.PropertyVetoException pve) {
+         System.out.println("Can not set maximum " + pve.getMessage());
+      }
 
    }
 
@@ -241,6 +247,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       targetSession.removeSessionJumpListener(this);
 
       desktop.remove(index);
+      this.repaint();
 
    }
 
@@ -327,7 +334,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          //...Create the GUI and put it in the window...
 
          //...Then set the window size or call pack...
-         setSize(300,300);
+         setSize(600,500);
 
          //Set the window's location.
          setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
@@ -341,6 +348,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
             public void internalFrameClosed(InternalFrameEvent e) {
 //               displayMessage("Internal frame closed", e);
+               disconnectMe();
             }
 
             public void internalFrameOpened(InternalFrameEvent e) {
@@ -364,7 +372,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
             public void internalFrameDeactivated(InternalFrameEvent e) {
                activated = false;
 
-               displayMessage("Internal frame deactivated", e);
+//               displayMessage("Internal frame deactivated", e);
             }
 
 
@@ -374,6 +382,10 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          void displayMessage(String prefix, InternalFrameEvent e) {
             String s = prefix + ": " + e.getSource();
             System.out.println(s + '\n');
+         }
+
+         void hideMe() {
+            this.setVisible(false);
          }
 
          public int getInternalId() {
@@ -393,14 +405,14 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          }
          public void update(Graphics g) {
             paint(g);
-            System.out.println("update");
          }
 
          private void disconnectMe() {
 
             Session s = (Session)getContentPane();
             me.closeSession(s);
-
+//            this.setVisible(false);
+//            disconnectMe(s);
          }
    }
 
@@ -428,7 +440,6 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 //           frame.repaint();
            ((Gui5250)frame.getContentPane()).getScreen().gg2d = null;
 
-         System.out.println(" Endi dragging ");
        }
 
        // This is called any time a frame is moved or resized.  This

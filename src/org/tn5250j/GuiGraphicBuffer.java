@@ -4,7 +4,7 @@ package org.tn5250j;
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
- * @version 0.4
+ * @version 0.5
  *
  * Description:
  *
@@ -48,6 +48,7 @@ public class GuiGraphicBuffer {
    private Rectangle2D pArea; // position area (cursor etc..)
    private Rectangle2D mArea; // message area
    private Rectangle2D iArea; // insert indicator
+   private Rectangle2D kbArea; // keybuffer indicator
    private int width;
    private int height;
    private Rectangle2D cursor = new Rectangle2D.Float();
@@ -67,6 +68,7 @@ public class GuiGraphicBuffer {
       pArea = new Rectangle2D.Float();
       mArea = new Rectangle2D.Float();
       iArea = new Rectangle2D.Float();
+      kbArea = new Rectangle2D.Float();
 
    }
 
@@ -150,6 +152,10 @@ public class GuiGraphicBuffer {
                                        fmHeight * (numRows + 1),
                                        fmWidth + fmWidth,
                                        fmHeight);
+         kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * fmWidth),
+                                       fmHeight * (numRows + 1),
+                                       fmWidth + fmWidth,
+                                       fmHeight);
 //         cArea = new Rectangle2D.Float(0,fmHeight * (numRows + 1),bi.getWidth(null),fmHeight * (numRows + 1));
 //         aArea = new Rectangle2D.Float(0,0,bi.getWidth(null),bi.getHeight(null));
 //         sArea = new Rectangle2D.Float(fmWidth * 9,fmHeight * (numRows + 1),fmWidth * 20,fmHeight);
@@ -169,6 +175,7 @@ public class GuiGraphicBuffer {
 
       return g2d;
    }
+
 
    public void drawCursor(Screen5250 s,int row, int col,
                            int fmWidth, int fmHeight,
@@ -292,6 +299,13 @@ public class GuiGraphicBuffer {
 
    public synchronized void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
 
+       /**
+        * @todo this is a hack and should be fixed at the root of the problem
+        */
+      if (gg2d == null) {
+//         System.out.println(" we got a null graphic object ");
+         return;
+      }
       synchronized (lock) {
          gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x,y);
          // tell waiting threads to wake up
@@ -301,6 +315,14 @@ public class GuiGraphicBuffer {
    }
 
    public synchronized void drawImageBuffer(Graphics2D gg2d) {
+
+       /**
+        * @todo this is a hack and should be fixed at the root of the problem
+        */
+      if (gg2d == null) {
+//         System.out.println(" we got a null graphic object ");
+         return;
+      }
 
       synchronized (lock) {
          gg2d.drawImage(bi,null,0,0);
@@ -363,6 +385,7 @@ public class GuiGraphicBuffer {
 
       if (g2d == null)
          return;
+
       try {
          g2d.setColor(colorBg);
          g2d.fill(sArea);
@@ -431,6 +454,10 @@ public class GuiGraphicBuffer {
 
    public Rectangle2D getInsertIndicatorArea () {
       return iArea;
+   }
+
+   public Rectangle2D getKBIndicatorArea () {
+      return kbArea;
    }
 
    public int getWidth() {

@@ -157,6 +157,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
          catch (Exception exc) {
             System.out.println("setStatus(ON) " + exc.getMessage());
+            try {
+               screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Connecting");
+            }
+            catch (Exception exc2) {
+               System.out.println("setStatus(ON) " + exc2.getMessage());
+
+            }
 
          }
 
@@ -200,6 +207,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
          catch (Exception exc) {
             System.out.println("setStatus(OFF) " + exc.getMessage());
+            try {
+               screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_OFF,null);
+            }
+            catch (Exception exc2) {
+               System.out.println("setStatus(OFF) " + exc2.getMessage());
+
+            }
 
          }
 
@@ -514,6 +528,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          String[] options = {"SysReq","Cancel"};
 
          int result = 0;
+
             result = JOptionPane.showOptionDialog(
                 null,                               // the parent that the dialog blocks
                 message,                           // the dialog message array
@@ -522,7 +537,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                 JOptionPane.QUESTION_MESSAGE,      // message type
                 null,                              // optional icon, use null to use the default icon
                 options,                           // options string array, will be made into buttons//
-                options[0]                         // option that should be made into a default button
+                sro                                // option that should be made into a default button
             );
 
             switch(result) {
@@ -537,12 +552,16 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   // byte abyte0[] = new byte[1];    or number of bytes in option
                   // abyte0[0] = getEBCDIC(option);
 
-                  System.out.println("SYSRQS sent");
+//                  System.out.println("SYSRQS sent");
 
                   // send option along with system request
                   if (sro.getText().length() > 0) {
                      for (int x = 0; x < sro.getText().length(); x++) {
    //                     System.out.println(sro.getText().charAt(x));
+                        if (sro.getText().charAt(0) == '2') {
+//                           System.out.println("dataq cleared");
+                           dsq.clear();
+                        }
                         baosp.write(getEBCDIC(sro.getText().charAt(x)));
                      }
 
@@ -874,6 +893,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
          catch (Exception exd ) {
             System.out.println(" tnvt.run: " + exd.getMessage());
+            exd.printStackTrace();
          }
 
          if (pendingUnlock)
@@ -2463,6 +2483,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       if(abyte0[i] == IAC) { // -1
 
          while(i < abyte0.length && abyte0[i++] == -1)
+//         while(i < abyte0.length && (abyte0[i] == -1 || abyte0[i++] == 0x20))
             switch(abyte0[i++]) {
 
                // we will not worry about what it WONT do
@@ -2574,7 +2595,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   if(abyte0[i] == NEW_ENVIRONMENT && abyte0[i + 1] == 1) {
                      negNewEnvironment();
 
-                     i++;
+                     while (++i < abyte0.length && abyte0[i + 1] != IAC);
                   }
 
                   if(abyte0[i] == TERMINAL_TYPE && abyte0[i + 1] == 1) {

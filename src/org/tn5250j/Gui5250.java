@@ -146,15 +146,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          public void mouseClicked(MouseEvent e) {
 
-               if (e.getClickCount() == 2) {
-
-                  screen.sendKeys("[enter]");
-               }
-               else {
+//               if (e.getClickCount() == 2) {
+//
+//                  screen.sendKeys("[enter]");
+//               }
+//               else {
                   screen.moveCursor(e);
                   repaint();
                   getFocusForMe();
-               }
+//               }
          }
 
       });

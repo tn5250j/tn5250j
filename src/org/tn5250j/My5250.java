@@ -624,6 +624,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    protected void closeSession(Session targetSession) {
 
       Gui5250Frame f = getParentView(targetSession);
+      if (f == null)
+         return;
       int tabs = f.getSessionViewCount();
       Sessions sessions = manager.getSessions();
       Session session = null;
