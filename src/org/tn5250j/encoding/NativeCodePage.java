@@ -80,6 +80,18 @@ class NativeCodePage extends CodePage
             return c;
          }
 
+         if (encoding.equals("1147")) {
+            char c = ' ';
+            try {
+               byte[] b = new byte[1];
+               b[0] = (byte)index;
+               c = (new String(b, "Cp1147")).charAt(0);
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return c;
+         }
+
          if (encoding.equals("1112")) {
             char c = ' ';
             try {
@@ -124,6 +136,16 @@ class NativeCodePage extends CodePage
             byte b = 0x0;
             try {
                b = characterToString(index).getBytes("Cp1140")[0];
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return b;
+         }
+
+         if (encoding.equals("1147")) {
+            byte b = 0x0;
+            try {
+               b = characterToString(index).getBytes("Cp1147")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
@@ -221,6 +243,8 @@ class NativeCodePage extends CodePage
          } else if(encoding.toLowerCase().startsWith("1141")) {
              convert = true;
          } else if(encoding.toLowerCase().startsWith("1140")) {
+             convert = true;
+         } else if(encoding.toLowerCase().startsWith("1147")) {
              convert = true;
          } else if(encoding.toLowerCase().startsWith("1112")) {
              convert = true;
@@ -383,7 +407,7 @@ class NativeCodePage extends CodePage
    static final String[] acp = {"37","37PT","273","280","284","285",
                                        "277-dk","277-no","297","424","500-ch",
                                        "870-pl","870-sk","871","875","1025-r","1026",
-                                       "1141","1140","1112"};
+                                       "1112","1141","1140","1147"};
 
    /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM037..ISO-8859-1 (reversible).  */
@@ -881,7 +905,7 @@ class NativeCodePage extends CodePage
 
    /* Added 871 code page by Karl Helgason, <kalli@midverk.is */
    /* Icelandic characters added, based on codePage870sk above. */
-   private static final int[] codePage871 = {    
+   private static final int[] codePage871 = {
       0,   1,   2,   3, 156,   9, 134, 127,	/*   0 -   7  */
     151, 141, 142,  11,  12,  13,  14,  15,	/*   8 -  15  */
      16,  17,  18,  19, 157, 133,   8, 135,	/*  16 -  23  */
@@ -913,8 +937,8 @@ class NativeCodePage extends CodePage
      92, 247,  83,  84,  85,  86,  87,  88,	/* 224 - 231  */
      89,  90, 234, 212, 94, 195, 211, 239,	/* 232 - 239  */
      48,  49,  50,  51,  52,  53,  54,  55,	/* 240 - 247  */
-     56,  57,  91, 251, 220, 189, 218, 159,	/* 248 - 255  */     
-  };    
+     56,  57,  91, 251, 220, 189, 218, 159,	/* 248 - 255  */
+  };
 
    /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM875..ISO-8859-1 (reversible).  */
@@ -1106,6 +1130,44 @@ class NativeCodePage extends CodePage
      56,  57, 179, 219, 220, 217, 218, 159,	/* 248 - 255  */
    };
 
+/* Conversion table generated mechanically by Free `recode' 3.5
+   for sequence IBM297..ISO-8859-1 (reversible).  */
+   private static final int[] codePage1147 =  {
+      0,   1,   2,   3, 156,   9, 134, 127,	/*   0 -   7  */
+    151, 141, 142,  11,  12,  13,  14,  15,	/*   8 -  15  */
+     16,  17,  18,  19, 157, 133,   8, 135,	/*  16 -  23  */
+     24,  25, 146, 143,  28,  29,  30,  31,	/*  24 -  31  */
+    128, 129, 130, 131, 132,  10,  23,  27,	/*  32 -  39  */
+    136, 137, 138, 139, 140,   5,   6,   7,	/*  40 -  47  */
+    144, 145,  22, 147, 148, 149, 150,   4,	/*  48 -  55  */
+    152, 153, 154, 155,  20,  21, 158,  26,	/*  56 -  63  */
+     32, 160, 226, 228,  64, 225, 227, 229,	/*  64 -  71  */
+     92, 241, 176,  46,  60,  40,  43,  33,	/*  72 -  79  */
+     38, 123, 234, 235, 125, 237, 238, 239,	/*  80 -  87  */
+    236, 223, 167,  36,  42,  41,  59,  94,	/*  88 -  95  */
+     45,  47, 194, 196, 192, 193, 195, 197,	/*  96 - 103  */
+    199, 209, 249,  44,  37,  95,  62,  63,	/* 104 - 111  */
+    248, 201, 202, 203, 200, 205, 206, 207,	/* 112 - 119  */
+    204, 181,  58, 163, 224,  39,  61,  34,	/* 120 - 127  */
+    216,  97,  98,  99, 100, 101, 102, 103,	/* 128 - 135  */
+    104, 105, 171, 187, 240, 253, 254, 177,	/* 136 - 143  */
+     91, 106, 107, 108, 109, 110, 111, 112,	/* 144 - 151  */
+//     91, 106, 107, 108, 109, 110, 111, 0x02A,	/* 144 - 151  */
+    113, 114, 170, 186, 230, 184, 198, 164,	/* 152 - 159  */
+     96, 168, 115, 116, 117, 118, 119, 120,	/* 160 - 167  */
+    121, 122, 161, 191, 208, 221, 222, 174,	/* 168 - 175  */
+    162,  35, 165, 183, 169,  93, 182, 188,	/* 176 - 183  */
+    189, 190, 172, 124, 175, 126, 180, 215,	/* 184 - 191  */
+    233,  65,  66,  67,  68,  69,  70,  71,	/* 192 - 199  */
+     72,  73, 173, 244, 246, 242, 243, 245,	/* 200 - 207  */
+    232,  74,  75,  76,  77,  78,  79,  80,	/* 208 - 215  */
+     81,  82, 185, 251, 252, 166, 250, 255,	/* 216 - 223  */
+    231, 247,  83,  84,  85,  86,  87,  88,	/* 224 - 231  */
+     89,  90, 178, 212, 214, 210, 211, 213,	/* 232 - 239  */
+     48,  49,  50,  51,  52,  53,  54,  55,	/* 240 - 247  */
+     56,  57, 179, 219, 220, 217, 218, 159,	/* 248 - 255  */
+   };
+
    static final CodePage getCodePage(String cp)
    {
       if (cp.equals("37"))
@@ -1146,6 +1208,8 @@ class NativeCodePage extends CodePage
          return new NativeCodePage(cp, codePage1141);
       if (cp.equals("1140"))
          return new NativeCodePage(cp, codePage1140);
+      if (cp.equals("1147"))
+         return new NativeCodePage(cp, codePage1147);
 
 //      return codePage37;
       return null;
