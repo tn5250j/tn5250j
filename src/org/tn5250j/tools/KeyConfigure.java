@@ -338,6 +338,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
    private void mapIt() {
 
       Object[]      message = new Object[1];
+
       JPanel kgp = new JPanel();
       final KeyGetter kg = new KeyGetter();
       kg.setForeground(Color.blue);
@@ -360,7 +361,6 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       String[] options = new String[1];
       options[0] = LangTool.getString("key.labelClose");
-      JPanel kp = new JPanel();
 
       JOptionPane opain = new JOptionPane(message,
                         JOptionPane.PLAIN_MESSAGE,

@@ -258,13 +258,18 @@ public class KeyMapper {
    }
 
    public final static String getKeyStrokeText(KeyEvent ke) {
-      if (!workStroke.equals(ke)) {
-         workStroke.setAttributes(ke);
-         lastKeyMnemonic = (String)mappedKeys.get(workStroke);
-      }
-
-      return lastKeyMnemonic;
-
+//      if (!workStroke.equals(ke)) {
+//         workStroke.setAttributes(ke);
+//         lastKeyMnemonic = (String)mappedKeys.get(workStroke);
+//      }
+//
+//      if (lastKeyMnemonic != null && lastKeyMnemonic.endsWith(".alt2")) {
+//
+//         lastKeyMnemonic = lastKeyMnemonic.substring(0,lastKeyMnemonic.indexOf(".alt2"));
+//      }
+//
+//      return lastKeyMnemonic;
+      return getKeyStrokeText(ke,false);
    }
 
    public final static String getKeyStrokeText(KeyEvent ke,boolean isAltGr) {
@@ -272,6 +277,12 @@ public class KeyMapper {
          workStroke.setAttributes(ke,isAltGr);
          lastKeyMnemonic = (String)mappedKeys.get(workStroke);
       }
+
+      if (lastKeyMnemonic != null && lastKeyMnemonic.endsWith(".alt2")) {
+
+         lastKeyMnemonic = lastKeyMnemonic.substring(0,lastKeyMnemonic.indexOf(".alt2"));
+      }
+
       return lastKeyMnemonic;
 
    }
