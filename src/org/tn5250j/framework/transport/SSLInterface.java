@@ -25,8 +25,19 @@ import java.net.Socket;
 
 public interface SSLInterface {
 
+	/**
+	 * Set the SSL type (if required) for new sockets
+	 * @param type The ssl type
+	 * @see org.tn5250j.framework.transport.SSLConstants
+	 */
    public abstract void setSSLType(String type);
 
+   /**
+    * Create a new socket
+    * @param destination
+    * @param port
+    * @return new socket, or null if none could be created.
+    */
    public abstract Socket createSSLSocket(String destination, int port);
 
 }
