@@ -571,8 +571,6 @@ public class KeyConfigure extends JDialog implements ActionListener,
          exists = mapper.isKeyStrokeDefined(ke);
       }
 
-      System.out.println(" key is available " + !exists);
-
       if (exists) {
 
          Object[] args = {getKeyDescription(ke)};
