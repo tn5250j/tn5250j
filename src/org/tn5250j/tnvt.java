@@ -2,28 +2,28 @@
 
 /**
  * Title: tn5250J Copyright: Copyright (c) 2001 Company:
- * 
+ *
  * @author Kenneth J. Pouncey
  * @version 0.5
- * 
+ *
  * Description:
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this software; see the file COPYING. If not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *  
+ *
  */
-package org.tn5250j; 
- 
+package org.tn5250j;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -581,8 +581,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	/**
 	 * Help request -
-	 * 
-	 * 
+	 *
+	 *
 	 * See notes inside method
 	 */
 	public final void sendHelpRequest() {
@@ -608,8 +608,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	/**
 	 * Attention Key -
-	 * 
-	 * 
+	 *
+	 *
 	 * See notes inside method
 	 */
 	public final void sendAttentionKey() {
@@ -642,9 +642,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	/**
 	 * System request - taken from the rfc1205 - 5250 Telnet interface section
 	 * 4.3
-	 * 
+	 *
 	 * See notes inside method
-	 * 
+	 *
 	 * @param sr -
 	 *            system request option
 	 */
@@ -765,7 +765,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	/**
 	 * Cancel Invite - taken from the rfc1205 - 5250 Telnet interface section
 	 * 4.3
-	 * 
+	 *
 	 * See notes inside method
 	 */
 	public final void cancelInvite() {
@@ -926,10 +926,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	// WVL - LDC : TR.000300 : Callback scenario from 5250
 	/**
 	 * Activate or deactivate the command scanning behaviour.
-	 * 
+	 *
 	 * @param scan
 	 *            if true, scanning is enabled; disabled otherwise.
-	 * 
+	 *
 	 * @see scan4Cmd()
 	 */
 	public void setScanningEnabled(boolean scan) {
@@ -939,7 +939,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	// WVL - LDC : TR.000300 : Callback scenario from 5250
 	/**
 	 * Checks whether command scanning is enabled.
-	 * 
+	 *
 	 * @return true is command scanning is enabled; false otherwise.
 	 */
 	public boolean isScanningEnabled() {
@@ -977,14 +977,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	 * called with the parsed string. The position immediately following the
 	 * encountered white space, separating the command from the rest of the
 	 * screen, is passed as starting index.
-	 * 
+	 *
 	 * Note that the character at the starting position can potentially be a
 	 * white space itself. The starting position in <code>execCommand</code>
 	 * provided to make the scanning sequence more flexible. We'd like for
 	 * example to embed also a <code>+</code> or <code>-</code> sign to
 	 * indicate whether the tnvt should trigger a repaint or not. This would
 	 * allow the flashing of command sequences without them becoming visible.
-	 * 
+	 *
 	 * <ul>
 	 * <li><strong>PRE </strong> The screen character at position
 	 * <code>STRSCAN + 2</code> is not a white space.</li>
@@ -1109,13 +1109,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 			case 11:
 				log.debug("Turn on message light");
-				screen52.setMessageLightOn();
+				screen52.getOIA().setMessageLightOn();
 				screen52.setCursorActive(true);
 
 				break;
 			case 12:
 				log.debug("Turn off Message light");
-				screen52.setMessageLightOff();
+				screen52.getOIA().setMessageLightOff();
 				screen52.setCursorActive(true);
 
 				break;
@@ -1156,7 +1156,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				pendingUnlock = false;
 			}
 
-			if (cursorOn && !screen52.isKeyboardLocked()) {
+			if (cursorOn && !screen52.getOIA().isKeyBoardLocked()) {
 				screen52.setCursorActive(true);
 				cursorOn = false;
 			}
@@ -1173,7 +1173,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		if (log.isDebugEnabled()) {
 			log.debug(" Pending unlock " + pendingUnlock);
 			log.debug(" Status Error " + screen52.isStatusErrorCode());
-			log.debug(" Keyboard Locked " + screen52.isKeyboardLocked());
+			log.debug(" Keyboard Locked " + screen52.getOIA().isKeyBoardLocked());
 			log.debug(" Cursor On " + cursorOn);
 			log.debug(" Cursor Active " + screen52.cursorActive);
 		}
@@ -1384,7 +1384,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public final void restoreScreen() throws IOException {
@@ -1652,17 +1652,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	/**
 	 * This routine handles sending negative responses back to the host.
-	 * 
+	 *
 	 * You can find a description of the types of responses to be sent back by
 	 * looking at section 12.4 of the 5250 Functions Reference manual
-	 * 
-	 * 
+	 *
+	 *
 	 * @param cat
 	 * @param modifier
 	 * @param uByte1
 	 * @param uByte2
 	 * @param from
-	 *  
+	 *
 	 */
 	protected void sendNegResponse(int cat, int modifier, int uByte1,
 			int uByte2, String from) {
@@ -2151,14 +2151,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			Toolkit.getDefaultToolkit().beep();
 		}
 		if ((byte1 & 0x02) == 0x02) {
-			screen52.setMessageLightOff();
+			screen52.getOIA().setMessageLightOff();
 		}
 		if ((byte1 & 0x01) == 0x01) {
-			screen52.setMessageLightOn();
+			screen52.getOIA().setMessageLightOn();
 		}
 
 		if ((byte1 & 0x01) == 0x01 && (byte1 & 0x02) == 0x02) {
-			screen52.setMessageLightOn();
+			screen52.getOIA().setMessageLightOn();
 		}
 
 		// reset blinking cursor seems to control whether to set or not set the
@@ -2815,16 +2815,16 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	/**
 	 * Method sendQueryResponse
-	 * 
+	 *
 	 * The query command is used to obtain information about the capabilities of
 	 * the 5250 display.
-	 * 
+	 *
 	 * The Query command must follow an Escape (0x04) and Write Structured Field
 	 * command (0xF3).
-	 * 
+	 *
 	 * This section is modeled after the rfc1205 - 5250 Telnet Interface section
 	 * 5.3
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public final void sendQueryResponse() throws IOException {
@@ -2934,23 +2934,23 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	}
 
-	protected final boolean negotiate(byte abyte0[]) throws IOException {
-		int i = 0;
+   protected final boolean negotiate(byte abyte0[]) throws IOException {
+      int i = 0;
 
 
-		// from server negotiations
+      // from server negotiations
       if(abyte0[i] == IAC) { // -1
 
          while(i < abyte0.length && abyte0[i++] == -1)
 //         while(i < abyte0.length && (abyte0[i] == -1 || abyte0[i++] == 0x20))
             switch(abyte0[i++]) {
 
-				// we will not worry about what it WONT do
-				case WONT: // -4
-				default:
-					break;
+               // we will not worry about what it WONT do
+               case WONT:            // -4
+               default:
+                 break;
 
-				case DO: //-3
+               case DO: //-3
 
                   // not sure why but since moving to V5R2 we are receiving a
                   //   DO with no option when connecting a second session with
@@ -2958,139 +2958,139 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   //   is interested please debug this until then this works.
                   if (i < abyte0.length) {
                      switch(abyte0[i]) {
-					case TERMINAL_TYPE: // 24
-						baosp.write(IAC);
-						baosp.write(WILL);
-						baosp.write(TERMINAL_TYPE);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+                        case TERMINAL_TYPE: // 24
+                           baosp.write(IAC);
+                           baosp.write(WILL);
+                           baosp.write(TERMINAL_TYPE);
+                           writeByte(baosp.toByteArray());
+                           baosp.reset();
 
-						break;
+                           break;
 
-					case OPT_END_OF_RECORD: // 25
+                       case OPT_END_OF_RECORD: // 25
 
-						baosp.write(IAC);
-						baosp.write(WILL);
-						baosp.write(OPT_END_OF_RECORD);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
-						break;
+                           baosp.write(IAC);
+                           baosp.write(WILL);
+                           baosp.write(OPT_END_OF_RECORD);
+                           writeByte(baosp.toByteArray());
+                           baosp.reset();
+                           break;
 
-					case TRANSMIT_BINARY: // 0
+                       case TRANSMIT_BINARY: // 0
 
-						baosp.write(IAC);
-						baosp.write(WILL);
-						baosp.write(TRANSMIT_BINARY);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+                           baosp.write(IAC);
+                           baosp.write(WILL);
+                           baosp.write(TRANSMIT_BINARY);
+                           writeByte(baosp.toByteArray());
+                           baosp.reset();
 
-						break;
+                           break;
 
-					case TIMING_MARK: // 6 rfc860
+                       case TIMING_MARK: // 6   rfc860
    //                        System.out.println("Timing Mark Received and notifying " +
-					//                        "the server that we will not do it");
-						baosp.write(IAC);
-						baosp.write(WONT);
-						baosp.write(TIMING_MARK);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+   //                        "the server that we will not do it");
+                           baosp.write(IAC);
+                           baosp.write(WONT);
+                           baosp.write(TIMING_MARK);
+                           writeByte(baosp.toByteArray());
+                           baosp.reset();
 
-						break;
+                           break;
 
-					case NEW_ENVIRONMENT: // 39 rfc1572
-						if (devName == null && user == null) {
-							baosp.write(IAC);
-							baosp.write(WONT);
-							baosp.write(NEW_ENVIRONMENT);
-							writeByte(baosp.toByteArray());
-							baosp.reset();
+                       case NEW_ENVIRONMENT: // 39 rfc1572
+                           if (devName == null && user == null) {
+                              baosp.write(IAC);
+                              baosp.write(WONT);
+                              baosp.write(NEW_ENVIRONMENT);
+                              writeByte(baosp.toByteArray());
+                              baosp.reset();
 
                            }
                            else {
-							baosp.write(IAC);
-							baosp.write(WILL);
-							baosp.write(NEW_ENVIRONMENT);
-							writeByte(baosp.toByteArray());
-							baosp.reset();
+                              baosp.write(IAC);
+                              baosp.write(WILL);
+                              baosp.write(NEW_ENVIRONMENT);
+                              writeByte(baosp.toByteArray());
+                              baosp.reset();
 
-						}
-						break;
+                           }
+                           break;
 
-					default: // every thing else we will not do at this time
-						baosp.write(IAC);
-						baosp.write(WONT);
-						baosp.write(abyte0[i]); // either
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+                       default:  // every thing else we will not do at this time
+                           baosp.write(IAC);
+                           baosp.write(WONT);
+                           baosp.write(abyte0[i]); // either
+                           writeByte(baosp.toByteArray());
+                           baosp.reset();
 
-						break;
-					}
+                           break;
+                     }
                  }
 
-					i++;
-					break;
+                 i++;
+                 break;
 
-				case WILL:
+               case WILL:
 
                  switch(abyte0[i]) {
-					case OPT_END_OF_RECORD: // 25
-						baosp.write(IAC);
-						baosp.write(DO);
-						baosp.write(OPT_END_OF_RECORD);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+                    case OPT_END_OF_RECORD: // 25
+                        baosp.write(IAC);
+                        baosp.write(DO);
+                        baosp.write(OPT_END_OF_RECORD);
+                        writeByte(baosp.toByteArray());
+                        baosp.reset();
 
-						break;
+                        break;
 
-					case TRANSMIT_BINARY: // '\0'
-						baosp.write(IAC);
-						baosp.write(DO);
-						baosp.write(TRANSMIT_BINARY);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+                    case TRANSMIT_BINARY: // '\0'
+                        baosp.write(IAC);
+                        baosp.write(DO);
+                        baosp.write(TRANSMIT_BINARY);
+                        writeByte(baosp.toByteArray());
+                        baosp.reset();
 
-						break;
-					}
-					i++;
-					break;
+                        break;
+                 }
+                 i++;
+                 break;
 
-				case SB: // -6
+               case SB: // -6
 
                   if(abyte0[i] == NEW_ENVIRONMENT && abyte0[i + 1] == 1) {
-						negNewEnvironment();
+                     negNewEnvironment();
 
                      while (++i < abyte0.length && abyte0[i + 1] != IAC);
-					}
+                  }
 
                   if(abyte0[i] == TERMINAL_TYPE && abyte0[i + 1] == 1) {
-						baosp.write(IAC);
-						baosp.write(SB);
-						baosp.write(TERMINAL_TYPE);
-						baosp.write(QUAL_IS);
+                     baosp.write(IAC);
+                     baosp.write(SB);
+                     baosp.write(TERMINAL_TYPE);
+                     baosp.write(QUAL_IS);
                      if(!support132)
-							baosp.write("IBM-3179-2".getBytes());
-						else
-							baosp.write("IBM-3477-FC".getBytes());
-						baosp.write(IAC);
-						baosp.write(SE);
-						writeByte(baosp.toByteArray());
-						baosp.reset();
+                         baosp.write("IBM-3179-2".getBytes());
+                     else
+                         baosp.write("IBM-3477-FC".getBytes());
+                     baosp.write(IAC);
+                     baosp.write(SE);
+                     writeByte(baosp.toByteArray());
+                     baosp.reset();
 
-						i++;
-					}
-					i++;
-					break;
-				}
-			return true;
+                     i++;
+                  }
+                  i++;
+                  break;
+            }
+            return true;
       }
       else {
-			return false;
-		}
-	}
+         return false;
+      }
+   }
 
 	/**
 	 * Negotiate new environment string for device name
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void negNewEnvironment() throws IOException {
@@ -3170,7 +3170,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	 * less than zero then it will send the device name as specified. On each
 	 * unsuccessful attempt a sequential number is appended until we find one or
 	 * the controller says no way.
-	 * 
+	 *
 	 * @return String
 	 */
 	private String negDeviceName() {

@@ -34,9 +34,10 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.font.*;
 
+import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.tools.logging.*;
 
-public class GuiGraphicBuffer {
+public class GuiGraphicBuffer implements ScreenOIAListener {
 
    private BufferedImage bi;
    private final Object lock = new Object();
@@ -66,11 +67,15 @@ public class GuiGraphicBuffer {
    protected int offLeft = 0;  // offset from left
    private boolean resized = false;
    private boolean antialiased;
-   
-   private TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
-   
-   public GuiGraphicBuffer () {
 
+   private Screen5250 screen;
+
+   private TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
+
+   public GuiGraphicBuffer (Screen5250 screen) {
+
+      this.screen = screen;
+      screen.getOIA().addOIAListener(this);
       tArea = new Rectangle2D.Float();
       cArea = new Rectangle2D.Float();
       aArea = new Rectangle2D.Float();
@@ -506,6 +511,141 @@ public class GuiGraphicBuffer {
       catch (Exception e) {
 
          log.warn(" gui graphics setStatus " + e.getMessage());
+
+      }
+   }
+
+//   public void setStatus(byte attr,byte value,String s) {
+   public void setStatus(ScreenOIA oia) {
+
+      int attr = oia.getLevel();
+      int value = oia.getInputInhibited();
+      String s = oia.getInhibitedText();
+      Graphics2D g2d = getWritingArea(screen.font);
+
+      if (g2d == null)
+         return;
+
+      try {
+         g2d.setColor(screen.colorBg);
+         g2d.fill(sArea);
+
+         float Y = ((int)sArea.getY() + screen.fmHeight)- (screen.lm.getLeading() + screen.lm.getDescent());
+
+         switch (attr) {
+
+//   public static final int OIA_LEVEL_INPUT_INHIBITED   =  1;
+
+//            case STATUS_SYSTEM:
+            case OIA_LEVEL_INPUT_INHIBITED:
+            case OIA_LEVEL_NOT_INHIBITED:
+               if (value == oia.INPUTINHIBITED_SYSTEM_WAIT) {
+                  g2d.setColor(screen.colorWhite);
+
+                  if (s != null)
+                     g2d.drawString(s,(float)sArea.getX(),Y);
+                  else
+                     g2d.drawString(xSystem,(float)sArea.getX(),Y);
+               }
+               break;
+//            case STATUS_ERROR_CODE:
+            case OIA_LEVEL_INPUT_ERROR:
+               if (value == oia.INPUTINHIBITED_SYSTEM_WAIT) {
+                  g2d.setColor(screen.colorRed);
+
+                  if (s != null)
+                     g2d.drawString(s,(float)sArea.getX(),Y);
+                  else
+                     g2d.drawString(xError,(float)sArea.getX(),Y);
+
+               }
+               break;
+
+         }
+         g2d.dispose();
+      }
+      catch (Exception e) {
+
+         log.warn(" gui graphics setStatus " + e.getMessage());
+
+      }
+   }
+
+   // OIA_LEVEL
+   public static final int OIA_LEVEL_INPUT_INHIBITED   =  1;
+   public static final int OIA_LEVEL_NOT_INHIBITED   =  2;
+   public static final int OIA_LEVEL_MESSAGE_LIGHT_ON  =  3;
+   public static final int OIA_LEVEL_MESSAGE_LIGHT_OFF  =  4;
+   public static final int OIA_LEVEL_AUDIBLE_BELL  =  5;
+   public static final int OIA_LEVEL_INSERT_MODE  =  6;
+   public static final int OIA_LEVEL_KEYBOARD  =  7;
+   public static final int OIA_LEVEL_CLEAR_SCREEN  =  8;
+   public static final int OIA_LEVEL_SCREEN_SIZE  =  9;
+   public static final int OIA_LEVEL_INPUT_ERROR   =  10;
+   public static final int OIA_LEVEL_KEYS_BUFFERED   =  11;
+   public static final int OIA_LEVEL_SCRIPT   =  12;
+
+   public void onOIAChanged(ScreenOIA changedOIA) {
+
+      switch (changedOIA.getLevel()) {
+
+         case OIA_LEVEL_KEYS_BUFFERED:
+            if (changedOIA.isKeysBuffered()) {
+               Graphics2D g2d = getWritingArea(screen.font);
+               float Y = (screen.fmHeight * (screen.getRows() + 2))
+                     - (screen.lm.getLeading() + screen.lm.getDescent());
+               g2d.setColor(screen.colorYellow);
+               g2d.drawString("KB", (float) kbArea.getX(), Y);
+               screen.updateImage(kbArea.getBounds());
+               g2d.dispose();
+            }
+            else {
+
+               Graphics2D g2d = getWritingArea(screen.font);
+
+               g2d.setColor(screen.colorBg);
+               g2d.fill(kbArea);
+               screen.updateImage(kbArea.getBounds());
+               g2d.dispose();
+
+
+            }
+            break;
+         case OIA_LEVEL_MESSAGE_LIGHT_OFF:
+            Graphics2D g2d = getWritingArea(screen.font);
+
+            g2d.setColor(screen.colorBg);
+            g2d.fill(mArea);
+            screen.updateImage(mArea.getBounds());
+            g2d.dispose();
+            break;
+         case OIA_LEVEL_MESSAGE_LIGHT_ON:
+            g2d = getWritingArea(screen.font);
+            float Y = (screen.fmHeight * (screen.getRows() + 2))
+                  - (screen.lm.getLeading() + screen.lm.getDescent());
+            g2d.setColor(screen.colorBlue);
+            g2d.drawString("MW", (float) mArea.getX(), Y);
+            screen.updateImage(mArea.getBounds());
+            g2d.dispose();
+            break;
+         case OIA_LEVEL_SCRIPT:
+            if (changedOIA.isScriptActive()) {
+               drawScriptRunning(screen.colorGreen);
+               screen.updateImage(scriptArea.getBounds());
+            }
+            else {
+               eraseScriptRunning(screen.colorBg);
+               screen.updateImage(scriptArea.getBounds());
+
+            }
+            break;
+         case OIA_LEVEL_INPUT_INHIBITED:
+         case OIA_LEVEL_NOT_INHIBITED:
+            setStatus(changedOIA);
+            break;
+		// draw the status information
+//		bi.setStatus(attr, value, s, fmWidth, fmHeight, lm, font, colorBg,
+//				colorRed, colorWhite);
 
       }
    }

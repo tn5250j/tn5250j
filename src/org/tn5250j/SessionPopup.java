@@ -187,7 +187,7 @@ public class SessionPopup implements TN5250jConstants {
 
          createKeyboardItem(kbMenu,MNEMONIC_SYSREQ);
 
-         if (screen.isMessageWait() &&
+         if (screen.getOIA().isMessageWait() &&
                OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
 
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
@@ -224,7 +224,7 @@ public class SessionPopup implements TN5250jConstants {
 
          createShortCutItems(kbMenu);
 
-         if (screen.isMessageWait() &&
+         if (screen.getOIA().isMessageWait() &&
             OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
 
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {

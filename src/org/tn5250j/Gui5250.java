@@ -43,6 +43,7 @@ import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.event.EmulatorActionListener;
@@ -78,6 +79,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
    private TN5250jLogger graphics = TN5250jLogFactory.getLogger("GFX");
+
    public Gui5250 () {
 
    }
@@ -637,9 +639,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
    public void setMacroRunning(boolean mr) {
       macroRunning = mr;
       if (macroRunning)
-         screen.setSRIndicatorOn();
+         screen.getOIA().setScriptActive(true);
       else
-         screen.setSRIndicatorOff();
+         screen.getOIA().setScriptActive(false);
 
       stopMacro = !macroRunning;
    }

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * <p>
  * Title: Screen5250.jar
  * </p>
@@ -13,17 +13,17 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 2, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this software; see the file COPYING. If not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * </p>
- * 
+ *
  * @author Kenneth J. Pouncey
  * @version 0.5
  */
@@ -46,215 +46,110 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		ActionListener {
 
 	ScreenChar[] screen;
-
 	private ScreenChar[] errorLine;
-
 	private ScreenFields screenFields;
-
 	private int errorLineNum;
-
 	public Font font;
-
 	private int lastAttr;
-
 	private int lastRow;
-
 	private int lastCol;
-
 	private int lastPos;
-
 	private int lenScreen;
-
 	private GuiGraphicBuffer bi;
-
-	private boolean keyboardLocked;
-
 	private KeyStrokenizer strokenizer;
-
 	private tnvt sessionVT;
-
 	private int numRows = 0;
-
 	private int numCols = 0;
-
 	int fmWidth = 0;
-
 	int fmHeight = 0;
-
 	LineMetrics lm;
-
 	Color colorBlue;
-
 	Color colorWhite;
-
 	Color colorRed;
-
 	Color colorGreen;
-
 	Color colorPink;
-
 	Color colorYellow;
-
 	Color colorBg;
-
 	Color colorTurq;
-
 	Color colorGUIField;
-
 	Color colorCursor;
-
 	Color colorSep;
-
 	Color colorHexAttr;
-
 	private boolean updateCursorLoc;
-
 	private Rectangle2D cursor = new Rectangle2D.Float();
-
 	private Rectangle2D tArea; // text area
-
 	private Rectangle2D aArea; // all screen area
-
 	private Rectangle2D cArea; // command line area
-
 	private Rectangle2D sArea; // status area
-
-	private Rectangle2D pArea; // position area (cursor etc..)
-
-	private Rectangle2D mArea; // message area
-
-	private Rectangle2D iArea; // insert indicator
-
-	private Rectangle2D kbArea; // keybuffer indicator
-
-	private Rectangle2D scriptArea; // script indicator
-
 	private char char0 = 0;
-
 	private static final int initAttr = 32;
-
 	private static final char initChar = 0;
-
 	private boolean statusErrorCode;
-
 	private boolean statusXSystem;
-
 	private int top;
-
 	private int left;
-
 	private Rectangle workR = new Rectangle();
-
-	private int colSepLine = 0;
-
+   private int colSepLine = 0;
 	public boolean cursorActive = false;
-
 	public boolean cursorShown = false;
-
 	private boolean insertMode = false;
-
 	private boolean keyProcessed = false;
-
 	private Rectangle dirty = new Rectangle();
-
 	private Graphics2D g2d;
-
 	protected Graphics2D gg2d;
-
 	private Point startPoint;
-
 	private Point endPoint;
-
 	private int crossHair = 0;
-
 	private boolean messageLight = false;
-
 	public int homePos = 0;
-
 	public int saveHomePos = 0;
-
-	private boolean keysBuffered;
-
 	private String bufferedKeys;
-
 	private boolean updateFont;
-
 	public boolean pendingInsert = false;
-
 	private Gui5250 gui;
-
 	private int cursorSize = 0;
-
 	private boolean hotSpots = false;
-
 	private boolean showHex = false;
-
 	private float sfh = 1.2f; // font scale height
-
 	private float sfw = 1.0f; // font scale height
-
 	private float ps132 = 0; // Font point size
 
 	public final static byte STATUS_SYSTEM = 1;
-
 	public final static byte STATUS_ERROR_CODE = 2;
-
 	public final static byte STATUS_VALUE_ON = 1;
-
 	public final static byte STATUS_VALUE_OFF = 2;
 
 	private final static String xSystem = "X - System";
-
 	private final static String xError = "X - II";
-
 	private String statusString = "";
-
 	private StringBuffer hsMore = new StringBuffer("More...");
-
 	private StringBuffer hsBottom = new StringBuffer("Bottom");
 
 	// error codes to be sent to the host on an error
 	private final static int ERR_CURSOR_PROTECTED = 0x05;
-
 	private final static int ERR_INVALID_SIGN = 0x11;
-
 	private final static int ERR_NO_ROOM_INSERT = 0x12;
-
 	private final static int ERR_NUMERIC_ONLY = 0x09;
-
 	private final static int ERR_DUP_KEY_NOT_ALLOWED = 0x19;
-
 	private final static int ERR_NUMERIC_09 = 0x10;
-
 	private final static int ERR_FIELD_MINUS = 0x16;
-
 	private final static int ERR_FIELD_EXIT_INVALID = 0x18;
-
 	private final static int ERR_ENTER_NO_ALLOWED = 0x20;
-
 	private final static int ERR_MANDITORY_ENTER = 0x21;
 
 	private boolean guiInterface = false;
-
 	protected boolean guiShowUnderline = true;
-
 	private boolean restrictCursor = false;
-
 	private Rectangle restriction;
-
 	private boolean resetRequired;
-
 	private int cursorBottOffset;
-
 	private boolean defaultPrinter;
-
 	private SessionConfig config;
-
 	private boolean rulerFixed;
-
 	private boolean antialiased = true;
-
 	private boolean feError;
+
+   private ScreenOIA oia;
 
 	//Added by Barry
 	private StringBuffer keybuf;
@@ -340,7 +235,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		fmHeight = (int) (font.getStringBounds("g", frc).getHeight()
 				+ lm.getDescent() + lm.getLeading());
 
-		keyboardLocked = true;
+      oia = new ScreenOIA(this);
+      oia.setKeyBoardLocked(true);
 
 		checkOffScreenImage();
 		lenScreen = numRows * numCols;
@@ -354,7 +250,12 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		screenFields = new ScreenFields(this);
 		strokenizer = new KeyStrokenizer();
 
+
 	}
+
+   public final ScreenOIA getOIA() {
+      return oia;
+   }
 
 	public final void setRowsCols(int rows, int cols) {
 
@@ -919,15 +820,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * RubberBanding start code
-	 *  
+	 *
 	 */
 
 	/**
 	 * Translate the starting point of mouse movement to encompass a full
 	 * character
-	 * 
+	 *
 	 * @param start
 	 * @return Point
 	 */
@@ -944,7 +845,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Translate the ending point of mouse movement to encompass a full
 	 * character
-	 * 
+	 *
 	 * @param end
 	 * @return Point
 	 */
@@ -969,15 +870,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * RubberBanding end code
-	 *  
+	 *
 	 */
 
 	/**
-	 * 
+	 *
 	 * Copy & Paste start code
-	 *  
+	 *
 	 */
 	public final void copyMe() {
 
@@ -1137,11 +1038,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Fills the passed Rectangle with the starting row and column and width and
 	 * height of the selected area.
-	 * 
+	 *
 	 * 1 BASED so column 1 row one is returned 1,1
-	 * 
+	 *
 	 * If there is no area bounded then the full screen area is returned.
-	 * 
+	 *
 	 * @param bounds
 	 */
 	public void getBoundingArea(Rectangle bounds) {
@@ -1169,14 +1070,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * Copy & Paste end code
-	 *  
+	 *
 	 */
 
 	/**
 	 * Sum them
-	 * 
+	 *
 	 * @param which
 	 *            formatting option to use
 	 * @return vector string of numberic values
@@ -1254,7 +1155,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	public void moveCursor(MouseEvent e) {
-		if (!keyboardLocked) {
+		if (!oia.isKeyBoardLocked()) {
 
 			int pos = getPosFromView(e.getX(), e.getY());
 			if (log.isDebugEnabled()) {
@@ -1378,8 +1279,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @param x
 	 * @param y
 	 * @return
@@ -1422,15 +1323,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Return the row column based on the screen x,y position coordinates
-	 * 
+	 *
 	 * It will calculate a 0,0 based row and column based on the screen point
 	 * coordinate.
-	 * 
+	 *
 	 * @param x
 	 *            screen x position
 	 * @param y
 	 *            screen y position
-	 * 
+	 *
 	 * @return screen array position based 0,0 so position row 1 col 3 would be
 	 *         2
 	 */
@@ -1466,7 +1367,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * This will return the screen coordinates of a row and column.
-	 * 
+	 *
 	 * @param r
 	 * @param c
 	 * @param point
@@ -1491,7 +1392,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Searches the mnemonicData array looking for the specified string. If it
 	 * is found it will return the value associated from the mnemonicValue
-	 * 
+	 *
 	 * @see #sendKeys
 	 * @param mnem
 	 *            string mnemonic value
@@ -1511,18 +1412,19 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	protected void setPrehelpState(boolean setErrorCode, boolean lockKeyboard,
 			boolean unlockIfLocked) {
 		statusErrorCode = setErrorCode;
-		if (isKeyboardLocked() && unlockIfLocked)
+		if (oia.isKeyBoardLocked() && unlockIfLocked)
 			setKeyboardLocked(false);
 		else
 			setKeyboardLocked(lockKeyboard);
 		bufferedKeys = null;
-		keysBuffered = false;
-		setKBIndicatorOff();
+      oia.setKeysBuffered(false);
+
+
 	}
 
 	/**
 	 * Activate the cursor on screen
-	 * 
+	 *
 	 * @param activate
 	 */
 	public void setCursorActive(boolean activate) {
@@ -1561,7 +1463,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private void updateCursorLoc() {
 
@@ -1578,27 +1480,27 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		}
 	}
-	
+
 	//Added by Barry
 	public String getKeys() {
 		String result = this.keybuf.toString();
-		this.keybuf = new StringBuffer(); 
+		this.keybuf = new StringBuffer();
 		return result;
 	}
-	
+
 	/**
 	 * The sendKeys method sends a string of keys to the virtual screen. This
 	 * method acts as if keystrokes were being typed from the keyboard. The
 	 * keystrokes will be sent to the location given. The string being passed
 	 * can also contain mnemonic values such as [enter] enter key,[tab] tab key,
 	 * [pf1] pf1 etc...
-	 * 
+	 *
 	 * These will be processed as if you had pressed these keys from the
 	 * keyboard. All the valid special key values are contained in the MNEMONIC
 	 * enumeration:
-	 * 
+	 *
 	 * <table BORDER COLS=2 WIDTH="50%" >
-	 * 
+	 *
 	 * <tr>
 	 * <td>MNEMONIC_CLEAR</td>
 	 * <td>[clear]</td>
@@ -1879,14 +1781,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * <td>MNEMONIC_MARK_DOWN</td>
 	 * <td>[markdown]</td>
 	 * </tr>
-	 * 
+	 *
 	 * </table>
-	 * 
+	 *
 	 * @param text
 	 *            The string of characters to be sent
-	 * 
+	 *
 	 * @see #sendAid
-	 * 
+	 *
 	 * Added synchronized to fix a StringOutOfBounds error - Luc Gorren LDC
 	 */
 	public synchronized void sendKeys(String text) {
@@ -1901,7 +1803,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			setCursorActive(true);
 		}
 
-		if (keyboardLocked) {
+		if (oia.isKeyBoardLocked()) {
 			if (text.equals("[reset]") || text.equals("[sysreq]")
 					|| text.equals("[attn]")) {
 				setCursorActive(false);
@@ -1914,8 +1816,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					return;
 				}
 
-				keysBuffered = true;
-				setKBIndicatorOn();
+            oia.setKeysBuffered(true);
 
 				if (bufferedKeys == null) {
 					bufferedKeys = text;
@@ -1928,13 +1829,12 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		} else {
 
-			if (keysBuffered) {
+			if (oia.isKeysBuffered()) {
 				if (bufferedKeys != null) {
 					text = bufferedKeys + text;
 				}
 				//            if (text.length() == 0) {
-				keysBuffered = false;
-				setKBIndicatorOff();
+				oia.setKeysBuffered(false);
 				//            }
 				bufferedKeys = null;
 
@@ -1996,13 +1896,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 							} else
 								log.info(" send keys mnemonic " + s);
 						}
-						if (keyboardLocked) {
+
+						if (oia.isKeyBoardLocked()) {
 
 							bufferedKeys = strokenizer
 									.getUnprocessedKeyStroked();
 							if (bufferedKeys != null) {
-								keysBuffered = true;
-								setKBIndicatorOn();
+                        oia.setKeysBuffered(true);
 
 							}
 							done = true;
@@ -2026,10 +1926,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * aid keys can be thought of as special keystrokes, like the Enter key,
 	 * PF1-24 keys or the Page Up key. All the valid special key values are
 	 * contained in the AID_ enumeration:
-	 * 
+	 *
 	 * @param aidKey
 	 *            The aid key to be sent to the host
-	 * 
+	 *
 	 * @see #sendKeys
 	 * @see TN5250jConstants#AID_CLEAR
 	 * @see #AID_ENTER
@@ -2071,7 +1971,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Restores the error line and sets the error mode off.
-	 *  
+	 *
 	 */
 	public void resetError() {
 
@@ -2525,7 +2425,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 				isInField(lastPos);
 				updateDirty();
 			} else {
-				setPrehelpState(false, isKeyboardLocked(), false);
+				setPrehelpState(false, oia.isKeyBoardLocked(), false);
 			}
 			gui.repaint();
 			simulated = true;
@@ -2752,10 +2652,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * @todo: Change to be mnemonic key.
-	 * 
+	 *
 	 * This toggles the ruler line.
-	 * 
-	 *  
+	 *
+	 *
 	 */
 	public void crossHair() {
 		setCursorActive(false);
@@ -2768,15 +2668,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Method: endOfField
 	 * <p>
-	 * 
+	 *
 	 * convenience method that call endOfField with lastRow lastCol and passes
 	 * the posSpace to that method
-	 * 
+	 *
 	 * @param posSpace
 	 *            value of type boolean - specifying to return the position of
 	 *            the the last space or not
 	 * @return a value of type int - the screen postion (row * columns) + col
-	 *  
+	 *
 	 */
 	private int endOfField(boolean posSpace) {
 		return endOfField(lastPos, posSpace);
@@ -2785,19 +2685,19 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Method: endOfField
 	 * <p>
-	 * 
+	 *
 	 * gets the position of the last character of the current field posSpace
 	 * parameter tells the routine whether to return the position of the last
 	 * space ( <= ' ') or the last non space posSpace == true last occurrence of
 	 * char <= ' ' posSpace == false last occurrence of char > ' '
-	 * 
+	 *
 	 * @param pos
 	 *            value of type int - position to start from
 	 * @param posSpace
 	 *            value of type boolean - specifying to return the position of
 	 *            the the last space or not
 	 * @return a value of type int - the screen postion (row * columns) + col
-	 *  
+	 *
 	 */
 	private int endOfField(int pos, boolean posSpace) {
 
@@ -3029,7 +2929,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * This routine is 0 based offset. So to get row 20,1 then pass row 19,0
-	 * 
+	 *
 	 * @param row
 	 * @param col
 	 * @return
@@ -3042,7 +2942,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Current position is based on offsets of 1,1 not 0,0 of the current
 	 * position of the screen
-	 * 
+	 *
 	 * @return int
 	 */
 	public int getCurrentPos() {
@@ -3056,7 +2956,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * any documenation for this. Maybe there is but I could not find it. If
 	 * anybody finds this documention could you please send me a copy. Please
 	 * note that I did not look that hard either.
-	 * 
+	 *
 	 * <p>
 	 * 0000: 00 50 73 1D 89 81 00 50 DA 44 C8 45 08 00 45 00 .Ps....P.D.E..E.
 	 * </p>
@@ -3072,9 +2972,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * <p>
 	 * 0040: 00 05 FF EF .... ----------|| The 00 XX is the code to be sent. I
 	 * found the following
-	 * 
+	 *
 	 * <table BORDER COLS=2 WIDTH="50%" >
-	 * 
+	 *
 	 * <tr>
 	 * <td>ERR_CURSOR_PROTECTED</td>
 	 * <td>0x05</td>
@@ -3111,14 +3011,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * <td>ERR_ENTER_NOT_ALLOWED</td>
 	 * <td>0x20</td>
 	 * </tr>
-	 * 
+	 *
 	 * </table> I am tired of typing and they should be self explanitory.
 	 * Finding them in the first place was the pain.
 	 * </p>
-	 * 
+	 *
 	 * @param ec
 	 *            error code
-	 *  
+	 *
 	 */
 	private void displayError(int ec) {
 		saveHomePos = homePos;
@@ -3174,7 +3074,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Convinience class to return if the cursor is in a field or not.
-	 * 
+	 *
 	 * @return true or false
 	 */
 
@@ -3184,11 +3084,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * Convinience class to return if the position that is passed is in a field
 	 * or not. If it is then the chgToField parameter will change the current
 	 * field to this field where the position indicates
-	 * 
+	 *
 	 * @param pos
 	 * @param chgToField
 	 * @return true or false
@@ -3199,11 +3099,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * Convinience class to return if the position that is passed is in a field
 	 * or not. If it is then the field at this position becomes the current
 	 * working field
-	 * 
+	 *
 	 * @param pos
 	 * @return true or false
 	 */
@@ -3216,7 +3116,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * Convinience class to return if the position at row and column that is
 	 * passed is in a field or not. If it is then the field at this position
 	 * becomes the current working field.
-	 * 
+	 *
 	 * @param row
 	 * @param col
 	 * @return true or false
@@ -3227,12 +3127,12 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * Convinience class to return if the position at row and column that is
 	 * passed is in a field or not. If it is then the chgToField parameter will
 	 * change the current field to this field where the row and column
 	 * indicates.
-	 * 
+	 *
 	 * @param row
 	 * @param col
 	 * @param chgToField
@@ -3244,7 +3144,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Gets the length of the screen - number of rows times number of columns
-	 * 
+	 *
 	 * @return int value of screen length
 	 */
 	public int getScreenLength() {
@@ -3254,7 +3154,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Get the number or rows available.
-	 * 
+	 *
 	 * @return number of rows
 	 */
 	public int getRows() {
@@ -3265,7 +3165,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Get the number of columns available.
-	 * 
+	 *
 	 * @return number of columns
 	 */
 	public int getCols() {
@@ -3276,7 +3176,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Get the current row where the cursor is
-	 * 
+	 *
 	 * @return the cursor current row position 1,1 based
 	 */
 	public int getCurrentRow() {
@@ -3287,7 +3187,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Get the current column where the cursor is
-	 * 
+	 *
 	 * @return the cursor current column position 1,1 based
 	 */
 	public int getCurrentCol() {
@@ -3299,7 +3199,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * The last position of the cursor on the screen - Note - position is based
 	 * 0,0
-	 * 
+	 *
 	 * @return last position
 	 */
 	protected int getLastPos() {
@@ -3310,7 +3210,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Hotspot More... string
-	 * 
+	 *
 	 * @return string literal of More...
 	 */
 	public StringBuffer getHSMore() {
@@ -3319,7 +3219,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Hotspot Bottom string
-	 * 
+	 *
 	 * @return string literal of Bottom
 	 */
 	public StringBuffer getHSBottom() {
@@ -3328,7 +3228,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * The column separator to be used
-	 * 
+	 *
 	 * @return column separator to be used values: 0 - line 1 - dot 2 - short
 	 *         line 3 - do not show column separator
 	 */
@@ -3338,7 +3238,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Should the screen attributes be show in hex
-	 * 
+	 *
 	 * @return true we should and false we should not
 	 */
 	public boolean isShowHex() {
@@ -3347,11 +3247,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Return the whole screen represented as a character array
-	 * 
+	 *
 	 * @return character array containing the text
-	 * 
+	 *
 	 * Added by Luc - LDC
-	 * 
+	 *
 	 * Note to KJP - Have to ask what the difference is between this method and
 	 * the other
 	 */
@@ -3374,9 +3274,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * Return the screen represented as a character array
-	 * 
+	 *
 	 * @return character array containing the text
 	 */
 	public char[] getScreenAsChars() {
@@ -3400,36 +3300,29 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Set the keyboard as locked or not depending on the value passed
-	 * 
+	 *
 	 * @param k
 	 *            true of false
 	 */
 	public void setKeyboardLocked(boolean k) {
 
-		keyboardLocked = k;
+//		keyboardLocked = k;
 
-		if (!keyboardLocked) {
+      oia.setKeyBoardLocked(k);
 
-			if (keysBuffered) {
+		if (!k) {
+
+			if (oia.isKeysBuffered()) {
 				sendKeys("");
 			}
 		}
 	}
 
 	/**
-	 * Is the keyboard locked or not
-	 * 
-	 * @return locked or not
-	 */
-	public boolean isKeyboardLocked() {
-		return keyboardLocked;
-	}
-
-	/**
 	 * This routine is based on offset 1,1 not 0,0 it will translate to offset
 	 * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
 	 * that use the 1,1 offset
-	 * 
+	 *
 	 * @param row
 	 * @param col
 	 */
@@ -3449,9 +3342,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * This returns whether or not any of the fields currently on the screen
 	 * have been changed in any way.
-	 * 
+	 *
 	 * Convinience class to ScreenFields
-	 * 
+	 *
 	 * @return true or false
 	 * @see org#tn5250j#ScreenFields
 	 */
@@ -3463,7 +3356,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Set the current working field to the field number specified.
-	 * 
+	 *
 	 * @param f -
 	 *            numeric field number on the screen
 	 * @return true or false whether it was sucessful
@@ -3488,7 +3381,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Convenience method to set the field object passed as the currect working
 	 * screen field
-	 * 
+	 *
 	 * @param f
 	 * @return true or false whether it was sucessful
 	 * @see org.tn5250j.ScreenField
@@ -3505,7 +3398,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Convenience class to position the cursor to the next word on the screen
-	 *  
+	 *
 	 */
 	private void gotoNextWord() {
 
@@ -3531,7 +3424,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Convenience class to position the cursor to the previous word on the
 	 * screen
-	 *  
+	 *
 	 */
 	private void gotoPrevWord() {
 
@@ -3559,7 +3452,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Convinience class to position to the next field on the screen.
-	 * 
+	 *
 	 * @see org.tn5250j.ScreenFields
 	 */
 	private void gotoFieldNext() {
@@ -3575,7 +3468,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Convinience class to position to the previous field on the screen.
-	 * 
+	 *
 	 * @see org.tn5250j.ScreenFields
 	 */
 	private void gotoFieldPrev() {
@@ -3594,9 +3487,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * Used to restrict the cursor to a particular position on the screen. Used
 	 * in combination with windows to restrict the cursor to the active window
 	 * show on the screen.
-	 * 
+	 *
 	 * Not supported yet. Please implement me :-(
-	 * 
+	 *
 	 * @param depth
 	 * @param width
 	 */
@@ -3609,7 +3502,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Creates a window on the screen
-	 * 
+	 *
 	 * @param depth
 	 * @param width
 	 * @param type
@@ -3745,7 +3638,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Creates a scroll bar on the screen using the parameters provided.
 	 *  ** we only support vertical scroll bars at the time.
-	 * 
+	 *
 	 * @param flag -
 	 *            type to draw - vertical or horizontal
 	 * @param totalRowScrollable
@@ -3793,7 +3686,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Write the title of the window that is on the screen
-	 * 
+	 *
 	 * @param pos
 	 * @param depth
 	 * @param width
@@ -3843,13 +3736,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Roll the screen up or down.
-	 * 
+	 *
 	 * Byte 1: Bit 0 0 = Roll up 1 = Roll down Bits 1-2 Reserved Bits 3-7 Number
 	 * of lines that the designated area is to be rolled Byte 2: Bits 0-7 Line
 	 * number defining the top line of the area that will participate in the
 	 * roll. Byte 3: Bits 0-7 Line number defining the bottom line of the area
 	 * that will participate in the roll.
-	 * 
+	 *
 	 * @param direction
 	 * @param topLine
 	 * @param bottomLine
@@ -3910,7 +3803,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Add a field to the field format table.
-	 * 
+	 *
 	 * @param attr -
 	 *            Field attribute
 	 * @param len -
@@ -4101,7 +3994,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Return the fields that are contained in the Field Format Table
-	 * 
+	 *
 	 * @return ScreenFields object
 	 * @see org.tn5250j.ScreenFields
 	 */
@@ -4112,7 +4005,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Redraw the fields on the screen. Used for gui enhancement to redraw the
 	 * fields when toggling
-	 *  
+	 *
 	 */
 	public void drawFields() {
 
@@ -4162,7 +4055,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Draws the field on the screen. Used to redraw or change the attributes of
 	 * the field.
-	 * 
+	 *
 	 * @param sf -
 	 *            Field to be redrawn
 	 * @see org.tn5250j.ScreenField.java
@@ -4182,7 +4075,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Set the field to be displayed as highlighted.
-	 * 
+	 *
 	 * @param sf -
 	 *            Field to be highlighted
 	 */
@@ -4204,7 +4097,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Draw the field as un higlighted. This is used to reset the field
 	 * presentation on the screen after the field is exited.
-	 * 
+	 *
 	 * @param sf -
 	 *            Field to be unhighlighted
 	 */
@@ -4317,9 +4210,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Draw or redraw the dirty parts of the screen and display them.
-	 * 
+	 *
 	 * Rectangle dirty holds the dirty area of the screen to be updated.
-	 * 
+	 *
 	 * If you want to change the screen in anyway you need to set the screen
 	 * attributes before calling this routine.
 	 */
@@ -4385,13 +4278,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Change position of the screen by the increment of parameter passed.
-	 * 
+	 *
 	 * If the position change is under the minimum of the first screen position
 	 * then the position is moved to the last row and column of the screen.
-	 * 
+	 *
 	 * If the position change is over the last row and column of the screen then
 	 * cursor is moved to first position of the screen.
-	 * 
+	 *
 	 * @param i
 	 */
 	protected void changePos(int i) {
@@ -4453,7 +4346,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Set the error line number to that of number passed.
-	 * 
+	 *
 	 * @param line
 	 */
 	public void setErrorLine(int line) {
@@ -4466,7 +4359,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Returns the current error line number
-	 * 
+	 *
 	 * @return current error line number
 	 */
 	public int getErrorLine() {
@@ -4475,7 +4368,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Saves off the current error line characters to be used later.
-	 *  
+	 *
 	 */
 	public void saveErrorLine() {
 		// if there is already an error line saved then do not save it again
@@ -4495,7 +4388,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Restores the error line characters from the save buffer.
-	 * 
+	 *
 	 * @see #saveErrorLine()
 	 */
 	public void restoreErrorLine() {
@@ -4512,96 +4405,36 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 	}
 
-	public void setKBIndicatorOn() {
-
-		Graphics2D g2d = getWritingArea();
-		float Y = (fmHeight * (numRows + 2))
-				- (lm.getLeading() + lm.getDescent());
-		g2d.setColor(colorYellow);
-		g2d.drawString("KB", (float) kbArea.getX(), Y);
-		updateImage(kbArea.getBounds());
-		g2d.dispose();
-
-	}
-
-	public void setKBIndicatorOff() {
-
-		Graphics2D g2d = getWritingArea();
-
-		g2d.setColor(colorBg);
-		g2d.fill(kbArea);
-		updateImage(kbArea.getBounds());
-		g2d.dispose();
-
-	}
-
-	public void setSRIndicatorOn() {
-
-		bi.drawScriptRunning(colorGreen);
-		updateImage(scriptArea.getBounds());
-
-	}
-
-	public void setSRIndicatorOff() {
-
-		bi.eraseScriptRunning(colorBg);
-		updateImage(scriptArea.getBounds());
-
-	}
-
-	public void setMessageLightOn() {
-
-		Graphics2D g2d = getWritingArea();
-		float Y = (fmHeight * (numRows + 2))
-				- (lm.getLeading() + lm.getDescent());
-		g2d.setColor(colorBlue);
-		g2d.drawString("MW", (float) mArea.getX(), Y);
-		messageLight = true;
-		updateImage(mArea.getBounds());
-		g2d.dispose();
-
-	}
-
-	public void setMessageLightOff() {
-
-		Graphics2D g2d = getWritingArea();
-
-		g2d.setColor(colorBg);
-		g2d.fill(mArea);
-		messageLight = false;
-		updateImage(mArea.getBounds());
-		g2d.dispose();
-
-	}
-
-	public boolean isMessageWait() {
-
-		return messageLight;
-	}
-
 	public void setStatus(byte attr, byte value, String s) {
 
 		statusString = s;
 
 		// draw the status information
-		bi.setStatus(attr, value, s, fmWidth, fmHeight, lm, font, colorBg,
-				colorRed, colorWhite);
+//		bi.setStatus(attr, value, s, fmWidth, fmHeight, lm, font, colorBg,
+//				colorRed, colorWhite);
 
 		// set environment variables
 		switch (attr) {
 
 		case STATUS_SYSTEM:
 			if (value == STATUS_VALUE_ON) {
+            oia.setInputInhibited(oia.INPUTINHIBITED_SYSTEM_WAIT,oia.OIA_LEVEL_INPUT_INHIBITED, s);
 				statusXSystem = true;
-			} else
+			}
+         else {
 				statusXSystem = false;
+            oia.setInputInhibited(oia.INPUTINHIBITED_NOTINHIBITED,oia.OIA_LEVEL_NOT_INHIBITED,s);
+         }
 			break;
 
 		case STATUS_ERROR_CODE:
 			if (value == STATUS_VALUE_ON) {
 				setPrehelpState(true, true, false);
+         oia.setInputInhibited(oia.INPUTINHIBITED_SYSTEM_WAIT,oia.OIA_LEVEL_INPUT_ERROR,s);
+
 				Toolkit.getDefaultToolkit().beep();
 			} else {
+         oia.setInputInhibited(oia.INPUTINHIBITED_NOTINHIBITED,oia.OIA_LEVEL_NOT_INHIBITED);
 				setPrehelpState(false, true, true);
 				homePos = saveHomePos;
 				saveHomePos = 0;
@@ -4652,7 +4485,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		screen[0].setAttribute(initAttr);
 		insertMode = false;
 		cursor.setRect(0, 0, 0, 0);
-
+      oia.setInsertMode(insertMode);
 	}
 
 	/**
@@ -4668,7 +4501,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Clear the gui constructs
-	 *  
+	 *
 	 */
 	protected void clearGuiStuff() {
 
@@ -4692,6 +4525,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 		dirty.setBounds(tArea.getBounds());
 		drawing = true;
+      oia.clearScreen();
+
 	}
 
 	public void restoreScreen() {
@@ -4703,7 +4538,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Returns a pointer to the graphics area that we can draw on
-	 * 
+	 *
 	 * @return Graphics2D pointer of graphics buffer
 	 */
 	public Graphics2D getDrawingArea() {
@@ -4713,7 +4548,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	/**
 	 * Returns a pointer to the graphics area that we can write on
-	 * 
+	 *
 	 * @return Graphics2D pointer of graphics buffer
 	 */
 	public Graphics2D getWritingArea() {
@@ -4877,16 +4712,16 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * This routine will make sure we have something to draw on
-	 *  
+	 *
 	 */
 	private void checkOffScreenImage() {
 
 		// do we have something already?
 		if (bi == null) {
 
-			bi = new GuiGraphicBuffer();
+			bi = new GuiGraphicBuffer(this);
 
 			if (antialiased) {
 				bi.setUseAntialias(true);
@@ -4900,10 +4735,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			cArea = new Rectangle2D.Float(0, 0, 0, 0);
 			aArea = new Rectangle2D.Float(0, 0, 0, 0);
 			sArea = new Rectangle2D.Float(0, 0, 0, 0);
-			pArea = new Rectangle2D.Float(0, 0, 0, 0);
-			mArea = new Rectangle2D.Float(0, 0, 0, 0);
-			kbArea = new Rectangle2D.Float(0, 0, 0, 0);
-			scriptArea = new Rectangle2D.Float(0, 0, 0, 0);
 
 			// Draw Operator Information Area
 			drawOIA();
@@ -4914,7 +4745,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	/**
 	 * Convinience method to resize the screen area such as when the parent
 	 * frame is resized.
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 */
@@ -4979,30 +4810,26 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		cArea.setRect(bi.getCommandLineArea());
 		aArea.setRect(bi.getScreenArea());
 		sArea.setRect(bi.getStatusArea());
-		pArea.setRect(bi.getPositionArea());
-		mArea.setRect(bi.getMessageArea());
-		kbArea.setRect(bi.getKBIndicatorArea());
-		scriptArea.setRect(bi.getScriptIndicatorArea());
 
 	}
 
 	/**
-	 * 
+	 *
 	 * This routine will calculate the new image size that will be displayed
 	 * when the frame that holds it is resized.
-	 * 
+	 *
 	 * The font characteristics are changed to fit the new size as will as the
 	 * screen buffer row column offsets so that the characters that make of the
 	 * screen are displayed correctly
-	 * 
+	 *
 	 * Changes made by Luc - LDC This routine was split into two separate
 	 * functions. setBounds and repaintScreen. This allowed a public function
 	 * called updateScreen to be introduced.
-	 * 
+	 *
 	 * @param width
 	 * @param height
-	 * 
-	 *  
+	 *
+	 *
 	 */
 
 	public final void setBounds(int width, int height) {
@@ -5041,19 +4868,19 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			setStatus(STATUS_ERROR_CODE, STATUS_VALUE_ON, statusString);
 		if (isXSystem())
 			setStatus(STATUS_SYSTEM, STATUS_VALUE_ON, statusString);
-		if (isMessageWait())
-			setMessageLightOn();
+		if (oia.isMessageWait())
+			oia.setMessageLightOn();
 	}
 
 	/**
-	 * 
+	 *
 	 * This routine will calculate the new image size that will be displayed
 	 * when the frame that holds it is resized.
-	 * 
+	 *
 	 * The font characteristics are changed to fit the new size as will as the
 	 * screen buffer row column offsets so that the characters that make of the
 	 * screen are displayed correctly
-	 * 
+	 *
 	 * @param r
 	 */
 	public final void setBounds(Rectangle r) {
@@ -5062,12 +4889,12 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * This routine returns the preferred size of the component that wants to be
 	 * displayed
-	 * 
+	 *
 	 * @return the value of the preferredSize property
-	 *  
+	 *
 	 */
 	public final Dimension getPreferredSize() {
 
@@ -5076,10 +4903,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * 
+	 *
 	 * This routine is responsible for setting up a PrinterJob on this component
 	 * and initiating the print session.
-	 *  
+	 *
 	 */
 	public final void printMe() {
 
