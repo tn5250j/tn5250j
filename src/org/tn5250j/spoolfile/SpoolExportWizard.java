@@ -1120,8 +1120,10 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    public void canceled(WizardEvent e) {
 //      System.out.println("It is canceled!");
-      if (workingThread != null)
+      if (workingThread != null) {
          workingThread.interrupt();
+         workingThread = null;
+      }
       this.hide();
       this.dispose();
    }
