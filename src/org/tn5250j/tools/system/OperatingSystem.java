@@ -23,7 +23,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
 import java.io.File;
-//import org.gjt.sp.util.Log;
+
+import org.tn5250j.tools.logging.*;
 
 /**
  * Operating system detection routines.
@@ -33,6 +34,10 @@ import java.io.File;
  */
 public class OperatingSystem
 {
+
+   private static TN5250jLogger log =
+         TN5250jLogFactory.getLogger("org.tn5250j.tools.system.OperatingSystem");
+
    public static final Rectangle getScreenBounds()
    {
       int screenX = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -191,16 +196,16 @@ public class OperatingSystem
                    }
                }
                catch(InterruptedException x) {
-                   System.err.println("Error bringing up browser, cmd='" +
+                   log.warn("Error bringing up browser, cmd='" +
                    cmd + "'");
-                   System.err.println("Caught: " + x);
+                   log.warn("Caught: " + x);
                }
            }
        }
        catch(java.io.IOException x) {
            // couldn't exec browser
-           System.err.println("Could not invoke browser, command=" + cmd);
-           System.err.println("Caught: " + x);
+           log.warn("Could not invoke browser, command=" + cmd);
+           log.warn("Caught: " + x);
        }
    }
 
@@ -262,13 +267,11 @@ public class OperatingSystem
          else
          {
             os = UNKNOWN;
-//				Log.log(Log.WARNING,OperatingSystem.class,
-//					"Unknown operating system: " + osName);
+            log.warn("Unknown operating system: " + osName);
          }
       }
 
       if(System.getProperty("java.version").compareTo("1.4") >= 0)
-//			&& System.getProperty("jedit.nojava14") == null)
          java14 = true;
    } //}}}
 
