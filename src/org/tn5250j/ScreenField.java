@@ -222,6 +222,7 @@ public class ScreenField {
          s.screen[cursorPos].setChar(c);
          changePos(1);
       }
+
    }
 
    public void setFieldChar(int lastPos, char c) {
@@ -362,6 +363,19 @@ public class ScreenField {
    protected boolean isCanSend() {
 
       int adj = getAdjustment();
+
+      // here we need to check the Field Exit Required value first before checking
+      //   the adjustments.  If the last character has been entered and we are
+      //   now setting past the last position then we are allowed to process the
+      //   the field without continuing.
+      if (isFER() && cursorPos > endPos) {
+         return true;
+      }
+
+      // signed numeric fields need to be checked as well.
+      if (isSignedNumeric() && cursorPos < endPos - 1) {
+         return false;
+      }
 
       if (adj  > 0) {
 

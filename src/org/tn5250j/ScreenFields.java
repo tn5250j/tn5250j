@@ -157,11 +157,12 @@ public class ScreenFields implements TN5250jConstants {
     *
     */
    public boolean isCanSendAid() {
-      if (currentField != null &&
 
-            currentField.getAdjustment() > 0 &&
-            currentModified &&
-            !currentField.isCanSend())
+      // We also have to check if we are still in the field.
+      if (currentField != null &&
+            (currentField.getAdjustment() > 0 || currentField.isSignedNumeric())
+             && currentModified && isInField()
+            && !currentField.isCanSend())
 
          return false;
       else
