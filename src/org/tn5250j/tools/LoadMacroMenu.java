@@ -72,6 +72,9 @@ public final class LoadMacroMenu {
       }
 
       scriptDir("scripts",menu,session);
+      scriptDir(GlobalConfigure.instance().getProperty(
+                           "emulator.settingsDirectory") +
+                           "scripts",menu,session);
    }
 
    public static void scriptDir(String pathName, JMenu menu,Session session) {
@@ -90,7 +93,6 @@ public final class LoadMacroMenu {
          System.out.println(ioe.getMessage());
 
       }
-
 
    }
 
@@ -176,13 +178,13 @@ public final class LoadMacroMenu {
       }
    }
 
-	public static class MacroCompare implements Comparator {
-		public int compare(Object one, Object two) {
+   public static class MacroCompare implements Comparator {
+      public int compare(Object one, Object two) {
          String s1 = one.toString();
          String s2 = two.toString();
          return s1.compareToIgnoreCase(s2);
-		}
+      }
 
-	}
+   }
 
 }

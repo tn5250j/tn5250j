@@ -212,7 +212,12 @@ public class Macronizer {
 
       File directory = new File("scripts");
 
-      return directory.isDirectory();
+      File directory2 = new File(GlobalConfigure.instance().getProperty(
+                           "emulator.settingsDirectory") +
+                           "scripts");
+
+
+      return directory.isDirectory() || directory2.isDirectory();
 
    }
 
