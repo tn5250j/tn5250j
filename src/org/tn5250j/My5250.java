@@ -817,15 +817,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
     */
    private void initJarPaths() {
 
-      String userDir = System.getProperty("user.dir");
-      if (new File(userDir + File.separator + "jython.jar").exists()) {
+      jarClassPaths = "." + File.pathSeparator + "jython.jar"
+                        + File.pathSeparator + "jt400.jar"
+                        + File.pathSeparator + "itext.jar";
 
-         jarClassPaths = "." + File.pathSeparator + "jython.jar"
-                           + File.pathSeparator + "jt400.jar"
-                           + File.pathSeparator + "itext.jar";
-         if (sessions.contains("emul.scriptClassPath")) {
-            jarClassPaths += File.pathSeparator + sessions.getProperty("emul.scriptClassPath");
-         }
+      if (sessions.containsKey("emul.scriptClassPath")) {
+         jarClassPaths += File.pathSeparator + sessions.getProperty("emul.scriptClassPath");
       }
 
       if (jarClassPaths != null)
