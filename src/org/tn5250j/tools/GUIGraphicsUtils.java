@@ -41,6 +41,8 @@ import java.awt.Point;
 import javax.swing.SwingUtilities;
 import java.awt.Toolkit;
 import java.awt.GraphicsEnvironment;
+import javax.swing.ImageIcon;
+import java.net.URL;
 
 import org.tn5250j.*;
 import org.tn5250j.tools.system.OperatingSystem;
@@ -54,6 +56,11 @@ public class GUIGraphicsUtils {
    public static final int WINDOW_NORMAL = 3;
    public static final int WINDOW_GRAPHIC = 4;
    private static String defaultFont;
+
+   // Application icons
+   private static ImageIcon focused;
+   private static ImageIcon unfocused;
+   private static ImageIcon tnicon;
 
    public static void draw3DLeft(Graphics2D g,int which,
                                           int x,int y,
@@ -1515,4 +1522,52 @@ public class GUIGraphicsUtils {
 
       return false;
    }
+
+   /**
+    * This routine will extract image resources from jar file and create
+    * an ImageIcon
+    */
+   public static ImageIcon createImageIcon (String image) {
+      URL file=null;
+
+      ClassLoader classLoader = GUIGraphicsUtils.class.getClassLoader();
+      if (classLoader == null)
+        classLoader = ClassLoader.getSystemClassLoader();
+
+      try {
+         file = classLoader.getResource(image);
+
+      }
+      catch (Exception e) {
+         System.err.println(e);
+      }
+      return new ImageIcon( file);
+   }
+
+   public static ImageIcon getFocusedIcon () {
+
+      if (focused == null)
+         focused = createImageIcon("focused.gif");
+
+      return focused;
+
+   }
+
+   public static ImageIcon getUnFocusedIcon () {
+
+      if (unfocused == null)
+         unfocused = createImageIcon("unfocused.gif");
+
+      return unfocused;
+
+   }
+
+   public static ImageIcon getApplicationIcon () {
+
+      if (tnicon == null)
+         tnicon = createImageIcon("tnicon.jpg");
+
+      return tnicon;
+   }
+
 }
