@@ -35,11 +35,12 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    Sessions sessions;
    My5250 me;
+   Vector configs;
 
    public SessionManager() {
 
       sessions = new Sessions();
-
+      configs = new Vector(3);
    }
 
    public void setController(My5250 m) {
@@ -69,6 +70,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
    public Session openSession(Properties sesProps, String configurationResource
                                                 , String sessionName) {
 //                                             throws TN5250jException {
+
       if(sessionName == null)
          sesProps.put(SESSION_TERM_NAME,sesProps.getProperty(SESSION_HOST));
       else
@@ -80,25 +82,44 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
       sesProps.put(SESSION_CONFIG_RESOURCE
                         ,configurationResource);
 
-      Session newSession = new Session(me,sesProps,configurationResource,sessionName);
+      Enumeration e = configs.elements();
+      SessionConfig useConfig = null;
+
+      while(e.hasMoreElements()) {
+         SessionConfig conf = (SessionConfig)e.nextElement();
+         if (conf.getSessionName().equals(sessionName)) {
+            useConfig = conf;
+            System.out.println(" found one ");
+         }
+      }
+
+      if (useConfig == null) {
+
+         useConfig = new SessionConfig(configurationResource,sessionName);
+         configs.add(useConfig);
+      }
+
+      Session newSession = new Session(me,sesProps,configurationResource,
+                                          sessionName,useConfig);
       sessions.addSession(newSession);
+      useConfig.addSessionConfigListener(newSession);
       return newSession;
 
    }
 
 
-   protected static void loadConfigurationResource(Properties props,
-                                                   String resourceName) {
-
-      FileInputStream in = null;
-      try {
-         in = new FileInputStream(resourceName);
-         props.load(in);
-
-      }
-      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
-      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-
-   }
+//   protected static void loadConfigurationResource2(Properties props,
+//                                                   String resourceName) {
+//
+//      FileInputStream in = null;
+//      try {
+//         in = new FileInputStream(resourceName);
+//         props.load(in);
+//
+//      }
+//      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
+//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
+//
+//   }
 
 }

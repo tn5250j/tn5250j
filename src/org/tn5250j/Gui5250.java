@@ -30,7 +30,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-import java.io.*;
+//import java.io.*;
 import java.util.*;
 import java.text.*;
 import java.beans.*;
@@ -40,6 +40,8 @@ import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
+import org.tn5250j.event.SessionConfigListener;
+import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.KeyChangeListener;
 
 public class Gui5250 extends JPanel implements ComponentListener,
@@ -48,10 +50,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
                                                       PropertyChangeListener ,
                                                       RubberBandCanvasIF,
                                                       KeyChangeListener,
-                                                      SessionListener {
+                                                      SessionListener,
+                                                      SessionConfigListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
-   Properties defaultProps = null;
    Screen5250 screen = null;
    String propFileName = null;
    tnvt vt = null;
@@ -75,23 +77,20 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private boolean macroRunning;
    private boolean stopMacro;
    private boolean doubleClick;
+   private SessionConfig sesConfig;
 
    public Gui5250 () {
 
    }
 
    //Construct the frame
-   public Gui5250(My5250 m) {
-
-      this(m,null,false);
-   }
-
-   //Construct the frame
-   public Gui5250(My5250 m,String properties, boolean useGui) {
+   public Gui5250(My5250 m,SessionConfig config) {
 
       me = m;
-      gui = useGui;
-      propFileName = properties;
+
+      propFileName = config.getConfigurationResource();
+
+      sesConfig = config;
 
       String os = System.getProperty("os.name");
       if (os.toLowerCase().indexOf("linux") != -1) {
@@ -114,26 +113,22 @@ public class Gui5250 extends JPanel implements ComponentListener,
       this.setLayout(borderLayout1);
 
 //      this.setOpaque(false);
-      setDoubleBuffered(true);
+//      setDoubleBuffered(true);
       s.setOpaque(false);
       s.setDoubleBuffered(false);
 
-      loadProps();
-      screen = new Screen5250(this,defaultProps);
+      screen = new Screen5250(this,sesConfig);
       this.addComponentListener(this);
 
-      if (!defaultProps.containsKey("width") ||
-         !defaultProps.containsKey("height"))
+      if (!sesConfig.isPropertyExists("width") ||
+         !sesConfig.isPropertyExists("height"))
          // set the initialize size
          this.setSize(screen.getPreferredSize());
       else {
 
-         this.setSize(Integer.parseInt((String)defaultProps.get("width")),
-                     Integer.parseInt((String)defaultProps.get("height"))
-
-         );
+         this.setSize(sesConfig.getIntegerProperty("width"),
+                        sesConfig.getIntegerProperty("height"));
       }
-
 
       addMouseListener(new MouseAdapter() {
          public void mousePressed(MouseEvent e) {
@@ -201,7 +196,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       macros.init();
 
       keyPad.addActionListener(this);
-      if (getStringProperty("keypad").equals("Yes"))
+      if (sesConfig.getStringProperty("keypad").equals("Yes"))
          keyPad.setVisible(true);
       else
          keyPad.setVisible(false);
@@ -220,7 +215,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 
       // check if double click sends enter
-      if (getStringProperty("doubleClick").equals("Yes"))
+      if (sesConfig.getStringProperty("doubleClick").equals("Yes"))
          doubleClick = true;
       else
          doubleClick = false;
@@ -538,6 +533,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
       ex.printStackTrace();
    }
+
    public void onKeyChanged() {
 
       getInputMap().clear();
@@ -545,6 +541,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       initKeyBindings();
 
    }
+
    /**
     * MyAction is used so that I can attach a string command to the action
     *    I tried using just the default versions but it was not returning
@@ -801,9 +798,14 @@ public class Gui5250 extends JPanel implements ComponentListener,
          e.consume();
    }
 
+   public SessionConfig getConfiguration() {
+
+      return sesConfig;
+   }
+
    private void sendScreenEMail() {
 
-      SendEMailDialog semd = new SendEMailDialog(me.getParentView((Session)this),screen);
+      new SendEMailDialog(me.getParentView((Session)this),(Session)this);
    }
 
    private void sendMeToFile() {
@@ -911,15 +913,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   protected final String getStringProperty(String prop) {
-
-      if (defaultProps.containsKey(prop))
-         return (String)defaultProps.get(prop);
-      else
-         return "";
-
-   }
-
    public void actionPerformed(ActionEvent actionevent) {
 
       Object obj = actionevent.getSource();
@@ -959,8 +952,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
       }
 
+      screen.propertyChange(pce);
+
       resizeMe();
       repaint();
+
+   }
+
+   public void onConfigChanged(SessionConfigEvent changeEvent) {
+
 
    }
 
@@ -969,7 +969,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       switch (changeEvent.getState()) {
          case STATE_CONNECTED:
 
-            String mac = getStringProperty("connectMacro");
+            String mac = sesConfig.getStringProperty("connectMacro");
             if (mac.length() > 0)
                executeMeMacro(mac);
             break;
@@ -1077,76 +1077,47 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void closeDown() {
 
-      if (defaultProps.containsKey("saveme")) {
-
-         defaultProps.remove("saveme");
-
-         Object[] args = {propFileName};
-         String message = MessageFormat.format(
-                           LangTool.getString("messages.saveSettings"),
-                           args);
-
-         int result = JOptionPane.showConfirmDialog(getParent(),message);
-
-         if (result == JOptionPane.OK_OPTION) {
-            try {
-               FileOutputStream out = new FileOutputStream(propFileName);
-                  // save off the width and height to be restored later
-               defaultProps.store(out,"------ Defaults --------");
-            }
-            catch (FileNotFoundException fnfe) {}
-            catch (IOException ioe) {}
-         }
-
-
-      }
+      sesConfig.saveSessionProps(getParent());
       vt.disconnect();
 
    }
 
-   private void loadProps() {
-
-      defaultProps = new Properties();
-      if (propFileName == null || propFileName == "")
-         propFileName = "TN5250JDefaults.props";
-
-      try {
-         FileInputStream in = new FileInputStream(propFileName);
-         //InputStream in = getClass().getClassLoader().getResourceAsStream(propFileName);
-         defaultProps.load(in);
-
-      }
-      catch (IOException ioe) {
-         System.out.println("Information Message: Properties file is being "
-                              + "created for first time use:  File name "
-                              + propFileName);
-      }
-      catch (SecurityException se) {
-         System.out.println(se.getMessage());
-      }
-
-   }
-
+   /**
+    * Show the session attributes screen for modification of the attribute/
+    * settings of the session.
+    *
+    */
    private void doAttributes() {
 
-      SessionAttributes sa = null;
+      Frame parent = null;
 
       // if me is null then we must be called from an applet so we create
       //   a new frame object.
       if (me == null)
-         sa = new SessionAttributes(propFileName,
-                                       defaultProps,
-                                       new JFrame());
+         parent = new JFrame();
       else
-         sa = new SessionAttributes(propFileName,
-                                       defaultProps,
-                                       (Frame)me.getParentView((Session)this));
-      sa.addPropertyChangeListener(screen);
-      sa.addPropertyChangeListener(this);
+         parent = (Frame)me.getParentView((Session)this);
+
+      SessionAttributes sa = new SessionAttributes(parent,sesConfig);
+
+      Vector listeners = sesConfig.getSessionConfigListeners();
+
+      Enumeration e = listeners.elements();
+
+      while (e.hasMoreElements()) {
+         sa.addPropertyChangeListener((Session)e.nextElement());
+      }
+
       sa.showIt();
-      defaultProps = sa.getProperties();
-      sa.removePropertyChangeListener(screen);
-      sa.removePropertyChangeListener(this);
+
+      listeners = sesConfig.getSessionConfigListeners();
+
+      e = listeners.elements();
+
+      while (e.hasMoreElements()) {
+         sa.removePropertyChangeListener((Session)e.nextElement());
+      }
+
       getFocusForMe();
       sa = null;
    }
@@ -1534,8 +1505,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       GUIGraphicsUtils.positionPopup(me.getComponent(),popup,
                me.getX(),me.getY());
-//      popup.show(me.getComponent(),
-//               me.getX(),me.getY());
 
    }
 
@@ -1596,7 +1565,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void doMeTransfer() {
 
-      XTFRFile xtrf = new XTFRFile(me.getParentView((Session)this),vt);
+      XTFRFile xtrf = new XTFRFile(me.getParentView((Session)this),vt,(Session)this);
 
    }
 
@@ -2020,7 +1989,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       protected void drawBoundingShape(Graphics g, int startX, int startY, int width, int height) {
          g.drawRect(startX,startY,width,height);
-//         System.out.println("shape");
       }
 
       protected Rectangle getBoundingArea() {

@@ -36,9 +36,10 @@ import javax.swing.tree.TreeSelectionModel;
 import java.util.*;
 import java.beans.*;
 import java.io.*;
-import org.tn5250j.tools.*;
 import java.net.*;
 import java.text.*;
+
+import org.tn5250j.tools.*;
 
 public class SessionAttributes extends JDialog {
 
@@ -81,11 +82,15 @@ public class SessionAttributes extends JDialog {
 
    private PropertyChangeSupport changes = null;
 
-   public SessionAttributes(String fileName, Properties props, Frame parent) {
+//   public SessionAttributes(String fileName, Properties props, Frame parent) {
+   public SessionAttributes(Frame parent, SessionConfig config ) {
       super(parent);
-      this.fileName = fileName;
-      this.props = props;
-      this.gui = gui;
+
+//      this.fileName = fileName;
+//      this.props = props;
+      this.fileName = config.getConfigurationResource();
+      this.props = config.getProperties();
+//      this.gui = gui;
 
       try {
          jbInit();
@@ -105,7 +110,6 @@ public class SessionAttributes extends JDialog {
       Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
       // define fonts panel
       final JPanel fp = new JPanel();
-
 
       fp.setLayout(new BorderLayout());
 
