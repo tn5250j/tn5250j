@@ -43,6 +43,13 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+31/07/2002  Fixed a problem with gui windows not restoring the screen correctly.
+
+            Added support for multiple macros running at the same time for
+            different sessions.
+
+30/07/2002  Fixed a problem with error line again.
+
 27/07/2002  Added scripting to emulator using jython.  We now have scripting!!!
 
 25/07/2002  Add the macros in ascending order.  This and the session sorting

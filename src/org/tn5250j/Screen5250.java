@@ -3357,7 +3357,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       if (pendingInsert) {
          homePos = getPos(icX,icY);
       }
-      goto_XY(icX,icY);
+
+      if (!isStatusErrorCode()) {
+         goto_XY(icX,icY);
+      }
    }
 
    public void setPendingInsert(boolean flag) {
@@ -3569,6 +3572,20 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       screenFields.clearFFT();
       pendingInsert = false;
       homePos = -1;
+   }
+
+   /**
+    * Clear the gui constructs
+    *
+    */
+   protected void clearGuiStuff() {
+
+      for (int x = 0; x < lenScreen; x++) {
+//         screen[x].setCharAndAttr(' ',initAttr,false);
+         screen[x].setUseGUI(ScreenChar.NO_GUI);
+      }
+//      dirty.setBounds(tArea.getBounds());
+      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
    }
 
    /**

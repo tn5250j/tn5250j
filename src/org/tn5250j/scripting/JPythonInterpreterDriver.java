@@ -34,7 +34,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
          throws InterpreterDriver.InterpreterException {
       try {
          session.setMacroRunning(true);
-         _interpreter.set("session",session);
+         _interpreter.set("_session",session);
          _interpreter.exec(script);
          session.setMacroRunning(false);
       }
@@ -46,6 +46,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
    public void executeScript(String script)
          throws InterpreterDriver.InterpreterException {
       try {
+         _interpreter = new PythonInterpreter();
          _interpreter.exec(script);
       }
       catch (PyException ex) {
@@ -63,7 +64,8 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
          s1.setMacroRunning(true);
          Runnable interpretIt = new Runnable() {
             public void run() {
-               _interpreter.set("session",s1);
+               _interpreter = new PythonInterpreter();
+               _interpreter.set("_session",s1);
                _interpreter.execfile(s2);
             }
 

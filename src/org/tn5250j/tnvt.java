@@ -1312,7 +1312,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
                case CMD_RESTORE_SCREEN:   // 0x12 18 Restore Screen
                case 13:   // 0x13 19 Restore Partial Screen
-                  System.out.println("restore screen partial");
+//                  System.out.println("restore screen partial");
                   restoreScreen();
                   break;
 
@@ -2192,6 +2192,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //                              d = bk.getNextByte();
 //                        }
 
+                        screen52.clearGuiStuff();
                         // per 14.6.13.4 documentation we should clear the
                         //    format table after this command
                         screen52.clearTable();
