@@ -745,7 +745,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
                      break;
                   default:
-                     sb.append((char)buf[x]);
+                     sb.append(byte2char(buf[x], "cp850"));
                }
             }
 
@@ -872,10 +872,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                      sb.setLength(0);
                      break;
                   default:
-                     sb.append((char)buf[x]);
+                     sb.append(byte2char(buf[x], "cp850"));
                }
             }
-
 
             totBytes += read;
 
@@ -1147,5 +1146,25 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
          return getLayout().preferredLayoutSize(this);
       }
    }
+
+   /**
+    * Converts a byte to a char 
+    *
+    * @param b the byte to be converted
+    * @param charsetName the name of a charset in the which the byte is encoded 
+    * @return the converted char
+    */
+   public static char byte2char(byte b, String charsetName) {
+      char c = ' ';
+      try {
+         byte[] bytes = {b};
+         c = (new String(bytes, charsetName)).charAt(0);
+      } catch (java.io.UnsupportedEncodingException uee) {
+         System.err.println(uee);
+         System.err.println("Error while converting byte to char, returning blank...");
+      }
+      return c;
+   }
+
 
 }
