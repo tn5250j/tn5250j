@@ -1241,7 +1241,7 @@ class NativeCodePage extends CodePage
       if (cp.equals("1026"))
          return new NativeCodePage(cp, codePage1026);
       if (cp.equals("1141")) {
-         if (isEncodingAvailable("1141")) {
+         if (isEncodingAvailable("Cp1141")) {
             return new NativeCodePage(cp, codePage1141);
          } else {
             System.err.println("Charset encoding 1141 not available");
@@ -1249,7 +1249,7 @@ class NativeCodePage extends CodePage
          }
       }
       if (cp.equals("1140")) {
-         if (isEncodingAvailable("1140")) {
+         if (isEncodingAvailable("Cp1140")) {
             return new NativeCodePage(cp, codePage1140);
          } else {
             System.err.println("Charset encoding 1140 not available");
