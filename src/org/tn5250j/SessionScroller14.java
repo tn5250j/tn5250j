@@ -28,6 +28,7 @@ package org.tn5250j;
 import java.awt.event.*;
 
 import org.tn5250j.interfaces.SessionScrollerInterface;
+import org.tn5250j.framework.tn5250.Screen5250;
 
 /**
  * Session Scroller to allow the use of the mouse wheel to move the list on the

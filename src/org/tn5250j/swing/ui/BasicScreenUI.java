@@ -11,6 +11,7 @@ import javax.swing.border.*;
 //import org.ohio.*;
 //import org.osohio.common.OhioConstants;
 import org.tn5250j.*;
+import org.tn5250j.framework.tn5250.*;
 import org.tn5250j.event.ScreenListener;
 import org.tn5250j.tools.*;
 

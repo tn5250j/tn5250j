@@ -31,7 +31,7 @@ import javax.swing.*;
 import java.awt.Frame;
 
 import org.tn5250j.tools.logging.*;
-import org.tn5250j.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.TN5250jFileChooser;
 
 public class SendScreenToFile {

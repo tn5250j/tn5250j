@@ -14,6 +14,7 @@ import org.tn5250j.swing.*;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.*;
+import org.tn5250j.framework.tn5250.*;
 
 public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jConstants
 {

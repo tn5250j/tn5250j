@@ -36,6 +36,7 @@ import java.awt.*;
 import org.tn5250j.*;
 import org.tn5250j.event.*;
 import org.tn5250j.tools.filters.*;
+import org.tn5250j.framework.tn5250.tnvt;
 
 public class FTP5250Prot {
 

@@ -43,6 +43,7 @@ import org.tn5250j.event.ScreenListener;
 import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.event.*;
+import org.tn5250j.framework.tn5250.*;
 
 public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                                           PropertyChangeListener,
@@ -1044,7 +1045,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    public void drawCursor(int row, int col)   {
 
       	int botOffset = cursorBottOffset;
-      	boolean insertMode = screen.insertMode;
+      	boolean insertMode = screen.getOIA().isInsertMode();
 
          Graphics2D g2 = getDrawingArea();
 

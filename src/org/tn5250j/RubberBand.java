@@ -242,7 +242,6 @@ public abstract class RubberBand {
    }
 
    protected void reset() {
-      erase();
       setStartPoint(null);
       setEndPoint(null);
       isSomethingBounded = false;

@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ *u
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -34,18 +34,19 @@ import java.util.StringTokenizer;
 
 import javax.swing.*;
 
-import org.tn5250j.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.SessionGUI;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 import org.tn5250j.gui.TN5250jFrame;
+import org.tn5250j.TN5250jConstants;
 
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog extends TN5250jFrame implements Runnable  {
+public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Runnable  {
 
 	JComboBox toAddress;
 	JTextField subject;
@@ -64,6 +65,16 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
    SendEMail sendEMail;
    Thread myThread = new Thread(this);
 
+    private static class FrameShower
+         implements Runnable {
+       final Frame frame;
+       public FrameShower(Frame frame) {
+         this.frame = frame;
+       }
+       public void run() {
+         frame.show();
+       }
+         }
 	/**
 	 * Constructor to send the screen information
 	 *
@@ -82,7 +93,7 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 	 * @param session
 	 */
 	public SendEMailDialog(Frame parent, SessionGUI session, boolean sendScreen) {
-
+      super();
 		if (!isEMailAvailable()) {
 
 			JOptionPane.showMessageDialog(
@@ -139,13 +150,52 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 
 						if (text.isSelected()) {
 
+                     char[] screenTxt;
+                     char[] screenExtendedAttr;
+                     char[] screenAttrPlace;
+
+                     int len = screen.getScreenLength();
+                     screenTxt = new char[len];
+                     screenExtendedAttr = new char[len];
+                     screenAttrPlace = new char[len];
+                     int ret = screen.GetScreen(screenTxt, len, PLANE_TEXT);
+                     ret = screen.GetScreen(screenExtendedAttr, len, PLANE_EXTENDED);
+                     ret = screen.GetScreen(screenAttrPlace, len, PLANE_IS_ATTR_PLACE);
+
 							StringBuffer sb = new StringBuffer();
-							char[] s = screen.getScreenAsChars();
+//							char[] s = screen.getScreenAsChars();
 							int c = screen.getCols();
 							int l = screen.getRows() * c;
+
 							int col = 0;
 							for (int x = 0; x < l; x++, col++) {
-								sb.append(s[x]);
+
+                        // only draw printable characters (in this case >= ' ')
+                        if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & EXTENDED_5250_NON_DSP) == 0)) {
+
+                           if (
+                                    (screenExtendedAttr[x] & EXTENDED_5250_UNDERLINE) != 0 &&
+                                    screenAttrPlace[x] != 1) {
+                                 sb.append('_');
+                           }
+                           else {
+                              sb.append(screenTxt[x]);
+
+                           }
+
+                        }
+                        else {
+
+                           if (
+                                    (screenExtendedAttr[x] & EXTENDED_5250_UNDERLINE) != 0 &&
+                                    screenAttrPlace[x] != 1) {
+                                 sb.append('_');
+                           }
+                           else {
+                              sb.append(' ');
+                           }
+                        }
+
 								if (col == c) {
 									sb.append('\n');
 									col = 0;
@@ -344,24 +394,27 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 			if (sendEMail.send()) {
             sendEMail.release();
             sendEMail = null;
-//				JOptionPane.showMessageDialog(
-//					parent,
-//					LangTool.getString("em.confirmationMessage")
-//						+ " "
-//						+ (String) toAddress.getSelectedItem(),
-//					LangTool.getString("em.titleConfirmation"),
-//					JOptionPane.INFORMATION_MESSAGE);
-//
-//				if (session != null) {
-//					config.setProperty(
-//						"emailTo",
-//						getToTokens(
-//							config.getStringProperty("emailTo"),
-//							toAddress));
-//					config.saveSessionProps();
-//					setToCombo(config.getStringProperty("emailTo"), toAddress);
-//				}
+
+				JOptionPane.showMessageDialog(
+					null,
+					LangTool.getString("em.confirmationMessage")
+						+ " "
+						+ (String) toAddress.getSelectedItem(),
+					LangTool.getString("em.titleConfirmation"),
+					JOptionPane.INFORMATION_MESSAGE);
+
+				if (session != null) {
+					config.setProperty(
+						"emailTo",
+						getToTokens(
+							config.getStringProperty("emailTo"),
+							toAddress));
+					config.saveSessionProps();
+					setToCombo(config.getStringProperty("emailTo"), toAddress);
+
+				}
 			}
+
 //		} catch (IOException ioe) {
 //			System.out.println(ioe.getMessage());
 		} catch (Exception ex) {

@@ -36,7 +36,7 @@ import com.ibm.as400.access.*;
 import com.ibm.as400.vaccess.*;
 
 import org.tn5250j.gui.*;
-import org.tn5250j.tnvt;
+import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.SessionGUI;

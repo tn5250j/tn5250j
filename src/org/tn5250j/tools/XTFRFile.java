@@ -49,6 +49,7 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.TN5250jFileFilter;
+import org.tn5250j.framework.tn5250.tnvt;
 
 public class XTFRFile
 	extends TN5250jFrame

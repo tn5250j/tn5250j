@@ -7,6 +7,7 @@ import javax.swing.*;
 //import org.ohio.*;
 import org.tn5250j.*;
 import org.tn5250j.event.*;
+import org.tn5250j.framework.tn5250.*;
 
 public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIAListener
 {

@@ -36,6 +36,8 @@ import org.tn5250j.tools.*;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.tnvt;
 
 /**
  * Custom

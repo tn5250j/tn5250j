@@ -30,6 +30,7 @@ import java.awt.*;
 import java.awt.font.*;
 import org.tn5250j.SessionGUI;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.framework.tn5250.Screen5250;
 
 public class PrinterThread extends Thread implements Printable, TN5250jConstants {
 
@@ -53,6 +54,7 @@ public class PrinterThread extends Thread implements Printable, TN5250jConstants
       session = ses;
       session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       config = ses.getSession().getConfiguration();
+
       int len = scr.getScreenLength();
       screen = new char[len];
       screenExtendedAttr = new char[len];

@@ -25,7 +25,7 @@
 
 package org.tn5250j.event;
 
-import org.tn5250j.ScreenOIA;
+import org.tn5250j.framework.tn5250.ScreenOIA;
 
 public interface ScreenOIAListener {
 

@@ -20,7 +20,7 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
-import org.tn5250j.tnvt;
+import org.tn5250j.framework.tn5250.tnvt;
 
  /**
  * Class representing the File Field Definition of a file

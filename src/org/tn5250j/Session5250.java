@@ -27,6 +27,8 @@ import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.interfaces.ScanListener;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.tnvt;
 
 /**
  * A host session
@@ -41,8 +43,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
    private Vector listeners;
    private SessionChangeEvent sce;
    private String sslType;
-   private boolean firstScreen;
-   private char[] signonSave;
    private boolean heartBeat;
    String propFileName;
    protected SessionConfig sesConfig;
@@ -58,7 +58,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
                      String sessionName,
                      SessionConfig config) {
 
-//      super(config);
       propFileName = config.getConfigurationResource();
 
       sesConfig = config;
@@ -70,7 +69,8 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       if (sesProps.containsKey(SESSION_HEART_BEAT))
          heartBeat = true;
 
-      screen = new Screen5250(sesConfig);
+      screen = new Screen5250();
+
       screen.setVT(vt);
 
    }
@@ -100,6 +100,10 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       return heartBeat;
    }
 
+   public Properties getConnectionProperties() {
+      return sesProps;
+   }
+
    public void setGUI (SessionGUI gui) {
       guiComponent = gui;
    }
@@ -107,45 +111,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
    public SessionGUI getGUI() {
       return guiComponent;
    }
-//      public boolean isOnSignOnScreen() {
-//
-//         // check to see if we should check.
-//         if (firstScreen) {
-//
-//            char[] so = screen.getScreenAsChars();
-//            int size = signonSave.length;
-//
-//            Rectangle region = super.sesConfig.getRectangleProperty("signOnRegion");
-//
-//            int fromRow = region.x;
-//            int fromCol = region.y;
-//            int toRow = region.width;
-//            int toCol = region.height;
-//
-//            // make sure we are within range.
-//            if (fromRow == 0)
-//               fromRow = 1;
-//            if (fromCol == 0)
-//               fromCol = 1;
-//            if (toRow == 0)
-//               toRow = 24;
-//            if (toCol == 0)
-//               toCol = 80;
-//
-//            int pos = 0;
-//
-//            for (int r = fromRow; r <= toRow; r++)
-//               for (int c =fromCol;c <= toCol; c++) {
-//                  pos = screen.getPos(r - 1, c - 1);
-//   //               System.out.println(signonSave[pos]);
-//                  if (signonSave[pos] != so[pos])
-//                     return false;
-//               }
-//         }
-//
-//         return true;
-//      }
-
    public String getSessionName() {
       return sessionName;
    }
@@ -186,10 +151,10 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
          if (((String)sesProps.getProperty(SESSION_SCREEN_SIZE)).equals(SCREEN_SIZE_27X132_STR))
             support132 = true;
 
-      final tnvt vt = new tnvt(screen,enhanced,support132);
+      final tnvt vt = new tnvt(this,screen,enhanced,support132);
       setVT(vt);
 
-      vt.setController(this);
+//      vt.setController(this);
 
       if (sesProps.containsKey(SESSION_PROXY_PORT))
          proxyPort = (String)sesProps.getProperty(SESSION_PROXY_PORT);
@@ -239,7 +204,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       Thread ct = new Thread(connectIt);
       ct.setDaemon(true);
       ct.start();
-//      addSessionListener(this);
 
    }
 
@@ -320,7 +284,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
     * @see tnvt#parseCommand();
     * @see scanned(String,String)
     */
-  protected void scanned(String command, String remainder)
+  public void scanned(String command, String remainder)
   {
     if (scanListener != null)
       scanListener.scanned(command, remainder);
@@ -341,22 +305,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
     *
     * @param state  The state change property object.
     */
-   protected void fireSessionChanged(int state) {
-
-      switch (state) {
-
-         case TN5250jConstants.STATE_CONNECTED:
-            if (!firstScreen) {
-               firstScreen = true;
-               signonSave = screen.getScreenAsChars();
-//               System.out.println("Signon saved");
-            }
-            break;
-         default:
-            firstScreen = false;
-            signonSave = null;
-
-      }
+   public void fireSessionChanged(int state) {
 
       if (listeners != null) {
          int size = listeners.size();

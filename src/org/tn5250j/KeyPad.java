@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import org.tn5250j.tools.*;
+import org.tn5250j.framework.tn5250.Screen5250;
 
 public class KeyPad extends JPanel implements SwingConstants {
 

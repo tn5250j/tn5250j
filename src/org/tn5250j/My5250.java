@@ -566,6 +566,10 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
       if (!frame1.isVisible()) {
          splash.updateProgress(++step);
+         if (isSpecified("-noembed",args)) {
+            newView();
+         }
+
          frame1.setVisible(true);
          splash.setVisible(false);
          frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
