@@ -1,19 +1,22 @@
-#################################################################
-#                           chat400                             #
-# ============================================================= #
-# Code : PR MOORE jorjun@mac.com                                #
-# Interface : Patrick Bielen                                    #
-# ==============================================================#
-# Functionality : Script to send/receive messages to '400 users	#
-# Discussions	: tn5250j-scripting@lists.sourceforge.net       #
-#################################################################
+######################################################################
+#							   chat400								 #
+# Code : PR MOORE jorjun@mac.com					                 #
+# Interface : Patrick Bielen										 #
+# ================================================================== #
+# Functionality : Script to send/receive messages to '400 users		 #
+# Discussions	: tn5250j-scripting@lists.sourceforge.net			 #
+######################################################################
 import sys
 from java.lang import *
 import com.ibm.as400.access as acc
 import com.ibm.as400.resource as rsc
 from javax import swing
 import java.awt as awt
+global server, name, passw
 #**************************************************************************
+server = ''
+name = ''
+passw = ''
 CHATQ = "/QSYS.LIB/QGPL.LIB/chat400.DTAQ"
 KEYLEN = 10
 #==========================================================================
@@ -46,17 +49,14 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 #==========================================================================
 	def __init__(self):
 		swing.JFrame.__init__(self, title=\
-                "CHAT400 - An AS/400 Instant Messenger", resizable=0)
-		# We have to activate this when the script
-		# is ready for production-environments.
-		# self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE)
-		try:
-			tmp_srvNam = _session.getHostName()
-		except:
-			tmp_srvNam = ""
-		self.as400 = acc.AS400(tmp_srvNam)
+							  "CHAT400 - An AS/400 Instant Messenger", \
+							  resizable=0)
+		self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE)
 
-                # Get user profile descriptions==> usrDct
+	def run(self, server, name, *passw):
+		self.as400 = acc.AS400(server, name, *passw)
+
+# Get user profile descriptions==> usrDct
 		rUsrLst = rsc.RUserList(self.as400)  
 		rUsrLst.open()
 		rUsrLst.waitForComplete()
@@ -68,18 +68,18 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 				self.usrDct[key_usr] = tmp_usrText
 		rUsrLst.close()
 		
-                # Interactive job list		
+# Interactive job list		
 		self.jobLst = rsc.RJobList(self.as400)
 		self.jobLst.setSelectionValue(rsc.RJobList.PRIMARY_JOB_STATUSES, \
-                rsc.RJob.JOB_STATUS_ACTIVE)
+									  rsc.RJob.JOB_STATUS_ACTIVE)
 		self.jobLst.setSelectionValue(rsc.RJobList.JOB_TYPE, \
-                rsc.RJob.JOB_TYPE_INTERACTIVE)
+									  rsc.RJob.JOB_TYPE_INTERACTIVE)
 		self.jobLst.setSortValue([rsc.RJob.USER_NAME, rsc.RJob.JOB_NAME])
 
-                # Thread of execution to receive instant messages
+# Thread of execution to receive instant messages
 		self.polchat = Thread(Poller(self))
 
-                # Form GUI
+# Form GUI
 		self.contentPane.setLayout(awt.GridBagLayout())
 		self.addWindowListener(self)
 		self.chkFullNames = swing.JCheckBox("Show user's full name", 1)
@@ -107,11 +107,12 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 	def windowDeiconified(self, event):
 		None
 
-        #*************************#
-        # Retrieve send-user list #
-        #*************************#
+#**************************
+#	Retrieve send-user list
+#**************************
 	def rtvIntJobs(self):
-		# Get interactive job list
+		
+# Get interactive job list
 		self.jobLst.open()
 		self.jobLst.waitForComplete()
 		self.jobDct = {}
@@ -136,13 +137,12 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			if self.chkActive.isSelected():   # Active jobs only
 				if not self.jobDct.has_key(key_usr):
 					continue
-                        else:
-                            sts = '*'
-			menuItem = menuItem + sts # N.B. * means profile is running an active job
+				sts = '*'
+			menuItem = menuItem	+ sts # N.B. * means profile is running an active job
 			self.users.addItem(menuItem)
-        #**************************
-        #	Send message      #
-        #**************************
+#**************************
+#	Send message
+#**************************
 	def btnActSnd(self, event):
 		cmd = acc.CommandCall(self.as400)
 		curUsr = self.as400.getUserId()
@@ -174,20 +174,19 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		self.rtvIntJobs()
 
 		self.btnRef = swing.JButton("Refresh User-List", \
-            actionPerformed = self.btnActRef, \
-		    minimumSize=(135,25), \
-		    preferredSize=(135, 25))
+									actionPerformed = self.btnActRef, \
+									minimumSize=(135,25), \
+									preferredSize=(135, 25))
 		self.btnRef.setMnemonic('R')
 		self.btnSnd = swing.JButton("Send Message", \
-		    actionPerformed = self.btnActSnd)
+									actionPerformed = self.btnActSnd)
 		self.btnSnd.setMnemonic('S')
 		self.label1 = swing.JLabel("Send To:", minimumSize=(50, 25), \
-			preferredSize=(50, 25))
+								   preferredSize=(50, 25))
 		self.rootPane.setDefaultButton(self.btnSnd)
 		self.rpyTxt.setEditable(0)		# <Scrollable message reply text area>
-		self.statusTxt = swing.JTextField(text=
-            'Welcome to CHAT400 - An AS/400 Instant Messenger',\
-			editable=0, horizontalAlignment=swing.JTextField.CENTER)
+		self.statusTxt = swing.JTextField(text='Welcome to CHAT400 - An AS/400 Instant Messenger',\
+										  editable=0, horizontalAlignment=swing.JTextField.CENTER)
 
 		gbc = awt.GridBagConstraints()
 		# Build the screen
@@ -217,10 +216,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		self.contentPane.add(self.btnSnd, gbc)
 		# Build the SplitPane (2 scrollpanes)
 		scrollPane1 = swing.JScrollPane(self.chatTxt, swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, \
-		    swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+		swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
 		scrollPane1.setViewportView(self.chatTxt)
 		scrollPane2 = swing.JScrollPane(self.rpyTxt, swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, \
-		    swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+		swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
 		scrollPane2.setViewportView(self.rpyTxt)
 		splitPane = swing.JSplitPane(swing.JSplitPane.VERTICAL_SPLIT, scrollPane1, scrollPane2)
 		# Add the SplitPane
@@ -241,4 +240,31 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 
 		self.show()
 
+try:
+	server = _session.getHostName()
+	name = _session.getAllocDeviceName()
+except:
+	None
+try:
+	from LogOn import *
+	login = LogOn()
+	login.txt1.setText(server)
+	login.txt2.setText(name)
+	if server == '':
+		login.txt1.requestFocus()
+	elif name == '':
+		login.txt2.requestFocus()
+	else:
+		login.txt3.requestFocus()
+	login.show()
+	server = login.txt1.getText()
+	name = login.txt2.getText()
+	passw = login.txt3.getText()
+	login.dispose()
+except:
+	None
 chatter=Chat400()
+if passw != '':
+	chatter.run(server, name, passw)
+else:
+	chatter.run(server, name)
