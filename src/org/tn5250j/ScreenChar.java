@@ -299,372 +299,372 @@ public class ScreenChar {
       }
    }
 
-   public final void drawChar(Graphics2D g) {
-
-      if (attributePlace && s.isShowHex()) {
-//      if ((sChar[0] == 0x20 || sChar[0] == 0x0 || nonDisplay) && s.isShowHex()) {
-         Font f = g.getFont();
-
-         Font k = f.deriveFont(f.getSize2D()/2);
-         g.setFont(k);
-         g.setColor(s.colorHexAttr);
-         char[] a = Integer.toHexString(attr).toCharArray();
-         g.drawChars(a, 0, 1, x, y + (int)(s.fmHeight /2));
-         g.drawChars(a, 1, 1, x+(int)(s.fmWidth/2),
-            (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading())-2));
-         g.setFont(f);
-//return;
-      }
-
-      if(!nonDisplay && !attributePlace) {
-
-         if (!useGui) {
-            g.setColor(bg);
-            g.fill(cArea);
-         }
-         else {
-
-            if (bg == s.colorBg && whichGui >= FIELD_LEFT && whichGui <= FIELD_ONE)
-               g.setColor(s.colorGUIField);
-            else
-               g.setColor(bg);
-
-            g.fill(cArea);
-
-         }
-
-         if (useGui && (whichGui < FIELD_LEFT)) {
-            int w = 0;
-
-            g.setColor(fg);
-
-            switch (whichGui) {
-
-               case UPPER_LEFT:
-                  if (sChar[0] == '.') {
-                     if (s.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinUpperLeft(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             s.colorBlue,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinUpperLeft(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                     }
-                  }
-               break;
-               case UPPER:
-                  if (sChar[0] == '.') {
-
-                     if (s.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinUpper(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             s.colorBlue,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinUpper(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-                     }
-                  }
-               break;
-               case UPPER_RIGHT:
-                  if (sChar[0] == '.') {
-                     if (s.isUsingGuiInterface()) {
-
-                        GUIGraphicsUtils.drawWinUpperRight(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             s.colorBlue,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinUpperRight(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                     }
-                  }
-               break;
-               case LEFT:
-                  if (sChar[0] == ':') {
-                     if (s.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinLeft(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinLeft(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                        g.drawLine(x + s.fmWidth / 2,
-                                    y,
-                                    x + s.fmWidth / 2,
-                                    y + s.fmHeight);
-                     }
-                  }
-               break;
-               case RIGHT:
-                  if (sChar[0] == ':') {
-                     if (s.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinRight(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-
-                     }
-                     else {
-                        GUIGraphicsUtils.drawWinRight(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                     }
-                  }
-               break;
-               case LOWER_LEFT:
-                  if (sChar[0] == ':') {
-
-                     if (s.isUsingGuiInterface()) {
-
-                        GUIGraphicsUtils.drawWinLowerLeft(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinLowerLeft(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-                     }
-                  }
-               break;
-               case BOTTOM:
-                  if (sChar[0] == '.') {
-
-                     if (s.isUsingGuiInterface()) {
-
-
-                        GUIGraphicsUtils.drawWinBottom(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinBottom(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-                     }
-                  }
-               break;
-
-               case LOWER_RIGHT:
-                  if (sChar[0] == ':') {
-                     if (s.isUsingGuiInterface()) {
-
-                        GUIGraphicsUtils.drawWinLowerRight(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinLowerRight(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,s.fmWidth,s.fmHeight);
-
-                     }
-                  }
-               break;
-
-            }
-         }
-
-         else {
-            if (sChar[0] != 0x0) {
-            // use this until we define colors for gui stuff
-               if ((useGui && whichGui < BUTTON_LEFT) && (fg == s.colorGUIField))
-
-                  g.setColor(Color.black);
-               else
-                  g.setColor(fg);
-
-                  try {
-                     if (useGui)
-
-                        if (sChar[0] == 0x1C)
-                           g.drawChars(dupChar, 0, 1, x+1, cy -2);
-                        else
-                           g.drawChars(sChar, 0, 1, x+1, cy -2);
-                     else
-                        if (sChar[0] == 0x1C)
-                           g.drawChars(dupChar, 0, 1, x, cy -2);
-                        else
-                           g.drawChars(sChar, 0, 1, x, cy -2);
-                  }
-                  catch (IllegalArgumentException iae) {
-                     System.out.println(" ScreenChar iae " + iae.getMessage());
-
-                  }
-            }
-            if(underLine ) {
-
-               if (!useGui || s.guiShowUnderline) {
-                  g.setColor(fg);
-//                  g.drawLine(x, cy -2, (int)(x + s.fmWidth), cy -2);
-//                  g.drawLine(x, (int)(y + (s.fmHeight - s.lm.getLeading()-5)), (int)(x + s.fmWidth), (int)(y + (s.fmHeight - s.lm.getLeading())-5));
-                  g.drawLine(x, (int)(y + (s.fmHeight - (s.lm.getLeading() + s.lm.getDescent()))), (int)(x + s.fmWidth), (int)(y + (s.fmHeight -(s.lm.getLeading() + s.lm.getDescent()))));
-
-               }
-            }
-
-            if(colSep) {
-               g.setColor(s.colorSep);
-               switch (s.getColSepLine()) {
-                  case 0:  // line
-                     g.drawLine(x, y, x, y + s.fmHeight - 1);
-                     g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
-                     break;
-                  case 1:  // short line
-                     g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-4, x, y + s.fmHeight);
-                     g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4, x + s.fmWidth - 1, y + s.fmHeight);
-                     break;
-                  case 2:  // dot
-                     g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-3, x, y + s.fmHeight - (int)s.lm.getLeading()-4);
-                     g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-3, x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4);
-                     break;
-                  case 3:  // hide
-                     break;
-               }
-            }
-         }
-      }
-
-      if (useGui & (whichGui >= FIELD_LEFT)) {
-            int w = 0;
-
-            switch (whichGui) {
-
-               case FIELD_LEFT:
-                  GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
-
-               break;
-               case FIELD_MIDDLE:
-                  GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
-               break;
-               case FIELD_RIGHT:
-                  GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
-               break;
-
-               case FIELD_ONE:
-                  GUIGraphicsUtils.draw3DOne(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
-
-               break;
-
-               case BUTTON_LEFT:
-               case BUTTON_LEFT_UP:
-               case BUTTON_LEFT_DN:
-               case BUTTON_LEFT_EB:
-
-                  GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.RAISED, x,y,
-                                             s.fmWidth,s.fmHeight);
-
-                  break;
-
-               case BUTTON_MIDDLE:
-               case BUTTON_MIDDLE_UP:
-               case BUTTON_MIDDLE_DN:
-               case BUTTON_MIDDLE_EB:
-
-                  GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.RAISED, x,y,
-                                             s.fmWidth,s.fmHeight);
-                  break;
-
-               case BUTTON_RIGHT:
-               case BUTTON_RIGHT_UP:
-               case BUTTON_RIGHT_DN:
-               case BUTTON_RIGHT_EB:
-
-                  GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.RAISED, x,y,
-                                             s.fmWidth,s.fmHeight);
-
-               break;
-
-               // scroll bar
-               case BUTTON_SB_UP:
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x,y,
-                                             s.fmWidth,s.fmHeight,
-                                             s.colorWhite,s.colorBg);
-                  break;
-
-               // scroll bar
-               case BUTTON_SB_DN:
-
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x,y,
-                                             s.fmWidth,s.fmHeight,
-                                             s.colorWhite,s.colorBg);
-
-
-                  break;
-               // scroll bar
-               case BUTTON_SB_GUIDE:
-
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0,x,y,
-                                             s.fmWidth,s.fmHeight,
-                                             s.colorWhite,s.colorBg);
-
-
-                  break;
-
-               // scroll bar
-               case BUTTON_SB_THUMB:
-
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3,x,y,
-                                             s.fmWidth,s.fmHeight,
-                                             s.colorWhite,s.colorBg);
-
-
-                  break;
-
-            }
-         }
-
-   }
+//      public final void drawChar(Graphics2D g) {
+//
+//         if (attributePlace && s.isShowHex()) {
+//   //      if ((sChar[0] == 0x20 || sChar[0] == 0x0 || nonDisplay) && s.isShowHex()) {
+//            Font f = g.getFont();
+//
+//            Font k = f.deriveFont(f.getSize2D()/2);
+//            g.setFont(k);
+//            g.setColor(s.colorHexAttr);
+//            char[] a = Integer.toHexString(attr).toCharArray();
+//            g.drawChars(a, 0, 1, x, y + (int)(s.fmHeight /2));
+//            g.drawChars(a, 1, 1, x+(int)(s.fmWidth/2),
+//               (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading())-2));
+//            g.setFont(f);
+//   //return;
+//         }
+//
+//         if(!nonDisplay && !attributePlace) {
+//
+//            if (!useGui) {
+//               g.setColor(bg);
+//               g.fill(cArea);
+//            }
+//            else {
+//
+//               if (bg == s.colorBg && whichGui >= FIELD_LEFT && whichGui <= FIELD_ONE)
+//                  g.setColor(s.colorGUIField);
+//               else
+//                  g.setColor(bg);
+//
+//               g.fill(cArea);
+//
+//            }
+//
+//            if (useGui && (whichGui < FIELD_LEFT)) {
+//               int w = 0;
+//
+//               g.setColor(fg);
+//
+//               switch (whichGui) {
+//
+//                  case UPPER_LEFT:
+//                     if (sChar[0] == '.') {
+//                        if (s.isUsingGuiInterface()) {
+//                           GUIGraphicsUtils.drawWinUpperLeft(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                s.colorBlue,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinUpperLeft(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                        }
+//                     }
+//                  break;
+//                  case UPPER:
+//                     if (sChar[0] == '.') {
+//
+//                        if (s.isUsingGuiInterface()) {
+//                           GUIGraphicsUtils.drawWinUpper(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                s.colorBlue,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinUpper(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//                        }
+//                     }
+//                  break;
+//                  case UPPER_RIGHT:
+//                     if (sChar[0] == '.') {
+//                        if (s.isUsingGuiInterface()) {
+//
+//                           GUIGraphicsUtils.drawWinUpperRight(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                s.colorBlue,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinUpperRight(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                        }
+//                     }
+//                  break;
+//                  case LEFT:
+//                     if (sChar[0] == ':') {
+//                        if (s.isUsingGuiInterface()) {
+//                           GUIGraphicsUtils.drawWinLeft(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                bg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinLeft(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                           g.drawLine(x + s.fmWidth / 2,
+//                                       y,
+//                                       x + s.fmWidth / 2,
+//                                       y + s.fmHeight);
+//                        }
+//                     }
+//                  break;
+//                  case RIGHT:
+//                     if (sChar[0] == ':') {
+//                        if (s.isUsingGuiInterface()) {
+//                           GUIGraphicsUtils.drawWinRight(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                bg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//
+//                        }
+//                        else {
+//                           GUIGraphicsUtils.drawWinRight(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                        }
+//                     }
+//                  break;
+//                  case LOWER_LEFT:
+//                     if (sChar[0] == ':') {
+//
+//                        if (s.isUsingGuiInterface()) {
+//
+//                           GUIGraphicsUtils.drawWinLowerLeft(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                bg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinLowerLeft(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//                        }
+//                     }
+//                  break;
+//                  case BOTTOM:
+//                     if (sChar[0] == '.') {
+//
+//                        if (s.isUsingGuiInterface()) {
+//
+//
+//                           GUIGraphicsUtils.drawWinBottom(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                bg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinBottom(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//                        }
+//                     }
+//                  break;
+//
+//                  case LOWER_RIGHT:
+//                     if (sChar[0] == ':') {
+//                        if (s.isUsingGuiInterface()) {
+//
+//                           GUIGraphicsUtils.drawWinLowerRight(g,
+//                                                GUIGraphicsUtils.WINDOW_GRAPHIC,
+//                                                bg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                        }
+//                        else {
+//
+//                           GUIGraphicsUtils.drawWinLowerRight(g,
+//                                                GUIGraphicsUtils.WINDOW_NORMAL,
+//                                                fg,
+//                                                x,y,s.fmWidth,s.fmHeight);
+//
+//                        }
+//                     }
+//                  break;
+//
+//               }
+//            }
+//
+//            else {
+//               if (sChar[0] != 0x0) {
+//               // use this until we define colors for gui stuff
+//                  if ((useGui && whichGui < BUTTON_LEFT) && (fg == s.colorGUIField))
+//
+//                     g.setColor(Color.black);
+//                  else
+//                     g.setColor(fg);
+//
+//                     try {
+//                        if (useGui)
+//
+//                           if (sChar[0] == 0x1C)
+//                              g.drawChars(dupChar, 0, 1, x+1, cy -2);
+//                           else
+//                              g.drawChars(sChar, 0, 1, x+1, cy -2);
+//                        else
+//                           if (sChar[0] == 0x1C)
+//                              g.drawChars(dupChar, 0, 1, x, cy -2);
+//                           else
+//                              g.drawChars(sChar, 0, 1, x, cy -2);
+//                     }
+//                     catch (IllegalArgumentException iae) {
+//                        System.out.println(" ScreenChar iae " + iae.getMessage());
+//
+//                     }
+//               }
+//               if(underLine ) {
+//
+//                  if (!useGui || s.guiShowUnderline) {
+//                     g.setColor(fg);
+//   //                  g.drawLine(x, cy -2, (int)(x + s.fmWidth), cy -2);
+//   //                  g.drawLine(x, (int)(y + (s.fmHeight - s.lm.getLeading()-5)), (int)(x + s.fmWidth), (int)(y + (s.fmHeight - s.lm.getLeading())-5));
+//                     g.drawLine(x, (int)(y + (s.fmHeight - (s.lm.getLeading() + s.lm.getDescent()))), (int)(x + s.fmWidth), (int)(y + (s.fmHeight -(s.lm.getLeading() + s.lm.getDescent()))));
+//
+//                  }
+//               }
+//
+//               if(colSep) {
+//                  g.setColor(s.colorSep);
+//                  switch (s.getColSepLine()) {
+//                     case 0:  // line
+//                        g.drawLine(x, y, x, y + s.fmHeight - 1);
+//                        g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
+//                        break;
+//                     case 1:  // short line
+//                        g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-4, x, y + s.fmHeight);
+//                        g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4, x + s.fmWidth - 1, y + s.fmHeight);
+//                        break;
+//                     case 2:  // dot
+//                        g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-3, x, y + s.fmHeight - (int)s.lm.getLeading()-4);
+//                        g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-3, x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4);
+//                        break;
+//                     case 3:  // hide
+//                        break;
+//                  }
+//               }
+//            }
+//         }
+//
+//         if (useGui & (whichGui >= FIELD_LEFT)) {
+//               int w = 0;
+//
+//               switch (whichGui) {
+//
+//                  case FIELD_LEFT:
+//                     GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.INSET, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//
+//                  break;
+//                  case FIELD_MIDDLE:
+//                     GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.INSET, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//                  break;
+//                  case FIELD_RIGHT:
+//                     GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.INSET, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//                  break;
+//
+//                  case FIELD_ONE:
+//                     GUIGraphicsUtils.draw3DOne(g, GUIGraphicsUtils.INSET, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//
+//                  break;
+//
+//                  case BUTTON_LEFT:
+//                  case BUTTON_LEFT_UP:
+//                  case BUTTON_LEFT_DN:
+//                  case BUTTON_LEFT_EB:
+//
+//                     GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.RAISED, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//
+//                     break;
+//
+//                  case BUTTON_MIDDLE:
+//                  case BUTTON_MIDDLE_UP:
+//                  case BUTTON_MIDDLE_DN:
+//                  case BUTTON_MIDDLE_EB:
+//
+//                     GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.RAISED, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//                     break;
+//
+//                  case BUTTON_RIGHT:
+//                  case BUTTON_RIGHT_UP:
+//                  case BUTTON_RIGHT_DN:
+//                  case BUTTON_RIGHT_EB:
+//
+//                     GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.RAISED, x,y,
+//                                                s.fmWidth,s.fmHeight);
+//
+//                  break;
+//
+//                  // scroll bar
+//                  case BUTTON_SB_UP:
+//                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x,y,
+//                                                s.fmWidth,s.fmHeight,
+//                                                s.colorWhite,s.colorBg);
+//                     break;
+//
+//                  // scroll bar
+//                  case BUTTON_SB_DN:
+//
+//                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x,y,
+//                                                s.fmWidth,s.fmHeight,
+//                                                s.colorWhite,s.colorBg);
+//
+//
+//                     break;
+//                  // scroll bar
+//                  case BUTTON_SB_GUIDE:
+//
+//                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0,x,y,
+//                                                s.fmWidth,s.fmHeight,
+//                                                s.colorWhite,s.colorBg);
+//
+//
+//                     break;
+//
+//                  // scroll bar
+//                  case BUTTON_SB_THUMB:
+//
+//                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3,x,y,
+//                                                s.fmWidth,s.fmHeight,
+//                                                s.colorWhite,s.colorBg);
+//
+//
+//                     break;
+//
+//               }
+//            }
+//
+//      }
 
    public final boolean isChanged() {
       return isChanged;
@@ -696,7 +696,7 @@ public class ScreenChar {
    public int whichGui;
    public final Screen5250 s;
    private boolean isChanged = true;
-   private Rectangle2D cArea; // character area
+   protected Rectangle2D cArea; // character area
    public static final int NO_GUI = 0;
    public static final int UPPER_LEFT = 1;
    public static final int UPPER = 2;

@@ -1,7 +1,7 @@
 /**
  *
  * <p>
- * Title: Screen5250.jar
+ * Title: Screen5250.java
  * </p>
  * <p>
  * Description: Main interface to draw the graphical image of the screen
@@ -41,6 +41,7 @@ import java.beans.*;
 import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
+import org.tn5250j.event.ScreenListener;
 
 public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		ActionListener {
@@ -146,6 +147,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private boolean antialiased = true;
 	private boolean feError;
 
+   // vector of listeners for changes to the screen.
+   Vector listeners = null;
+
+   // Operator Information Area
    private ScreenOIA oia;
 
 	//Added by Barry
@@ -1793,7 +1798,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		//         return;
 		//      }
 		this.keybuf.append(text);
-		
+
 		if (isStatusErrorCode() && !resetRequired) {
 			setCursorActive(false);
 			simulateMnemonic(getMnemonicValue("[reset]"));
@@ -4513,6 +4518,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	protected synchronized void updateImage(int x, int y, int width, int height) {
+
 		if (gg2d == null) {
 			//System.out.println("was null");
 			gg2d = (Graphics2D) gui.getGraphics();
@@ -4592,6 +4598,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			height += bi.offTop;
 		else
 			y += bi.offTop;
+
 		gui.repaint(x, y, width, height);
 
 	}
@@ -4611,6 +4618,22 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		bi.drawImageBuffer(g2);
 	}
+
+   /**
+    * Notify all registered listeners of the onScreenChanged event.
+    *
+    */
+   private void fireScreenChanged(int which, int x, int y, int width, int height) {
+
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            ScreenListener target =
+                    (ScreenListener)listeners.elementAt(i);
+            target.onScreenChanged(1,x,y,width,height);
+         }
+      }
+   }
 
 	protected void paintComponent2(Graphics2D g2) {
 
@@ -4644,26 +4667,30 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		er--;
 		ec--;
 
-		//      System.out.println(sr + "," + c + "," + er + "," + ec);
-		workR.setBounds(sr, c, ec, er);
+      fireScreenChanged(1,sr,c,er,ec);
 
-		int rows = er - sr;
-		int cols = 0;
-		int lr = workR.x;
-		int lc = 0;
+//         //      System.out.println(sr + "," + c + "," + er + "," + ec);
+      workR.setBounds(sr, c, ec, er);
 
-		lr = sPos;
-
-		while (rows-- >= 0) {
-			cols = ec - c;
-			lc = lr;
-			while (cols-- >= 0) {
-				if (lc >= 0 && lc < lenScreen)
-					screen[lc++].drawChar(g2);
-
-			}
-			lr += numCols;
-		}
+//         int rows = er - sr;
+//         int cols = 0;
+//         int lr = workR.x;
+//         int lc = 0;
+//
+//         lr = sPos;
+//
+//         while (rows-- >= 0) {
+//            cols = ec - c;
+//            lc = lr;
+//            while (cols-- >= 0) {
+//               if (lc >= 0 && lc < lenScreen) {
+//   //					screen[lc++].drawChar(g2);
+//                  bi.drawChar(g2,screen[lc],getRow(lc),getCol(lc));
+//                  lc++;
+//               }
+//            }
+//            lr += numCols;
+//         }
 
 	}
 
@@ -4804,6 +4831,33 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		setCursorActive(true);
 	}
 
+   /**
+    * Add a ScreenListener to the listener list.
+    *
+    * @param listener  The ScreenListener to be added
+    */
+   public void addScreenListener(ScreenListener listener) {
+
+      if (listeners == null) {
+          listeners = new java.util.Vector(3);
+      }
+      listeners.addElement(listener);
+
+   }
+
+   /**
+    * Remove a ScreenListener from the listener list.
+    *
+    * @param listener  The ScreenListener to be removed
+    */
+   public void removeScreenListener(ScreenListener listener) {
+
+      if (listeners == null) {
+          return;
+      }
+      listeners.removeElement(listener);
+   }
+
 	/**
 	 * Utility method to share the repaint behaviour between setBounds() and
 	 * updateScreen.
@@ -4823,7 +4877,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
 		         			ScreenOIA.OIA_LEVEL_INPUT_ERROR);
 		}
-		
+
 		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_INHIBITED) {
 		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
 		         			ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
