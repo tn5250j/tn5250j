@@ -86,7 +86,8 @@ public class GlobalConfigure extends ConfigureFactory {
     *
     */
    private void initialize() {
-
+	
+		loadSettings();
       loadSessions();
       loadMacros();
       loadKeyStrokes();
@@ -175,11 +176,70 @@ public class GlobalConfigure extends ConfigureFactory {
 
    }
 
+   private void loadSettings() {
+
+      FileInputStream in = null;
+      settings = new Properties();
+
+      try {
+         in = new FileInputStream("tn5250jsettings.cfg");
+         settings.load(in);
+
+      }
+      catch (FileNotFoundException fnfe) {
+
+			System.out.println(" Information Message: " + fnfe.getMessage()
+									+ ".  The file tn5250jsettings.cfg will"
+									+ " be created for first time use.");
+			checkLegacy();
+			saveSettings();
+      }
+      catch (IOException ioe) {
+         System.out.println("IO Exception accessing File tn5250jsettings.cfg for the following reason : "
+                              + ioe.getMessage());
+      }
+      catch (SecurityException se) {
+         System.out.println("Security Exception for file tn5250jsettings.cfg.  This file can not be " 
+										+ "accessed because : " + se.getMessage());
+      }
+
+		
+		// we now check to see if the settings directory is a directory.  If not then we create it
+		File sd = new File(settings.getProperty("emulator.settingsDirectory"));
+		if (!sd.isDirectory())
+			sd.mkdirs();
+   }
+
+	private void checkLegacy() {
+	
+		// we check if the sessions file already exists in the directory
+		// if it does exist we are working with an old install so we
+		// need to set the settings directory to the users directory
+		File ses = new File("sessions");
+			
+		if(ses.exists()) {
+
+			settings.setProperty("emulator.settingsDirectory", System.getProperty("user.dir") + File.separator);
+			
+		}
+		else {
+		
+			settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
+
+		}
+	}
+	
    /**
     * Save the settings for the global configuration
     */
    public void saveSettings() {
 
+		try {
+			FileOutputStream out = new FileOutputStream("tn5250jsettings.cfg");
+			settings.store(out,"----------------- tn5250j Global Settings --------------");
+		}
+		catch (FileNotFoundException fnfe) {}
+		catch (IOException ioe) {}
    }
 
    /**
@@ -332,8 +392,8 @@ public class GlobalConfigure extends ConfigureFactory {
     * @return
     */
    private String settingsDirectory() {
-
-      return System.getProperty("user.dir") + File.separator;
+		//System.out.println(settings.getProperty("emulator.settingsDirectory"));
+      return settings.getProperty("emulator.settingsDirectory");
 
    }
 
