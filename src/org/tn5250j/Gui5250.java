@@ -43,7 +43,6 @@ import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
-import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.event.EmulatorActionListener;

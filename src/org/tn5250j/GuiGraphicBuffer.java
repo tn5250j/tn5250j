@@ -522,7 +522,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
       int value = oia.getInputInhibited();
       String s = oia.getInhibitedText();
       Graphics2D g2d = getWritingArea(screen.font);
-
+      log.info(attr + ", " + value + ", " + s);
       if (g2d == null)
          return;
 
@@ -534,12 +534,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 
          switch (attr) {
 
-//   public static final int OIA_LEVEL_INPUT_INHIBITED   =  1;
-
-//            case STATUS_SYSTEM:
-            case OIA_LEVEL_INPUT_INHIBITED:
-            case OIA_LEVEL_NOT_INHIBITED:
-               if (value == oia.INPUTINHIBITED_SYSTEM_WAIT) {
+            case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
+               if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
                   g2d.setColor(screen.colorWhite);
 
                   if (s != null)
@@ -548,9 +544,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                      g2d.drawString(xSystem,(float)sArea.getX(),Y);
                }
                break;
-//            case STATUS_ERROR_CODE:
-            case OIA_LEVEL_INPUT_ERROR:
-               if (value == oia.INPUTINHIBITED_SYSTEM_WAIT) {
+            case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
+               if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
                   g2d.setColor(screen.colorRed);
 
                   if (s != null)
@@ -562,6 +557,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                break;
 
          }
+   		screen.updateImage(sArea.getBounds());
          g2d.dispose();
       }
       catch (Exception e) {
@@ -571,25 +567,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
       }
    }
 
-   // OIA_LEVEL
-   public static final int OIA_LEVEL_INPUT_INHIBITED   =  1;
-   public static final int OIA_LEVEL_NOT_INHIBITED   =  2;
-   public static final int OIA_LEVEL_MESSAGE_LIGHT_ON  =  3;
-   public static final int OIA_LEVEL_MESSAGE_LIGHT_OFF  =  4;
-   public static final int OIA_LEVEL_AUDIBLE_BELL  =  5;
-   public static final int OIA_LEVEL_INSERT_MODE  =  6;
-   public static final int OIA_LEVEL_KEYBOARD  =  7;
-   public static final int OIA_LEVEL_CLEAR_SCREEN  =  8;
-   public static final int OIA_LEVEL_SCREEN_SIZE  =  9;
-   public static final int OIA_LEVEL_INPUT_ERROR   =  10;
-   public static final int OIA_LEVEL_KEYS_BUFFERED   =  11;
-   public static final int OIA_LEVEL_SCRIPT   =  12;
-
    public void onOIAChanged(ScreenOIA changedOIA) {
 
       switch (changedOIA.getLevel()) {
 
-         case OIA_LEVEL_KEYS_BUFFERED:
+         case ScreenOIA.OIA_LEVEL_KEYS_BUFFERED:
             if (changedOIA.isKeysBuffered()) {
                Graphics2D g2d = getWritingArea(screen.font);
                float Y = (screen.fmHeight * (screen.getRows() + 2))
@@ -611,7 +593,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 
             }
             break;
-         case OIA_LEVEL_MESSAGE_LIGHT_OFF:
+         case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_OFF:
             Graphics2D g2d = getWritingArea(screen.font);
 
             g2d.setColor(screen.colorBg);
@@ -619,7 +601,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
             screen.updateImage(mArea.getBounds());
             g2d.dispose();
             break;
-         case OIA_LEVEL_MESSAGE_LIGHT_ON:
+         case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_ON:
             g2d = getWritingArea(screen.font);
             float Y = (screen.fmHeight * (screen.getRows() + 2))
                   - (screen.lm.getLeading() + screen.lm.getDescent());
@@ -628,7 +610,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
             screen.updateImage(mArea.getBounds());
             g2d.dispose();
             break;
-         case OIA_LEVEL_SCRIPT:
+         case ScreenOIA.OIA_LEVEL_SCRIPT:
             if (changedOIA.isScriptActive()) {
                drawScriptRunning(screen.colorGreen);
                screen.updateImage(scriptArea.getBounds());
@@ -639,8 +621,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 
             }
             break;
-         case OIA_LEVEL_INPUT_INHIBITED:
-         case OIA_LEVEL_NOT_INHIBITED:
+         case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
+         case ScreenOIA.OIA_LEVEL_NOT_INHIBITED:
+         case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
             setStatus(changedOIA);
             break;
 		// draw the status information

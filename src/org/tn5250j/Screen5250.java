@@ -119,9 +119,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public final static byte STATUS_VALUE_ON = 1;
 	public final static byte STATUS_VALUE_OFF = 2;
 
-	private final static String xSystem = "X - System";
-	private final static String xError = "X - II";
-	private String statusString = "";
 	private StringBuffer hsMore = new StringBuffer("More...");
 	private StringBuffer hsBottom = new StringBuffer("Bottom");
 
@@ -4407,34 +4404,30 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	public void setStatus(byte attr, byte value, String s) {
 
-		statusString = s;
-
-		// draw the status information
-//		bi.setStatus(attr, value, s, fmWidth, fmHeight, lm, font, colorBg,
-//				colorRed, colorWhite);
-
-		// set environment variables
+		// set the status area
 		switch (attr) {
 
 		case STATUS_SYSTEM:
 			if (value == STATUS_VALUE_ON) {
-            oia.setInputInhibited(oia.INPUTINHIBITED_SYSTEM_WAIT,oia.OIA_LEVEL_INPUT_INHIBITED, s);
+            oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, s);
 				statusXSystem = true;
 			}
          else {
 				statusXSystem = false;
-            oia.setInputInhibited(oia.INPUTINHIBITED_NOTINHIBITED,oia.OIA_LEVEL_NOT_INHIBITED,s);
+            oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,ScreenOIA.OIA_LEVEL_NOT_INHIBITED,s);
          }
 			break;
 
 		case STATUS_ERROR_CODE:
 			if (value == STATUS_VALUE_ON) {
 				setPrehelpState(true, true, false);
-         oia.setInputInhibited(oia.INPUTINHIBITED_SYSTEM_WAIT,oia.OIA_LEVEL_INPUT_ERROR,s);
+				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+				      						ScreenOIA.OIA_LEVEL_INPUT_ERROR,s);
 
 				Toolkit.getDefaultToolkit().beep();
 			} else {
-         oia.setInputInhibited(oia.INPUTINHIBITED_NOTINHIBITED,oia.OIA_LEVEL_NOT_INHIBITED);
+			   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+			         						ScreenOIA.OIA_LEVEL_NOT_INHIBITED);
 				setPrehelpState(false, true, true);
 				homePos = saveHomePos;
 				saveHomePos = 0;
@@ -4443,7 +4436,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			break;
 
 		}
-		updateImage(sArea.getBounds());
 	}
 
 	public boolean isWithinScreenArea(int x, int y) {
@@ -4864,10 +4856,16 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 
 		// restore statuses that were on the screen before resize
-		if (isStatusErrorCode())
-			setStatus(STATUS_ERROR_CODE, STATUS_VALUE_ON, statusString);
-		if (isXSystem())
-			setStatus(STATUS_SYSTEM, STATUS_VALUE_ON, statusString);
+		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
+		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+		         			ScreenOIA.OIA_LEVEL_INPUT_ERROR);
+		}
+		
+		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_INHIBITED) {
+		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+		         			ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
+		}
+
 		if (oia.isMessageWait())
 			oia.setMessageLightOn();
 	}
