@@ -72,9 +72,25 @@ public final class LoadMacroMenu {
       }
 
       scriptDir("scripts",menu,session);
-      scriptDir(GlobalConfigure.instance().getProperty(
-                           "emulator.settingsDirectory") +
-                           "scripts",menu,session);
+
+      String conPath = "";
+      String conPath2 = "";
+
+      try {
+         conPath = new File("scripts").getCanonicalPath();
+         conPath2 = new File(GlobalConfigure.instance().getProperty(
+                              "emulator.settingsDirectory") +
+                              "scripts").getCanonicalPath();
+      }
+      catch (IOException ioe ) {
+
+      }
+
+      // lets not load the menu again if they point to the same place
+      if (!conPath.equals(conPath2))
+         scriptDir(GlobalConfigure.instance().getProperty(
+                              "emulator.settingsDirectory") +
+                              "scripts",menu,session);
    }
 
    public static void scriptDir(String pathName, JMenu menu,Session session) {
