@@ -4440,6 +4440,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 //         g2d.setComposite(ac);
 //         g2d.drawImage(tileimage, null, null);
 //      }
+
+// LDC - WVL : 08/09/2003 : TR.000358
+// TN5250j overpaints superimposed components
+// as swing doesn't support overlay detection when painting a component
+// we have to adhere to swing's paint request and use dirty rectangle marking
+// instead of off-thread painting
+// So we replaced the complete block underneath by 1 repaint request
+      
       // fix for jdk1.4 - found this while testing under jdk1.4
       //   if the height and or the width are equal to zero we skip the
       //   the updating of the image.
