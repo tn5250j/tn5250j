@@ -231,6 +231,9 @@
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${lib.dir}/jython.jar">
         </copy>
+        <copy todir="${dist.dir}/${dist.base.name}"
+                file="${lib.dir}/jythonlib.jar">
+        </copy>
         <!--copy todir="${dist.dir}/${dist.base.name}"
                 file="${lib.dir}/jt400.jar">
         </copy -->
@@ -250,7 +253,7 @@
         <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
             basedir="${dist.dir}/${dist.base.name}"
             includes="**"
-            excludes="jython.jar,jt400.jar,itext.jar">
+            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar">
         </zip>
     </target>
 
