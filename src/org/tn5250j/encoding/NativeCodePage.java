@@ -92,6 +92,18 @@ class NativeCodePage extends CodePage
             return c;
          }
 
+         if (encoding.equals("1148")) {
+            char c = ' ';
+            try {
+               byte[] b = new byte[1];
+               b[0] = (byte)index;
+               c = (new String(b, "Cp1148")).charAt(0);
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return c;
+         }
+
          if (encoding.equals("1112")) {
             char c = ' ';
             try {
@@ -146,6 +158,16 @@ class NativeCodePage extends CodePage
             byte b = 0x0;
             try {
                b = characterToString(index).getBytes("Cp1147")[0];
+            } catch (java.io.UnsupportedEncodingException uee) {
+               System.err.println(uee);
+            }
+            return b;
+         }
+
+         if (encoding.equals("1148")) {
+            byte b = 0x0;
+            try {
+               b = characterToString(index).getBytes("Cp1148")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                System.err.println(uee);
             }
@@ -245,6 +267,8 @@ class NativeCodePage extends CodePage
          } else if(encoding.toLowerCase().startsWith("1140")) {
              convert = true;
          } else if(encoding.toLowerCase().startsWith("1147")) {
+             convert = true;
+         } else if(encoding.toLowerCase().startsWith("1148")) {
              convert = true;
          } else if(encoding.toLowerCase().startsWith("1112")) {
              convert = true;
@@ -403,7 +427,7 @@ class NativeCodePage extends CodePage
    static final String[] acp = {"37","37PT","273","280","284","285",
                                        "277-dk","277-no","278","297","424","500-ch",
                                        "870-pl","870-sk","871","875","1025-r","1026",
-                                       "1112","1141","1140","1147"};
+                                       "1112","1141","1140","1147", "1148"};
 
    /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM037..ISO-8859-1 (reversible).  */
@@ -1164,6 +1188,45 @@ class NativeCodePage extends CodePage
      56,  57, 179, 219, 220, 217, 218, 159,	/* 248 - 255  */
    };
 
+/* Code page 1148 copied from 500ch */
+
+   private static final int[] codePage1148 = {
+
+      0,   1,   2,   3, 156,   9, 134, 127,	/*   0 -   7  */
+    151, 141, 142,  11,  12,  13,  14,  15,	/*   8 -  15  */
+     16,  17,  18,  19, 157, 133,   8, 135,	/*  16 -  23  */
+     24,  25, 146, 143,  28,  29,  30,  31,	/*  24 -  31  */
+    128, 129, 130, 131, 132,  10,  23,  27,	/*  32 -  39  */
+    136, 137, 138, 139, 140,   5,   6,   7,	/*  40 -  47  */
+    144, 145,  22, 147, 148, 149, 150,   4,	/*  48 -  55  */
+    152, 153, 154, 155,  20,  21, 158,  26,	/*  56 -  63  */
+     32, 160, 226, 228, 224, 225, 227, 229,	/*  64 -  71  */
+    231, 241,  91,  46,  60,  40,  43,  33,	/*  72 -  79  */
+     38, 233, 234, 235, 232, 237, 238, 239,	/*  80 -  87  */
+    236, 223,  93,  36,  42,  41,  59,  94,	/*  88 -  95  */
+     45,  47, 194, 196, 192, 193, 195, 197,	/*  96 - 103  */
+    199, 209, 166,  44,  37,  95,  62,  63,	/* 104 - 111  */
+    248, 201, 202, 203, 200, 205, 206, 207,	/* 112 - 119  */
+    204,  96,  58,  35,  64,  39,  61,  34,	/* 120 - 127  */
+    216,  97,  98,  99, 100, 101, 102, 103,	/* 128 - 135  */
+    104, 105, 171, 187, 240, 253, 254, 177,	/* 136 - 143  */
+    176, 106, 107, 108, 109, 110, 111, 112,	/* 144 - 151  */
+    113, 114, 170, 186, 230, 184, 198, 164,	/* 152 - 159  */
+    181, 126, 115, 116, 117, 118, 119, 120,	/* 160 - 167  */
+    121, 122, 161, 191, 208, 221, 222, 174,	/* 168 - 175  */
+    162, 163, 165, 183, 169, 167, 182, 188,	/* 176 - 183  */
+    189, 190, 172, 124, 175, 168, 180, 215,	/* 184 - 191  */
+    123,  65,  66,  67,  68,  69,  70,  71,	/* 192 - 199  */
+     72,  73, 173, 244, 246, 242, 243, 245,	/* 200 - 207  */
+    125,  74,  75,  76,  77,  78,  79,  80,	/* 208 - 215  */
+     81,  82, 185, 251, 252, 249, 250, 255,	/* 216 - 223  */
+     92, 247,  83,  84,  85,  86,  87,  88,	/* 224 - 231  */
+     89,  90, 178, 212, 214, 210, 211, 213,	/* 232 - 239  */
+     48,  49,  50,  51,  52,  53,  54,  55,	/* 240 - 247  */
+     56,  57, 179, 219, 220, 217, 218, 159,	/* 248 - 255  */
+  };
+
+
 /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM278..ISO-8859-1 (reversible).  */
    private static final int[] codePage278 =  {
@@ -1258,6 +1321,9 @@ class NativeCodePage extends CodePage
       }
       if (cp.equals("1147"))
          return new NativeCodePage(cp, codePage1147);
+
+      if (cp.equals("1148"))
+         return new NativeCodePage(cp, codePage1148);
 
 //      return codePage37;
       return null;
