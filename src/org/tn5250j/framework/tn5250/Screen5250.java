@@ -200,68 +200,7 @@ public class Screen5250 implements TN5250jConstants{
       resetRequired = reset;
    }
 
-//      /**
-//       *
-//       * RubberBanding start code
-//       *
-//       */
-//
-//      /**
-//       * Translate the starting point of mouse movement to encompass a full
-//       * character
-//       *
-//       * @param start
-//       * @return Point
-//       */
-//      public Point translateStart(Point start) {
-//
-//         // because getRowColFromPoint returns position offset as 1,1 we need
-//         // to translate as offset 0,0
-//         int pos = getPosFromView(start.x, start.y);
-//         int x = fmWidth * getCol(pos);
-//         int y = fmHeight * getRow(pos);
-//   //		start.setLocation(screen[pos].x, screen[pos].y);
-//         start.setLocation(x, y);
-//         return start;
-//
-//      }
-//
-//      /**
-//       * Translate the ending point of mouse movement to encompass a full
-//       * character
-//       *
-//       * @param end
-//       * @return Point
-//       */
-//      public Point translateEnd(Point end) {
-//
-//         // because getRowColFromPoint returns position offset as 1,1 we need
-//         // to translate as offset 0,0
-//         int pos = getPosFromView(end.x, end.y);
-//   //		if (pos >= screen.length) {
-//   //			pos = screen.length - 1;
-//   //		}
-//   //		int x = screen[pos].x + fmWidth - 1;
-//   //		int y = screen[pos].y + fmHeight - 1;
-//
-//         if (pos >= lenScreen) {
-//            pos = lenScreen - 1;
-//         }
-//         int x =  ((fmWidth * getCol(pos)) + fmWidth) - 1;
-//         int y = ((fmHeight * getRow(pos)) + fmHeight) - 1;
-//
-//         end.setLocation(x, y);
-//
-//         return end;
-//      }
-
-	/**
-	 *
-	 * RubberBanding end code
-	 *
-	 */
-
-	/**
+   /**
 	 *
 	 * Copy & Paste start code
 	 *
@@ -430,40 +369,6 @@ public class Screen5250 implements TN5250jConstants{
 		cb.setContents(contents, null);
 		screenFields.restoreCurrentField();
 	}
-
-//	/**
-//	 * Fills the passed Rectangle with the starting row and column and width and
-//	 * height of the selected area.
-//	 *
-//	 * 1 BASED so column 1 row one is returned 1,1
-//	 *
-//	 * If there is no area bounded then the full screen area is returned.
-//	 *
-//	 * @param bounds
-//	 */
-//	public void getBoundingArea(Rectangle bounds) {
-//
-//		// check to see if there is an area selected. If not then return all
-//		//    screen area.
-//		if (!gui.rubberband.isAreaSelected()) {
-//
-//			bounds.setBounds(1, 1, getCols(), getRows());
-//		} else {
-//			// lets get the bounding area using a rectangle that we have already
-//			// allocated
-//			gui.rubberband.getBoundingArea(workR);
-//
-//			// get starting row and column
-//			int sPos = getRowColFromPoint(workR.x, workR.y);
-//			// get the width and height
-//			int ePos = getRowColFromPoint(workR.width, workR.height);
-//
-//			int row = getRow(sPos) + 1;
-//			int col = getCol(sPos) + 1;
-//
-//			bounds.setBounds(row, col, getCol(ePos) + 1, getRow(ePos) + 1);
-//		}
-//	}
 
 	/**
 	 *
@@ -773,23 +678,11 @@ public class Screen5250 implements TN5250jConstants{
 	 */
 	private void updateCursorLoc() {
 
-		//      System.out.println("cursor loc " + updateCursorLoc + " " +
-		// cursorActive);
 		if (cursorActive) {
 
-//			int row = getRow(lastPos);
-//			int col = getCol(lastPos);
-
-//			bi.drawCursor(this, row, col, fmWidth, fmHeight, insertMode,
-//					crossHair, rulerFixed, cursorSize, colorCursor, colorBg,
-//					colorWhite, font, cursorBottOffset);
-//			gui.bi.drawCursor();
          fireCursorChanged(3);
 
 		}
-//      else {
-//         fireCursorChanged(4);
-//      }
 	}
 
 	//Added by Barry
@@ -1586,7 +1479,6 @@ public class Screen5250 implements TN5250jConstants{
 
 				int s = screenFields.getCurrentField().getFieldShift();
 				if (s == 3 || s == 5 || s == 7) {
-//					screen[lastPos].setChar('-');
                planes.setChar(lastPos,'-');
 
 					resetDirty(lastPos);
@@ -1683,7 +1575,6 @@ public class Screen5250 implements TN5250jConstants{
 
 				int s = screenFields.getCurrentField().getFieldShift();
 				if (s == 3 || s == 5 || s == 7) {
-//					screen[lastPos].setChar('-');
                planes.setChar(lastPos,'-');
 
 					resetDirty(lastPos);
@@ -1742,7 +1633,6 @@ public class Screen5250 implements TN5250jConstants{
 			} else {
 				setPrehelpState(false, oia.isKeyBoardLocked(), false);
 			}
-//			gui.repaint();
 			simulated = true;
 			break;
 		case ATTN:
@@ -1812,13 +1702,12 @@ public class Screen5250 implements TN5250jConstants{
 
 	protected boolean simulateKeyStroke(char c) {
 
-		//      if (isStatusErrorCode() && !Character.isISOControl(c) &&
-		// !keyProcessed) {
-		//         if (resetRequired)
-		//            return false;
-		//         else
-		//            resetError();
-		//      }
+      if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
+         if (resetRequired)
+            return false;
+         else
+            resetError();
+      }
 
 		boolean updateField = false;
 		boolean numericError = false;
@@ -1903,7 +1792,6 @@ public class Screen5250 implements TN5250jConstants{
 								getRow(lastPos), getCol(lastPos));
 						screenFields.getCurrentField().changePos(1);
 
-//						screen[lastPos].setChar(c);
                   planes.setChar(lastPos,c);
 
 						screenFields.setCurrentFieldMDT();
@@ -1935,8 +1823,6 @@ public class Screen5250 implements TN5250jConstants{
 
 					}
 
-//					updateImage(dirty);
-//               fireScreenChanged(1,dirty);
                fireScreenChanged(1);
 
 					if (autoEnter)
@@ -1996,7 +1882,6 @@ public class Screen5250 implements TN5250jConstants{
 		int count = endPos - pos;
 
 		// first lets get the real ending point without spaces and the such
-//		while (screen[endPos].getChar() <= ' ' && count-- > 0) {
 		while (planes.getChar(endPos) <= ' ' && count-- > 0) {
 
 			endPos--;
@@ -2053,21 +1938,15 @@ public class Screen5250 implements TN5250jConstants{
 			switch (adj) {
 
 			case 5:
-				//               System.out.println("Right adjust, zero fill " +
-				// screenFields.getCurrentField().getAdjustment());
 				rightAdjustField('0');
 				sf.setRightAdjusted();
 				break;
 			case 6:
-				//               System.out.println("Right adjust, blank fill " +
-				// screenFields.getCurrentField().getAdjustment());
 				rightAdjustField(' ');
 				sf.setRightAdjusted();
 
 				break;
 			case 7:
-				System.out.println("Mandatory fill "
-						+ screenFields.getCurrentField().getAdjustment());
 				sf.setManditoryEntered();
 				break;
 
@@ -2093,7 +1972,6 @@ public class Screen5250 implements TN5250jConstants{
 
 		// subtract 1 from count for signed numeric - note for later
 		if (screenFields.getCurrentField().isSignedNumeric()) {
-//			if (screen[end - 1].getChar() != '-')
 			if (planes.getChar(end -1) != '-')
 				count--;
 		}
@@ -2103,7 +1981,6 @@ public class Screen5250 implements TN5250jConstants{
 		while (count-- >= 0) {
 
 			shiftRight(pos);
-//			screen[pos].setChar(fill);
          planes.setChar(pos,fill);
 
 			setDirty(pos);
@@ -2134,7 +2011,6 @@ public class Screen5250 implements TN5250jConstants{
 			// left
 			while (count-- > 0) {
 				pos++;
-//				screen[pPos].setChar(screen[pos].getChar());
             planes.setChar(pPos,planes.getChar(pos));
 				setDirty(pPos);
 				pPos = pos;
@@ -2147,7 +2023,6 @@ public class Screen5250 implements TN5250jConstants{
 					break;
 
 				pos = screenFields.getCurrentField().startPos();
-//				screen[pPos].setChar(screen[pos].getChar());
             planes.setChar(pPos,planes.getChar(pos));
 				setDirty(pPos);
 
@@ -2166,7 +2041,6 @@ public class Screen5250 implements TN5250jConstants{
 		}
 
 		screenFields.setCurrentField(sf);
-//		screen[endPos].setChar(initChar);
       planes.setChar(endPos,initChar);
 		setDirty(endPos);
 		goto_XY(screenFields.getCurrentFieldPos());
@@ -2187,7 +2061,6 @@ public class Screen5250 implements TN5250jConstants{
 		while (count-- > 0) {
 
 			pos--;
-//			screen[pPos].setChar(screen[pos].getChar());
 			planes.setChar(pPos, planes.getChar(pos));
 			setDirty(pPos);
 
@@ -2322,7 +2195,6 @@ public class Screen5250 implements TN5250jConstants{
 		saveHomePos = homePos;
 		homePos = lastPos + numCols + 1;
 		pendingInsert = true;
-//		gui.sendNegResponse2(ec);
       sessionVT.sendNegResponse2(ec);
 
 	}
@@ -3272,18 +3144,12 @@ public class Screen5250 implements TN5250jConstants{
 	/**
 	 * Add a field to the field format table.
 	 *
-	 * @param attr -
-	 *            Field attribute
-	 * @param len -
-	 *            length of field
-	 * @param ffw1 -
-	 *            Field format word 1
-	 * @param ffw2 -
-	 *            Field format word 2
-	 * @param fcw1 -
-	 *            Field control word 1
-	 * @param fcw2 -
-	 *            Field control word 2
+	 * @param attr - Field attribute
+	 * @param len - length of field
+	 * @param ffw1 - Field format word 1
+	 * @param ffw2 - Field format word 2
+	 * @param fcw1 - Field control word 1
+	 * @param fcw2 - Field control word 2
 	 */
 	protected void addField(int attr, int len, int ffw1, int ffw2, int fcw1,
 			int fcw2) {
@@ -3987,21 +3853,21 @@ public class Screen5250 implements TN5250jConstants{
       }
    }
 
-      /**
-       * Notify all registered listeners of the onScreenSizeChanged event.
-       *
-       */
-      private void fireScreenSizeChanged() {
+   /**
+    * Notify all registered listeners of the onScreenSizeChanged event.
+    *
+    */
+   private void fireScreenSizeChanged() {
 
-         if (listeners != null) {
-            int size = listeners.size();
-            for (int i = 0; i < size; i++) {
-               ScreenListener target =
-                     (ScreenListener)listeners.elementAt(i);
-               target.onScreenSizeChanged(numRows,numCols);
-            }
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            ScreenListener target =
+                  (ScreenListener)listeners.elementAt(i);
+            target.onScreenSizeChanged(numRows,numCols);
          }
       }
+   }
 
 	/**
 	 * This method does a complete refresh of the screen.
