@@ -80,6 +80,10 @@ public class My5250App extends JApplet implements TN5250jConstants {
       else
          LangTool.init();
 
+      if (isSpecified("-sslType")) {
+	 sesProps.put(SSL_TYPE,getParameter("-sslType"));
+      }
+
       manager = new SessionManager();
       Session s = manager.openSession(sesProps,"","Test Applet");
       this.getContentPane().add(s);
