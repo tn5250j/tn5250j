@@ -368,12 +368,22 @@ public class ScreenField {
       return startPos;
    }
 
+   /**
+    * Get the starting row of the field.  Offset is 0 so row 6 returned
+    *    is row 7 mapped to screen
+    * @return int starting row of the field offset 0
+    */
    public int startRow() {
 
       return startPos / s.getCols();
 
    }
 
+   /**
+    * Get the starting column of the field.  Offset is 0 so column 6 returned
+    *    is column 7 mapped to screen
+    * @return int starting column of the field offset 0
+    */
    public int startCol() {
 
       return startPos % s.getCols();

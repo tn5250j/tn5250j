@@ -163,6 +163,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setIconAt(0,focused);
 
       }
+      sessionPane.getComponent(sessionPane.getSelectedIndex()).requestFocus();
 
    }
 
@@ -184,6 +185,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          sessionPane.setIconAt(index,focused);
 
       }
+      sessionPane.getComponent(sessionPane.getSelectedIndex()).requestFocus();
    }
 
    public void setIcons(ImageIcon focused, ImageIcon unfocused) {

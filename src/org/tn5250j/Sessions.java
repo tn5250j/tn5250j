@@ -113,6 +113,13 @@ public class Sessions implements SessionsInterface {
 
    }
 
+   public Vector getSessionsList() {
+      Vector newS = new Vector(sessions.size());
+      for (int x = 0; x < sessions.size(); x++)
+         newS.add(sessions.get(x));
+      return newS;
+   }
+
    public void refresh() {
 
 

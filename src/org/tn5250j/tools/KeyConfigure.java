@@ -35,6 +35,7 @@ import java.util.*;
 import java.io.*;
 import java.text.*;
 import org.tn5250j.tools.CodePage;
+import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.*;
 
 public class KeyConfigure extends JDialog implements ActionListener,
@@ -180,8 +181,17 @@ public class KeyConfigure extends JDialog implements ActionListener,
          }
          else {
             if (macros) {
-               System.out.println((String)lm.getElementAt(index));
-               strokeDesc.setText(mapper.getKeyStrokeDesc((String)lm.getElementAt(index)));
+               Object o = lm.getElementAt(index);
+               if (o instanceof String) {
+                  System.out.println((String)o);
+                  strokeDesc.setText(mapper.getKeyStrokeDesc((String)o));
+               }
+               else
+                  if (o instanceof Macro) {
+
+                     Macro m = (Macro)o;
+                     strokeDesc.setText(mapper.getKeyStrokeDesc(m.getFullName()));
+                  }
             }
             if (special) {
                System.out.println((String)lm.getElementAt(index));
@@ -212,7 +222,6 @@ public class KeyConfigure extends JDialog implements ActionListener,
          Collections.sort(lk,new KeyDescriptionCompare());
 
          for (int x = 0; x < mnemonicData.length; x++) {
-//            lm.addElement(LangTool.getString("key."+mnemonicData[x]));
             lm.addElement(lk.get(x));
          }
          macros = false;
@@ -220,10 +229,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
       }
       else {
          if (which.equals(LangTool.getString("key.labelMacros"))) {
+            Vector macrosVector = new Vector();
             if (macrosList != null)
                for (int x = 0; x < macrosList.length; x++) {
-                  lm.addElement(macrosList[x]);
+                  macrosVector.add(macrosList[x]);
                }
+            scriptDir("scripts",macrosVector);
+            loadListModel(lm,macrosVector,null,0);
             macros = true;
             special = false;
          }
@@ -336,7 +348,11 @@ public class KeyConfigure extends JDialog implements ActionListener,
       if (functions.getSelectedValue() instanceof String)
          function = (String)functions.getSelectedValue();
       else
-         function = ((KeyDescription)functions.getSelectedValue()).toString();
+         if (functions.getSelectedValue() instanceof Macro) {
+            function = ((Macro)functions.getSelectedValue()).toString();
+         }
+         else
+            function = ((KeyDescription)functions.getSelectedValue()).toString();
 
       kg.setText(LangTool.getString("key.labelMessage") +
                         function);
@@ -390,9 +406,17 @@ public class KeyConfigure extends JDialog implements ActionListener,
       else {
 
          if (macros) {
-            mapper.removeKeyStroke((String)functions.getSelectedValue());
+            Object o = functions.getSelectedValue();
+            String name;
+            if (o instanceof Macro) {
+               name = ((Macro)o).getFullName();
+            }
+            else {
+               name = (String)o;
+            }
+            mapper.removeKeyStroke(name);
             strokeDesc.setText(mapper.getKeyStrokeDesc(
-                              (String)functions.getSelectedValue()));
+                              name));
          }
          if (special) {
             String k = "";
@@ -420,14 +444,21 @@ public class KeyConfigure extends JDialog implements ActionListener,
       }
       else {
          if (macros) {
-            System.out.println((String)functions.getSelectedValue());
-            if (isLinux)
-               mapper.setKeyStroke((String)functions.getSelectedValue(),ke,isAltGr);
+            Object o = functions.getSelectedValue();
+            String macro;
+            if (o instanceof Macro)
+               macro = ((Macro)o).getFullName();
             else
-               mapper.setKeyStroke((String)functions.getSelectedValue(),ke);
+               macro = (String)o;
+
+            System.out.println(macro);
+            if (isLinux)
+               mapper.setKeyStroke(macro,ke,isAltGr);
+            else
+               mapper.setKeyStroke(macro,ke);
 
             strokeDesc.setText(mapper.getKeyStrokeDesc(
-                              (String)functions.getSelectedValue()));
+                              macro));
          }
          if (special) {
             System.out.println((String)functions.getSelectedValue());
@@ -450,14 +481,14 @@ public class KeyConfigure extends JDialog implements ActionListener,
       mods = true;
    }
 
-	private static class KeyDescriptionCompare implements Comparator {
-		public int compare(Object one, Object two) {
+   private static class KeyDescriptionCompare implements Comparator {
+      public int compare(Object one, Object two) {
          String s1 = one.toString();
          String s2 = two.toString();
          return s1.compareToIgnoreCase(s2);
-		}
+      }
 
-	}
+   }
 
    private class KeyDescription {
 
@@ -480,6 +511,174 @@ public class KeyConfigure extends JDialog implements ActionListener,
          return index;
       }
    }
+
+
+   public static void scriptDir(String pathName, Vector scripts) {
+
+      File root = new File(pathName);
+
+      try {
+
+         loadScripts(scripts,root.getCanonicalPath(),root);
+
+      }
+      catch (IOException ioe) {
+         System.out.println(ioe.getMessage());
+
+      }
+
+
+   }
+
+   /**
+    * Recursively read the scripts directory and add them to our macros vector
+    *    holding area
+    *
+    * @param vector
+    * @param path
+    * @param directory
+    */
+   private static void loadScripts(Vector vector,
+                                    String path,
+                                    File directory) {
+
+      Macro macro;
+
+      File[] macroFiles = directory.listFiles();
+      if(macroFiles == null || macroFiles.length == 0)
+         return;
+
+      Arrays.sort(macroFiles,new MacroCompare());
+
+      for(int i = 0; i < macroFiles.length; i++) {
+         File file = macroFiles[i];
+         String fileName = file.getName();
+         if(file.isHidden()) {
+            /* do nothing! */
+            continue;
+         }
+         else if(file.isDirectory()) {
+            Vector subvector = new Vector();
+            subvector.addElement(fileName.replace('_',' '));
+            loadScripts(subvector,path + fileName + '/',file);
+            // if we do not want empty directories to show up uncomment this
+            //    line.  It is uncommented here.
+            if(subvector.size() != 1)
+               vector.addElement(subvector);
+         }
+         else {
+            if (InterpreterDriverManager.isScriptSupported(fileName)) {
+               String fn = fileName.replace('_',' ');
+               int index = fn.lastIndexOf('.');
+               if (index > 0) {
+                  fn = fn.substring(0,index);
+               }
+
+               macro = new Macro (fn, file.getAbsolutePath(),fileName);
+               vector.addElement(macro);
+            }
+         }
+      }
+
+   }
+
+   /**
+    * Load the ListModel with the scripts from the vector of macros provided
+    *
+    * @param menu
+    * @param vector
+    * @param start
+    */
+   private static void loadListModel(DefaultListModel lm,
+                                          Vector vector,
+                                          String prefix,
+                                          int start) {
+
+      for (int i = start; i < vector.size(); i++) {
+         Object obj = vector.elementAt(i);
+         if (obj instanceof Macro) {
+            Macro m = (Macro)obj;
+            m.setPrefix(prefix);
+            lm.addElement(m);
+         }
+         else
+            if (obj instanceof Vector) {
+               Vector subvector = (Vector)obj;
+               String name = (String)subvector.elementAt(0);
+               if (prefix != null)
+                  loadListModel(lm,subvector,prefix + '/' + name + '/',1);
+               else
+                  loadListModel(lm,subvector,name + '/',1);
+            }
+            else {
+               if (obj instanceof String) {
+
+                  lm.addElement((String)obj);
+
+               }
+            }
+         }
+
+   }
+
+   private static class Macro {
+
+      String name;
+      String path;
+      String prefix;
+      String fileName;
+
+      Macro (String name, String path, String fileName) {
+
+         this.name = name;
+         this.path = path;
+         this.fileName = fileName;
+      }
+
+      /**
+       * Setst the directory prefix
+       *
+       * @param prefix before the name
+       */
+      public void setPrefix(String prefix) {
+         this.prefix = prefix;
+      }
+
+      /**
+       * This function gets the full name representation of the macro
+       *
+       * @return the full name non prettied up
+       */
+      public String getFullName() {
+         if (prefix != null)
+            return prefix + fileName;
+         else
+            return fileName;
+      }
+
+      /**
+       * This function is used for display of the macro name prettied up
+       *
+       * @return pretty string
+       */
+      public String toString() {
+
+         if (prefix != null)
+            return prefix + name;
+         else
+            return name;
+      }
+   }
+
+   public static class MacroCompare implements Comparator {
+      public int compare(Object one, Object two) {
+         String s1 = one.toString();
+         String s2 = two.toString();
+         return s1.compareToIgnoreCase(s2);
+      }
+
+   }
+
 
    /**
     * This class extends label so that we can display text as well as capture

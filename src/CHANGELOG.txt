@@ -41,6 +41,15 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+05/09/2002  Lots of clean up for bounding area selection.
+
+04/09/2002  Added support to map scripts to the Key Mapping
+
+            Added new access funtions to get SessionManager and a list of
+            Sessions from scripts.
+
+            Fix for bug 604515 for selection of mouse in continued area.
+
 25/08/2002  Sort of the keyboard functions on Map Keys...
 
             Fixed the remapping of keyboard operations for special characters

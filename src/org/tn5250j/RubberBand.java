@@ -30,40 +30,52 @@ import java.awt.event.*;
 import javax.swing.SwingUtilities;
 
 public abstract class RubberBand {
-	private RubberBandCanvasIF canvas;
-	private Point startPoint;
-	private Point endPoint;
-	private boolean eraseSomething = false;
+   private RubberBandCanvasIF canvas;
+   private Point startPoint;
+   private Point endPoint;
+   private boolean eraseSomething = false;
    private boolean isSomethingBounded = false;
 
-	private class MouseHandler extends MouseAdapter
-	{
-		public void mousePressed(MouseEvent e) {
-         if (!SwingUtilities.isRightMouseButton(e) && !isSomethingBounded)
-   			start(canvas.translateStart(e.getPoint()));
+   private class MouseHandler extends MouseAdapter
+   {
+      public void mousePressed(MouseEvent e) {
+         if (!SwingUtilities.isRightMouseButton(e)) {
+            if (!isSomethingBounded)
+               start(canvas.translateStart(e.getPoint()));
+            else {
+               if (isSomethingBounded) {
+                  erase();
+                  notifyRubberBandCanvas();
+                  reset();
+                  start(canvas.translateStart(e.getPoint()));
+               }
+            }
+         }
+
 //         System.out.println("mouse pressed rb");
-		}
+      }
 
-		public void mouseReleased(MouseEvent e) {
- 			erase();
-		}
+      public void mouseReleased(MouseEvent e) {
+         erase();
+      }
 
-	}
+   }
 
-	private class MouseMotionHandler extends MouseMotionAdapter	{
+   private class MouseMotionHandler extends MouseMotionAdapter	{
 
-		public void mouseDragged(MouseEvent e) {
+      public void mouseDragged(MouseEvent e) {
 
-			if(!SwingUtilities.isRightMouseButton(e) && getCanvas().canDrawRubberBand(RubberBand.this)) {
+         if(!SwingUtilities.isRightMouseButton(e) && getCanvas().canDrawRubberBand(RubberBand.this)) {
 
-				erase();
-				stop(canvas.translateEnd(e.getPoint()));
-				draw();
-				notifyRubberBandCanvas();
-			}
-		}
+            erase();
+            stop(canvas.translateEnd(e.getPoint()));
+            notifyRubberBandCanvas();
+            draw();
+            notifyRubberBandCanvas();
+         }
+      }
 
-	}
+   }
 
    public RubberBand(RubberBandCanvasIF c) {
       super();

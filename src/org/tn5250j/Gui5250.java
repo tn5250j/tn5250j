@@ -641,6 +641,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 //      if (linux)
 //      if (keyCode == e.VK_UNDEFINED ||
+//      if (keyCode == e.VK_ALT) {
+//         System.out.println(" cursor active " + screen.cursorActive);
+//         e.consume();
+//         return;
+//      }
+
       if (      keyCode == e.VK_CAPS_LOCK ||
             keyCode == e.VK_SHIFT ||
             keyCode == e.VK_ALT ||
@@ -697,12 +703,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       char kc = e.getKeyChar();
 //      displayInfo(e,"Typed processed " + keyProcessed);
-
       // Hack to make german umlauts work under Linux
       // The problem is that these umlauts don't generate a keyPressed event
       // and so keyProcessed is true (even if is hasn't been processed)
       // so we check if it's a letter (with or without shift) and skip return
       if (isLinux) {
+
          if (!((Character.isLetter(kc))  && (e.getModifiers() == 0
             || e.getModifiers() == Event.SHIFT_MASK))) {
 
@@ -710,12 +716,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
                return;
             }
          }
-      } else {
+      }
+      else {
          if (Character.isISOControl(kc) || keyProcessed) {
             return;
          }
       }
-
 //      displayInfo(e,"Typed processed " + keyProcessed);
       String s = "";
 //      if (isLinux) {
@@ -788,20 +794,20 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       if (!rubberband.isAreaSelected()) {
          if (last.equals("[markleft]"))
-            screen.getPointFromRowCol(screen.getCurrentRow(),
-                                    screen.getCurrentCol()+1,
-                                    p);
-         if (last.equals("[markright]"))
-            screen.getPointFromRowCol(screen.getCurrentRow(),
+            screen.getPointFromRowCol(screen.getCurrentRow() - 1,
                                     screen.getCurrentCol()-1,
                                     p);
+         if (last.equals("[markright]"))
+            screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+                                    screen.getCurrentCol()-2,
+                                    p);
          if (last.equals("[markup]"))
-            screen.getPointFromRowCol(screen.getCurrentRow()+1,
-                                    screen.getCurrentCol(),
+            screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+                                    screen.getCurrentCol() - 1,
                                     p);
          if (last.equals("[markdown]"))
-            screen.getPointFromRowCol(screen.getCurrentRow()-1,
-                                    screen.getCurrentCol(),
+            screen.getPointFromRowCol(screen.getCurrentRow()-2,
+                                    screen.getCurrentCol() - 1,
                                     p);
          MouseEvent me = new MouseEvent(this,
                               MouseEvent.MOUSE_PRESSED,
@@ -813,8 +819,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       }
 
-      screen.getPointFromRowCol(screen.getCurrentRow(),
-                                 screen.getCurrentCol(),
+      screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+                                 screen.getCurrentCol() - 1,
                                  p);
       rubberband.getCanvas().translateEnd(p);
       MouseEvent me = new MouseEvent(this,
@@ -824,10 +830,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
                            p.x,p.y,
                            1,false);
       dispatchEvent(me);
-//      Rectangle workR = new Rectangle();
-//      rubberband.getBoundingArea(workR);
-//      System.out.println(" area "  + rubberband.getEndPoint() + " " + workR +
-//                           " from " );
 
    }
 
@@ -1936,7 +1938,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
    public void areaBounded(RubberBand band, int x1, int y1, int x2, int y2) {
 
 
-      repaint(x1,y1,x2+1,y2+1);
+//      repaint(x1,y1,x2-1,y2-1);
+      repaint();
 //      System.out.println(" bound " + band.getEndPoint());
    }
 

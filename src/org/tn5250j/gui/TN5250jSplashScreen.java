@@ -40,6 +40,7 @@ import java.awt.Canvas;
 import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Color;
+import org.tn5250j.My5250;
 
 /**
  * Uses an Icon or the location of an image to create an application's introductory screen.
@@ -64,15 +65,26 @@ public class TN5250jSplashScreen extends Canvas {
     */
    public TN5250jSplashScreen(String image_location) {
 
-      // get the URL given the image location
-      URL url = getClass().getResource(image_location);
+      URL file=null;
+      try {
+//         ClassLoader cl = this.getClass().getClassLoader();
+         file = My5250.classLoader.getResource(image_location);
 
-      if (url == null) {
-         throw new IllegalArgumentException("Image could not be found: " +
-                                    image_location);
       }
-      // convert URL to Image icon
-      ImageIcon image = new ImageIcon(url);
+      catch (Exception e) {
+         System.err.println(e);
+      }
+//      return new ImageIcon( file);
+//
+//      // get the URL given the image location
+//      URL url = getClass().getResource(image_location);
+//
+//      if (url == null) {
+//         throw new IllegalArgumentException("Image could not be found: " +
+//                                    image_location);
+//      }
+//      // convert URL to Image icon
+      ImageIcon image = new ImageIcon(file);
       initialize(image);
    }
 

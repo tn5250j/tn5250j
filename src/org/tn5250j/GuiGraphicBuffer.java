@@ -83,7 +83,7 @@ public class GuiGraphicBuffer {
             this.width = width;
             this.height = height;
             // tell waiting threads to wake up
-            lock.notify();
+            lock.notifyAll();
          }
       }
 
@@ -93,27 +93,15 @@ public class GuiGraphicBuffer {
 
 
       synchronized (lock) {
-         if (bi == null || bi.getWidth() != width || bi.getHeight() != height)
+         if (bi == null || bi.getWidth() != width || bi.getHeight() != height) {
             // allocate a buffer Image with appropriate size
             bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
             this.width = width;
             this.height = height;
+         }
          // tell waiting threads to wake up
-         lock.notify();
+         lock.notifyAll();
       }
-      return bi;
-   }
-
-   public BufferedImage getImageBuffer() {
-
-
-//      synchronized (lock) {
-//         if (bi == null || bi.getWidth() != width || bi.getHeight() != height)
-//            // allocate a buffer Image with appropriate size
-//            bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-//         // tell waiting threads to wake up
-//         lock.notify();
-//      }
       return bi;
    }
 
@@ -132,7 +120,8 @@ public class GuiGraphicBuffer {
          Graphics2D g2d;
 
          // get ourselves a global pointer to the graphics
-         g2d = (Graphics2D)bi.getGraphics();
+//         g2d = (Graphics2D)bi.getGraphics();
+         g2d = getDrawingArea();
 
          g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                RenderingHints.VALUE_ANTIALIAS_ON);
@@ -190,20 +179,10 @@ public class GuiGraphicBuffer {
                            Color colorBg,Color colorWhite,
                            Font font,int botOffset) {
 
-//      synchronized (lock) {
-
          Graphics2D g2 = getDrawingArea();
-//         if (g2 == null)
-//            return;
-//            botOffset = 4;
+
          switch (cursorSize) {
             case 0:
-//               cursor.setRect(
-//                           fmWidth * (col),
-//                           (fmHeight * (row + 1)),
-//                           fmWidth,
-//                           1
-//                           );
                cursor.setRect(
                            fmWidth * (col),
                            (fmHeight * (row + 1)) - botOffset,
@@ -226,12 +205,6 @@ public class GuiGraphicBuffer {
                            fmWidth,
                            fmHeight - botOffset
                            );
-//               cursor.setRect(
-//                           fmWidth * (col),
-//                           (fmHeight * row) - lm.getLeading()-5,
-//                           fmWidth,
-//                           fmHeight
-//                           );
                break;
          }
 
@@ -280,10 +253,6 @@ public class GuiGraphicBuffer {
                         (float)pArea.getY() + fmHeight);
          s.updateImage(pArea.getBounds());
          g2.dispose();
-         // tell waiting threads to wake up
-//         lock.notify();
-//      }
-
 
    }
 
@@ -339,13 +308,16 @@ public class GuiGraphicBuffer {
       try {
          synchronized (lock) {
             // wait until there is something to read
-            while (bi == null)
+            while (bi == null) {
+               System.out.println(" bi = null ");
                lock.wait();
-
+            }
             // we have the lock and state we're seeking
             Graphics2D g2;
 
             g2 = bi.createGraphics();
+            // tell waiting threads to wake up
+            lock.notifyAll();
             return g2;
          }
       }
@@ -355,37 +327,37 @@ public class GuiGraphicBuffer {
       }
    }
 
-   public synchronized void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
+   public void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
 
        /**
         * @todo this is a hack and should be fixed at the root of the problem
         */
       if (gg2d == null) {
-//         System.out.println(" we got a null graphic object ");
+         System.out.println(" we got a null graphic object ");
          return;
       }
       synchronized (lock) {
          gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x,y);
          // tell waiting threads to wake up
-         lock.notify();
+         lock.notifyAll();
       }
 
    }
 
-   public synchronized void drawImageBuffer(Graphics2D gg2d) {
+   public void drawImageBuffer(Graphics2D gg2d) {
 
        /**
         * @todo this is a hack and should be fixed at the root of the problem
         */
       if (gg2d == null) {
-//         System.out.println(" we got a null graphic object ");
+         System.out.println(" we got a null graphic object ");
          return;
       }
 
       synchronized (lock) {
          gg2d.drawImage(bi,null,0,0);
          // tell waiting threads to wake up
-         lock.notify();
+         lock.notifyAll();
       }
 
 
@@ -404,8 +376,10 @@ public class GuiGraphicBuffer {
       try {
          synchronized (lock) {
             // wait until there is something to read
-            while (bi == null)
+            while (bi == null) {
+               System.out.println( " bi = null wa ");
                lock.wait();
+            }
                // we have the lock and state we're seeking
 
             g2 = bi.createGraphics();
@@ -420,6 +394,8 @@ public class GuiGraphicBuffer {
                g2.setFont(font);
             }
 
+            // tell waiting threads to wake up
+            lock.notifyAll();
             return g2;
 
          }
@@ -525,6 +501,8 @@ public class GuiGraphicBuffer {
    public int getWidth() {
 
       synchronized (lock) {
+         // tell waiting threads to wake up
+         lock.notifyAll();
          return bi.getWidth();
       }
 
@@ -532,18 +510,24 @@ public class GuiGraphicBuffer {
    public int getHeight() {
 
       synchronized (lock) {
+         // tell waiting threads to wake up
+         lock.notifyAll();
          return bi.getHeight();
       }
    }
    public int getWidth(ImageObserver io) {
 
       synchronized (lock) {
+         // tell waiting threads to wake up
+         lock.notifyAll();
          return bi.getWidth(io);
       }
    }
    public int getHeight(ImageObserver io) {
 
       synchronized (lock) {
+         // tell waiting threads to wake up
+         lock.notifyAll();
          return bi.getHeight(io);
       }
    }

@@ -27,6 +27,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
    private PythonInterpreter _interpreter = new PythonInterpreter();
 
    static {
+//      PySystemState.initialize(System.getProperties(),null, new String[] {""});
       _instance = new JPythonInterpreterDriver();
       InterpreterDriverManager.registerDriver(_instance);
    }
@@ -65,6 +66,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
          s1.setMacroRunning(true);
          Runnable interpretIt = new Runnable() {
             public void run() {
+//               PySystemState.initialize(System.getProperties(),null, new String[] {""},this.getClass().getClassLoader());
                _interpreter = new PythonInterpreter();
                _interpreter.set("_session",s1);
                try {

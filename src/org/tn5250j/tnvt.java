@@ -81,18 +81,30 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private char[] signOnSave;
    private boolean onConnect;
    private String connectMacro;
+   private Properties sessProps;
 
-   tnvt (Screen5250 screen52) {
+  /* tnvt (Screen5250 screen52) {
 
-      this(screen52,false,false);
+      this(null, screen52,false,false);
 
-   }
+   }*/
 
-   tnvt (Screen5250 screen52, boolean type, boolean support132) {
+   tnvt (Properties props, Screen5250 screen52,  boolean type, boolean support132) {
 
       enhanced = type;
       this.support132 = support132;
-      setCodePage("37");
+
+      // Set system configuration
+      sessProps = null;
+      if (props != null) sessProps = props;
+
+      if (sessProps.getProperty(SESSION_CODE_PAGE) != null) {
+        // Set correct codepage
+        setCodePage(sessProps.getProperty(SESSION_CODE_PAGE));
+      } else {
+        // Set default codepage
+        setCodePage("37");
+      }
       this.screen52 = screen52;
       dataIncluded = new boolean[24];
       baosp = new ByteArrayOutputStream();
@@ -818,7 +830,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       while (keepTrucking) {
 
          try {
-            bk = (Stream5250)dsq.get();
+           bk = (Stream5250)dsq.get();
          }
          catch (InterruptedException ie) {
             System.out.println("   vt thread interrupted and stopping ");

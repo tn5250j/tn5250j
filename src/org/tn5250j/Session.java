@@ -63,7 +63,6 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    public boolean isConnected() {
 
       return vt.isConnected();
-//      return connected;
 
    }
 
@@ -84,6 +83,12 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    public Screen5250 getScreen() {
 
       return screen;
+
+   }
+
+   public SessionManager getSessionManager() {
+
+      return this.me.manager;
 
    }
 
