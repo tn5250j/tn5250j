@@ -32,7 +32,7 @@ import java.awt.Frame;
 import javax.swing.*;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.XTFRFile;
 
@@ -41,7 +41,7 @@ import org.tn5250j.tools.XTFRFile;
  */
 public class TransferAction extends EmulatorAction implements TN5250jConstants {
 
-   public TransferAction(Session session, KeyMapper keyMap) {
+   public TransferAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_FILE_TRANSFER,
             KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK),

@@ -44,7 +44,7 @@ import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
 import org.tn5250j.tools.filters.*;
 import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.gui.TN5250jFileChooser;
@@ -104,11 +104,11 @@ public class XTFRFile
 	ProgressOptionPane monitor;
 	JDialog dialog;
 	XTFRFileFilter filter;
-	Session session;
+	SessionGUI session;
 
 	static String messageProgress;
 
-	public XTFRFile(Frame parent, tnvt pvt, Session session) {
+	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session) {
 
       this(parent, pvt, session, null);
 //		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -135,7 +135,7 @@ public class XTFRFile
 //		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	public XTFRFile(Frame parent, tnvt pvt, Session session, Properties XTFRProps) {
+	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session, Properties XTFRProps) {
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.session = session;
@@ -859,7 +859,7 @@ public class XTFRFile
 	private void initXTFRFields(Properties props) {
 
       if (props == null) {
-         SessionConfig config = session.getConfiguration();
+         SessionConfig config = session.getSession().getConfiguration();
          props = config.getProperties();
       }
 
@@ -908,7 +908,7 @@ public class XTFRFile
 
 	private void saveXTFRFields() {
 
-		SessionConfig config = session.getConfiguration();
+		SessionConfig config = session.getSession().getConfiguration();
 		Properties props = config.getProperties();
 
       saveXTFRFields(props);

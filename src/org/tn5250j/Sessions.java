@@ -36,9 +36,9 @@ public class Sessions implements SessionsInterface,ActionListener {
    private Vector sessions = null;
    private int count = 0;
    private Timer heartBeater;
-   
+
    private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
-   
+
    public Sessions() {
 
       sessions = new Vector();
@@ -46,10 +46,10 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    public void actionPerformed(ActionEvent e) {
 
-      Session ses;
+      Session5250 ses;
       for (int x = 0; x < sessions.size(); x++) {
          try {
-            ses = (Session)sessions.get(x);
+            ses = (Session5250)sessions.get(x);
             if (ses.isConnected() && ses.isSendKeepAlive()) {
                ses.getVT().sendHeartBeat();
                log.info(" sent heartbeat to " +  ses.getSessionName());
@@ -62,7 +62,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    }
 
-   protected void addSession(Session newSession) {
+   protected void addSession(Session5250 newSession) {
       sessions.add(newSession);
       log.debug("adding Session: "+newSession.getSessionName());
       if (newSession.isSendKeepAlive() && heartBeater == null) {
@@ -74,7 +74,7 @@ public class Sessions implements SessionsInterface,ActionListener {
       ++count;
    }
 
-   protected void removeSession(Session session) {
+   protected void removeSession(Session5250 session) {
       log.debug("Removing session: "+session.getSessionName());
       if (session != null) {
          if (session.isConnected())
@@ -86,13 +86,14 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    protected void removeSession(String sessionName) {
       log.debug("Remove session by name: "+sessionName);
-      removeSession((Session)item(sessionName));
+      removeSession((Session5250)item(sessionName));
 
    }
 
    protected void removeSession(int index) {
    	  log.debug("Remove session by index: "+index);
-      removeSession((Session)item(index));
+//      removeSession((SessionGUI)(((Session5250)item(index)).getGUI()));
+      removeSession(item(index));
    }
 
    public int getCount() {
@@ -100,20 +101,20 @@ public class Sessions implements SessionsInterface,ActionListener {
       return count;
    }
 
-   public Session item (int index) {
+   public Session5250 item (int index) {
 
-      return (Session)sessions.get(index);
+      return (Session5250)sessions.get(index);
 
    }
 
-   public Session item (String sessionName) {
+   public Session5250 item (String sessionName) {
 
-      Session s = null;
+      Session5250 s = null;
       int x = 0;
 
       while (x < sessions.size()) {
 
-         s = (Session)sessions.get(x);
+         s = (Session5250)sessions.get(x);
 
          if (s.getSessionName().equals(sessionName))
             return s;
@@ -125,14 +126,14 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    }
 
-   public Session item (Session sessionObject) {
+   public Session5250 item (Session5250 sessionObject) {
 
-      Session s = null;
+      Session5250 s = null;
       int x = 0;
 
       while (x < sessions.size()) {
 
-         s = (Session)sessions.get(x);
+         s = (Session5250)sessions.get(x);
 
          if (s.equals(sessionObject))
             return s;

@@ -86,7 +86,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	private boolean enhanced = true;
 
-	private Session controller;
+	private Session5250 controller;
 
 	private boolean cursorOn = false;
 
@@ -194,7 +194,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return session;
 	}
 
-	public void setController(Session c) {
+	public void setController(Session5250 c) {
 
 		controller = c;
 
@@ -268,8 +268,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
-//						screen52.setStatus(Screen5250.STATUS_SYSTEM,
-//								Screen5250.STATUS_VALUE_ON, "X - Connecting");
 					   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
 					         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED,"X - Connecting");
 					}
@@ -326,8 +324,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			try {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					public void run() {
-//						screen52.setStatus(Screen5250.STATUS_SYSTEM,
-//								Screen5250.STATUS_VALUE_OFF, null);
 					   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
 					         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 					}
@@ -359,8 +355,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	public final boolean disconnect() {
 
 		// Added by LUC - LDC to fix a null pointer exception.
-		if (!connected)
+		if (!connected) {
+         screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED,"X - Disconnected");
 			return false;
+		}
 
 		if (me != null && me.isAlive()) {
 			me.interrupt();
@@ -368,8 +367,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			pthread.interrupt();
 		}
 
-//		screen52.setStatus(Screen5250.STATUS_SYSTEM,
-//				Screen5250.STATUS_VALUE_ON, "X - Disconnected");
 	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
 	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED,"X - Disconnected");
 		screen52.getOIA().setKeyBoardLocked(false);
@@ -755,7 +752,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					}
 				}
 			}
-			controller.requestFocus();
+//			controller.requestFocus();
 		} else {
 
 			baosp.write(codePage.uni2ebcdic(sr));
@@ -1187,7 +1184,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				//                  }
 				//               );
 				screen52.updateDirty();
-				controller.validate();
+//				controller.validate();
 				log.debug("update dirty");
 			} catch (Exception exd) {
 				log.warn(" tnvt.run: " + exd.getMessage());

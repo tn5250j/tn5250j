@@ -1,5 +1,3 @@
-package org.tn5250j;
-
 /*
  * @(#)TN5250jConstants.java
  * Copyright:    Copyright (c) 2001
@@ -21,14 +19,14 @@ package org.tn5250j;
  *
  */
 
-
+package org.tn5250j;
 
 public interface TN5250jConstants {
 
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".5";
-   public static final String tn5250jSubVer= ".7";
+   public static final String tn5250jSubVer= ".8 alpha 1";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;

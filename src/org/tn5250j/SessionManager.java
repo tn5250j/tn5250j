@@ -33,7 +33,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    static private Sessions sessions;
    static private Vector configs;
-   
+
    private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
    /**
     * A handle to the unique SessionManager class
@@ -78,20 +78,20 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    public void closeSession(String sessionName) {
 
-      Session session = (Session)sessions.item(sessionName);
+      SessionGUI session = ((Session5250)sessions.item(sessionName)).getGUI();
       if (session != null)
          closeSession(session);
 
    }
 
-   public void closeSession(Session sessionObject) {
+   public void closeSession(SessionGUI sessionObject) {
 
       sessionObject.closeDown();
-      sessions.removeSession((Session)sessionObject);
+      sessions.removeSession(((SessionGUI)sessionObject).getSession());
 
    }
 
-   public Session openSession(Properties sesProps, String configurationResource
+   public Session5250 openSession(Properties sesProps, String configurationResource
                                                 , String sessionName) {
 //                                             throws TN5250jException {
 
@@ -123,12 +123,10 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
          configs.add(useConfig);
       }
 
-      Session newSession = new Session(sesProps,configurationResource,
+      Session5250 newSession = new Session5250(sesProps,configurationResource,
                                           sessionName,useConfig);
       sessions.addSession(newSession);
-      useConfig.addSessionConfigListener(newSession);
       return newSession;
 
    }
-
 }

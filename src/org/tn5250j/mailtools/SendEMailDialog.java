@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
 import javax.swing.*;
 
 import org.tn5250j.Screen5250;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.LangTool;
@@ -52,7 +52,7 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 	JTextArea bodyText;
 	JTextField attachmentName;
 	SessionConfig config;
-	Session session;
+	SessionGUI session;
 	String fileName;
 	JRadioButton text;
 	JRadioButton graphic;
@@ -71,7 +71,7 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 	 * @param session
     * @param sendScreen
 	 */
-	public SendEMailDialog(Frame parent, Session session) {
+	public SendEMailDialog(Frame parent, SessionGUI session) {
       this(parent,session,true);
 	}
 
@@ -81,7 +81,7 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 	 * @param parent
 	 * @param session
 	 */
-	public SendEMailDialog(Frame parent, Session session, boolean sendScreen) {
+	public SendEMailDialog(Frame parent, SessionGUI session, boolean sendScreen) {
 
 		if (!isEMailAvailable()) {
 
@@ -215,7 +215,7 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 	 * @param parent
 	 * @param session
 	 */
-	public SendEMailDialog(Frame parent, Session session, String fileName) {
+	public SendEMailDialog(Frame parent, SessionGUI session, String fileName) {
 
 		if (!isEMailAvailable()) {
 
@@ -465,7 +465,7 @@ public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 		config = null;
 
 		if (session != null) {
-			config = session.getConfiguration();
+			config = session.getSession().getConfiguration();
 
 			if (config.isPropertyExists("emailTo")) {
 				setToCombo(config.getStringProperty("emailTo"), toAddress);

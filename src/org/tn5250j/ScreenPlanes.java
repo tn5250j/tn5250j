@@ -88,8 +88,6 @@ public class ScreenPlanes implements TN5250jConstants {
       screenIsChanged = new boolean[screenSize];
 
       initalizePlanes();
-//      if (numRows != oldRows)
-//         fireScreenSizeChanged();
    }
 
    protected void setErrorLine (int line) {
@@ -143,8 +141,6 @@ public class ScreenPlanes implements TN5250jConstants {
 			int r = scr.getPos(errorLineNum - 1, 0);
 
 			for (int x = 0; x < numCols - 1; x++) {
-//				screen[r + x].setCharAndAttr(errorLine[x].getChar(),
-//						errorLine[x].getCharAttr(), false);
             setScreenCharAndAttr(r+x,errorLine[x],errorLineAttr[x],
                   					(errorLineIsAttr[x] == '1' ? true : false));
 			}
@@ -212,12 +208,6 @@ public class ScreenPlanes implements TN5250jConstants {
       screenIsChanged[pos] = screenGUI[pos] == which ? false : true;
 
       screenGUI[pos] = (char)which;
-//      if (which == NO_GUI) {
-//        screenGUI[pos] = ;
-//      }
-//      else {
-//        screenGUI[pos] = true;
-//      }
    }
 
    protected void initalizePlanes () {
@@ -296,7 +286,6 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The row which corresponds to the position given
     * @throws OhioException
     */
-//   public int convertPosToRow(int pos) throws OhioException {
    public int convertPosToRow(int pos) {
 
       return (pos / numCols) + 1;
@@ -310,7 +299,6 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The column which corresponds to the position given
     * @throws OhioException
     */
-//   public int convertPosToColumn(int pos) throws OhioException {
    public int convertPosToColumn(int pos) {
 
       return (pos % numCols) + 1;
@@ -326,7 +314,6 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The linear position which corresponds to the coordinate given.
     * @throws OhioException
     */
-//   public int convertRowColToPos(int row, int col) throws OhioException {
    public int convertRowColToPos(int row, int col) {
 
 
@@ -366,9 +353,8 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The number of characters copied to the buffer
     * @throws OhioException
     */
-   public synchronized int GetScreen(char buffer[], int bufferLength, int plane)
-//                                       throws OhioException {
-                                       {
+   public synchronized int GetScreen(char buffer[], int bufferLength, int plane) {
+
       return GetScreen(buffer,bufferLength,0,screenSize,plane);
 
    }
@@ -399,7 +385,6 @@ public class ScreenPlanes implements TN5250jConstants {
     */
    public synchronized int GetScreen(char buffer[], int bufferLength, int from,
                                     int length, int plane)
-//                                    throws OhioException {
                                     {
 //      if(buffer == null)
 //         throw new OhioException(sessionVT.getSessionConfiguration(),
@@ -589,88 +574,7 @@ public class ScreenPlanes implements TN5250jConstants {
       return numBytes;
    }
 
-//      public final char getChar() {
-//           return sChar[0];
-//      }
-//
-//      public final int getCharAttr() {
-//           return attr;
-//      }
-//
-//      public final boolean isAttributePlace() {
-//         return attributePlace;
-//      }
-//
-//      public final void setChar(char c) {
-//         isChanged = sChar[0] == c ? false : true;
-//   //      if (isChanged)
-//   //         System.out.println(sChar[0] + " - " + c);
-//         sChar[0] = c;
-//         if (attributePlace)
-//            setCharAndAttr(c,32,false);
-//
-//      }
-//
-//      public final void setUseGUI(int which) {
-//
-//         isChanged = whichGui == which ? false : true;
-//
-//         whichGui = which;
-//         if (which == NO_GUI) {
-//           useGui = false;
-//         }
-//         else {
-//           useGui = true;
-//         }
-//      }
-//
-//      public final int getWhichGUI() {
-//
-//         return whichGui;
-//      }
-//
-//
-//      public final void setCharAndAttr(char c, int a, boolean ap) {
-//
-//         isChanged = sChar[0] == c ? false : true;
-//   //      if (isChanged)
-//   //         System.out.println(sChar[0] + " - " + c);
-//
-//         sChar[0] = c;
-//   //         useGui = false;
-//   //         whichGui = NO_GUI;
-//
-//         if(attr != a)
-//             setAttribute(a);
-//
-//         if(ap) {
-//            attributePlace = true;
-//            useGui = false;
-//            whichGui = NO_GUI;
-//
-//         }
-//         else
-//            attributePlace = false;
-//      }
-//
-//      public final void setRowCol(int row, int col) {
-//
-//         cArea.setRect((s.fmWidth*col),s.fmHeight * row,s.fmWidth,s.fmHeight);
-//         x = s.fmWidth * col;
-//         y = s.fmHeight * row;
-//         cy = (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading()));
-//      }
-//
-
    public final void disperseAttribute(int pos, int attr) {
-
-//      Screen5250 s = scr;
-//
-//      boolean colSep = false;
-//      boolean underLine = false;
-//      boolean nonDisplay = false;
-//      java.awt.Color fg;
-//      java.awt.Color bg;
 
       char c = 0;
       char cs = 0;
@@ -861,9 +765,6 @@ public class ScreenPlanes implements TN5250jConstants {
 	   boolean retHS = false;
 	   StringBuffer hsMore = s.getHSMore();
 	   StringBuffer hsBottom = s.getHSBottom();
-	//   Rectangle2D mArea = new Rectangle2D.Float(0,0,0,0);
-	//   Rectangle2D mwArea = new Rectangle2D.Float(0,0,0,0);
-	//   ArrayList mArray = new ArrayList(10);
 
 	      for (int x = 0; x < lenScreen; x++) {
 
@@ -1129,52 +1030,6 @@ public class ScreenPlanes implements TN5250jConstants {
 
 	      }
 
-
-	//      int pos = 0;
-	//
-	//      mArea.setRect(0,0,0,0);
-	//      mwArea.setRect(0,0,0,0);
-	//      for (int k = 0; k < numCols;k++) {
-	////         System.out.println(k);
-	//         pos =k;
-	//         boolean gui = false;
-	//         for (int j=0; j < 19; j++) {
-	//            if (screen[pos].whichGui != NO_GUI)
-	////                  System.out.print(screen[pos].getChar());
-	//
-	//                  mwArea.setRect(screen[pos].x,
-	//                                    screen[pos].y,
-	//                                    screen[pos].x,
-	//                                    screen[pos].y);
-	//
-	//                  if (mArea.getWidth() == 0) {
-	//                     mArea.setRect(mwArea);
-	//                  }
-	//                  else {
-	//                     double x1 = Math.min(mArea.getX(), mwArea.getX());
-	//                     double x2 = Math.max(mArea.getWidth(), mwArea.getWidth());
-	//                     double y1 = Math.min(mArea.getY(), mwArea.getY());
-	//                     double y2 = Math.max(mArea.getHeight(), mwArea.getHeight());
-	//                     mArea.setRect(x1, y1, x2, y2);
-	//
-	//                  }
-	//            pos += numCols;
-	//         }
-	//      }
-	//
-	//      if (mwArea.getWidth() != 0) {
-	//         System.out.println("Mennu area is " +
-	//                              s.getRow(s.getRowColFromPoint((int)mArea.getX(),(int)mArea.getY())) + "," +
-	//                              s.getCol(s.getRowColFromPoint((int)mArea.getX(),(int)mArea.getY())) + "," +
-	//                              s.getRow(s.getRowColFromPoint(
-	//                                       (int)mArea.getWidth(),
-	//                                       (int)mArea.getHeight())) + "," +
-	//                              s.getCol(s.getRowColFromPoint(
-	//                                       (int)mArea.getWidth(),
-	//                                       (int)mArea.getHeight()) ));
-	//      }
-
-
       return retHS;
 	}
 
@@ -1194,7 +1049,6 @@ public class ScreenPlanes implements TN5250jConstants {
 	               screen[sp] == '.' ||
 	               screen[sp] == '*') {
 	         hs =false;
-	//         System.out.println(" hs1 false " + screen[sp].getChar() + " " + sp);
 	         break;
 	      }
 	   }
@@ -1202,13 +1056,11 @@ public class ScreenPlanes implements TN5250jConstants {
 	   // now lets check for how long the option is it has to be numPref or less
 	   os = sp;
 	   while (hs && --os > 0 && screen[os] > ' ' ) {
-	//      System.out.println(" hs2 length " + (sp-os) + " " + screen[os].getChar());
 
 	      if (sp - os >= numPref || screen[os] == suff ||
 	               screen[os] == '.' ||
 	               screen[os] == '*') {
 	         hs = false;
-	//         System.out.println(" hs2 false at " + (sp-os) + " " + screen[os].getChar());
 	         break;
 	      }
 	   }
@@ -1227,7 +1079,6 @@ public class ScreenPlanes implements TN5250jConstants {
 	                  screen[sp] == '.' ||
 	               screen[sp] == '*') {
 	         hs =false;
-	//         System.out.println(" hs3 false at " + sp + " " + screen[sp].getChar());
 	         break;
 	      }
 	   }

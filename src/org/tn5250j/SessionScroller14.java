@@ -38,18 +38,18 @@ public class SessionScroller14 implements SessionScrollerInterface,
 
    Screen5250 screen;
 
-	public SessionScroller14(Session ses) {
+	public SessionScroller14(SessionGUI ses) {
 
       screen = ses.getScreen();
 	}
 
-   public void addMouseWheelListener(Session ses) {
+   public void addMouseWheelListener(SessionGUI ses) {
 
       ses.addMouseWheelListener(this);
 
    }
 
-   public void removeMouseWheelListener(Session ses) {
+   public void removeMouseWheelListener(SessionGUI ses) {
 
       ses.removeMouseWheelListener(this);
 

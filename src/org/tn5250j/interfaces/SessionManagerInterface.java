@@ -31,11 +31,11 @@ public interface SessionManagerInterface {
 
    public abstract void closeSession(String sessionName);
 
-   public abstract void closeSession(Session sessionObject);
+   public abstract void closeSession(SessionGUI sessionObject);
 
 //   public abstract Session openSession(String configurationResource
 //                                                , String sessionName);
-   public abstract Session openSession(Properties props, String configurationResource
+   public abstract Session5250 openSession(Properties props, String configurationResource
                                                 , String sessionName);
 
 }

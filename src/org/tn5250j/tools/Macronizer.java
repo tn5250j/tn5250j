@@ -32,7 +32,7 @@ import java.util.*;
 import java.io.*;
 import javax.swing.*;
 
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.interfaces.ConfigureFactory;
 
@@ -147,7 +147,7 @@ public class Macronizer {
 
    }
 
-   public static void showRunScriptDialog(Session session) {
+   public static void showRunScriptDialog(SessionGUI session) {
 
       JPanel rsp = new JPanel();
       rsp.setLayout(new BorderLayout());
@@ -204,7 +204,7 @@ public class Macronizer {
 
    }
 
-   public final static void invoke (String macro, Session session) {
+   public final static void invoke (String macro, SessionGUI session) {
 
       String keys = getMacroByName(macro);
       if (keys != null)
@@ -213,7 +213,7 @@ public class Macronizer {
          try {
             if (!macro.endsWith(".py"))
                macro = macro + ".py";
-            InterpreterDriverManager.executeScriptFile((Session)session,"scripts" +
+            InterpreterDriverManager.executeScriptFile((SessionGUI)session,"scripts" +
                   File.separatorChar + macro);
          }
          catch (Exception ex) {

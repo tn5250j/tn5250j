@@ -29,7 +29,8 @@ package org.tn5250j.keyboard;
 import javax.swing.KeyStroke;
 import java.awt.event.*;
 
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
+import org.tn5250j.Session5250;
 import org.tn5250j.keyboard.actions.*;
 
 /**
@@ -41,7 +42,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
     * Creates a new keyboard handler
     * @param Session The session to which the keys should be sent
     */
-   public DefaultKeyboardHandler(Session session) {
+   public DefaultKeyboardHandler(Session5250 session) {
       super(session);
    }
 
@@ -131,28 +132,33 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
     */
    void initKeyBindings() {
 
+      if (session.getGUI() == null)
+         return;
+
+      SessionGUI sessionGui = session.getGUI();
+
       KeyStroke ks;
 
-      new NewSessionAction(session,keyMap);
-      new ToggleConnectionAction(session,keyMap);
-      new JumpNextAction(session,keyMap);
-      new JumpPrevAction(session,keyMap);
-      new HotspotsAction(session,keyMap);
-      new GuiAction(session,keyMap);
-      new DispMsgsAction(session,keyMap);
-      new AttributesAction(session,keyMap);
-      new PrintAction(session,keyMap);
-      new RulerAction(session,keyMap);
-      new CloseAction(session,keyMap);
-      new TransferAction(session,keyMap);
-      new EmailAction(session,keyMap);
-      new RunScriptAction(session,keyMap);
-      new DebugAction(session,keyMap);
-      new CopyAction(session,keyMap);
-      new PasteAction(session,keyMap);
-      new SpoolWorkAction(session,keyMap);
-      new QuickEmailAction(session,keyMap);
-      new OpenSameAction(session,keyMap);
+      new NewSessionAction(sessionGui,keyMap);
+      new ToggleConnectionAction(sessionGui,keyMap);
+      new JumpNextAction(sessionGui,keyMap);
+      new JumpPrevAction(sessionGui,keyMap);
+      new HotspotsAction(sessionGui,keyMap);
+      new GuiAction(sessionGui,keyMap);
+      new DispMsgsAction(sessionGui,keyMap);
+      new AttributesAction(sessionGui,keyMap);
+      new PrintAction(sessionGui,keyMap);
+      new RulerAction(sessionGui,keyMap);
+      new CloseAction(sessionGui,keyMap);
+      new TransferAction(sessionGui,keyMap);
+      new EmailAction(sessionGui,keyMap);
+      new RunScriptAction(sessionGui,keyMap);
+      new DebugAction(sessionGui,keyMap);
+      new CopyAction(sessionGui,keyMap);
+      new PasteAction(sessionGui,keyMap);
+      new SpoolWorkAction(sessionGui,keyMap);
+      new QuickEmailAction(sessionGui,keyMap);
+      new OpenSameAction(sessionGui,keyMap);
 
    }
 
@@ -235,14 +241,14 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
                recordBuffer.append(lastKeyStroke);
          }
          else {
-            session.executeMeMacro(lastKeyStroke);
+            session.getGUI().executeMacro(lastKeyStroke);
          }
          if (lastKeyStroke.startsWith("[mark")) {
             if (lastKeyStroke.equals("[markleft]") ||
                   lastKeyStroke.equals("[markright]") ||
                   lastKeyStroke.equals("[markup]") ||
                   lastKeyStroke.equals("[markdown]")) {
-               session.doKeyBoundArea(e,lastKeyStroke);
+               session.getGUI().doKeyBoundArea(e,lastKeyStroke);
             }
          }
       }
@@ -292,7 +298,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 //      }
 //      else
          s += kc;
-      if (!session.getVT().isConnected()   )
+      if (!session.isConnected())
          return;
       screen.sendKeys(s);
       if (recording)
@@ -324,7 +330,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
                recordBuffer.append(s);
          }
          else
-            session.executeMeMacro(s);
+            session.getGUI().executeMacro(s);
 
       }
       else

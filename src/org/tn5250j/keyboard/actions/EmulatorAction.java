@@ -30,7 +30,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.KeyStroke;
 
 import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.interfaces.OptionAccessFactory;
 
 /**
@@ -39,15 +39,15 @@ import org.tn5250j.interfaces.OptionAccessFactory;
 public abstract class EmulatorAction extends AbstractAction {
 
    // content pane to be used if needed by subclasses
-   protected Session session;
+   protected SessionGUI session;
 
-   public EmulatorAction(Session session, String name) {
+   public EmulatorAction(SessionGUI session, String name) {
 
       super(name);
       this.session = session;
    }
 
-   public EmulatorAction(Session session, String name, KeyStroke ks, KeyMapper keyMap) {
+   public EmulatorAction(SessionGUI session, String name, KeyStroke ks, KeyMapper keyMap) {
 
       this(session,name);
 

@@ -37,7 +37,7 @@ import org.tn5250j.tools.system.OperatingSystem;
 public class SessionScroller implements SessionScrollerInterface, TN5250jConstants {
 
    Screen5250 screen;
-   Session session;
+   SessionGUI session;
    static boolean useJava14;
 
    SessionScrollerInterface _instance;
@@ -58,7 +58,7 @@ public class SessionScroller implements SessionScrollerInterface, TN5250jConstan
 	}
 
 
-   protected SessionScrollerInterface getScrollerInstance(Session ses) {
+   protected SessionScrollerInterface getScrollerInstance(SessionGUI ses) {
 
       if (_instance != null)
          return _instance;
@@ -84,7 +84,7 @@ public class SessionScroller implements SessionScrollerInterface, TN5250jConstan
 
          scroller_class       = loader.loadClass(SCROLLER_NAME14);
 
-         constructor1 = scroller_class.getConstructor(new Class[] {Session.class});
+         constructor1 = scroller_class.getConstructor(new Class[] {SessionGUI.class});
 
          try {
             Object obj= constructor1.newInstance(new Object[] {session});
@@ -108,12 +108,12 @@ public class SessionScroller implements SessionScrollerInterface, TN5250jConstan
 
    }
 
-   public void addMouseWheelListener(Session ses) {
+   public void addMouseWheelListener(SessionGUI ses) {
 
 
    }
 
-   public void removeMouseWheelListener(Session ses) {
+   public void removeMouseWheelListener(SessionGUI ses) {
 
 
    }

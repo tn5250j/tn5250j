@@ -43,18 +43,18 @@ import org.tn5250j.interfaces.OptionAccessFactory;
 public class SessionPopup implements TN5250jConstants {
 
    Screen5250 screen;
-   Session session;
+   SessionGUI session;
    tnvt vt;
    Macronizer macros;
    String newMacName;
 
-	public SessionPopup(Session ses, MouseEvent me) {
+	public SessionPopup(SessionGUI ses, MouseEvent me) {
 
       JMenuItem menuItem;
       Action action;
       JPopupMenu popup = new JPopupMenu();
       session = ses;
-      vt = session.getVT();
+      vt = session.getSession().getVT();
 //      final Gui5250 g = session;
       screen = session.getScreen();
       JMenuItem mi;
@@ -94,7 +94,7 @@ public class SessionPopup implements TN5250jConstants {
 
          action = new AbstractAction(LangTool.getString("popup.copy")) {
                public void actionPerformed(ActionEvent e) {
-                  session.copyMe();
+                  session.actionCopy();
                   session.getFocusForMe();
                }
            };
@@ -258,7 +258,7 @@ public class SessionPopup implements TN5250jConstants {
 
             action = new AbstractAction(LangTool.getString("popup.settings")) {
                   public void actionPerformed(ActionEvent e) {
-                     session.doAttributes();
+                     session.actionAttributes();
                     session.getFocusForMe();
                   }
               };

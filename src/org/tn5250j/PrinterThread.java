@@ -28,7 +28,7 @@ package org.tn5250j;
 import java.awt.print.*;
 import java.awt.*;
 import java.awt.font.*;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.SessionConfig;
 
 public class PrinterThread extends Thread implements Printable, TN5250jConstants {
@@ -41,18 +41,18 @@ public class PrinterThread extends Thread implements Printable, TN5250jConstants
    int numRows;
    Color colorBg;
    Font font;
-   Session session;
+   SessionGUI session;
    boolean toDefault;
    SessionConfig config;
 
    public PrinterThread (Screen5250 scr, Font font, int cols, int rows,
-                           Color colorBg, boolean toDefaultPrinter, Session ses) {
+                           Color colorBg, boolean toDefaultPrinter, SessionGUI ses) {
 
 
       setPriority(1);
       session = ses;
       session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-      config = ses.getConfiguration();
+      config = ses.getSession().getConfiguration();
       int len = scr.getScreenLength();
       screen = new char[len];
       screenExtendedAttr = new char[len];

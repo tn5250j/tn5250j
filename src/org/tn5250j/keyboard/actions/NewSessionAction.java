@@ -30,7 +30,7 @@ import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.keyboard.KeyMapper;
 
 /**
@@ -38,7 +38,7 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class NewSessionAction extends EmulatorAction implements TN5250jConstants {
 
-   public NewSessionAction(Session session, KeyMapper keyMap) {
+   public NewSessionAction(SessionGUI session, KeyMapper keyMap) {
       super(session,MNEMONIC_OPEN_NEW,
             KeyStroke.getKeyStroke(KeyEvent.VK_N,KeyEvent.ALT_MASK),
             keyMap);

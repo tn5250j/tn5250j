@@ -25,8 +25,8 @@ import org.tn5250j.*;
 public interface SessionsInterface {
 
    public abstract int getCount();
-   public abstract Session item (int index);
-   public abstract Session item (String sessionName);
+   public abstract Session5250 item (int index);
+   public abstract Session5250 item (String sessionName);
    public abstract void refresh();
 
 }

@@ -23,7 +23,7 @@ package org.tn5250j.interfaces;
 import javax.swing.*;
 
 import org.tn5250j.gui.TN5250jFrame;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.My5250;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionChangeEvent;
@@ -61,11 +61,11 @@ public abstract class GUIViewInterface extends TN5250jFrame {
       this.unfocused = unfocused;
    }
 
-   public abstract void addSessionView(String descText,Session session);
-   public abstract void removeSessionView(Session targetSession);
-   public abstract boolean containsSession(Session session);
+   public abstract void addSessionView(String descText,SessionGUI session);
+   public abstract void removeSessionView(SessionGUI targetSession);
+   public abstract boolean containsSession(SessionGUI session);
    public abstract int getSessionViewCount();
-   public abstract Session getSessionAt( int index);
+   public abstract SessionGUI getSessionAt( int index);
    public abstract void onSessionJump(SessionJumpEvent jumpEvent);
    public abstract void onSessionChanged(SessionChangeEvent changeEvent);
 

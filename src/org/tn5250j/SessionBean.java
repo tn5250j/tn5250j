@@ -4,10 +4,10 @@
 * <p>Description: TN5250 Session as a bean with auto signon features</p>
 * <p>Copyright: Copyright (c) 2000 - 2004</p>
 * <p>
-* 
+*
 * @author Luc Gorrens
 * @version 1.0
-* 
+*
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2, or (at your option)
@@ -46,11 +46,11 @@ import javax.swing.Timer;
 import javax.swing.border.Border;
 
 import org.tn5250j.interfaces.ConfigureFactory;
-
+import org.tn5250j.Session5250;
 
 
 public class SessionBean
-    extends Session
+    extends SessionGUI
 {
 //      // ===========================================================================
 //      //                      C o n s t r u c t o r s
@@ -68,10 +68,22 @@ public class SessionBean
                      String configurationResource,
                      String sessionName)
   {
-    super(sessionProperties, null, sessionName, new SessionConfig(configurationResource, sessionName));
-    this.sessionProperties = sessionProperties;
+
+//   Session52520 session = new Session5250(sessionProperties, null, sessionName, new SessionConfig(configurationResource, sessionName));
+   this(new Session5250(sessionProperties, null, sessionName,
+         new SessionConfig(configurationResource, sessionName)));
+   //    super(sessionProperties, null, sessionName, new SessionConfig(configurationResource, sessionName));
+//    this.sessionProperties = sessionProperties;
+//    this.sessionProperties.put(SESSION_LOCALE, Locale.getDefault());
+//    this.getConfiguration().addSessionConfigListener(this);
+  }
+
+  public SessionBean(Session5250 session) {
+
+    super(session);
+    this.sessionProperties = session.sesProps;
     this.sessionProperties.put(SESSION_LOCALE, Locale.getDefault());
-    this.getConfiguration().addSessionConfigListener(this);
+    this.getSession().getConfiguration().addSessionConfigListener(this);
   }
 
   // ===========================================================================
@@ -270,16 +282,16 @@ public class SessionBean
 
   public void signoff()
   {
-    if (vt != null)
+    if (session.getVT() != null)
     {
       if (this.isConnected())
-        this.vt.systemRequest("90");
+        this.session.getVT().systemRequest("90");
     }
   }
 
   public void systemRequest(String srCode)
   {
-    this.vt.systemRequest(srCode);
+    this.session.getVT().systemRequest(srCode);
   }
 
   // ===========================================================================
@@ -464,7 +476,7 @@ public class SessionBean
 
   private void failIfConnected()
   {
-    if ((vt != null) && (isConnected()))
+    if ((session.getVT() != null) && (isConnected()))
       throw new IllegalStateException("Cannot change property after being connected!");
   }
 

@@ -32,7 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.JFrame;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.mailtools.SendEMailDialog;
 
@@ -41,7 +41,7 @@ import org.tn5250j.mailtools.SendEMailDialog;
  */
 public class QuickEmailAction extends EmulatorAction implements TN5250jConstants {
 
-   public QuickEmailAction(Session session, KeyMapper keyMap) {
+   public QuickEmailAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_QUICK_MAIL,
             KeyStroke.getKeyStroke(KeyEvent.VK_F,KeyEvent.ALT_MASK),

@@ -40,7 +40,7 @@ import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.gui.TN5250jFileChooser;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.mailtools.SendEMailDialog;
 
 import com.lowagie.text.pdf.*;
@@ -104,7 +104,7 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
    SpooledFile splfile;
 
    // Session object
-   Session session;
+   SessionGUI session;
 
    JPanel twoPDF;
    JPanel twoText;
@@ -132,7 +132,7 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
    private Thread workingThread;
 
    //Construct the frame
-   public SpoolExportWizard(SpooledFile splfile, Session session) {
+   public SpoolExportWizard(SpooledFile splfile, SessionGUI session) {
 
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       this.splfile = splfile;
@@ -302,11 +302,11 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
       textProps.add(getEditor);
 
       // see if we have an external viewer defined and if we use it or not
-      if (session.getConfiguration().isPropertyExists("useExternal"))
+      if (session.getSession().getConfiguration().isPropertyExists("useExternal"))
          openAfter.setEnabled(true);
 
-      if (session.getConfiguration().isPropertyExists("externalViewer"))
-         editor.setText(session.getConfiguration().getStringProperty("externalViewer"));
+      if (session.getSession().getConfiguration().isPropertyExists("externalViewer"))
+         editor.setText(session.getSession().getConfiguration().getStringProperty("externalViewer"));
 
       twoText.add(textProps,BorderLayout.CENTER);
 
@@ -756,15 +756,15 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
 
                // now we set the field to use external viewer or not
                if (openAfter.isSelected())
-                  session.getConfiguration().setProperty("useExternal","");
+                  session.getSession().getConfiguration().setProperty("useExternal","");
                else
-                  session.getConfiguration().removeProperty("useExternal");
+                  session.getSession().getConfiguration().removeProperty("useExternal");
 
                // now we set the property for external viewer
-               session.getConfiguration().setProperty("externalViewer",
+               session.getSession().getConfiguration().setProperty("externalViewer",
                                                       editor.getText());
                // save it off
-               session.getConfiguration().saveSessionProps();
+               session.getSession().getConfiguration().saveSessionProps();
             }
             catch (Throwable t) {
                // print a stack trace

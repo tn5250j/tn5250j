@@ -47,9 +47,9 @@ public final class LoadMacroMenu {
       macroVector = new Vector();
    }
 
-   public static void loadMacros(Session session, Macronizer macros, JMenu menu) {
+   public static void loadMacros(SessionGUI session, Macronizer macros, JMenu menu) {
 
-      final Session ses = session;
+      final SessionGUI ses = session;
       Vector mv = new Vector();
       Action action;
 
@@ -69,7 +69,7 @@ public final class LoadMacroMenu {
       for (int x = 0; x < mv.size(); x++) {
          action = new AbstractAction((String)mv.get(x)) {
                public void actionPerformed(ActionEvent e) {
-                  ses.executeMeMacro(e);
+                  ses.executeMacro(e);
                }
            };
 
@@ -120,7 +120,7 @@ public final class LoadMacroMenu {
                               "scripts",menu,session);
    }
 
-   private static void doOptionsPopup(MouseEvent e, Session session) {
+   private static void doOptionsPopup(MouseEvent e, SessionGUI session) {
 
       Action action;
 
@@ -136,7 +136,7 @@ public final class LoadMacroMenu {
 
       j.add(action);
 
-      final Session ses = session;
+      final SessionGUI ses = session;
       action = new AbstractAction(LangTool.getString("popup.execute")
                      + " " + ((JMenuItem)e.getSource()).getText()) {
          public void actionPerformed(ActionEvent e) {
@@ -152,7 +152,7 @@ public final class LoadMacroMenu {
 
    }
 
-   public static void scriptDir(String pathName, JMenu menu,Session session) {
+   public static void scriptDir(String pathName, JMenu menu,SessionGUI session) {
 
       File root = new File(pathName);
 
@@ -181,7 +181,7 @@ public final class LoadMacroMenu {
     * @param session
     */
    private static void loadScripts(Vector vector, String path, File directory,
-			Session session) {
+			SessionGUI session) {
 
 		ExecuteScriptAction action;
 

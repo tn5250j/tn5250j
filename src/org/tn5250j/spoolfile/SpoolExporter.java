@@ -39,7 +39,7 @@ import org.tn5250j.gui.*;
 import org.tn5250j.tnvt;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 
 public class SpoolExporter extends TN5250jFrame {
 
@@ -64,7 +64,7 @@ public class SpoolExporter extends TN5250jFrame {
 
    // Connection vt
    tnvt vt;
-   Session session;
+   SessionGUI session;
 
    Vector data = new Vector();
    Vector row = new Vector();
@@ -72,7 +72,7 @@ public class SpoolExporter extends TN5250jFrame {
 
    SpooledFileList splfList;
 
-   public SpoolExporter(tnvt vt, Session session) {
+   public SpoolExporter(tnvt vt, SessionGUI session) {
 
       this.vt = vt;
       this.session = session;

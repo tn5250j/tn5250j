@@ -27,12 +27,14 @@
 package org.tn5250j.keyboard;
 
 import java.awt.event.*;
-import org.tn5250j.Session;
+import javax.swing.*;
+
+import org.tn5250j.SessionGUI;
+import org.tn5250j.Session5250;
 import org.tn5250j.Screen5250;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.tnvt;
 import org.tn5250j.tools.system.OperatingSystem;
-import javax.swing.*;
 
 /**
  *
@@ -40,7 +42,8 @@ import javax.swing.*;
 public abstract class KeyboardHandler extends KeyAdapter implements
                                              org.tn5250j.TN5250jConstants,
                                              KeyChangeListener {
-   protected Session session;
+   protected Session5250 session;
+   protected SessionGUI sessionGui;
    protected Screen5250 screen;
    protected boolean isLinux;
    protected boolean isAltGr;
@@ -54,10 +57,11 @@ public abstract class KeyboardHandler extends KeyAdapter implements
     * Creates a new keyboard handler.
     * @param session The session that will be sent the keys
     */
-   public KeyboardHandler(Session session) {
+   public KeyboardHandler(Session5250 session) {
 
       this.session = session;
       this.screen = session.getScreen();
+      sessionGui = session.getGUI();
 
 //      String os = System.getProperty("os.name");
 //      if (os.toLowerCase().indexOf("linux") != -1) {
@@ -78,7 +82,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements
 
    }
 
-   public static KeyboardHandler getKeyboardHandlerInstance (Session session) {
+   public static KeyboardHandler getKeyboardHandlerInstance (Session5250 session) {
 
       return new DefaultKeyboardHandler(session);
    }
@@ -87,12 +91,12 @@ public abstract class KeyboardHandler extends KeyAdapter implements
 
    protected InputMap getInputMap() {
 
-      return session.getInputMap();
+      return sessionGui.getInputMap();
    }
 
    protected ActionMap getActionMap() {
 
-      return session.getActionMap();
+      return sessionGui.getActionMap();
    }
 
    public void onKeyChanged() {
@@ -128,25 +132,24 @@ public abstract class KeyboardHandler extends KeyAdapter implements
       return recording;
    }
 
-   protected tnvt getVT() {
-      return session.getVT();
-   }
-
    /**
     *  Remove the references to all listeners before closing
     *
     *  Added by Luc to fix a memory leak.
     */
-   public void sessionClosed(Session session) {
+   public void sessionClosed(SessionGUI session) {
       keyMap.removeKeyChangeListener(this);
    }
 
    protected boolean emulatorAction(KeyStroke ks, KeyEvent e){
 
+      if (sessionGui == null)
+         return false;
+
       InputMap map = getInputMap();
       ActionMap am = getActionMap();
 
-      if(map != null && am != null && session.isEnabled()) {
+      if(map != null && am != null && sessionGui.isEnabled()) {
          Object binding = map.get(ks);
          Action action = (binding == null) ? null : am.get(binding);
          if (action != null) {
