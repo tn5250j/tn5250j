@@ -418,7 +418,8 @@ public class SendEMailDialog {
 		gbc.insets = new Insets(5, 5, 5, 10);		
 		semp.add(subject, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = 0; gbc.gridy = 4;
+		gbc.gridx = 0; gbc.gridy = 3;
+		gbc.gridheight = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 10, 5, 5);		
 		semp.add(bodyl, gbc);
