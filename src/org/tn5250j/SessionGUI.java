@@ -32,7 +32,7 @@ import org.tn5250j.interfaces.ScanListener;
 /**
  * A host GUI session
  */
-public class SessionGUI extends Gui5250 implements TN5250jConstants {
+public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConstants {
 
    private String configurationResource;
    private String sessionName;
@@ -55,7 +55,7 @@ public class SessionGUI extends Gui5250 implements TN5250jConstants {
       sce = new SessionChangeEvent(this);
 
       session.getConfiguration().addSessionConfigListener(this);
-
+      session.addSessionListener(this);
    }
 
    public Session5250 getSession() {
@@ -148,6 +148,17 @@ public class SessionGUI extends Gui5250 implements TN5250jConstants {
    public void disconnect() {
 
       session.disconnect();
+   }
+
+   public void onSessionChanged(SessionChangeEvent changeEvent) {
+
+      switch (changeEvent.getState()) {
+         case STATE_CONNECTED:
+            String mac = sesConfig.getStringProperty("connectMacro");
+            if (mac.length() > 0)
+               executeMacro(mac);
+            break;
+      }
    }
 
    /**

@@ -52,7 +52,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
                                                       TN5250jConstants,
                                                       RubberBandCanvasIF,
-                                                      SessionListener,
+                                                      //SessionListener,
                                                       SessionConfigListener {
 //                                                      DropTargetListener {
 
@@ -523,23 +523,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
       }
 
-//      screen.propertyChange(pce);
-
       resizeMe();
       repaint();
 
-   }
-
-   public void onSessionChanged(SessionChangeEvent changeEvent) {
-
-      switch (changeEvent.getState()) {
-         case STATE_CONNECTED:
-
-            String mac = sesConfig.getStringProperty("connectMacro");
-            if (mac.length() > 0)
-               executeMacro(mac);
-            break;
-      }
    }
 
    public tnvt getVT() {
@@ -852,9 +838,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
          rubberband.draw();
       }
 
-      // this was a fix for a keypad drawing problem under JDK1.2/1.3
-	   // but caused problems under Linux/JDK1.4
-	   //keyPad.repaint();
+//      keyPad.repaint();
+
    }
 
    public void update(Graphics g) {
