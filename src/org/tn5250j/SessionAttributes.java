@@ -46,39 +46,24 @@ public class SessionAttributes extends JDialog {
 
    String fileName;
    Properties props = null;
-   Gui5250 gui = null;
    JPanel jpm = new JPanel(new BorderLayout());
 
-   JRadioButton csLine;
-   JRadioButton csDot;
-   JRadioButton csShortLine;
-   JRadioButton cFull;
-   JRadioButton cHalf;
-   JRadioButton cLine;
-   JRadioButton saNormal;
-   JRadioButton chNone;
-   JRadioButton chHorz;
-   JRadioButton chVert;
-   JRadioButton chCross;
-   JCheckBox rulerFixed;
-   JCheckBox guiCheck;
-   JCheckBox guiShowUnderline;
    JCheckBox hsCheck;
    JCheckBox kpCheck;
    JCheckBox dceCheck;
-   JCheckBox signoffCheck;
    JTextField connectMacro;
    JTextField hsMore;
    JTextField hsBottom;
-   Properties schemaProps;
-   Schema colorSchema;
-   JTextField cursorBottOffset;
    JCheckBox defaultPrinter;
 
    ColorAttributesPanel cpp;
    FontAttributesPanel fp;
+   DisplayAttributesPanel display;
+   CursorAttributesPanel cuPanel;
+   SignoffAttributesPanel signoff;
 
    private SessionConfig changes = null;
+   JTree tree = new JTree();
 
    public SessionAttributes(Frame parent, SessionConfig config ) {
       super(parent);
@@ -98,216 +83,18 @@ public class SessionAttributes extends JDialog {
    /**Component initialization*/
    private void jbInit() throws Exception  {
 
-
       Dimension ps = null;
 
       // define font panel
       fp = new FontAttributesPanel(changes);
       // define colors panel
       cpp = new ColorAttributesPanel(changes);
-
       // define display panel
-      final JPanel display = new JPanel();
-      display.setLayout(new BoxLayout(display,BoxLayout.Y_AXIS));
-
-      // define column separator panel
-      JPanel csp = new JPanel();
-      TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.cs"));
-      csp.setBorder(tb);
-
-      csLine = new JRadioButton(LangTool.getString("sa.csLine"));
-      csLine.setActionCommand("Line");
-      csDot = new JRadioButton(LangTool.getString("sa.csDot"));
-      csDot.setActionCommand("Dot");
-      csShortLine = new JRadioButton(LangTool.getString("sa.csShortLine"));
-      csShortLine.setActionCommand("ShortLine");
-
-      // Group the radio buttons.
-      ButtonGroup csGroup = new ButtonGroup();
-      csGroup.add(csLine);
-      csGroup.add(csDot);
-      csGroup.add(csShortLine);
-
-      if (getStringProperty("colSeparator").equals("Dot"))
-         csDot.setSelected(true);
-      else if (getStringProperty("colSeparator").equals("ShortLine"))
-         csShortLine.setSelected(true);
-      else
-         csLine.setSelected(true);
-
-      csp.add(csLine);
-      csp.add(csDot);
-      csp.add(csShortLine);
-
-
-      // define show attributs panel
-      JPanel sap = new JPanel();
-      sap.setBorder(
-         BorderFactory.createTitledBorder(LangTool.getString("sa.showAttr")));
-
-      saNormal = new JRadioButton(LangTool.getString("sa.showNormal"));
-      saNormal.setActionCommand("Normal");
-      JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
-      saHex.setActionCommand("Hex");
-
-      // Group the radio buttons.
-      ButtonGroup saGroup = new ButtonGroup();
-      saGroup.add(saNormal);
-      saGroup.add(saHex);
-
-      if (getStringProperty("showAttr").equals("Hex"))
-         saHex.setSelected(true);
-      else
-         saNormal.setSelected(true);
-
-      sap.add(saNormal);
-      sap.add(saHex);
-
-      // define gui panel
-      JPanel cgp = new JPanel();
-      cgp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.cgp")));
-      cgp.setLayout(new AlignLayout(1,5,5));
-//      cgp.setLayout(new BoxLayout(cgp,BoxLayout.Y_AXIS));
-
-      guiCheck = new JCheckBox(LangTool.getString("sa.guiCheck"));
-      guiShowUnderline = new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
-
-      if (getStringProperty("guiInterface").equals("Yes"))
-         guiCheck.setSelected(true);
-
-      // since this is a new property added then it might not exist in existing
-      //    profiles and it should be defaulted to yes.
-      String under = getStringProperty("guiShowUnderline");
-      if (under.equals("Yes") || under.length() == 0)
-         guiShowUnderline.setSelected(true);
-
-      cgp.add(guiCheck);
-      cgp.add(guiShowUnderline);
-
-      display.add(csp);
-      display.add(sap);
-      display.add(cgp);
-
+      display = new DisplayAttributesPanel(changes);
       // define cursor panel
-      final JPanel cuPanel = new JPanel();
-      cuPanel.setLayout(new BoxLayout(cuPanel,BoxLayout.Y_AXIS));
-
-
-      // define cursor size panel
-      JPanel crp = new JPanel();
-      crp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.crsSize")));
-      cFull = new JRadioButton(LangTool.getString("sa.cFull"));
-      cHalf = new JRadioButton(LangTool.getString("sa.cHalf"));
-      cLine = new JRadioButton(LangTool.getString("sa.cLine"));
-
-      // Group the radio buttons.
-      ButtonGroup cGroup = new ButtonGroup();
-      cGroup.add(cFull);
-      cGroup.add(cHalf);
-      cGroup.add(cLine);
-
-      int cursorSize = 0;
-
-      if (getStringProperty("cursorSize").equals("Full"))
-         cursorSize = 2;
-      if (getStringProperty("cursorSize").equals("Half"))
-         cursorSize = 1;
-
-      switch (cursorSize) {
-
-         case 0:
-            cLine.setSelected(true);
-            break;
-         case 1:
-            cHalf.setSelected(true);
-            break;
-         case 2:
-            cFull.setSelected(true);
-            break;
-
-
-      }
-      crp.add(cFull);
-      crp.add(cHalf);
-      crp.add(cLine);
-
-      // define cursor ruler panel
-      JPanel chp = new JPanel();
-      chp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.crossHair")));
-      chNone = new JRadioButton(LangTool.getString("sa.chNone"));
-      chHorz = new JRadioButton(LangTool.getString("sa.chHorz"));
-      chVert = new JRadioButton(LangTool.getString("sa.chVert"));
-      chCross = new JRadioButton(LangTool.getString("sa.chCross"));
-
-      // Group the radio buttons.
-      ButtonGroup chGroup = new ButtonGroup();
-      chGroup.add(chNone);
-      chGroup.add(chHorz);
-      chGroup.add(chVert);
-      chGroup.add(chCross);
-
-      int crossHair = 0;
-
-      if (getStringProperty("crossHair").equals("Horz"))
-         crossHair = 1;
-      if (getStringProperty("crossHair").equals("Vert"))
-         crossHair = 2;
-      if (getStringProperty("crossHair").equals("Both"))
-         crossHair = 3;
-
-      switch (crossHair) {
-
-         case 0:
-            chNone.setSelected(true);
-            break;
-         case 1:
-            chHorz.setSelected(true);
-            break;
-         case 2:
-            chVert.setSelected(true);
-            break;
-         case 3:
-            chCross.setSelected(true);
-            break;
-
-
-      }
-      chp.add(chNone);
-      chp.add(chHorz);
-      chp.add(chVert);
-      chp.add(chCross);
-
-      // define double click as enter
-      JPanel rulerFPanel = new JPanel();
-      rulerFPanel.setBorder(BorderFactory.createTitledBorder(""));
-
-      rulerFixed = new JCheckBox(LangTool.getString("sa.rulerFixed"));
-
-      rulerFPanel.add(rulerFixed);
-
-      // define double click as enter
-      JPanel bottOffPanel = new JPanel();
-      bottOffPanel.setBorder(BorderFactory.createTitledBorder(
-                                    LangTool.getString("sa.curBottOffset")));
-
-      cursorBottOffset = new JTextField(5);
-
-      try {
-         int i = Integer.parseInt(getStringProperty("cursorBottOffset","0"));
-         cursorBottOffset.setText(Integer.toString(i));
-      }
-      catch (NumberFormatException ne) {
-         cursorBottOffset.setText("0");
-      }
-
-
-      bottOffPanel.add(cursorBottOffset);
-
-      cuPanel.add(crp);
-      cuPanel.add(chp);
-      cuPanel.add(rulerFPanel);
-      cuPanel.add(bottOffPanel);
-
+      cuPanel = new CursorAttributesPanel(changes);
+      // define signoff panel
+      signoff = new SignoffAttributesPanel(changes);
 
       // define onConnect panel
       final JPanel onConnect = new JPanel();
@@ -341,23 +128,6 @@ public class SessionAttributes extends JDialog {
 
       dcep.add(dceCheck);
       mouse.add(dcep);
-
-      // define signoff panel
-      final JPanel signoff = new JPanel();
-      signoff.setLayout(new BoxLayout(signoff,BoxLayout.Y_AXIS));
-
-      // define double click as enter
-      JPanel soConfirm = new JPanel();
-      soConfirm.setBorder(BorderFactory.createTitledBorder(
-                           LangTool.getString("sa.titleSignoff")));
-
-      signoffCheck = new JCheckBox(LangTool.getString("sa.confirmSignoff"));
-
-      // check if double click sends enter
-      signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
-
-      soConfirm.add(signoffCheck);
-      signoff.add(soConfirm);
 
       // define hotspot panel
       final JPanel hotspot = new JPanel();
@@ -434,7 +204,8 @@ public class SessionAttributes extends JDialog {
       createNodes(top);
 
       //Create a tree that allows one selection at a time.
-      final JTree tree = new JTree(top);
+      tree = new JTree(top);
+
       tree.getSelectionModel().setSelectionMode
              (TreeSelectionModel.SINGLE_TREE_SELECTION);
 
@@ -546,6 +317,7 @@ public class SessionAttributes extends JDialog {
         DefaultMutableTreeNode attrib = null;
 
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeColors"));
+//        attrib = new DefaultMutableTreeNode(cpp);
         top.add(attrib);
 
         attrib = new DefaultMutableTreeNode(LangTool.getString("sa.nodeDisplay"));
@@ -609,28 +381,6 @@ public class SessionAttributes extends JDialog {
 
    }
 
-   protected final Color getColorProperty(String prop) {
-
-      if (props.containsKey(prop)) {
-         Color c = new Color(getIntProperty(prop));
-         return c;
-      }
-      else
-         return null;
-
-   }
-
-   protected final Color getColorProperty(String prop, Color defColor) {
-
-      if (props.containsKey(prop)) {
-         Color c = new Color(getIntProperty(prop));
-         return c;
-      }
-      else
-         return defColor;
-
-   }
-
    protected final void setProperty(String key, String val) {
 
       props.setProperty(key,val);
@@ -641,16 +391,6 @@ public class SessionAttributes extends JDialog {
 
       return props;
    }
-
-//   public void addPropertyChangeListener(PropertyChangeListener l) {
-//
-//      changes.addPropertyChangeListener(l);
-//   }
-
-//   public void removePropertyChangeListener(PropertyChangeListener l) {
-//
-//      changes.removePropertyChangeListener(l);
-//   }
 
    public void showIt() {
 
@@ -743,111 +483,31 @@ public class SessionAttributes extends JDialog {
 
    private void applyAttributes() {
 
+//      DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+//      Enumeration e = root.children();
+//      while (e.hasMoreElements())
+//         System.out.println(e.nextElement());
+//      (DefaultMutableTreeNode)tree.getModel().getRoot()
+//         for (int x = 0; x < compa.length; x ++) {
+//
+//            if (compa[x] instanceof org.tn5250j.settings.AttributesPanel) {
+//               System.out.println(compa.length + " " + x);
+//
+//   //            ((AttributesPanel)compa[x])
+//            }
+//         }
+
+
       // apply the font attributes
       fp.applyAttributes();
       // apply the color attributes
       cpp.applyAttributes();
-
-      if (csLine.isSelected()) {
-         changes.firePropertyChange(this,"colSeparator",
-                           getStringProperty("colSeparator"),
-                           "Line");
-         setProperty("colSeparator","Line");
-      }
-      else if (csShortLine.isSelected()) {
-         changes.firePropertyChange(this,"colSeparator",
-                           getStringProperty("colSeparator"),
-                           "ShortLine");
-         setProperty("colSeparator","ShortLine");
-      }
-
-      else {
-         changes.firePropertyChange(this,"colSeparator",
-                           getStringProperty("colSeparator"),
-                           "Dot");
-         setProperty("colSeparator","Dot");
-
-      }
-
-      if (cFull.isSelected()) {
-         changes.firePropertyChange(this,"cursorSize",
-                           getStringProperty("cursorSize"),
-                           "Full");
-         setProperty("cursorSize","Full");
-
-      }
-      if (cHalf.isSelected()) {
-         changes.firePropertyChange(this,"cursorSize",
-                           getStringProperty("cursorSize"),
-                           "Half");
-         setProperty("cursorSize","Half");
-      }
-      if (cLine.isSelected()) {
-         changes.firePropertyChange(this,"cursorSize",
-                           getStringProperty("cursorSize"),
-                           "Line");
-
-         setProperty("cursorSize","Line");
-      }
-
-      if (chNone.isSelected()) {
-         changes.firePropertyChange(this,"crossHair",
-                           getStringProperty("crossHair"),
-                           "None");
-         setProperty("crossHair","None");
-
-      }
-
-      if (chHorz.isSelected()) {
-         changes.firePropertyChange(this,"crossHair",
-                           getStringProperty("crossHair"),
-                           "Horz");
-         setProperty("crossHair","Horz");
-
-      }
-
-      if (chVert.isSelected()) {
-         changes.firePropertyChange(this,"crossHair",
-                           getStringProperty("crossHair"),
-                           "Vert");
-         setProperty("crossHair","Vert");
-
-      }
-
-      if (chCross.isSelected()) {
-         changes.firePropertyChange(this,"crossHair",
-                           getStringProperty("crossHair"),
-                           "Both");
-         setProperty("crossHair","Both");
-
-      }
-
-      if (rulerFixed.isSelected()) {
-         changes.firePropertyChange(this,"rulerFixed",
-                           getStringProperty("rulerFixed"),
-                           "Yes");
-         setProperty("rulerFixed","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"rulerFixed",
-                           getStringProperty("rulerFixed"),
-                           "No");
-         setProperty("rulerFixed","No");
-      }
-
-      if (saNormal.isSelected()) {
-         changes.firePropertyChange(this,"showAttr",
-                           getStringProperty("showAttr"),
-                           "Normal");
-         setProperty("showAttr","Normal");
-      }
-      else {
-         changes.firePropertyChange(this,"showAttr",
-                           getStringProperty("showAttr"),
-                           "Hex");
-         setProperty("showAttr","Hex");
-
-      }
+      // apply the display attributes
+      display.applyAttributes();
+      // apply the cursor attributes
+      cuPanel.applyAttributes();
+      // apply the signoff attributes
+      signoff.applyAttributes();
 
       if (dceCheck.isSelected()) {
          changes.firePropertyChange(this,"doubleClick",
@@ -860,32 +520,6 @@ public class SessionAttributes extends JDialog {
                            getStringProperty("doubleClick"),
                            "No");
          setProperty("doubleClick","No");
-      }
-
-      if (guiCheck.isSelected()) {
-         changes.firePropertyChange(this,"guiInterface",
-                           getStringProperty("guiInterface"),
-                           "Yes");
-         setProperty("guiInterface","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"guiInterface",
-                           getStringProperty("guiInterface"),
-                           "No");
-         setProperty("guiInterface","No");
-      }
-
-      if (guiShowUnderline.isSelected()) {
-         changes.firePropertyChange(this,"guiShowUnderline",
-                           getStringProperty("guiShowUnderline"),
-                           "Yes");
-         setProperty("guiShowUnderline","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"guiShowUnderline",
-                           getStringProperty("guiShowUnderline"),
-                           "No");
-         setProperty("guiShowUnderline","No");
       }
 
       if (hsCheck.isSelected()) {
@@ -930,26 +564,6 @@ public class SessionAttributes extends JDialog {
                         hsBottom.getText());
       setProperty("hsBottom",hsBottom.getText());
 
-//      changes.firePropertyChange(this,"fontScaleHeight",
-//                        getStringProperty("fontScaleHeight"),
-//                        verticalScale.getText());
-//      setProperty("fontScaleHeight",verticalScale.getText());
-//
-//      changes.firePropertyChange(this,"fontScaleWidth",
-//                        getStringProperty("fontScaleWidth"),
-//                        horizontalScale.getText());
-//      setProperty("fontScaleWidth",horizontalScale.getText());
-//
-//      changes.firePropertyChange(this,"fontPointSize",
-//                        getStringProperty("fontPointSize"),
-//                        pointSize.getText());
-//      setProperty("fontPointSize",pointSize.getText());
-
-      changes.firePropertyChange(this,"cursorBottOffset",
-                        getStringProperty("cursorBottOffset"),
-                        cursorBottOffset.getText());
-      setProperty("cursorBottOffset",cursorBottOffset.getText());
-
       if (defaultPrinter.isSelected()) {
          changes.firePropertyChange(this,"defaultPrinter",
                            getStringProperty("defaultPrinter"),
@@ -963,18 +577,6 @@ public class SessionAttributes extends JDialog {
          setProperty("defaultPrinter","No");
       }
 
-      if (signoffCheck.isSelected()) {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
-                           "Yes");
-         setProperty("confirmSignoff","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
-                           "No");
-         setProperty("confirmSignoff","No");
-      }
 
       setProperty("saveme","yes");
 
@@ -993,208 +595,4 @@ public class SessionAttributes extends JDialog {
 
    }
 
-   private void loadSchemas(JComboBox schemas) {
-
-      schemaProps = new Properties();
-      URL file=null;
-
-      try {
-         ClassLoader cl = this.getClass().getClassLoader();
-         file = cl.getResource("tn5250jSchemas.properties");
-         schemaProps.load(file.openStream());
-      }
-      catch (Exception e) {
-         System.err.println(e);
-      }
-
-      schemas.addItem(LangTool.getString("sa.colorDefault"));
-      int numSchemas = Integer.parseInt((String)schemaProps.get("schemas"));
-      Schema s = null;
-      String prefix = "";
-      for (int x = 1; x <= numSchemas; x++) {
-         s = new Schema();
-         prefix = "schema" + x;
-         s.setDescription((String)schemaProps.get(prefix + ".title"));
-         s.setColorBg(getSchemaProp(prefix + ".colorBg"));
-         s.setColorRed(getSchemaProp(prefix + ".colorRed"));
-         s.setColorTurq(getSchemaProp(prefix + ".colorTurq"));
-         s.setColorCursor(getSchemaProp(prefix + ".colorCursor"));
-         s.setColorGuiField(getSchemaProp(prefix + ".colorGUIField"));
-         s.setColorWhite(getSchemaProp(prefix + ".colorWhite"));
-         s.setColorYellow(getSchemaProp(prefix + ".colorYellow"));
-         s.setColorGreen(getSchemaProp(prefix + ".colorGreen"));
-         s.setColorPink(getSchemaProp(prefix + ".colorPink"));
-         s.setColorBlue(getSchemaProp(prefix + ".colorBlue"));
-         s.setColorSeparator(getSchemaProp(prefix + ".colorSep"));
-         s.setColorHexAttr(getSchemaProp(prefix + ".colorHexAttr"));
-         schemas.addItem(s);
-      }
-
-      System.out.println(" loaded schemas " + numSchemas);
-   }
-
-   private int getSchemaProp(String key) {
-
-      if(schemaProps.containsKey(key)) {
-
-         return Integer.parseInt((String)schemaProps.get(key));
-
-      }
-      else {
-         return 0;
-      }
-
-   }
-
-   class Schema {
-
-
-      public String toString() {
-
-         return description;
-
-      }
-
-      public void setDescription(String desc) {
-
-         description = desc;
-      }
-
-      public void setColorBg(int color) {
-
-         bg = new Color(color);
-      }
-
-      public Color getColorBg() {
-
-         return bg;
-      }
-
-      public void setColorBlue(int color) {
-
-         blue = new Color(color);
-      }
-
-      public Color getColorBlue() {
-
-         return blue;
-      }
-
-      public void setColorRed(int color) {
-
-         red = new Color(color);
-      }
-
-      public Color getColorRed() {
-
-         return red;
-      }
-
-      public void setColorPink(int color) {
-
-         pink = new Color(color);
-      }
-
-      public Color getColorPink() {
-
-         return pink;
-      }
-
-      public void setColorGreen(int color) {
-
-         green = new Color(color);
-      }
-
-      public Color getColorGreen() {
-
-         return green;
-      }
-
-      public void setColorTurq(int color) {
-
-         turq = new Color(color);
-      }
-
-      public Color getColorTurq() {
-
-         return turq;
-      }
-
-      public void setColorYellow(int color) {
-
-         yellow = new Color(color);
-      }
-
-      public Color getColorYellow() {
-
-         return yellow;
-      }
-
-      public void setColorWhite(int color) {
-
-         white = new Color(color);
-      }
-
-      public Color getColorWhite() {
-
-         return white;
-      }
-
-      public void setColorGuiField(int color) {
-
-         gui = new Color(color);
-      }
-
-      public Color getColorGuiField() {
-
-         return gui;
-      }
-
-      public void setColorCursor(int color) {
-
-         cursor = new Color(color);
-      }
-
-      public Color getColorCursor() {
-
-
-         return cursor;
-      }
-
-      public void setColorSeparator(int color) {
-
-         columnSep = new Color(color);
-      }
-
-      public Color getColorSeparator() {
-
-
-         return columnSep;
-      }
-
-      public void setColorHexAttr(int color) {
-
-         hexAttr = new Color(color);
-      }
-
-      public Color getColorHexAttr() {
-
-
-         return hexAttr;
-      }
-
-      private String description;
-      private Color bg;
-      private Color blue;
-      private Color red;
-      private Color pink;
-      private Color green;
-      private Color turq;
-      private Color white;
-      private Color yellow;
-      private Color gui;
-      private Color cursor;
-      private Color columnSep;
-      private Color hexAttr;
-   }
 }
