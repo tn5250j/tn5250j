@@ -30,6 +30,7 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 public abstract class GUIViewInterface extends TN5250jFrame {
 
@@ -42,6 +43,8 @@ public abstract class GUIViewInterface extends TN5250jFrame {
    public GUIViewInterface(My5250 m) {
       super();
       me = m;
+      focused = GUIGraphicsUtils.getFocusedIcon();
+      unfocused = GUIGraphicsUtils.getUnFocusedIcon();
    }
 
    public int getFrameSequence() {
