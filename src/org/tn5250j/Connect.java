@@ -91,7 +91,7 @@ public class Connect extends JDialog implements ActionListener,
    void jbInit() throws Exception {
 
       // make it non resizable
-      setResizable(false);
+      setResizable(true);
       this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
       // create some reusable borders and layouts
@@ -103,6 +103,17 @@ public class Connect extends JDialog implements ActionListener,
 
       // create a table using our custom table model
       sessions = new JTable(ctm);
+
+      // Add enter as default key for connect with this session
+      KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0);
+
+      sessions.registerKeyboardAction(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               doActionConnect();
+            }
+         },enter,JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+
       sessions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       sessions.setPreferredScrollableViewportSize(new Dimension(500,200));
       sessions.setShowGrid(false);
@@ -175,6 +186,7 @@ public class Connect extends JDialog implements ActionListener,
       getContentPane().add(sessionPanel,BorderLayout.CENTER);
       getContentPane().add(options, BorderLayout.SOUTH);
 
+
       // pack it and center it on the screen
       pack();
 
@@ -192,8 +204,9 @@ public class Connect extends JDialog implements ActionListener,
          sessions.getSelectionModel().setSelectionInterval(0,0);
       }
 
+
       // now show the world what we and they can do
-      show();
+      this.setVisible(true);
 
    }
 
@@ -252,11 +265,17 @@ public class Connect extends JDialog implements ActionListener,
       }
 
       if (e.getActionCommand().equals("CONNECT")) {
-         int selectedRow = rowSM.getMinSelectionIndex();
-         connectKey = (String)ctm.getValueAt(selectedRow,0);
-         saveProps();
-         setVisible(false);
+         doActionConnect();
       }
+   }
+
+   private void doActionConnect () {
+
+      int selectedRow = rowSM.getMinSelectionIndex();
+      connectKey = (String)ctm.getValueAt(selectedRow,0);
+      saveProps();
+      setVisible(false);
+
    }
 
    public String getConnectKey() {

@@ -43,7 +43,7 @@ import java.net.*;
 
 public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
-   protected Gui5250Frame frame;
+   protected Gui5250Frame frame1;
    private String[] sessionArgs = null;
    private static Properties sessions = new Properties();
    private static ImageIcon focused;
@@ -210,8 +210,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
          if (isSpecified("-width",args) ||
                isSpecified("-height",args)) {
-            int width = m.frame.getWidth();
-            int height = m.frame.getHeight();
+            int width = m.frame1.getWidth();
+            int height = m.frame1.getHeight();
 
             if (isSpecified("-width",args)) {
                width = Integer.parseInt(m.getParm("-width",args));
@@ -220,8 +220,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
                height = Integer.parseInt(m.getParm("-height",args));
             }
 
-            m.frame.setSize(width,height);
-            m.frame.centerFrame();
+            m.frame1.setSize(width,height);
+            m.frame1.centerFrame();
 
 
          }
@@ -254,7 +254,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
                   m.sessionArgs = null;
                }
                else {
-                  m.frame.setVisible(true);
+                  m.frame1.setVisible(true);
                   LangTool.init();
                   m.sessionArgs = args;
                }
@@ -309,8 +309,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          for (int x = 1; x < os400_sessions.size(); x++ ) {
             String sel = os400_sessions.elementAt(x).toString();
 
-            if (!m.frame.isVisible())
-               m.frame.setVisible(true);
+            if (!m.frame1.isVisible())
+               m.frame1.setVisible(true);
 
             m.sessionArgs = new String[NUM_PARMS];
             m.parseArgs(sessions.getProperty(sel),m.sessionArgs);
@@ -423,7 +423,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    private String getConnectSession () {
 
-      Connect sc = new Connect(frame,LangTool.getString("ss.title"),sessions);
+      Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
 
       // load the new session information from the session property file
       loadSessions();
@@ -480,19 +480,19 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       Session s = manager.openSession(sesProps,propFileName,sel);
 
-      if (!frame.isVisible())
-         frame.setVisible(true);
+      if (!frame1.isVisible())
+         frame1.setVisible(true);
       else {
          if (isSpecified("-noembed",args)) {
             newView();
-            frame.setVisible(true);
+            frame1.setVisible(true);
          }
       }
 
       if (isSpecified("-t",args))
-         frame.addSessionView(sel,s);
+         frame1.addSessionView(sel,s);
       else
-         frame.addSessionView(session,s);
+         frame1.addSessionView(session,s);
 
       s.connect();
 
@@ -509,13 +509,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       if (sessions.containsKey("emul.height"))
          height = Integer.parseInt(sessions.getProperty("emul.height"));
 
-      frame = new Gui5250Frame(this, frames.size());
-      frame.setSize(width,height);
-      frame.centerFrame();
-      frame.setIconImage(tnicon.getImage());
-      frame.setIcons(focused,unfocused);
+      frame1 = new Gui5250Frame(this, frames.size());
+      frame1.setSize(width,height);
+      frame1.centerFrame();
+      frame1.setIconImage(tnicon.getImage());
+      frame1.setIcons(focused,unfocused);
 
-      frames.add(frame);
+      frames.add(frame1);
 
    }
 

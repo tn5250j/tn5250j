@@ -107,7 +107,8 @@ public class ScreenField {
       this.fcw1 = fcw1;
       this.fcw2 = fcw2;
 
-      if ((fcw1 & 0x88) == 0x88) {
+//      if ((fcw1 & 0x88) == 0x88) {
+      if (fcw1 == 0x88) {
 
          cursorProg = fcw2;
       }

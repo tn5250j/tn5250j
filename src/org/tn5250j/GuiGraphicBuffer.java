@@ -280,17 +280,17 @@ public class GuiGraphicBuffer {
 
    public void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
 
-      synchronized (lock) {
+//      synchronized (lock) {
          gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x,y);
-      }
+//      }
 
    }
 
    public void drawImageBuffer(Graphics2D gg2d) {
 
-      synchronized (lock) {
+//      synchronized (lock) {
          gg2d.drawImage(bi,null,0,0);
-      }
+//      }
 
 
    }

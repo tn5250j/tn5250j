@@ -159,7 +159,8 @@ public class ScreenFields implements TN5250jConstants {
          sf.setFieldId(++fieldIds);
 
       // check if the cursor progression field flag should be set.
-      if ((fcw1 & 0x88) == 0x88)
+//      if ((fcw1 & 0x88) == 0x88)
+      if (fcw1 == 0x88)
          cpfExists = true;
 
       if (currentField != null) {

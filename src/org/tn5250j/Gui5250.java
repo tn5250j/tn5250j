@@ -796,7 +796,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void sendScreenEMail() {
 
-      SendEMailDialog semd = new SendEMailDialog(me.frame,screen);
+      SendEMailDialog semd = new SendEMailDialog(me.getParentView((Session)this),screen);
+   }
+
+   private void sendMeToFile() {
+      new SendScreenToFile(screen);
+
    }
 
    private void doKeyBoundArea(KeyEvent ke,String last) {
@@ -1073,7 +1078,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       SessionAttributes sa = new SessionAttributes(propFileName,
                                        defaultProps,
-                                       (Frame)me.frame);
+                                       (Frame)me.getParentView((Session)this));
       sa.addPropertyChangeListener(screen);
       sa.addPropertyChangeListener(this);
       sa.showIt();
@@ -1358,14 +1363,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
 
-   private void sendMeToFile() {
-      new SendScreenToFile(screen);
-
-   }
-
    private void doMeTransfer() {
 
-      XTFRFile xtrf = new XTFRFile(me.frame,vt);
+      XTFRFile xtrf = new XTFRFile(me.getParentView((Session)this),vt);
    }
 
    private void sumArea(boolean which) {
@@ -1446,10 +1446,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       if (macros.isMacrosExist()) {
          String[] macrosList = macros.getMacroList();
-         kc = new KeyConfigure(me.frame,macrosList,vt.getCodePage());
+         kc = new KeyConfigure(me.getParentView((Session)this),macrosList,vt.getCodePage());
       }
       else
-         kc = new KeyConfigure(me.frame,null,vt.getCodePage());
+         kc = new KeyConfigure(me.getParentView((Session)this),null,vt.getCodePage());
 
    }
 
@@ -1532,7 +1532,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       int result = 0;
       result = JOptionPane.showOptionDialog(
-          me.frame,                               // the parent that the dialog blocks
+          me.getParentView((Session)this),   // the parent that the dialog blocks
           message,                           // the dialog message array
           LangTool.getString("hm.title"),    // the title of the dialog window
           JOptionPane.DEFAULT_OPTION,        // option type

@@ -1512,16 +1512,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   int fcw1 = 0;
                   int fcw2 = 0;
                   int ffw1 = 0;
-                  int ffw0 = bk.getNextByte();   // FFW
+                  int ffw0 = bk.getNextByte() & 0xff;   // FFW
 
-                  if (!isAttribute(ffw0)) {
-                     ffw1 = bk.getNextByte();   // FFW 1
+//                  if (!isAttribute(ffw0)) {
+                  if ((ffw0 & 0x40) == 0x40) {
+                     ffw1 = bk.getNextByte() & 0xff;   // FFW 1
 
-                     fcw1 = bk.getNextByte();   // check for field control word
+                     fcw1 = bk.getNextByte() & 0xff;   // check for field control word
 
                      if (!isAttribute(fcw1)) {
-                        fcw2 = bk.getNextByte();   // FCW 2
-                        attr = bk.getNextByte();   // attribute field
+                        fcw2 = bk.getNextByte() & 0xff;   // FCW 2
+                        attr = bk.getNextByte() & 0xff;   // attribute field
 
                      }
                      else {

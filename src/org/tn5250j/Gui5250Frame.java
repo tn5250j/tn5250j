@@ -74,7 +74,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
       String release = "0";
       String version = ".5";
-      String subVer= ".2b";
+      String subVer= ".3 RC1";
 
       if (sequence > 0)
          setTitle("tn5250j <" + sequence + ">- " + release + version + subVer);
