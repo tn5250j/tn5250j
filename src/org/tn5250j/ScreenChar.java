@@ -55,7 +55,6 @@ public class ScreenChar {
    }
 
    public final boolean isAttributePlace() {
-//      return (attributePlace || (sChar[0] == ' ' && !underLine && !colSep && bg.equals(s.colorBg)));
       return attributePlace;
    }
 
@@ -303,6 +302,7 @@ public class ScreenChar {
    public final void drawChar(Graphics2D g) {
 
       if (attributePlace && s.isShowHex()) {
+//      if ((sChar[0] == 0x20 || sChar[0] == 0x0 || nonDisplay) && s.isShowHex()) {
          Font f = g.getFont();
 
          Font k = f.deriveFont(f.getSize2D()/2);
@@ -313,6 +313,7 @@ public class ScreenChar {
          g.drawChars(a, 1, 1, x+(int)(s.fmWidth/2),
             (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading())-2));
          g.setFont(f);
+//return;
       }
 
       if(!nonDisplay && !attributePlace) {

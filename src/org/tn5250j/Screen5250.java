@@ -3402,6 +3402,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             else
                screen[lastPos-1].setUseGUI(ScreenChar.FIELD_ONE);
 
+//         screen[lastPos].setCharAndAttr(initChar,initAttr,true);
          setEndingAttr(initAttr);
 
          lastPos = sf.startPos();
@@ -3627,18 +3628,20 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public void setChar(int cByte) {
 
       if (cByte > 0 && cByte < ' ') {
-         screen[lastPos].setCharAndAttr(' ',33,false);
+         screen[lastPos].setCharAndAttr((char)0x00,33,false);
          setDirty(lastPos);
 
          advancePos();
       }
       else {
          if (lastPos > 0) {
-            if (screen[lastPos - 1].isAttributePlace())
-               lastAttr = screen[lastPos -1].getCharAttr();
+             if (screen[lastPos - 1].isAttributePlace())// &&
+                lastAttr = screen[lastPos -1].getCharAttr();
          }
 
-         screen[lastPos].setCharAndAttr((char)cByte,lastAttr,false);
+         screen[lastPos].setCharAndAttr((char)cByte,
+                           screen[lastPos].getCharAttr(),false);
+
          setDirty(lastPos);
          if (guiInterface && !isInField(lastPos,false))
             screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
@@ -3663,9 +3666,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public void setAttr(int cByte) {
       lastAttr = cByte;
 
-//      int sattr = screen[getPos(lastRow,lastCol)].getCharAttr();
+//      int sattr = screen[lastPos].getCharAttr();
 //         System.out.println("changing from " + sattr + " to attr " + lastAttr +
-//                     " at " + (lastRow + 1) + "," + (lastCol + 1));
+//                     " at " + (this.getRow(lastPos) + 1) + "," + (this.getCol(lastPos) + 1));
       screen[lastPos].setCharAndAttr(initChar,lastAttr,true);
       setDirty(lastPos);
 
@@ -3673,6 +3676,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       int pos = lastPos;
 
       int times = 0;
+//      sattr = screen[lastPos].getCharAttr();
+//         System.out.println(" next position after change " + sattr + " last attr " + lastAttr +
+//                     " at " + (this.getRow(lastPos) + 1) + "," + (this.getCol(lastPos) + 1) +
+//                     " attr place " + screen[lastPos].isAttributePlace());
       while (screen[lastPos].getCharAttr() != lastAttr &&
             !screen[lastPos].isAttributePlace()) {
 
