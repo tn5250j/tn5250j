@@ -29,15 +29,13 @@ import java.util.*;
 
 public class ExportFileFilter extends FileFilter {
 
-   private String TYPE_UNKNOWN = "Type Unknown";
-   private String HIDDEN_FILE = "Hidden File";
+//   private String TYPE_UNKNOWN = "Type Unknown";
+//   private String HIDDEN_FILE = "Hidden File";
 
    private Hashtable filters = null;
    private String description = null;
    private String fullDescription = null;
    private boolean useExtensionsInDescription = true;
-   private String outputFilterClassName;
-   private Object o;
 
    /**
    * Creates a file filter. If no filters are added, then all

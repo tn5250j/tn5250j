@@ -699,8 +699,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
          // get the text (via a transformed input stream) from the spooled file
          PrintObjectTransformedInputStream inStream = splF.getTransformedInputStream(printParms);
          //            DataInputStream dis = new DataInputStream(inStream);
-         BufferedReader br = new BufferedReader(
-                    new InputStreamReader(inStream));
 
          // get the number of available bytes
          int avail = inStream.available();
@@ -772,7 +770,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             try {
                Runtime rt = Runtime.getRuntime();
                String[] cmdArray = {editor.getText(),pcPathInfo.getText()};
-               Process proc = rt.exec(cmdArray);
+//               Process proc = rt.exec(cmdArray);
+               // We need to probably do some checking here in the future
+               rt.exec(cmdArray);
 
                // now we set the field to use external viewer or not
                if (openAfter.isSelected())
@@ -825,9 +825,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
          // get the text (via a transformed input stream) from the spooled file
          PrintObjectTransformedInputStream inStream = splfile.getTransformedInputStream(printParms);
-
-         BufferedReader br = new BufferedReader(
-                    new InputStreamReader(inStream));
 
          // get the number of available bytes
          int avail = inStream.available();
