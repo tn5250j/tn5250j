@@ -3639,8 +3639,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                 lastAttr = screen[lastPos -1].getCharAttr();
          }
 
-         screen[lastPos].setCharAndAttr((char)cByte,
-                           screen[lastPos].getCharAttr(),false);
+         screen[lastPos].setCharAndAttr((char)cByte, lastAttr,false);
+
+//         screen[lastPos].setCharAndAttr((char)cByte,
+//                           screen[lastPos].getCharAttr(),false);
 
          setDirty(lastPos);
          if (guiInterface && !isInField(lastPos,false))
