@@ -41,6 +41,10 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+04/08/2002  Added to send via e-mail where if the smtp configuration file
+            already exists then the option will read edit config instead of
+            always config
+
 03/08/2002  Added new categories to the session attributes screen:
                Cursor - Moved from display cat and added Ruler follows cursor
                Signoff - not implemented yet
