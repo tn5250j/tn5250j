@@ -54,6 +54,7 @@ public class GlobalConfigure extends ConfigureFactory {
    static private Hashtable registry = new Hashtable();
    static private Hashtable headers = new Hashtable();  //LUC GORRENS
 
+   // Moved to ConfigureFactory
 //   static final public String SESSIONS = "sessions";
    static final public File ses = new File(SESSIONS);
 //   static final public String MACROS = "macros";
