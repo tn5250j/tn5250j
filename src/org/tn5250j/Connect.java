@@ -87,6 +87,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.DESSHA1;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
 
 public class Connect
 	extends JDialog
@@ -104,9 +105,19 @@ public class Connect
 	JPanel emptyPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 	JPanel accessPanel = new JPanel();
 	JPanel loggingPanel = new JPanel();
+	JPanel levelPanel = new JPanel();
+	JPanel appenderPanel = new JPanel();
 
 	JTable sessions = null;
 	GridBagConstraints gbc;
+	
+	// LoggingPanel Components
+	JRadioButton intOFF = null;
+	JRadioButton intDEBUG = null;
+	JRadioButton intINFO = null;
+	JRadioButton intWARN = null;
+	JRadioButton intERROR = null;
+	JRadioButton intFATAL = null;
 
 	// button needing global access
 	JButton editButton = null;
@@ -143,6 +154,9 @@ public class Connect
 
 	//  Selection value for connection
 	String connectKey = null;
+	private JRadioButton intConsole;
+	private JRadioButton intFile;
+	private JRadioButton intBoth;
 
 	public Connect(Frame frame, String title, Properties prop) {
 
@@ -462,7 +476,123 @@ public class Connect
 	}
 	
 	private void createLoggingPanel(){
-		//Needs to be implemented yet
+		loggingPanel.setLayout(new GridBagLayout());
+		// levelPanel
+		levelPanel = new JPanel(new GridBagLayout());
+		TitledBorder tb = BorderFactory.createTitledBorder(
+				LangTool.getString("logscr.Level"));
+		tb.setTitleJustification(TitledBorder.CENTER);
+		levelPanel.setBorder(tb);
+		// Create the Checkboxes
+		// The translation section is called ...
+		// #Logging Literals
+		// Search and translate into the message property-files
+		ButtonGroup levelGroup = new ButtonGroup();
+		intOFF = new JRadioButton(LangTool.getString("logscr.Off"));
+		intOFF.setSelected(true);
+		intOFF.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intOFF_itemStateChanged(e);
+			}
+		});
+		intDEBUG = new JRadioButton(LangTool.getString("logscr.Debug"));
+		intINFO = new JRadioButton(LangTool.getString("logscr.Info"));
+		intWARN = new JRadioButton(LangTool.getString("logscr.Warn"));
+		intERROR = new JRadioButton(LangTool.getString("logscr.Error"));
+		intFATAL = new JRadioButton(LangTool.getString("logscr.Fatal"));
+
+		// add the interface options to the group control
+		levelGroup.add(intOFF);
+		levelGroup.add(intDEBUG);
+		levelGroup.add(intINFO);
+		levelGroup.add(intWARN);
+		levelGroup.add(intERROR);
+		levelGroup.add(intFATAL);
+		
+//		 add the levelPanel components
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(20, 20, 5, 20);
+		levelPanel.add(intOFF, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 5, 20);
+		levelPanel.add(intDEBUG, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 5, 20);
+		levelPanel.add(intINFO, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 5, 20);
+		levelPanel.add(intWARN, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 5, 20);
+		levelPanel.add(intERROR, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 20, 20);
+		levelPanel.add(intFATAL, gbc);
+		
+		appenderPanel = new JPanel(new GridBagLayout());
+		tb = BorderFactory.createTitledBorder(
+				LangTool.getString("logscr.Appender"));
+		tb.setTitleJustification(TitledBorder.CENTER);
+		appenderPanel.setBorder(tb);
+		
+		ButtonGroup appenderGroup = new ButtonGroup();
+		intConsole = new JRadioButton(LangTool.getString("logscr.Console"));
+		intConsole.setSelected(true);
+		intConsole.setEnabled(false);
+		intConsole.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intConsole_itemStateChanged(e);
+			}
+		});
+		intFile = new JRadioButton(LangTool.getString("logscr.File"));
+		intFile.setEnabled(false);
+		intBoth = new JRadioButton(LangTool.getString("logscr.Both"));
+		intBoth.setEnabled(false);
+		
+		appenderGroup.add(intConsole);
+		appenderGroup.add(intFile);
+		appenderGroup.add(intBoth);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(20, 20, 5, 20);
+		appenderPanel.add(intConsole, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 5, 20);
+		appenderPanel.add(intFile, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(5, 20, 20, 20);
+		appenderPanel.add(intBoth, gbc);
+		
+		// add the pannels to the mainpanel
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(10, 10, 10, 20);
+		loggingPanel.add(levelPanel, gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(10, 20, 10, 10);
+		loggingPanel.add(appenderPanel, gbc);
 	}
 
 	private void createAccessPanel() {
@@ -773,6 +903,24 @@ public class Connect
 			props.remove("emul.showConnectDialog");
 		}
 
+	}
+	
+	private void intOFF_itemStateChanged(ItemEvent e) {
+		if (!intOFF.isSelected() && TN5250jLogFactory.isLog4j()) {
+			intConsole.setEnabled(true);
+			intFile.setEnabled(true);
+			intBoth.setEnabled(true);
+		}
+		else {
+			intConsole.setEnabled(false);
+			intConsole.setSelected(true);
+			intFile.setEnabled(false);
+			intBoth.setEnabled(false);
+		}
+	}
+	
+	private void intConsole_itemStateChanged(ItemEvent e) {
+		//TODO: Provide the itemstatechanged for the intConsole checkbox
 	}
 
 	public class CheckPasswordDocument extends PlainDocument {

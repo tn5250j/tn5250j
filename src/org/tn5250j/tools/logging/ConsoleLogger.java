@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigureFactory.java
+ * @(#)ConsoleLogger.java
  * @author  Kenneth J. Pouncey
  * Modified by LDC Luc
  *
@@ -23,8 +23,11 @@
  */
 package org.tn5250j.tools.logging;
 
+import org.tn5250j.interfaces.ConfigureFactory;
+
 /**
- * An implementation of the TN5250jLogFactory to provide logger instances.
+ * An implementation of the TN5250jLogger to provide logger instances to the
+ * console - System.out or System.err.
  */
 public class ConsoleLogger extends TN5250jLogger {
 
@@ -36,6 +39,9 @@ public class ConsoleLogger extends TN5250jLogger {
 
    public void initialize(final String clazz) {
       this.clazz = clazz;
+      logLevel = Integer.parseInt(ConfigureFactory.getInstance().getProperty(
+                  "emulator.logLevel", INFO + ""));
+
    }
 
    // printing methods:
@@ -45,32 +51,55 @@ public class ConsoleLogger extends TN5250jLogger {
    }
 
    public void info(Object message) {
+      if (logLevel <= INFO)
       System.out.println("INFO ["+clazz+"] "+ message);
 
    }
 
    public void warn(Object message) {
+      if (logLevel <= WARN)
       System.out.println("WARN ["+clazz+"] "+ message);
 
    }
 
    public void warn(Object message, Throwable obj1) {
+      if (logLevel <= WARN)
       System.out.println("WARN ["+clazz+"] "+ new StringBuffer(32).append(message)
                                                     .append(obj1.getMessage()));
    }
 
    public void error(Object message) {
+      if (logLevel <= ERROR)
       System.err.println("ERROR ["+clazz+"] "+ message);
 
    }
 
    public void fatal(Object message) {
+      if (logLevel <= FATAL)
       System.err.println("FATAL ["+clazz+"] "+ message);
 
    }
 
    public boolean isDebugEnabled() {
+      if (logLevel <= DEBUG)
+         return true;
+      else
+         return false;
+   }
+
+   public boolean isInfoEnabled() {
+      if (logLevel <= INFO)
+         return true;
+      else
       return false;
    }
   
+   public void setLevel(int newLevel) {
+      logLevel = newLevel;
+   }
+
+   public int getLevel() {
+      return logLevel;
+   }
+
 }

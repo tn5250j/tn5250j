@@ -113,5 +113,9 @@ public abstract class TN5250jLogFactory {
 
       return logger;
    }
+   
+   public static boolean isLog4j() {
+   		return log4j;
+   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigureFactory.java
+ * @(#)Log4jLogger.java
  * @author  Kenneth J. Pouncey
  * Modified by LDC Luc
  *
@@ -23,10 +23,11 @@
  */
 package org.tn5250j.tools.logging;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
- * An implementation of the TN5250jLogFactory to provide logger instances.
+ * An implementation of the TN5250jLogger to provide log4j logger instances.
  */
 public class Log4jLogger extends TN5250jLogger {
 
@@ -72,4 +73,63 @@ public class Log4jLogger extends TN5250jLogger {
       return log.isDebugEnabled();
    }
  
+   public boolean isInfoEnabled() {
+      return log.isInfoEnabled();
+   }
+
+   public void setLevel(int newLevel) {
+
+      switch (newLevel) {
+      	case OFF:
+      		Level.toLevel(Level.OFF_INT);
+      		break;
+      		
+         case DEBUG:
+            log.getLevel().toLevel(org.apache.log4j.Level.DEBUG_INT);
+            break;
+
+         case INFO:
+            log.getLevel().toLevel(org.apache.log4j.Level.INFO_INT);
+            break;
+
+         case WARN:
+            log.getLevel().toLevel(org.apache.log4j.Level.WARN_INT);
+            break;
+
+         case ERROR:
+            log.getLevel().toLevel(org.apache.log4j.Level.ERROR_INT);
+            break;
+
+         case FATAL:
+            log.getLevel().toLevel(org.apache.log4j.Level.FATAL_INT);
+            break;
+
+      }
+
+   }
+
+   public int getLevel() {
+
+      switch (log.getLevel().toInt()) {
+
+         case (org.apache.log4j.Level.DEBUG_INT):
+            return DEBUG;
+
+         case (org.apache.log4j.Level.INFO_INT):
+            return INFO;
+
+         case (org.apache.log4j.Level.WARN_INT):
+            return WARN;
+
+         case (org.apache.log4j.Level.ERROR_INT):
+            return ERROR;
+
+         case (org.apache.log4j.Level.FATAL_INT):
+            return FATAL;
+         default:
+            return WARN;
+
+      }
+
+   }
 }

@@ -28,6 +28,18 @@ package org.tn5250j.tools.logging;
  */
 public abstract class TN5250jLogger extends TN5250jLogFactory {
 
+   // debug levels - The levels work from lower to higher.  The lower levels
+   //   will be activated by turning on a higher level
+   public static final int OFF = 0;
+   public static final int DEBUG = 1;
+   public static final int INFO  = 2;
+   public static final int WARN  = 4;
+   public static final int ERROR = 8;
+   public static final int FATAL = 16;
+
+   // The log level at which we are now
+   protected int logLevel;
+
    TN5250jLogger () {
 
    }
@@ -48,6 +60,13 @@ public abstract class TN5250jLogger extends TN5250jLogFactory {
 
    abstract public void fatal(Object message);
 
+   // are we enabled for X?
    abstract public boolean isDebugEnabled();
+   abstract public boolean isInfoEnabled();
+
+   // level accessors
+   abstract public void setLevel(int newLevel);
+   abstract public int getLevel();
+
    
 }
