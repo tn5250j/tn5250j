@@ -547,7 +547,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 			lc = lr;
 			while (cols-- >= 0) {
 				if (lc >= 0 && lc < lenScreen) {
-//					drawChar(gg2d,screen.screen[lc],screen.getRow(lc),screen.getCol(lc));
 					drawChar(gg2d,pos++,screen.getRow(lc),screen.getCol(lc));
                lc++;
 				}
@@ -694,40 +693,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       }
    }
 
-   public static final int NO_GUI = 0;
-   public static final int UPPER_LEFT = 1;
-   public static final int UPPER = 2;
-   public static final int UPPER_RIGHT = 3;
-   public static final int LEFT = 4;
-   public static final int RIGHT = 5;
-   public static final int LOWER_LEFT = 6;
-   public static final int BOTTOM = 7;
-   public static final int LOWER_RIGHT = 8;
-   public static final int FIELD_LEFT = 9;
-   public static final int FIELD_RIGHT = 10;
-   public static final int FIELD_MIDDLE = 11;
-   public static final int FIELD_ONE = 12;
-   public static final int BUTTON_LEFT = 13;
-   public static final int BUTTON_RIGHT = 14;
-   public static final int BUTTON_MIDDLE = 15;
-   public static final int BUTTON_ONE = 16;
-   public static final int BUTTON_LEFT_UP = 17;
-   public static final int BUTTON_RIGHT_UP = 18;
-   public static final int BUTTON_MIDDLE_UP = 19;
-   public static final int BUTTON_ONE_UP = 20;
-   public static final int BUTTON_LEFT_DN = 21;
-   public static final int BUTTON_RIGHT_DN = 22;
-   public static final int BUTTON_MIDDLE_DN = 23;
-   public static final int BUTTON_ONE_DN = 24;
-   public static final int BUTTON_LEFT_EB = 25;
-   public static final int BUTTON_RIGHT_EB = 26;
-   public static final int BUTTON_MIDDLE_EB = 27;
-   public static final int BUTTON_SB_UP = 28;
-   public static final int BUTTON_SB_DN = 29;
-   public static final int BUTTON_SB_GUIDE = 30;
-   public static final int BUTTON_SB_THUMB = 31;
-   public static final int BUTTON_LAST = 31;
-
 
    protected Data fillData(int startRow, int startCol, int endRow, int endCol) {
 
@@ -773,6 +738,27 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       public final char[] field;
    }
 
+   public final Rectangle modelToView(int row, int col)
+   {
+     return modelToView(row, col, new Rectangle());
+   }
+
+   public final Rectangle modelToView(int row, int col, Rectangle r) {
+      int columnWidth = screen.fmWidth;
+      int rowHeight = screen.fmHeight;
+      
+      // right now row and column is 1,1 offset based.  This will need
+      //   to be changed to 0,0 offset based by subtracting 1 from them
+      //   when the screen is being passed this way 
+//     r.x      =  (col - 1) * columnWidth;
+//     r.y      =  (row - 1) * rowHeight;
+     r.x      =  col * columnWidth;
+     r.y      =  row * rowHeight;
+     r.width  = columnWidth;
+     r.height = rowHeight;
+     return r;
+   }
+
    // Dup Character array for display output
    public static final transient char[] dupChar = {'*'};
    public final void drawChar(Graphics2D g, int pos, int row, int col) {
@@ -789,10 +775,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       int whichGui = updateRect.graphic[pos];
       boolean useGui = whichGui == 0 ? false : true;
 
-      csArea.setRect((s.fmWidth*col),s.fmHeight * row,s.fmWidth,s.fmHeight);
+      csArea = modelToView(row, col, csArea);
+      
 
-      int x = s.fmWidth * col;
-      int y = s.fmHeight * row;
+      int x = csArea.x;
+      int y = csArea.y;
       int cy = (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading()));
 
 //      int x = sc.x;
@@ -898,7 +885,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                      }
                   }
                break;
-               case LEFT:
+               case GUI_LEFT:
                   if (sChar[0] == ':') {
                      if (s.isUsingGuiInterface()) {
                         GUIGraphicsUtils.drawWinLeft(g,
@@ -922,7 +909,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                      }
                   }
                break;
-               case RIGHT:
+               case GUI_RIGHT:
                   if (sChar[0] == ':') {
                      if (s.isUsingGuiInterface()) {
                         GUIGraphicsUtils.drawWinRight(g,

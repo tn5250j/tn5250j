@@ -1057,7 +1057,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	                     hs = true;
 	
 	               if (hs) {
-	                  screenGUI[x] = ScreenChar.BUTTON_LEFT;
+	                  screenGUI[x] = BUTTON_LEFT;
 	
 	                  int ns = 0;
 	                  int row = x / numCols;
@@ -1067,15 +1067,15 @@ public class ScreenPlanes implements TN5250jConstants {
 	                     else
 	                        ns = 0;
 	                     if (ns <2)
-	                        screenGUI[x] = ScreenChar.BUTTON_MIDDLE;
+	                        screenGUI[x] = BUTTON_MIDDLE;
 	
 	                  }
 	
 	                  // now lets go back and take out gui's that do not belong
 	                  while (screen[--x] <= ' ') {
-	                     screenGUI[x] = ScreenChar.NO_GUI;
+	                     screenGUI[x] = NO_GUI;
 	                  }
-	                  screenGUI[x] = ScreenChar.BUTTON_RIGHT;
+	                  screenGUI[x] = BUTTON_RIGHT;
 	
 	               }
 	            }
@@ -1084,7 +1084,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	         // now lets check for menus
 	         if (!hs && x > 0 && x < lenScreen - 2 &&
 	               screen[x] == '.' &&
-	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_UNDERLINE) == 0 &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
@@ -1120,20 +1120,20 @@ public class ScreenPlanes implements TN5250jConstants {
 	                     break;
 	               }
 	
-	               screenGUI[++os] = ScreenChar.BUTTON_LEFT;
+	               screenGUI[++os] = BUTTON_LEFT;
 	               s.setDirty(os);
 	
 	               while (++os < stop) {
-	                  screenGUI[os] = ScreenChar.BUTTON_MIDDLE;
+	                  screenGUI[os] = BUTTON_MIDDLE;
 	                  s.setDirty(os);
 	               }
 	
 	               // now lets go back and take out gui's that do not belong
 	               while (screen[--stop] <= ' ') {
-	                  screenGUI[stop] = ScreenChar.NO_GUI;
+	                  screenGUI[stop] = NO_GUI;
 	                  s.setDirty(stop);
 	               }
-	               screenGUI[stop] = ScreenChar.BUTTON_RIGHT;
+	               screenGUI[stop] = BUTTON_RIGHT;
 	               s.setDirty(stop);
 	
 	            }
@@ -1142,7 +1142,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	         // now lets check for options.
 	         if (!hs && x > 0 && x < lenScreen - 2 &&
 	               screen[x] == '=' &&
-	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_UNDERLINE) == 0 &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
@@ -1177,22 +1177,22 @@ public class ScreenPlanes implements TN5250jConstants {
 	                     break;
 	               }
 	
-	               screenGUI[++os] = ScreenChar.BUTTON_LEFT;
+	               screenGUI[++os] = BUTTON_LEFT;
 	               s.setDirty(os);
 	
 	               while (++os < stop) {
-	                  screenGUI[os] = ScreenChar.BUTTON_MIDDLE;
+	                  screenGUI[os] = BUTTON_MIDDLE;
 	                  s.setDirty(os);
 	
 	               }
 	
 	               // now lets go back and take out gui's that do not belong
 	               while (screen[--stop] <= ' ') {
-	                  screenGUI[stop] = ScreenChar.NO_GUI;
+	                  screenGUI[stop] = NO_GUI;
 	                  s.setDirty(stop);
 	
 	               }
-	               screenGUI[stop] = ScreenChar.BUTTON_RIGHT;
+	               screenGUI[stop] = BUTTON_RIGHT;
 	               s.setDirty(stop);
 	            }
 	         }
@@ -1203,7 +1203,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	               screen[x] == hsMore.charAt(0) &&
 	               screen[x - 1] <= ' ' &&
 	               screen[x - 2] <= ' ' &&
-	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
 	
@@ -1221,13 +1221,13 @@ public class ScreenPlanes implements TN5250jConstants {
 	            if (mFlag) {
 	               hs = true;
 	
-	               screenGUI[x] = ScreenChar.BUTTON_LEFT_DN;
+	               screenGUI[x] = BUTTON_LEFT_DN;
 	
 	               while (--ms > 0) {
-	                  screenGUI[++x] = ScreenChar.BUTTON_MIDDLE_DN;
+	                  screenGUI[++x] = BUTTON_MIDDLE_DN;
 	
 	               }
-	               screenGUI[x] = ScreenChar.BUTTON_RIGHT_DN;
+	               screenGUI[x] = BUTTON_RIGHT_DN;
 	            }
 	         }
 	
@@ -1236,7 +1236,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	               screen[x] == hsBottom.charAt(0) &&
 	               screen[x - 1]  <= ' ' &&
 	               screen[x - 2] <= ' ' &&
-	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
 	
@@ -1254,13 +1254,13 @@ public class ScreenPlanes implements TN5250jConstants {
 	            if (mFlag) {
 	               hs = true;
 	
-	               screenGUI[x] = ScreenChar.BUTTON_LEFT_UP;
+	               screenGUI[x] = BUTTON_LEFT_UP;
 	
 	               while (--bs > 0) {
-	                  screenGUI[++x] = ScreenChar.BUTTON_MIDDLE_UP;
+	                  screenGUI[++x] = BUTTON_MIDDLE_UP;
 	
 	               }
-	               screenGUI[x] = ScreenChar.BUTTON_RIGHT_UP;
+	               screenGUI[x] = BUTTON_RIGHT_UP;
 	            }
 	         }
 	
@@ -1268,7 +1268,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	         if (!hs && x > 0 && x < lenScreen - 7 &&
 	               Character.toLowerCase(screen[x]) == 'h' &&
 	               screen[x - 1] <= ' ' &&
-	               screenGUI[x] == ScreenChar.NO_GUI &&
+	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
 	
@@ -1281,13 +1281,13 @@ public class ScreenPlanes implements TN5250jConstants {
 	
 	               hs = true;
 	
-	               screenGUI[x] = ScreenChar.BUTTON_LEFT_EB;
+	               screenGUI[x] = BUTTON_LEFT_EB;
 	
 	               while (screen[++x] > ' ') {
-	                  screenGUI[x] = ScreenChar.BUTTON_MIDDLE_EB;
+	                  screenGUI[x] = BUTTON_MIDDLE_EB;
 	
 	               }
-	               screenGUI[--x] = ScreenChar.BUTTON_RIGHT_EB;
+	               screenGUI[--x] = BUTTON_RIGHT_EB;
 	            }
 	         }
 	         if (!retHS && hs)
@@ -1305,7 +1305,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	//         pos =k;
 	//         boolean gui = false;
 	//         for (int j=0; j < 19; j++) {
-	//            if (screen[pos].whichGui != ScreenChar.NO_GUI)
+	//            if (screen[pos].whichGui != NO_GUI)
 	////                  System.out.print(screen[pos].getChar());
 	//
 	//                  mwArea.setRect(screen[pos].x,
@@ -1404,39 +1404,5 @@ public class ScreenPlanes implements TN5250jConstants {
 	   }
 	   return -1;
 	}
-
-   public static final int NO_GUI = 0;
-   public static final int UPPER_LEFT = 1;
-   public static final int UPPER = 2;
-   public static final int UPPER_RIGHT = 3;
-   public static final int LEFT = 4;
-   public static final int RIGHT = 5;
-   public static final int LOWER_LEFT = 6;
-   public static final int BOTTOM = 7;
-   public static final int LOWER_RIGHT = 8;
-   public static final int FIELD_LEFT = 9;
-   public static final int FIELD_RIGHT = 10;
-   public static final int FIELD_MIDDLE = 11;
-   public static final int FIELD_ONE = 12;
-   public static final int BUTTON_LEFT = 13;
-   public static final int BUTTON_RIGHT = 14;
-   public static final int BUTTON_MIDDLE = 15;
-   public static final int BUTTON_ONE = 16;
-   public static final int BUTTON_LEFT_UP = 17;
-   public static final int BUTTON_RIGHT_UP = 18;
-   public static final int BUTTON_MIDDLE_UP = 19;
-   public static final int BUTTON_ONE_UP = 20;
-   public static final int BUTTON_LEFT_DN = 21;
-   public static final int BUTTON_RIGHT_DN = 22;
-   public static final int BUTTON_MIDDLE_DN = 23;
-   public static final int BUTTON_ONE_DN = 24;
-   public static final int BUTTON_LEFT_EB = 25;
-   public static final int BUTTON_RIGHT_EB = 26;
-   public static final int BUTTON_MIDDLE_EB = 27;
-   public static final int BUTTON_SB_UP = 28;
-   public static final int BUTTON_SB_DN = 29;
-   public static final int BUTTON_SB_GUIDE = 30;
-   public static final int BUTTON_SB_THUMB = 31;
-   public static final int BUTTON_LAST = 31;
 
 }

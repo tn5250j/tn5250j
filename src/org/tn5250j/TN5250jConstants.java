@@ -425,4 +425,38 @@ public interface TN5250jConstants {
    public static final int EXTENDED_5250_COL_SEP   =  0x02;
    public static final int EXTENDED_5250_NON_DSP   =  0x01;
 
+   public static final int NO_GUI = 0;
+   public static final int UPPER_LEFT = 1;
+   public static final int UPPER = 2;
+   public static final int UPPER_RIGHT = 3;
+   public static final int GUI_LEFT = 4;
+   public static final int GUI_RIGHT = 5;
+   public static final int LOWER_LEFT = 6;
+   public static final int BOTTOM = 7;
+   public static final int LOWER_RIGHT = 8;
+   public static final int FIELD_LEFT = 9;
+   public static final int FIELD_RIGHT = 10;
+   public static final int FIELD_MIDDLE = 11;
+   public static final int FIELD_ONE = 12;
+   public static final int BUTTON_LEFT = 13;
+   public static final int BUTTON_RIGHT = 14;
+   public static final int BUTTON_MIDDLE = 15;
+   public static final int BUTTON_ONE = 16;
+   public static final int BUTTON_LEFT_UP = 17;
+   public static final int BUTTON_RIGHT_UP = 18;
+   public static final int BUTTON_MIDDLE_UP = 19;
+   public static final int BUTTON_ONE_UP = 20;
+   public static final int BUTTON_LEFT_DN = 21;
+   public static final int BUTTON_RIGHT_DN = 22;
+   public static final int BUTTON_MIDDLE_DN = 23;
+   public static final int BUTTON_ONE_DN = 24;
+   public static final int BUTTON_LEFT_EB = 25;
+   public static final int BUTTON_RIGHT_EB = 26;
+   public static final int BUTTON_MIDDLE_EB = 27;
+   public static final int BUTTON_SB_UP = 28;
+   public static final int BUTTON_SB_DN = 29;
+   public static final int BUTTON_SB_GUIDE = 30;
+   public static final int BUTTON_SB_THUMB = 31;
+   public static final int BUTTON_LAST = 31;
+   
 }

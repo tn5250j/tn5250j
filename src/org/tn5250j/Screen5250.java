@@ -46,8 +46,6 @@ import org.tn5250j.event.ScreenListener;
 public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		ActionListener {
 
-//	ScreenChar[] screen;
-	private ScreenChar[] errorLine;
 	private ScreenFields screenFields;
 	private int errorLineNum;
 	public Font font;
@@ -1204,16 +1202,16 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
          int g = planes.getWhichGUI(pos);
 
 			// lets check for hot spots
-			if (g >= ScreenChar.BUTTON_LEFT && g <= ScreenChar.BUTTON_LAST) {
+			if (g >= BUTTON_LEFT && g <= BUTTON_LAST) {
 				StringBuffer aid = new StringBuffer();
 				boolean aidFlag = true;
 				switch (g) {
-				case ScreenChar.BUTTON_RIGHT:
-				case ScreenChar.BUTTON_MIDDLE:
-//					while (screen[--pos].getWhichGUI() != ScreenChar.BUTTON_LEFT) {
-					while (planes.getWhichGUI(--pos) != ScreenChar.BUTTON_LEFT) {
+				case BUTTON_RIGHT:
+				case BUTTON_MIDDLE:
+//					while (screen[--pos].getWhichGUI() != BUTTON_LEFT) {
+					while (planes.getWhichGUI(--pos) != BUTTON_LEFT) {
 					}
-				case ScreenChar.BUTTON_LEFT:
+				case BUTTON_LEFT:
 //					if (screen[pos].getChar() == 'F') {
 					if (planes.getChar(pos) == 'F') {
 						pos++;
@@ -1246,31 +1244,31 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 				if (aidFlag) {
 					switch (g) {
 
-					case ScreenChar.BUTTON_LEFT_UP:
-					case ScreenChar.BUTTON_MIDDLE_UP:
-					case ScreenChar.BUTTON_RIGHT_UP:
-					case ScreenChar.BUTTON_ONE_UP:
-					case ScreenChar.BUTTON_SB_UP:
-					case ScreenChar.BUTTON_SB_GUIDE:
+					case BUTTON_LEFT_UP:
+					case BUTTON_MIDDLE_UP:
+					case BUTTON_RIGHT_UP:
+					case BUTTON_ONE_UP:
+					case BUTTON_SB_UP:
+					case BUTTON_SB_GUIDE:
 						gui.sendAidKey(tnvt.AID_ROLL_UP);
 						break;
 
-					case ScreenChar.BUTTON_LEFT_DN:
-					case ScreenChar.BUTTON_MIDDLE_DN:
-					case ScreenChar.BUTTON_RIGHT_DN:
-					case ScreenChar.BUTTON_ONE_DN:
-					case ScreenChar.BUTTON_SB_DN:
-					case ScreenChar.BUTTON_SB_THUMB:
+					case BUTTON_LEFT_DN:
+					case BUTTON_MIDDLE_DN:
+					case BUTTON_RIGHT_DN:
+					case BUTTON_ONE_DN:
+					case BUTTON_SB_DN:
+					case BUTTON_SB_THUMB:
 
 						gui.sendAidKey(tnvt.AID_ROLL_DOWN);
 						break;
-					case ScreenChar.BUTTON_LEFT_EB:
-					case ScreenChar.BUTTON_MIDDLE_EB:
-					case ScreenChar.BUTTON_RIGHT_EB:
+					case BUTTON_LEFT_EB:
+					case BUTTON_MIDDLE_EB:
+					case BUTTON_RIGHT_EB:
 						StringBuffer eb = new StringBuffer();
-						while (planes.getWhichGUI(pos--) != ScreenChar.BUTTON_LEFT_EB)
+						while (planes.getWhichGUI(pos--) != BUTTON_LEFT_EB)
 							;
-						while (planes.getWhichGUI(pos++) != ScreenChar.BUTTON_RIGHT_EB) {
+						while (planes.getWhichGUI(pos++) != BUTTON_RIGHT_EB) {
 							eb.append(planes.getChar(pos));
 						}
 						org.tn5250j.tools.system.OperatingSystem.displayURL(eb
@@ -3763,8 +3761,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //		screen[lastPos].setCharAndAttr((char) ul, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos, (char) ul, colorAttr, false);
 		if (gui) {
-//			screen[lastPos].setUseGUI(ScreenChar.UPPER_LEFT);
-			planes.setUseGUI(lastPos, ScreenChar.UPPER_LEFT);
+//			screen[lastPos].setUseGUI(UPPER_LEFT);
+			planes.setUseGUI(lastPos, UPPER_LEFT);
 		}
 		setDirty(lastPos);
 
@@ -3776,8 +3774,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //			screen[lastPos].setCharAndAttr((char) upper, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos, (char) upper, colorAttr, false);
 			if (gui) {
-//				screen[lastPos].setUseGUI(ScreenChar.UPPER);
-				planes.setUseGUI(lastPos,ScreenChar.UPPER);
+//				screen[lastPos].setUseGUI(UPPER);
+				planes.setUseGUI(lastPos,UPPER);
 			}
 			setDirty(lastPos);
 			advancePos();
@@ -3788,8 +3786,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		planes.setScreenCharAndAttr(lastPos,(char) ur, colorAttr, false);
 
 		if (gui) {
-//			screen[lastPos].setUseGUI(ScreenChar.UPPER_RIGHT);
-			planes.setUseGUI(lastPos, ScreenChar.UPPER_RIGHT);
+//			screen[lastPos].setUseGUI(UPPER_RIGHT);
+			planes.setUseGUI(lastPos, UPPER_RIGHT);
 		}
 		setDirty(lastPos);
 		advancePos();
@@ -3815,8 +3813,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			planes.setScreenCharAndAttr(lastPos, (char) left, colorAttr, false);
 
 			if (gui) {
-//				screen[lastPos].setUseGUI(ScreenChar.LEFT);
-				planes.setUseGUI(lastPos,ScreenChar.LEFT);
+//				screen[lastPos].setUseGUI(LEFT);
+				planes.setUseGUI(lastPos,GUI_LEFT);
 			}
 			setDirty(lastPos);
 			advancePos();
@@ -3826,8 +3824,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			while (w-- >= 0) {
 //				screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 				planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
-//				screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
-				planes.setUseGUI(lastPos,ScreenChar.NO_GUI);
+//				screen[lastPos].setUseGUI(NO_GUI);
+				planes.setUseGUI(lastPos,NO_GUI);
 				setDirty(lastPos);
 				advancePos();
 			}
@@ -3836,8 +3834,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //			screen[lastPos].setCharAndAttr((char) right, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos,(char) right, colorAttr, false);
 			if (gui) {
-//				screen[lastPos].setUseGUI(ScreenChar.RIGHT);
-				planes.setUseGUI(lastPos,ScreenChar.RIGHT);
+//				screen[lastPos].setUseGUI(RIGHT);
+				planes.setUseGUI(lastPos,GUI_RIGHT);
 			}
 			setDirty(lastPos);
 			advancePos();
@@ -3860,8 +3858,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //		screen[lastPos].setCharAndAttr((char) ll, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos,(char) ll, colorAttr, false);
 		if (gui) {
-//			screen[lastPos].setUseGUI(ScreenChar.LOWER_LEFT);
-			planes.setUseGUI(lastPos,ScreenChar.LOWER_LEFT);
+//			screen[lastPos].setUseGUI(LOWER_LEFT);
+			planes.setUseGUI(lastPos,LOWER_LEFT);
 		}
 		setDirty(lastPos);
 		advancePos();
@@ -3872,8 +3870,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //			screen[lastPos].setCharAndAttr((char) bottom, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos,(char) bottom, colorAttr, false);
 			if (gui) {
-//				screen[lastPos].setUseGUI(ScreenChar.BOTTOM);
-				planes.setUseGUI(lastPos,ScreenChar.BOTTOM);
+//				screen[lastPos].setUseGUI(BOTTOM);
+				planes.setUseGUI(lastPos,BOTTOM);
 			}
 			setDirty(lastPos);
 			advancePos();
@@ -3883,8 +3881,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //		screen[lastPos].setCharAndAttr((char) lr, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos, (char) lr, colorAttr, false);
 		if (gui) {
-//			screen[lastPos].setUseGUI(ScreenChar.LOWER_RIGHT);
-			planes.setUseGUI(lastPos,ScreenChar.LOWER_RIGHT);
+//			screen[lastPos].setUseGUI(LOWER_RIGHT);
+			planes.setUseGUI(lastPos,LOWER_RIGHT);
 		}
 		setDirty(lastPos);
 		advancePos();
@@ -3927,9 +3925,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		int thumbPos = (int) (size * (float) ((float) sliderColPos / (float) totalColScrollable));
 		//      System.out.println(thumbPos);
 //		screen[sp].setCharAndAttr(' ', 32, false);
-//		screen[sp].setUseGUI(ScreenChar.BUTTON_SB_UP);
+//		screen[sp].setUseGUI(BUTTON_SB_UP);
 		planes.setScreenCharAndAttr(sp,' ', 32, false);
-		planes.setUseGUI(sp,ScreenChar.BUTTON_SB_UP);
+		planes.setUseGUI(sp,BUTTON_SB_UP);
 
 		int ctr = 0;
 		while (ctr < size) {
@@ -3937,20 +3935,20 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //			screen[sp].setCharAndAttr(' ', 32, false);
 			planes.setScreenCharAndAttr(sp,' ', 32, false);
 			if (ctr == thumbPos)
-//				screen[sp].setUseGUI(ScreenChar.BUTTON_SB_THUMB);
-				planes.setUseGUI(sp,ScreenChar.BUTTON_SB_THUMB);
+//				screen[sp].setUseGUI(BUTTON_SB_THUMB);
+				planes.setUseGUI(sp,BUTTON_SB_THUMB);
 			else
-//				screen[sp].setUseGUI(ScreenChar.BUTTON_SB_GUIDE);
-				planes.setUseGUI(sp, ScreenChar.BUTTON_SB_GUIDE);
+//				screen[sp].setUseGUI(BUTTON_SB_GUIDE);
+				planes.setUseGUI(sp, BUTTON_SB_GUIDE);
 			ctr++;
 		}
 		sp += numCols;
 
 //		screen[sp].setCharAndAttr(' ', 32, false);
-//		screen[sp].setUseGUI(ScreenChar.BUTTON_SB_DN);
+//		screen[sp].setUseGUI(BUTTON_SB_DN);
 
 		planes.setScreenCharAndAttr(sp, ' ', 32, false);
-		planes.setUseGUI(sp, ScreenChar.BUTTON_SB_DN);
+		planes.setUseGUI(sp, BUTTON_SB_DN);
 	}
 
 	/**
@@ -3998,9 +3996,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		for (int x = 0; x < len; x++) {
 //			screen[pos].setChar(title.charAt(x));
-//			screen[pos++].setUseGUI(ScreenChar.NO_GUI);
+//			screen[pos++].setUseGUI(NO_GUI);
 			planes.setChar(pos, title.charAt(x));
-			planes.setUseGUI(pos++, ScreenChar.NO_GUI);
+			planes.setUseGUI(pos++, NO_GUI);
 
 		}
 	}
@@ -4133,8 +4131,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					planes.setScreenAttr(lastPos,lastAttr);
 
 				if (gui) {
-//					screen[lastPos].setUseGUI(ScreenChar.FIELD_MIDDLE);
-					planes.setUseGUI(lastPos,ScreenChar.FIELD_MIDDLE);
+//					screen[lastPos].setUseGUI(FIELD_MIDDLE);
+					planes.setUseGUI(lastPos,FIELD_MIDDLE);
 				}
 
 				advancePos();
@@ -4143,22 +4141,22 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 			if (gui)
 				if (len > 1) {
-//					screen[sf.startPos()].setUseGUI(ScreenChar.FIELD_LEFT);
-					planes.setUseGUI(sf.startPos(), ScreenChar.FIELD_LEFT);
+//					screen[sf.startPos()].setUseGUI(FIELD_LEFT);
+					planes.setUseGUI(sf.startPos(), FIELD_LEFT);
 //					if (lastPos > 0)
-//						screen[lastPos - 1].setUseGUI(ScreenChar.FIELD_RIGHT);
+//						screen[lastPos - 1].setUseGUI(FIELD_RIGHT);
 //					else
-//						screen[lastPos].setUseGUI(ScreenChar.FIELD_RIGHT);
+//						screen[lastPos].setUseGUI(FIELD_RIGHT);
 
 					if (lastPos > 0)
-						planes.setUseGUI(lastPos - 1, ScreenChar.FIELD_RIGHT);
+						planes.setUseGUI(lastPos - 1, FIELD_RIGHT);
 					else
-						planes.setUseGUI(lastPos,ScreenChar.FIELD_RIGHT);
+						planes.setUseGUI(lastPos,FIELD_RIGHT);
 
 				}
             else {
-//					screen[lastPos - 1].setUseGUI(ScreenChar.FIELD_ONE);
-					planes.setUseGUI(lastPos - 1,ScreenChar.FIELD_ONE);
+//					screen[lastPos - 1].setUseGUI(FIELD_ONE);
+					planes.setUseGUI(lastPos - 1,FIELD_ONE);
             }
 
 			//         screen[lastPos].setCharAndAttr(initChar,initAttr,true);
@@ -4252,7 +4250,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	//                  screen[lastPos].setAttribute(lastAttr);
 	//
 	//               if (gui)
-	//                  screen[lastPos].setUseGUI(ScreenChar.FIELD_MIDDLE);
+	//                  screen[lastPos].setUseGUI(FIELD_MIDDLE);
 	//
 	//               advancePos();
 	//
@@ -4260,15 +4258,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	//
 	//            if (gui)
 	//               if (len > 1) {
-	//                  screen[sf.startPos()].setUseGUI(ScreenChar.FIELD_LEFT);
+	//                  screen[sf.startPos()].setUseGUI(FIELD_LEFT);
 	//                  if (lastPos > 0)
-	//                     screen[lastPos-1].setUseGUI(ScreenChar.FIELD_RIGHT);
+	//                     screen[lastPos-1].setUseGUI(FIELD_RIGHT);
 	//                  else
-	//                     screen[lastPos].setUseGUI(ScreenChar.FIELD_RIGHT);
+	//                     screen[lastPos].setUseGUI(FIELD_RIGHT);
 	//
 	//               }
 	//               else
-	//                  screen[lastPos-1].setUseGUI(ScreenChar.FIELD_ONE);
+	//                  screen[lastPos-1].setUseGUI(FIELD_ONE);
 	//
 	//            setEndingAttr(initAttr);
 	//
@@ -4322,26 +4320,26 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					while (l-- > 0) {
 
 						if (guiInterface && f) {
-//							screen[pos].setUseGUI(ScreenChar.FIELD_LEFT);
-							planes.setUseGUI(pos,ScreenChar.FIELD_LEFT);
+//							screen[pos].setUseGUI(FIELD_LEFT);
+							planes.setUseGUI(pos,FIELD_LEFT);
 							f = false;
 						} else {
 
-//							screen[pos].setUseGUI(ScreenChar.FIELD_MIDDLE);
-							planes.setUseGUI(pos,ScreenChar.FIELD_MIDDLE);
+//							screen[pos].setUseGUI(FIELD_MIDDLE);
+							planes.setUseGUI(pos,FIELD_MIDDLE);
 
 						}
 
 						if (guiInterface && l == 0) {
-//							screen[pos].setUseGUI(ScreenChar.FIELD_RIGHT);
-							planes.setUseGUI(pos,ScreenChar.FIELD_RIGHT);
+//							screen[pos].setUseGUI(FIELD_RIGHT);
+							planes.setUseGUI(pos,FIELD_RIGHT);
 						}
 
 						pos++;
 					}
 				} else {
-//					screen[pos].setUseGUI(ScreenChar.FIELD_ONE);
-					planes.setUseGUI(pos,ScreenChar.FIELD_ONE);
+//					screen[pos].setUseGUI(FIELD_ONE);
+					planes.setUseGUI(pos,FIELD_ONE);
 				}
 			}
 		}
@@ -4452,8 +4450,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 			setDirty(lastPos);
 			if (guiInterface && !isInField(lastPos, false)) {
-//				screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
-				planes.setUseGUI(lastPos, ScreenChar.NO_GUI);
+//				screen[lastPos].setUseGUI(NO_GUI);
+				planes.setUseGUI(lastPos, NO_GUI);
 			}
 			advancePos();
 		}
@@ -4506,11 +4504,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			planes.setScreenAttr(lastPos, lastAttr);
 			if (guiInterface && !isInField(lastPos, false)) {
 //				int g = screen[lastPos].whichGui;
-//				if (g >= ScreenChar.FIELD_LEFT && g <= ScreenChar.FIELD_ONE)
-//					screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
+//				if (g >= FIELD_LEFT && g <= FIELD_ONE)
+//					screen[lastPos].setUseGUI(NO_GUI);
 				int g = planes.getWhichGUI(lastPos);
-				if (g >= ScreenChar.FIELD_LEFT && g <= ScreenChar.FIELD_ONE)
-					planes.setUseGUI(lastPos,ScreenChar.NO_GUI);
+				if (g >= FIELD_LEFT && g <= FIELD_ONE)
+					planes.setUseGUI(lastPos,NO_GUI);
 			}
 			setDirty(lastPos);
 
@@ -4819,8 +4817,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		for (int x = 0; x < lenScreen; x++) {
 			//         screen[x].setCharAndAttr(' ',initAttr,false);
-//			screen[x].setUseGUI(ScreenChar.NO_GUI);
-         planes.setUseGUI(x,ScreenChar.NO_GUI);
+//			screen[x].setUseGUI(NO_GUI);
+         planes.setUseGUI(x,NO_GUI);
 		}
 		dirty.setBounds(tArea.getBounds());
 		//      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
@@ -4834,9 +4832,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		for (int x = 0; x < lenScreen; x++) {
 //			screen[x].setCharAndAttr(' ', initAttr, false);
-//			screen[x].setUseGUI(ScreenChar.NO_GUI);
+//			screen[x].setUseGUI(NO_GUI);
 			planes.setScreenCharAndAttr(x,' ', initAttr, false);
-			planes.setUseGUI(x, ScreenChar.NO_GUI);
+			planes.setUseGUI(x, NO_GUI);
 		}
 		dirty.setBounds(tArea.getBounds());
 		drawing = true;
