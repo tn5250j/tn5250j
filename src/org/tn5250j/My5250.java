@@ -580,8 +580,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    void newView() {
 
-      int width = 600;
-      int height = 500;
+      // we will now to default the frame size to take over the whole screen
+      //    this is per unanimous vote of the user base
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+      int width = screenSize.width;
+      int height = screenSize.height;
 
       if (sessions.containsKey("emul.width"))
          width = Integer.parseInt(sessions.getProperty("emul.width"));
@@ -651,7 +655,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       }
 
-
       sessions.setProperty("emul.frame" + view.getFrameSequence(),
                                     view.getX() + "," +
                                     view.getY() + "," +
@@ -664,17 +667,14 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       System.out.println("number of active sessions we have after shutting down " + sess.getCount());
 
       if (sess.getCount() == 0) {
-         try {
-            FileOutputStream out = new FileOutputStream("sessions");
-            // save off the width and height to be restored later
-            sessions.setProperty("emul.width",Integer.toString(view.getWidth()));
-            sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
 
-            sessions.store(out,"------ Defaults --------");
-         }
-         catch (FileNotFoundException fnfe) {}
-         catch (IOException ioe) {}
+         sessions.setProperty("emul.width",Integer.toString(view.getWidth()));
+         sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
 
+         // save off the session settings before closing down
+         ConfigureFactory.getInstance().saveSettings(GlobalConfigure.SESSIONS,
+                                                      GlobalConfigure.SESSIONS,
+                                                      "------ Defaults --------");
          if (strapper != null) {
             strapper.interrupt();
          }
