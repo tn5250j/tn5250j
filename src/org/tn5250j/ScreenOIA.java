@@ -52,12 +52,12 @@ public class ScreenOIA
    public static final int OIA_LEVEL_SCRIPT   =  12;
 
    // INPUTINHIBITED
-   static final int INPUTINHIBITED_NOTINHIBITED   =  0;
-   static final int INPUTINHIBITED_SYSTEM_WAIT   =  1;
-   static final int INPUTINHIBITED_COMMCHECK   =  2;
-   static final int INPUTINHIBITED_PROGCHECK   =  3;
-   static final int INPUTINHIBITED_MACHINECHECK   =  4;
-   static final int INPUTINHIBITED_OTHER   =  5;
+   public static final int INPUTINHIBITED_NOTINHIBITED   =  0;
+   public static final int INPUTINHIBITED_SYSTEM_WAIT   =  1;
+   public static final int INPUTINHIBITED_COMMCHECK   =  2;
+   public static final int INPUTINHIBITED_PROGCHECK   =  3;
+   public static final int INPUTINHIBITED_MACHINECHECK   =  4;
+   public static final int INPUTINHIBITED_OTHER   =  5;
 
    public ScreenOIA (Screen5250 screen) {
 
