@@ -31,6 +31,7 @@ import java.io.*;
 import java.awt.event.*;
 
 import org.tn5250j.*;
+import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.LangTool;
@@ -101,7 +102,7 @@ public final class LoadMacroMenu {
 
       try {
          conPath = new File("scripts").getCanonicalPath();
-         conPath2 = new File(GlobalConfigure.getInstance().getProperty(
+         conPath2 = new File(ConfigureFactory.getInstance().getProperty(
                               "emulator.settingsDirectory") +
                               "scripts").getCanonicalPath();
       }
@@ -111,7 +112,7 @@ public final class LoadMacroMenu {
 
       // lets not load the menu again if they point to the same place
       if (!conPath.equals(conPath2))
-         scriptDir(GlobalConfigure.getInstance().getProperty(
+         scriptDir(ConfigureFactory.getInstance().getProperty(
                               "emulator.settingsDirectory") +
                               "scripts",menu,session);
    }

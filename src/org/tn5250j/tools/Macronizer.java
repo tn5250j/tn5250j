@@ -33,7 +33,6 @@ import java.io.*;
 import javax.swing.*;
 
 import org.tn5250j.Session;
-import org.tn5250j.GlobalConfigure;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.interfaces.ConfigureFactory;
 
@@ -54,7 +53,7 @@ public class Macronizer {
 
    private static boolean loadMacros() {
 
-      macros = ConfigureFactory.getInstance().getProperties(GlobalConfigure.MACROS);
+      macros = ConfigureFactory.getInstance().getProperties(ConfigureFactory.MACROS);
       if (macros != null && macros.size() > 0)
          return true;
 
@@ -64,7 +63,7 @@ public class Macronizer {
    private final static void saveMacros() {
 
       ConfigureFactory.getInstance().saveSettings(
-               GlobalConfigure.MACROS,"------ Macros --------");
+               ConfigureFactory.MACROS,"------ Macros --------");
    }
 
    public final static boolean isMacrosExist() {
@@ -227,7 +226,7 @@ public class Macronizer {
 
       File directory = new File("scripts");
 
-      File directory2 = new File(GlobalConfigure.getInstance().getProperty(
+      File directory2 = new File(ConfigureFactory.getInstance().getProperty(
                            "emulator.settingsDirectory") +
                            "scripts");
 

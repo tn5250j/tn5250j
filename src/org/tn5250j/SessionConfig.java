@@ -202,14 +202,7 @@ public class SessionConfig implements TN5250jConstants {
    }
 
    private String settingsDirectory() {
-       if (System.getProperties().containsKey("emulator.settingsDirectory")) {
-           return System.getProperty("emulator.settingsDirectory") +
-           File.separator;
-       }
-       else {
-           return System.getProperty("user.home") + File.separator +
-           ".tn5250j" + File.separator;
-       }
+      return ConfigureFactory.getInstance().getProperty("emulator.settingsDirectory");
    }
 
    private void loadDefaults() {
