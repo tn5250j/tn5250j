@@ -43,11 +43,16 @@ public class DisplayAttributesPanel extends AttributesPanel {
    JCheckBox guiShowUnderline;
 
    public DisplayAttributesPanel(SessionConfig config ) {
-      super(config);
+      super(config,"Display");
    }
 
    /**Component initialization*/
-   void initPanel() throws Exception  {
+   public void initPanel() throws Exception  {
+
+      setLayout(new BorderLayout());
+      contentPane = new JPanel();
+      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+      add(contentPane,BorderLayout.NORTH);
 
       // define column separator panel
       JPanel csp = new JPanel();
@@ -122,9 +127,13 @@ public class DisplayAttributesPanel extends AttributesPanel {
       cgp.add(guiCheck);
       cgp.add(guiShowUnderline);
 
-      add(csp);
-      add(sap);
-      add(cgp);
+      contentPane.add(csp);
+      contentPane.add(sap);
+      contentPane.add(cgp);
+
+   }
+
+   public void save() {
 
    }
 

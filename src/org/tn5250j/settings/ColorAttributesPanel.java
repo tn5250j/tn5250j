@@ -45,11 +45,11 @@ public class ColorAttributesPanel extends AttributesPanel {
 
 
    public ColorAttributesPanel(SessionConfig config ) {
-      super(config);
+      super(config,"Colors");
    }
 
    /**Component initialization*/
-   protected void initPanel() throws Exception  {
+   public void initPanel() throws Exception  {
 
       JPanel cp = new JPanel();
       cp.setLayout(new BorderLayout());
@@ -162,39 +162,9 @@ public class ColorAttributesPanel extends AttributesPanel {
 
    }
 
-//   protected final int getIntProperty(String prop) {
-//
-//      return Integer.parseInt((String)props.get(prop));
-//
-//   }
+   public void save() {
 
-//   protected final Color getColorProperty(String prop) {
-//
-//      if (props.containsKey(prop)) {
-//         Color c = new Color(getIntProperty(prop));
-//         return c;
-//      }
-//      else
-//         return null;
-//
-//   }
-//
-//   protected final Color getColorProperty(String prop, Color defColor) {
-//
-//      if (props.containsKey(prop)) {
-//         Color c = new Color(getIntProperty(prop));
-//         return c;
-//      }
-//      else
-//         return defColor;
-//
-//   }
-
-//   protected final void setProperty(String key, String val) {
-//
-//      props.setProperty(key,val);
-//
-//   }
+   }
 
    public void applyAttributes() {
 

@@ -1,6 +1,6 @@
 package org.tn5250j.settings;
 /**
- * Title: SignoffAttributesPanel
+ * Title: MouseAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -33,12 +33,12 @@ import java.util.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class SignoffAttributesPanel extends AttributesPanel {
+public class MouseAttributesPanel extends AttributesPanel {
 
-   JCheckBox signoffCheck;
+   JCheckBox dceCheck;
 
-   public SignoffAttributesPanel(SessionConfig config ) {
-      super(config,"Signoff");
+   public MouseAttributesPanel(SessionConfig config ) {
+      super(config,"Mouse");
    }
 
    /**Component initialization*/
@@ -50,17 +50,17 @@ public class SignoffAttributesPanel extends AttributesPanel {
       add(contentPane,BorderLayout.NORTH);
 
       // define double click as enter
-      JPanel soConfirm = new JPanel();
-      soConfirm.setBorder(BorderFactory.createTitledBorder(
-                           LangTool.getString("sa.titleSignoff")));
+      JPanel dcep = new JPanel();
+      dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.doubleClick")));
 
-      signoffCheck = new JCheckBox(LangTool.getString("sa.confirmSignoff"));
+      dceCheck = new JCheckBox(LangTool.getString("sa.sendEnter"));
 
       // check if double click sends enter
-      signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
+      dceCheck.setSelected(getStringProperty("doubleClick").equals("Yes"));
 
-      soConfirm.add(signoffCheck);
-      contentPane.add(soConfirm);
+      dcep.add(dceCheck);
+
+      contentPane.add(dcep);
 
    }
 
@@ -70,17 +70,17 @@ public class SignoffAttributesPanel extends AttributesPanel {
 
    public void applyAttributes() {
 
-      if (signoffCheck.isSelected()) {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
+      if (dceCheck.isSelected()) {
+         changes.firePropertyChange(this,"doubleClick",
+                           getStringProperty("doubleClick"),
                            "Yes");
-         setProperty("confirmSignoff","Yes");
+         setProperty("doubleClick","Yes");
       }
       else {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
+         changes.firePropertyChange(this,"doubleClick",
+                           getStringProperty("doubleClick"),
                            "No");
-         setProperty("confirmSignoff","No");
+         setProperty("doubleClick","No");
       }
 
    }

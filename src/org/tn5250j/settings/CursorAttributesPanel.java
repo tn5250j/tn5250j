@@ -46,11 +46,16 @@ public class CursorAttributesPanel extends AttributesPanel {
    JTextField cursorBottOffset;
 
    public CursorAttributesPanel(SessionConfig config ) {
-      super(config);
+      super(config,"Cursor");
    }
 
    /**Component initialization*/
-   protected void initPanel() throws Exception  {
+   public void initPanel() throws Exception  {
+
+      setLayout(new BorderLayout());
+      contentPane = new JPanel();
+      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+      add(contentPane,BorderLayout.NORTH);
 
       // define cursor size panel
       JPanel crp = new JPanel();
@@ -161,10 +166,14 @@ public class CursorAttributesPanel extends AttributesPanel {
 
       bottOffPanel.add(cursorBottOffset);
 
-      add(crp);
-      add(chp);
-      add(rulerFPanel);
-      add(bottOffPanel);
+      contentPane.add(crp);
+      contentPane.add(chp);
+      contentPane.add(rulerFPanel);
+      contentPane.add(bottOffPanel);
+
+   }
+
+   public void save() {
 
    }
 

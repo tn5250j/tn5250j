@@ -40,11 +40,16 @@ public class HotspotAttributesPanel extends AttributesPanel {
    JTextField hsBottom;
 
    public HotspotAttributesPanel(SessionConfig config ) {
-      super(config);
+      super(config,"HS");
    }
 
    /**Component initialization*/
-   protected void initPanel() throws Exception  {
+   public void initPanel() throws Exception  {
+
+      setLayout(new BorderLayout());
+      contentPane = new JPanel();
+      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+      add(contentPane,BorderLayout.NORTH);
 
       // define hsPanel panel
       JPanel hsp = new JPanel();
@@ -59,20 +64,24 @@ public class HotspotAttributesPanel extends AttributesPanel {
       // define assignment panel
       JPanel hsap = new JPanel();
       hsap.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.hsap")));
-      hsap.setLayout(new GridLayout(2,2));
+      hsap.setLayout(new AlignLayout(2,5,5));
 
       JLabel moreLabel = new JLabel(LangTool.getString("sa.hsMore"));
       JLabel bottomLabel = new JLabel(LangTool.getString("sa.hsBottom"));
-      hsMore = new JTextField(getStringProperty("hsMore"));
-      hsBottom = new JTextField(getStringProperty("hsBottom"));
+      hsMore = new JTextField(getStringProperty("hsMore"),20);
+      hsBottom = new JTextField(getStringProperty("hsBottom"),20);
 
       hsap.add(moreLabel);
       hsap.add(hsMore);
       hsap.add(bottomLabel);
       hsap.add(hsBottom);
 
-      add(hsp);
-      add(hsap);
+      contentPane.add(hsp);
+      contentPane.add(hsap);
+
+   }
+
+   public void save() {
 
    }
 

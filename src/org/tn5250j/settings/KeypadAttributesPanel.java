@@ -1,6 +1,6 @@
 package org.tn5250j.settings;
 /**
- * Title: SignoffAttributesPanel
+ * Title: KeypadAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -33,12 +33,12 @@ import java.util.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class SignoffAttributesPanel extends AttributesPanel {
+public class KeypadAttributesPanel extends AttributesPanel {
 
-   JCheckBox signoffCheck;
+   JCheckBox kpCheck;
 
-   public SignoffAttributesPanel(SessionConfig config ) {
-      super(config,"Signoff");
+   public KeypadAttributesPanel(SessionConfig config ) {
+      super(config,"KP");
    }
 
    /**Component initialization*/
@@ -49,18 +49,17 @@ public class SignoffAttributesPanel extends AttributesPanel {
       contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
       add(contentPane,BorderLayout.NORTH);
 
-      // define double click as enter
-      JPanel soConfirm = new JPanel();
-      soConfirm.setBorder(BorderFactory.createTitledBorder(
-                           LangTool.getString("sa.titleSignoff")));
+      // define Key Pad panel
+      JPanel kpp = new JPanel();
+      kpp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.kpp")));
+      kpCheck = new JCheckBox(LangTool.getString("sa.kpCheck"));
 
-      signoffCheck = new JCheckBox(LangTool.getString("sa.confirmSignoff"));
+      if (getStringProperty("keypad").equals("Yes"))
+         kpCheck.setSelected(true);
 
-      // check if double click sends enter
-      signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
+      kpp.add(kpCheck);
 
-      soConfirm.add(signoffCheck);
-      contentPane.add(soConfirm);
+      contentPane.add(kpp);
 
    }
 
@@ -70,17 +69,17 @@ public class SignoffAttributesPanel extends AttributesPanel {
 
    public void applyAttributes() {
 
-      if (signoffCheck.isSelected()) {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
+      if (kpCheck.isSelected()) {
+         changes.firePropertyChange(this,"keypad",
+                           getStringProperty("keypad"),
                            "Yes");
-         setProperty("confirmSignoff","Yes");
+         setProperty("keypad","Yes");
       }
       else {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
+         changes.firePropertyChange(this,"keypad",
+                           getStringProperty("keypad"),
                            "No");
-         setProperty("confirmSignoff","No");
+         setProperty("keypad","No");
       }
 
    }

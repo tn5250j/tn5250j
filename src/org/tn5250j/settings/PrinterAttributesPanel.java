@@ -1,6 +1,6 @@
 package org.tn5250j.settings;
 /**
- * Title: SignoffAttributesPanel
+ * Title: PrinterAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -33,12 +33,12 @@ import java.util.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class SignoffAttributesPanel extends AttributesPanel {
+public class PrinterAttributesPanel extends AttributesPanel {
 
-   JCheckBox signoffCheck;
+   JCheckBox defaultPrinter;
 
-   public SignoffAttributesPanel(SessionConfig config ) {
-      super(config,"Signoff");
+   public PrinterAttributesPanel(SessionConfig config ) {
+      super(config,"Printer");
    }
 
    /**Component initialization*/
@@ -49,18 +49,17 @@ public class SignoffAttributesPanel extends AttributesPanel {
       contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
       add(contentPane,BorderLayout.NORTH);
 
-      // define double click as enter
-      JPanel soConfirm = new JPanel();
-      soConfirm.setBorder(BorderFactory.createTitledBorder(
-                           LangTool.getString("sa.titleSignoff")));
+      // define ppPanel panel
+      JPanel ppp = new JPanel();
+      ppp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.print")));
+      defaultPrinter = new JCheckBox(LangTool.getString("sa.defaultPrinter"));
 
-      signoffCheck = new JCheckBox(LangTool.getString("sa.confirmSignoff"));
+      if (getStringProperty("defaultPrinter").equals("Yes"))
+         defaultPrinter.setSelected(true);
 
-      // check if double click sends enter
-      signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
+      ppp.add(defaultPrinter);
 
-      soConfirm.add(signoffCheck);
-      contentPane.add(soConfirm);
+      contentPane.add(ppp);
 
    }
 
@@ -70,17 +69,17 @@ public class SignoffAttributesPanel extends AttributesPanel {
 
    public void applyAttributes() {
 
-      if (signoffCheck.isSelected()) {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
+      if (defaultPrinter.isSelected()) {
+         changes.firePropertyChange(this,"defaultPrinter",
+                           getStringProperty("defaultPrinter"),
                            "Yes");
-         setProperty("confirmSignoff","Yes");
+         setProperty("defaultPrinter","Yes");
       }
       else {
-         changes.firePropertyChange(this,"confirmSignoff",
-                           getStringProperty("confirmSignoff"),
+         changes.firePropertyChange(this,"defaultPrinter",
+                           getStringProperty("defaultPrinter"),
                            "No");
-         setProperty("confirmSignoff","No");
+         setProperty("defaultPrinter","No");
       }
 
    }

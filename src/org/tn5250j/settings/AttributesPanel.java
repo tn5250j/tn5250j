@@ -1,4 +1,3 @@
-package org.tn5250j.settings;
 /**
  * Title: AttributesPanel
  * Copyright:   Copyright (c) 2001,2002
@@ -24,6 +23,7 @@ package org.tn5250j.settings;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.settings;
 
 import java.awt.*;
 import javax.swing.*;
@@ -40,14 +40,26 @@ public abstract class AttributesPanel extends JPanel {
 
    Properties props;
    Properties schemaProps;
-
+   static final String nodePrefix = "sa.node";
+   String name;
    SessionConfig changes = null;
 
-   public AttributesPanel(SessionConfig config ) {
+   // content pane to be used if needed by subclasses
+   JPanel contentPane;
+
+   public AttributesPanel(SessionConfig config) {
+      this(config,"",nodePrefix);
+   }
+
+   public AttributesPanel(SessionConfig config, String name) {
+      this(config,name,nodePrefix);
+   }
+
+   public AttributesPanel(SessionConfig config, String name, String prefix) {
       super();
       changes = config;
       props = config.getProperties();
-
+      this.name = LangTool.getString(prefix + name);
       // define layout
       setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
@@ -59,7 +71,11 @@ public abstract class AttributesPanel extends JPanel {
       }
    }
 
-   abstract void initPanel() throws Exception;
+   public abstract void initPanel() throws Exception;
+
+   public abstract void applyAttributes();
+
+   public abstract void save();
 
    protected final String getStringProperty(String prop) {
 
@@ -118,5 +134,8 @@ public abstract class AttributesPanel extends JPanel {
 
    }
 
-   abstract void applyAttributes();
+   public String toString() {
+      return name;
+   }
+
 }

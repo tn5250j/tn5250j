@@ -38,11 +38,16 @@ public class OnConnectAttributesPanel extends AttributesPanel {
    JTextField connectMacro;
 
    public OnConnectAttributesPanel(SessionConfig config ) {
-      super(config);
+      super(config,"OnConnect");
    }
 
    /**Component initialization*/
-   protected void initPanel() throws Exception  {
+   public void initPanel() throws Exception  {
+
+      setLayout(new BorderLayout());
+      contentPane = new JPanel();
+      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+      add(contentPane,BorderLayout.NORTH);
 
       // define onConnect macro to run
       JPanel ocMacrop = new JPanel();
@@ -55,7 +60,11 @@ public class OnConnectAttributesPanel extends AttributesPanel {
       connectMacro.setText(getStringProperty("connectMacro"));
 
       ocMacrop.add(connectMacro);
-      add(ocMacrop);
+      contentPane.add(ocMacrop);
+
+   }
+
+   public void save() {
 
    }
 

@@ -45,16 +45,19 @@ public class FontAttributesPanel extends AttributesPanel {
    JTextField pointSize;
 
    public FontAttributesPanel(SessionConfig config ) {
-      super(config);
+      super(config,"Fonts");
    }
 
    /**Component initialization*/
-   void initPanel() throws Exception  {
+   public void initPanel() throws Exception  {
+
+      setLayout(new BorderLayout());
+      contentPane = new JPanel();
+      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
+      add(contentPane,BorderLayout.NORTH);
 
       // fonts
       Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-
-      setLayout(new BorderLayout());
 
       JPanel flp = new JPanel();
       TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.font"));
@@ -96,8 +99,12 @@ public class FontAttributesPanel extends AttributesPanel {
       fsp.add(new JLabel(LangTool.getString("sa.vertScaleLabel")));
       fsp.add(verticalScale);
 
-      add(flp,BorderLayout.NORTH);
-      add(fsp,BorderLayout.SOUTH);
+      contentPane.add(flp);
+      contentPane.add(fsp);
+
+   }
+
+   public void save() {
 
    }
 
