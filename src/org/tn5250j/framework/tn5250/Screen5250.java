@@ -3157,7 +3157,7 @@ public class Screen5250 implements TN5250jConstants{
 		lastAttr = attr;
 
 		planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
-
+		
 		setDirty(lastPos);
 
 		advancePos();
@@ -3189,7 +3189,10 @@ public class Screen5250 implements TN5250jConstants{
 				if (gui) {
 					planes.setUseGUI(lastPos,FIELD_MIDDLE);
 				}
-
+				
+				// now we set the field plane attributes
+				planes.setScreenFieldAttr(lastPos,ffw1);
+				
 				advancePos();
 
 			}

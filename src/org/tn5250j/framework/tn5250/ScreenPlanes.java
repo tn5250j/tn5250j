@@ -88,6 +88,7 @@ public class ScreenPlanes implements TN5250jConstants {
       screenExtended = new char[screenSize];
       fieldExtended = new char[screenSize];
       screenIsChanged = new boolean[screenSize];
+      screenField = new char[screenSize];
 
       initalizePlanes();
    }
@@ -183,6 +184,12 @@ public class ScreenPlanes implements TN5250jConstants {
 
    }
 
+   protected void setScreenFieldAttr(int pos, int attr) {
+
+      screenField[pos] = (char)attr;
+
+   }
+
    protected final void setChar(int pos, char c) {
       screenIsChanged[pos] = screen[pos] == c ? false : true;
       //      if (isChanged)
@@ -218,10 +225,14 @@ public class ScreenPlanes implements TN5250jConstants {
 
          setScreenCharAndAttr(y,initChar,initAttr,false);
          screenGUI[y] = NO_GUI;
-         fieldExtended[y] = initChar;
          screenIsChanged[y] = false;
 
       }
+      
+      // here we will just copy a plane that has already been initialized
+      //   onto the other planes using arraycopy which will be faster.  I hope.
+      System.arraycopy(screen,0,fieldExtended,0,screenSize);
+      System.arraycopy(screen,0,screenField,0,screenSize);
    }
 
    protected final int getWhichGUI(int pos) {
@@ -267,7 +278,7 @@ public class ScreenPlanes implements TN5250jConstants {
          case PLANE_EXTENDED_GRAPHIC:
             System.arraycopy(screenGUI, from, planeChars, 0, len);
             break;
-         case PLANE_EXTENDED_FIELD:
+         case PLANE_FIELD:
             System.arraycopy(screenField, from, planeChars, 0, len);
             break;
          case PLANE_IS_ATTR_PLACE:
@@ -288,7 +299,7 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The row which corresponds to the position given
     * @throws OhioException
     */
-   public int convertPosToRow(int pos) {
+   private int convertPosToRow(int pos) {
 
       return (pos / numCols) + 1;
 
@@ -301,7 +312,7 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The column which corresponds to the position given
     * @throws OhioException
     */
-   public int convertPosToColumn(int pos) {
+   private int convertPosToColumn(int pos) {
 
       return (pos % numCols) + 1;
 
@@ -316,7 +327,7 @@ public class ScreenPlanes implements TN5250jConstants {
     * @return The linear position which corresponds to the coordinate given.
     * @throws OhioException
     */
-   public int convertRowColToPos(int row, int col) {
+   private int convertRowColToPos(int row, int col) {
 
 
       return (row - 1) * numCols + col -1;

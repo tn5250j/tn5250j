@@ -186,13 +186,10 @@ public class ScreenField {
          //    if we read an attribute byte of 32 for normal display the unicode
          //       character for this is \u0020 and the unicode character for
          //       a space is also \u0020 thus the offset.
-//         if (s.screen[cursorPos].attributePlace) {
          if (s.planes.isAttributePlace(cursorPos)) {
-//            text.setCharAt(x,(char)('\uff00' + s.screen[cursorPos].attr));
             text.setCharAt(x,(char)('\uff00' + s.planes.getCharAttr(cursorPos)));
          }
          else {
-//            text.setCharAt(x,s.screen[cursorPos].getChar());
             text.setCharAt(x,s.planes.getChar(cursorPos));
          }
          changePos(-1);
@@ -223,7 +220,6 @@ public class ScreenField {
       int x = length;
       cursorPos = startPos;
       while (x-- > 0) {
-//         s.screen[cursorPos].setChar(c);
          s.planes.setChar(cursorPos,c);
          changePos(1);
       }
@@ -235,7 +231,6 @@ public class ScreenField {
       int x = endPos - lastPos + 1;
       cursorPos = lastPos;
       while (x-- > 0) {
-//         s.screen[cursorPos].setChar(c);
          s.planes.setChar(cursorPos,c);
          s.setDirty(cursorPos);
          changePos(1);
