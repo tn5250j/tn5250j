@@ -33,6 +33,12 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+06/06/2002  Fixed a problem with restore of changed fields after a popup not
+            being recognized as being change.  Thanks for the report James
+
+23/5/2002   Added new color schema from Alessandro Casassa named Asso from
+            http:\\www.teknosw.it  alessandro.casassa@teknosw.it
+
 20/5/2002   Fixed a problem with code page 280 for italian.
 
 15/5/2002   Cleaned up some error messages on thread interruptions during session

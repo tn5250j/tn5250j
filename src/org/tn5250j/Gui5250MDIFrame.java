@@ -137,8 +137,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    private void nextSession() {
 
-      JInternalFrame[] frames = desktop.getAllFrames();
-      JInternalFrame miv = desktop.getSelectedFrame();
+      MyInternalFrame[] frames = (MyInternalFrame[])desktop.getAllFrames();
+      MyInternalFrame miv = (MyInternalFrame)desktop.getSelectedFrame();
       int index = desktop.getIndexOf(miv);
       if (index < desktop.getComponentCount() - 1) {
          try {
@@ -163,8 +163,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    private void prevSession() {
 
-      JInternalFrame[] frames = desktop.getAllFrames();
-      JInternalFrame miv = desktop.getSelectedFrame();
+      MyInternalFrame[] frames = (MyInternalFrame[])desktop.getAllFrames();
+      MyInternalFrame miv = (MyInternalFrame)desktop.getSelectedFrame();
       int index = desktop.getIndexOf(miv);
       if (index == 0) {
 //         desktop.setSelectedFrame(frames[frames.length - 1]);
@@ -214,7 +214,31 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    public void removeSessionView(Session targetSession) {
 
-      JInternalFrame[] frames = desktop.getAllFrames();
+      MyInternalFrame[] frames = (MyInternalFrame[])desktop.getAllFrames();
+
+
+      int index = desktop.getIndexOf(targetSession);
+      System.out.println("session found and closing down " + index);
+      targetSession.removeSessionListener(this);
+      targetSession.removeSessionJumpListener(this);
+
+      desktop.remove(index);
+//      sessionPane.remove(index);
+
+//      if (index < (sessionPane.getTabCount() - 2)) {
+//         sessionPane.setSelectedIndex(index);
+//         sessionPane.setForegroundAt(index,Color.blue);
+//         sessionPane.setIconAt(index,focused);
+//      }
+//      else {
+//
+//         if (sessionPane.getTabCount() > 0) {
+//            sessionPane.setSelectedIndex(0);
+//            sessionPane.setForegroundAt(0,Color.blue);
+//            sessionPane.setIconAt(0,focused);
+//         }
+//
+//      }
 
 
    }
@@ -233,6 +257,28 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
+      Session ses = (Session)changeEvent.getSource();
+
+      switch (changeEvent.getState()) {
+         case STATE_CONNECTED:
+
+            final String d = ses.getAllocDeviceName();
+            if (d != null) {
+               System.out.println(changeEvent.getState() + " " + d);
+               final int index = desktop.getIndexOf(ses);
+
+               Runnable tc = new Runnable () {
+                  public void run() {
+                     JInternalFrame[] frames = desktop.getAllFrames();
+                     frames[index].setTitle(d);
+                  }
+               };
+               SwingUtilities.invokeLater(tc);
+
+            }
+            break;
+      }
+
    }
 
    public boolean containsSession(Session session) {
@@ -242,7 +288,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
    }
 
    public class MyInternalFrame extends JInternalFrame {
-   //    static int openFrameCount = 0;
+
       static final int xOffset = 30, yOffset = 30;
 
       public MyInternalFrame() {
@@ -265,35 +311,35 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 //                  paintme();
 //   //                  displayMessage("Internal frame activated", e);
 //              }
+            public void internalFrameClosing(InternalFrameEvent e) {
+               displayMessage("Internal frame closing", e);
+               disconnectMe();
+            }
 
-      public void internalFrameClosing(InternalFrameEvent e) {
-                  displayMessage("Internal frame closing", e);
-               }
+            public void internalFrameClosed(InternalFrameEvent e) {
+               displayMessage("Internal frame closed", e);
+            }
 
-               public void internalFrameClosed(InternalFrameEvent e) {
-                  displayMessage("Internal frame closed", e);
-               }
+            public void internalFrameOpened(InternalFrameEvent e) {
+               displayMessage("Internal frame opened", e);
+            }
 
-               public void internalFrameOpened(InternalFrameEvent e) {
-                  displayMessage("Internal frame opened", e);
-               }
+            public void internalFrameIconified(InternalFrameEvent e) {
+               displayMessage("Internal frame iconified", e);
+            }
 
-               public void internalFrameIconified(InternalFrameEvent e) {
-                  displayMessage("Internal frame iconified", e);
-               }
+            public void internalFrameDeiconified(InternalFrameEvent e) {
+               displayMessage("Internal frame deiconified", e);
+            }
 
-               public void internalFrameDeiconified(InternalFrameEvent e) {
-                  displayMessage("Internal frame deiconified", e);
-               }
+            public void internalFrameActivated(InternalFrameEvent e) {
+               displayMessage("Internal frame activated", e);
+               repaint();
+            }
 
-               public void internalFrameActivated(InternalFrameEvent e) {
-                  displayMessage("Internal frame activated", e);
-                  repaint();
-               }
-
-               public void internalFrameDeactivated(InternalFrameEvent e) {
-                  displayMessage("Internal frame deactivated", e);
-               }
+            public void internalFrameDeactivated(InternalFrameEvent e) {
+               displayMessage("Internal frame deactivated", e);
+            }
 
 
             });
@@ -313,6 +359,11 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
             System.out.println("update");
          }
 
+         private void disconnectMe() {
+
+            me.closeSession((Session)this.getContentPane());
+
+         }
    }
 
    // A DesktopManager that keeps its frames inside the desktop.
