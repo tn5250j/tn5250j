@@ -53,7 +53,7 @@ public class KeyStrokenizer {
 
    public String nextKeyStroke() {
 
-      String s = null;
+      String s = "";
       boolean gotOne = false;
       int start = index;
       if(length > index) {
