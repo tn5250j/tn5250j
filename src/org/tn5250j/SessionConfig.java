@@ -177,27 +177,33 @@ public class SessionConfig implements TN5250jConstants {
 
       sesProps = new Properties();
 
-      try {
-         FileInputStream in = new FileInputStream(settingsDirectory() + getConfigurationResource());
-         sesProps.load(in);
-         if (sesProps.size() == 0)
-            loadDefaults();
-      }
-      catch (IOException ioe) {
-         System.out.println("Information Message: Properties file is being "
-                              + "created for first time use:  File name "
-                              + getConfigurationResource());
+      if (configurationResource == null || configurationResource == "") {
+         configurationResource = "TN5250JDefaults.props";
+         usingDefaults = true;
          loadDefaults();
       }
-      catch (SecurityException se) {
-         System.out.println(se.getMessage());
+      else {
+         try {
+            FileInputStream in = new FileInputStream(settingsDirectory() + getConfigurationResource());
+            sesProps.load(in);
+            if (sesProps.size() == 0)
+               loadDefaults();
+         }
+         catch (IOException ioe) {
+            System.out.println("Information Message: Properties file is being "
+                                 + "created for first time use:  File name "
+                                 + getConfigurationResource());
+            loadDefaults();
+         }
+         catch (SecurityException se) {
+            System.out.println(se.getMessage());
+         }
       }
-
    }
-   
+
    private String settingsDirectory() {
        if (System.getProperties().containsKey("emulator.settingsDirectory")) {
-           return System.getProperty("emulator.settingsDirectory") +  
+           return System.getProperty("emulator.settingsDirectory") +
            File.separator;
        }
        else {
