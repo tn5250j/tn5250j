@@ -18,7 +18,7 @@
    <property name="conf.dir" value="${basedir}/conf" />
 
    <property name="main.class" value="org.tn5250j.My5250"/>
-   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar"/>
+   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar kunststoff.jar"/>
 
     <!-- compile options -->
     <property name="debug" value="off"/>

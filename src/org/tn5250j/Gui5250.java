@@ -1028,7 +1028,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   private void doMeSpool() {
+   public void doMeSpool() {
 
       try {
          org.tn5250j.spoolfile.SpoolExporter spooler =

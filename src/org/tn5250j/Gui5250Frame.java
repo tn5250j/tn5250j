@@ -67,11 +67,6 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       this.getContentPane().setLayout(borderLayout1);
 
-      if (sequence > 0)
-         setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-      else
-         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-
       // update the frame sequences
       frameSeq = sequence++;
 
@@ -81,6 +76,8 @@ public class Gui5250Frame extends GUIViewInterface implements
       sessionPane.setRequestFocusEnabled(false);
       sessionPane.setDoubleBuffered(false);
 
+      sessionPane.addChangeListener(this);
+
       Properties props = GlobalConfigure.getInstance().
                            getProperties(GlobalConfigure.SESSIONS);
 
@@ -89,8 +86,9 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       if (!hideTabBar) {
          this.getContentPane().add(sessionPane, BorderLayout.CENTER);
-         sessionPane.addChangeListener(this);
       }
+
+      setTitle();
 
       if (packFrame)
          pack();
@@ -153,46 +151,59 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    private void nextSession() {
 
-      int index = sessionPane.getSelectedIndex();
+      final int index = sessionPane.getSelectedIndex();
       sessionPane.setForegroundAt(index,Color.black);
       sessionPane.setIconAt(index,unfocused);
 
-      if (index < sessionPane.getTabCount() - 1) {
-         sessionPane.setSelectedIndex(++index);
-         sessionPane.setForegroundAt(index,Color.blue);
-         sessionPane.setIconAt(index,focused);
 
-      }
-      else {
-         sessionPane.setSelectedIndex(0);
-         sessionPane.setForegroundAt(0,Color.blue);
-         sessionPane.setIconAt(0,focused);
+      SwingUtilities.invokeLater(new Runnable() {
+         public void run() {
+            int index1 = index;
+            if (index1 < sessionPane.getTabCount() - 1) {
+               sessionPane.setSelectedIndex(++index1);
+               sessionPane.setForegroundAt(index1,Color.blue);
+               sessionPane.setIconAt(index1,focused);
 
-      }
-      ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+            }
+            else {
+               sessionPane.setSelectedIndex(0);
+               sessionPane.setForegroundAt(0,Color.blue);
+               sessionPane.setIconAt(0,focused);
+
+            }
+            ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+            setTitle();
+       }
+      });
 
    }
 
    private void prevSession() {
 
-      int index = sessionPane.getSelectedIndex();
+      final int index = sessionPane.getSelectedIndex();
       sessionPane.setForegroundAt(index,Color.black);
       sessionPane.setIconAt(index,unfocused);
 
-      if (index == 0) {
-         sessionPane.setSelectedIndex(sessionPane.getTabCount() - 1);
-         sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-         sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
+      SwingUtilities.invokeLater(new Runnable() {
+         public void run() {
+            int index1 = index;
+            if (index1 == 0) {
+               sessionPane.setSelectedIndex(sessionPane.getTabCount() - 1);
+               sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
+               sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
 
-      }
-      else {
-         sessionPane.setSelectedIndex(--index);
-         sessionPane.setForegroundAt(index,Color.blue);
-         sessionPane.setIconAt(index,focused);
+            }
+            else {
+               sessionPane.setSelectedIndex(--index1);
+               sessionPane.setForegroundAt(index1,Color.blue);
+               sessionPane.setIconAt(index1,focused);
 
-      }
+            }
 
-      ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+            ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+            setTitle();
+       }
+      });
    }
 
    public void stateChanged(ChangeEvent e) {
@@ -219,6 +230,19 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    }
 
+   private void setTitle() {
+
+      if (sequence - 1 > 0)
+         setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+      else
+         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+
+      if (getSessionAt(selectedIndex) != null &&
+                  getSessionAt(selectedIndex).getAllocDeviceName() != null)
+         setTitle(getTitle() + " - " + getSessionAt(selectedIndex).getAllocDeviceName());
+
+   }
+
    public void addSessionView(String tabText,Session sessionView) {
 
       final Session session = sessionView;
@@ -226,6 +250,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
 
          this.getContentPane().add(session, BorderLayout.CENTER);
+         session.addSessionListener(this);
 
          session.resizeMe();
          repaint();
@@ -235,6 +260,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             validate();
          embedded = true;
          session.grabFocus();
+         setTitle();
       }
       else {
 
@@ -248,6 +274,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                   break;
                }
             }
+
             //ses = (Session)(this.getContentPane().getComponent(0));
             sessionPane.addTab(tabText,focused,ses);
 
@@ -366,8 +393,11 @@ public class Gui5250Frame extends GUIViewInterface implements
          }
          return null;
       }
-      else
+      else {
+         if (sessionPane.getTabCount() <= 0)
+            return null;
          return (Session)sessionPane.getComponentAt(index);
+      }
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
@@ -381,12 +411,15 @@ public class Gui5250Frame extends GUIViewInterface implements
             if (d != null) {
                System.out.println(changeEvent.getState() + " " + d);
                final int index = sessionPane.indexOfComponent(ses);
-               Runnable tc = new Runnable () {
-                  public void run() {
-                     sessionPane.setTitleAt(index,d);
-                  }
-               };
-               SwingUtilities.invokeLater(tc);
+               if (index >= 0) {
+                  Runnable tc = new Runnable () {
+                     public void run() {
+                        sessionPane.setTitleAt(index,d);
+                     }
+                  };
+                  SwingUtilities.invokeLater(tc);
+               }
+               setTitle();
 
             }
             break;

@@ -149,6 +149,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       new RunScriptAction(session,keyMap);
       new DebugAction(session,keyMap);
       new CopyAction(session,keyMap);
+      new SpoolWorkAction(session,keyMap);
 
    }
 
