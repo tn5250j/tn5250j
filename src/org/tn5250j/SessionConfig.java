@@ -164,7 +164,7 @@ public class SessionConfig implements TN5250jConstants {
       }
       else {
          try {
-            FileOutputStream out = new FileOutputStream(getConfigurationResource());
+            FileOutputStream out = new FileOutputStream(settingsDirectory() + getConfigurationResource());
                // save off the width and height to be restored later
             sesProps.store(out,"------ Defaults --------");
          }
@@ -178,7 +178,7 @@ public class SessionConfig implements TN5250jConstants {
       sesProps = new Properties();
 
       try {
-         FileInputStream in = new FileInputStream(getConfigurationResource());
+         FileInputStream in = new FileInputStream(settingsDirectory() + getConfigurationResource());
          sesProps.load(in);
          if (sesProps.size() == 0)
             loadDefaults();
@@ -193,6 +193,17 @@ public class SessionConfig implements TN5250jConstants {
          System.out.println(se.getMessage());
       }
 
+   }
+   
+   private String settingsDirectory() {
+       if (System.getProperties().containsKey("emulator.settingsDirectory")) {
+           return System.getProperty("emulator.settingsDirectory") +  
+           File.separator;
+       }
+       else {
+           return System.getProperty("user.home") + File.separator +
+           ".tn5250j" + File.separator;
+       }
    }
 
    private void loadDefaults() {
