@@ -155,8 +155,11 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
             support132 = true;
 
       final tnvt vt = new tnvt(this,screen,enhanced,support132);
-      if (sesProps.containsKey(TN5250jConstants.SSL_TYPE))
-      	vt.setSSLType(sesProps.getProperty(TN5250jConstants.SSL_TYPE));
+      //smk don't need to set ssl type.  tnvt now get's it by calling 
+      //Session5250.getConnectionProperties().getProperty(String) on it's
+      //specified Session (this).
+      //if (sesProps.containsKey(TN5250jConstants.SSL_TYPE))
+      	//vt.setSSLType(sesProps.getProperty(TN5250jConstants.SSL_TYPE));
       setVT(vt);
 
 //      vt.setController(this);
@@ -168,6 +171,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
          vt.setProxy((String)sesProps.getProperty(SESSION_PROXY_HOST),
                      proxyPort);
 
+      /*
       String sslType = null;
       if (sesProps.containsKey(TN5250jConstants.SSL_TYPE)) {
          sslType = (String)sesProps.getProperty(TN5250jConstants.SSL_TYPE);
@@ -178,7 +182,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       }
 
       vt.setSSLType(sslType);
-
+      */
       if (sesProps.containsKey(SESSION_CODE_PAGE))
          vt.setCodePage((String)sesProps.getProperty(SESSION_CODE_PAGE));
 

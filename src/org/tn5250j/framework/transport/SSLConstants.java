@@ -24,21 +24,21 @@ package org.tn5250j.framework.transport;
  * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
  * 
  * 
- *
+ * @deprecated.  Use org.tn5250j.TN5250jConstants instead
  */
 public interface SSLConstants {
 
   /**
-   * The system property name for the SSL type 
-   */
-  public static final String SSL_TYPE = "TN5250J_SSL_TYPE";
+   * The system or session property name for the SSL type 
+   */	
+  //public static final String SSL_TYPE = "-sslType";
   
   /**
    * Constants for SSL Socket Types
    */
-  public static final String SSL_TYPE_NONE = "NONE";
-  public static final String SSL_TYPE_SSLv2 = "SSLv2";
-  public static final String SSL_TYPE_SSLv3 = "SSLv3";
-  public static final String SSL_TYPE_TLS = "TLS";
+  //public static final String SSL_TYPE_NONE = "NONE";
+  //public static final String SSL_TYPE_SSLv2 = "SSLv2";
+  //public static final String SSL_TYPE_SSLv3 = "SSLv3";
+  //public static final String SSL_TYPE_TLS = "TLS";
 
 }

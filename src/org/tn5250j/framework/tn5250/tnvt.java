@@ -51,7 +51,6 @@ import org.tn5250j.framework.Tn5250jEvent;
 import org.tn5250j.framework.Tn5250jKeyEvents;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
-import org.tn5250j.framework.transport.SSLConstants;
 import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.Session5250;
@@ -103,7 +102,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private FileOutputStream fw;
 	private BufferedOutputStream dw;
 	private boolean firstScreen;
-	private String sslType;
+	//private String sslType;
 	WTDSFParser sfParser;
 
 	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -150,14 +149,15 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return session;
 	}
 
-	/**
+	/*
 	 * Set the ssl type to use for connect.
 	 * @param type
-	 */
+	 * No longer used.  Use session properties instead
 	public void setSSLType(String type) {
-		sslType = type;
+		//not needed.  obtained from session properties
+		//sslType = type;
 	}
-
+	*/
 	public void setDeviceName(String name) {
 
 		devName = name;
