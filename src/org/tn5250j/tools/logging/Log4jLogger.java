@@ -1,7 +1,6 @@
 /*
  * @(#)Log4jLogger.java
  * @author  Kenneth J. Pouncey
- * Modified by LDC Luc
  *
  * Copyright:    Copyright (c) 2001, 2002, 2003
  *
@@ -72,7 +71,7 @@ public class Log4jLogger extends TN5250jLogger {
    public boolean isDebugEnabled() {
       return log.isDebugEnabled();
    }
- 
+
    public boolean isInfoEnabled() {
       return log.isInfoEnabled();
    }

@@ -1,7 +1,6 @@
 /*
  * @(#)ConsoleLogger.java
  * @author  Kenneth J. Pouncey
- * Modified by LDC Luc
  *
  * Copyright:    Copyright (c) 2001, 2002, 2003
  *
@@ -91,15 +90,15 @@ public class ConsoleLogger extends TN5250jLogger {
       if (logLevel <= INFO)
          return true;
       else
-      return false;
-   }
-  
-   public void setLevel(int newLevel) {
-      logLevel = newLevel;
+         return false;
    }
 
    public int getLevel() {
       return logLevel;
+   }
+
+   public void setLevel(int newLevel) {
+      logLevel = newLevel;
    }
 
 }

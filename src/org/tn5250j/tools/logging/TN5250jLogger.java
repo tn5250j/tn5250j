@@ -1,7 +1,6 @@
 /*
- * @(#)ConfigureFactory.java
+ * @(#)TN5250jLogger.java
  * @author  Kenneth J. Pouncey
- * Modified by LDC Luc
  *
  * Copyright:    Copyright (c) 2001, 2002, 2003
  *
@@ -62,11 +61,11 @@ public abstract class TN5250jLogger extends TN5250jLogFactory {
 
    // are we enabled for X?
    abstract public boolean isDebugEnabled();
+
    abstract public boolean isInfoEnabled();
 
    // level accessors
    abstract public void setLevel(int newLevel);
    abstract public int getLevel();
 
-   
 }
