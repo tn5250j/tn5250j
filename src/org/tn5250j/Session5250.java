@@ -71,7 +71,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
 
       screen = new Screen5250();
 
-      screen.setVT(vt);
+      //screen.setVT(vt);
 
    }
 
@@ -92,7 +92,10 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
 
    public boolean isConnected() {
 
-      return vt.isConnected();
+      if (vt == null)
+         return false;
+      else
+         return vt.isConnected();
 
    }
 
