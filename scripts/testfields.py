@@ -1,6 +1,6 @@
 print "--------------- tn5250j test fields script start ------------"
 
-screen = session.getScreen()
+screen = _session.getScreen()
 
 screenfields = screen.getScreenFields()
 

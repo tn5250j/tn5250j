@@ -1,6 +1,6 @@
 print "--------------- tn5250j test send keys script start ------------"
 
-screen = session.getScreen()
+screen = _session.getScreen()
 
 screen.sendKeys("userid[fldext]password[fldext][enter][enter][enter][enter]")
 
