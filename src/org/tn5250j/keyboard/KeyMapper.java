@@ -1,0 +1,473 @@
+/**
+ * Title: tn5250J
+ * Copyright:   Copyright (c) 2001
+ * Company:
+ * @author  Kenneth J. Pouncey
+ * @version 0.1
+ *
+ * Description:
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
+ */
+package org.tn5250j.keyboard;
+
+import java.awt.event.KeyEvent;
+import java.util.*;
+import java.io.*;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.event.KeyChangeListener;
+import org.tn5250j.GlobalConfigure;
+import org.tn5250j.tools.KeyStroker;
+import org.tn5250j.tools.LangTool;
+
+public class KeyMapper {
+
+   private static HashMap mappedKeys;
+   private static KeyStroker workStroke;
+   private static String keyMapName;
+   private static String lastKeyMnemonic;
+   private static Vector listeners;
+
+   public static void init() {
+//      if (mappedKeys != null)
+//         return;
+//
+//      init("keymap");
+//
+//   }
+//
+//   public static void init(String map) {
+
+      if (mappedKeys != null)
+         return;
+
+//      keyMapName = map;
+      mappedKeys = new HashMap(60);
+      workStroke = new KeyStroker(0, false, false, false,false);
+
+//      Properties keys = new Properties();
+      Properties keys = ConfigureFactory.getInstance().getProperties(
+                           GlobalConfigure.KEYMAP);
+
+      if (!loadKeyStrokes(keys)) {
+         // keycode shift control alternate
+
+         // Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown
+
+         // my personal preference
+         mappedKeys.put(new KeyStroker(10, false, false, false, false),"[fldext]");
+         mappedKeys.put(new KeyStroker(17, false, true, false, false),"[enter]");
+
+//         mappedKeys.put(new KeyStroker(10, false, false, false),"[enter]");
+//         mappedKeys.put(new KeyStroker(10, true, false, false),"[fldext]");
+
+         mappedKeys.put(new KeyStroker(8, false, false, false, false),"[backspace]");
+         mappedKeys.put(new KeyStroker(9, false, false, false, false),"[tab]");
+         mappedKeys.put(new KeyStroker(9, true, false, false, false),"[backtab]");
+         mappedKeys.put(new KeyStroker(127, false, false, false, false),"[delete]");
+         mappedKeys.put(new KeyStroker(155, false, false, false, false),"[insert]");
+         mappedKeys.put(new KeyStroker(19, false, false, false, false),"[clear]");
+         mappedKeys.put(new KeyStroker(27, false, false, false, false),"[reset]");
+         mappedKeys.put(new KeyStroker(27, true, false, false, false),"[sysreq]");
+
+         mappedKeys.put(new KeyStroker(35, false, false, false, false),"[eof]");
+         mappedKeys.put(new KeyStroker(36, false, false, false, false),"[home]");
+         mappedKeys.put(new KeyStroker(39, false, false, false, false),"[right]");
+         mappedKeys.put(new KeyStroker(39, false, false, true, false),"[nextword]");
+         mappedKeys.put(new KeyStroker(37, false, false, false, false),"[left]");
+         mappedKeys.put(new KeyStroker(37, false, false, true, false),"[prevword]");
+         mappedKeys.put(new KeyStroker(38, false, false, false, false),"[up]");
+         mappedKeys.put(new KeyStroker(40, false, false, false, false),"[down]");
+         mappedKeys.put(new KeyStroker(34, false, false, false, false),"[pgdown]");
+         mappedKeys.put(new KeyStroker(33, false, false, false, false),"[pgup]");
+
+         mappedKeys.put(new KeyStroker(96, false, false, false, false),"[keypad0]");
+         mappedKeys.put(new KeyStroker(97, false, false, false, false),"[keypad1]");
+         mappedKeys.put(new KeyStroker(98, false, false, false, false),"[keypad2]");
+         mappedKeys.put(new KeyStroker(99, false, false, false, false),"[keypad3]");
+         mappedKeys.put(new KeyStroker(100, false, false, false, false),"[keypad4]");
+         mappedKeys.put(new KeyStroker(101, false, false, false, false),"[keypad5]");
+         mappedKeys.put(new KeyStroker(102, false, false, false, false),"[keypad6]");
+         mappedKeys.put(new KeyStroker(103, false, false, false, false),"[keypad7]");
+         mappedKeys.put(new KeyStroker(104, false, false, false, false),"[keypad8]");
+         mappedKeys.put(new KeyStroker(105, false, false, false, false),"[keypad9]");
+
+         mappedKeys.put(new KeyStroker(109, false, false, false, false),"[field-]");
+         mappedKeys.put(new KeyStroker(107, false, false, false, false),"[field+]");
+         mappedKeys.put(new KeyStroker(112, false, false, false, false),"[pf1]");
+         mappedKeys.put(new KeyStroker(113, false, false, false, false),"[pf2]");
+         mappedKeys.put(new KeyStroker(114, false, false, false, false),"[pf3]");
+         mappedKeys.put(new KeyStroker(115, false, false, false, false),"[pf4]");
+         mappedKeys.put(new KeyStroker(116, false, false, false, false),"[pf5]");
+         mappedKeys.put(new KeyStroker(117, false, false, false, false),"[pf6]");
+         mappedKeys.put(new KeyStroker(118, false, false, false, false),"[pf7]");
+         mappedKeys.put(new KeyStroker(119, false, false, false, false),"[pf8]");
+         mappedKeys.put(new KeyStroker(120, false, false, false, false),"[pf9]");
+         mappedKeys.put(new KeyStroker(121, false, false, false, false),"[pf10]");
+         mappedKeys.put(new KeyStroker(122, false, false, false, false),"[pf11]");
+         mappedKeys.put(new KeyStroker(123, false, false, false, false),"[pf12]");
+         mappedKeys.put(new KeyStroker(112, true, false, false, false),"[pf13]");
+         mappedKeys.put(new KeyStroker(113, true, false, false, false),"[pf14]");
+         mappedKeys.put(new KeyStroker(114, true, false, false, false),"[pf15]");
+         mappedKeys.put(new KeyStroker(115, true, false, false, false),"[pf16]");
+         mappedKeys.put(new KeyStroker(116, true, false, false, false),"[pf17]");
+         mappedKeys.put(new KeyStroker(117, true, false, false, false),"[pf18]");
+         mappedKeys.put(new KeyStroker(118, true, false, false, false),"[pf19]");
+         mappedKeys.put(new KeyStroker(119, true, false, false, false),"[pf20]");
+         mappedKeys.put(new KeyStroker(120, true, false, false, false),"[pf21]");
+         mappedKeys.put(new KeyStroker(121, true, false, false, false),"[pf22]");
+         mappedKeys.put(new KeyStroker(122, true, false, false, false),"[pf23]");
+         mappedKeys.put(new KeyStroker(123, true, false, false, false),"[pf24]");
+         mappedKeys.put(new KeyStroker(112, false, false, true, false),"[help]");
+
+         mappedKeys.put(new KeyStroker(72, false, false, true, false),"[hostprint]");
+         mappedKeys.put(new KeyStroker(67, false, false, true, false),"[copy]");
+         mappedKeys.put(new KeyStroker(86, false, false, true, false),"[paste]");
+
+         mappedKeys.put(new KeyStroker(39, true, false, false, false),"[markright]");
+         mappedKeys.put(new KeyStroker(37, true, false, false, false),"[markleft]");
+         mappedKeys.put(new KeyStroker(38, true, false, false, false),"[markup]");
+         mappedKeys.put(new KeyStroker(40, true, false, false, false),"[markdown]");
+
+         mappedKeys.put(new KeyStroker(155, true, false, false, false),"[dupfield]");
+         mappedKeys.put(new KeyStroker(17, true, true, false, false),"[newline]");
+         mappedKeys.put(new KeyStroker(34, false, false, true, false),"[jumpnext]");
+         mappedKeys.put(new KeyStroker(33, false, false, true, false),"[jumpprev]");
+
+         saveKeyMap();
+      }
+      else {
+
+         setKeyMap(keys);
+
+      }
+
+   }
+
+   private static boolean loadKeyStrokes(Properties keystrokes) {
+
+      keystrokes = ConfigureFactory.getInstance().getProperties(GlobalConfigure.KEYMAP);
+      if (keystrokes != null && keystrokes.size() > 0)
+         return true;
+      else
+         return false;
+   }
+
+   private static void parseKeyStrokes(Properties keystrokes) {
+
+      String theStringList = "";
+      String theKey = "";
+      Enumeration ke = keystrokes.propertyNames();
+      while (ke.hasMoreElements()) {
+         theKey = (String)ke.nextElement();
+         theStringList = keystrokes.getProperty(theKey);
+         int x = 0;
+         int kc = 0;
+         boolean is = false;
+         boolean ic = false;
+         boolean ia = false;
+         boolean iag = false;
+
+         StringTokenizer tokenizer = new StringTokenizer(theStringList, ",");
+
+         // first is the keycode
+         kc = Integer.parseInt(tokenizer.nextToken());
+         // isShiftDown
+         if (tokenizer.nextToken().equals("true"))
+            is = true;
+         else
+            is =false;
+         // isControlDown
+         if (tokenizer.nextToken().equals("true"))
+            ic = true;
+         else
+            ic =false;
+         // isAltDown
+         if (tokenizer.nextToken().equals("true"))
+            ia = true;
+         else
+            ia =false;
+
+         // isAltDown Gr
+         if (tokenizer.hasMoreTokens())
+            if (tokenizer.nextToken().equals("true"))
+               iag = true;
+            else
+               iag =false;
+
+         mappedKeys.put(new KeyStroker(kc, is, ic, ia, iag),theKey);
+
+      }
+
+   }
+
+   protected static void setKeyMap(Properties keystrokes) {
+
+      parseKeyStrokes(keystrokes);
+
+   }
+
+   public final static boolean isEqualLast(KeyEvent ke) {
+      return workStroke.equals(ke);
+   }
+
+   public final static void saveKeyMap() {
+
+      Properties map = ConfigureFactory.getInstance().getProperties(GlobalConfigure.KEYMAP);
+
+      map.clear();
+
+      // save off the width and height to be restored later
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = ks.toString();
+         map.put((String)i.next(),ks.toString());
+      }
+
+      ConfigureFactory.getInstance().saveSettings(GlobalConfigure.KEYMAP,
+      "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------");
+   }
+
+   public final static String getKeyStrokeText(KeyEvent ke) {
+//      if (!workStroke.equals(ke)) {
+//         workStroke.setAttributes(ke);
+//         lastKeyMnemonic = (String)mappedKeys.get(workStroke);
+//      }
+//
+//      if (lastKeyMnemonic != null && lastKeyMnemonic.endsWith(".alt2")) {
+//
+//         lastKeyMnemonic = lastKeyMnemonic.substring(0,lastKeyMnemonic.indexOf(".alt2"));
+//      }
+//
+//      return lastKeyMnemonic;
+      return getKeyStrokeText(ke,false);
+   }
+
+   public final static String getKeyStrokeText(KeyEvent ke,boolean isAltGr) {
+      if (!workStroke.equals(ke,isAltGr)) {
+         workStroke.setAttributes(ke,isAltGr);
+         lastKeyMnemonic = (String)mappedKeys.get(workStroke);
+      }
+
+      if (lastKeyMnemonic != null && lastKeyMnemonic.endsWith(".alt2")) {
+
+         lastKeyMnemonic = lastKeyMnemonic.substring(0,lastKeyMnemonic.indexOf(".alt2"));
+      }
+
+      return lastKeyMnemonic;
+
+   }
+
+   public final static int getKeyStrokeCode() {
+      return workStroke.hashCode();
+   }
+
+   public final static String getKeyStrokeDesc(String which) {
+
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which))
+            return ks.getKeyStrokeDesc();
+      }
+
+      return LangTool.getString("key.dead");
+   }
+
+   public final static boolean isKeyStrokeDefined(String which) {
+
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which))
+            return true;
+      }
+
+      return false;
+   }
+
+   public final static KeyStroke getKeyStroke(String which) {
+
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which)) {
+            int mask = 0;
+
+            if (ks.isShiftDown())
+               mask |= KeyEvent.SHIFT_MASK;
+            if (ks.isControlDown())
+               mask |= KeyEvent.CTRL_MASK;
+            if (ks.isAltDown())
+               mask |= KeyEvent.ALT_MASK;
+            if (ks.isAltGrDown())
+               mask |= KeyEvent.ALT_GRAPH_MASK;
+
+            return KeyStroke.getKeyStroke(ks.getKeyCode(),mask);
+         }
+      }
+
+      return KeyStroke.getKeyStroke(0,0);
+   }
+
+   public final static void removeKeyStroke(String which) {
+
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which)) {
+            mappedKeys.remove(ks);
+            return;
+         }
+      }
+
+   }
+
+   public final static void setKeyStroke(String which, KeyEvent ke) {
+
+      if (ke == null)
+         return;
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which)) {
+            mappedKeys.remove(ks);
+            mappedKeys.put(new KeyStroker(ke.getKeyCode(),
+                                          ke.isShiftDown(),
+                                          ke.isControlDown(),
+                                          ke.isAltDown(),
+                                          ke.isAltGraphDown()),keyVal);
+            return;
+         }
+      }
+      // if we got here it was a dead key and we need to add it.
+      mappedKeys.put(new KeyStroker(ke.getKeyCode(),
+                                    ke.isShiftDown(),
+                                    ke.isControlDown(),
+                                    ke.isAltDown(),
+                                    ke.isAltGraphDown()),which);
+
+
+   }
+
+   public final static void setKeyStroke(String which, KeyEvent ke, boolean isAltGr) {
+
+      if (ke == null)
+         return;
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which)) {
+            mappedKeys.remove(ks);
+            mappedKeys.put(new KeyStroker(ke.getKeyCode(),
+                                          ke.isShiftDown(),
+                                          ke.isControlDown(),
+                                          ke.isAltDown(),
+                                          isAltGr),keyVal);
+            return;
+         }
+      }
+      // if we got here it was a dead key and we need to add it.
+      mappedKeys.put(new KeyStroker(ke.getKeyCode(),
+                                    ke.isShiftDown(),
+                                    ke.isControlDown(),
+                                    ke.isAltDown(),
+                                    isAltGr),which);
+
+
+   }
+
+   public final static HashMap getKeyMap() {
+
+      return mappedKeys;
+   }
+
+   /**
+    * Add a KeyChangeListener to the listener list.
+    *
+    * @param listener  The KeyChangedListener to be added
+    */
+   public static synchronized void addKeyChangeListener(KeyChangeListener listener) {
+
+      if (listeners == null) {
+          listeners = new java.util.Vector(3);
+      }
+      listeners.addElement(listener);
+
+   }
+
+   /**
+    * Remove a Key Change Listener from the listener list.
+    *
+    * @param listener  The KeyChangeListener to be removed
+    */
+   public synchronized void removeKeyChangeListener(KeyChangeListener listener) {
+      if (listeners == null) {
+          return;
+      }
+      listeners.removeElement(listener);
+
+   }
+
+   /**
+    * Notify all registered listeners of the Key Change Event.
+    *
+    */
+   public static void fireKeyChangeEvent() {
+
+      if (listeners != null) {
+         System.out.println(" changed key ");
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            KeyChangeListener target =
+                    (KeyChangeListener)listeners.elementAt(i);
+            target.onKeyChanged();
+         }
+      }
+   }
+
+}
