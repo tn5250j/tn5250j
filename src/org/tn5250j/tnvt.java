@@ -489,6 +489,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
     *    section 4.3
     *
     *    See notes inside method
+    *
+    *  @param sr - system request option
     */
    public final void systemRequest(char sr) {
 
@@ -760,7 +762,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
 
          // lets play nicely with the others on the playground
-         me.yield();
+//         me.yield();
 
          pthread.yield();
 
@@ -857,7 +859,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //      else {
 
          if (screen52.isHotSpots()) {
-            screen52.checkHotSpots();
+           screen52.checkHotSpots();
          }
 
          try {
@@ -871,8 +873,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
             screen52.setCursorOn();
             cursorOn = false;
          }
+
          // lets play nicely with the others on the playground
-         me.yield();
+//         me.yield();
          pthread.yield();
 
 
@@ -1075,6 +1078,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
    }
 
    /**
+    *
+    * @throws IOException
     */
    public final void restoreScreen()
         throws IOException   {
@@ -1305,6 +1310,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
     *    You can find a description of the types of responses to be sent back
     *    by looking at section 12.4 of the 5250 Functions Reference manual
     *
+    *
+    * @param cat
+    * @param modifier
+    * @param uByte1
+    * @param uByte2
+    * @param from
     *
     */
    private void sendNegResponse(int cat, int modifier , int uByte1, int uByte2, String from) {
@@ -2323,6 +2334,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
     *
     * This section is modeled after the rfc1205 - 5250 Telnet Interface section
     * 5.3
+    *
+    * @throws IOException
     */
    public final void sendQueryResponse()
          throws IOException {
@@ -2578,6 +2591,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    /**
     * Negotiate new environment string for device name
+    *
+    * @throws IOException
     */
    private void negNewEnvironment()  throws IOException {
 
@@ -2606,6 +2621,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
     *    if the sequence is less than zero then it will send the device name
     *    as specified.  On each unsuccessful attempt a sequential number is
     *    appended until we find one or the controller says no way.
+    *
+    * @return String
     */
    private String negDeviceName() {
 

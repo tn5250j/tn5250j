@@ -5,7 +5,7 @@ package org.tn5250j.tools;
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
- * @version 0.1
+ * @version 0.5
  *
  * Description:
  *
@@ -60,6 +60,7 @@ public class FTP5250Prot {
    private boolean aborted;
    private char decChar;
    private OutputFilterInterface ofi;
+   private Vector members;
 
    public FTP5250Prot (tnvt v) {
       vt = v;
@@ -152,14 +153,14 @@ public class FTP5250Prot {
     */
    private void fireStatusEvent() {
 
-   	if (listeners != null) {
-	      int size = listeners.size();
-	      for (int i = 0; i < size; i++) {
-	         FTPStatusListener target =
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            FTPStatusListener target =
                     (FTPStatusListener)listeners.elementAt(i);
-	         target.statusReceived(status);
-	      }
-   	}
+            target.statusReceived(status);
+         }
+      }
    }
 
    /**
@@ -168,14 +169,14 @@ public class FTP5250Prot {
     */
    private void fireCommandEvent() {
 
-   	if (listeners != null) {
-	      int size = listeners.size();
-	      for (int i = 0; i < size; i++) {
-	         FTPStatusListener target =
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            FTPStatusListener target =
                     (FTPStatusListener)listeners.elementAt(i);
-	         target.commandStatusReceived(status);
-	      }
-   	}
+            target.commandStatusReceived(status);
+         }
+      }
    }
 
    /**
@@ -184,14 +185,14 @@ public class FTP5250Prot {
     */
    private void fireInfoEvent() {
 
-   	if (listeners != null) {
-	      int size = listeners.size();
-	      for (int i = 0; i < size; i++) {
-	         FTPStatusListener target =
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            FTPStatusListener target =
                     (FTPStatusListener)listeners.elementAt(i);
-	         target.fileInfoReceived(status);
-	      }
-   	}
+            target.fileInfoReceived(status);
+         }
+      }
    }
 
    /**
@@ -454,7 +455,7 @@ public class FTP5250Prot {
 
       if (memberOffset > 0) {
 
-         System.out.println(tFile.substring(0,memberOffset));
+//         System.out.println(tFile.substring(0,memberOffset));
          file2 = tFile.substring(0,memberOffset);
          member2 = tFile.substring(memberOffset + 1);
       }
@@ -628,6 +629,8 @@ public class FTP5250Prot {
       DataInputStream datainputstream = null;
       executeCommand("TYPE","I");
       String remoteFile = "QTEMP/FML";
+      members = new Vector(10);
+      boolean foundMbr = false;
 
       try {
          socket = createPassiveSocket("RETR " + remoteFile);
@@ -663,24 +666,27 @@ public class FTP5250Prot {
 
                   printFTPInfo(sb + " " + packed2int(abyte0,345,5));
 
-                  if (member == null && fileSize == 0) {
-                     // get current number of records
-                     fileSize = packed2int(abyte0,345,5);
-                     status.setFileLength(fileSize);
-                     member = sb.toString();
-                  }
-                  else {
-                     if (sb.toString().equalsIgnoreCase(member)) {
-                        // get current number of records
-                        fileSize = packed2int(abyte0,345,5);
-                        status.setFileLength(fileSize);
+                  members.add(new MemberInfo(sb.toString(),packed2int(abyte0,345,5)));
 
-                     }
-                     else {
-                        fileSize = packed2int(abyte0,345,5);
-                        status.setFileLength(fileSize);
-                     }
-                  }
+//                  if (member == null && fileSize == 0) {
+//                     // get current number of records
+//                     fileSize = packed2int(abyte0,345,5);
+//                     status.setFileLength(fileSize);
+//                     member = sb.toString();
+//                     break;
+//                  }
+//                  else {
+//                     if (sb.toString().equalsIgnoreCase(member)) {
+//                        // get current number of records
+//                        fileSize = packed2int(abyte0,345,5);
+//                        status.setFileLength(fileSize);
+//
+//                     }
+//                     else {
+//                        fileSize = packed2int(abyte0,345,5);
+//                        status.setFileLength(fileSize);
+//                     }
+//                  }
 
                   len =0;
 
@@ -711,6 +717,57 @@ public class FTP5250Prot {
       parseResponse();
       return flag;
 
+   }
+
+   /**
+    * Convenience method to return the file name and member that is being
+    *    transferred
+    */
+   public String getFullFileName(String tFile) {
+
+      int memberOffset = tFile.indexOf(".");
+      String file2 = null;
+      String member2 = null;
+
+      if (memberOffset > 0) {
+         file2 = tFile.substring(0,memberOffset);
+         member2 = tFile.substring(memberOffset + 1);
+      }
+      else {
+         file2 = tFile;
+      }
+
+      if (members != null) {
+
+         if (member2 == null) {
+            MemberInfo mi = (MemberInfo)members.get(0);
+            fileSize = mi.getSize();
+            status.setFileLength(mi.getSize());
+            member2 = mi.getName();
+         }
+         else {
+
+            Iterator i = members.iterator();
+            boolean found = false;
+            MemberInfo mi = null;
+
+            while (i.hasNext()) {
+               mi = (MemberInfo)i.next();
+               if (mi.getName().trim().equalsIgnoreCase(member2.trim())) {
+                  fileSize = mi.getSize();
+                  status.setFileLength(mi.getSize());
+//                  System.out.println(" found member " + mi.getName());
+                  break;
+               }
+
+            }
+         }
+      }
+
+      if (member2 != null)
+         return file2.trim() + "." + member2.trim();
+      else
+         return file2.trim();
    }
 
    /**
@@ -1021,4 +1078,28 @@ public class FTP5250Prot {
 
    }
 
+   class MemberInfo {
+
+      private String name;
+      private int size;
+
+      MemberInfo(String name, int size) {
+
+         this.name = name;
+         this.size = size;
+
+      }
+
+      public String getName() {
+         return name;
+      }
+
+      public int getSize() {
+
+         return size;
+      }
+
+
+
+   }
 }

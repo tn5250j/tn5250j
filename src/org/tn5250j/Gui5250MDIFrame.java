@@ -253,6 +253,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
       Session s = (Session)frames[index].getContentPane();
+
       return s;
    }
 

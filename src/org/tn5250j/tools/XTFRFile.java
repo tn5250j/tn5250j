@@ -5,7 +5,7 @@ package org.tn5250j.tools;
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
- * @version 0.1
+ * @version 0.5
  *
  * Description:
  *
@@ -179,6 +179,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    }
 
    public void fileInfoReceived(FTPStatusEvent statusevent) {
+
+      hostFile.setText(ftpProtocol.getFullFileName(hostFile.getText()));
 
       if (allFields.isSelected()) {
          doTransfer();
@@ -644,6 +646,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
       /**
        * Returns true if the user hits the Cancel button in the progress dialog.
+       *
+       * @return whether or not dialog was cancelled
        */
       public boolean isCanceled() {
         if (this == null) return false;

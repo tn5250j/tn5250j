@@ -170,6 +170,8 @@ public class GuiGraphicBuffer {
                            Color colorBg,Color colorWhite,
                            Font font) {
 
+//      synchronized (lock) {
+
          Graphics2D g2 = getDrawingArea();
 //         if (g2 == null)
 //            return;
@@ -250,6 +252,9 @@ public class GuiGraphicBuffer {
                         (float)pArea.getY() + fmHeight);
          s.updateImage(pArea.getBounds());
          g2.dispose();
+         // tell waiting threads to wake up
+//         lock.notify();
+//      }
 
 
    }
@@ -278,19 +283,23 @@ public class GuiGraphicBuffer {
       }
    }
 
-   public void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
+   public synchronized void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
 
-//      synchronized (lock) {
+      synchronized (lock) {
          gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x,y);
-//      }
+         // tell waiting threads to wake up
+         lock.notify();
+      }
 
    }
 
-   public void drawImageBuffer(Graphics2D gg2d) {
+   public synchronized void drawImageBuffer(Graphics2D gg2d) {
 
-//      synchronized (lock) {
+      synchronized (lock) {
          gg2d.drawImage(bi,null,0,0);
-//      }
+         // tell waiting threads to wake up
+         lock.notify();
+      }
 
 
    }
