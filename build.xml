@@ -150,6 +150,7 @@
 
     <!-- =================================================================== -->
     <!-- Compiles the source directory                                       -->
+    </-- To use debugging add the debug="true" parameter to javac            -->
     <!-- =================================================================== -->
     <target name="compile" depends="prepare,testjava" description="Compile your source-files">
         <javac srcdir="${source.dir}"
