@@ -147,7 +147,18 @@ public class Connect extends JDialog implements ActionListener,
          sessions.getSelectionModel().setSelectionInterval(selInterval,selInterval);
       }
 
-      sessions.requestFocus();
+      // Oh man what a pain in the ass.  Had to add a window listener to request
+      // focus of the sessions list.
+      addWindowListener(new WindowAdapter() {
+         public void windowOpened(WindowEvent e) {
+            SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+
+                  sessions.requestFocus();
+               }
+            });
+         }
+      });
 
       // now show the world what we and they can do
       this.setVisible(true);
