@@ -1,7 +1,7 @@
 package org.tn5250j.tools;
 
 /**
- * Title: XTFRFile.java
+ * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -311,7 +311,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
          axtfr.setOutputFilter(fileFilter.getOutputFilterInstance());
          axtfr.getFile(hostFile.getText(),
                               fileFilter.setExtension(localFile.getText()),
-                              queryStatement.getText().trim());
+                              queryStatement.getText().trim(),
+                              intDesc.isSelected());
 
       }
       else {
@@ -393,11 +394,22 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
    private void startWizard() {
 
-      SqlWizard wizard = new SqlWizard(systemName.getText().trim(),
-                                       user.getText(),
-                                       new String(password.getPassword()));
+      try {
+         SqlWizard wizard = new SqlWizard(systemName.getText().trim(),
+                                          user.getText(),
+                                          new String(password.getPassword()));
 
-      wizard.setQueryTextArea(queryStatement);
+         wizard.setQueryTextArea(queryStatement);
+      }
+      catch (NoClassDefFoundError ncdfe) {
+         JOptionPane.showMessageDialog(this,
+                                       LangTool.getString("messages.noAS400Toolbox"),
+                                       "Error",
+                                       JOptionPane.ERROR_MESSAGE,null);
+      }
+      catch (Exception e) {
+         System.out.println(e.getMessage());
+      }
    }
 
    /**

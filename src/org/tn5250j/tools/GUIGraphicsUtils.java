@@ -35,7 +35,10 @@ import java.awt.Rectangle;
 import java.awt.Graphics2D;
 import java.awt.font.*;
 import java.awt.geom.AffineTransform;
-
+import javax.swing.JPopupMenu;
+import java.awt.Point;
+import javax.swing.SwingUtilities;
+import java.awt.Toolkit;
 import org.tn5250j.*;
 
 public class GUIGraphicsUtils {
@@ -1414,6 +1417,24 @@ public class GUIGraphicsUtils {
 //      System.out.println(k.getSize() + " ");
 
       return k;
+   }
+
+   public static void positionPopup(Component component, JPopupMenu jpm,
+                                       int xCoord , int yCoord) {
+
+      Dimension popupSize = jpm.getSize();
+      if(popupSize.width == 0)
+         popupSize = jpm.getPreferredSize();
+      Point point = new Point(xCoord + popupSize.width, yCoord + popupSize.height);
+      SwingUtilities.convertPointToScreen(point, component);
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      int x = 0;
+      int y = 0;
+      if(point.y > screenSize.height - 25)
+         y = yCoord - popupSize.height;
+      if(point.x > screenSize.width)
+         x = xCoord - popupSize.width;
+      jpm.show(component, x != 0 ? x : xCoord, y != 0 ? y : yCoord);
    }
 
 }

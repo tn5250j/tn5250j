@@ -121,10 +121,10 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
       if (sesProps.containsKey(org.tn5250j.transport.SSLConstants.SSL_TYPE)) {
          sslType = (String)sesProps.getProperty(org.tn5250j.transport.SSLConstants.SSL_TYPE);
       }
-//      else {
+      else {
          // set default to none
-//         sslType = org.tn5250j.transport.SSLConstants.SSL_TYPE_NONE;
-//      }
+         sslType = org.tn5250j.transport.SSLConstants.SSL_TYPE_NONE;
+      }
 
       vt.setSSLType(sslType);
 

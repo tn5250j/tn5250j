@@ -178,7 +178,7 @@ public class XTFRFileFilter extends FileFilter {
       return null;
    }
 
-   /**
+  /**
    * Adds a filetype "dot" extension to filter against.
    *
    * For example: the following code will create a filter that filters

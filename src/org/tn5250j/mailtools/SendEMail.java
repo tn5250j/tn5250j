@@ -164,9 +164,9 @@ public class SendEMail {
    /**
     * This method processes the send request from the compose form
     */
-   public void send()	throws IOException {
+   public void send() throws Exception, AddressException, MessagingException {
 
-      try {
+//      try {
          if(!loadConfig(configFile))
             return;
 
@@ -242,10 +242,20 @@ public class SendEMail {
 
          // send the message
          Transport.send(msg);
-      }
-      catch (Exception mex) {
-         System.out.println(mex.toString());
-      }
+//      }
+//      catch (SendFailedException sfe) {
+//         System.out.println("Send Failed Exception " + sfe.toString());
+//         JOptionPane.showMessageDialog(parent,
+//                                          LangTool.getString("em.confirmationMessage") +
+//                                          " " + tot.getText(),
+//                                          LangTool.getString("em.titleConfirmation"),
+//                                          JOptionPane.INFORMATION_ERROR);
+//
+//
+//      }
+//      catch (Exception mex) {
+//         System.out.println(mex.toString());
+//      }
    }
 
 }

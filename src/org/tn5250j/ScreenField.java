@@ -408,6 +408,9 @@ public class ScreenField {
             ") is bypass field = " + isBypassField() +
             ") is autoenter = " + isAutoEnter() +
             ") is manditoryenter = " + isMandatoryEnter() +
+            ") is cursor progression = " + (fcw1 == 0x88) +
+            ") next progression field = " + fcw2 +
+            ") field id " + fieldId +
             " continued edit field = " + isContinued() +
             " first continued edit field = " + isContinuedFirst() +
             " middle continued edit field = " + isContinuedMiddle() +

@@ -30,7 +30,6 @@ import java.awt.*;
 import java.io.*;
 import javax.swing.*;
 import org.tn5250j.Screen5250;
-import org.tn5250j.gui.TN5250jFileChooser;
 
 public class SendScreenToFile {
 
@@ -58,7 +57,7 @@ public class SendScreenToFile {
    private void getPCFile() {
 
       String workingDir = System.getProperty("user.dir");
-      TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
 
       int ret = pcFileChooser.showSaveDialog(new JFrame());
 
@@ -86,20 +85,12 @@ public class SendScreenToFile {
    }
 
 
-   /**
-    * Write the string to a file.
-    *
-    * @param sc - String to write
-    * @param file - File to write to
-    */
-
    private void writeToFile(String sc,File file) {
 
       FileOutputStream out = null;
       try {
          out = new FileOutputStream(file);
-         for (int x = 0; x < sc.length(); x++)
-            out.write(sc.charAt(x));
+         out.write(sc.getBytes());
          out.flush();
          out.close();
 
@@ -116,6 +107,21 @@ public class SendScreenToFile {
       }
 
 
+   }
+
+    /**
+     * This is to fix
+     * Bug Id - 4416982
+     * Synopsis JFileChooser does not use its resources to size itself initially
+     */
+   class MyFileChooser extends JFileChooser {
+      MyFileChooser(String dir) {
+         super(dir);
+      }
+
+      public Dimension getPreferredSize() {
+         return getLayout().preferredLayoutSize(this);
+      }
    }
 
 }

@@ -158,6 +158,7 @@ public class KeyMapper {
       FileInputStream in = null;
       try {
          in = new FileInputStream(keyMapName);
+         //InputStream in = KeyMapper.class.getClassLoader().getResourceAsStream(keyMapName);
          keystrokes.load(in);
          return true;
       }

@@ -272,18 +272,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
       pendingUnlock =false;
 
       try {
-
-	 if (sock != null) {
+         if (sock != null) {
             System.out.println("Closing socket");
             sock.close();
          }
-
          if (bin != null)
             bin.close();
-
          if (bout != null)
             bout.close();
-
          connected = false;
          firstScreen = false;
          controller.fireSessionChanged(TN5250jConstants.STATE_DISCONNECTED);

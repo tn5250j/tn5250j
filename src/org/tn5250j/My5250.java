@@ -49,7 +49,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    private static Properties sessions = new Properties();
    private static ImageIcon focused;
    private static ImageIcon unfocused;
-   private static ImageIcon tnicon;
+   public static ImageIcon tnicon;
    private static BootStrapper strapper = null;
    protected SessionManager manager;
    private static Vector frames;

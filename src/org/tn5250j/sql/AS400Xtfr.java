@@ -323,7 +323,8 @@ public class AS400Xtfr {
    /**
     * Transfer the file information to an output file
     */
-   public boolean getFile(String remoteFile, String localFile, String statement) {
+   public boolean getFile(String remoteFile, String localFile, String statement,
+                           boolean useInternal) {
 
       boolean flag = true;
 
@@ -335,6 +336,8 @@ public class AS400Xtfr {
       final String localFileF = localFile;
       final String remoteFileF = remoteFile;
       final String query = statement;
+      final boolean internal = useInternal;
+
 
       Runnable getRun = new Runnable () {
 
@@ -351,6 +354,14 @@ public class AS400Xtfr {
                   ResultSetMetaData rsmd = rs.getMetaData();
 
                   int numCols = rsmd.getColumnCount();
+
+
+                  ResultSet rsd = dmd.getColumns(null,"VISIONR","CXREF",null);
+
+                  while (rsd.next ()) {
+
+                     System.out.println(rsd.getString(12));
+                  }
 
                   if (ffd != null) {
                      ffd.clear();
@@ -369,17 +380,18 @@ public class AS400Xtfr {
                                                    " " + rsmd.getColumnTypeName(x) +
                                                    " " + rsmd.getPrecision(x) +
                                                    " " + rsmd.getScale(x) +
-                                                   " " + rsmd.getCatalogName(x) +
-                                                   " " + rsmd.getSchemaName(x));
+                                                   " cn " + rsmd.getCatalogName(x) +
+                                                   " tn " + rsmd.getTableName(x) +
+                                                   " sn " + rsmd.getSchemaName(x));
 
                         FileFieldDef ffDesc = new FileFieldDef(vt,decChar);
 
-//                        if (useInternal)
-//                           // WHFLDI  Field name internal
-//                           ffDesc.setFieldName(rsmd.getColumnLabel(x) );
-//                        else
+                        if (internal)
+                           // WHFLDI  Field name internal
+                           ffDesc.setFieldName(rsmd.getColumnName(x) );
+                        else
                            // WHFLD  Field name text description
-                           ffDesc.setFieldName(rsmd.getColumnName(x));
+                           ffDesc.setFieldName(rsmd.getColumnLabel(x));
 
                         ffDesc.setNeedsTranslation(false);
                         // WHFOBO  Field starting offset
@@ -481,6 +493,145 @@ public class AS400Xtfr {
 
    }
 
+//   private void loadFields() {
+//
+//
+//        ResultSet resultSet = null;
+//        try
+//        {
+//            // Get database meta data
+//            DatabaseMetaData metaData = connection_.getMetaData();
+//
+//            // Create new array to hold table values.
+//            data_ = new String[ROW_INCREMENT][NUM_COLUMNS_];
+//            types_ = new int[ROW_INCREMENT];
+//
+//            // Loop through each database file.
+//            String library, table, tprefix;
+//            int sepIndex;
+//            int curRow;
+//            for (int i=0; i<tables_.length; ++i)
+//            {
+//                // Get meta data.
+//                sepIndex = tables_[i].indexOf(".");
+//                if (sepIndex == -1)
+//                {
+//                    // Incorrect table specification, send error
+//                    // and continue to next table.
+//                    // Create generic exception to hold error message
+//                    Exception e = new Exception(ResourceLoader.getText("EXC_TABLE_SPEC_NOT_VALID"));
+//                    errorListeners_.fireError(e);
+//                }
+//                else
+//                {
+//                    library = tables_[i].substring(0, sepIndex);
+//                    table = tables_[i].substring(sepIndex+1);
+//                    if (tables_.length > 1)
+//                        tprefix = table + "."; // need to qualify field names
+//                    else
+//                        tprefix = "";  // only 1 table, can just use field names
+//
+//                    resultSet = metaData.getColumns(null, library, table, null);
+//
+//                    // Loop through fields for this database file.
+//                    while (resultSet.next())
+//                    {
+//                        curRow = numRows_; // current row in table
+//
+//                        // make sure we have room in table for this row.
+//                        if (curRow >= data_.length)                         // @D1C
+//                        {
+//                            String[][] newData =
+//                                new String[data_.length + ROW_INCREMENT][NUM_COLUMNS_];
+//                            System.arraycopy(data_, 0, newData, 0, data_.length);
+//                            data_ = newData;
+//                            int[] newTypes =
+//                                new int[types_.length + ROW_INCREMENT];
+//                            System.arraycopy(types_, 0, newTypes, 0, types_.length);
+//                            types_ = newTypes;
+//                        }
+//
+//                        // Store SQL type for use by getSQLType,
+//                        // although this is not externalized in the table.
+//                        types_[curRow] = resultSet.getInt(5);
+//
+//                        // Add field info to table
+//                        data_[curRow][FIELD_NAME_] = tprefix + resultSet.getString(4).trim();
+//                        data_[curRow][FIELD_TYPE_] = resultSet.getString(6);
+//                        // The following code should not be necessary when using
+//                        // most drivers, but makes the length values correct
+//                        // when using the AS400 JDBC driver.
+//                        // These values came from the ODBC description of precision
+//                        // (in 2.0 ref, Appendix D page 624).
+//                        switch (types_[curRow])
+//                        {
+//                            case Types.SMALLINT:
+//                                data_[curRow][FIELD_LENGTH_] = "5";
+//                                break;
+//                            case Types.INTEGER:
+//                                data_[curRow][FIELD_LENGTH_] = "10";
+//                                break;
+//                            case Types.TIME:
+//                                data_[curRow][FIELD_LENGTH_] = "8";
+//                                break;
+//                            case Types.TIMESTAMP:
+//                                // We always give length = 23, even though
+//                                // we should give 19 if there is no decimals.
+//                                // In order to not mess up 'correct' values,
+//                                // only change it if we know the value is bad.
+//                                if (resultSet.getInt(7) == 10)
+//                                    data_[curRow][FIELD_LENGTH_] = "23";
+//                                break;
+//                            case Types.DATE:
+//                                data_[curRow][FIELD_LENGTH_] = "10";
+//                                break;
+//                            case Types.DOUBLE:
+//                                if (resultSet.getInt(7) == 4)
+//                                    // single precision (type REAL)
+//                                    data_[curRow][FIELD_LENGTH_] = "7";
+//                                else
+//                                    // double precison (type FLOAT)
+//                                    data_[curRow][FIELD_LENGTH_] = "15";
+//                                break;
+//                            default:
+//                                // Other types are correct.
+//                                data_[curRow][FIELD_LENGTH_] = resultSet.getString(7);
+//                        }
+//                        data_[curRow][FIELD_DECIMALS_] = resultSet.getString(9);
+//                        data_[curRow][FIELD_NULLS_] = resultSet.getString(18);
+//                        data_[curRow][FIELD_DESC_] = resultSet.getString(12);
+//
+//                        numRows_++;
+//                    }
+//                }
+//            }
+//        }
+//        catch (SQLException e)
+//        {
+//            // In case of error, set fields to init state
+//            data_ = new String[0][0];
+//            types_ = new int[0];
+//            numRows_ = 0;
+//            errorListeners_.fireError(e);
+//            error_ = true;
+//        }
+//        finally
+//        {
+//            if (resultSet != null)
+//            {
+//                try
+//                {
+//                    resultSet.close();
+//                }
+//                catch(SQLException e)
+//                {
+//                    errorListeners_.fireError(e);
+//                }
+//            }
+//        }
+//
+//
+//   }
    /**
     * Parse the field field definition of the data and return a string buffer of
     * the output to be written

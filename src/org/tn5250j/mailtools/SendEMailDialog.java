@@ -40,9 +40,9 @@ public class SendEMailDialog {
       if (!isEMailAvailable()) {
 
          JOptionPane.showMessageDialog(parent,
-               "The Java E-Mail API can not be found or is not installed\n" +
-                  "Please read e-mail.txt file for installation instructions." ,"Error",
-               JOptionPane.ERROR_MESSAGE,null);
+                                       LangTool.getString("messages.noEmailAPI"),
+                                       "Error",
+                                       JOptionPane.ERROR_MESSAGE,null);
 
       }
       else {
@@ -120,18 +120,24 @@ public class SendEMailDialog {
                   sem.setAttachment(sb.toString());
                   try {
                      sem.send();
+                     JOptionPane.showMessageDialog(parent,
+                                                      LangTool.getString("em.confirmationMessage") +
+                                                      " " + tot.getText(),
+                                                      LangTool.getString("em.titleConfirmation"),
+                                                      JOptionPane.INFORMATION_MESSAGE);
                   }
                   catch (IOException ioe) {
                      System.out.println(ioe.getMessage());
                   }
+                  catch (SendFailedException sfe) {
+                     showFailedException(parent,sfe);
+                  }
+                  catch (Exception ex) {
+                     System.out.println(ex.getMessage());
+                  }
                   sem.release();
                   sem = null;
 
-                  JOptionPane.showMessageDialog(parent,
-                                                   LangTool.getString("em.confirmationMessage") +
-                                                   " " + tot.getText(),
-                                                   LangTool.getString("em.titleConfirmation"),
-                                                   JOptionPane.INFORMATION_MESSAGE);
 
                   break;
                case 1: // Cancel
@@ -223,13 +229,23 @@ public class SendEMailDialog {
 
                   try {
                      sem.send();
+                     JOptionPane.showMessageDialog(parent,
+                                                      LangTool.getString("em.confirmationMessage") +
+                                                      " " + tot.getText(),
+                                                      LangTool.getString("em.titleConfirmation"),
+                                                      JOptionPane.INFORMATION_MESSAGE);
                   }
                   catch (IOException ioe) {
                      System.out.println(ioe.getMessage());
                   }
+                  catch (SendFailedException sfe) {
+                     showFailedException(parent, sfe);
+                  }
+                  catch (Exception ex) {
+                     System.out.println(ex.getMessage());
+                  }
                   sem.release();
                   sem = null;
-                  System.out.println("Message sent");
 
                   break;
                case 1: // Cancel
@@ -248,6 +264,29 @@ public class SendEMailDialog {
       }
    }
 
+   private void showFailedException(Frame parent, SendFailedException sfe) {
+
+      String error = sfe.getMessage() + "\n";
+
+      Address[] ia = sfe.getInvalidAddresses();
+
+      for (int x = 0; x < ia.length; x++) {
+         error += "Invalid Address: " + ia[x].toString() + "\n";
+      }
+
+      JTextArea ea = new JTextArea(error,6,50);
+      JScrollPane errorScrollPane = new JScrollPane(ea);
+      errorScrollPane.setHorizontalScrollBarPolicy(
+      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      errorScrollPane.setVerticalScrollBarPolicy(
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      JOptionPane.showMessageDialog(parent,
+                                       errorScrollPane,
+                                       LangTool.getString("em.titleConfirmation"),
+                                       JOptionPane.ERROR_MESSAGE);
+
+
+   }
    private void setOptions(String[] options) {
 
 

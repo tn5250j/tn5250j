@@ -33,6 +33,7 @@ import com.ibm.as400.vaccess.*;
 import com.ibm.as400.access.*;
 import java.sql.*;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.My5250;
 
 /**
  *
@@ -50,7 +51,7 @@ public class SqlWizard extends JFrame {
    private String queryText;
    private JTextArea queryTextArea;
 
-   public SqlWizard(String host, String name, String password) {
+   public SqlWizard(String host, String name, String password ) {
 
       this.host = host;
       this.name = name;
@@ -69,6 +70,11 @@ public class SqlWizard extends JFrame {
    private void jbInit() throws Exception {
 
       try {
+
+         setIconImage(My5250.tnicon.getImage());
+
+         // set title
+         setTitle(LangTool.getString("xtfr.wizardTitle"));
 
          // Load the JDBC driver.
          Driver driver2 = (Driver)Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
@@ -125,16 +131,9 @@ public class SqlWizard extends JFrame {
       }
    }
 
-   //Overridden so we can exit on System Close
-//   protected void processWindowEvent(WindowEvent e) {
-//      super.processWindowEvent(e);
-//      if(e.getID() == WindowEvent.WINDOW_CLOSING) {
-//         fillQueryTextArea();
-//      }
-//   }
-
    private void fillQueryTextArea() {
       queryTextArea.append(queryBuilder.getQuery());
+
       this.hide();
       this.dispose();
    }

@@ -10,7 +10,7 @@ import org.tn5250j.tools.LangTool;
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
    private SessionManager manager;
-   private String sessionName;
+
    /**Get a parameter value*/
    public String getParameter(String key, String def) {
 
@@ -80,19 +80,12 @@ public class My5250App extends JApplet implements TN5250jConstants {
       else
          LangTool.init();
 
-      if (isSpecified("-sslType")) {
-	 sesProps.put(SSL_TYPE,getParameter("-sslType"));
-      }
-
-      sessionName = sessionName = getParameter("name","");
       manager = new SessionManager();
-      Session s = manager.openSession(sesProps,"",sessionName);
+      Session s = manager.openSession(sesProps,"","Test Applet");
       this.getContentPane().add(s);
+      s.grabFocus();
       s.connect();
-   }
 
-   public void stop() {
-      manager.closeSession(sessionName);
    }
 
    /**Get Applet information*/
@@ -102,15 +95,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
 
    /**Get parameter info*/
    public String[][] getParameterInfo() {
-      String[][] info = {
-        {"host","text","Hostname or IP Address of Host"},
-        {"-p","int","IP Port to connect to"},
-        {"width","int","Width of Applet"},
-        {"height","int","Height of Applet"},
-        {"-dn","text","Screen Device Name"},
-        {"-sslType","text","Type of SSL connection (NONE | SSLv2 | TLS)"}
-      };
-      return info;
+      return null;
    }
 
    /**

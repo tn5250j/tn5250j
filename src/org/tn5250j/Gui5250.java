@@ -1447,13 +1447,27 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          popup.addSeparator();
 
+         JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
+
          action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
                public void actionPerformed(ActionEvent e) {
                   doMeTransfer();
                   getFocusForMe();
                }
            };
-         popup.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
+
+         xtfrMenu.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
+
+         action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
+               public void actionPerformed(ActionEvent e) {
+                  doMeSpool();
+                  getFocusForMe();
+               }
+           };
+
+         xtfrMenu.add(action);
+
+         popup.add(xtfrMenu);
 
          JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
          popup.add(sendMenu);
@@ -1518,8 +1532,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       popup.add(createMenuItem(action,MNEMONIC_CLOSE));
 
-      popup.show(me.getComponent(),
+      GUIGraphicsUtils.positionPopup(me.getComponent(),popup,
                me.getX(),me.getY());
+//      popup.show(me.getComponent(),
+//               me.getX(),me.getY());
 
    }
 
@@ -1581,6 +1597,22 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void doMeTransfer() {
 
       XTFRFile xtrf = new XTFRFile(me.getParentView((Session)this),vt);
+
+   }
+
+   private void doMeSpool() {
+
+      try {
+         org.tn5250j.spoolfile.SpoolExporter spooler = new org.tn5250j.spoolfile.SpoolExporter(vt);
+         spooler.setVisible(true);
+      }
+      catch (NoClassDefFoundError ncdfe) {
+         JOptionPane.showMessageDialog(this,
+                                       LangTool.getString("messages.noAS400Toolbox"),
+                                       "Error",
+                                       JOptionPane.ERROR_MESSAGE,null);
+      }
+
    }
 
    private void sumArea(boolean which) {
