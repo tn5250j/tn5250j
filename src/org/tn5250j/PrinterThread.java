@@ -205,14 +205,14 @@ public class PrinterThread extends Thread implements Printable {
          int w = (int)pageFormat.getImageableWidth() / numCols;     // proposed width
          int h = (int)pageFormat.getImageableHeight() / numRows;     // proposed height
 
-         Font k = new Font("Courier New",Font.PLAIN,8);
+         Font k = font;
 
          LineMetrics l;
          FontRenderContext f = null;
 
          float j = 1;
 
-         for (; j < 36; j++) {
+         for (; j < 50; j++) {
 
             // derive the font and obtain the relevent information to compute
             // the width and height
@@ -222,7 +222,7 @@ public class PrinterThread extends Thread implements Printable {
 
             if (
                   (w < (int)k.getStringBounds("W",f).getWidth()) ||
-                     h < (int)(k.getStringBounds("g",f).getHeight() +
+                     h < (int)(k.getStringBounds("y",f).getHeight() +
                            l.getDescent() + l.getLeading())
 
                )
@@ -240,7 +240,7 @@ public class PrinterThread extends Thread implements Printable {
 
          // get the width and height of the character bounds
          int w1 = (int)k.getStringBounds("W",f).getWidth();
-         int h1 = (int)(k.getStringBounds("g",f).getHeight() +
+         int h1 = (int)(k.getStringBounds("y",f).getHeight() +
                      l.getDescent() + l.getLeading());
          int x;
          int y;
