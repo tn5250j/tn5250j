@@ -193,7 +193,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          while(negotiate(abyte0 = readNegotiations())) ;
          negotiated = true;
          try {
-            screen52.setCursorOff();
+            screen52.setCursorActive(false);
          }
          catch (Exception excc) {
             System.out.println("setCursorOff " + excc.getMessage());
@@ -330,7 +330,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
 
       if (!enhanced) {
-         screen52.setCursorOff();
+         screen52.setCursorActive(false);
       }
          screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
 
@@ -361,7 +361,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
 
       if (!enhanced) {
-         screen52.setCursorOff();
+         screen52.setCursorActive(false);
       }
          screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
 
@@ -684,7 +684,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_OFF,null);
       }
 
-      screen52.setCursorOff();
+      screen52.setCursorActive(false);
       screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
       // From client access ip capture
       // it seems to use an operation code of 3 and 4
@@ -826,7 +826,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
          pthread.yield();
 
          invited = false;
-         screen52.setCursorOff();
+
+         screen52.setCursorActive(false);
 
 //      System.out.println("operation code: " + bk.getOpCode());
          if (bk == null)
@@ -903,13 +904,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
             case 11:
 //               System.out.println("Turn on message light");
                screen52.setMessageLightOn();
-               screen52.setCursorOn();
+               screen52.setCursorActive(true);
 
                break;
             case 12:
 //               System.out.println("Turn off Message light");
                screen52.setMessageLightOff();
-               screen52.setCursorOn();
+               screen52.setCursorActive(true);
 
                break;
             default:
@@ -948,7 +949,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
 
          if (cursorOn && !screen52.isKeyboardLocked()) {
-            screen52.setCursorOn();
+            screen52.setCursorActive(true);
             cursorOn = false;
          }
 
@@ -1356,7 +1357,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   bk.getNextByte();
                   readType = b;
                   screen52.goHome();
-//                  screen52.setCursorOn();
+                  // do nothing with the cursor here it is taken care of
+                  //   in the main loop.
+////////////////                  screen52.setCursorOn();
                   waitingForInput = true;
                   pendingUnlock = true;
 //                  screen52.setKeyboardLocked(false);

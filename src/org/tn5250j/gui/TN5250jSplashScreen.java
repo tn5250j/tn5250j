@@ -141,6 +141,10 @@ public class TN5250jSplashScreen extends Canvas {
 
    public synchronized void updateProgress(int prog) {
 
+      if (dialog == null || f == null) {
+         return;
+      }
+
       progress = prog;
       repaint();
 

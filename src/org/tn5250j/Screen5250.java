@@ -152,6 +152,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private Rectangle restriction;
    private final Object kblock = new Object();
    private boolean resetRequired;
+   private int cursorBottOffset;
 
    public Screen5250(Gui5250 gui, Properties props) {
       this.gui = gui;
@@ -330,6 +331,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          ps132 = getFloatProperty("fontPointSize");
       }
 
+      if (appProps.containsKey("cursorBottOffset")) {
+         cursorBottOffset = getIntProperty("cursorBottOffset");
+      }
+
    }
 
    protected final void loadColors() {
@@ -427,12 +432,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
-   protected final int getIntProperty(String prop) {
-
-      return Integer.parseInt((String)appProps.get(prop));
-
-   }
-
    protected final Color getColorProperty(String prop) {
 
       if (appProps.containsKey(prop)) {
@@ -452,6 +451,22 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
       else
          return 0.0f;
+
+   }
+
+   protected final int getIntProperty(String prop) {
+
+      if (appProps.containsKey(prop)) {
+         try {
+            int i = Integer.parseInt((String)appProps.get(prop));
+            return i;
+         }
+         catch (NumberFormatException ne) {
+            return 0;
+         }
+      }
+      else
+         return 0;
 
    }
 
@@ -630,6 +645,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       }
 
+      if (pn.equals("cursorBottOffset")) {
+         cursorBottOffset = getIntProperty("cursorBottOffset");
+      }
+
       if (updateFont) {
          Rectangle r = gui.getDrawingBounds();
          resizeScreenArea(r.width,r.height);
@@ -642,8 +661,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          }
          bi.drawOIA(fmWidth,fmHeight,numRows,numCols,font,colorBg,colorBlue);
       }
+      gui.validate();
       gui.repaint();
-      gui.revalidate();
    }
 
    public boolean isHotSpots() {
@@ -777,7 +796,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
       Transferable content = cb.getContents(this);
-      setCursorOff();
       try {
          StringBuffer sb = new StringBuffer((String)content.getTransferData(DataFlavor.stringFlavor));
          StringBuffer pd = new StringBuffer();
@@ -874,7 +892,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       catch (Throwable exc) {
          System.err.println(exc);
       }
-      setCursorOn();
    }
 
    protected final void copyField(int pos) {
@@ -1187,6 +1204,65 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
+    * Activate the cursor on screen
+    *
+    * @param activate
+    */
+   public void setCursorActive(boolean activate) {
+
+//      System.out.println("cursor active " + updateCursorLoc + " " + cursorActive + " " + activate);
+      if (cursorActive && !activate) {
+         setCursorOff();
+         cursorActive = activate;
+      }
+      else {
+         if (!cursorActive && activate) {
+            cursorActive = activate;
+            setCursorOn();
+         }
+      }
+   }
+
+   /**
+    * Set the cursor on
+    */
+   public void setCursorOn() {
+         updateCursorLoc();
+   }
+
+   /**
+    * Set the cursor off
+    */
+   public void setCursorOff() {
+
+         updateCursorLoc();
+//      System.out.println("cursor off " + updateCursorLoc + " " + cursorActive);
+
+
+   }
+
+   /**
+    *
+    */
+   private void updateCursorLoc() {
+
+//      System.out.println("cursor loc " + updateCursorLoc + " " + cursorActive);
+      if (cursorActive) {
+
+         int row = getRow(lastPos);
+         int col = getCol(lastPos);
+
+         bi.drawCursor(this,row,col,
+                           fmWidth,fmHeight,
+                           insertMode, crossHair,
+                           cursorSize,colorCursor,
+                           colorBg,colorWhite,
+                           font,cursorBottOffset);
+
+      }
+   }
+
+   /**
     * The sendKeys method sends a string of keys to the virtual screen. This
     * method acts as if keystrokes were being typed from the keyboard.  The
     * keystrokes will be sent to the location given. The string being passed can
@@ -1285,8 +1361,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (isStatusErrorCode() && !resetRequired) {
             resetError();
-            if (!cursorActive)
-               setCursorOn();
+//            if (!cursorActive)
+//               setCursorOn();
       }
 
       if (keyboardLocked) {
@@ -1321,15 +1397,24 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             if (bufferedKeys != null) {
                text = bufferedKeys + text;
             }
-            keysBuffered = false;
-            setKBIndicatorOff();
+//            if (text.length() == 0) {
+               keysBuffered = false;
+               setKBIndicatorOff();
+//            }
             bufferedKeys = null;
+
          }
          // check to see if position is in a field and if it is then change
          //   current field to that field
          isInField(lastPos,true);
          if (text.length() == 1 && !text.equals("[") && !text.equals("]")) {
+//               setCursorOff2();
+               setCursorActive(false);
                simulateKeyStroke(text.charAt(0));
+               setCursorActive(true);
+//               setCursorOn2();
+//                     System.out.println(" text one");
+
          }
          else {
 
@@ -1337,19 +1422,37 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             String s;
             boolean done = false;
 
-            while (strokenizer.hasMoreKeyStrokes()  && !keyboardLocked &&
-                        !isStatusErrorCode() && !done) {
+//            setCursorOff2();
+            setCursorActive(false);
+            while (!done) {
+//            while (strokenizer.hasMoreKeyStrokes()  && !keyboardLocked &&
+//                        !isStatusErrorCode() && !done) {
+               if (strokenizer.hasMoreKeyStrokes()) {
 
                s = strokenizer.nextKeyStroke();
                if (s.length() == 1) {
+//                  setCursorOn();
+//                  if (!keysBuffered) {
+//                     System.out.println(" s two" + s);
+//                     setCursorOn();
+//                  }
+
+//                  try { new Thread().sleep(400);} catch (InterruptedException ie) {}
                   simulateKeyStroke(s.charAt(0));
-                  setCursorOn();
+//                     System.out.println(" s two " + s + " " + cursorActive);
+//                  if (cursorActive && !keysBuffered) {
+//                     System.out.println(" s two" + s);
+//                     setCursorOn();
+//                  }
                }
                else {
 
                   if (s != null) {
                      simulateMnemonic(getMnemonicValue(s));
-
+//                  if (!cursorActive && !keysBuffered) {
+//                     System.out.println(" m one");
+//                     setCursorOn();
+//                  }
                   }
                   else
                      System.out.println(" send keys mnemonic " + s);
@@ -1366,6 +1469,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                }
 
             }
+
+            else {
+//                  setCursorActive(true);
+//                  setCursorOn();
+               done = true;
+            }
+            }
+            setCursorActive(true);
          }
       }
    }
@@ -1488,13 +1599,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                   displayError(ERR_CURSOR_PROTECTED);
 
                else {
-                  setCursorOff();
                   screenFields.getCurrentField().getKeyPos(lastPos);
                   screenFields.getCurrentField().changePos(-1);
                   resetDirty(screenFields.getCurrentField().getCurrentPos());
                   shiftLeft(screenFields.getCurrentField().getCurrentPos());
                   updateDirty();
-                  setCursorOn();
                   screenFields.setCurrentFieldMDT();
 
                   simulated  = true;
@@ -1527,12 +1636,16 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             break;
          case UP :
          case MARK_UP :
+//            setCursorOff();
             process_XY(lastPos - numCols);
+//            setCursorOn();
             simulated = true;
             break;
          case DOWN :
          case MARK_DOWN :
+//            setCursorOff();
             process_XY(lastPos + numCols);
+//            setCursorOn();
             simulated = true;
             break;
          case LEFT :
@@ -1558,13 +1671,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                screenFields.withinCurrentField(lastPos)
                && !screenFields.isCurrentFieldBypassField()) {
 
-                  setCursorOff();
                   resetDirty(lastPos);
                   screenFields.getCurrentField().getKeyPos(lastPos);
                   shiftLeft(screenFields.getCurrentFieldPos());
                   screenFields.setCurrentFieldMDT();
                   updateDirty();
-                  setCursorOn();
                   simulated  = true;
             }
             else {
@@ -1616,7 +1727,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                screenFields.withinCurrentField(lastPos)
                && !screenFields.isCurrentFieldBypassField()) {
 
-               setCursorOff();
                int where = lastPos;
                resetDirty(lastPos);
                if (fieldExit()) {
@@ -1636,7 +1746,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                }
                updateDirty();
                goto_XY(where);
-               setCursorOn();
                simulated  = true;
 
             }
@@ -1650,7 +1759,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                screenFields.withinCurrentField(lastPos)
                && !screenFields.isCurrentFieldBypassField()) {
 
-               setCursorOff();
                int where = lastPos;
                lastPos = screenFields.getCurrentField().startPos();
                resetDirty(lastPos);
@@ -1671,7 +1779,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                }
                updateDirty();
                goto_XY(where);
-               setCursorOn();
                simulated  = true;
 
             }
@@ -1681,10 +1788,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
             break;
          case INSERT :
-            setCursorOff();
             // we toggle it
             insertMode = insertMode ? false : true;
-            setCursorOn();
             break;
          case HOME :
             // position to the home position set
@@ -1776,7 +1881,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                screenFields.withinCurrentField(lastPos)
                && !screenFields.isCurrentFieldBypassField()) {
 
-               setCursorOff();
                resetDirty(lastPos);
                if (fieldExit()) {
                   screenFields.setCurrentFieldMDT();
@@ -1794,7 +1898,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                   }
                }
                updateDirty();
-               setCursorOn();
                simulated  = true;
                if (screenFields.isCurrentFieldAutoEnter())
                   sendAid(AID_ENTER);
@@ -1810,7 +1913,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                screenFields.withinCurrentField(lastPos)
                && !screenFields.isCurrentFieldBypassField()) {
 
-               setCursorOff();
                resetDirty(lastPos);
                if (fieldExit()) {
                   screenFields.setCurrentFieldMDT();
@@ -1826,7 +1928,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                   }
                }
                updateDirty();
-               setCursorOn();
                simulated  = true;
                if (screenFields.isCurrentFieldAutoEnter())
                   sendAid(AID_ENTER);
@@ -1844,7 +1945,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
                int s = screenFields.getCurrentField().getFieldShift();
                if (s == 3 || s == 5 || s == 7) {
-                  setCursorOff();
                   screen[lastPos].setChar('-');
 
                   resetDirty(lastPos);
@@ -1863,7 +1963,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                      }
                   }
                   updateDirty();
-                  setCursorOn();
                   simulated  = true;
                   if (screenFields.isCurrentFieldAutoEnter())
                      sendAid(AID_ENTER);
@@ -1904,7 +2003,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                resetError();
                isInField(lastPos);
                updateDirty();
-               setCursorOn();
             }
             else {
                setPrehelpState(false,isKeyboardLocked(),false);
@@ -1927,13 +2025,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                && !screenFields.isCurrentFieldBypassField()) {
 
                if (screenFields.isCurrentFieldDupEnabled()) {
-                  setCursorOff();
                   resetDirty(lastPos);
                   screenFields.getCurrentField().setFieldChar(lastPos,(char)0x1C);
                   screenFields.setCurrentFieldMDT();
                   gotoFieldNext();
                   updateDirty();
-                  setCursorOn();
                   simulated = true;
                }
                else {
@@ -1951,7 +2047,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                int startPos = lastPos;
                boolean isthere = false;
 
-               setCursorOff();
                if (startRow == getRows())
                   startRow = 0;
 
@@ -1976,7 +2071,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                      }
                   }
                }
-               setCursorOn();
             }
             simulated  = true;
             break;
@@ -2055,7 +2149,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                if (screenFields.isCurrentFieldToUpper())
                   c = Character.toUpperCase(c);
 
-               setCursorOff();
                updatePos = true;
                resetDirty(lastPos);
 
@@ -2091,7 +2184,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                }
 
                updateImage(dirty);
-               setCursorOn();
+
                if (autoEnter)
                   sendAid(AID_ENTER);
             }
@@ -2109,12 +2202,19 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return updatePos;
    }
 
+   /**
+    * @todo: Change to be mnemonic key.
+    *
+    * This toggles the ruler line.
+    *
+    *
+    */
    protected void crossHair() {
-      setCursorOff();
+      setCursorActive(false);
       crossHair++;
       if (crossHair > 3)
          crossHair = 0;
-      setCursorOn();
+      setCursorActive(true);
    }
 
    /**
@@ -2367,6 +2467,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          return 0;
    }
 
+   /**
+    * This routine is 0 based offset.  So to get row 20,1 then pass row 19,0
+    *
+    * @param row
+    * @param col
+    * @return
+    */
    private int getPos(int row, int col) {
 
       return (row * numCols) + col;
@@ -2659,11 +2766,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          if (keysBuffered) {
             sendKeys("");
          }
-
       }
-
-
-
    }
 
    /**
@@ -2689,31 +2792,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    // this routine is based on offset 0,0 not 1,1
    public void goto_XY(int pos) {
+//      setCursorOff();
       updateCursorLoc();
       lastPos = pos;
+//      setCursorOn();
       updateCursorLoc();
    }
 
-   /**
-    * Set the cursor on
-    */
-   public void setCursorOn() {
-      updateCursorLoc = true;
-//      System.out.println("cursor on");
-      if (!keysBuffered)
-      updateCursorLoc();
-   }
-
-   /**
-    * Set the cursor off
-    */
-   public void setCursorOff() {
-
-      updateCursorLoc();
-      updateCursorLoc = false;
-
-
-   }
 
    /**
     * This returns whether or not any of the fields currently on the screen have
@@ -2779,7 +2864,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private void gotoNextWord() {
 
       int pos = lastPos;
-      setCursorOff();
 
       if (screen[lastPos].getChar() > ' ') {
          advancePos();
@@ -2800,9 +2884,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          advancePos();
       }
 
-
-      setCursorOn();
-
    }
 
    /**
@@ -2812,7 +2893,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private void gotoPrevWord() {
 
       int pos = lastPos;
-      setCursorOff();
 
       changePos(-1);
 
@@ -2832,7 +2912,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       // and position one position more should give us the beginning of word
       advancePos();
-      setCursorOn();
 
    }
 
@@ -3873,7 +3952,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       //   the updating of the image.
       if (gui.isVisible() && height > 0 && width > 0) {
          bi.drawImageBuffer(gg2d,x,y,width,height);
-//         gg2d.drawImage(bi.getImageBuffer().getSubimage(x,y,width,height),null,x,y);
       }
 
    }
@@ -3939,28 +4017,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          lr += numCols;
       }
 
-   }
-
-   /**
-    *
-    */
-   private void updateCursorLoc() {
-
-      if (updateCursorLoc) {
-         cursorActive = cursorActive ? false:true;
-
-         int row = getRow(lastPos);
-         int col = getCol(lastPos);
-
-         bi.drawCursor(this,row,col,
-                           fmWidth,fmHeight,
-                           insertMode, crossHair,
-                           cursorSize,colorCursor,
-                           colorBg,colorWhite,
-                           font);
-
-         cursorActive = false;
-      }
    }
 
    /**
@@ -4068,6 +4124,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    public final void setBounds(int width, int height) {
 
+      setCursorActive(false);
       resizeScreenArea(width,height);
       dirty.setBounds(tArea.getBounds());
       if (gui.getGraphics() != null) {
@@ -4075,7 +4132,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          //    be a very hard to trace screen resize problem
          gg2d = null;
          updateDirty();
-         setCursorOn();
       }
 
       // restore statuses that were on the screen before resize
@@ -4085,6 +4141,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          setStatus(STATUS_SYSTEM,STATUS_VALUE_ON,statusString);
       if (isMessageWait())
          setMessageLightOn();
+      setCursorActive(true);
    }
 
    /**

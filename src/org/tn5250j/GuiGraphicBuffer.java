@@ -182,19 +182,25 @@ public class GuiGraphicBuffer {
                            boolean insertMode, int crossHair,
                            int cursorSize, Color colorCursor,
                            Color colorBg,Color colorWhite,
-                           Font font) {
+                           Font font,int botOffset) {
 
 //      synchronized (lock) {
 
          Graphics2D g2 = getDrawingArea();
 //         if (g2 == null)
 //            return;
-
+//            botOffset = 4;
          switch (cursorSize) {
             case 0:
+//               cursor.setRect(
+//                           fmWidth * (col),
+//                           (fmHeight * (row + 1)),
+//                           fmWidth,
+//                           1
+//                           );
                cursor.setRect(
                            fmWidth * (col),
-                           (fmHeight * (row + 1)),
+                           (fmHeight * (row + 1)) - botOffset,
                            fmWidth,
                            1
                            );
@@ -204,7 +210,7 @@ public class GuiGraphicBuffer {
                            fmWidth * (col),
                            (fmHeight * (row + 1) - fmHeight / 2),
                            fmWidth,
-                           fmHeight / 2
+                           (fmHeight / 2) - botOffset
                            );
                break;
             case 2:
@@ -212,8 +218,14 @@ public class GuiGraphicBuffer {
                            fmWidth * (col),
                            (fmHeight * row),
                            fmWidth,
-                           fmHeight
+                           fmHeight - botOffset
                            );
+//               cursor.setRect(
+//                           fmWidth * (col),
+//                           (fmHeight * row) - lm.getLeading()-5,
+//                           fmWidth,
+//                           fmHeight
+//                           );
                break;
          }
 
@@ -222,7 +234,7 @@ public class GuiGraphicBuffer {
                            fmWidth * (col),
                            (fmHeight * (row + 1) - fmHeight / 2),
                            fmWidth,
-                           fmHeight / 2
+                           (fmHeight / 2) - botOffset
                            );
          }
 
@@ -232,22 +244,21 @@ public class GuiGraphicBuffer {
          g2.setXORMode(colorBg);
 
          g2.fill(cursor);
-//         cursorActive = true;
          s.updateImage(r);
 
          switch (crossHair) {
             case 1:  // horizontal
-               g2.drawLine(0,fmHeight * (row + 1),bi.getWidth(null),fmHeight * (row + 1));
-               s.updateImage(0,fmHeight * (row + 1),bi.getWidth(null),1);
+               g2.drawLine(0,(fmHeight * (row + 1))- botOffset,bi.getWidth(null),(fmHeight * (row + 1))- botOffset);
+               s.updateImage(0,fmHeight * (row + 1)- botOffset,bi.getWidth(null),1);
                break;
             case 2:  // vertical
                g2.drawLine(r.x,0,r.x,bi.getHeight(null) - fmHeight - fmHeight);
                s.updateImage(r.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
                break;
             case 3:  // horizontal & vertical
-               g2.drawLine(0,fmHeight * (row + 1),bi.getWidth(null),fmHeight * (row + 1));
+               g2.drawLine(0,(fmHeight * (row + 1))- botOffset,bi.getWidth(null),(fmHeight * (row + 1))- botOffset);
                g2.drawLine(r.x,0,r.x,bi.getHeight(null) - fmHeight - fmHeight);
-               s.updateImage(0,fmHeight * (row + 1),bi.getWidth(null),1);
+               s.updateImage(0,(fmHeight * (row + 1)) - botOffset,bi.getWidth(null),1);
                s.updateImage(r.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
                break;
          }
@@ -257,9 +268,6 @@ public class GuiGraphicBuffer {
 
          g2.fill(pArea);
          g2.setColor(colorWhite);
-//         g2.drawString((getRow(lastPos) + 1) + "/" + (getCol(lastPos) + 1)
-//                        ,(float)pArea.getX(),
-//                        (float)pArea.getY() + fmHeight);
 
          g2.drawString((row + 1) + "/" + (col + 1)
                         ,(float)pArea.getX(),

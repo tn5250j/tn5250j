@@ -76,6 +76,7 @@ public class SessionAttributes extends JDialog {
    JTextField verticalScale;
    JTextField horizontalScale;
    JTextField pointSize;
+   JTextField cursorBottOffset;
 
    private PropertyChangeSupport changes = null;
 
@@ -442,9 +443,28 @@ public class SessionAttributes extends JDialog {
 
       rulerFPanel.add(rulerFixed);
 
+      // define double click as enter
+      JPanel bottOffPanel = new JPanel();
+      bottOffPanel.setBorder(BorderFactory.createTitledBorder(
+                                    LangTool.getString("sa.curBottOffset")));
+
+      cursorBottOffset = new JTextField(5);
+
+      try {
+         int i = Integer.parseInt(getStringProperty("cursorBottOffset","0"));
+         cursorBottOffset.setText(Integer.toString(i));
+      }
+      catch (NumberFormatException ne) {
+         cursorBottOffset.setText("0");
+      }
+
+
+      bottOffPanel.add(cursorBottOffset);
+
       cuPanel.add(crp);
       cuPanel.add(chp);
       cuPanel.add(rulerFPanel);
+      cuPanel.add(bottOffPanel);
 
 
       // define onConnect panel
@@ -672,6 +692,20 @@ public class SessionAttributes extends JDialog {
          return (String)props.get(prop);
       else
          return "";
+
+   }
+
+   protected final String getStringProperty(String prop,String defaultValue) {
+
+      if (props.containsKey(prop)) {
+         String p = (String)props.get(prop);
+         if (p.length() > 0)
+            return p;
+         else
+            return defaultValue;
+      }
+      else
+         return defaultValue;
 
    }
 
@@ -1260,6 +1294,11 @@ public class SessionAttributes extends JDialog {
                         getStringProperty("fontPointSize"),
                         pointSize.getText());
       setProperty("fontPointSize",pointSize.getText());
+
+      changes.firePropertyChange("cursorBottOffset",
+                        getStringProperty("cursorBottOffset"),
+                        cursorBottOffset.getText());
+      setProperty("cursorBottOffset",cursorBottOffset.getText());
 
       setProperty("saveme","yes");
 
