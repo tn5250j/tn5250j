@@ -1,7 +1,7 @@
 package org.tn5250j.tools.filters;
 
 /*
- * @(#)iOhioSession.java
+ * @(#)ExcelOutputFilter.java
  * Copyright:    Copyright (c) 2001
  *
  * This program is free software; you can redistribute it and/or modify
@@ -212,6 +212,7 @@ public class ExcelOutputFilter implements OutputFilterInterface {
       fout.write(s & 0xFF);
       fout.write((s >>> 8) & 0xFF);
    }
+
    /**
     * Write the html header of the output file
     */
@@ -289,6 +290,14 @@ public class ExcelOutputFilter implements OutputFilterInterface {
          System.out.println("write footer: " + ioex.getMessage());
       }
 
+
+   }
+
+   public boolean isCustomizable() {
+      return false;
+   }
+
+   public void setCustomProperties() {
 
    }
 

@@ -63,6 +63,7 @@ public class XTFRFileFilter extends FileFilter {
    private String fullDescription = null;
    private boolean useExtensionsInDescription = true;
    private String outputFilterClassName;
+   private Object o;
 
    /**
    * Creates a file filter. If no filters are added, then all
@@ -319,11 +320,12 @@ public class XTFRFileFilter extends FileFilter {
    }
 
    public OutputFilterInterface getOutputFilterInstance() {
-      Object o = null;
-      try {
-         Class c = Class.forName(outputFilterClassName);
-         o = c.newInstance();
 
+      try {
+         if (o == null) {
+            Class c = Class.forName(outputFilterClassName);
+            o = c.newInstance();
+         }
       }
       catch (Exception e) {
          System.err.println(e);

@@ -462,5 +462,12 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
 
    }
 
+   public boolean isCustomizable() {
+      return false;
+   }
+
+   public void setCustomProperties() {
+
+   }
 
 }

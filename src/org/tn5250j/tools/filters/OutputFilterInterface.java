@@ -33,5 +33,6 @@ public interface OutputFilterInterface {
                                        ArrayList ffd, char decSep);
    public abstract void writeFooter(ArrayList ffd);
    public abstract void parseFields(byte[] cByte, ArrayList ffd,StringBuffer rb);
-
+   public abstract boolean isCustomizable();
+   public abstract void setCustomProperties();
 }
