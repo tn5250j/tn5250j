@@ -57,7 +57,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    private static TN5250jSplashScreen splash;
    private int step;
    private static String jarClassPaths;
-//   public static ClassLoader classLoader;
 
    My5250 () {
 
