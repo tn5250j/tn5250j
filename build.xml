@@ -140,19 +140,6 @@
     <target name="compile" depends="prepare" description="Compile your source-files">
         <javac srcdir="${source.dir}"
                 destdir="${build.classes.dir}"
-                excludes="**/Cvs/**,**/*.ini,**/scripting/**" >
-            <classpath>
-                <path refid="classpath"/>
-            </classpath>
-        </javac>
-    </target>
-
-    <!-- =================================================================== -->
-    <!-- Compiles the source directory with scripting                        -->
-    <!-- =================================================================== -->
-    <target name="compile-script" depends="prepare" description="Compile your source-files include scripting">
-        <javac srcdir="${source.dir}"
-                destdir="${build.classes.dir}"
                 excludes="**/Cvs/**,**/*.ini" >
             <classpath>
                 <path refid="classpath"/>
@@ -215,9 +202,6 @@
 
 
     <target name= "all" depends="clean, compile, package"   description="Clean, Compile, Jar">
-    </target>
-
-    <target name= "all-script" depends="clean, compile-script, package"   description="Clean, Compile, Jar">
     </target>
 
     <!-- =================================================================== -->
