@@ -46,8 +46,11 @@ import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.keyboard.KeyboardHandler;
+import org.tn5250j.event.EmulatorActionListener;
+import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.keyboard.DefaultKeyboardHandler;
 import org.tn5250j.keyboard.configure.KeyConfigure;
+import org.tn5250j.gui.TN5250jFrame;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
@@ -60,7 +63,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
    Screen5250 screen = null;
    String propFileName = null;
    tnvt vt = null;
-   My5250 me;
    TNRubberBand rubberband;
    JPanel s = new JPanel();
    KeyPad keyPad = new KeyPad();
@@ -68,6 +70,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    Macronizer macros;
    String newMacName;
    private Vector listeners = null;
+   private Vector actionListeners = null;
    private SessionJumpEvent jumpEvent;
    private boolean macroRunning;
    private boolean stopMacro;
@@ -80,9 +83,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    //Construct the frame
-   public Gui5250(My5250 m,SessionConfig config) {
-
-      me = m;
+   public Gui5250(SessionConfig config) {
 
       propFileName = config.getConfigurationResource();
 
@@ -203,11 +204,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
       ex.printStackTrace();
    }
 
-   public SessionConfig getConfiguration() {
-
-      return sesConfig;
-   }
-
    public void sendScreenEMail() {
 
       new SendEMailDialog((JFrame)SwingUtilities.getRoot(this),(Session)this);
@@ -318,7 +314,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       }
       if (result == 1) {
-         me.closingDown((Session)this);
+         fireEmulatorAction(EmulatorActionEvent.CLOSE_EMULATOR);
       }
 
    }
@@ -457,7 +453,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    public void startNewSession() {
-      me.startNewSession();
+      fireEmulatorAction(EmulatorActionEvent.START_NEW_SESSION);
    }
    public void sendAidKey(int whichOne) {
 
@@ -517,6 +513,25 @@ public class Gui5250 extends JPanel implements ComponentListener,
                     (SessionJumpListener)listeners.elementAt(i);
             jumpEvent.setJumpDirection(dir);
             target.onSessionJump(jumpEvent);
+         }
+      }
+   }
+
+   /**
+    * Notify all registered listeners of the onEmulatorAction event.
+    *
+    * @param action  The action to be performed.
+    */
+   protected void fireEmulatorAction(int action) {
+
+      if (actionListeners != null) {
+         int size = actionListeners.size();
+         for (int i = 0; i < size; i++) {
+            EmulatorActionListener target =
+                    (EmulatorActionListener)actionListeners.elementAt(i);
+            EmulatorActionEvent sae = new EmulatorActionEvent(this);
+            sae.setAction(action);
+            target.onEmulatorAction(sae);
          }
       }
    }
@@ -1010,7 +1025,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void doConnections() {
 
-      me.startNewSession();
+      fireEmulatorAction(EmulatorActionEvent.START_NEW_SESSION);
    }
 
    public void doMeTransfer() {
@@ -1088,7 +1103,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void closeMe() {
 
-      me.closeSession((Session)this);
+      fireEmulatorAction(EmulatorActionEvent.CLOSE_SESSION);
 
 //      keyMap.removeKeyChangeListener(this);
    }
@@ -1108,12 +1123,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void mapMeKeys() {
       KeyConfigure kc;
 
-      Frame parent = null;
-
-      if (me == null)
-         parent = new JFrame();
-      else
-         parent = me.getParentView((Session)this);
+      Frame parent = (JFrame)SwingUtilities.getRoot(this);
 
       if (macros.isMacrosExist()) {
          String[] macrosList = macros.getMacroList();
@@ -1210,13 +1220,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       int result = 0;
 
-      // if me is null then we are running as an applet and we need to create
-      //   a frame to pass
-      JFrame parent = null;
-      if (me == null)
-         parent = new JFrame();
-      else
-         parent = me.getParentView((Session)this);
+      JFrame parent = (JFrame)SwingUtilities.getRoot(this);
 
       result = JOptionPane.showOptionDialog(
           parent,   // the parent that the dialog blocks
@@ -1328,6 +1332,33 @@ public class Gui5250 extends JPanel implements ComponentListener,
           return;
       }
       listeners.removeElement(listener);
+
+   }
+
+   /**
+    * Add a EmulatorActionListener to the listener list.
+    *
+    * @param listener  The EmulatorActionListener to be added
+    */
+   public synchronized void addEmulatorActionListener(EmulatorActionListener listener) {
+
+      if (actionListeners == null) {
+          actionListeners = new java.util.Vector(3);
+      }
+      actionListeners.addElement(listener);
+
+   }
+
+   /**
+    * Remove a EmulatorActionListener from the listener list.
+    *
+    * @param listener  The EmulatorActionListener to be removed
+    */
+   public synchronized void removeEmulatorActionListener(EmulatorActionListener listener) {
+      if (actionListeners == null) {
+          return;
+      }
+      actionListeners.removeElement(listener);
 
    }
 

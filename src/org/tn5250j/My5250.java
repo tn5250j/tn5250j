@@ -44,14 +44,12 @@ import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.interfaces.ConfigureFactory;
 
-public class My5250 implements BootListener,TN5250jConstants,SessionListener {
+public class My5250 implements BootListener,TN5250jConstants,SessionListener,
+                                 EmulatorActionListener {
 
    protected GUIViewInterface frame1;
    private String[] sessionArgs = null;
    private static Properties sessions = new Properties();
-   private static ImageIcon focused;
-   private static ImageIcon unfocused;
-   public static ImageIcon tnicon;
    private static BootStrapper strapper = null;
    protected SessionManager manager;
    private static Vector frames;
@@ -59,21 +57,17 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    private static TN5250jSplashScreen splash;
    private int step;
    private static String jarClassPaths;
-   public static ClassLoader classLoader;
+//   public static ClassLoader classLoader;
 
    My5250 () {
 
       GlobalConfigure configure = (GlobalConfigure)ConfigureFactory.getInstance();
 
-      classLoader = this.getClass().getClassLoader();
+//      classLoader = this.getClass().getClassLoader();
 
       splash = new TN5250jSplashScreen("tn5250jSplash.jpg");
       splash.setSteps(5);
       splash.setVisible(true);
-
-      focused = createImageIcon("focused.gif");
-      unfocused = createImageIcon("unfocused.gif");
-      tnicon = createImageIcon("tnicon.jpg");
 
       try  {
          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -97,15 +91,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       newView();
 
       setDefaultLocale();
-      manager = new SessionManager();
-      manager.setController(this);
+      manager = SessionManager.instance();
       splash.updateProgress(++step);
 
-   }
-
-   public static ImageIcon getTN5250jIcon() {
-
-      return tnicon;
    }
 
    /**
@@ -575,7 +563,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       s.connect();
 
-
+      s.addEmulatorActionListener(this);
    }
 
    void newView() {
@@ -611,7 +599,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          frame1.centerFrame();
       }
 
-      frame1.setIcons(focused,unfocused);
+//      frame1.setIcons(focused,unfocused);
 
       frames.add(frame1);
 
@@ -728,19 +716,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    protected static void loadSessions() {
 
-//      FileInputStream in = null;
-//      try {
-//         in = new FileInputStream(ConfigureFactory.getInstance()).settingsDirectory()
-//                                    +  "sessions");
-//         sessions.load(in);
-//
-//      }
-//      catch (FileNotFoundException fnfe) {
-//         System.out.println(" Information Message: " + fnfe.getMessage()
-//                           + ".  Default sessions file will"
-//                           + " be created for first time use.");
-//      }
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
       sessions = ((GlobalConfigure)ConfigureFactory.getInstance()).getProperties(
                      GlobalConfigure.SESSIONS);
    }
@@ -756,6 +731,22 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       }
    }
 
+   public void onEmulatorAction(EmulatorActionEvent actionEvent) {
+
+      Session ses = (Session)actionEvent.getSource();
+
+      switch (actionEvent.getAction()) {
+         case EmulatorActionEvent.CLOSE_SESSION:
+            closeSession(ses);
+            break;
+         case EmulatorActionEvent.CLOSE_EMULATOR:
+            closingDown(ses);
+            break;
+         case EmulatorActionEvent.START_NEW_SESSION:
+            startNewSession();
+            break;
+      }
+   }
 
    public GUIViewInterface getParentView(Session session) {
 
@@ -769,23 +760,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       return null;
 
-   }
-
-   /**
-    * This routine will extract image resources from jar file and create
-    * an ImageIcon
-    */
-   protected ImageIcon createImageIcon (String image) {
-      URL file=null;
-
-      try {
-         file = classLoader.getResource(image);
-
-      }
-      catch (Exception e) {
-         System.err.println(e);
-      }
-      return new ImageIcon( file);
    }
 
    /**
