@@ -2569,7 +2569,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * @param col
     * @return
     */
-   private int getPos(int row, int col) {
+   public int getPos(int row, int col) {
 
       return (row * numCols) + col;
    }
