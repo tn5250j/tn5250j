@@ -146,15 +146,16 @@ public class GlobalConfigure extends ConfigureFactory {
            checkDirs();
        }
        else {
+           settings.setProperty("emulator.settingsDirectory",
+           System.getProperty("user.home") + File.separator +
+           ".tn5250j" + File.separator);
            try {
                in = new FileInputStream(settingsFile);
                settings.load(in);
            }
            catch (FileNotFoundException fnfe) {
                try {
-                   again = new FileInputStream(System.getProperty("user.home") 
-                   + File.separator + ".tn5250j" + File.separator 
-                   + settingsFile); 
+                   again = new FileInputStream(settingsDirectory() + settingsFile); 
                    settings.load(again); 
                }
                catch (FileNotFoundException fnfea) {
@@ -215,9 +216,6 @@ public class GlobalConfigure extends ConfigureFactory {
           "Old install detected", JOptionPane.WARNING_MESSAGE,
           JOptionPane.YES_NO_OPTION);
           if (cfc == 0) {
-               settings.setProperty("emulator.settingsDirectory", 
-               System.getProperty("user.home") + File.separator + ".tn5250j"  
-               + File.separator);
                // Here we do a checkdir so we know the destination-dir exists
                checkDirs();
                copyConfigs(SESSIONS);
@@ -235,10 +233,6 @@ public class GlobalConfigure extends ConfigureFactory {
               "Using NON-STANDARD behaviour", JOptionPane.WARNING_MESSAGE);
               System.exit(0);
           }
-      }
-      else {
-         settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
-         System.out.println("User Home = " + System.getProperty("user.home"));
       }
    }
    
@@ -279,7 +273,7 @@ public class GlobalConfigure extends ConfigureFactory {
    public void saveSettings() {
 
       try {
-         FileOutputStream out = new FileOutputStream(settingsFile);
+         FileOutputStream out = new FileOutputStream(settingsDirectory() + settingsFile);
          settings.store(out,"----------------- tn5250j Global Settings --------------");
       }
       catch (FileNotFoundException fnfe) {}
