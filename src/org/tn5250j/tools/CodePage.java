@@ -35,6 +35,12 @@ public class CodePage {
    private String codePage = "";
    private char unicode[] = new char[256];
    private boolean convert;
+   /**
+    * The value of the <code>Character</code>.
+    *
+    * @serial
+    */
+   private char value;
 
    private static final char[] uni1250 = {
       '\u0000', '\u0001', '\u0002', '\u0003' , '\u0004', '\u0005', '\u0006', '\u0007',	/*   0 -   7  */
@@ -311,6 +317,7 @@ public class CodePage {
          }
       }
    }
+
    /**
     * This routine will convert an unicode value to ebcdic value
     *
@@ -328,7 +335,8 @@ public class CodePage {
         if (codePage.equals("1141")) {
             byte b = 0x0;
             try {
-               b = Character.toString(index).getBytes("Cp1141")[0];
+               b = characterToString(index).getBytes("Cp1141")[0];
+
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
@@ -338,7 +346,7 @@ public class CodePage {
          if (codePage.equals("1140")) {
             byte b = 0x0;
             try {
-               b = Character.toString(index).getBytes("Cp1140")[0];
+               b = characterToString(index).getBytes("Cp1140")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
@@ -362,4 +370,21 @@ public class CodePage {
       else
          return (byte)ascii[index & 0xff];
    }
+
+   /**
+    * Returns a <code>String</code> object representing the
+    * specified <code>char</code>.  The result is a string of length
+    * 1 consisting solely of the specified <code>char</code>.
+    *
+    * @param c the <code>char</code> to be converted
+    * @return the string representation of the specified <code>char</code>
+    *
+    * This code was taken from the Character.toString implementation of the
+    * JDK 1.4 so that we can compile on version 1.3
+    *
+    */
+   public static String characterToString(char c) {
+     return String.valueOf(new char[] {c});
+   }
+
 }
