@@ -1,5 +1,3 @@
-
-
 /**
  * Title: tn5250J Copyright: Copyright (c) 2001 Company:
  *

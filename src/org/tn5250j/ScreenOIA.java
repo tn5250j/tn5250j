@@ -230,7 +230,7 @@ public class ScreenOIA {
       level = OIA_LEVEL_INPUT_INHIBITED;
       inhibitedText = message;
 
-      if (saveInhibit != inhibit || saveInhibitLevel != whatCode) {
+//      if (saveInhibit != inhibit || saveInhibitLevel != whatCode) {
          switch(inhibit) {
 
             case INPUTINHIBITED_COMMCHECK :
@@ -253,7 +253,7 @@ public class ScreenOIA {
          saveInhibit = inhibit;
          saveInhibitLevel = level;
          fireOIAChanged();
-      }
+//      }
    }
 
    /**

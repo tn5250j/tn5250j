@@ -124,15 +124,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
    /**
     * Draw the operator information area
     */
-   public Graphics2D drawOIA (int fmWidth,
-                           int fmHeight,
-                           int numRows,
-                           int numCols,
-                           Font font,
-                           Color colorBg,
-                           Color colorBlue
-                           ) {
+      public Graphics2D drawOIA () {
 
+      	int numRows = screen.getRows();
+      	int numCols = screen.getCols();
+      	
          Graphics2D g2d;
 
          // get ourselves a global pointer to the graphics
@@ -145,28 +141,28 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                RenderingHints.VALUE_COLOR_RENDER_SPEED);
          g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                RenderingHints.VALUE_RENDER_SPEED);
-         g2d.setFont(font);
+         g2d.setFont(screen.font);
 
 
-         g2d.setColor(colorBg);
+         g2d.setColor(screen.colorBg);
          g2d.fillRect(0,0,bi.getWidth(null),bi.getHeight(null));
-         tArea.setRect(0,0,bi.getWidth(null),(fmHeight * (numRows)));
-         cArea.setRect(0,fmHeight * (numRows + 1),bi.getWidth(null),fmHeight * (numRows + 1));
+         tArea.setRect(0,0,bi.getWidth(null),(screen.fmHeight * (numRows)));
+         cArea.setRect(0,screen.fmHeight * (numRows + 1),bi.getWidth(null),screen.fmHeight * (numRows + 1));
          aArea.setRect(0,0,bi.getWidth(null),bi.getHeight(null));
-         sArea.setRect(fmWidth * 9,fmHeight * (numRows + 1),fmWidth * 20,fmHeight);
-         pArea.setRect(bi.getWidth(null) - fmWidth * 6,fmHeight * (numRows + 1),fmWidth * 6,fmHeight);
-         mArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + fmWidth + fmWidth,
-                                       fmHeight * (numRows + 1),
-                                       fmWidth + fmWidth,
-                                       fmHeight);
-         kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * fmWidth),
-                                       fmHeight * (numRows + 1),
-                                       fmWidth + fmWidth,
-                                       fmHeight);
-         scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * fmWidth),
-                                       fmHeight * (numRows + 1),
-                                       fmWidth + fmWidth,
-                                       fmHeight);
+         sArea.setRect(screen.fmWidth * 9,screen.fmHeight * (numRows + 1),screen.fmWidth * 20,screen.fmHeight);
+         pArea.setRect(bi.getWidth(null) - screen.fmWidth * 6,screen.fmHeight * (numRows + 1),screen.fmWidth * 6,screen.fmHeight);
+         mArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + screen.fmWidth + screen.fmWidth,
+               screen.fmHeight * (numRows + 1),
+               screen.fmWidth + screen.fmWidth,
+               screen.fmHeight);
+         kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * screen.fmWidth),
+               screen.fmHeight * (numRows + 1),
+               screen.fmWidth + screen.fmWidth,
+               screen.fmHeight);
+         scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * screen.fmWidth),
+               screen.fmHeight * (numRows + 1),
+               screen.fmWidth + screen.fmWidth,
+               screen.fmHeight);
 //         cArea = new Rectangle2D.Float(0,fmHeight * (numRows + 1),bi.getWidth(null),fmHeight * (numRows + 1));
 //         aArea = new Rectangle2D.Float(0,0,bi.getWidth(null),bi.getHeight(null));
 //         sArea = new Rectangle2D.Float(fmWidth * 9,fmHeight * (numRows + 1),fmWidth * 20,fmHeight);
@@ -177,11 +173,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 //                                       fmHeight);
 
          separatorLine.setLine(0,
-               (fmHeight * (numRows + 1)) - (fmHeight / 2),
+               (screen.fmHeight * (numRows + 1)) - (screen.fmHeight / 2),
                bi.getWidth(null),
-               (fmHeight * (numRows + 1)) - (fmHeight / 2));
+               (screen.fmHeight * (numRows + 1)) - (screen.fmHeight / 2));
 
-         g2d.setColor(colorBlue);
+         g2d.setColor(screen.colorBlue);
          g2d.draw(separatorLine);
 
       return g2d;
@@ -296,7 +292,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 
    }
 
-   public void drawScriptRunning(Color color) {
+   private void drawScriptRunning(Color color) {
 
       Graphics2D g2d;
 
@@ -326,7 +322,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 
    }
 
-   public void eraseScriptRunning(Color color) {
+   private void eraseScriptRunning(Color color) {
 
       Graphics2D g2d;
 
@@ -462,60 +458,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
       this.antialiased = antialiased;
    }
 
-   public void setStatus(byte attr,byte value,String s,
-                           int fmWidth,
-                           int fmHeight,
-                           LineMetrics lm,
-                           Font font,
-                           Color colorBg,
-                           Color colorRed,
-                           Color colorWhite) {
-
-      Graphics2D g2d = getWritingArea(font);
-
-      if (g2d == null)
-         return;
-
-      try {
-         g2d.setColor(colorBg);
-         g2d.fill(sArea);
-
-         float Y = ((int)sArea.getY() + fmHeight)- (lm.getLeading() + lm.getDescent());
-         switch (attr) {
-
-            case STATUS_SYSTEM:
-               if (value == STATUS_VALUE_ON) {
-                  g2d.setColor(colorWhite);
-
-                  if (s != null)
-                     g2d.drawString(s,(float)sArea.getX(),Y);
-                  else
-                     g2d.drawString(xSystem,(float)sArea.getX(),Y);
-               }
-               break;
-            case STATUS_ERROR_CODE:
-               if (value == STATUS_VALUE_ON) {
-                  g2d.setColor(colorRed);
-
-                  if (s != null)
-                     g2d.drawString(s,(float)sArea.getX(),Y);
-                  else
-                     g2d.drawString(xError,(float)sArea.getX(),Y);
-
-               }
-               break;
-
-         }
-         g2d.dispose();
-      }
-      catch (Exception e) {
-
-         log.warn(" gui graphics setStatus " + e.getMessage());
-
-      }
-   }
-
-//   public void setStatus(byte attr,byte value,String s) {
    public void setStatus(ScreenOIA oia) {
 
       int attr = oia.getLevel();
@@ -626,9 +568,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
          case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
             setStatus(changedOIA);
             break;
-		// draw the status information
-//		bi.setStatus(attr, value, s, fmWidth, fmHeight, lm, font, colorBg,
-//				colorRed, colorWhite);
 
       }
    }

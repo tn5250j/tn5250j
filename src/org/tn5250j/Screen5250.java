@@ -783,8 +783,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			for (int y = 0; y < lenScreen; y++) {
 				screen[y].setAttribute(screen[y].getCharAttr());
 			}
-			bi.drawOIA(fmWidth, fmHeight, numRows, numCols, font, colorBg,
-					colorBlue);
+			bi.drawOIA();
 		}
 		gui.validate();
 		gui.repaint();
@@ -1794,6 +1793,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		//         return;
 		//      }
 		this.keybuf.append(text);
+		
 		if (isStatusErrorCode() && !resetRequired) {
 			setCursorActive(false);
 			simulateMnemonic(getMnemonicValue("[reset]"));
@@ -4450,13 +4450,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	}
 
-	public boolean isStatusErrorCode() {
+	protected boolean isStatusErrorCode() {
 
-		return statusErrorCode;
+		return oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR;
 
 	}
 
-	public boolean isXSystem() {
+	public boolean iisXSystem() {
 
 		return statusXSystem;
 
@@ -4795,8 +4795,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private void drawOIA() {
 
 		// get ourselves a global pointer to the graphics
-		g2d = bi.drawOIA(fmWidth, fmHeight, numRows, numCols, font, colorBg,
-				colorBlue);
+		g2d = bi.drawOIA();
 
 		tArea.setRect(bi.getTextArea());
 		cArea.setRect(bi.getCommandLineArea());
