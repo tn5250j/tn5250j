@@ -91,7 +91,7 @@ public class SocketConnector {
 		}
 		
       	if (sslIf != null) {
-      		sslIf.setSSLType(sslType);
+      		sslIf.init(sslType);
       		socket = sslIf.createSSLSocket(destination,port);
       	}
       }

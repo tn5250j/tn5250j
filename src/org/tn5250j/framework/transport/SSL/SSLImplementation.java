@@ -23,6 +23,8 @@ package org.tn5250j.framework.transport.SSL;
  *
  */
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.Socket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLContext;
@@ -30,9 +32,15 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.swing.JOptionPane;
 
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.tn5250j.framework.transport.SSLInterface;
 
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -43,131 +51,151 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * This class implements the SSLInterface and is used to create SSL socket
  * instances.
  * </p>
- * <p>
- * This class uses an X509CertificateTrustManager instance to perform
- * certificate validation during handshaking.
- * </p> 
+ * 
  * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
- *
+ *  
  */
-public class SSLImplementation implements SSLInterface {
+public class SSLImplementation implements SSLInterface, X509TrustManager {
 
-  SSLContext sslctx = null;
-  KeyStore ks = null;
-  KeyManagerFactory kmf = null;
-  SecureRandom prng = null;
-  TrustManagerFactory tmf = null;
-  TrustManager[] trustManagers = null;
-  String sslType = null;
+	SecureRandom prng = null;
 
-  private char[] keystorePassword = "changeit".toCharArray();
-  
-  TN5250jLogger logger;
-  
-  public SSLImplementation () {
-  	logger = TN5250jLogFactory.getLogger(getClass());
-  }
+	SSLContext sslContext = null;
 
-  public SSLImplementation (String sslType) {
-  	this();
-    this.sslType = sslType;
-  }
+	KeyStore userks = null;
 
-  public void setSSLType(String type) {
-    sslType = type;
-  }
+	private char[] userksPassword = "changeit".toCharArray();
 
-  /**
-   * Initialize the keystore where certificates are loaded from and stored to.
-   *
-   */
-  private void initKeyStore () {
-    try {
-      ks = KeyStore.getInstance(KeyStore.getDefaultType());
-      logger.debug("Loading Keystore...");
-      
-      String seperator=System.getProperty("file.separator","/");
-      
-      ks.load(new java.io.FileInputStream(System.getProperty("java.home")+
-                seperator+"lib"+seperator+"security"+seperator+"cacerts"),
-                keystorePassword);
-      
-    }
-    catch (Exception e) {
-    	logger.error("Failed Initializing Keystore ["+e.getMessage()+"]");
-    }
-  }
+	KeyManagerFactory userkmf = null;
 
-  
-  /**
-   * Initialize the key manager factory  
-   *
-   */
-  private void initKeyManagerFactory() {
-    try {
-    	logger.debug("Initializing KeyManagerFactory...");
-      kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(ks,keystorePassword);
-    }
-    catch (Exception e) {
-    	logger.error("Failed initializing Key Manager Factory ["+e.getMessage()+"]");
-    }
-  }
+	TrustManagerFactory usertmf = null;
 
-  /**
-   * Initialize the trust managers
-   *
-   */
-  private void initTrustManagers() {
-    try {
-    	logger.debug("Instantiating TrustManager...");
-      tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      tmf.init(ks);
-      trustManagers = tmf.getTrustManagers();
-      X509TrustManager myTrustManager = 
-      	new X509CertificateTrustManager(trustManagers,ks);
-      TrustManager[] newTrustManagers = new TrustManager[1];
-      newTrustManagers[0] = myTrustManager;
-      trustManagers = newTrustManagers;
-    }
-    catch (Exception e) {
-    	logger.error("Failed initializing Trust Managers ["+e.getMessage()+"]");
-    }
-  }
+	TrustManager[] userTrustManagers = null;
 
-  
-  private void initPrng() {
-    logger.debug("Initializing PRNG...");
-    SecureRandom prng = new SecureRandom();
-    prng.nextInt();
-  }
+	X509Certificate[] acceptedIssuers;
 
-  private void initSSLContext(String type) {
-    try {
-    	logger.debug("Creating and Initializing SSL Context...");
-      sslctx = SSLContext.getInstance(type);
-      sslctx.init(kmf.getKeyManagers(),trustManagers,prng);
-    }
-    catch (Exception e) {
-    	logger.error("Failed initializing SSL Context ["+e.getMessage()+"]");
-    }
+	TN5250jLogger logger;
 
-  }
+	public SSLImplementation() {
+		logger = TN5250jLogFactory.getLogger(getClass());
+	}
 
-  public Socket createSSLSocket(String destination, int port) {
-  	SSLSocket socket = null;
-    try {
-      //Using SSL Socket
-      initKeyStore();
-      initKeyManagerFactory();
-      initTrustManagers();
-      initPrng();
-      initSSLContext(sslType);
-      socket = (SSLSocket)sslctx.getSocketFactory().createSocket(destination,port);
-    }
-    catch (Exception e) {
-    	logger.error("Error creating ssl socket ["+e.getMessage()+"]");
-    }
-    return socket;
-  }
+	public void init(String sslType) {
+		try {
+			logger.debug("Initializing User KeyStore");
+			String userKsPath = System.getProperty("user.home")
+					+ File.separator + ".t5250j" + File.separator + "keystore";
+			File userKsFile = new File(userKsPath);
+			userks = KeyStore.getInstance(KeyStore.getDefaultType());
+			userks.load(
+					userKsFile.exists()?new FileInputStream(userKsFile):null
+							, userksPassword);
+			logger.debug("Initializing User Key Manager Factory");
+			userkmf = KeyManagerFactory.getInstance(KeyManagerFactory
+					.getDefaultAlgorithm());
+			userkmf.init(userks, userksPassword);
+			logger.debug("Initializing User Trust Manager Factory");
+			usertmf = TrustManagerFactory.getInstance(TrustManagerFactory
+					.getDefaultAlgorithm());
+			usertmf.init(userks);
+			userTrustManagers = usertmf.getTrustManagers();
+			ArrayList issuersList = new ArrayList();
+			for (int i = 0; i < userTrustManagers.length; i++) {
+				if (userTrustManagers[i] instanceof X509TrustManager)
+					issuersList.addAll(Arrays
+							.asList(((X509TrustManager) userTrustManagers[i])
+									.getAcceptedIssuers()));
+			}
+			X509Certificate[] acceptedIssuers = new X509Certificate[issuersList
+					.size()];
+			acceptedIssuers = (X509Certificate[]) issuersList
+					.toArray(acceptedIssuers);
+
+			logger.debug("Initializing SSL Context");
+			sslContext = SSLContext.getInstance(sslType);
+			sslContext.init(userkmf.getKeyManagers(), new TrustManager[] {this}, prng);
+		} catch (Exception ex) {
+			logger.error("Error initializing SSL [" + ex.getMessage() + "]");
+		}
+
+	}
+
+	public Socket createSSLSocket(String destination, int port) {
+		if (sslContext == null)
+			throw new IllegalStateException("SSL Context Not Initialized");
+		SSLSocket socket = null;
+		try {
+			socket = (SSLSocket) sslContext.getSocketFactory().createSocket(
+					destination, port);
+		} catch (Exception e) {
+			logger.error("Error creating ssl socket [" + e.getMessage() + "]");
+		}
+		return socket;
+	}
+
+	// X509TrustManager Methods
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
+	 */
+	public X509Certificate[] getAcceptedIssuers() {
+		return acceptedIssuers;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.net.ssl.X509TrustManager#checkClientTrusted(java.security.cert.X509Certificate[],
+	 *      java.lang.String)
+	 */
+	public void checkClientTrusted(X509Certificate[] arg0, String arg1)
+			throws CertificateException {
+		throw new SecurityException("checkClientTrusted unsupported");
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.net.ssl.X509TrustManager#checkServerTrusted(java.security.cert.X509Certificate[],
+	 *      java.lang.String)
+	 */
+	public void checkServerTrusted(X509Certificate[] chain, String type)
+			throws CertificateException {
+		try {
+			for (int i = 0; i < userTrustManagers.length; i++) {
+				if (userTrustManagers[i] instanceof X509TrustManager)
+					((X509TrustManager) userTrustManagers[i])
+							.checkServerTrusted(chain, type);
+			}
+			return;
+		} catch (CertificateException ce) {
+			X509Certificate cert = chain[0];
+			String certInfo = "Version: " + cert.getVersion() + "\n";
+			certInfo = certInfo.concat("Serial Number: "
+					+ cert.getSerialNumber() + "\n");
+			certInfo = certInfo.concat("Signature Algorithm: "
+					+ cert.getSigAlgName() + "\n");
+			certInfo = certInfo.concat("Issuer: "
+					+ cert.getIssuerDN().getName() + "\n");
+			certInfo = certInfo.concat("Valid From: " + cert.getNotBefore()
+					+ "\n");
+			certInfo = certInfo
+					.concat("Valid To: " + cert.getNotAfter() + "\n");
+			certInfo = certInfo.concat("Subject DN: "
+					+ cert.getSubjectDN().getName() + "\n");
+			certInfo = certInfo.concat("Public Key: "
+					+ cert.getPublicKey().getFormat() + "\n");
+
+			int accept = JOptionPane
+					.showConfirmDialog(null, certInfo, "Unknown Certificate",
+							javax.swing.JOptionPane.YES_NO_OPTION);
+			if (accept != JOptionPane.YES_OPTION) {
+				throw new java.security.cert.CertificateException(
+						"Certificate Rejected");
+			}
+		}
+
+	}
 }
