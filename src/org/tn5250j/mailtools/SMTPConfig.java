@@ -30,6 +30,7 @@ import java.io.*;
 import javax.swing.*;
 import java.util.Properties;
 import java.awt.event.*;
+import java.util.Enumeration;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.AlignLayout;
@@ -53,7 +54,8 @@ public class SMTPConfig extends JDialog {
    JLabel labelFileName = new JLabel();
    JTextField fieldFileName = new JTextField();
    Properties SMTPProperties;
-   String fileName;
+//   String fileName;
+
    private static final String smtpFileName = "SMTPProperties.cfg";
 
    public SMTPConfig(Frame frame, String title, boolean modal) {
@@ -72,8 +74,6 @@ public class SMTPConfig extends JDialog {
    }
 
    void jbInit() throws Exception {
-
-      SMTPProperties = new Properties();
 
       setTitle(LangTool.getString("em.configTitle"));
       mainPanel.setLayout(borderLayout1);
@@ -171,25 +171,6 @@ public class SMTPConfig extends JDialog {
     */
    private boolean loadConfig(String name) throws Exception {
 
-//      SMTPProperties = new java.util.Properties();
-//      fileName = name;
-//
-//      if (fileName == null || fileName == "")
-//         fileName = ConfigureFactory.getInstance().settingsDirectory()
-//                                    +  "SMTPProperties.cfg";
-//
-//      try {
-//         FileInputStream in = new FileInputStream(fileName);
-//
-//         SMTPProperties.load(in);
-//         return true;
-//      }
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-//      catch (SecurityException se) {
-//         System.out.println(se.getMessage());
-//      }
-
-//      return false;
       SMTPProperties = ConfigureFactory.getInstance().getProperties("smtp",
                            smtpFileName);
 
@@ -208,19 +189,12 @@ public class SMTPConfig extends JDialog {
       // file name
       SMTPProperties.setProperty("fileName",fieldFileName.getText());
 
+      for (Enumeration x = SMTPProperties.propertyNames();x.hasMoreElements();)
+         System.out.println(SMTPProperties.get(x.nextElement()));
+
       ConfigureFactory.getInstance().saveSettings("smtp", smtpFileName,
                                  "------ SMTP Defaults --------");
-//      try {
-//         FileOutputStream out = new FileOutputStream(fileName);
-//         SMTPProperties.store(out,"------ SMTP Defaults --------");
-//         System.out.println("SMTP Properties saved");
-//         this.setVisible(false);
-//
-//      }
-//      catch (FileNotFoundException fnfe) {}
-//      catch (IOException ioe) {}
-//      System.out.println("SMTP Properties not saved");
-
+      this.setVisible(false);
 
    }
 
