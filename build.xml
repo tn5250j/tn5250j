@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.4b"/>
+   <property name="version" value="0.5.4c"/>
    <property name="year" value="2001-2002"/>
 
    <property name="source.dir" value="${basedir}/src" />
@@ -202,6 +202,9 @@
 
 
     <target name= "all" depends="clean, compile, package"   description="Clean, Compile, Jar">
+    </target>
+
+    <target name= "all-dep" depends="clean, compile-dep, package"   description="Clean, Compile, Jar">
     </target>
 
 
