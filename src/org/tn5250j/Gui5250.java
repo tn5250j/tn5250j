@@ -1573,30 +1573,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void addMacros(JMenu menu) {
 
-      Vector mv = new Vector();
-      Action action;
-
-      menu.addSeparator();
-
-
-      String[] macrosList = macros.getMacroList();
-
-
-      for (int x = 0; x < macrosList.length; x++) {
-         mv.add(macrosList[x]);
-      }
-
-      Collections.sort(mv);
-
-      for (int x = 0; x < mv.size(); x++) {
-         action = new AbstractAction((String)mv.get(x)) {
-               public void actionPerformed(ActionEvent e) {
-                  executeMeMacro(e);
-               }
-           };
-         menu.add(action);
-
-      }
+      LoadMacroMenu.loadMacros((Session)this,macros,menu);
    }
 
    private JMenuItem createMenuItem(Action action, String accelKey) {
@@ -1710,13 +1687,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
       keyMap.removeKeyChangeListener(this);
    }
 
-   private void executeMeMacro(ActionEvent ae) {
+   public void executeMeMacro(ActionEvent ae) {
 
       executeMeMacro(ae.getActionCommand());
 
    }
 
-   private void executeMeMacro(String macro) {
+   public void executeMeMacro(String macro) {
 
       String keys = macros.getMacroByName(macro);
       if (keys != null)

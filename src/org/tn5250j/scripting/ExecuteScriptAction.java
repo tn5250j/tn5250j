@@ -12,19 +12,23 @@ package org.tn5250j.scripting;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+import org.tn5250j.Session;
 
 public class ExecuteScriptAction extends AbstractAction {
    String _scriptFile;
-   public ExecuteScriptAction(String name, String scriptFile) {
+   Session ses;
+
+   public ExecuteScriptAction(String name, String scriptFile, Session session) {
       super(name);
       _scriptFile = scriptFile;
+      ses = session;
    }
 
    public void actionPerformed(ActionEvent e) {
       System.out.println("Invoking " + _scriptFile);
 
       try {
-         InterpreterDriverManager.executeScriptFile(_scriptFile);
+         InterpreterDriverManager.executeScriptFile(ses,_scriptFile);
       }
       catch (InterpreterDriver.InterpreterException ex) {
          System.out.println(ex);
