@@ -51,6 +51,7 @@ import org.tn5250j.framework.Tn5250jEvent;
 import org.tn5250j.framework.Tn5250jKeyEvents;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+import org.tn5250j.framework.transport.SSLConstants;
 import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.Session5250;
@@ -149,6 +150,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return session;
 	}
 
+	/**
+	 * Set the ssl type to use for connect.
+	 * @param type
+	 */
 	public void setSSLType(String type) {
 		sslType = type;
 	}
@@ -234,8 +239,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			//         sock = new Socket(s, port);
 			//smk - For SSL compability
 			SocketConnector sc = new SocketConnector();
-			if (sslType != null)
-				sc.setSSLType(sslType);
+			if(props.containsKey(TN5250jConstants.SSL_TYPE)) 
+				sc.setSSLType(props.getProperty(TN5250jConstants.SSL_TYPE));
+				
 			sock = sc.createSocket(s, port);
 
 			if (sock == null) {
