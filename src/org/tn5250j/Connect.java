@@ -103,6 +103,7 @@ public class Connect
 	JPanel emulOptPanel = new JPanel();
 	JPanel emptyPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 	JPanel accessPanel = new JPanel();
+	JPanel loggingPanel = new JPanel();
 
 	JTable sessions = null;
 	GridBagConstraints gbc;
@@ -178,11 +179,10 @@ public class Connect
 
 		optionTabs.addChangeListener(this);
 
-		optionTabs.addTab(
-			LangTool.getString("ss.labelConnections"),
-			sessionPanel);
+		optionTabs.addTab(LangTool.getString("ss.labelConnections"), sessionPanel);
 		optionTabs.addTab(LangTool.getString("ss.labelOptions1"), emulOptPanel);
-
+		createLoggingPanel();
+		optionTabs.addTab(LangTool.getString("ss.labelLogging"), loggingPanel);
 		createAccessPanel();
 		optionTabs.addTab(LangTool.getString("ss.labelOptions2"), accessPanel);
 
@@ -459,6 +459,10 @@ public class Connect
 		//contentPane.add(Box.createHorizontalStrut(10));
 		contentPane.add(Box.createVerticalStrut(10));
 		contentPane.add(showMePanel);
+	}
+	
+	private void createLoggingPanel(){
+		//Needs to be implemented yet
 	}
 
 	private void createAccessPanel() {
