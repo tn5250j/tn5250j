@@ -128,6 +128,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
    // conical path of file
    private String conicalPath;
 
+   // exporting worker thread
+   private Thread workingThread;
+
    //Construct the frame
    public SpoolExportWizard(SpooledFile splfile, Session session) {
 
@@ -630,22 +633,22 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       if (!pagesValid())
          return;
 
-      Thread cvt = null;
+      workingThread = null;
 
       if (cvtType.getSelectedIndex() == 0)
-         cvt = new Thread(new Runnable () {
+         workingThread = new Thread(new Runnable () {
             public void run() {
                cvtToPDF();
             }
          });
       else
-         cvt = new Thread(new Runnable () {
+         workingThread = new Thread(new Runnable () {
             public void run() {
                cvtToText();
             }
          });
 
-      cvt.start();
+      workingThread.start();
    }
 
    /**
@@ -1117,6 +1120,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    public void canceled(WizardEvent e) {
 //      System.out.println("It is canceled!");
+      if (workingThread != null)
+         workingThread.interrupt();
       this.hide();
       this.dispose();
    }

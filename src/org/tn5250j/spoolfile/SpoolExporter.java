@@ -115,12 +115,12 @@ public class SpoolExporter extends JFrame {
          }
 
          public void mousePressed (MouseEvent event) {
-            if (event.isPopupTrigger ())
+            if (SwingUtilities.isRightMouseButton(event))
                showPopupMenu(event);
          }
 
          public void mouseReleased (MouseEvent event) {
-            if (event.isPopupTrigger ())
+            if (SwingUtilities.isRightMouseButton(event))
                showPopupMenu(event);
          }
 
