@@ -137,12 +137,30 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    private void nextSession() {
 
-      MyInternalFrame[] frames = (MyInternalFrame[])desktop.getAllFrames();
-      MyInternalFrame miv = (MyInternalFrame)desktop.getSelectedFrame();
+      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame miv = desktop.getSelectedFrame();
+
       int index = desktop.getIndexOf(miv);
+
+      MyInternalFrame mix = (MyInternalFrame)frames[index];
+
+      int seq = mix.getInternalId();
+      index  = 0;
+
+      for (int x = 0; x < frames.length; x++){
+         MyInternalFrame mif = (MyInternalFrame)frames[x];
+         System.out.println(" current index " + x + " count " + frames.length + " has focus " +
+                        mif.isActive() + " title " + mif.getTitle());
+         if (mif.getInternalId() > seq) {
+            index = x;
+            break;
+         }
+      }
+
+      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
       if (index < desktop.getComponentCount() - 1) {
          try {
-            frames[index + 1].setSelected(true);
+            frames[index].setSelected(true);
          }
          catch (java.beans.PropertyVetoException e) {
             System.out.println(e.getMessage());
@@ -163,14 +181,17 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    private void prevSession() {
 
-      MyInternalFrame[] frames = (MyInternalFrame[])desktop.getAllFrames();
-      MyInternalFrame miv = (MyInternalFrame)desktop.getSelectedFrame();
-      int index = desktop.getIndexOf(miv);
+      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame miv = (JInternalFrame)desktop.getSelectedFrame();
+//      int index = desktop.getIndexOf(miv);
+      int index = selectedIndex;
+
       if (index == 0) {
 //         desktop.setSelectedFrame(frames[frames.length - 1]);
          try {
             frames[frames.length - 1].setSelected(true);
             frames[frames.length - 1].repaint();
+            selectedIndex = frames.length -1;
          }
          catch (java.beans.PropertyVetoException e) {
             System.out.println(e.getMessage());
@@ -180,6 +201,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          try {
             frames[index - 1].setSelected(true);
             frames[index - 1].repaint();
+            selectedIndex--;
          }
          catch (java.beans.PropertyVetoException e) {
             System.out.println(e.getMessage());
@@ -203,6 +225,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       MyInternalFrame frame = new MyInternalFrame();
       frame.setVisible(true);
       desktop.add(frame);
+      selectedIndex = desktop.getComponentCount();
       frame.setContentPane(session);
       try {
          frame.setSelected(true);
@@ -214,32 +237,12 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    public void removeSessionView(Session targetSession) {
 
-      MyInternalFrame[] frames = (MyInternalFrame[])desktop.getAllFrames();
-
-
-      int index = desktop.getIndexOf(targetSession);
+      int index = getIndexOfSession(targetSession);
       System.out.println("session found and closing down " + index);
       targetSession.removeSessionListener(this);
       targetSession.removeSessionJumpListener(this);
 
       desktop.remove(index);
-//      sessionPane.remove(index);
-
-//      if (index < (sessionPane.getTabCount() - 2)) {
-//         sessionPane.setSelectedIndex(index);
-//         sessionPane.setForegroundAt(index,Color.blue);
-//         sessionPane.setIconAt(index,focused);
-//      }
-//      else {
-//
-//         if (sessionPane.getTabCount() > 0) {
-//            sessionPane.setSelectedIndex(0);
-//            sessionPane.setForegroundAt(0,Color.blue);
-//            sessionPane.setIconAt(0,focused);
-//         }
-//
-//      }
-
 
    }
 
@@ -250,9 +253,9 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    public Session getSessionAt( int index) {
 
-      JInternalFrame[] frames = desktop.getAllFrames();
-
-      return (Session)frames[index].getContentPane();
+      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      Session s = (Session)frames[index].getContentPane();
+      return s;
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
@@ -265,12 +268,15 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
             final String d = ses.getAllocDeviceName();
             if (d != null) {
                System.out.println(changeEvent.getState() + " " + d);
-               final int index = desktop.getIndexOf(ses);
+               final int index = getIndexOfSession(ses);
 
+               System.out.println(" index of session " + index + " num frames " + desktop.getAllFrames().length);
+               if (index == -1)
+                  return;
                Runnable tc = new Runnable () {
                   public void run() {
                      JInternalFrame[] frames = desktop.getAllFrames();
-                     frames[index].setTitle(d);
+                     frames[index].setTitle(frames[index].getTitle() + " " + d);
                   }
                };
                SwingUtilities.invokeLater(tc);
@@ -287,9 +293,27 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    }
 
+   public int getIndexOfSession(Session session) {
+
+      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      int index = -1;
+
+      for (int idx = 0; idx < frames.length; idx++) {
+         if (frames[idx].getContentPane().equals(session)) {
+            index = idx;
+            return index;
+         }
+      }
+
+      return index;
+
+   }
+
    public class MyInternalFrame extends JInternalFrame {
 
       static final int xOffset = 30, yOffset = 30;
+      private int internalId = 0;
+      private boolean activated;
 
       public MyInternalFrame() {
          super("#" + (++openFrameCount),
@@ -297,6 +321,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
               true, //closable
               true, //maximizable
               true);//iconifiable
+
+         internalId = openFrameCount;
 
          //...Create the GUI and put it in the window...
 
@@ -307,37 +333,37 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
 
          addInternalFrameListener(new InternalFrameAdapter() {
-//               public void internalFrameActivated(InternalFrameEvent e) {
-//                  paintme();
-//   //                  displayMessage("Internal frame activated", e);
-//              }
+
             public void internalFrameClosing(InternalFrameEvent e) {
-               displayMessage("Internal frame closing", e);
+//               displayMessage("Internal frame closing", e);
                disconnectMe();
             }
 
             public void internalFrameClosed(InternalFrameEvent e) {
-               displayMessage("Internal frame closed", e);
+//               displayMessage("Internal frame closed", e);
             }
 
             public void internalFrameOpened(InternalFrameEvent e) {
-               displayMessage("Internal frame opened", e);
+//               displayMessage("Internal frame opened", e);
             }
 
             public void internalFrameIconified(InternalFrameEvent e) {
-               displayMessage("Internal frame iconified", e);
+//               displayMessage("Internal frame iconified", e);
             }
 
             public void internalFrameDeiconified(InternalFrameEvent e) {
-               displayMessage("Internal frame deiconified", e);
+//               displayMessage("Internal frame deiconified", e);
             }
 
             public void internalFrameActivated(InternalFrameEvent e) {
-               displayMessage("Internal frame activated", e);
+//               displayMessage("Internal frame activated", e);
+               activated = true;
                repaint();
             }
 
             public void internalFrameDeactivated(InternalFrameEvent e) {
+               activated = false;
+
                displayMessage("Internal frame deactivated", e);
             }
 
@@ -350,6 +376,17 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
             System.out.println(s + '\n');
          }
 
+         public int getInternalId() {
+
+            return internalId;
+
+         }
+
+         public boolean isActive() {
+
+            return activated;
+
+         }
 
          public void paintme() {
             repaint();
@@ -433,6 +470,33 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
            super.setBoundsForFrame(f, x, y, w, h);
          }
        }
+//         public JInternalFrame getSelectedFrame() {
+//           int i, count;
+//           JInternalFrame[] results;
+//   //        Vector vResults = new Vector(10);
+//           Object next, tmp;
+//            System.out.println(" get selected one ");
+//           count = getComponentCount();
+//           for(i = 0; i < count; i++) {
+//               next = getComponent(i);
+//               if(next instanceof JInternalFrame) {
+//                  JInternalFrame n = (JInternalFrame)next;
+//                   if (n.isSelected())
+//                     return n;
+//               }
+//               else if(next instanceof JInternalFrame.JDesktopIcon)  {
+//                   JInternalFrame n = ((JInternalFrame.JDesktopIcon)next).getInternalFrame();
+//                   if (n != null & n.isSelected())
+//                     return n;
+//   //                if(tmp != null)
+//   //                    vResults.addElement(tmp);
+//               }
+//           }
+//
+//           return null;
+//
+//         }
      }
+
 
 }
