@@ -823,8 +823,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          jarClassPaths = "." + File.pathSeparator + "jython.jar"
                            + File.pathSeparator + "jt400.jar"
                            + File.pathSeparator + "itext.jar";
-         if (sessions.contains("scriptClassPath")) {
-            jarClassPaths += File.pathSeparator + sessions.getProperty("scriptClassPath");
+         if (sessions.contains("emul.scriptClassPath")) {
+            jarClassPaths += File.pathSeparator + sessions.getProperty("emul.scriptClassPath");
          }
       }
 
