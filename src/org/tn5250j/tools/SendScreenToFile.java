@@ -28,21 +28,31 @@ package org.tn5250j.tools;
 
 import java.io.*;
 import javax.swing.*;
+import java.awt.Frame;
+
+import org.apache.log4j.Logger;
 import org.tn5250j.Screen5250;
 import org.tn5250j.gui.TN5250jFileChooser;
 
 public class SendScreenToFile {
 
    Screen5250 screen;
+   private Logger log = Logger.getLogger(this.getClass());
 
-   public SendScreenToFile(Screen5250 scrn) {
+   //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
+   Frame  parent;
+
+   public SendScreenToFile(Frame parent, Screen5250 scrn) {
 
       screen = scrn;
+      this.parent = parent;
+
       try {
          jbInit();
       }
       catch(Exception ex) {
-         ex.printStackTrace();
+         log.warn("Error in constructor: "+ ex.getMessage());
+
       }
    }
 
@@ -59,7 +69,8 @@ public class SendScreenToFile {
       String workingDir = System.getProperty("user.dir");
       TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
-      int ret = pcFileChooser.showSaveDialog(new JFrame());
+//      int ret = pcFileChooser.showSaveDialog(new JFrame());
+      int ret = pcFileChooser.showSaveDialog(parent);
 
       // check to see if something was actually chosen
       if (ret == JFileChooser.APPROVE_OPTION) {
@@ -95,14 +106,20 @@ public class SendScreenToFile {
          out.close();
 
       }
-      catch (FileNotFoundException fnfe) {System.out.println("fnfe: " + fnfe.getMessage());}
-      catch (IOException ioe) {System.out.println("ioe: " + ioe.getMessage());}
+      catch (FileNotFoundException fnfe) {
+         log.warn("fnfe: " + fnfe.getMessage());
+      }
+      catch (IOException ioe) {
+         log.warn("ioe: " + ioe.getMessage());
+      }
       finally {
          if (out != null)
             try {
                out.close();
             }
-            catch (IOException exc) {}
+            catch (IOException exc) {
+               log.warn("ioe finally: " + exc.getMessage());
+            }
 
       }
 

@@ -28,6 +28,9 @@ package org.tn5250j.tools;
 
 import java.io.*;
 import javax.swing.*;
+import java.awt.Frame;
+
+import org.apache.log4j.Logger;
 import org.tn5250j.Session;
 import org.tn5250j.tools.encoder.EncodeComponent;
 import org.tn5250j.tools.filters.XTFRFileFilter;
@@ -36,15 +39,21 @@ import org.tn5250j.gui.TN5250jFileChooser;
 public class SendScreenImageToFile {
 
    Session session;
+   //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
+   Frame  parent;
+   private Logger log = Logger.getLogger(this.getClass());
 
-   public SendScreenImageToFile(Session ses) {
+   public SendScreenImageToFile(Frame parent, Session ses) {
 
       session = ses;
+      this.parent = parent;
+
+
       try {
          jbInit();
       }
       catch(Exception ex) {
-         ex.printStackTrace();
+         log.warn("Error in constructor: "+ ex.getMessage());
       }
    }
 
@@ -65,7 +74,7 @@ public class SendScreenImageToFile {
 
       pcFileChooser.setFileFilter(pngFilter);
 
-      int ret = pcFileChooser.showSaveDialog(new JFrame());
+      int ret = pcFileChooser.showSaveDialog(parent);
 
       // check to see if something was actually chosen
       if (ret == JFileChooser.APPROVE_OPTION) {
@@ -83,7 +92,8 @@ public class SendScreenImageToFile {
             EncodeComponent.encode(EncodeComponent.PNG,session, file);
          }
          catch (Exception e) {
-            System.out.println("Error generating PNG exception caught: " + e);
+            log.warn("Error generating PNG exception caught: " + e.getMessage());
+
          }
 
       }
