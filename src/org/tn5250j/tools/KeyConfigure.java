@@ -193,10 +193,10 @@ public class KeyConfigure extends JDialog implements ActionListener,
                      strokeDesc.setText(mapper.getKeyStrokeDesc(m.getFullName()));
                   }
             }
+
             if (special) {
                System.out.println((String)lm.getElementAt(index));
-               String k = "";
-               k += ((String)lm.getElementAt(index)).charAt(7);
+               String k = parseSpecialCharacter((String)lm.getElementAt(index));
                strokeDesc.setText(mapper.getKeyStrokeDesc(k));
             }
          }
@@ -205,6 +205,18 @@ public class KeyConfigure extends JDialog implements ActionListener,
          System.out.println("ar at index " + index + " - " + ar.getMessage());
       }
 
+   }
+
+   private String parseSpecialCharacter(String value) {
+
+      StringTokenizer tokenizer = new StringTokenizer(value, "-");
+
+      if (tokenizer.hasMoreTokens()) {
+         String first = tokenizer.nextToken();
+         return String.valueOf(value.charAt(first.length() + 2));
+      }
+
+      return "";
    }
 
    private void loadList(String which) {
@@ -462,8 +474,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
          }
          if (special) {
             System.out.println((String)functions.getSelectedValue());
-            String k = "";
-            k += ((String)functions.getSelectedValue()).charAt(7);
+            String k = parseSpecialCharacter((String)functions.getSelectedValue());
+//            k += ((String)functions.getSelectedValue()).charAt(7);
             mapper.removeKeyStroke(k);
             if (isLinux) {
                mapper.setKeyStroke(k,ke,isAltGr);
@@ -778,7 +790,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
             modString += " (no modifiers)";
         }
 
-         locString = "location = (UNKNOWN)";
+        locString = "location = (UNKNOWN)";
+
 //        switch (location) {
 //            case KeyEvent.KEY_LOCATION_LEFT:
 //               locString = "location = " + location + " (LEFT)";
