@@ -388,10 +388,6 @@ class InfoFrame(JFrame):
 
 #------------------------------------------------------------------------------#
 
-def main():
-    frame = InfoFrame("Java-to-Jython Event/Property/Method Browser")
-    frame.show()
+frame = InfoFrame("Java-to-Jython Event/Property/Method Browser")
+frame.show()
 
-
-if __name__ == '__main__':
-    main()        
