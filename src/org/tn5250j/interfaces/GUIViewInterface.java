@@ -1,5 +1,3 @@
-package org.tn5250j.interfaces;
-
 /*
  * @(#)GUIViewInterface.java
  * Copyright:    Copyright (c) 2002
@@ -20,15 +18,48 @@ package org.tn5250j.interfaces;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.interfaces;
+
+import java.awt.*;
 import javax.swing.*;
+
+import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.Session;
+import org.tn5250j.My5250;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 
-public interface GUIViewInterface {
+public abstract class GUIViewInterface extends TN5250jFrame {
 
+   protected static My5250 me;
+   protected static int sequence;
+   protected int frameSeq;
+   protected ImageIcon focused = null;
+   protected ImageIcon unfocused = null;
+
+   public GUIViewInterface(My5250 m) {
+      super();
+      me = m;
+   }
+
+   public int getFrameSequence() {
+
+      return frameSeq;
+   }
+
+   /**
+    * Set the icons to be used for focused and unfocused
+    *
+    * @param focused
+    * @param unfocused
+    */
+   public void setIcons(ImageIcon focused, ImageIcon unfocused) {
+
+      this.focused = focused;
+      this.unfocused = unfocused;
+   }
 
    public abstract void addSessionView(String descText,Session session);
    public abstract void removeSessionView(Session targetSession);
@@ -37,6 +68,5 @@ public interface GUIViewInterface {
    public abstract Session getSessionAt( int index);
    public abstract void onSessionJump(SessionJumpEvent jumpEvent);
    public abstract void onSessionChanged(SessionChangeEvent changeEvent);
-   public abstract void setIcons(ImageIcon focused, ImageIcon unfocused);
 
 }
