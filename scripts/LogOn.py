@@ -15,7 +15,7 @@ class LogOn(swing.JDialog):
 	lbl3 = swing.JLabel("Paswoord", preferredSize=(60, 22))
 	self.txt1 = swing.JTextField(preferredSize=(125, 22))
 	self.txt2 = swing.JTextField(preferredSize=(125, 22))
-	self.txt3 = swing.JTextField(preferredSize=(125, 22))
+	self.txt3 = swing.JPasswordField(preferredSize=(125, 22))
 	btn = swing.JButton("OK", preferredSize=(75, 25), actionPerformed=self.sendData)
 	btn.setMnemonic('O')
 	
