@@ -44,7 +44,6 @@ public class KeyMapper {
          return;
 
       init("keymap");
-      listeners = new Vector();
 
    }
 
@@ -438,20 +437,33 @@ public class KeyMapper {
    }
 
    /**
+    * Remove a Key Change Listener from the listener list.
+    *
+    * @param listener  The KeyChangeListener to be removed
+    */
+   public synchronized void removeKeyChangeListener(KeyChangeListener listener) {
+      if (listeners == null) {
+          return;
+      }
+      listeners.removeElement(listener);
+
+   }
+
+   /**
     * Notify all registered listeners of the Key Change Event.
     *
     */
    protected static void fireKeyChangeEvent() {
 
-   	if (listeners != null) {
+      if (listeners != null) {
          System.out.println(" changed key ");
-	      int size = listeners.size();
-	      for (int i = 0; i < size; i++) {
-	         KeyChangeListener target =
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            KeyChangeListener target =
                     (KeyChangeListener)listeners.elementAt(i);
-	         target.onKeyChanged();
-	      }
-   	}
+            target.onKeyChanged();
+         }
+      }
    }
 
 }
