@@ -584,49 +584,55 @@ public final class tnvt implements Runnable, TN5250jConstants {
          dialog.show();
 
          // now we can process the value selected
-         String value = (String)pane.getValue();
+         Object o = pane.getValue();
 
-         if (value.equals(options[0])) {
-            // from rfc1205 section 4.3
-            // Client sends header with the           000A12A0000004040000FFEF
-            // System Request bit set.
-            //
-            // if we wanted to send an option with it we would need to send
-            //    it at the end such as the following
-            //
-            // byte abyte0[] = new byte[1];    or number of bytes in option
-            // abyte0[0] = getEBCDIC(option);
+         // but only if it is a String
+         if (o instanceof String) {
 
-//                  System.out.println("SYSRQS sent");
+            String value = (String)o;
 
-            // send option along with system request
-            if (sro.getText().length() > 0) {
-               for (int x = 0; x < sro.getText().length(); x++) {
-            //                     System.out.println(sro.getText().charAt(x));
-                  if (sro.getText().charAt(0) == '2') {
-            //                           System.out.println("dataq cleared");
-                     dsq.clear();
+            if (value.equals(options[0])) {
+               // from rfc1205 section 4.3
+               // Client sends header with the           000A12A0000004040000FFEF
+               // System Request bit set.
+               //
+               // if we wanted to send an option with it we would need to send
+               //    it at the end such as the following
+               //
+               // byte abyte0[] = new byte[1];    or number of bytes in option
+               // abyte0[0] = getEBCDIC(option);
+
+   //                  System.out.println("SYSRQS sent");
+
+               // send option along with system request
+               if (sro.getText().length() > 0) {
+                  for (int x = 0; x < sro.getText().length(); x++) {
+               //                     System.out.println(sro.getText().charAt(x));
+                     if (sro.getText().charAt(0) == '2') {
+               //                           System.out.println("dataq cleared");
+                        dsq.clear();
+                     }
+                     baosp.write(getEBCDIC(sro.getText().charAt(x)));
                   }
-                  baosp.write(getEBCDIC(sro.getText().charAt(x)));
-               }
 
-               try {
-                 writeGDS(4, 0, baosp.toByteArray());
-               }
-               catch (IOException ioe) {
+                  try {
+                    writeGDS(4, 0, baosp.toByteArray());
+                  }
+                  catch (IOException ioe) {
 
-                 System.out.println(ioe.getMessage());
+                    System.out.println(ioe.getMessage());
+                  }
+                  baosp.reset();
                }
-               baosp.reset();
-            }
-            else {    // no option sent with system request
+               else {    // no option sent with system request
 
-               try {
-                 writeGDS(4, 0, null);
-               }
-               catch (IOException ioe) {
+                  try {
+                    writeGDS(4, 0, null);
+                  }
+                  catch (IOException ioe) {
 
-                 System.out.println(ioe.getMessage());
+                    System.out.println(ioe.getMessage());
+                  }
                }
             }
          }
