@@ -155,11 +155,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private boolean defaultPrinter;
    private SessionConfig config;
    private boolean rulerFixed;
+//   private Image tileimage;
 
    //LDC - 12/02/2003 -  boolean: true: it must be repainted
    private boolean drawing;
 
    public Screen5250(Gui5250 gui, SessionConfig config) {
+
+//      ImageIcon ic = new ImageIcon("transtable1.jpg");
+//      tileimage = ic.getImage();
 
       this.gui = gui;
 
@@ -179,8 +183,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    void jbInit() throws Exception {
 
       if (!config.isPropertyExists("font")) {
-         font = new Font("dialoginput",Font.PLAIN,14);
-         config.setProperty("font","dialoginput");
+         font = new Font("Courier New",Font.PLAIN,14);
+         config.setProperty("font","Courier New");
       }
       else {
          font = new Font(getStringProperty("font"),Font.PLAIN,14);
@@ -724,7 +728,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       // because getRowColFromPoint returns position offset as 1,1 we need
       // to translate as offset 0,0
-      int pos = getRowColFromPoint(start.x,start.y);
+      int pos = getPosFromView(start.x,start.y);
       start.setLocation(screen[pos].x,screen[pos].y);
       return start;
 
@@ -741,19 +745,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       // because getRowColFromPoint returns position offset as 1,1 we need
       // to translate as offset 0,0
-      int pos = getRowColFromPoint(end.x,end.y);
+      int pos = getPosFromView(end.x,end.y);
 
-//      if (pos >= 0 && pos <= lenScreen) {
-         int x = screen[pos].x + fmWidth - 1;
-         int y = screen[pos].y + fmHeight - 1;
+      int x = screen[pos].x + fmWidth - 1;
+      int y = screen[pos].y + fmHeight - 1;
 
-//      System.out.println(" ex = " + x + " sx = " + rubberband.getStartPoint().x);
 
-         end.setLocation(x,y);
-//      }
-//      else {
-//         System.out.println(" pos is not good " + pos);
-//      }
+      end.setLocation(x,y);
 
       return end;
    }
@@ -771,42 +769,21 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    /**
     *
     * Copy & Paste start code
-    *     fix me
+    *
     */
-   protected final void copyMe() {
+   public final void copyMe() {
 
       Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
       StringBuffer s = new StringBuffer();
 
-      if (!gui.rubberband.isAreaSelected())
-         workR.setBounds(0,0,numCols,numRows);
-      else {
-         // lets get the bounding area using a rectangle that we have already
-         // allocated
-         gui.rubberband.getBoundingArea(workR);
+      // lets get the bounding area using a rectangle that we have already
+      // allocated
+      getBoundingArea(workR);
 
-         // get starting row and column
-         int sPos = getRowColFromPoint(workR.x ,
-                                    workR.y );
-         // get the width and height
-         int ePos = getRowColFromPoint(workR.width ,
-                                    workR.height );
-         int r = getRow(sPos);
-         int c = getCol(sPos);
-         int r2 = getRow(ePos) + 1;
-         int c2 = getCol(ePos) + 1;
+      gui.rubberband.reset();
+      gui.repaint();
 
-//         if (c2 == 0)
-//            c2 = getCols();
-//         if (r2 == 0)
-//            r2 = 1;
-         workR.setBounds(r,c,c2,r2);
-         gui.rubberband.reset();
-         gui.repaint();
-      }
-
-      System.out.println("Copying");
-      System.out.println(workR);
+      System.out.println("Copying" + workR);
 
       // loop through all the screen characters to send them to the clip board
       int m = workR.x;
@@ -818,8 +795,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          i = workR.y;
          while (t-- > 0) {
             // only copy printable characters (in this case >= ' ')
-            char c = screen[getPos(m,i)].getChar();
-            if (c >= ' ' && !screen[getPos(m,i)].nonDisplay)
+            char c = screen[getPos(m - 1,i - 1)].getChar();
+            if (c >= ' ' && !screen[getPos(m - 1,i - 1)].nonDisplay)
                s.append(c);
             else
                s.append(' ');
@@ -953,6 +930,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * Fills the passed Rectangle with the starting row and column and width
     * and height of the selected area.
     *
+    * 1 BASED so column 1 row one is returned 1,1
+    *
     * If there is no area bounded then the full screen area is returned.
     *
     * @param bounds
@@ -963,23 +942,24 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       //    screen area.
       if (!gui.rubberband.isAreaSelected()) {
 
-         bounds.setBounds(1,1,getRows(),getCols());
+         bounds.setBounds(1,1,getCols(),getRows());
       }
       else {
          // lets get the bounding area using a rectangle that we have already
          // allocated
-         gui.rubberband.getBoundingArea(bounds);
+         gui.rubberband.getBoundingArea(workR);
 
          // get starting row and column
-         int sPos = getRowColFromPoint(bounds.x ,
-                                    bounds.y );
+         int sPos = getRowColFromPoint(workR.x,
+                                    workR.y);
          // get the width and height
-         int ePos = getRowColFromPoint(bounds.width ,
-                                    bounds.height );
+         int ePos = getRowColFromPoint(workR.width,
+                                    workR.height);
+
          int row = getRow(sPos) + 1;
          int col = getCol(sPos) + 1;
 
-         bounds.setBounds(row,col,getCol(ePos),getRow(ePos));
+         bounds.setBounds(row,col,getCol(ePos) + 1,getRow(ePos) + 1);
       }
    }
 
@@ -1004,15 +984,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       gui.rubberband.reset();
       gui.repaint();
 
-      System.out.println("Summing");
-      System.out.println(workR);
-
-      // loop through all the screen characters to send them to the clip board
-      int m = workR.x;
-      int i = 0;
-      int t = 0;
-
-      double sum = 0.0;
+//      System.out.println("Summing");
 
       // obtain the decimal format for parsing
       DecimalFormat df =
@@ -1033,15 +1005,22 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       Vector sumVector = new Vector();
 
-      while (workR.height-- >= 0) {
+      // loop through all the screen characters to send them to the clip board
+      int m = workR.x;
+      int i = 0;
+      int t = 0;
+
+      double sum = 0.0;
+
+      while (workR.height-- > 0) {
          t = workR.width;
          i = workR.y;
-         while (t-- >= 0) {
+         while (t-- > 0) {
 
             // only copy printable numeric characters (in this case >= ' ')
-            char c = screen[getPos(m-1,i-1)].getChar();
+            char c = screen[getPos(m - 1,i - 1)].getChar();
             if (((c >= '0' && c <= '9') || c== '.' || c == ',' || c == '-')
-                                    && !screen[getPos(m-1,i-1)].nonDisplay) {
+                                    && !screen[getPos(m - 1,i - 1)].nonDisplay) {
                s.append(c);
             }
             i++;
@@ -1054,7 +1033,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             }
             try {
                Number n = df.parse(s.toString());
-               System.out.println(s + " " + n.doubleValue());
+//               System.out.println(s + " " + n.doubleValue());
 
                sumVector.add(new Double(n.doubleValue()));
                sum += n.doubleValue();
@@ -1073,10 +1052,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public void moveCursor (MouseEvent e) {
       if(!keyboardLocked) {
 
-         int pos = getRowColFromPoint(e.getX(),e.getY());
+         int pos = getPosFromView(e.getX(),e.getY());
 //         System.out.println((getRow(pos)) + "," + (getCol(pos)));
 //         System.out.println(e.getX() + "," + e.getY()+ "," + fmWidth+ "," + fmHeight);
-         if (pos == 0)
+         if (pos < 0)
             return ;
          // because getRowColFromPoint returns offset of 1,1 we need to
          //    translate to offset 0,0
@@ -1181,31 +1160,22 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       gui.requestFocus();
    }
 
-   // this returns the row column position with left, top starting at 1,1
-   //    not 0,0
-   public int getRowColFromPoint (int x, int y) {
+   /**
+    *
+    *
+    * @param x
+    * @param y
+    * @return
+    */
+   public int getPosFromView(int x, int y) {
 
-      // is x,y in the drawing area
-      // x is left to right and y is top to bottom
-//         if (tArea.contains(x,y)) {
-//
-//   //         int cols = (numCols - ((((fmWidth * numCols) - x) / fmWidth)));
-//   //         System.out.println(cols);
-//            return getPos((numRows - ((((fmHeight * (numRows)) - y) / fmHeight))),
-//                           (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-//                        );
-//
-//         }
-//         else {
+         // we have to translate the point into a an upper left 0,0 based format
+         // to get the position into the character array which is 0,0 based.
+         // we take the point of x,y and subtract the screen offsets.
 
-//      if (!tArea.contains(x,y)) {
+         x -= bi.offLeft;
+         y -= bi.offTop;
 
-//         System.out.println(" Not in area before " +
-//                           (int)tArea.getMinX() + " " +
-//                           (int)tArea.getMinY() + " " +
-//                           (int)tArea.getMaxX() + " " +
-//                           (int)tArea.getMaxY() + " " +
-//                           x + " " + y);
          if (x > tArea.getMaxX())
             x = (int)tArea.getMaxX() - 1;
          if (y > tArea.getMaxY())
@@ -1215,22 +1185,54 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          if (y < tArea.getMinY())
             y = 0;
 
-//         System.out.println(" Not in area after " +
-//                           (int)tArea.getMinX() + " " +
-//                           (int)tArea.getMinY() + " " +
-//                           (int)tArea.getMaxX() + " " +
-//                           (int)tArea.getMaxY() + " " +
-//                           x + " " + y);
-//      }
-
-      int s = fmWidth * numCols;
-      int t = s - x;
-      int u = t / fmWidth;
-      int v = numCols - u;
+//      int s = fmWidth * numCols; // image length in pixels
+//      int t = s - x; // image length minus the  x point
+//      int u = t / fmWidth; //
+//      int v = numCols - u; //
 
       int s0 = y / fmHeight;
       int s1 = x / fmWidth;
 
+//      System.out.println("row " + s0 + ", column " + s1 + " pos " + getPos(s0,s1));
+//      return getPos((numRows - ((((fmHeight * (numRows)) - y) / fmHeight))),
+//                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
+//                  );
+      return getPos(s0,s1);
+
+
+   }
+
+   /**
+    * Return the row column based on the screen x,y position coordinates
+    *
+    * It will calculate a 0,0 based row and column based on the screen point
+    * coordinate.
+    *
+    * @param x screen x position
+    * @param y screen y position
+    *
+    * @return screen array position based 0,0 so position row 1 col 3 would be 2
+    */
+   public int getRowColFromPoint (int x, int y) {
+
+      if (x > tArea.getMaxX())
+         x = (int)tArea.getMaxX() - 1;
+      if (y > tArea.getMaxY())
+         y = (int)tArea.getMaxY() - 1;
+      if (x < tArea.getMinX())
+         x = 0;
+      if (y < tArea.getMinY())
+         y = 0;
+
+//      int s = fmWidth * numCols; // image length in pixels
+//      int t = s - x; // image length minus the  x point
+//      int u = t / fmWidth; //
+//      int v = numCols - u; //
+
+      int s0 = y / fmHeight;
+      int s1 = x / fmWidth;
+
+//      System.out.println("row " + s0 + ", column " + s1 + " pos " + getPos(s0,s1));
 //      return getPos((numRows - ((((fmHeight * (numRows)) - y) / fmHeight))),
 //                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
 //                  );
@@ -1239,12 +1241,22 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //      return 0;
    }
 
-   // this returns the row column position with left, top starting at 1,1
-   //    not 0,0
+   /**
+    * This will return the screen coordinates of a row and column.
+    *
+    * @param r
+    * @param c
+    * @param point
+    */
    public void getPointFromRowCol (int r, int c, Point point) {
 
-      point.x = screen[getPos(r,c)].x;
-      point.y = screen[getPos(r,c)].y;
+      // here the x + y coordinates of the row and column are obtained from
+      // the character array which is based on a upper left 0,0 coordinate
+      //  we will then add to that the offsets to get the screen position point
+      //  x,y coordinates.  Maybe change this to a translate routine method or
+      //  something.
+      point.x = screen[getPos(r,c)].x + bi.offLeft;
+      point.y = screen[getPos(r,c)].y + bi.offTop;
 
    }
 
@@ -3951,6 +3963,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    public boolean isWithinScreenArea(int x, int y){
 
+//      if (x == 0 || y == 0)
+//         return true;
+//
+//      x -= bi.offLeft;
+//      y -= bi.offTop;
+
       return tArea.contains(x,y);
 
    }
@@ -4073,6 +4091,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          paintComponent2(g2d);
       }
 
+//      if (tileimage != null) {
+//
+//         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+//         g2d.setComposite(ac);
+//         g2d.drawImage(tileimage, null, null);
+//      }
       // fix for jdk1.4 - found this while testing under jdk1.4
       //   if the height and or the width are equal to zero we skip the
       //   the updating of the image.
@@ -4229,6 +4253,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                      lm.getDescent() + lm.getLeading());
 
          bi.resize(fmWidth * numCols,fmHeight * (numRows + 2));
+
+         // set the offsets for the screen centering.
+         bi.offLeft = (width - bi.getWidth()) / 2;
+         bi.offTop = (height - bi.getHeight()) / 2;
+         if (bi.offLeft < 0)
+            bi.offLeft = 0;
+         if (bi.offTop <0 )
+            bi.offTop = 0;
+
          drawOIA();
 
          // and loop through the screen buffer to draw the new image with
@@ -4239,6 +4272,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          }
          updateFont = false;
       }
+
    }
 
    /**

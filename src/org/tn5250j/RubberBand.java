@@ -31,8 +31,8 @@ import javax.swing.SwingUtilities;
 
 public abstract class RubberBand {
    private RubberBandCanvasIF canvas;
-   private Point startPoint;
-   private Point endPoint;
+   protected Point startPoint;
+   protected Point endPoint;
    private boolean eraseSomething = false;
    private boolean isSomethingBounded = false;
 
@@ -139,24 +139,24 @@ public abstract class RubberBand {
       return this.canvas;
    }
 
-   protected final Point getEndPoint() {
+   protected Point getEndPoint() {
       if(this.endPoint == null) {
          setEndPoint(new Point(0,0));
       }
       return this.endPoint;
    }
 
-   protected final boolean getEraseSomething() {
-      return this.eraseSomething;
-   }
-
-   protected final Point getStartPoint() {
+   protected Point getStartPoint() {
 
       if(this.startPoint == null) {
          setStartPoint(new Point(0,0));
       }
       return this.startPoint;
 
+   }
+
+   protected final boolean getEraseSomething() {
+      return this.eraseSomething;
    }
 
    protected void notifyRubberBandCanvas() {

@@ -62,6 +62,9 @@ public class GuiGraphicBuffer {
    private int crossRow;
    private int crossCol;
    private Rectangle crossRect = new Rectangle();
+   protected int offTop = 0;   // offset from top
+   protected int offLeft = 0;  // offset from left
+   private boolean resized = false;
 
    public GuiGraphicBuffer () {
 
@@ -85,6 +88,7 @@ public class GuiGraphicBuffer {
             bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
             this.width = width;
             this.height = height;
+            resized = true;
             // tell waiting threads to wake up
             lock.notifyAll();
          }
@@ -101,6 +105,7 @@ public class GuiGraphicBuffer {
             bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
             this.width = width;
             this.height = height;
+            resized = true;
          }
          // tell waiting threads to wake up
          lock.notifyAll();
@@ -365,7 +370,7 @@ public class GuiGraphicBuffer {
       }
 
       synchronized (lock) {
-         gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x,y);
+         gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x + offLeft,y+ offTop);
          // tell waiting threads to wake up
          lock.notifyAll();
       }
@@ -378,12 +383,23 @@ public class GuiGraphicBuffer {
         * @todo this is a hack and should be fixed at the root of the problem
         */
       if (gg2d == null) {
-         System.out.println(" we got a null graphic object ");
+//         System.out.println(" we got a null graphic object ");
          return;
       }
 
       synchronized (lock) {
-         gg2d.drawImage(bi,null,0,0);
+
+//         // lets calculate the offsets
+//         Rectangle r = gg2d.getClipBounds();
+//         offLeft = (r.width - width) / 2;
+//         offTop = (r.height - height) / 2;
+//         resized = false;
+//         if (offLeft < 0)
+//            offLeft = 0;
+//         if (offTop <0 )
+//            offTop = 0;
+
+         gg2d.drawImage(bi,null,offLeft,offTop);
          // tell waiting threads to wake up
          lock.notifyAll();
       }

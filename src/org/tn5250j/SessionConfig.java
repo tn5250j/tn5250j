@@ -144,28 +144,57 @@ public class SessionConfig implements TN5250jConstants {
 
    public void saveSessionProps() {
 
-      try {
-         FileOutputStream out = new FileOutputStream(configurationResource);
-            // save off the width and height to be restored later
-         sesProps.store(out,"------ Defaults --------");
+      if (configurationResource == null || configurationResource == "") {
+         try {
+            FileOutputStream out = new FileOutputStream(configurationResource);
+               // save off the width and height to be restored later
+            sesProps.store(out,"------ Defaults --------");
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
       }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
-
    }
 
    private void loadConfigurationResource() {
 
       sesProps = new Properties();
-      if (configurationResource == null || configurationResource == "")
-         configurationResource = "TN5250JDefaults.props";
+      boolean loadDefaults = false;
+
+      if (configurationResource == null || configurationResource == "") {
+         loadDefaults = true;
+      }
 
       try {
-//         FileInputStream in = new FileInputStream(((GlobalConfigure)ConfigureFactory.getInstance()).settingsDirectory()
-//                                    +  configurationResource);
-         FileInputStream in = new FileInputStream(configurationResource);
-         //InputStream in = getClass().getClassLoader().getResourceAsStream(propFileName);
-         sesProps.load(in);
+         if (loadDefaults) {
+            Properties schemaProps = new Properties();
+            java.net.URL file=null;
+
+            ClassLoader cl = this.getClass().getClassLoader();
+            if (cl == null)
+               cl = ClassLoader.getSystemClassLoader();
+            file = cl.getResource("tn5250jSchemas.properties");
+            schemaProps.load(file.openStream());
+            // we will now load the default schema
+            String prefix = schemaProps.getProperty("schemaDefault");
+            sesProps.setProperty("colorBg",schemaProps.getProperty(prefix + ".colorBg"));
+            sesProps.setProperty("colorRed",schemaProps.getProperty(prefix + ".colorRed"));
+            sesProps.setProperty("colorTurq",schemaProps.getProperty(prefix + ".colorTurq"));
+            sesProps.setProperty("colorCursor",schemaProps.getProperty(prefix + ".colorCursor"));
+            sesProps.setProperty("colorGUIField",schemaProps.getProperty(prefix + ".colorGUIField"));
+            sesProps.setProperty("colorWhite",schemaProps.getProperty(prefix + ".colorWhite"));
+            sesProps.setProperty("colorYellow",schemaProps.getProperty(prefix + ".colorYellow"));
+            sesProps.setProperty("colorGreen",schemaProps.getProperty(prefix + ".colorGreen"));
+            sesProps.setProperty("colorPink",schemaProps.getProperty(prefix + ".colorPink"));
+            sesProps.setProperty("colorBlue",schemaProps.getProperty(prefix + ".colorBlue"));
+            sesProps.setProperty("colorSep",schemaProps.getProperty(prefix + ".colorSep"));
+            sesProps.setProperty("colorHexAttr",schemaProps.getProperty(prefix + ".colorHexAttr"));
+
+
+         }
+         else {
+            FileInputStream in = new FileInputStream(configurationResource);
+            sesProps.load(in);
+         }
 
       }
       catch (IOException ioe) {

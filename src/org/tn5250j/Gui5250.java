@@ -217,25 +217,46 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+   /**
+    * This routine allows areas to be bounded by using the keyboard
+    *
+    * @param ke
+    * @param last
+    */
    public void doKeyBoundArea(KeyEvent ke,String last) {
 
       Point p = new Point();
 
+      // If there is not area selected then we send to the previous position
+      // of the cursor because the cursor position has already been updated
+      // to the current position.
+      //
+      // The getPointFromRowCol is 0,0 based so we will take the current row
+      // and column and make these calculations ourselves to be passed
       if (!rubberband.isAreaSelected()) {
+
+         // mark left we will mark the column to the right of where the cursor
+         // is now.
          if (last.equals("[markleft]"))
             screen.getPointFromRowCol(screen.getCurrentRow() - 1,
-                                    screen.getCurrentCol()-1,
+                                    screen.getCurrentCol() + 1,
                                     p);
+         // mark right will mark the current position to the left of the
+         // current cursor position
          if (last.equals("[markright]"))
             screen.getPointFromRowCol(screen.getCurrentRow() - 1,
                                     screen.getCurrentCol()-2,
                                     p);
+
+
          if (last.equals("[markup]"))
-            screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+            screen.getPointFromRowCol(screen.getCurrentRow() + 1,
                                     screen.getCurrentCol() - 1,
                                     p);
+         // mark down will mark the current position minus the current
+         // row.
          if (last.equals("[markdown]"))
-            screen.getPointFromRowCol(screen.getCurrentRow()-2,
+            screen.getPointFromRowCol(screen.getCurrentRow() - 2,
                                     screen.getCurrentCol() - 1,
                                     p);
          MouseEvent me = new MouseEvent(this,
@@ -251,7 +272,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       screen.getPointFromRowCol(screen.getCurrentRow() - 1,
                                  screen.getCurrentCol() - 1,
                                  p);
-      rubberband.getCanvas().translateEnd(p);
+//      rubberband.getCanvas().translateEnd(p);
       MouseEvent me = new MouseEvent(this,
                            MouseEvent.MOUSE_DRAGGED,
                            System.currentTimeMillis(),
@@ -563,7 +584,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       final Gui5250 g = this;
       JMenuItem mi;
 
-      final int pos = screen.getRowColFromPoint(me.getX(),me.getY());
+      final int pos = screen.getPosFromView(me.getX(),me.getY());
 
       if (!rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
          action = new AbstractAction(LangTool.getString("popup.copy")) {
@@ -578,7 +599,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys(MNEMONIC_PASTE);
+                  screen.copyMe();
                   getFocusForMe();
                }
            };
@@ -624,20 +645,18 @@ public class Gui5250 extends JPanel implements ComponentListener,
          Rectangle workR = new Rectangle();
          if (rubberband.isAreaSelected()) {
 
-            rubberband.getBoundingArea(workR);
-            // get the width and height
-            int ePos = screen.getRowColFromPoint(workR.width + 1 ,
-                                       workR.height + 1 );
+            // get the bounded area of the selection
+            screen.getBoundingArea(workR);
 
             popup.addSeparator();
 
             menuItem = new JMenuItem(LangTool.getString("popup.selectedColumns")
-                              + " " + screen.getCol(ePos));
+                              + " " + workR.width);
             menuItem.setArmed(false);
             popup.add(menuItem);
 
             menuItem = new JMenuItem(LangTool.getString("popup.selectedRows")
-                              + " " + screen.getRow(ePos));
+                              + " " + workR.height);
             menuItem.setArmed(false);
             popup.add(menuItem);
 
@@ -1341,7 +1360,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    public Point translateEnd(Point end) {
-
       return screen.translateEnd(end);
    }
 
@@ -1358,8 +1376,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
       // before we get the row col we first have to translate the x,y point
       //   back to screen coordinates because we are translating the starting
       //   point to the 5250 screen coordinates
-
-      return !screen.isKeyboardLocked() && (screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y));
+//      return !screen.isKeyboardLocked() && (screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y));
+      return screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y);
 
    }
 
@@ -1407,6 +1425,26 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //         return r;
       }
 
+      protected Point getEndPoint() {
+
+         if(this.endPoint == null) {
+            Point p = new Point(0,0);
+            screen.getPointFromRowCol(0,0,p);
+            setEndPoint(p);
+         }
+         return this.endPoint;
+      }
+
+      protected Point getStartPoint() {
+
+         if(this.startPoint == null) {
+            Point p = new Point(0,0);
+            screen.getPointFromRowCol(0,0,p);
+            setStartPoint(p);
+         }
+         return this.startPoint;
+
+      }
    }
 
 }

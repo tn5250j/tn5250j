@@ -26,6 +26,7 @@
 package org.tn5250j;
 
 import java.util.Properties;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.io.*;
 
@@ -50,10 +51,13 @@ public class GlobalConfigure extends ConfigureFactory {
    static private Properties settings;
 
    static private Hashtable registry = new Hashtable();
+   static private Hashtable headers = new Hashtable();  //LUC GORRENS
 
    static final public String SESSIONS = "sessions";
    static final public String MACROS = "macros";
    static final public String KEYMAP = "keymap";
+
+   static final private String settingsFile = "tn5250jstartup.cfg";
 
    /**
     * The constructor is made protected to allow overriding.
@@ -86,8 +90,8 @@ public class GlobalConfigure extends ConfigureFactory {
     *
     */
    private void initialize() {
-	
-		loadSettings();
+
+      loadSettings();
       loadSessions();
       loadMacros();
       loadKeyStrokes();
@@ -98,26 +102,7 @@ public class GlobalConfigure extends ConfigureFactory {
     */
    private void loadSessions() {
 
-//      FileInputStream in = null;
-//      Properties sessions = new Properties();
-//
-//      try {
-//         in = new FileInputStream(settingssDirectory() +  SESSIONS);
-//         sessions.load(in);
-//
-//      }
-//      catch (FileNotFoundException fnfe) {
-//         System.out.println(" Information Message: " + fnfe.getMessage()
-//                           + ".  Default sessions file will"
-//                           + " be created for first time use.");
-//      }
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-//
-//      if (sessions != null) {
-//
-//         registry.put(SESSIONS,sessions);
-//      }
-      getProperties(SESSIONS,SESSIONS,true,"",true);
+      setProperties(SESSIONS,SESSIONS,"------ Sessions --------",true);
    }
 
    /**
@@ -125,47 +110,15 @@ public class GlobalConfigure extends ConfigureFactory {
     */
    private void loadMacros() {
 
-//      FileInputStream in = null;
-//      Properties macs = new Properties();
-//
-//      try {
-//         in = new FileInputStream(settingssDirectory()
-//                                    +  MACROS);
-//         macs.load(in);
-//      }
-//      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-//      catch (SecurityException se) {
-//         System.out.println(se.getMessage());
-//      }
-//
-//      if (macs != null) {
-//         registry.put(MACROS,macs);
-//      }
-      getProperties(MACROS,MACROS,true,"",true);
+      setProperties(MACROS,MACROS,"------ Macros --------",true);
 
    }
 
    private void loadKeyStrokes() {
 
-//      FileInputStream in = null;
-//      Properties keystrokes = new Properties();
-//
-//      try {
-//         in = new FileInputStream(settingssDirectory()
-//                                    +  KEYMAP);
-//         keystrokes.load(in);
-//      }
-//      catch (FileNotFoundException fnfe) {System.out.println(fnfe.getMessage());}
-//      catch (IOException ioe) {System.out.println(ioe.getMessage());}
-//      catch (SecurityException se) {
-//         System.out.println(se.getMessage());
-//      }
-//
-//      if (keystrokes != null) {
-//         registry.put(KEYMAP,keystrokes);
-//      }
-      getProperties(KEYMAP,KEYMAP,true,"",true);
+      setProperties(KEYMAP,KEYMAP,
+      "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------",
+                     true);
 
    }
 
@@ -182,64 +135,66 @@ public class GlobalConfigure extends ConfigureFactory {
       settings = new Properties();
 
       try {
-         in = new FileInputStream("tn5250jsettings.cfg");
+         in = new FileInputStream(settingsFile);
          settings.load(in);
 
       }
       catch (FileNotFoundException fnfe) {
 
-			System.out.println(" Information Message: " + fnfe.getMessage()
-									+ ".  The file tn5250jsettings.cfg will"
-									+ " be created for first time use.");
-			checkLegacy();
-			saveSettings();
+         System.out.println(" Information Message: " + fnfe.getMessage()
+                           + ".  The file " + settingsFile + " will"
+                           + " be created for first time use.");
+         checkLegacy();
+         saveSettings();
       }
       catch (IOException ioe) {
-         System.out.println("IO Exception accessing File tn5250jsettings.cfg for the following reason : "
+         System.out.println("IO Exception accessing File " + settingsFile
+                              + " for the following reason : "
                               + ioe.getMessage());
       }
       catch (SecurityException se) {
-         System.out.println("Security Exception for file tn5250jsettings.cfg.  This file can not be " 
-										+ "accessed because : " + se.getMessage());
+         System.out.println("Security Exception for file " + settingsFile
+                              + "  This file can not be "
+                              + "accessed because : " + se.getMessage());
       }
 
-		
-		// we now check to see if the settings directory is a directory.  If not then we create it
-		File sd = new File(settings.getProperty("emulator.settingsDirectory"));
-		if (!sd.isDirectory())
-			sd.mkdirs();
+
+      // we now check to see if the settings directory is a directory.  If not then we create it
+      File sd = new File(settings.getProperty("emulator.settingsDirectory"));
+      if (!sd.isDirectory())
+         sd.mkdirs();
    }
 
-	private void checkLegacy() {
-	
-		// we check if the sessions file already exists in the directory
-		// if it does exist we are working with an old install so we
-		// need to set the settings directory to the users directory
-		File ses = new File("sessions");
-			
-		if(ses.exists()) {
+   private void checkLegacy() {
 
-			settings.setProperty("emulator.settingsDirectory", System.getProperty("user.dir") + File.separator);
-			
-		}
-		else {
-		
-			settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
+      // we check if the sessions file already exists in the directory
+      // if it does exist we are working with an old install so we
+      // need to set the settings directory to the users directory
+      File ses = new File("sessions");
 
-		}
-	}
-	
+      if(ses.exists()) {
+
+         settings.setProperty("emulator.settingsDirectory", System.getProperty("user.dir") + File.separator);
+
+      }
+      else {
+
+         settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
+
+      }
+   }
+
    /**
     * Save the settings for the global configuration
     */
    public void saveSettings() {
 
-		try {
-			FileOutputStream out = new FileOutputStream("tn5250jsettings.cfg");
-			settings.store(out,"----------------- tn5250j Global Settings --------------");
-		}
-		catch (FileNotFoundException fnfe) {}
-		catch (IOException ioe) {}
+      try {
+         FileOutputStream out = new FileOutputStream(settingsFile);
+         settings.store(out,"----------------- tn5250j Global Settings --------------");
+      }
+      catch (FileNotFoundException fnfe) {}
+      catch (IOException ioe) {}
    }
 
    /**
@@ -277,15 +232,107 @@ public class GlobalConfigure extends ConfigureFactory {
       if (registry.containsKey(regKey)) {
          try {
             FileOutputStream out = new FileOutputStream(
-                                    settingsDirectory() + regKey);
+                                    settingsDirectory() + fileName);
             Properties props = (Properties)registry.get(regKey);
             props.store(out,header);
+            out.flush();
+            out.close();
          }
-         catch (FileNotFoundException fnfe) {}
-         catch (IOException ioe) {}
+         catch (FileNotFoundException fnfe) {
+            System.out.println("File not found : writing file "
+                                 + fileName + ".  Description of error is "
+                                 + fnfe.getMessage());
+         }
+         catch (IOException ioe) {
+            System.out.println("IO Exception : writing file "
+                                 + fileName + ".  Description of error is "
+                                 + ioe.getMessage());
+         }
+         catch (SecurityException se) {
+            System.out.println("Security Exception : writing file "
+                                 + fileName + ".  Description of error is "
+                                 + se.getMessage());
+         }
+
       }
 
    }
+
+   /**
+    * Place the Properties in the registry under a given registry name
+    *
+    * @param regKey
+    * @param regProps
+    */
+   public void setProperties(String regKey, Properties regProps) {
+
+      registry.put(regKey, regProps);
+
+   }
+
+   /**
+    * Set the properties for the given registry key.
+    *
+    * @param regKey
+    * @param fileName
+    * @param header
+    */
+   public void setProperties(String regKey,  String fileName, String  header) {  //LG NEW
+      setProperties(regKey, fileName, header, false);
+   }
+
+   /**
+    * Set the properties for the given registry key.
+    *
+    * @param regKey
+    * @param fileName
+    * @param header
+    * @param createFile
+    */
+  public void setProperties(String regKey,  String fileName, String  header,
+                              boolean createFile) {
+
+      FileInputStream in = null;
+      Properties props = new Properties();
+      headers.put(regKey, header);
+
+      try {
+         in = new FileInputStream(settingsDirectory()
+                                    +  fileName);
+         props.load(in);
+
+      }
+      catch (FileNotFoundException fnfe) {
+
+         if (createFile) {
+            System.out.println(" Information Message: " + fnfe.getMessage()
+                              + ".  The file " + fileName + " will"
+                              + " be created for first time use.");
+
+            saveSettings(regKey,header);
+
+         }
+         else {
+
+            System.out.println(" Information Message: " + fnfe.getMessage()
+                              + ".");
+
+         }
+      }
+      catch (IOException ioe) {
+         System.out.println("IO Exception accessing File "+ fileName +
+                              " for the following reason : "
+                              + ioe.getMessage());
+      }
+      catch (SecurityException se) {
+         System.out.println("Security Exception for file "+ fileName
+                              + ".  This file can not be accessed because : "
+                              + se.getMessage());
+      }
+
+      registry.put(regKey,props);
+
+  }
 
    /**
     * Returns the properties associated with a given registry key.
@@ -318,51 +365,57 @@ public class GlobalConfigure extends ConfigureFactory {
                                                 boolean createFile,String header,
                                                 boolean reloadIfLoaded) {
 
-      FileInputStream in = null;
-      Properties props = new Properties();
+      if (!registry.containsKey(regKey) || reloadIfLoaded) {
 
-      try {
-         in = new FileInputStream(settingsDirectory()
-                                    +  fileName);
-         props.load(in);
+         FileInputStream in = null;
+         Properties props = new Properties();
+         headers.put(regKey, header);
 
-      }
-      catch (FileNotFoundException fnfe) {
-
-         if (createFile) {
-            System.out.println(" Information Message: " + fnfe.getMessage()
-                              + ".  The file " + fileName + " will"
-                              + " be created for first time use.");
-
-            registry.put(regKey,props);
-
-            saveSettings(regKey,header);
-
-            return props;
+         try {
+            in = new FileInputStream(settingsDirectory()
+                                       +  fileName);
+            props.load(in);
 
          }
-         else {
+         catch (FileNotFoundException fnfe) {
 
-            System.out.println(" Information Message: " + fnfe.getMessage()
-                              + ".");
+            if (createFile) {
+               System.out.println(" Information Message: " + fnfe.getMessage()
+                                 + ".  The file " + fileName + " will"
+                                 + " be created for first time use.");
 
+               registry.put(regKey,props);
+
+               saveSettings(regKey,header);
+
+               return props;
+
+            }
+            else {
+
+               System.out.println(" Information Message: " + fnfe.getMessage()
+                                 + ".");
+
+            }
          }
-      }
-      catch (IOException ioe) {
-         System.out.println("IO Exception accessing File "+ fileName +
-                              " for the following reason : "
-                              + ioe.getMessage());
-      }
-      catch (SecurityException se) {
-         System.out.println("Security Exception for file "+ fileName
-                              + ".  This file can not be accessed because : "
-                              + se.getMessage());
-      }
+         catch (IOException ioe) {
+            System.out.println("IO Exception accessing File "+ fileName +
+                                 " for the following reason : "
+                                 + ioe.getMessage());
+         }
+         catch (SecurityException se) {
+            System.out.println("Security Exception for file "+ fileName
+                                 + ".  This file can not be accessed because : "
+                                 + se.getMessage());
+         }
 
-      registry.put(regKey,props);
+         registry.put(regKey,props);
 
-      return props;
-
+         return props;
+      }
+      else {
+         return (Properties)registry.get(regKey);
+      }
    }
 
    /**
@@ -392,7 +445,7 @@ public class GlobalConfigure extends ConfigureFactory {
     * @return
     */
    private String settingsDirectory() {
-		//System.out.println(settings.getProperty("emulator.settingsDirectory"));
+      //System.out.println(settings.getProperty("emulator.settingsDirectory"));
       return settings.getProperty("emulator.settingsDirectory");
 
    }
