@@ -458,5 +458,5 @@ public interface TN5250jConstants {
    public static final int BUTTON_SB_GUIDE = 30;
    public static final int BUTTON_SB_THUMB = 31;
    public static final int BUTTON_LAST = 31;
-   
+
 }

@@ -56,10 +56,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
    private int width;
    private int height;
    private Rectangle2D cursor = new Rectangle2D.Float();
-   public final static byte STATUS_SYSTEM       = 1;
-   public final static byte STATUS_ERROR_CODE   = 2;
-   public final static byte STATUS_VALUE_ON     = 1;
-   public final static byte STATUS_VALUE_OFF    = 2;
    private final static String xSystem = "X - System";
    private final static String xError = "X - II";
    private int crossRow;
@@ -72,12 +68,22 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
    private Graphics2D gg2d;
    private Screen5250 screen;
    private Data updateRect;
+   private int columnWidth;
+   private int rowHeight;
+	LineMetrics lm;
+	Font font;
    
    private TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
 
    public GuiGraphicBuffer (Screen5250 screen) {
 
       this.screen = screen;
+      
+      columnWidth = screen.fmWidth;
+      rowHeight = screen.fmHeight;
+      font = screen.font;
+      lm = screen.lm;
+      
       screen.getOIA().addOIAListener(this);
       screen.addScreenListener(this);
       tArea = new Rectangle2D.Float();
@@ -101,6 +107,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
             this.width = width;
             this.height = height;
             resized = true;
+            columnWidth = screen.fmWidth;
+            rowHeight = screen.fmHeight;
+            font = screen.font;
+            lm = screen.lm;
             // tell waiting threads to wake up
             lock.notifyAll();
          }
@@ -145,28 +155,28 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                RenderingHints.VALUE_COLOR_RENDER_SPEED);
          g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                RenderingHints.VALUE_RENDER_SPEED);
-         g2d.setFont(screen.font);
+         g2d.setFont(font);
 
 
          g2d.setColor(screen.colorBg);
          g2d.fillRect(0,0,bi.getWidth(null),bi.getHeight(null));
-         tArea.setRect(0,0,bi.getWidth(null),(screen.fmHeight * (numRows)));
-         cArea.setRect(0,screen.fmHeight * (numRows + 1),bi.getWidth(null),screen.fmHeight * (numRows + 1));
+         tArea.setRect(0,0,bi.getWidth(null),(rowHeight * (numRows)));
+         cArea.setRect(0,rowHeight * (numRows + 1),bi.getWidth(null),rowHeight * (numRows + 1));
          aArea.setRect(0,0,bi.getWidth(null),bi.getHeight(null));
-         sArea.setRect(screen.fmWidth * 9,screen.fmHeight * (numRows + 1),screen.fmWidth * 20,screen.fmHeight);
-         pArea.setRect(bi.getWidth(null) - screen.fmWidth * 6,screen.fmHeight * (numRows + 1),screen.fmWidth * 6,screen.fmHeight);
-         mArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + screen.fmWidth + screen.fmWidth,
-               screen.fmHeight * (numRows + 1),
-               screen.fmWidth + screen.fmWidth,
-               screen.fmHeight);
-         kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * screen.fmWidth),
-               screen.fmHeight * (numRows + 1),
-               screen.fmWidth + screen.fmWidth,
-               screen.fmHeight);
-         scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * screen.fmWidth),
-               screen.fmHeight * (numRows + 1),
-               screen.fmWidth + screen.fmWidth,
-               screen.fmHeight);
+         sArea.setRect(columnWidth * 9,rowHeight * (numRows + 1),columnWidth * 20,rowHeight);
+         pArea.setRect(bi.getWidth(null) - columnWidth * 6,rowHeight * (numRows + 1),columnWidth * 6,rowHeight);
+         mArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + columnWidth + columnWidth,
+               rowHeight * (numRows + 1),
+               columnWidth + columnWidth,
+               rowHeight);
+         kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * columnWidth),
+               rowHeight * (numRows + 1),
+               columnWidth + columnWidth,
+               rowHeight);
+         scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * columnWidth),
+               rowHeight * (numRows + 1),
+               columnWidth + columnWidth,
+               rowHeight);
 //         cArea = new Rectangle2D.Float(0,fmHeight * (numRows + 1),bi.getWidth(null),fmHeight * (numRows + 1));
 //         aArea = new Rectangle2D.Float(0,0,bi.getWidth(null),bi.getHeight(null));
 //         sArea = new Rectangle2D.Float(fmWidth * 9,fmHeight * (numRows + 1),fmWidth * 20,fmHeight);
@@ -177,9 +187,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 //                                       fmHeight);
 
          separatorLine.setLine(0,
-               (screen.fmHeight * (numRows + 1)) - (screen.fmHeight / 2),
+               (rowHeight * (numRows + 1)) - (rowHeight / 2),
                bi.getWidth(null),
-               (screen.fmHeight * (numRows + 1)) - (screen.fmHeight / 2));
+               (rowHeight * (numRows + 1)) - (rowHeight / 2));
 
          g2d.setColor(screen.colorBlue);
          g2d.draw(separatorLine);
@@ -200,8 +210,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       	int row = screen.getRow(screen.getLastPos());
       	int col = screen.getCol(screen.getLastPos());
 
-      	int fmHeight = screen.fmHeight;
-      	int fmWidth = screen.fmWidth;
+      	int fmHeight = rowHeight;
+      	int fmWidth = columnWidth;
       	int botOffset = screen.cursorBottOffset;
       	int cursorSize = screen.cursorSize;
       	boolean insertMode = screen.insertMode;
@@ -213,36 +223,36 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
          switch (screen.cursorSize) {
             case 0:
                cursor.setRect(
-                     fmWidth * (col),
-                           (fmHeight * (row + 1)) - botOffset,
-                           fmWidth,
+                     columnWidth * (col),
+                           (rowHeight * (row + 1)) - botOffset,
+                           columnWidth,
                            1
                            );
                break;
             case 1:
                cursor.setRect(
-                     fmWidth * (col),
-                           (fmHeight * (row + 1) - fmHeight / 2),
-                           fmWidth,
-                           (fmHeight / 2) - botOffset
+                     columnWidth * (col),
+                           (rowHeight * (row + 1) - rowHeight / 2),
+                           columnWidth,
+                           (rowHeight / 2) - botOffset
                            );
                break;
             case 2:
                cursor.setRect(
-                     fmWidth * (col),
-                           (fmHeight * row),
-                           fmWidth,
-                           fmHeight - botOffset
+                     columnWidth * (col),
+                           (rowHeight * row),
+                           columnWidth,
+                           rowHeight - botOffset
                            );
                break;
          }
 
          if (insertMode && cursorSize != 1) {
                cursor.setRect(
-                     fmWidth * (col),
-                           (fmHeight * (row + 1) - fmHeight / 2),
-                           fmWidth,
-                           (fmHeight / 2) - botOffset
+                     columnWidth * (col),
+                           (rowHeight * (row + 1) - rowHeight / 2),
+                           columnWidth,
+                           (rowHeight / 2) - botOffset
                            );
          }
 
@@ -271,25 +281,25 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 
          switch (crossHair) {
             case 1:  // horizontal
-               g2.drawLine(0,(fmHeight * (crossRow + 1))- botOffset,
+               g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
                            bi.getWidth(null),
-                           (fmHeight * (crossRow + 1))- botOffset);
-               screen.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
+                           (rowHeight * (crossRow + 1))- botOffset);
+               screen.updateImage(0,rowHeight * (crossRow + 1)- botOffset,
                               bi.getWidth(null),1);
                break;
             case 2:  // vertical
-               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - fmHeight - fmHeight);
-               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
+               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
+               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
                break;
 
             case 3:  // horizontal & vertical
-               g2.drawLine(0,(fmHeight * (crossRow + 1))- botOffset,
+               g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
                            bi.getWidth(null),
-                           (fmHeight * (crossRow + 1))- botOffset);
-               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - fmHeight - fmHeight);
-               screen.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
+                           (rowHeight * (crossRow + 1))- botOffset);
+               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
+               screen.updateImage(0,rowHeight * (crossRow + 1)- botOffset,
                               bi.getWidth(null),1);
-               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
+               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
                break;
          }
 
@@ -302,7 +312,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 
          g2.drawString((row + 1) + "/" + (col + 1)
                         ,(float)pArea.getX(),
-                        (float)pArea.getY() + fmHeight);
+                        (float)pArea.getY() + rowHeight);
          screen.updateImage(pArea.getBounds());
          g2.dispose();
 
@@ -488,7 +498,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
          g2d.setColor(screen.colorBg);
          g2d.fill(sArea);
 
-         float Y = ((int)sArea.getY() + screen.fmHeight)- (screen.lm.getLeading() + screen.lm.getDescent());
+         float Y = ((int)sArea.getY() + rowHeight)- (lm.getLeading() + lm.getDescent());
 
          switch (attr) {
 
@@ -563,7 +573,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
          case ScreenOIA.OIA_LEVEL_KEYS_BUFFERED:
             if (changedOIA.isKeysBuffered()) {
                Graphics2D g2d = getWritingArea(screen.font);
-               float Y = (screen.fmHeight * (screen.getRows() + 2))
+               float Y = (rowHeight * (screen.getRows() + 2))
                      - (screen.lm.getLeading() + screen.lm.getDescent());
                g2d.setColor(screen.colorYellow);
                g2d.drawString("KB", (float) kbArea.getX(), Y);
@@ -592,7 +602,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
             break;
          case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_ON:
             g2d = getWritingArea(screen.font);
-            float Y = (screen.fmHeight * (screen.getRows() + 2))
+            float Y = (rowHeight * (screen.getRows() + 2))
                   - (screen.lm.getLeading() + screen.lm.getDescent());
             g2d.setColor(screen.colorBlue);
             g2d.drawString("MW", (float) mArea.getX(), Y);
@@ -744,8 +754,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
    }
 
    public final Rectangle modelToView(int row, int col, Rectangle r) {
-      int columnWidth = screen.fmWidth;
-      int rowHeight = screen.fmHeight;
       
       // right now row and column is 1,1 offset based.  This will need
       //   to be changed to 0,0 offset based by subtracting 1 from them
@@ -780,7 +788,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 
       int x = csArea.x;
       int y = csArea.y;
-      int cy = (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading()));
+      int cy = (int)(y + rowHeight - (s.lm.getDescent() + s.lm.getLeading()));
 
 //      int x = sc.x;
 //      int y = sc.y;
@@ -794,9 +802,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
          g.setFont(k);
          g.setColor(s.colorHexAttr);
          char[] a = Integer.toHexString(attr).toCharArray();
-         g.drawChars(a, 0, 1, x, y + (int)(s.fmHeight /2));
-         g.drawChars(a, 1, 1, x+(int)(s.fmWidth/2),
-            (int)(y + s.fmHeight - (s.lm.getDescent() + s.lm.getLeading())-2));
+         g.drawChars(a, 0, 1, x, y + (int)(rowHeight /2));
+         g.drawChars(a, 1, 1, x+(int)(columnWidth/2),
+            (int)(y + rowHeight - (s.lm.getDescent() + s.lm.getLeading())-2));
          g.setFont(f);
 //return;
       }
@@ -831,7 +839,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinUpperLeft(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              s.colorBlue,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
                      }
                      else {
@@ -839,7 +847,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinUpperLeft(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
                      }
                   }
@@ -851,7 +859,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinUpper(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              s.colorBlue,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
 
                      }
@@ -860,7 +868,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinUpper(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
                      }
                   }
                break;
@@ -871,7 +879,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinUpperRight(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              s.colorBlue,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
 
                      }
@@ -880,7 +888,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinUpperRight(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
                      }
                   }
@@ -891,7 +899,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinLeft(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              bg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
 
                      }
@@ -900,12 +908,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinLeft(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
-                        g.drawLine(x + s.fmWidth / 2,
+                        g.drawLine(x + columnWidth / 2,
                                     y,
-                                    x + s.fmWidth / 2,
-                                    y + s.fmHeight);
+                                    x + columnWidth / 2,
+                                    y + rowHeight);
                      }
                   }
                break;
@@ -915,7 +923,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinRight(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              bg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
 
                      }
@@ -923,7 +931,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinRight(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
                      }
                   }
@@ -936,7 +944,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinLowerLeft(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              bg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
 
                      }
@@ -945,7 +953,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinLowerLeft(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
                      }
                   }
                break;
@@ -958,7 +966,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinBottom(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              bg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
 
                      }
@@ -967,7 +975,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinBottom(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
                      }
                   }
                break;
@@ -979,7 +987,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinLowerRight(g,
                                              GUIGraphicsUtils.WINDOW_GRAPHIC,
                                              bg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
                      }
                      else {
@@ -987,7 +995,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                         GUIGraphicsUtils.drawWinLowerRight(g,
                                              GUIGraphicsUtils.WINDOW_NORMAL,
                                              fg,
-                                             x,y,s.fmWidth,s.fmHeight);
+                                             x,y,columnWidth,rowHeight);
 
                      }
                   }
@@ -1027,9 +1035,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 
                if (!useGui || s.guiShowUnderline) {
                   g.setColor(fg);
-//                  g.drawLine(x, cy -2, (int)(x + s.fmWidth), cy -2);
-//                  g.drawLine(x, (int)(y + (s.fmHeight - s.lm.getLeading()-5)), (int)(x + s.fmWidth), (int)(y + (s.fmHeight - s.lm.getLeading())-5));
-                  g.drawLine(x, (int)(y + (s.fmHeight - (s.lm.getLeading() + s.lm.getDescent()))), (int)(x + s.fmWidth), (int)(y + (s.fmHeight -(s.lm.getLeading() + s.lm.getDescent()))));
+//                  g.drawLine(x, cy -2, (int)(x + columnWidth), cy -2);
+//                  g.drawLine(x, (int)(y + (rowHeight - s.lm.getLeading()-5)), (int)(x + columnWidth), (int)(y + (rowHeight - s.lm.getLeading())-5));
+                  g.drawLine(x, (int)(y + (rowHeight - (s.lm.getLeading() + s.lm.getDescent()))), (int)(x + columnWidth), (int)(y + (rowHeight -(s.lm.getLeading() + s.lm.getDescent()))));
 
                }
             }
@@ -1038,16 +1046,16 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                g.setColor(s.colorSep);
                switch (s.getColSepLine()) {
                   case 0:  // line
-                     g.drawLine(x, y, x, y + s.fmHeight - 1);
-                     g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
+                     g.drawLine(x, y, x, y + rowHeight - 1);
+                     g.drawLine(x + columnWidth - 1, y, x + columnWidth - 1, y + rowHeight);
                      break;
                   case 1:  // short line
-                     g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-4, x, y + s.fmHeight);
-                     g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4, x + s.fmWidth - 1, y + s.fmHeight);
+                     g.drawLine(x,  y + rowHeight - (int)s.lm.getLeading()-4, x, y + rowHeight);
+                     g.drawLine(x + columnWidth - 1, y + rowHeight - (int)s.lm.getLeading()-4, x + columnWidth - 1, y + rowHeight);
                      break;
                   case 2:  // dot
-                     g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-3, x, y + s.fmHeight - (int)s.lm.getLeading()-4);
-                     g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-3, x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4);
+                     g.drawLine(x,  y + rowHeight - (int)s.lm.getLeading()-3, x, y + rowHeight - (int)s.lm.getLeading()-4);
+                     g.drawLine(x + columnWidth - 1, y + rowHeight - (int)s.lm.getLeading()-3, x + columnWidth - 1, y + rowHeight - (int)s.lm.getLeading()-4);
                      break;
                   case 3:  // hide
                      break;
@@ -1063,21 +1071,21 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
 
                case FIELD_LEFT:
                   GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
 
                break;
                case FIELD_MIDDLE:
                   GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
                break;
                case FIELD_RIGHT:
                   GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
                break;
 
                case FIELD_ONE:
                   GUIGraphicsUtils.draw3DOne(g, GUIGraphicsUtils.INSET, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
 
                break;
 
@@ -1087,7 +1095,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                case BUTTON_LEFT_EB:
 
                   GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.RAISED, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
 
                   break;
 
@@ -1097,7 +1105,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                case BUTTON_MIDDLE_EB:
 
                   GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.RAISED, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
                   break;
 
                case BUTTON_RIGHT:
@@ -1106,14 +1114,14 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                case BUTTON_RIGHT_EB:
 
                   GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.RAISED, x,y,
-                                             s.fmWidth,s.fmHeight);
+                                             columnWidth,rowHeight);
 
                break;
 
                // scroll bar
                case BUTTON_SB_UP:
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x,y,
-                                             s.fmWidth,s.fmHeight,
+                                             columnWidth,rowHeight,
                                              s.colorWhite,s.colorBg);
                   break;
 
@@ -1121,7 +1129,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                case BUTTON_SB_DN:
 
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x,y,
-                                             s.fmWidth,s.fmHeight,
+                                             columnWidth,rowHeight,
                                              s.colorWhite,s.colorBg);
 
 
@@ -1130,7 +1138,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                case BUTTON_SB_GUIDE:
 
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0,x,y,
-                                             s.fmWidth,s.fmHeight,
+                                             columnWidth,rowHeight,
                                              s.colorWhite,s.colorBg);
 
 
@@ -1140,7 +1148,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
                case BUTTON_SB_THUMB:
 
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3,x,y,
-                                             s.fmWidth,s.fmHeight,
+                                             columnWidth,rowHeight,
                                              s.colorWhite,s.colorBg);
 
 
