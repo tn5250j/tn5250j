@@ -20,7 +20,6 @@
  */
 package org.tn5250j.interfaces;
 
-import org.tn5250j.event.*;
 import org.tn5250j.Session;
 
 

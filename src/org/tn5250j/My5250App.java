@@ -6,12 +6,13 @@ import java.util.*;
 
 import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.gui.TN5250jSecurityAccessDialog;
 
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
    private SessionManager manager;
 	
-   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
+   private TN5250jLogger log;
    
    /**Get a parameter value*/
    public String getParameter(String key, String def) {
@@ -30,13 +31,32 @@ public class My5250App extends JApplet implements TN5250jConstants {
          jbInit();
       }
       catch(Exception e) {
-         log.warn("In constructor: ", e);
+      	if (log == null)
+            System.out.println(e.getMessage());
+         else
+         	log.warn("In constructor: ", e);
       }
    }
 
    /**Component initialization*/
    private void jbInit() throws Exception {
       this.setSize(new Dimension(400,300));
+      
+      if (isSpecified("-L"))
+      	LangTool.init(parseLocale(getParameter("-L")));
+      else
+      	LangTool.init();
+
+     //Let's check some permissions
+     try {
+        System.getProperty(".java.policy");
+     }
+     catch (SecurityException e) {
+        e.printStackTrace();
+        TN5250jSecurityAccessDialog.showErrorMessage(e);
+        return;
+     }
+     log = TN5250jLogFactory.getLogger (this.getClass());
 
       Properties sesProps = new Properties();
       log.info(" We have loaded a new one");
@@ -77,11 +97,6 @@ public class My5250App extends JApplet implements TN5250jConstants {
       // check if device name is specified
       if (isSpecified("-dn"))
          sesProps.put(SESSION_DEVICE_NAME ,getParameter("-dn"));
-
-      if (isSpecified("-L"))
-         LangTool.init(parseLocale(getParameter("-L")));
-      else
-         LangTool.init();
 
       loadSystemProperty("SESSION_CONNECT_USER");
       loadSystemProperty("SESSION_CONNECT_PASSWORD");

@@ -25,11 +25,7 @@
  */
 package org.tn5250j;
 
-import java.util.*;
-import java.io.*;
-
 import org.tn5250j.encoding.CodePage;
-import org.tn5250j.encoding.CharMappings;
 
 /**
  *

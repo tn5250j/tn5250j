@@ -30,7 +30,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.StringTokenizer;
 
 import javax.swing.*;

@@ -30,7 +30,6 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.jar.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.encoding.*;

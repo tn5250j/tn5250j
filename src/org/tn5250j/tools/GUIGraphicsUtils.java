@@ -42,7 +42,6 @@ import java.awt.Toolkit;
 import java.awt.GraphicsEnvironment;
 import javax.swing.ImageIcon;
 import java.net.URL;
-import java.awt.print.*;
 
 import org.tn5250j.tools.system.OperatingSystem;
 

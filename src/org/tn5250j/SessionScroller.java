@@ -25,7 +25,6 @@
  */
 package org.tn5250j;
 
-import java.awt.event.*;
 import java.lang.reflect.*;
 
 import org.tn5250j.interfaces.SessionScrollerInterface;
