@@ -80,6 +80,7 @@ import org.tn5250j.gui.JSortTable;
 import org.tn5250j.gui.SortTableModel;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.gui.TN5250jMultiSelectList;
 
 public class Connect
 	extends JDialog
@@ -95,6 +96,7 @@ public class Connect
 		FlowLayout.CENTER, 30, 10));
 	JPanel emulOptPanel = new JPanel();
 	JPanel emptyPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+	JPanel accessPanel = new JPanel();
 
 	JTable sessions = null;
 	GridBagConstraints gbc;
@@ -169,6 +171,9 @@ public class Connect
 			LangTool.getString("ss.labelConnections"),
 			sessionPanel);
 		optionTabs.addTab(LangTool.getString("ss.labelOptions1"), emulOptPanel);
+
+      createAccessPanel();
+		optionTabs.addTab("Option Access", accessPanel);
 
 		// add the panels to our dialog
 		getContentPane().add(optionTabs, BorderLayout.CENTER);
@@ -403,12 +408,12 @@ public class Connect
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 1;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 27, 5, 10);		
+		gbc.insets = new Insets(5, 27, 5, 10);
 		interfacePanel.add(hideTabBar, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 10, 10, 10);		
+		gbc.insets = new Insets(5, 10, 10, 10);
 		interfacePanel.add(intMDI, gbc);
 		//interfacePanel.add(new JLabel());
 
@@ -438,6 +443,33 @@ public class Connect
 		contentPane.add(Box.createVerticalStrut(10));
 		contentPane.add(showMePanel);
 	}
+
+   private void createAccessPanel() {
+
+      TN5250jMultiSelectList sel = new TN5250jMultiSelectList();
+      Vector v = new Vector();
+      for (int x = 0;x < 40; x++) {
+
+         v.add("option " + x);
+
+      }
+
+      sel.setListData(v);
+
+      int[] indexes = {5,15,20};
+
+      sel.setSelectedIndices(indexes);
+      sel.setSourceColumnHeader("Active");
+      sel.setSelectionColumnHeader("In Active");
+
+      sel.setSourceHeader("Active");
+      sel.setSelectionHeader("In Active");
+		// create emulator options panel
+		accessPanel.setLayout(new BorderLayout());
+
+      accessPanel.add(sel,BorderLayout.CENTER);
+
+   }
 
 	private void createButtonOptions() {
 
