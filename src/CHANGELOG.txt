@@ -7,8 +7,6 @@ Implement the insert (right shift of characters) for continued edit fields.
 
 Add support for maintaining macros.  Think GUI interface.
 
-Translate to french.  Done.
-
 Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
 large to implement this - 57 pages worth of specs and the such.  Work has begun.
 
@@ -20,8 +18,6 @@ Add restore of session sizes in MDI session interface.
 
 Known problems
 --------------
-This session updating problem is hopefully fixed or at least acceptable now.
-
 On some JVM linux machines the keymappings will have to be changed from the
 default that I set up.  This is for JVM supplied by IBM.
 
@@ -52,11 +48,27 @@ Enhancements/Change Log
                - Send screen image via e-mail - Fixes by Patrick Bielen
             Added new options to define the margins for the Print Screen
                function.
-	    Added auto login support
-	    New splash screen donated by Carlo Daffara from Conecta http://www.conecta.it
-	    Added blinking cursor.  Beta and may leave traces.
+            Added auto login suppor
 
-	    Well just run it to see all the new stuff.
+            New splash screen donated by Carlo Daffara from Conecta http://www.conecta.it
+
+            Added blinking cursor.  Beta and may leave traces
+
+            
+
+           Well just run it to see all the new stuff
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 05/09/2002  Lots of clean up for bounding area selection.
