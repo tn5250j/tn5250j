@@ -205,26 +205,61 @@ public class CodePage {
 
       if (convert) {
 
+         if (codePage.equals("1141")) {
+            char c = ' ';
+            try {
+               byte[] b = new byte[1];
+               b[0] = (byte)index;
+               c = (new String(b, "Cp1141")).charAt(0);
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return c;
+         }
+
+         if (codePage.equals("1140")) {
+            char c = ' ';
+            try {
+               byte[] b = new byte[1];
+               b[0] = (byte)index;
+               c = (new String(b, "Cp1140")).charAt(0);
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return c;
+         }
+
          int ea = ebcdic[index & 0xff];
          if (ea > 0x7F) {
 //            System.out.println("conversion found for index: " + index + " "  + ea + " "  + (char)ebcdic[index & 0xff] + " " + unicode[ea]);
             return unicode[ea];
          }
-         else
+         else {
             return (char)ea;
+         }
 
       }
       else
          return (char)ebcdic[index & 0xff];
    }
-   public byte getASCII(int index) {
-
+   /**
+    *
+    * @deprecated
+    */
+   public byte getASCII(int index)
+   {
       return (byte)ascii[index];
-
    }
-   public char getASCIIChar(int index) {
+
+   /**
+    *
+    * @deprecated
+    */
+   public char getASCIIChar(int index)
+   {
       return (char)ebcdic[index & 0xff];
    }
+
    public String getCodePage () {
 
       return codePage;
@@ -266,6 +301,10 @@ public class CodePage {
              unicode = uni1253;
              convert = true;
              //            System.out.println("using conversion");
+         } else if(codePage.toLowerCase().startsWith("1141")) {
+             convert = true;
+         } else if(codePage.toLowerCase().startsWith("1140")) {
+             convert = true;
          } else {
             convert = false;
 //            System.out.println("not using conversion");
@@ -286,6 +325,26 @@ public class CodePage {
    public byte uni2ebcdic (char index) {
 
       if (convert) {
+        if (codePage.equals("1141")) {
+            byte b = 0x0;
+            try {
+               b = Character.toString(index).getBytes("Cp1141")[0];
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return b;
+         }
+
+         if (codePage.equals("1140")) {
+            byte b = 0x0;
+            try {
+               b = Character.toString(index).getBytes("Cp1140")[0];
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return b;
+         }
+
          int ind = index;
          int len = unicode.length;
          if (index > '\u007F')
@@ -299,7 +358,7 @@ public class CodePage {
 
 //         System.out.println("using conversion");
          return (byte)ascii[ind & 0xff];
-      }
+       }
       else
          return (byte)ascii[index & 0xff];
    }
