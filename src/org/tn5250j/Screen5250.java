@@ -153,9 +153,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    protected boolean guiShowUnderline = true;
    private boolean restrictCursor =false;
    private Rectangle restriction;
+   private final Object kblock = new Object();
 
    public Screen5250(Gui5250 gui, Properties props) {
-
       this.gui = gui;
 
       loadProps(props);
@@ -1153,6 +1153,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    }
 
+   protected void setPrehelpState(boolean setErrorCode) {
+      statusErrorCode = setErrorCode;
+      setKeyboardLocked(setErrorCode);
+      bufferedKeys = null;
+      keysBuffered = false;
+      setKBIndicatorOff();
+   }
+
    /**
     * The sendKeys method sends a string of keys to the virtual screen. This
     * method acts as if keystrokes were being typed from the keyboard.  The
@@ -1246,16 +1254,21 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     */
    public void sendKeys(String text) {
 
+      if (text == null) {
+         return;
+      }
 
       if (keyboardLocked) {
-
-         if(text.equals("[reset]") || text.equals("[sysreq]") || text.equals("[attn]")) {
-            bufferedKeys = "";
-            keysBuffered = false;
-            setKBIndicatorOff();
+         if(text.equals("[reset]") || text.equals("[sysreq]")
+                  || text.equals("[attn]")) {
             simulateMnemonic(getMnemonicValue(text));
          }
          else {
+            if (isStatusErrorCode()) {
+               Toolkit.getDefaultToolkit().beep();
+               return;
+            }
+
             keysBuffered = true;
             setKBIndicatorOn();
 
@@ -1272,11 +1285,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
       else {
 
+
          if (keysBuffered) {
-            text = bufferedKeys + text;
+            if (text != null) {
+               text = bufferedKeys + text;
+            }
             keysBuffered = false;
             setKBIndicatorOff();
-            bufferedKeys = "";
+            bufferedKeys = null;
          }
          // check to see if position is in a field and if it is then change
          //   current field to that field
@@ -1290,20 +1306,25 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             String s;
             boolean done = false;
 
-            while (strokenizer.hasMoreKeyStrokes() && !done) {
+            while (strokenizer.hasMoreKeyStrokes()  && !keyboardLocked &&
+                        !isStatusErrorCode() && !done) {
+
                s = strokenizer.nextKeyStroke();
                if (s.length() == 1) {
+
                   simulateKeyStroke(s.charAt(0));
                }
                else {
 
-                  if (s != null)
+                  if (s != null) {
                      simulateMnemonic(getMnemonicValue(s));
-                  else
 
-                     System.out.println(" mnemonic " + s);
+                  }
+                  else
+                     System.out.println(" send keys mnemonic " + s);
                }
                if (keyboardLocked) {
+
                   bufferedKeys = strokenizer.getUnprocessedKeyStroked();
                   if (bufferedKeys != null) {
                      keysBuffered = true;
@@ -1312,6 +1333,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                   }
                   done = true;
                }
+
             }
          }
       }
@@ -1934,8 +1956,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    protected boolean simulateKeyStroke(char c){
 
       if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
-         restoreErrorLine();
-         setStatus(STATUS_ERROR_CODE,STATUS_VALUE_OFF,null);
+         return false;
       }
 
       boolean updateField = false;
@@ -2350,6 +2371,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       pendingInsert = true;
       gui.sendNegResponse2(ec);
 
+
    }
 
    private void process_XY(int pos) {
@@ -2527,16 +2549,18 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * @param k true of false
     */
    public void setKeyboardLocked (boolean k) {
-//      System.out.println(" lock it " + k);
+
       keyboardLocked = k;
+
       if (!keyboardLocked) {
 
          if (keysBuffered) {
-
             sendKeys("");
          }
 
       }
+
+
 
    }
 
@@ -3510,13 +3534,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
          case STATUS_ERROR_CODE:
             if (value == STATUS_VALUE_ON) {
-               statusErrorCode = true;
-               setKeyboardLocked(true);
+               setPrehelpState(true);
                Toolkit.getDefaultToolkit().beep();
             }
             else {
-               statusErrorCode = false;
-               setKeyboardLocked(false);
+               setPrehelpState(false);
                homePos = saveHomePos;
                saveHomePos = 0;
                pendingInsert = false;
