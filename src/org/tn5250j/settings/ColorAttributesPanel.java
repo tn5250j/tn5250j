@@ -99,57 +99,93 @@ public class ColorAttributesPanel extends AttributesPanel {
 
       // set the default color for display as that being for back ground
       jcc.setColor(getColorProperty("colorBg"));
+
       colorList.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JComboBox cb = (JComboBox)e.getSource();
                 String newSelection = (String)cb.getSelectedItem();
                 if (newSelection.equals(LangTool.getString("sa.bg"))) {
-                  jcc.setColor(getColorProperty("colorBg"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorBg());
+                  else
+                     jcc.setColor(getColorProperty("colorBg"));
                 }
                 if (newSelection.equals(LangTool.getString("sa.blue"))) {
-                  jcc.setColor(getColorProperty("colorBlue"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorBlue());
+                  else
+                     jcc.setColor(getColorProperty("colorBlue"));
                 }
                 if (newSelection.equals(LangTool.getString("sa.red"))) {
-                  jcc.setColor(getColorProperty("colorRed"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorRed());
+                  else
+                     jcc.setColor(getColorProperty("colorRed"));
 
                 }
                 if (newSelection.equals(LangTool.getString("sa.pink"))) {
-                  jcc.setColor(getColorProperty("colorPink"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorPink());
+                  else
+                     jcc.setColor(getColorProperty("colorPink"));
 
                 }
                 if (newSelection.equals(LangTool.getString("sa.green"))) {
-                  jcc.setColor(getColorProperty("colorGreen"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorGreen());
+                  else
+                     jcc.setColor(getColorProperty("colorGreen"));
 
                 }
                 if (newSelection.equals(LangTool.getString("sa.turq"))) {
-                  jcc.setColor(getColorProperty("colorTurq"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorTurq());
+                  else
+                     jcc.setColor(getColorProperty("colorTurq"));
 
                 }
                 if (newSelection.equals(LangTool.getString("sa.yellow"))) {
-                  jcc.setColor(getColorProperty("colorYellow"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorYellow());
+                  else
+                     jcc.setColor(getColorProperty("colorYellow"));
 
                 }
                 if (newSelection.equals(LangTool.getString("sa.white"))) {
-                  jcc.setColor(getColorProperty("colorWhite"));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorWhite());
+                  else
+                     jcc.setColor(getColorProperty("colorWhite"));
                 }
 
                 if (newSelection.equals(LangTool.getString("sa.guiField"))) {
-                  jcc.setColor(getColorProperty("colorGUIField",Color.white));
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorGuiField());
+                  else
+                     jcc.setColor(getColorProperty("colorGUIField",Color.white));
                 }
                 if (newSelection.equals(LangTool.getString("sa.cursorColor"))) {
-                  jcc.setColor(getColorProperty("colorCursor",
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorBg());
+                  else
+                     jcc.setColor(getColorProperty("colorCursor",
                               getColorProperty("colorBg")));
                 }
                 if (newSelection.equals(LangTool.getString("sa.columnSep"))) {
-                  jcc.setColor(getColorProperty("colorSep",
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorSeparator());
+                  else
+                     jcc.setColor(getColorProperty("colorSep",
                               getColorProperty("colorWhite")));
                 }
 
                 if (newSelection.equals(LangTool.getString("sa.hexAttrColor"))) {
-                  jcc.setColor(getColorProperty("colorHexAttr",
+                  if (colorSchema != null)
+                     jcc.setColor(colorSchema.getColorHexAttr());
+                  else
+                     jcc.setColor(getColorProperty("colorHexAttr",
                               getColorProperty("colorWhite")));
                 }
-
             }
         });
 

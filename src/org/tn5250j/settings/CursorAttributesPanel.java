@@ -145,6 +145,9 @@ public class CursorAttributesPanel extends AttributesPanel {
       rulerFPanel.setBorder(BorderFactory.createTitledBorder(""));
 
       rulerFixed = new JCheckBox(LangTool.getString("sa.rulerFixed"));
+      rulerFixed.setSelected(true);
+      if (getStringProperty("rulerFixed").equals("Yes"))
+         rulerFixed.setSelected(false);
 
       rulerFPanel.add(rulerFixed);
 
@@ -235,14 +238,14 @@ public class CursorAttributesPanel extends AttributesPanel {
       if (rulerFixed.isSelected()) {
          changes.firePropertyChange(this,"rulerFixed",
                            getStringProperty("rulerFixed"),
-                           "Yes");
-         setProperty("rulerFixed","Yes");
+                           "No");
+         setProperty("rulerFixed","No");
       }
       else {
          changes.firePropertyChange(this,"rulerFixed",
                            getStringProperty("rulerFixed"),
-                           "No");
-         setProperty("rulerFixed","No");
+                           "Yes");
+         setProperty("rulerFixed","Yes");
       }
 
       changes.firePropertyChange(this,"cursorBottOffset",
