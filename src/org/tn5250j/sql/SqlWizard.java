@@ -28,10 +28,12 @@ package org.tn5250j.sql;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Properties;
 import javax.swing.*;
 import com.ibm.as400.vaccess.*;
 import com.ibm.as400.access.*;
 import java.sql.*;
+import org.tn5250j.My5250;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.system.OperatingSystem;
@@ -51,6 +53,7 @@ public class SqlWizard extends JFrame {
    private String host;
    private String queryText;
    private JTextArea queryTextArea;
+   private static Properties sessions = new Properties();
 
    public SqlWizard(String host, String name, String password ) {
 
@@ -122,13 +125,16 @@ public class SqlWizard extends JFrame {
          //Center the window
          Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
          Dimension frameSize = getSize();
+   		frameSize.height = (Integer.parseInt(My5250.sessions.getProperty("emul.height"))-100);
          if (frameSize.height > screenSize.height)
             frameSize.height = screenSize.height;
          if (frameSize.width > screenSize.width)
             frameSize.width = screenSize.width;
+            
+        setSize(frameSize.width, frameSize.height);
 
          setLocation((screenSize.width - frameSize.width) / 2,
-                        (screenSize.height - frameSize.height) / 2);
+                        (screenSize.height - frameSize.height) / 3);
 
          setVisible(true);
       }

@@ -96,6 +96,8 @@ public class XTFRFile
 	ProgressMonitor pm;
 	JProgressBar progressBar;
 	JTextArea taskOutput;
+	JLabel fieldsLabel;
+	JLabel textDescLabel;
 	JLabel label;
 	JLabel note;
 	ProgressOptionPane monitor;
@@ -595,7 +597,7 @@ public class XTFRFile
 		gbc.insets = new Insets(0, 5, 0, 5);		
 		as400p.add(queryWizard, gbc);
 		// Field Selection panel
-		JLabel fieldsLabel = new JLabel(LangTool.getString("xtfr.labelFields"));
+		fieldsLabel = new JLabel(LangTool.getString("xtfr.labelFields"));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 5;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -619,7 +621,7 @@ public class XTFRFile
 		fieldGroup.add(allFields);
 		fieldGroup.add(selectedFields);
 		// Field Text Description panel
-		JLabel textDescLabel =
+		textDescLabel =
 			new JLabel(LangTool.getString("xtfr.labelTxtDesc"));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 6;
@@ -786,16 +788,10 @@ public class XTFRFile
 		as400QueryP = new JPanel();
 		as400QueryP.setLayout(new BorderLayout());
 
-		queryStatement = new JTextArea(5, 40);
+		queryStatement = new JTextArea(2, 40);
 		JScrollPane scrollPane = new JScrollPane(queryStatement);
 		queryStatement.setLineWrap(true);
 		as400QueryP.add(scrollPane, BorderLayout.CENTER);
-
-		as400FieldP = new JPanel();
-
-		AlignLayout as400fLayout = new AlignLayout();
-		as400FieldP.setLayout(as400fLayout);
-			
 
 		// now show the world what we can do
 		show();
@@ -910,12 +906,56 @@ public class XTFRFile
 		if (source == useQuery) {
 			if (useQuery.isSelected()) {
 				queryWizard.setEnabled(true);
-				as400p.remove(as400FieldP);
-				as400p.add(as400QueryP, BorderLayout.SOUTH);
+				as400p.remove(fieldsLabel);
+				as400p.remove(allFields);
+				as400p.remove(selectedFields);
+				as400p.remove(textDescLabel);
+				as400p.remove(txtDesc);
+				as400p.remove(intDesc);
+				gbc = new GridBagConstraints();
+				gbc.gridx = 0; gbc.gridy = 5;
+				gbc.gridheight = 2;
+				gbc.gridwidth = 3;
+				gbc.fill = GridBagConstraints.BOTH;
+				gbc.anchor = GridBagConstraints.WEST;
+				gbc.insets = new Insets(5, 10, 10, 10);
+				as400p.add(as400QueryP, gbc);
 			} else {
 				queryWizard.setEnabled(false);
 				as400p.remove(as400QueryP);
-				as400p.add(as400FieldP, BorderLayout.SOUTH);
+				gbc = new GridBagConstraints();
+				gbc.gridx = 0; gbc.gridy = 5;
+				gbc.anchor = GridBagConstraints.WEST;
+				gbc.insets = new Insets(5, 10, 5, 5);
+				as400p.add(fieldsLabel, gbc);
+				allFields.setSelected(true);
+				gbc = new GridBagConstraints();
+				gbc.gridx = 1; gbc.gridy = 5;
+				gbc.anchor = GridBagConstraints.CENTER;
+				gbc.insets = new Insets(0, 5, 0, 5);
+				as400p.add(allFields, gbc);		
+				gbc = new GridBagConstraints();
+				gbc.gridx = 2; gbc.gridy = 5;
+				gbc.anchor = GridBagConstraints.CENTER;
+				gbc.insets = new Insets(0, 5, 0, 10);
+				as400p.add(selectedFields, gbc);				
+				// Field Text Description panel
+				gbc = new GridBagConstraints();
+				gbc.gridx = 0; gbc.gridy = 6;
+				gbc.anchor = GridBagConstraints.WEST;
+				gbc.insets = new Insets(5, 10, 5, 5);
+				as400p.add(textDescLabel, gbc);
+				txtDesc.setSelected(true);
+				gbc = new GridBagConstraints();
+				gbc.gridx = 1; gbc.gridy = 6;
+				gbc.anchor = GridBagConstraints.CENTER;
+				gbc.insets = new Insets(0, 5, 5, 5);
+				as400p.add(txtDesc, gbc);		
+				gbc = new GridBagConstraints();
+				gbc.gridx = 2; gbc.gridy = 6;
+				gbc.anchor = GridBagConstraints.CENTER;
+				gbc.insets = new Insets(0, 5, 5, 10);
+				as400p.add(intDesc, gbc);	
 			}
 			this.validate();
 			this.repaint();
