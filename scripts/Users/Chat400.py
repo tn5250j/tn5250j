@@ -15,11 +15,12 @@ import com.ibm.as400.resource as rsc
 from javax import swing
 import java.awt as awt
 
-global server, name, passw
+global server, curUsr, name, passw
 #**************************************************************************
 server = ''
-name = ''
-passw = ''
+curUsr = ''
+name = 'QUSER'
+passw = 'QUSER'
 CHATQ = "/QSYS.LIB/QGPL.LIB/chat400.DTAQ"
 KEYLEN = 10
 #==========================================================================
@@ -31,7 +32,7 @@ class Poller(Runnable):
     def run(self):
         done = 0
         dq = acc.KeyedDataQueue(self.parent.as400, CHATQ)
-        curUsr = self.parent.as400.getUserId() # Current User ID.
+        #curUsr = self.parent.as400.getUserId() # Current User ID.
         if not dq.exists():
             dq.create(KEYLEN, 512)
 
@@ -60,9 +61,7 @@ class Poller(Runnable):
 class Chat400(swing.JFrame, awt.event.WindowListener):
 #==========================================================================
     def __init__(self):
-        swing.JFrame.__init__(self, title=\
-                              "CHAT400 - An AS/400 Instant Messenger", \
-                              resizable=0)
+        swing.JFrame.__init__(self, title=curUsr + " - CHAT400", resizable=0)
         try:
             self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE) # JDK1.4?
             self.setLocation(275, 150)
@@ -111,7 +110,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         self.polchat.interrupt()
         self.dispose()
     def windowClosing(self, event):
-        System.setProperty("chat400", "0")
+        System.setProperty("chat400", "None")
         self.sessionManager = _session.getSessionManager()
         self.sessions = self.sessionManager.getSessions()
         self.sessList = self.sessions.getSessionsList()
@@ -167,9 +166,9 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
     #**************************
     def btnActSnd(self, event):
         cmd = acc.CommandCall(self.as400)
-        curUsr = self.as400.getUserId()
+        #curUsr = self.as400.getUserId()
         selected = self.users.getSelectedItem()
-        sndUsr = selected.split(':')[0]
+        sndUsr =selected.split(':')[0]
         chatTxt = self.chatTxt.getText()
         dq = acc.KeyedDataQueue(self.as400, CHATQ)
         if not dq.exists():
@@ -256,18 +255,17 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 
         self.show()
 
+try:
+    server = _session.getHostName()
+    curUsr = _session.getConfigurationResource().upper()
+except:
+    None
 isRunning = System.getProperty("chat400")
-if not isRunning == '1':
-    System.setProperty("chat400", "1")
+if not isRunning == curUsr:
+    System.setProperty("chat400", curUsr)
+    chatter=Chat400()
+    chatter.run(server, name, passw)
     try:
-        server = _session.getHostName()
-        name = _session.getAllocDeviceName()
-        #passw = 'password'
+        _session.requestFocus()
     except:
         None
-    chatter=Chat400()
-    if passw != '':
-        chatter.run(server, name, passw)
-    else:
-        chatter.run(server, name)
-    _session.requestFocus()
