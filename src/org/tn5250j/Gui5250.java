@@ -231,212 +231,212 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       KeyStroke ks;
 
-      Action newSession = new AbstractAction("newSession") {
+      Action newSession = new AbstractAction(MNEMONIC_OPEN_NEW) {
             public void actionPerformed(ActionEvent e) {
                me.startNewSession();
             }
         };
 
-      if (!keyMap.isKeyStrokeDefined("[opennew]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_OPEN_NEW)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_N,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[opennew]");
+         ks = keyMap.getKeyStroke(MNEMONIC_OPEN_NEW);
       }
 
-      getInputMap().put(ks,"newSession");
-      getActionMap().put("newSession",newSession );
+      getInputMap().put(ks,MNEMONIC_OPEN_NEW);
+      getActionMap().put(MNEMONIC_OPEN_NEW,newSession );
 
-      Action chgSession = new AbstractAction("chgSession") {
+      Action chgSession = new AbstractAction(MNEMONIC_TOGGLE_CONNECTION) {
             public void actionPerformed(ActionEvent e) {
                changeConnection();
             }
         };
 
-      if (!keyMap.isKeyStrokeDefined("[togcon]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_TOGGLE_CONNECTION)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_X,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[togcon]");
+         ks = keyMap.getKeyStroke(MNEMONIC_TOGGLE_CONNECTION);
       }
 
-      getInputMap().put(ks,"chgSession");
-      getActionMap().put("chgSession",chgSession );
+      getInputMap().put(ks,MNEMONIC_TOGGLE_CONNECTION);
+      getActionMap().put(MNEMONIC_TOGGLE_CONNECTION,chgSession );
 
-      Action nxtSession = new AbstractAction("nxtSession") {
+      Action nxtSession = new AbstractAction(MNEMONIC_JUMP_NEXT) {
             public void actionPerformed(ActionEvent e) {
                nextSession();
             }
         };
 
-      if (!keyMap.isKeyStrokeDefined("[jumpnext]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_NEXT)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[jumpnext]");
+         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_NEXT);
       }
 
-      getInputMap().put(ks,"nxtSession");
-      getActionMap().put("nxtSession",nxtSession );
+      getInputMap().put(ks,MNEMONIC_JUMP_NEXT);
+      getActionMap().put(MNEMONIC_JUMP_NEXT,nxtSession );
 
-      Action prevSession = new AbstractAction("prevSession") {
+      Action prevSession = new AbstractAction(MNEMONIC_JUMP_PREV) {
             public void actionPerformed(ActionEvent e) {
                prevSession();
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[jumpprev]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_PREV)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[jumpprev]");
+         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_PREV);
       }
-      getInputMap().put(ks,"prevSession");
-      getActionMap().put("prevSession",prevSession );
+      getInputMap().put(ks,MNEMONIC_JUMP_PREV);
+      getActionMap().put(MNEMONIC_JUMP_PREV,prevSession );
 
-      Action hotSpots = new AbstractAction("hotSpots") {
+      Action hotSpots = new AbstractAction(MNEMONIC_HOTSPOTS) {
             public void actionPerformed(ActionEvent e) {
                screen.toggleHotSpots();
-               System.out.println("hotspots");
+               System.out.println(MNEMONIC_HOTSPOTS);
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[hotspots]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_HOTSPOTS)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[hotspots]");
+         ks = keyMap.getKeyStroke(MNEMONIC_HOTSPOTS);
       }
 
-      getInputMap().put(ks,"hotSpots");
-      getActionMap().put("hotSpots",hotSpots );
+      getInputMap().put(ks,MNEMONIC_HOTSPOTS);
+      getActionMap().put(MNEMONIC_HOTSPOTS,hotSpots );
 
-      Action gui = new AbstractAction("gui") {
+      Action gui = new AbstractAction(MNEMONIC_GUI) {
             public void actionPerformed(ActionEvent e) {
                screen.toggleGUIInterface();
             }
         };
 
-      if (!keyMap.isKeyStrokeDefined("[gui]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_GUI)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_G,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[gui]");
+         ks = keyMap.getKeyStroke(MNEMONIC_GUI);
       }
-      getInputMap().put(ks,"gui");
-      getActionMap().put("gui",gui );
+      getInputMap().put(ks,MNEMONIC_GUI);
+      getActionMap().put(MNEMONIC_GUI,gui );
 
-      Action msg = new AbstractAction("msg") {
+      Action msg = new AbstractAction(MNEMONIC_DISP_MESSAGES) {
             public void actionPerformed(ActionEvent e) {
                vt.systemRequest('4');
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[dspmsgs]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_DISP_MESSAGES)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_M,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[dspmsgs]");
+         ks = keyMap.getKeyStroke(MNEMONIC_DISP_MESSAGES);
       }
-      getInputMap().put(ks,"msg");
-      getActionMap().put("msg",msg );
+      getInputMap().put(ks,MNEMONIC_DISP_MESSAGES);
+      getActionMap().put(MNEMONIC_DISP_MESSAGES,msg );
 
-      Action attr = new AbstractAction("attr") {
+      Action attr = new AbstractAction(MNEMONIC_DISP_ATTRIBUTES) {
             public void actionPerformed(ActionEvent e) {
                doAttributes();
 
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[dspattr]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_DISP_ATTRIBUTES)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_D,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[dspattr]");
+         ks = keyMap.getKeyStroke(MNEMONIC_DISP_ATTRIBUTES);
       }
-      getInputMap().put(ks,"attr");
-      getActionMap().put("attr",attr );
+      getInputMap().put(ks,MNEMONIC_DISP_ATTRIBUTES);
+      getActionMap().put(MNEMONIC_DISP_ATTRIBUTES,attr );
 
-      Action print = new AbstractAction("print") {
+      Action print = new AbstractAction(MNEMONIC_PRINT_SCREEN) {
             public void actionPerformed(ActionEvent e) {
                printMe();
 
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[print]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_PRINT_SCREEN)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[print]");
+         ks = keyMap.getKeyStroke(MNEMONIC_PRINT_SCREEN);
       }
-      getInputMap().put(ks,"print");
-      getActionMap().put("print",print );
+      getInputMap().put(ks,MNEMONIC_PRINT_SCREEN);
+      getActionMap().put(MNEMONIC_PRINT_SCREEN,print );
 
-      Action cursor = new AbstractAction("cursor") {
+      Action cursor = new AbstractAction(MNEMONIC_CURSOR) {
             public void actionPerformed(ActionEvent e) {
                screen.crossHair();
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[cursor]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_CURSOR)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_L,KeyEvent.ALT_MASK,false);
       }
       else {
-         ks = keyMap.getKeyStroke("[cursor]");
+         ks = keyMap.getKeyStroke(MNEMONIC_CURSOR);
       }
-      getInputMap().put(ks,"cursor");
-      getActionMap().put("cursor",cursor );
+      getInputMap().put(ks,MNEMONIC_CURSOR);
+      getActionMap().put(MNEMONIC_CURSOR,cursor );
 
-      Action debug = new AbstractAction("debug") {
+      Action debug = new AbstractAction(MNEMONIC_DEBUG) {
             public void actionPerformed(ActionEvent e) {
                vt.toggleDebug();
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[debug]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_DEBUG)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[debug]");
+         ks = keyMap.getKeyStroke(MNEMONIC_DEBUG);
       }
-      getInputMap().put(ks,"debug");
-      getActionMap().put("debug",debug );
+      getInputMap().put(ks,MNEMONIC_DEBUG);
+      getActionMap().put(MNEMONIC_DEBUG,debug );
 
-      Action close = new AbstractAction("close") {
+      Action close = new AbstractAction(MNEMONIC_CLOSE) {
             public void actionPerformed(ActionEvent e) {
                closeSession();
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[close]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_CLOSE)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[close]");
+         ks = keyMap.getKeyStroke(MNEMONIC_CLOSE);
       }
-      getInputMap().put(ks,"close");
-      getActionMap().put("close",close );
+      getInputMap().put(ks,MNEMONIC_CLOSE);
+      getActionMap().put(MNEMONIC_CLOSE,close );
 
-      Action transfer = new AbstractAction("transfer") {
+      Action transfer = new AbstractAction(MNEMONIC_FILE_TRANSFER) {
             public void actionPerformed(ActionEvent e) {
                doMeTransfer();
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[transfer]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_FILE_TRANSFER)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[transfer]");
+         ks = keyMap.getKeyStroke(MNEMONIC_FILE_TRANSFER);
       }
-      getInputMap().put(ks,"transfer");
-      getActionMap().put("transfer",transfer );
+      getInputMap().put(ks,MNEMONIC_FILE_TRANSFER);
+      getActionMap().put(MNEMONIC_FILE_TRANSFER,transfer );
 
-      Action e_mail = new AbstractAction("e-mail") {
+      Action e_mail = new AbstractAction(MNEMONIC_E_MAIL) {
             public void actionPerformed(ActionEvent e) {
                sendScreenEMail();
             }
         };
-      if (!keyMap.isKeyStrokeDefined("[e-mail]")) {
+      if (!keyMap.isKeyStrokeDefined(MNEMONIC_E_MAIL)) {
          ks = KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK);
       }
       else {
-         ks = keyMap.getKeyStroke("[e-mail]");
+         ks = keyMap.getKeyStroke(MNEMONIC_E_MAIL);
       }
-      getInputMap().put(ks,"e-mail");
-      getActionMap().put("e-mail",e_mail );
+      getInputMap().put(ks,MNEMONIC_E_MAIL);
+      getActionMap().put(MNEMONIC_E_MAIL,e_mail );
 //
 //         Action ohshit = new AbstractAction() {
 //               public void actionPerformed(ActionEvent e) {
@@ -1134,6 +1134,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       Action action;
       popup = new JPopupMenu();
       final Gui5250 g = this;
+      JMenuItem mi;
 
 
       final int pos = screen.getRowColFromPoint(me.getX(),me.getY()) -
@@ -1146,14 +1147,17 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+
+         popup.add(createMenuItem(action,MNEMONIC_COPY));
+
+
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
                   screen.pasteMe(false);
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,MNEMONIC_PASTE));
 
          action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
                public void actionPerformed(ActionEvent e) {
@@ -1173,7 +1177,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+
+         popup.add(createMenuItem(action,MNEMONIC_COPY));
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
@@ -1181,7 +1186,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,MNEMONIC_PASTE));
 
          action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
                public void actionPerformed(ActionEvent e) {
@@ -1211,7 +1216,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
             menuItem.setArmed(false);
             popup.add(menuItem);
 
-//            JMenu sumMenu = new JMenu(LangTool.getString("popup.macros"));
             JMenu sumMenu = new JMenu(LangTool.getString("popup.calc"));
             popup.add(sumMenu);
 
@@ -1239,7 +1243,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,MNEMONIC_PRINT_SCREEN));
 
          popup.addSeparator();
 
@@ -1262,21 +1266,21 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   screen.sendKeys("[attn]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_ATTN));
 
          action = new AbstractAction(LangTool.getString("key.[reset]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[reset]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_RESET));
 
          action = new AbstractAction(LangTool.getString("key.[sysreq]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[sysreq]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_SYSREQ));
 
          if (screen.isMessageWait()) {
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
@@ -1284,7 +1288,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
                      vt.systemRequest('4');
                   }
               };
-            kbMenu.add(action);
+
+            kbMenu.add(createMenuItem(action,MNEMONIC_DISP_MESSAGES));
          }
 
          kbMenu.addSeparator();
@@ -1294,49 +1299,53 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   screen.sendKeys("[dupfield]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_DUP_FIELD));
 
          action = new AbstractAction(LangTool.getString("key.[help]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[help]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_HELP));
 
          action = new AbstractAction(LangTool.getString("key.[eraseeof]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[eraseeof]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_ERASE_EOF));
 
          action = new AbstractAction(LangTool.getString("key.[field+]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[field+]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_PLUS));
+
 
          action = new AbstractAction(LangTool.getString("key.[field-]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[field-]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_MINUS));
+
 
          action = new AbstractAction(LangTool.getString("key.[newline]")) {
                public void actionPerformed(ActionEvent e) {
                   screen.sendKeys("[newline]");
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_NEW_LINE));
+
 
          action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
                public void actionPerformed(ActionEvent e) {
                   vt.hostPrint(1);
                }
            };
-         kbMenu.add(action);
+         kbMenu.add(createMenuItem(action,MNEMONIC_PRINT));
+
 
          if (screen.isMessageWait()) {
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
@@ -1344,7 +1353,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                      vt.systemRequest('4');
                   }
               };
-            popup.add(action);
+            popup.add(createMenuItem(action,MNEMONIC_DISP_MESSAGES));
          }
 
          popup.addSeparator();
@@ -1355,7 +1364,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,""));
 
          action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
                public void actionPerformed(ActionEvent e) {
@@ -1364,7 +1373,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,""));
 
          action = new AbstractAction(LangTool.getString("popup.settings")) {
                public void actionPerformed(ActionEvent e) {
@@ -1372,7 +1381,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,MNEMONIC_DISP_ATTRIBUTES));
 
 
          popup.addSeparator();
@@ -1424,10 +1433,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         popup.add(action);
+         popup.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
 
          JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
-
          popup.add(sendMenu);
 
 
@@ -1437,7 +1445,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
-         sendMenu.add(action);
+         sendMenu.add(createMenuItem(action,MNEMONIC_E_MAIL));
 
          action = new AbstractAction(LangTool.getString("popup.file")) {
                public void actionPerformed(ActionEvent e) {
@@ -1457,7 +1465,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
             }
         };
 
-      popup.add(action);
+      popup.add(createMenuItem(action,MNEMONIC_OPEN_NEW));
 
       popup.addSeparator();
 
@@ -1480,7 +1488,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 
       }
-      popup.add(action);
+      popup.add(createMenuItem(action,MNEMONIC_TOGGLE_CONNECTION));
 
       action = new AbstractAction(LangTool.getString("popup.close")) {
             public void actionPerformed(ActionEvent e) {
@@ -1488,11 +1496,34 @@ public class Gui5250 extends JPanel implements ComponentListener,
             }
         };
 
-      popup.add(action);
+      popup.add(createMenuItem(action,MNEMONIC_CLOSE));
 
       popup.show(me.getComponent(),
                me.getX(),me.getY());
 
+   }
+
+   private JMenuItem createMenuItem(Action action, String accelKey) {
+      JMenuItem mi;
+
+      mi =new JMenuItem();
+      mi.setAction(action);
+      if (keyMap.isKeyStrokeDefined(accelKey))
+         mi.setAccelerator(keyMap.getKeyStroke(accelKey));
+      else {
+
+         InputMap map = getInputMap();
+         KeyStroke[] allKeys = map.allKeys();
+         for (int x = 0; x < allKeys.length; x++) {
+
+            if (((String)map.get(allKeys[x])).equals(accelKey)) {
+               mi.setAccelerator(allKeys[x]);
+               break;
+            }
+         }
+
+      }
+      return mi;
    }
 
    private void doConnections() {
@@ -1558,7 +1589,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void closeMe() {
 
       me.closeSession((Session)this);
-
+      keyMap.removeKeyChangeListener(this);
    }
 
    private void executeMeMacro(ActionEvent ae) {
