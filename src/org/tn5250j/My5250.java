@@ -272,29 +272,35 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
             // check if a locale parameter is specified on the command line
             if (isSpecified("-L",args)) {
-
                Locale.setDefault(parseLocal(getParm("-L",args)));
-               LangTool.init();
-               if (args[0].startsWith("-")) {
-
-                  m.sessionArgs = null;
-               }
-               else {
-                  m.splash.updateProgress(++m.step);
-                  m.frame1.setVisible(true);
-                  m.splash.setVisible(false);
-                  m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                  LangTool.init();
-                  m.sessionArgs = args;
-               }
             }
-            else {
-               LangTool.init();
+            LangTool.init();
+
+//            // check if a locale parameter is specified on the command line
+//            if (isSpecified("-L",args)) {
+//
+//               Locale.setDefault(parseLocal(getParm("-L",args)));
+//               LangTool.init();
+//               if (args[0].startsWith("-")) {
+//
+//                  m.sessionArgs = null;
+//               }
+//               else {
+//                  m.splash.updateProgress(++m.step);
+//                  m.frame1.setVisible(true);
+//                  m.splash.setVisible(false);
+//                  m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//                  LangTool.init();
+//                  m.sessionArgs = args;
+//               }
+//            }
+//            else {
+//               LangTool.init();
                if (isSpecified("-s",args))
                   m.sessionArgs = args;
                else
                   m.sessionArgs = null;
-            }
+//            }
          }
          else {
 
@@ -514,7 +520,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          sesProps.put(SSL_TYPE,getParm("-sslType",args));
       }
 
-  
+
       // check if device name is specified
       if (isSpecified("-dn=hostname",args)){
          String dnParam;
@@ -533,7 +539,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
          sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));
       }
-         
+
       Session s = manager.openSession(sesProps,propFileName,sel);
 
       if (!frame1.isVisible()) {
@@ -800,13 +806,20 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
     * Sets the python.path system variable to make the jython jar available
     * to scripting process.
     *
+    * This needs to be rewritten to loop through and obtain all jars in the
+    * user directory.  Maybe also additional paths to search.
     */
    private void initJarPaths() {
 
       String userDir = System.getProperty("user.dir");
       if (new File(userDir + File.separator + "jython.jar").exists()) {
 
-         jarClassPaths = userDir + File.separator + "jython.jar";
+         jarClassPaths = "." + File.pathSeparator + "jython.jar"
+                           + File.pathSeparator + "jt400.jar"
+                           + File.pathSeparator + "itext.jar";
+         if (sessions.contains("scriptClassPath")) {
+            jarClassPaths += File.pathSeparator + sessions.getProperty("scriptClassPath");
+         }
       }
 
       if (jarClassPaths != null)
