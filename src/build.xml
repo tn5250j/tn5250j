@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="tn5250j" default="info" basedir=".">
+
+	<!-- global properties -->
+	<property name="source.dir"		    value="${basedir}/src" />
+	<property name="build.dir"          value="${basedir}/build" />
+   <property name="build.classes.dir"  value="${build.dir}"/>
+	<property name="dist.dir"           value="${basedir}/dist" />
+	<property name="javadoc.dir"	    value="${basedir}/javadoc" />
+	<property name="lib.dir"		    value="${basedir}/lib" />
+	<property name="conf.dir"		    value="${basedir}/conf" />
+	<property name="jarname"	        value="my5250.jar" />
+	<property name="zipsrcname"	        value="tn5250j_src.zip" />
+
+	<!-- classpath -->
+	<path id="classpath">
+        <pathelement path="${build.classes.dir}" />
+        <pathelement path="${conf.dir}" />
+      	<fileset dir="${lib.dir}" >
+			<include name="*.jar" />
+			<include name="*.zip" />
+		</fileset>
+	</path>
+
+
+	<!-- the ftp task can be used to transfer files to a remote system -->
+	<!--
+	<taskdef name="ftp"
+		 classname="org.apache.tools.ant.taskdefs.optional.net.FTP"
+		 classpath="${ant_home}/lib/optional.jar"
+    />
+	-->
+
+
+
+	<target name="info" description="Prints a short summary of this project">
+        <echo message="" />
+        <echo message="tn5250j:" />
+        <echo message="========" />
+        <echo message="" />
+        <echo message="This application is an open source implementation" />
+        <echo message="of telnet 5250 in java" />
+        <echo message="" />
+	</target>
+
+
+
+	<target name="prepare">
+	    <!-- set time stamp -->
+	    <tstamp/>
+	    <!-- directory structure -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.classes.dir}" />
+		<mkdir dir="${javadoc.dir}" />
+		<mkdir dir="${dist.dir}" />
+
+	    <!-- printout some useful status information -->
+        <echo message="ant.java.version:      ${ant.java.version}" />
+        <echo message="ant.file:              ${ant.file}" />
+        <echo message="" />
+        <!--
+        <echo message="java.version:                   ${java.version}" />
+        <echo message="java.vendor:                    ${java.vendor}" />
+        <echo message="java.vendor.url:                ${java.vendor.url}" />
+        <echo message="java.home:                      ${java.home}" />
+        <echo message="" />
+		-->
+        <!--
+        <echo message="java.vm.specification.version:  ${java.vm.specification.version}" />
+        <echo message="java.vm.specification.vendor:   ${java.vm.specification.vendor}" />
+        <echo message="java.vm.specification.name:     ${java.vm.specification.name}" />
+        -->
+        <echo message="java.vm.version:       ${java.vm.version}" />
+        <echo message="java.vm.vendor:        ${java.vm.vendor}" />
+        <echo message="java.vm.name:          ${java.vm.name}" />
+        <echo message="" />
+        <!--
+        <echo message="java.specification.version:     ${java.specification.version}" />
+        <echo message="java.specification.vendor:      ${java.specification.vendor}" />
+        <echo message="java.specification.name:        ${java.specification.name}" />
+        <echo message="" />
+        <echo message="java.class.version:             ${java.class.version}" />
+        <echo message="java.class.path:                ${java.class.path}" />
+        <echo message="java.ext.dirs:                  ${java.ext.dirs}" />
+        <echo message="" />
+        -->
+        <echo message="os.name:               ${os.name}" />
+        <echo message="os.arch:               ${os.arch}" />
+        <echo message="os.version:            ${os.version}" />
+        <!--
+        <echo message="" />
+        <echo message="file.separator:                 ${file.separator}" />
+        <echo message="path.separator:                 ${path.separator}" />
+        <echo message="line.separator:                 ${line.separator}" />
+        <echo message="" />
+        <echo message="user.name:                      ${user.name}" />
+        <echo message="user.home:                      ${user.home}" />
+        <echo message="user.dir:                       ${user.dir}" />
+		-->
+	</target>
+
+
+
+	<target name="clean" description="Cleanup your workspace (delete build-directory, ...)">
+		<delete dir="${build.dir}" />
+		<delete dir="${build.classes.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+
+
+	<target name="compile" depends="prepare" description="Compile your source-files">
+		<javac srcdir="${source.dir}" destdir="${build.classes.dir}"
+			excludes="**/Cvs/**,**/*.ini" >
+			<classpath>
+				<path refid="classpath"/>
+			</classpath>
+		</javac>
+	</target>
+
+
+
+	<target name= "javadoc" depends="prepare" description="Creates the javadoc API documentation">
+		<javadoc packagenames="org.*" sourcepath="${source.dir}" destdir="${javadoc.dir}"
+		         doctitle="tn5250j"
+		         windowtitle="Telnet 5250 in java"
+		         header="tn5250j"
+		         footer="tn5250j"
+		         >
+			<classpath>
+				<path refid="classpath"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+
+
+	<target name= "dist" depends="compile"  description="Create a Jar-File of your compiled classes">
+		<jar jarfile="${dist.dir}/${jarname}" manifest="${source.dir}/Meta-inf/Manifest.mf">
+         <fileset dir="${build.dir}"/>
+         <fileset dir="${source.dir}"
+                  includes="*.properties,*.props,*.gif,*.jpg"/>
+      </jar>
+	</target>
+
+
+
+	<target name= "all" depends="clean, compile, dist"   description="Clean, Compile, Dist">
+	</target>
+
+
+
+	<target name= "zipsrc" depends="prepare"  description="Create a Zip-File with all the source files">
+		<zip zipfile="${dist.dir}/${zipsrcname}"
+		     basedir="${source.dir}"
+		/>
+	</target>
+
+
+</project>

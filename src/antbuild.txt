@@ -1,0 +1,61 @@
+Ant build README
+------------------------------------------------------------------------------
+
+I have only tested this with ant build 1.4.1 so do not know if it is backwards
+compatible with previous versions.
+
+Steps to get started after setting up ant
+-----------------------------------------
+1. Create a base directory to place source
+2. Create two directories beneath the base directory called lib and src
+
+for example your directory structure should look like the following:
+
+base directory
+   |
+   + - lib
+   |
+   + - src
+
+3. Unzip and place all source files from tn5250j source zip file that was
+   downloaded into src directory.  This includes the Meta-inf directory.
+4. Place the included build.xml file into the base directory.
+5. Place the extra .jar files used for mailing in the lib directory.
+   *** NOTE *** this is very important or some modules will not compile
+
+   You can download the e-mail api's from sun.  You will need two packages.
+      http://java.sun.com/products/javamail/
+      http://java.sun.com/products/javabeans/glasgow/jaf.html
+
+   JavaMail jar files
+   ------------------
+   activation.jar
+   mail.jar
+   mailapi.jar
+   smtp.jar
+
+6. Now execute ant using one of the methods described in the ant documentation.
+
+   using the sample bat file for windows below:
+
+   c:\basedirectory>build all
+
+
+   Sample Windows build.bat that I use on windows
+   ----------------------------------------------
+@echo off
+
+rem this batch-file can be used to override the java_home or ant_home
+rem environment or to set a special classpath and so on...
+set ANT_HOME=D:\jakarta-ant-1.4.1
+set JAVA_HOME=C:\jdk1.3.1
+
+call %ANT_HOME%\bin\ant -buildfile build.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
+
+   ----------------------------------------------
+
+If you have any questions or suggestions please let me know.  If you have code
+changes PLEASE PLEASE send them to me.
+
+Enjoy!!!
+

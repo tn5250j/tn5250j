@@ -1,0 +1,63 @@
+Applet README
+------------------------------------------------------------------------------
+
+This version of the emulator includes an applet version of the emulator to be
+embedded in a webbrowser.
+
+Big thanks goes to Bob Fludder at http://www.businessvision.au for testing and
+helping with this.  He is suppose to write a how to and/or deployment for the
+applet version of the emulator.
+
+--- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE ---
+Help is needed here with information and or changes to the code to allow a
+seemless integration.  There are probably bugs in there so please be nice when
+reporting them ;-)
+--- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE ---
+
+Browsers Tested
+---------------
+Netscape
+
+Plugins Tested
+--------------
+1.3.1
+1.4 beta 3
+
+One thing about the 1.4 beta 3 plugin is that it allows a signed jar to be
+loaded and the proper authority is prompted for the certificate.  Once accepted
+the certificate is then saved thus saving the deployment, installation and
+importing of keys/signatures to each of the desktops.  Very Very nice.
+
+Deployment
+-----------
+There are to applet html files that are included:
+
+My5250App.html
+My5250AppPlugin.html
+
+
+I am going to have to refer you to the experts at the discussion forum of sun
+at the following:
+
+http://forum.java.sun.com/thread.jsp?forum=63&thread=174214
+
+This has the best information on signing and deploying applets.  This being my
+first applet program I am at a lost for help on deployment for the different
+browsers and I do not have the time to test them all.
+
+--- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE ---
+Help is needed here with information and or changes to the code to allow a
+seemless integration.  There are probably bugs in there so please be nice when
+reporting them ;-)
+--- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE --- --- NOTE ---
+
+Applet Parameters
+-----------------
+All command line options are supported for applet parameters except for the
+-f argument for file properties.  Looking for suggestion here!!!!!!!!
+
+If you have any questions or suggestions please let me know.  If you have code
+changes PLEASE PLEASE send them to me.
+
+Enjoy!!!
+
