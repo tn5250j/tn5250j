@@ -1,7 +1,6 @@
-package org.tn5250j.mailtools;
-
 /**
- * Title: tn5250J
+ * Title: SendEMailDialog.java
+ *
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -25,17 +24,39 @@ package org.tn5250j.mailtools;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.mailtools;
 
 import javax.swing.*;
-import org.tn5250j.tools.*;
 import java.io.*;
 import java.awt.*;
-import org.tn5250j.Screen5250;
 import javax.mail.*;
+import java.util.*;
 
+import org.tn5250j.Screen5250;
+import org.tn5250j.Session;
+import org.tn5250j.SessionConfig;
+import org.tn5250j.tools.*;
+
+/**
+ * Send E-Mail dialog
+ */
 public class SendEMailDialog {
 
-   public SendEMailDialog(Frame parent, Screen5250 screen ) {
+   JComboBox toAddress;
+   JTextField subject;
+   JTextArea bodyText;
+   JTextField attachmentName;
+   SessionConfig config;
+   Session session;
+   String fileName;
+
+   /**
+    * Constructor to send the screen information
+    *
+    * @param parent
+    * @param session
+    */
+   public SendEMailDialog(Frame parent, Session session ) {
 
       if (!isEMailAvailable()) {
 
@@ -46,38 +67,19 @@ public class SendEMailDialog {
 
       }
       else {
-         JPanel semp = new JPanel();
-         semp.setLayout(new AlignLayout(2,5,5));
-         JLabel tol = new JLabel(LangTool.getString("em.to"));
-         JTextField tot = new JTextField(30);
-         JLabel subl = new JLabel(LangTool.getString("em.subject"));
-         JTextField subt = new JTextField(30);
-         JLabel bodyl = new JLabel(LangTool.getString("em.body"));
-         JTextArea bodyText = new JTextArea(6,30);
-         JScrollPane bodyScrollPane = new JScrollPane(bodyText);
-         bodyScrollPane.setHorizontalScrollBarPolicy(
-         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-         bodyScrollPane.setVerticalScrollBarPolicy(
-         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-         JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
-         JTextField fnt = new JTextField("tn5250j.txt",30);
-         semp.add(tol);
-         semp.add(tot);
-         semp.add(subl);
-         semp.add(subt);
-         semp.add(bodyl);
-         semp.add(bodyScrollPane);
-         semp.add(fnl);
-         semp.add(fnt);
+
+         this.session = session;
+         Screen5250 screen = session.getScreen();
 
          Object[]      message = new Object[1];
-         message[0] = semp;
+         message[0] = setupMailPanel("tn5250j.txt");
 
          String[] options = new String[3];
 
          int result = 0;
          while (result == 0 || result == 2) {
 
+            // setup the dialog options
             setOptions(options);
 
             result = JOptionPane.showOptionDialog(
@@ -95,13 +97,13 @@ public class SendEMailDialog {
                case 0: // Send it
                   SendEMail sem = new SendEMail();
                   sem.setConfigFile("SMTPProperties.cfg");
-                  sem.setTo(tot.getText());
-                  sem.setSubject(subt.getText());
+                  sem.setTo((String)toAddress.getSelectedItem());
+                  sem.setSubject(subject.getText());
                   if (bodyText.getText().length() >0)
                      sem.setMessage(bodyText.getText());
 
-                  if (fnt.getText().length() > 0)
-                     sem.setAttachmentName(fnt.getText());
+                  if (attachmentName.getText().length() > 0)
+                     sem.setAttachmentName(attachmentName.getText());
 
                   StringBuffer sb = new StringBuffer();
                   char[] s = screen.getScreenAsChars();
@@ -116,25 +118,11 @@ public class SendEMailDialog {
                      }
                   }
 
-
                   sem.setAttachment(sb.toString());
-                  try {
-                     sem.send();
-                     JOptionPane.showMessageDialog(parent,
-                                                      LangTool.getString("em.confirmationMessage") +
-                                                      " " + tot.getText(),
-                                                      LangTool.getString("em.titleConfirmation"),
-                                                      JOptionPane.INFORMATION_MESSAGE);
-                  }
-                  catch (IOException ioe) {
-                     System.out.println(ioe.getMessage());
-                  }
-                  catch (SendFailedException sfe) {
-                     showFailedException(parent,sfe);
-                  }
-                  catch (Exception ex) {
-                     System.out.println(ex.getMessage());
-                  }
+
+                  // send the information
+                  sendIt(parent,sem);
+
                   sem.release();
                   sem = null;
 
@@ -144,9 +132,7 @@ public class SendEMailDialog {
       //		      System.out.println("Cancel");
                   break;
                case 2: // Configure SMTP
-                  SMTPConfig smtp = new SMTPConfig(parent,"",true);
-                  smtp.setVisible(true);
-                  smtp.dispose();
+                  configureSMTP(parent);
       //		      System.out.println("Cancel");
                   break;
                default:
@@ -156,7 +142,13 @@ public class SendEMailDialog {
       }
    }
 
-   public SendEMailDialog(Frame parent, String fileName ) {
+   /**
+    * Constructor to send a file
+    *
+    * @param parent
+    * @param session
+    */
+   public SendEMailDialog(Frame parent, Session session, String fileName ) {
 
       if (!isEMailAvailable()) {
 
@@ -167,38 +159,19 @@ public class SendEMailDialog {
 
       }
       else {
-         JPanel semp = new JPanel();
-         semp.setLayout(new AlignLayout(2,5,5));
-         JLabel tol = new JLabel(LangTool.getString("em.to"));
-         JTextField tot = new JTextField(30);
-         JLabel subl = new JLabel(LangTool.getString("em.subject"));
-         JTextField subt = new JTextField(30);
-         JLabel bodyl = new JLabel(LangTool.getString("em.body"));
-         JTextArea bodyText = new JTextArea(6,30);
-         JScrollPane bodyScrollPane = new JScrollPane(bodyText);
-         bodyScrollPane.setHorizontalScrollBarPolicy(
-         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-         bodyScrollPane.setVerticalScrollBarPolicy(
-         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-         JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
-         JTextField fnt = new JTextField(fileName,30);
-         semp.add(tol);
-         semp.add(tot);
-         semp.add(subl);
-         semp.add(subt);
-         semp.add(bodyl);
-         semp.add(bodyScrollPane);
-         semp.add(fnl);
-         semp.add(fnt);
+
+         this.session = session;
+         Screen5250 screen = session.getScreen();
 
          Object[]      message = new Object[1];
-         message[0] = semp;
+         message[0] = setupMailPanel(fileName);
          String[] options = new String[3];
 
 
          int result = 0;
          while (result == 0 || result == 2) {
 
+            // setup the dialog options
             setOptions(options);
 
             result = JOptionPane.showOptionDialog(
@@ -214,36 +187,23 @@ public class SendEMailDialog {
 
             switch(result) {
                case 0: // Send it
+
                   SendEMail sem = new SendEMail();
                   sem.setConfigFile("SMTPProperties.cfg");
-                  sem.setTo(tot.getText());
-                  sem.setSubject(subt.getText());
+                  sem.setTo((String)toAddress.getSelectedItem());
+                  sem.setSubject(subject.getText());
                   if (bodyText.getText().length() >0)
                      sem.setMessage(bodyText.getText());
 
-                  if (fnt.getText().length() > 0)
-                     sem.setAttachmentName(fnt.getText());
+                  if (attachmentName.getText().length() > 0)
+                     sem.setAttachmentName(attachmentName.getText());
 
                   if (fileName != null && fileName.length() > 0)
                      sem.setFileName(fileName);
 
-                  try {
-                     sem.send();
-                     JOptionPane.showMessageDialog(parent,
-                                                      LangTool.getString("em.confirmationMessage") +
-                                                      " " + tot.getText(),
-                                                      LangTool.getString("em.titleConfirmation"),
-                                                      JOptionPane.INFORMATION_MESSAGE);
-                  }
-                  catch (IOException ioe) {
-                     System.out.println(ioe.getMessage());
-                  }
-                  catch (SendFailedException sfe) {
-                     showFailedException(parent, sfe);
-                  }
-                  catch (Exception ex) {
-                     System.out.println(ex.getMessage());
-                  }
+                  // send the information
+                  sendIt(parent,sem);
+
                   sem.release();
                   sem = null;
 
@@ -252,9 +212,7 @@ public class SendEMailDialog {
       //		      System.out.println("Cancel");
                   break;
                case 2: // Configure SMTP
-                  SMTPConfig smtp = new SMTPConfig(parent,"",true);
-                  smtp.setVisible(true);
-                  smtp.dispose();
+                  configureSMTP(parent);
       //		      System.out.println("Cancel");
                   break;
                default:
@@ -264,6 +222,65 @@ public class SendEMailDialog {
       }
    }
 
+   /**
+    * Send the e-mail on its way.
+    * @param sem
+    */
+   private void sendIt (Frame parent, SendEMail sem) {
+
+      if (parent == null)
+         parent = new JFrame();
+
+      try {
+         sem.send();
+
+         JOptionPane.showMessageDialog(parent,
+                                          LangTool.getString("em.confirmationMessage") +
+                                          " " + (String)toAddress.getSelectedItem(),
+                                          LangTool.getString("em.titleConfirmation"),
+                                          JOptionPane.INFORMATION_MESSAGE);
+
+         if (session != null) {
+            config.setProperty("emailTo",
+                  getToTokens(config.getStringProperty("emailTo"),
+                                 toAddress));
+            config.saveSessionProps();
+            setToCombo(config.getStringProperty("emailTo"),toAddress);
+         }
+      }
+      catch (IOException ioe) {
+         System.out.println(ioe.getMessage());
+      }
+      catch (SendFailedException sfe) {
+         showFailedException(parent, sfe);
+      }
+      catch (Exception ex) {
+         System.out.println(ex.getMessage());
+      }
+   }
+
+   /**
+    * Configure the SMTP server information
+    *
+    * @param parent
+    */
+   private void configureSMTP(Frame parent) {
+
+      if (parent == null)
+         parent = new JFrame();
+
+      SMTPConfig smtp = new SMTPConfig(parent,"",true);
+      smtp.setVisible(true);
+      smtp.dispose();
+
+   }
+
+   /**
+    * Show the error list from the e-mail API if there are errors
+    *
+    * @param parent
+    * @param sfe
+    */
    private void showFailedException(Frame parent, SendFailedException sfe) {
 
       String error = sfe.getMessage() + "\n";
@@ -287,6 +304,58 @@ public class SendEMailDialog {
 
 
    }
+
+   /**
+    * Create the main e-mail panel for display
+    *
+    * @param fileName
+    * @return
+    */
+   private JPanel setupMailPanel (String fileName) {
+
+      JPanel semp = new JPanel();
+      semp.setLayout(new AlignLayout(2,5,5));
+
+      JLabel tol = new JLabel(LangTool.getString("em.to"));
+      JLabel subl = new JLabel(LangTool.getString("em.subject"));
+      JLabel bodyl = new JLabel(LangTool.getString("em.body"));
+      JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
+
+      toAddress = new JComboBox();
+      toAddress.setEditable(true);
+
+      subject = new JTextField(30);
+      bodyText = new JTextArea(6,30);
+      JScrollPane bodyScrollPane = new JScrollPane(bodyText);
+      bodyScrollPane.setHorizontalScrollBarPolicy(
+      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      bodyScrollPane.setVerticalScrollBarPolicy(
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      attachmentName = new JTextField(fileName,30);
+
+      config = null;
+
+      if (session != null) {
+         config = session.getConfiguration();
+
+         if (config.isPropertyExists("emailTo")) {
+            setToCombo(config.getStringProperty("emailTo"),toAddress);
+         }
+      }
+
+      semp.add(tol);
+      semp.add(toAddress);
+      semp.add(subl);
+      semp.add(subject);
+      semp.add(bodyl);
+      semp.add(bodyScrollPane);
+      semp.add(fnl);
+      semp.add(attachmentName);
+
+      return semp;
+
+   }
+
    private void setOptions(String[] options) {
 
 
@@ -304,6 +373,53 @@ public class SendEMailDialog {
 
    }
 
+   /**
+    * Set the combo box items to the string token from to.
+    * The separator is a '|' character.
+    *
+    * @param to
+    * @param boxen
+    */
+   private void setToCombo(String to, JComboBox boxen) {
+
+      StringTokenizer tokenizer = new StringTokenizer(to, "|");
+
+      boxen.removeAllItems();
+
+      while(tokenizer.hasMoreTokens())  {
+         boxen.addItem(tokenizer.nextToken());
+      }
+   }
+
+   /**
+    * Creates string of tokens from the combobox items.
+    * The separator is a '|' character.  It does not save duplicate items.
+    *
+    * @param to
+    * @param boxen
+    * @return
+    */
+   private String getToTokens(String to, JComboBox boxen) {
+
+      StringBuffer sb = new StringBuffer();
+      String selected = (String)boxen.getSelectedItem();
+
+      sb.append(selected + '|');
+
+      int c = boxen.getItemCount();
+
+      for (int x = 0; x < c; x++) {
+         if (!selected.equals((String)boxen.getItemAt(x)))
+            sb.append((String)boxen.getItemAt(x) + '|');
+      }
+      return sb.toString();
+   }
+
+   /**
+    * Checks to make sure that the e-mail api's are available
+    *
+    * @return whether or not the e-mail api's are available or not.
+    */
    private boolean isEMailAvailable() {
 
       try {
@@ -316,4 +432,5 @@ public class SendEMailDialog {
       }
 
    }
+
 }
