@@ -46,7 +46,7 @@ import org.tn5250j.event.ScreenListener;
 public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		ActionListener {
 
-	ScreenChar[] screen;
+//	ScreenChar[] screen;
 	private ScreenChar[] errorLine;
 	private ScreenFields screenFields;
 	private int errorLineNum;
@@ -153,6 +153,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
    // Operator Information Area
    private ScreenOIA oia;
 
+   // screen planes
+   protected ScreenPlanes planes;
+
 	//Added by Barry
 	private StringBuffer keybuf;
 
@@ -242,18 +245,26 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		checkOffScreenImage();
 		lenScreen = numRows * numCols;
-		screen = new ScreenChar[lenScreen];
-		for (int y = 0; y < lenScreen; y++) {
-			screen[y] = new ScreenChar(this);
-			screen[y].setCharAndAttr(' ', initAttr, false);
-			screen[y].setRowCol(getRow(y), getCol(y));
-		}
+
+      planes = new ScreenPlanes(this,numRows);
+
+//		screen = new ScreenChar[lenScreen];
+//
+//		for (int y = 0; y < lenScreen; y++) {
+//			screen[y] = new ScreenChar(this);
+//			screen[y].setCharAndAttr(' ', initAttr, false);
+//			screen[y].setRowCol(getRow(y), getCol(y));
+//		}
 
 		screenFields = new ScreenFields(this);
 		strokenizer = new KeyStrokenizer();
 
 
 	}
+
+   public ScreenPlanes getPlanes() {
+      return planes;
+   }
 
    public final ScreenOIA getOIA() {
       return oia;
@@ -267,13 +278,16 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		lenScreen = numRows * numCols;
 
-		screen = new ScreenChar[lenScreen];
-		for (int y = 0; y < lenScreen; y++) {
-			screen[y] = new ScreenChar(this);
-			screen[y].setCharAndAttr(' ', initAttr, false);
-			screen[y].setRowCol(getRow(y), getCol(y));
-		}
+//		screen = new ScreenChar[lenScreen];
+//
+//		for (int y = 0; y < lenScreen; y++) {
+//			screen[y] = new ScreenChar(this);
+//			screen[y].setCharAndAttr(' ', initAttr, false);
+//			screen[y].setRowCol(getRow(y), getCol(y));
+//		}
 		errorLineNum = numRows;
+
+      planes.setSize(rows);
 
 		Rectangle r = gui.getDrawingBounds();
 		resizeScreenArea(r.width, r.height);
@@ -788,9 +802,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 
 		if (resetAttr) {
-			for (int y = 0; y < lenScreen; y++) {
-				screen[y].setAttribute(screen[y].getCharAttr());
-			}
+//			for (int y = 0; y < lenScreen; y++) {
+//				screen[y].setAttribute(screen[y].getCharAttr());
+//			}
 			bi.drawOIA();
 		}
 		gui.validate();
@@ -841,7 +855,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		// because getRowColFromPoint returns position offset as 1,1 we need
 		// to translate as offset 0,0
 		int pos = getPosFromView(start.x, start.y);
-		start.setLocation(screen[pos].x, screen[pos].y);
+      int x = fmWidth * getCol(pos);
+      int y = fmHeight * getRow(pos);
+//		start.setLocation(screen[pos].x, screen[pos].y);
+		start.setLocation(x, y);
 		return start;
 
 	}
@@ -858,11 +875,17 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		// because getRowColFromPoint returns position offset as 1,1 we need
 		// to translate as offset 0,0
 		int pos = getPosFromView(end.x, end.y);
-		if (pos >= screen.length) {
-			pos = screen.length - 1;
+//		if (pos >= screen.length) {
+//			pos = screen.length - 1;
+//		}
+//		int x = screen[pos].x + fmWidth - 1;
+//		int y = screen[pos].y + fmHeight - 1;
+
+		if (pos >= lenScreen) {
+			pos = lenScreen - 1;
 		}
-		int x = screen[pos].x + fmWidth - 1;
-		int y = screen[pos].y + fmHeight - 1;
+		int x =  ((fmWidth * getCol(pos)) + fmWidth) - 1;
+		int y = ((fmHeight * getRow(pos)) + fmHeight) - 1;
 
 		end.setLocation(x, y);
 
@@ -904,8 +927,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			i = workR.y;
 			while (t-- > 0) {
 				// only copy printable characters (in this case >= ' ')
-				char c = screen[getPos(m - 1, i - 1)].getChar();
-				if (c >= ' ' && !screen[getPos(m - 1, i - 1)].nonDisplay)
+//				char c = screen[getPos(m - 1, i - 1)].getChar();
+				char c = planes.getChar(getPos(m - 1, i - 1));
+//				if (c >= ' ' && !screen[getPos(m - 1, i - 1)].nonDisplay)
+            // TODO: change me here to implement the nondisplay check later
+				if (c >= ' ')
 					s.append(c);
 				else
 					s.append(' ');
@@ -1000,7 +1026,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 						setIt = false;
 
 					if (isInField(r, col) && setIt) {
-						screen[getPos(r, col)].setChar(pc);
+						//screen[getPos(r, col)].setChar(pc);
+						planes.setChar(getPos(r, col), pc);
 						setDirty(r, col);
 						screenFields.setCurrentFieldMDT();
 					}
@@ -1123,9 +1150,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			while (t-- > 0) {
 
 				// only copy printable numeric characters (in this case >= ' ')
-				char c = screen[getPos(m - 1, i - 1)].getChar();
-				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')
-						&& !screen[getPos(m - 1, i - 1)].nonDisplay) {
+//				char c = screen[getPos(m - 1, i - 1)].getChar();
+				char c = planes.getChar(getPos(m - 1, i - 1));
+//				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')
+//						&& !screen[getPos(m - 1, i - 1)].nonDisplay) {
+
+            // TODO: update me here to implement the nonDisplay check as well
+				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')) {
 					s.append(c);
 				}
 				i++;
@@ -1169,7 +1200,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			//    translate to offset 0,0
 			//         pos -= (numCols + 1);
 
-			int g = screen[pos].getWhichGUI();
+//			int g = screen[pos].getWhichGUI();
+         int g = planes.getWhichGUI(pos);
 
 			// lets check for hot spots
 			if (g >= ScreenChar.BUTTON_LEFT && g <= ScreenChar.BUTTON_LAST) {
@@ -1178,28 +1210,35 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 				switch (g) {
 				case ScreenChar.BUTTON_RIGHT:
 				case ScreenChar.BUTTON_MIDDLE:
-					while (screen[--pos].getWhichGUI() != ScreenChar.BUTTON_LEFT) {
+//					while (screen[--pos].getWhichGUI() != ScreenChar.BUTTON_LEFT) {
+					while (planes.getWhichGUI(--pos) != ScreenChar.BUTTON_LEFT) {
 					}
 				case ScreenChar.BUTTON_LEFT:
-					if (screen[pos].getChar() == 'F') {
+//					if (screen[pos].getChar() == 'F') {
+					if (planes.getChar(pos) == 'F') {
 						pos++;
 					} else
 						aidFlag = false;
 
-					if (screen[pos + 1].getChar() != '='
-							&& screen[pos + 1].getChar() != '.'
-							&& screen[pos + 1].getChar() != '/') {
+//					if (screen[pos + 1].getChar() != '='
+//							&& screen[pos + 1].getChar() != '.'
+//							&& screen[pos + 1].getChar() != '/') {
+					if (planes.getChar(pos + 1) != '='
+							&& planes.getChar(pos + 1) != '.'
+							&& planes.getChar(pos + 1) != '/') {
 						//                     System.out.println(" Hotspot clicked!!! we will send
 						// characters " +
 						//                                    screen[pos].getChar() +
 						//                                    screen[pos+1].getChar());
-						aid.append(screen[pos].getChar());
-						aid.append(screen[pos + 1].getChar());
+						aid.append(planes.getChar(pos));
+						aid.append(planes.getChar(pos + 1));
 					} else {
+//						log.debug(" Hotspot clicked!!! we will send character "
+//								+ screen[pos].getChar());
 						log.debug(" Hotspot clicked!!! we will send character "
-								+ screen[pos].getChar());
+								+ planes.getChar(pos));
 						//
-						aid.append(screen[pos].getChar());
+						aid.append(planes.getChar(pos));
 					}
 					break;
 
@@ -1229,10 +1268,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					case ScreenChar.BUTTON_MIDDLE_EB:
 					case ScreenChar.BUTTON_RIGHT_EB:
 						StringBuffer eb = new StringBuffer();
-						while (screen[pos--].getWhichGUI() != ScreenChar.BUTTON_LEFT_EB)
+						while (planes.getWhichGUI(pos--) != ScreenChar.BUTTON_LEFT_EB)
 							;
-						while (screen[pos++].getWhichGUI() != ScreenChar.BUTTON_RIGHT_EB) {
-							eb.append(screen[pos].getChar());
+						while (planes.getWhichGUI(pos++) != ScreenChar.BUTTON_RIGHT_EB) {
+							eb.append(planes.getChar(pos));
 						}
 						org.tn5250j.tools.system.OperatingSystem.displayURL(eb
 								.toString());
@@ -1254,7 +1293,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 						for (int x = 0; x < aid.length(); x++) {
 							//                  System.out.println(sr + "," + (sc + x) + " " +
 							// aid.charAt(x));
-							screen[xPos + x].setChar(aid.charAt(x));
+							planes.setChar(xPos + x , aid.charAt(x));
 						}
 						//                  System.out.println(aid);
 						screenFields.setCurrentFieldMDT();
@@ -1379,8 +1418,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		//  we will then add to that the offsets to get the screen position point
 		//  x,y coordinates. Maybe change this to a translate routine method or
 		//  something.
-		point.x = screen[getPos(r, c)].x + bi.offLeft;
-		point.y = screen[getPos(r, c)].y + bi.offTop;
+//		point.x = screen[getPos(r, c)].x + bi.offLeft;
+//		point.y = screen[getPos(r, c)].y + bi.offTop;
+		point.x = (fmWidth * c) + bi.offLeft;
+		point.y = (fmHeight * r) + bi.offTop;
 
 	}
 
@@ -2276,7 +2317,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 				int s = screenFields.getCurrentField().getFieldShift();
 				if (s == 3 || s == 5 || s == 7) {
-					screen[lastPos].setChar('-');
+//					screen[lastPos].setChar('-');
+               planes.setChar(lastPos,'-');
+
 					resetDirty(lastPos);
 					advancePos();
 					if (fieldExit()) {
@@ -2371,7 +2414,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 				int s = screenFields.getCurrentField().getFieldShift();
 				if (s == 3 || s == 5 || s == 7) {
-					screen[lastPos].setChar('-');
+//					screen[lastPos].setChar('-');
+               planes.setChar(lastPos,'-');
 
 					resetDirty(lastPos);
 					advancePos();
@@ -2604,7 +2648,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 								getRow(lastPos), getCol(lastPos));
 						screenFields.getCurrentField().changePos(1);
 
-						screen[lastPos].setChar(c);
+//						screen[lastPos].setChar(c);
+                  planes.setChar(lastPos,c);
 
 						screenFields.setCurrentFieldMDT();
 
@@ -2709,7 +2754,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		int count = endPos - pos;
 
 		// first lets get the real ending point without spaces and the such
-		while (screen[endPos].getChar() <= ' ' && count-- > 0) {
+//		while (screen[endPos].getChar() <= ' ' && count-- > 0) {
+		while (planes.getChar(endPos) <= ' ' && count-- > 0) {
 
 			endPos--;
 		}
@@ -2751,7 +2797,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 
 		for (; count >= 0; count--) {
-			screen[pos].setChar(initChar);
+//			screen[pos].setChar(initChar);
+         planes.setChar(pos,initChar);
 			setDirty(pos);
 			pos++;
 			mdt = true;
@@ -2804,7 +2851,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		// subtract 1 from count for signed numeric - note for later
 		if (screenFields.getCurrentField().isSignedNumeric()) {
-			if (screen[end - 1].getChar() != '-')
+//			if (screen[end - 1].getChar() != '-')
+			if (planes.getChar(end -1) != '-')
 				count--;
 		}
 
@@ -2813,7 +2861,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		while (count-- >= 0) {
 
 			shiftRight(pos);
-			screen[pos].setChar(fill);
+//			screen[pos].setChar(fill);
+         planes.setChar(pos,fill);
+
 			setDirty(pos);
 
 		}
@@ -2842,7 +2892,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			// left
 			while (count-- > 0) {
 				pos++;
-				screen[pPos].setChar(screen[pos].getChar());
+//				screen[pPos].setChar(screen[pos].getChar());
+            planes.setChar(pPos,planes.getChar(pos));
 				setDirty(pPos);
 				pPos = pos;
 
@@ -2854,7 +2905,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					break;
 
 				pos = screenFields.getCurrentField().startPos();
-				screen[pPos].setChar(screen[pos].getChar());
+//				screen[pPos].setChar(screen[pos].getChar());
+            planes.setChar(pPos,planes.getChar(pos));
 				setDirty(pPos);
 
 				pPos = pos;
@@ -2872,7 +2924,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 
 		screenFields.setCurrentField(sf);
-		screen[endPos].setChar(initChar);
+//		screen[endPos].setChar(initChar);
+      planes.setChar(endPos,initChar);
 		setDirty(endPos);
 		goto_XY(screenFields.getCurrentFieldPos());
 		sf = null;
@@ -2892,7 +2945,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		while (count-- > 0) {
 
 			pos--;
-			screen[pPos].setChar(screen[pos].getChar());
+//			screen[pPos].setChar(screen[pos].getChar());
+			planes.setChar(pPos, planes.getChar(pos));
 			setDirty(pPos);
 
 			pPos = pos;
@@ -3262,12 +3316,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		char c;
 
 		for (int x = 0; x < lenScreen; x++) {
-			c = screen[x].getChar();
+//			c = screen[x].getChar();
+         c = planes.getChar(x);
 			// only draw printable characters (in this case >= ' ')
-			if ((c >= ' ') && (!screen[x].isAttributePlace())) {
+//			if ((c >= ' ') && (!screen[x].isAttributePlace())) {
+			if ((c >= ' ') && (!planes.isAttributePlace(x))) {
 				sac[x] = c;
-				if (screen[x].underLine && c <= ' ')
-					sac[x] = '_';
+            // TODO: implement the underline check here
+//				if (screen[x].underLine && c <= ' ')
+//					sac[x] = '_';
 			} else
 				sac[x] = ' ';
 		}
@@ -3286,17 +3343,19 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		char c;
 
 		for (int x = 0; x < lenScreen; x++) {
-			c = screen[x].getChar();
+//			c = screen[x].getChar();
+         c = planes.getChar(x);
 			// only draw printable characters (in this case >= ' ')
-			if (c >= ' ' && !screen[x].nonDisplay) {
+//			if ((c >= ' ') && (!screen[x].isAttributePlace())) {
+			if ((c >= ' ') && (!planes.isAttributePlace(x))) {
 				sac[x] = c;
-				if (screen[x].underLine && c <= ' ')
-					sac[x] = '_';
-
+            // TODO: implement the underline check here
+//				if (screen[x].underLine && c <= ' ')
+//					sac[x] = '_';
 			} else
 				sac[x] = ' ';
-
 		}
+
 		return sac;
 	}
 
@@ -3382,14 +3441,20 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * Convenience class to position the cursor to the next word on the screen
 	 *
 	 */
+	/**
+	 * Convenience class to position the cursor to the next word on the screen
+	 *
+	 */
 	private void gotoNextWord() {
 
 		int pos = lastPos;
 
-		if (screen[lastPos].getChar() > ' ') {
+//		if (screen[lastPos].getChar() > ' ') {
+		if (planes.getChar(lastPos) > ' ') {
 			advancePos();
 			// get the next space character
-			while (screen[lastPos].getChar() > ' ' && pos != lastPos) {
+//			while (screen[lastPos].getChar() > ' ' && pos != lastPos) {
+			while (planes.getChar(lastPos) > ' ' && pos != lastPos) {
 				advancePos();
 			}
 		} else
@@ -3397,7 +3462,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		// now that we are positioned on the next space character get the
 		// next none space character
-		while (screen[lastPos].getChar() <= ' ' && pos != lastPos) {
+//		while (screen[lastPos].getChar() <= ' ' && pos != lastPos) {
+		while (planes.getChar(lastPos) <= ' ' && pos != lastPos) {
 			advancePos();
 		}
 
@@ -3415,7 +3481,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		changePos(-1);
 
 		// position previous white space character
-		while (screen[lastPos].getChar() <= ' ') {
+//		while (screen[lastPos].getChar() <= ' ') {
+		while (planes.getChar(lastPos) <= ' ') {
 			changePos(-1);
 			if (pos == lastPos)
 				break;
@@ -3423,7 +3490,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		changePos(-1);
 		// get the previous space character
-		while (screen[lastPos].getChar() > ' ' && pos != lastPos) {
+//		while (screen[lastPos].getChar() > ' ' && pos != lastPos) {
+		while (planes.getChar(lastPos) > ' ' && pos != lastPos) {
 			changePos(-1);
 		}
 
@@ -3510,14 +3578,18 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		w = width;
 		// set leading attribute byte
-		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+		planes.setScreenCharAndAttr(lastPos, initChar, initAttr, true);
 		setDirty(lastPos);
 
 		advancePos();
 		// set upper left
-		screen[lastPos].setCharAndAttr((char) ul, colorAttr, false);
-		if (gui)
-			screen[lastPos].setUseGUI(ScreenChar.UPPER_LEFT);
+//		screen[lastPos].setCharAndAttr((char) ul, colorAttr, false);
+		planes.setScreenCharAndAttr(lastPos, (char) ul, colorAttr, false);
+		if (gui) {
+//			screen[lastPos].setUseGUI(ScreenChar.UPPER_LEFT);
+			planes.setUseGUI(lastPos, ScreenChar.UPPER_LEFT);
+		}
 		setDirty(lastPos);
 
 		advancePos();
@@ -3525,22 +3597,31 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		// draw top row
 
 		while (w-- >= 0) {
-			screen[lastPos].setCharAndAttr((char) upper, colorAttr, false);
-			if (gui)
-				screen[lastPos].setUseGUI(ScreenChar.UPPER);
+//			screen[lastPos].setCharAndAttr((char) upper, colorAttr, false);
+			planes.setScreenCharAndAttr(lastPos, (char) upper, colorAttr, false);
+			if (gui) {
+//				screen[lastPos].setUseGUI(ScreenChar.UPPER);
+				planes.setUseGUI(lastPos,ScreenChar.UPPER);
+			}
 			setDirty(lastPos);
 			advancePos();
 		}
 
 		// set upper right
-		screen[lastPos].setCharAndAttr((char) ur, colorAttr, false);
-		if (gui)
-			screen[lastPos].setUseGUI(ScreenChar.UPPER_RIGHT);
+//		screen[lastPos].setCharAndAttr((char) ur, colorAttr, false);
+		planes.setScreenCharAndAttr(lastPos,(char) ur, colorAttr, false);
+
+		if (gui) {
+//			screen[lastPos].setUseGUI(ScreenChar.UPPER_RIGHT);
+			planes.setUseGUI(lastPos, ScreenChar.UPPER_RIGHT);
+		}
 		setDirty(lastPos);
 		advancePos();
 
 		// set ending attribute byte
-		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+		planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
+
 		setDirty(lastPos);
 
 		lastPos = ((getRow(lastPos) + 1) * numCols) + c;
@@ -3548,71 +3629,93 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		while (depth-- > 0) {
 
 			// set leading attribute byte
-			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+			planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 			setDirty(lastPos);
 			advancePos();
 
 			// set left
-			screen[lastPos].setCharAndAttr((char) left, colorAttr, false);
-			if (gui)
-				screen[lastPos].setUseGUI(ScreenChar.LEFT);
+//			screen[lastPos].setCharAndAttr((char) left, colorAttr, false);
+			planes.setScreenCharAndAttr(lastPos, (char) left, colorAttr, false);
+
+			if (gui) {
+//				screen[lastPos].setUseGUI(ScreenChar.LEFT);
+				planes.setUseGUI(lastPos,ScreenChar.LEFT);
+			}
 			setDirty(lastPos);
 			advancePos();
 
 			w = width;
 			// fill it in
 			while (w-- >= 0) {
-				screen[lastPos].setCharAndAttr(initChar, initAttr, true);
-				screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
+//				screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+				planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
+//				screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
+				planes.setUseGUI(lastPos,ScreenChar.NO_GUI);
 				setDirty(lastPos);
 				advancePos();
 			}
 
 			// set right
-			screen[lastPos].setCharAndAttr((char) right, colorAttr, false);
-			if (gui)
-				screen[lastPos].setUseGUI(ScreenChar.RIGHT);
+//			screen[lastPos].setCharAndAttr((char) right, colorAttr, false);
+			planes.setScreenCharAndAttr(lastPos,(char) right, colorAttr, false);
+			if (gui) {
+//				screen[lastPos].setUseGUI(ScreenChar.RIGHT);
+				planes.setUseGUI(lastPos,ScreenChar.RIGHT);
+			}
 			setDirty(lastPos);
 			advancePos();
 
 			// set ending attribute byte
-			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+			planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 			setDirty(lastPos);
 
 			lastPos = ((getRow(lastPos) + 1) * numCols) + c;
 		}
 
 		// set leading attribute byte
-		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+		planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 		setDirty(lastPos);
 		advancePos();
 
 		// set lower left
-		screen[lastPos].setCharAndAttr((char) ll, colorAttr, false);
-		if (gui)
-			screen[lastPos].setUseGUI(ScreenChar.LOWER_LEFT);
+//		screen[lastPos].setCharAndAttr((char) ll, colorAttr, false);
+		planes.setScreenCharAndAttr(lastPos,(char) ll, colorAttr, false);
+		if (gui) {
+//			screen[lastPos].setUseGUI(ScreenChar.LOWER_LEFT);
+			planes.setUseGUI(lastPos,ScreenChar.LOWER_LEFT);
+		}
 		setDirty(lastPos);
 		advancePos();
 
 		w = width;
 		// draw bottom row
 		while (w-- >= 0) {
-			screen[lastPos].setCharAndAttr((char) bottom, colorAttr, false);
-			if (gui)
-				screen[lastPos].setUseGUI(ScreenChar.BOTTOM);
+//			screen[lastPos].setCharAndAttr((char) bottom, colorAttr, false);
+			planes.setScreenCharAndAttr(lastPos,(char) bottom, colorAttr, false);
+			if (gui) {
+//				screen[lastPos].setUseGUI(ScreenChar.BOTTOM);
+				planes.setUseGUI(lastPos,ScreenChar.BOTTOM);
+			}
 			setDirty(lastPos);
 			advancePos();
 		}
 
 		// set lower right
-		screen[lastPos].setCharAndAttr((char) lr, colorAttr, false);
-		if (gui)
-			screen[lastPos].setUseGUI(ScreenChar.LOWER_RIGHT);
+//		screen[lastPos].setCharAndAttr((char) lr, colorAttr, false);
+		planes.setScreenCharAndAttr(lastPos, (char) lr, colorAttr, false);
+		if (gui) {
+//			screen[lastPos].setUseGUI(ScreenChar.LOWER_RIGHT);
+			planes.setUseGUI(lastPos,ScreenChar.LOWER_RIGHT);
+		}
 		setDirty(lastPos);
 		advancePos();
 
 		// set ending attribute byte
-		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+		planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 		setDirty(lastPos);
 
 	}
@@ -3647,23 +3750,31 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		int thumbPos = (int) (size * (float) ((float) sliderColPos / (float) totalColScrollable));
 		//      System.out.println(thumbPos);
-		screen[sp].setCharAndAttr(' ', 32, false);
-		screen[sp].setUseGUI(ScreenChar.BUTTON_SB_UP);
+//		screen[sp].setCharAndAttr(' ', 32, false);
+//		screen[sp].setUseGUI(ScreenChar.BUTTON_SB_UP);
+		planes.setScreenCharAndAttr(sp,' ', 32, false);
+		planes.setUseGUI(sp,ScreenChar.BUTTON_SB_UP);
 
 		int ctr = 0;
 		while (ctr < size) {
 			sp += numCols;
-			screen[sp].setCharAndAttr(' ', 32, false);
+//			screen[sp].setCharAndAttr(' ', 32, false);
+			planes.setScreenCharAndAttr(sp,' ', 32, false);
 			if (ctr == thumbPos)
-				screen[sp].setUseGUI(ScreenChar.BUTTON_SB_THUMB);
+//				screen[sp].setUseGUI(ScreenChar.BUTTON_SB_THUMB);
+				planes.setUseGUI(sp,ScreenChar.BUTTON_SB_THUMB);
 			else
-				screen[sp].setUseGUI(ScreenChar.BUTTON_SB_GUIDE);
+//				screen[sp].setUseGUI(ScreenChar.BUTTON_SB_GUIDE);
+				planes.setUseGUI(sp, ScreenChar.BUTTON_SB_GUIDE);
 			ctr++;
 		}
 		sp += numCols;
-		screen[sp].setCharAndAttr(' ', 32, false);
-		screen[sp].setUseGUI(ScreenChar.BUTTON_SB_DN);
 
+//		screen[sp].setCharAndAttr(' ', 32, false);
+//		screen[sp].setUseGUI(ScreenChar.BUTTON_SB_DN);
+
+		planes.setScreenCharAndAttr(sp, ' ', 32, false);
+		planes.setUseGUI(sp, ScreenChar.BUTTON_SB_DN);
 	}
 
 	/**
@@ -3710,8 +3821,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		//                              + "," + getCol(pos) + "," + ((orientation >> 6) & 0xf0));
 
 		for (int x = 0; x < len; x++) {
-			screen[pos].setChar(title.charAt(x));
-			screen[pos++].setUseGUI(ScreenChar.NO_GUI);
+//			screen[pos].setChar(title.charAt(x));
+//			screen[pos++].setUseGUI(ScreenChar.NO_GUI);
+			planes.setChar(pos, title.charAt(x));
+			planes.setUseGUI(pos++, ScreenChar.NO_GUI);
 
 		}
 	}
@@ -3749,13 +3862,15 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		case 0:
 			//  Now round em up and head em UP.
 			for (int x = start; x < len + numCols; x++) {
-				screen[x].setChar(screen[x + numCols].getChar());
+//				screen[x].setChar(screen[x + numCols].getChar());
+				planes.setChar(x, planes.getChar(x + numCols));
 			}
 			break;
 		case 1:
 			//  Now round em up and head em DOWN.
 			for (int x = end + numCols; x > 0; x--) {
-				screen[x + numCols].setChar(screen[x].getChar());
+//				screen[x + numCols].setChar(screen[x].getChar());
+				planes.setChar(x + numCols, planes.getChar(x));
 			}
 			break;
 		default:
@@ -3781,6 +3896,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			}
 		}
 		System.out.println(sb.toString());
+
 	}
 
 	/**
@@ -3804,7 +3920,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		lastAttr = attr;
 
-		screen[lastPos].setCharAndAttr(initChar, lastAttr, true);
+//		screen[lastPos].setCharAndAttr(initChar, lastAttr, true);
+		planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
+
 		setDirty(lastPos);
 
 		advancePos();
@@ -3828,13 +3946,20 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 			while (x-- > 0) {
 
-				if (screen[lastPos].getChar() == 0)
-					screen[lastPos].setCharAndAttr(' ', lastAttr, false);
-				else
-					screen[lastPos].setAttribute(lastAttr);
+//				if (screen[lastPos].getChar() == 0)
+//					screen[lastPos].setCharAndAttr(' ', lastAttr, false);
+//				else
+//					screen[lastPos].setAttribute(lastAttr);
 
-				if (gui)
-					screen[lastPos].setUseGUI(ScreenChar.FIELD_MIDDLE);
+				if (planes.getChar(lastPos) == 0)
+					planes.setScreenCharAndAttr(lastPos, ' ', lastAttr, false);
+				else
+					planes.setScreenAttr(lastPos,lastAttr);
+
+				if (gui) {
+//					screen[lastPos].setUseGUI(ScreenChar.FIELD_MIDDLE);
+					planes.setUseGUI(lastPos,ScreenChar.FIELD_MIDDLE);
+				}
 
 				advancePos();
 
@@ -3842,14 +3967,23 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 			if (gui)
 				if (len > 1) {
-					screen[sf.startPos()].setUseGUI(ScreenChar.FIELD_LEFT);
-					if (lastPos > 0)
-						screen[lastPos - 1].setUseGUI(ScreenChar.FIELD_RIGHT);
-					else
-						screen[lastPos].setUseGUI(ScreenChar.FIELD_RIGHT);
+//					screen[sf.startPos()].setUseGUI(ScreenChar.FIELD_LEFT);
+					planes.setUseGUI(sf.startPos(), ScreenChar.FIELD_LEFT);
+//					if (lastPos > 0)
+//						screen[lastPos - 1].setUseGUI(ScreenChar.FIELD_RIGHT);
+//					else
+//						screen[lastPos].setUseGUI(ScreenChar.FIELD_RIGHT);
 
-				} else
-					screen[lastPos - 1].setUseGUI(ScreenChar.FIELD_ONE);
+					if (lastPos > 0)
+						planes.setUseGUI(lastPos - 1, ScreenChar.FIELD_RIGHT);
+					else
+						planes.setUseGUI(lastPos,ScreenChar.FIELD_RIGHT);
+
+				}
+            else {
+//					screen[lastPos - 1].setUseGUI(ScreenChar.FIELD_ONE);
+					planes.setUseGUI(lastPos - 1,ScreenChar.FIELD_ONE);
+            }
 
 			//         screen[lastPos].setCharAndAttr(initChar,initAttr,true);
 			setEndingAttr(initAttr);
@@ -4012,22 +4146,26 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					while (l-- > 0) {
 
 						if (guiInterface && f) {
-							screen[pos].setUseGUI(ScreenChar.FIELD_LEFT);
+//							screen[pos].setUseGUI(ScreenChar.FIELD_LEFT);
+							planes.setUseGUI(pos,ScreenChar.FIELD_LEFT);
 							f = false;
 						} else {
 
-							screen[pos].setUseGUI(ScreenChar.FIELD_MIDDLE);
+//							screen[pos].setUseGUI(ScreenChar.FIELD_MIDDLE);
+							planes.setUseGUI(pos,ScreenChar.FIELD_MIDDLE);
 
 						}
 
 						if (guiInterface && l == 0) {
-							screen[pos].setUseGUI(ScreenChar.FIELD_RIGHT);
+//							screen[pos].setUseGUI(ScreenChar.FIELD_RIGHT);
+							planes.setUseGUI(pos,ScreenChar.FIELD_RIGHT);
 						}
 
 						pos++;
 					}
 				} else {
-					screen[pos].setUseGUI(ScreenChar.FIELD_ONE);
+//					screen[pos].setUseGUI(ScreenChar.FIELD_ONE);
+					planes.setUseGUI(pos,ScreenChar.FIELD_ONE);
 				}
 			}
 		}
@@ -4069,7 +4207,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		int na = sf.getHighlightedAttr();
 
 		while (x-- > 0) {
-			screen[pos].setAttribute(na);
+//			screen[pos].setAttribute(na);
+			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
 		updateImage(dirty);
@@ -4091,7 +4230,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		int na = sf.getAttr();
 
 		while (x-- > 0) {
-			screen[pos].setAttribute(na);
+//			screen[pos].setAttribute(na);
+			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
 		updateImage(dirty);
@@ -4101,8 +4241,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public boolean checkHotSpots() {
 
 		boolean retHS = false;
-		retHS = GUIHotSpots.checkHotSpots(this, screen, numRows, numCols,
-				lenScreen, fmWidth, fmHeight);
+      // needs to be re implemented
+//		retHS = GUIHotSpots.checkHotSpots(this, screen, numRows, numCols,
+//				lenScreen, fmWidth, fmHeight);
 
 		return retHS;
 	}
@@ -4110,25 +4251,33 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public void setChar(int cByte) {
 
 		if (cByte > 0 && cByte < ' ') {
-			screen[lastPos].setCharAndAttr((char) 0x00, 33, false);
+//			screen[lastPos].setCharAndAttr((char) 0x00, 33, false);
+			planes.setScreenCharAndAttr(lastPos, (char) 0x00, 33, false);
 			setDirty(lastPos);
 
 			advancePos();
 		} else {
 			if (lastPos > 0) {
-				if (screen[lastPos - 1].isAttributePlace())// &&
-					lastAttr = screen[lastPos - 1].getCharAttr();
+
+            ////  change me here once things are working
+//				if (screen[lastPos - 1].isAttributePlace())// &&
+//					lastAttr = screen[lastPos - 1].getCharAttr();
+            // uncomment me
+				if (planes.isAttributePlace(lastPos - 1)) // &&
+					lastAttr = planes.getCharAttr(lastPos - 1);
 			}
 
-			screen[lastPos].setCharAndAttr((char) cByte, lastAttr, false);
+//			screen[lastPos].setCharAndAttr((char) cByte, lastAttr, false);
+			planes.setScreenCharAndAttr(lastPos, (char) cByte, lastAttr, false);
 
 			//         screen[lastPos].setCharAndAttr((char)cByte,
 			//                           screen[lastPos].getCharAttr(),false);
 
 			setDirty(lastPos);
-			if (guiInterface && !isInField(lastPos, false))
-				screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
-
+			if (guiInterface && !isInField(lastPos, false)) {
+//				screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
+				planes.setUseGUI(lastPos, ScreenChar.NO_GUI);
+			}
 			advancePos();
 		}
 
@@ -4154,7 +4303,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		// +
 		//                     " at " + (this.getRow(lastPos) + 1) + "," + (this.getCol(lastPos) +
 		// 1));
-		screen[lastPos].setCharAndAttr(initChar, lastAttr, true);
+//		screen[lastPos].setCharAndAttr(initChar, lastAttr, true);
+		planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
 		setDirty(lastPos);
 
 		advancePos();
@@ -4167,14 +4317,23 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		//                     " at " + (this.getRow(lastPos) + 1) + "," + (this.getCol(lastPos) +
 		// 1) +
 		//                     " attr place " + screen[lastPos].isAttributePlace());
-		while (screen[lastPos].getCharAttr() != lastAttr
-				&& !screen[lastPos].isAttributePlace()) {
 
-			screen[lastPos].setAttribute(lastAttr);
+      ///  un - comment me here;
+//		while (screen[lastPos].getCharAttr() != lastAttr
+//				&& !screen[lastPos].isAttributePlace()) {
+
+		while (planes.getCharAttr(lastPos) != lastAttr
+				&& !planes.isAttributePlace(lastPos)) {
+
+//			screen[lastPos].setAttribute(lastAttr);
+			planes.setScreenAttr(lastPos, lastAttr);
 			if (guiInterface && !isInField(lastPos, false)) {
-				int g = screen[lastPos].whichGui;
+//				int g = screen[lastPos].whichGui;
+//				if (g >= ScreenChar.FIELD_LEFT && g <= ScreenChar.FIELD_ONE)
+//					screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
+				int g = planes.getWhichGUI(lastPos);
 				if (g >= ScreenChar.FIELD_LEFT && g <= ScreenChar.FIELD_ONE)
-					screen[lastPos].setUseGUI(ScreenChar.NO_GUI);
+					planes.setUseGUI(lastPos,ScreenChar.NO_GUI);
 			}
 			setDirty(lastPos);
 
@@ -4224,8 +4383,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	public void setDirty(int pos) {
 
-		int bx = screen[pos].x;
-		int by = screen[pos].y;
+//		int bx = screen[pos].x;
+//		int by = screen[pos].y;
+      int bx = fmWidth * getCol(pos);
+      int by = fmHeight * getRow(pos);
 		//LDC - 12/02/2003 - if we must drawing something, do a union with it
 		//  otherwise only this rectangle must be redrawing
 		if (drawing) {
@@ -4246,7 +4407,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	private void resetDirty(int pos) {
 
-		dirty.setBounds(screen[pos].x, screen[pos].y, fmWidth, fmHeight);
+//      int x = s.fmWidth * col;
+//      int y = s.fmHeight * row;
+      int x = fmWidth * getCol(pos);
+      int y = fmHeight * this.getRow(pos);
+
+//		dirty.setBounds(screen[pos].x, screen[pos].y, fmWidth, fmHeight);
+		dirty.setBounds(x, y, fmWidth, fmHeight);
 		//LDC - 12/02/2003 - It must be painting this area
 		drawing = true;
 	}
@@ -4353,19 +4520,20 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 *
 	 */
 	public void saveErrorLine() {
-		// if there is already an error line saved then do not save it again
-		//  This signifies that there was a previous error and the original error
-		//  line was not restored yet.
-		if (errorLine == null) {
-			errorLine = new ScreenChar[numCols];
-			int r = getPos(errorLineNum - 1, 0);
-
-			for (int x = 0; x < numCols; x++) {
-				errorLine[x] = new ScreenChar(this);
-				errorLine[x].setCharAndAttr(screen[r + x].getChar(), screen[r
-						+ x].getCharAttr(), false);
-			}
-		}
+//		// if there is already an error line saved then do not save it again
+//		//  This signifies that there was a previous error and the original error
+//		//  line was not restored yet.
+//		if (errorLine == null) {
+//			errorLine = new ScreenChar[numCols];
+//			int r = getPos(errorLineNum - 1, 0);
+//
+//			for (int x = 0; x < numCols; x++) {
+//				errorLine[x] = new ScreenChar(this);
+//				errorLine[x].setCharAndAttr(screen[r + x].getChar(), screen[r
+//						+ x].getCharAttr(), false);
+//			}
+//		}
+      planes.saveErrorLine();
 	}
 
 	/**
@@ -4375,15 +4543,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public void restoreErrorLine() {
 
-		if (errorLine != null) {
-			int r = getPos(errorLineNum - 1, 0);
-
-			for (int x = 0; x < numCols - 1; x++) {
-				screen[r + x].setCharAndAttr(errorLine[x].getChar(),
-						errorLine[x].getCharAttr(), false);
-			}
-			errorLine = null;
-			updateImage(0, screen[r].y, bi.getWidth(), fmHeight);
+		if (planes.isErrorLineSaved()) {
+         planes.restoreErrorLine();
+//			updateImage(0, screen[r].y, bi.getWidth(), fmHeight);
 		}
 	}
 
@@ -4453,7 +4615,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		clearTable();
 		clearScreen();
-		screen[0].setAttribute(initAttr);
+//		screen[0].setAttribute(initAttr);
+      planes.setScreenAttr(0,initAttr);
 		insertMode = false;
 		cursor.setRect(0, 0, 0, 0);
       oia.setInsertMode(insertMode);
@@ -4478,7 +4641,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		for (int x = 0; x < lenScreen; x++) {
 			//         screen[x].setCharAndAttr(' ',initAttr,false);
-			screen[x].setUseGUI(ScreenChar.NO_GUI);
+//			screen[x].setUseGUI(ScreenChar.NO_GUI);
+         planes.setUseGUI(x,ScreenChar.NO_GUI);
 		}
 		dirty.setBounds(tArea.getBounds());
 		//      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
@@ -4491,8 +4655,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public void clearScreen() {
 
 		for (int x = 0; x < lenScreen; x++) {
-			screen[x].setCharAndAttr(' ', initAttr, false);
-			screen[x].setUseGUI(ScreenChar.NO_GUI);
+//			screen[x].setCharAndAttr(' ', initAttr, false);
+//			screen[x].setUseGUI(ScreenChar.NO_GUI);
+			planes.setScreenCharAndAttr(x,' ', initAttr, false);
+			planes.setUseGUI(x, ScreenChar.NO_GUI);
 		}
 		dirty.setBounds(tArea.getBounds());
 		drawing = true;
@@ -4771,10 +4937,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 			// and loop through the screen buffer to draw the new image with
 			// the correct attributes
-			for (int m = 0; m < lenScreen; m++) {
-				screen[m].setRowCol(getRow(m), getCol(m));
-
-			}
+//			for (int m = 0; m < lenScreen; m++) {
+//				screen[m].setRowCol(getRow(m), getCol(m));
+//
+//			}
 			updateFont = false;
 		}
 
@@ -4925,16 +5091,21 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public final void printMe() {
 
-		Thread printerThread = new PrinterThread(screen, font, numCols,
+		Thread printerThread = new PrinterThread(planes.screen, font, numCols,
 				numRows, colorBg, defaultPrinter, (Session) gui);
 
 		printerThread.start();
 
 	}
 
-	// ADDED BY BARRY
-	public ScreenChar[] getCharacters() {
-		return this.screen;
+//	// ADDED BY BARRY
+//	public ScreenChar[] getCharacters() {
+//		return this.screen;
+//	}
+	// ADDED BY BARRY - changed by Kenneth to use the character plane
+   //  This should be replaced with the getPlane methods when they are implemented
+	public char[] getCharacters() {
+		return planes.screen;
 	}
 
 	public Gui5250 getGui() {

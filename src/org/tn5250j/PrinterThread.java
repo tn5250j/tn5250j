@@ -32,7 +32,7 @@ import org.tn5250j.SessionConfig;
 
 public class PrinterThread extends Thread implements Printable {
 
-   ScreenChar[] screen;
+   char[] screen;
    int numCols;
    int numRows;
    Color colorBg;
@@ -41,7 +41,7 @@ public class PrinterThread extends Thread implements Printable {
    boolean toDefault;
    SessionConfig config;
 
-   public PrinterThread (ScreenChar[] sc, Font font, int cols, int rows,
+   public PrinterThread (char[] sc, Font font, int cols, int rows,
                            Color colorBg, boolean toDefaultPrinter, Session ses) {
 
 
@@ -50,15 +50,17 @@ public class PrinterThread extends Thread implements Printable {
       session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       config = ses.getConfiguration();
 
-      screen = new ScreenChar[sc.length];
+      screen = new char[sc.length];
+		System.arraycopy(sc, 0, screen, 0, sc.length);
       toDefault = toDefaultPrinter;
 
       int len = sc.length;
 
-      for (int x = 0; x < len; x++) {
-         screen[x] = new ScreenChar(sc[x].s);
-         screen[x].setCharAndAttr(sc[x].getChar(),sc[x].getCharAttr(),sc[x].isAttributePlace());
-      }
+      // we need to fix this to use the access methods to planes
+//      for (int x = 0; x < len; x++) {
+//         screen[x] = new ScreenChar(sc[x].s);
+//         screen[x].setCharAndAttr(sc[x].getChar(),sc[x].getCharAttr(),sc[x].isAttributePlace());
+//      }
 
       numCols = cols;
       numRows = rows;
@@ -166,13 +168,13 @@ public class PrinterThread extends Thread implements Printable {
 
       session = null;
 
-      int len = screen.length;
-
-      for (int x = 0; x < len; x++) {
-         screen[x] = null;
-      }
-
-      screen = null;
+//      int len = screen.length;
+//
+//      for (int x = 0; x < len; x++) {
+//         screen[x] = null;
+//      }
+//
+//      screen = null;
 
    }
 
@@ -252,14 +254,19 @@ public class PrinterThread extends Thread implements Printable {
                y = h1 * (m + 1);
 
                // only draw printable characters (in this case >= ' ')
-               if (screen[getPos(m,i)].getChar() >= ' ' && !screen[getPos(m,i)].nonDisplay) {
+//               if (screen[getPos(m,i)].getChar() >= ' ' && !screen[getPos(m,i)].nonDisplay) {
+               //  TODO:  Fix me for detecting non display
+               if (screen[getPos(m,i)] >= ' ') {  // && !screen[getPos(m,i)].nonDisplay) {
 
-                  g2.drawChars(screen[getPos(m,i)].sChar, 0, 1,x , (int)(y + h1 - (l.getDescent() + l.getLeading())-2));
+//                  g2.drawChars(screen[getPos(m,i)], 0, 1,x , (int)(y + h1 - (l.getDescent() + l.getLeading())-2));
+                  g2.drawChars(screen, getPos(m,i), 1,x , (int)(y + h1 - (l.getDescent() + l.getLeading())-2));
 
                }
+
+               //  TODO:  Fix me for detecting non display
                // if it is underlined then underline the character
-               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
-                  g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (int)(x + w1), (int)(y + (h1 - l.getLeading())-3));
+//               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
+//                  g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (int)(x + w1), (int)(y + (h1 - l.getLeading())-3));
 
             }
 

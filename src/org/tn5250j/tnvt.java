@@ -812,7 +812,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //				Screen5250.STATUS_VALUE_ON, null);
 	   screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
 	         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
-		
+
 		// From client access ip capture
 		// it seems to use an operation code of 3 and 4
 		// also note that the flag field that says reserved is being sent as
@@ -971,10 +971,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private void scan() {
 		//     System.out.println("Checking command : " +
 		// screen52.screen[1].getChar() + screen52.screen[2].getChar());
-		ScreenChar[] screen = screen52.screen;
-		if ((screen[STRSCAN].getChar() == '#')
-				&& (screen[STRSCAN + 1].getChar() == '!')
-				&& (screen[STRSCAN + 2].getChar() != ' ')) {
+
+//		ScreenChar[] screen = screen52.screen;
+      ScreenPlanes planes = screen52.getPlanes();
+
+		if ((planes.getChar(STRSCAN) == '#')
+				&& (planes.getChar(STRSCAN + 1) == '!')
+				&& (planes.getChar(STRSCAN + 2) != ' ')) {
 			try {
 				parseCommand();
 			} catch (Throwable t) {
@@ -1298,14 +1301,37 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		int la = 32;
 		int sac = 0;
 		int len = rows * cols;
+
+      ScreenPlanes planes = screen52.planes;
+
 		for (int y = 0; y < len; y++) { // save the screen data
 
-			if (screen52.screen[y].isAttributePlace()) {
-				la = screen52.screen[y].getCharAttr();
+//			if (screen52.screen[y].isAttributePlace()) {
+//				la = screen52.screen[y].getCharAttr();
+//				sa[sac++] = (byte) la;
+//			} else {
+//				if (screen52.screen[y].getCharAttr() != la) {
+//					la = screen52.screen[y].getCharAttr();
+//					sac--;
+//					sa[sac++] = (byte) la;
+//				}
+//				//LDC: Check to see if it is an displayable character. If not,
+//				//  do not convert the character.
+//				//  The characters on screen are in unicode
+//				//sa[sac++] =
+//				// (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
+//				char ch = screen52.screen[y].getChar();
+//				byte byteCh = (byte) ch;
+//				if (isDataUnicode(ch))
+//					byteCh = this.uni2ebcdic(ch);
+//				sa[sac++] = byteCh;
+//			}
+			if (planes.isAttributePlace(y)) {
+				la = planes.getCharAttr(y);
 				sa[sac++] = (byte) la;
 			} else {
-				if (screen52.screen[y].getCharAttr() != la) {
-					la = screen52.screen[y].getCharAttr();
+				if (planes.getCharAttr(y) != la) {
+					la = planes.getCharAttr(y);
 					sac--;
 					sa[sac++] = (byte) la;
 				}
@@ -1314,7 +1340,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				//  The characters on screen are in unicode
 				//sa[sac++] =
 				// (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
-				char ch = screen52.screen[y].getChar();
+				char ch = planes.getChar(y);
 				byte byteCh = (byte) ch;
 				if (isDataUnicode(ch))
 					byteCh = this.uni2ebcdic(ch);
@@ -1403,6 +1429,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	 */
 	public final void restoreScreen() throws IOException {
 		int which = 0;
+
+      ScreenPlanes planes = screen52.planes;
+
 		try {
 			log.debug("Restore ");
 
@@ -1425,8 +1454,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 				b = bk.getNextByte();
 				if (isAttribute(b)) {
-					screen52.screen[y].setCharAndAttr(screen52.screen[y]
-							.getChar(), b, true);
+//					screen52.screen[y].setCharAndAttr(screen52.screen[y]
+//							.getChar(), b, true);
+					planes.setScreenCharAndAttr(y, planes.getChar(y), b, true);
 					la = b;
 
 				} else {
@@ -1438,9 +1468,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					if (isDataEBCDIC(b))
 						ch = ebcdic2uni(b);
 
-					screen52.screen[y].setCharAndAttr(
-					//getASCIIChar(b),
-							ch, la, false);
+//					screen52.screen[y].setCharAndAttr(
+//					//getASCIIChar(b),
+//							ch, la, false);
+					planes.setScreenCharAndAttr(y, ch, la, false);
 				}
 			}
 
@@ -3262,18 +3293,22 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	}
 
-	public void dumpScreen() {
-
-		for (int y = 0; y < screen52.getRows(); y++) {
-			System.out.print("row :" + (y + 1) + " ");
-
-			for (int x = 0; x < screen52.getCols(); x++) {
-				System.out.println("row " + (y + 1) + " col " + (x + 1) + " "
-						+ screen52.screen[y * x].toString());
-
-			}
-		}
-	}
+//      public void dumpScreen() {
+//
+//         for (int y = 0; y < screen52.getRows(); y++) {
+//            System.out.print("row :" + (y + 1) + " ");
+//
+//   //			for (int x = 0; x < screen52.getCols(); x++) {
+//   //				System.out.println("row " + (y + 1) + " col " + (x + 1) + " "
+//   //						+ screen52.screen[y * x].toString());
+//         // implement this part to create a string from a character.
+//   //			for (int x = 0; x < screen52.getCols(); x++) {
+//   //				System.out.println("row " + (y + 1) + " col " + (x + 1) + " "
+//   //						+ screen52.planes.getChar(y * x).toString());
+//
+//            }
+//         }
+//      }
 
 	// negotiating commands
 	private static final byte IAC = (byte) -1; // 255 FF

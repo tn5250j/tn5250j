@@ -23,31 +23,38 @@ import org.tn5250j.ScreenChar;
 import org.tn5250j.ScreenFields;
 
 public class Tn5250jEvent {
-	
+
 	private Screen5250 screen;
-	private ScreenChar data[];
+	private char[] data;
 	private ScreenFields fields;
-	
+
 	public Tn5250jEvent() {
-		screen = null;	
+		screen = null;
 	}
-	
+
 	public Tn5250jEvent(Screen5250 newscreen) {
 		screen = newscreen;
-		Object[] original = (Object[])screen.getCharacters();
-		data = new ScreenChar[original.length];
+//		Object[] original = (Object[])screen.getCharacters();
+//		data = new ScreenChar[original.length];
+//		System.arraycopy(original, 0, data, 0, original.length);
+
+      // changed by Kenneth - This should be replaced with a call to
+      //   getPlane method of screen object when they are implemented.  These
+      //   new methods will also do the array copy.
+		char[] original = screen.getCharacters();
+		data = new char[original.length];
 		System.arraycopy(original, 0, data, 0, original.length);
 		this.fields = newscreen.getScreenFields();
 	}
-	
-	public ScreenChar[] getData() {
+
+	public char[] getData() {
 		return data;
 	}
-	
+
 	public Screen5250 getScreen() {
 		return screen;
 	}
-	
+
 	public ScreenFields getFields() {
 		return this.fields;
 	}
