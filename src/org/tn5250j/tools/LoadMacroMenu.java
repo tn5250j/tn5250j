@@ -35,10 +35,13 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.logging.*;
 
 public final class LoadMacroMenu {
 
    private static Vector macroVector;
+   private static TN5250jLogger log =
+    TN5250jLogFactory.getLogger("org.tn5250j.tools.LoadMacroMenu");
 
    static {
       macroVector = new Vector();
@@ -177,55 +180,56 @@ public final class LoadMacroMenu {
     * @param directory
     * @param session
     */
-   private static void loadScripts(Vector vector,
-                                    String path,
-                                    File directory,
-                                    Session session) {
+   private static void loadScripts(Vector vector, String path, File directory,
+			Session session) {
 
-      ExecuteScriptAction action;
+		ExecuteScriptAction action;
 
-      File[] macroFiles = directory.listFiles();
-      if(macroFiles == null || macroFiles.length == 0)
-         return;
+		File[] macroFiles = directory.listFiles();
+		if (macroFiles == null || macroFiles.length == 0)
+			return;
 
-      Arrays.sort(macroFiles,new MacroCompare());
+		Arrays.sort(macroFiles, new MacroCompare());
 
-      for(int i = 0; i < macroFiles.length; i++) {
-         File file = macroFiles[i];
-         String fileName = file.getName();
-         if(file.isHidden()) {
-            /* do nothing! */
-            continue;
-         }
-         else if(file.isDirectory()) {
-            Vector submenu = new Vector();
-            submenu.addElement(fileName.replace('_',' '));
-            loadScripts(submenu,path + fileName + '/',file,session);
-            // if we do not want empty directories to show up uncomment this
-            //    line.
-//            if(submenu.size() != 1)
-               vector.addElement(submenu);
-         }
-         else {
-            if (InterpreterDriverManager.isScriptSupported(fileName)) {
-               String fn = fileName.replace('_',' ');
-               int index = fn.lastIndexOf('.');
-               if (index > 0) {
-                  fn = fn.substring(0,index);
-               }
-               action = new ExecuteScriptAction(fn,
-                                          file.getAbsolutePath(),
-                                          session) {
-                 };
-               vector.addElement(action);
-            }
-         }
-      }
-   }
+		//KJP - We will wrap this in a try catch block to catch security
+		// exceptions
+		for (int i = 0; i < macroFiles.length; i++) {
+			try {
+				File file = macroFiles[i];
+				String fileName = file.getName();
+				if (file.isHidden()) {
+					/* do nothing! */
+					continue;
+				} else if (file.isDirectory()) {
+					Vector submenu = new Vector();
+					submenu.addElement(fileName.replace('_', ' '));
+					loadScripts(submenu, path + fileName + '/', file, session);
+					// if we do not want empty directories to show up uncomment
+					// this line.
+					// if(submenu.size() != 1)
+					vector.addElement(submenu);
+				} else {
+					if (InterpreterDriverManager.isScriptSupported(fileName)) {
+						String fn = fileName.replace('_', ' ');
+						int index = fn.lastIndexOf('.');
+						if (index > 0) {
+							fn = fn.substring(0, index);
+						}
+						action = new ExecuteScriptAction(fn, file
+								.getAbsolutePath(), session) {
+						};
+						vector.addElement(action);
+					}
+				}
+			} catch (SecurityException se) {
+				log.warn(se.getMessage());
+			}
+		}
+	}
 
    /**
     * Create the scripts menu(s) from the vector of macros provided
-    *
+    * 
     * @param menu
     * @param vector
     * @param start
