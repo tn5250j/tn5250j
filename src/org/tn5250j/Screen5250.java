@@ -4446,30 +4446,39 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 //      if (gui.isVisible() && height > 0 && width > 0) {
 //         bi.drawImageBuffer(gg2d,x,y,width,height);
 //      }
-         if (gui.isVisible()) {
-            if (height > 0 && width > 0) {
+//         if (gui.isVisible()) {
+//            if (height > 0 && width > 0) {
 
          // We now redraw the selected area rectangle.
          if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
             gui.rubberband.draw();
          }
 
-         if (!fullRepaint) {
-            bi.drawImageBuffer(gg2d,x,y,width,height);
-         }
-         else
-            gui.repaint();
+//         if (!fullRepaint) {
+//            bi.drawImageBuffer(gg2d,x,y,width,height);
+//         }
+//         else
+//            gui.repaint();
 
 //            System.out.println(" something went right finally " + gui.isVisible() +
 //                           " height " + height + " width " + width);
-         }
+//         }
 //            else {
    //            bi.drawImageBuffer(gg2d);
 //            System.out.println(" something is wrong here " + gui.isVisible() +
 //                           " height " + height + " width " + width);
 
 //            }
-      }
+//      }
+     if (x == 0)
+       width += bi.offLeft;
+     else
+       x += bi.offLeft;
+     if (y == 0)
+       height += bi.offTop;
+     else
+       y += bi.offTop;
+     gui.repaint(x,y,width, height);
 
    }
 
