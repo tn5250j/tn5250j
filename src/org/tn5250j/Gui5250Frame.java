@@ -228,18 +228,21 @@ public class Gui5250Frame extends GUIViewInterface implements
       p.setForegroundAt(selectedIndex,Color.blue);
       p.setIconAt(selectedIndex,focused);
 
+      setTitle();
+
    }
 
    private void setTitle() {
 
-      if (sequence - 1 > 0)
-         setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-      else
-         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-
       if (getSessionAt(selectedIndex) != null &&
                   getSessionAt(selectedIndex).getAllocDeviceName() != null)
-         setTitle(getTitle() + " - " + getSessionAt(selectedIndex).getAllocDeviceName());
+         setTitle(getSessionAt(selectedIndex).getAllocDeviceName());
+
+      if (sequence - 1 > 0)
+         setTitle(getTitle() + " - tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+      else
+         setTitle(getTitle() + " - tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+
 
    }
 
