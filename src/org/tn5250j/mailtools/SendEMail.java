@@ -217,8 +217,9 @@ public class SendEMail {
 
             fbp.setText("File sent using tn5250j","us-ascii");
 
-            if (attachmentName == null || attachmentName.length() == 0)
-               fbp.setFileName("tn5250j.txt");
+            if (attachmentName == null || attachmentName.length() == 0) {
+               	fbp.setFileName("tn5250j.txt");
+            }
             else
                fbp.setFileName(attachmentName);
 

@@ -144,7 +144,8 @@ public class SendEMailDialog {
 							}
 
 							sem.setAttachment(sb.toString());
-						} else {
+						} 
+						else if (graphic.isSelected()){
 
 							File dir = new File(System.getProperty("user.dir"));
 
