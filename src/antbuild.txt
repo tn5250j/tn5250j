@@ -4,6 +4,19 @@ Ant build README
 I have only tested this with ant build 1.4.1 so do not know if it is backwards
 compatible with previous versions.
 
+A lot of new options and targets have been added by Christian Geisert.  This
+really makes the build process more flexible and complete.  Great thanks!!!!
+For a list of these see step 7. below.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!---- NOTE --------- NOTE --------- NOTE --------- NOTE --------- NOTE -----!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The new .jar file will be in the dist directly and named tn5250j and not
+my5250j.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!---- NOTE --------- NOTE --------- NOTE --------- NOTE --------- NOTE -----!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 Steps to get started after setting up ant
 -----------------------------------------
 1. Create a base directory to place source
@@ -19,6 +32,9 @@ base directory
 
 3. Unzip and place all source files from tn5250j source zip file that was
    downloaded into src directory.  This includes the Meta-inf directory.
+
+!! As of the newest build.xml the manifest file is built for you automagically.
+
 4. Place the included build.xml file into the base directory.
 5. Place the extra .jar files used for mailing in the lib directory.
    *** NOTE *** this is very important or some modules will not compile
@@ -54,12 +70,40 @@ call %ANT_HOME%\bin\ant -buildfile build.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
 
    ----------------------------------------------
 
-*** NOTE FOR JAVA 1.4 ***
-use the builddep.xml file because there are deprecated API's,
+!*** NOTE FOR JAVA 1.4 ***
+use the compile-dep command line parameter supported by the build.xml file.
+This will allow the compilation of the source using deprecation options
+!*** NOTE FOR JAVA 1.4 ***
+
+For more information on the command line parameters that the build process
+supports execute the following:
+
+>ant -projecthelp
+
+
+7. Main targets:
+
+ all               Clean, Compile, Jar
+ clean             Cleanup your workspace (delete build-directory, ...)
+ compile           Compile your source-files
+ compile-dep       Compile your source-files with deprecation turned on
+ dist              Creates all distribution archives
+ dist-bin          Create a Zip and TGZ Archives with all the binary files
+ dist-bin-prepare  Prepares binary distribution
+ dist-bin-tgz      Create a Tgz-File with all the binary files
+ dist-bin-zip      Create a Zip-File with all the binary files
+ dist-src          Create a Zip and TGZ Archives with all source files
+ dist-src-prepare  Prepares source distribution
+ dist-src-tgz      Create a Tgz-File with all the source files
+ dist-src-zip      Create a Zip-File with all the source files
+ info              Prints a short summary of this project
+ javadoc           Creates the javadoc API documentation
+ package           Create a Jar-File of your compiled classes
+
 
 
 If you have any questions or suggestions please let me know.  If you have code
-changes PLEASE PLEASE send them to me.
+changes or suggestions PLEASE PLEASE send them to me.
 
 Enjoy!!!
 
