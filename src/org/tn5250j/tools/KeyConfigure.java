@@ -146,8 +146,6 @@ public class KeyConfigure extends JDialog implements ActionListener,
       getContentPane().add(options, BorderLayout.SOUTH);
 
 
-//      functions.setSelectedIndex(0);
-
       // add option buttons to options panel
       addOptButton(LangTool.getString("key.labelMap","Map Key"),"MAP",options,true);
       addOptButton(LangTool.getString("key.labelRemove","Remove"),"REMOVE",options,true);
@@ -176,7 +174,9 @@ public class KeyConfigure extends JDialog implements ActionListener,
       // This try and catch is to fix a problem in JDK1.4-betas
       try {
          if (!macros && !special) {
-            strokeDesc.setText(mapper.getKeyStrokeDesc(mnemonicData[index]));
+
+            KeyDescription kd = (KeyDescription)lm.getElementAt(index);
+            strokeDesc.setText(mapper.getKeyStrokeDesc(mnemonicData[kd.getIndex()]));
          }
          else {
             if (macros) {
@@ -201,9 +201,19 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       lm.clear();
       lm.removeAllElements();
+
+
       if (which.equals(LangTool.getString("key.labelKeys"))) {
+         Vector lk = new Vector(mnemonicData.length);
          for (int x = 0; x < mnemonicData.length; x++) {
-            lm.addElement(LangTool.getString("key."+mnemonicData[x]));
+            lk.addElement(new KeyDescription(LangTool.getString("key."+mnemonicData[x]),x));
+         }
+
+         Collections.sort(lk,new KeyDescriptionCompare());
+
+         for (int x = 0; x < mnemonicData.length; x++) {
+//            lm.addElement(LangTool.getString("key."+mnemonicData[x]));
+            lm.addElement(lk.get(x));
          }
          macros = false;
          special = false;
@@ -320,8 +330,16 @@ public class KeyConfigure extends JDialog implements ActionListener,
       final KeyGetter kg = new KeyGetter();
       kg.setForeground(Color.blue);
       message[0] = kgp;
+
+      String function;
+
+      if (functions.getSelectedValue() instanceof String)
+         function = (String)functions.getSelectedValue();
+      else
+         function = ((KeyDescription)functions.getSelectedValue()).toString();
+
       kg.setText(LangTool.getString("key.labelMessage") +
-                        (String)functions.getSelectedValue());
+                        function);
       kgp.add(kg);
 
       String[] options = new String[1];
@@ -362,9 +380,11 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
    private void removeIt() {
       if (!macros && !special) {
-         mapper.removeKeyStroke(mnemonicData[functions.getSelectedIndex()]);
+         int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
+
+         mapper.removeKeyStroke(mnemonicData[index]);
          strokeDesc.setText(mapper.getKeyStrokeDesc(
-                           mnemonicData[functions.getSelectedIndex()]));
+                           mnemonicData[index]));
 
       }
       else {
@@ -390,12 +410,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
    private void setNewKeyStrokes(KeyEvent ke) {
 
       if (!macros && !special) {
+         int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
          if (isLinux)
-            mapper.setKeyStroke(mnemonicData[functions.getSelectedIndex()],ke,isAltGr);
+            mapper.setKeyStroke(mnemonicData[index],ke,isAltGr);
          else
-            mapper.setKeyStroke(mnemonicData[functions.getSelectedIndex()],ke);
+            mapper.setKeyStroke(mnemonicData[index],ke);
          strokeDesc.setText(mapper.getKeyStrokeDesc(
-                           mnemonicData[functions.getSelectedIndex()]));
+                           mnemonicData[index]));
       }
       else {
          if (macros) {
@@ -429,11 +450,42 @@ public class KeyConfigure extends JDialog implements ActionListener,
       mods = true;
    }
 
+	private static class KeyDescriptionCompare implements Comparator {
+		public int compare(Object one, Object two) {
+         String s1 = one.toString();
+         String s2 = two.toString();
+         return s1.compareToIgnoreCase(s2);
+		}
+
+	}
+
+   private class KeyDescription {
+
+      private int index;
+      private String text;
+
+      public KeyDescription(String text,int index) {
+
+         this.text = text;
+         this.index = index;
+
+      }
+
+      public String toString() {
+
+         return text;
+      }
+
+      public int getIndex() {
+         return index;
+      }
+   }
+
    /**
     * This class extends label so that we can display text as well as capture
     * the key stroke(s) to assign to keys.
     */
-   public class KeyGetter extends JLabel {
+   private class KeyGetter extends JLabel {
 
       KeyEvent keyevent;
 
