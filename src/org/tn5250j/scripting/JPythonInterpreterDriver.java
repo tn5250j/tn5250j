@@ -67,6 +67,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
                _interpreter = new PythonInterpreter();
                _interpreter.set("_session",s1);
                _interpreter.execfile(s2);
+               s1.setMacroRunning(false);
             }
 
            };
