@@ -1,8 +1,6 @@
-package org.tn5250j.tools.filters;
-
 /*
  * @(#)DelimitedOutputFilter.java
- * Copyright:    Copyright (c) 2001
+ * Copyright:    Copyright (c) 2001, 2002, 2003
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +18,7 @@ package org.tn5250j.tools.filters;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.tools.filters;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -29,8 +28,8 @@ import javax.swing.*;
 public class DelimitedOutputFilter implements OutputFilterInterface {
 
    PrintStream fout = null;
-   String delimiter = ",";
-   String stringQualifier = "\"";
+   static String delimiter = ",";
+   static String stringQualifier = "\"";
    StringBuffer sb = new StringBuffer();
 
    // create instance of file for output
@@ -121,23 +120,50 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
 
          opts.setLayout(new AlignLayout(2,5,5));
          JLabel fdl = new JLabel(LangTool.getString("delm.labelField"));
+
+         // setup the field delimiter list
          JComboBox fd = new JComboBox();
          fd.addItem(",");
          fd.addItem(";");
          fd.addItem(":");
          fd.addItem("|");
-         fd.addItem(LangTool.getString("delm.labelSpace"));
          fd.addItem(LangTool.getString("delm.labelTab"));
+         fd.addItem(LangTool.getString("delm.labelSpace"));
+         fd.addItem(LangTool.getString("delm.labelNone"));
+
+         if (delimiter.length() > 0)
+            if (delimiter.equals("\t"))
+               fd.setSelectedItem(LangTool.getString("delm.labelTab"));
+            else if (delimiter.equals(" "))
+               fd.setSelectedItem(LangTool.getString("delm.labelSpace"));
+            else {
+               if (!delimiter.equals(",") && !delimiter.equals(";") &&
+                     !delimiter.equals(":") && !delimiter.equals("|"))
+                  fd.addItem(delimiter);
+
+               fd.setSelectedItem(delimiter);
+            }
+         else
+            fd.setSelectedItem(LangTool.getString("delm.labelNone"));
 
          fd.setEditable(true);
-         fd.setSelectedIndex(0);
 
+         // setup the string qualifier list
          JLabel tdl = new JLabel(LangTool.getString("delm.labelText"));
          JComboBox td = new JComboBox();
          td.addItem("\"");
          td.addItem("'");
+         td.addItem(LangTool.getString("delm.labelNone"));
+
+         if (stringQualifier.length() > 0) {
+            if (!stringQualifier.equals("'") && !stringQualifier.equals("\""))
+               td.addItem(stringQualifier);
+            td.setSelectedItem(stringQualifier);
+         }
+         else
+            td.setSelectedItem(LangTool.getString("delm.labelNone"));
+
          td.setEditable(true);
-         td.setSelectedIndex(0);
 
          opts.add(fdl);
          opts.add(fd);
@@ -168,7 +194,11 @@ public class DelimitedOutputFilter implements OutputFilterInterface {
                   delimiter = " ";
                if (delimiter.equals(LangTool.getString("delm.labelTab")))
                   delimiter = "\t";
+               if (delimiter.equals(LangTool.getString("delm.labelNone")))
+                  delimiter = "";
                stringQualifier = (String)td.getSelectedItem();
+               if (stringQualifier.equals(LangTool.getString("delm.labelNone")))
+                  stringQualifier = "";
                break;
             case 1: // Cancel
    //		      System.out.println("Cancel");
