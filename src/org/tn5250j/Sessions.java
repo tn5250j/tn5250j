@@ -43,7 +43,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    public void actionPerformed(ActionEvent e) {
 
-      String t = new Date(e.getWhen()).toString();
+      //String t = new Date(e.getWhen()).toString();
       Session ses;
       for (int x = 0; x < sessions.size(); x++) {
          try {
