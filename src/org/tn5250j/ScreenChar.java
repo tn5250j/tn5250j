@@ -560,7 +560,7 @@ public class ScreenChar {
                      g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-3, x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4);
                      break;
                   default:
-                     g.setColor(fg);
+                     g.setColor(bg);
                      g.drawLine(x, y, x, y + s.fmHeight - 1);
                      g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
                      break;
