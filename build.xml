@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.7-pre2"/>
+   <property name="version" value="0.5.7-pre3"/>
    <property name="year" value="2001-2003"/>
 
    <property name="source.dir" value="${basedir}/src" />
@@ -66,7 +66,7 @@
   <!-- ===================================================================== -->
   <!-- Test Java version.                                                    -->
   <!-- ===================================================================== -->
- 
+
    <target name="testjava">
       <condition property="oldJava">
          <or>
@@ -74,8 +74,8 @@
          </or>
       </condition>
    </target>
-    
-    
+
+
     <!-- the ftp task can be used to transfer files to a remote system -->
     <!--
     <taskdef name="ftp"
@@ -179,7 +179,7 @@
             <classpath refid="classpath"/>
         </java>
     </target>
-    
+
     <!-- =================================================================== -->
     <!-- Creates the API documentation                                       -->
     <!-- =================================================================== -->
@@ -312,8 +312,8 @@
     </target>
 
   <!-- Creates an installer for tn5250j -->
-  <target name="generate-installer" depends="dist" description="Creates installer using IzPack"> 
-  
+  <target name="generate-installer" depends="dist" description="Creates installer using IzPack">
+
     <!-- Allows us to use the IzPack Ant task -->
     <taskdef name="izpack" classpath="${basedir}/lib/compiler.jar"
              classname="com.izforge.izpack.ant.IzPackTask"/>
