@@ -1,5 +1,6 @@
+package org.tn5250j;
 /**
- * Title: SessionAttributes.java
+ * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -23,7 +24,6 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -57,12 +57,15 @@ public class SessionAttributes extends JDialog {
    public SessionAttributes(JFrame parent, SessionConfig config ) {
       super(parent);
 
+      parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
       this.fileName = config.getConfigurationResource();
       this.props = config.getProperties();
       changes = config;
 
       try {
          jbInit();
+         parent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       }
       catch(Exception e) {
          e.printStackTrace();
@@ -76,6 +79,17 @@ public class SessionAttributes extends JDialog {
       jp = new JPanel();
       cardLayout = new CardLayout();
       jp.setLayout(cardLayout);
+
+      DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
+      Enumeration e = root.children();
+      Object child;
+      while (e.hasMoreElements()) {
+         child = e.nextElement();
+         Object obj = ((DefaultMutableTreeNode)child).getUserObject();
+         if (obj instanceof AttributesPanel) {
+            jp.add((AttributesPanel)obj,((AttributesPanel)obj).toString());
+         }
+      }
 
       //Create the nodes.
       DefaultMutableTreeNode top = new DefaultMutableTreeNode(fileName);
@@ -115,6 +129,7 @@ public class SessionAttributes extends JDialog {
 
       cardLayout.first(jp);
 
+
    }
 
    private void showPanel(Object node) {
@@ -133,6 +148,7 @@ public class SessionAttributes extends JDialog {
       createNode(top,new HotspotAttributesPanel(changes));
       createNode(top,new KeypadAttributesPanel(changes));
       createNode(top,new PrinterAttributesPanel(changes));
+      createNode(top,new ErrorResetAttributesPanel(changes));
 
    }
 
@@ -301,8 +317,6 @@ public class SessionAttributes extends JDialog {
          }
       }
 
-      // note for kjp
-      // this needs to be a call to the configuration object to save it's objects
       try {
          FileOutputStream out = new FileOutputStream(fileName);
          props.store(out,"------ Defaults --------");
