@@ -34,6 +34,8 @@
         <pack name="Emulator" required="yes">
             <description>A 5250 telnet emulator written in java</description>
             <file targetdir="$INSTALL_PATH/lib" src="installer/tn5250j.jar"/>
+            <file targetdir="$INSTALL_PATH" src="installer/COPYING"/>
+            <file targetdir="$INSTALL_PATH" src="installer/readme.txt"/>
             <file targetdir="$INSTALL_PATH" src="installer/bin"/>
             <parsable targetfile="$INSTALL_PATH/bin/tn5250j"/>
             <parsable targetfile="$INSTALL_PATH/bin/tn5250j.bat"/>
