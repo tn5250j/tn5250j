@@ -47,7 +47,7 @@ import org.tn5250j.event.KeyChangeListener;
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
                                                       TN5250jConstants,
-                                                      PropertyChangeListener ,
+//                                                      PropertyChangeListener ,
                                                       RubberBandCanvasIF,
                                                       KeyChangeListener,
                                                       SessionListener,
@@ -282,6 +282,14 @@ public class Gui5250 extends JPanel implements ComponentListener,
       getInputMap().put(ks,MNEMONIC_JUMP_NEXT);
       getActionMap().put(MNEMONIC_JUMP_NEXT,nxtSession );
 
+      // check for alternate
+      if (keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_NEXT + ".alt2")) {
+         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_NEXT + ".alt2");
+         getInputMap().put(ks,MNEMONIC_JUMP_NEXT);
+         getActionMap().put(MNEMONIC_JUMP_NEXT,nxtSession );
+      }
+
+
       Action prevSession = new AbstractAction(MNEMONIC_JUMP_PREV) {
             public void actionPerformed(ActionEvent e) {
                prevSession();
@@ -295,6 +303,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
       getInputMap().put(ks,MNEMONIC_JUMP_PREV);
       getActionMap().put(MNEMONIC_JUMP_PREV,prevSession );
+
+      // check for alternate
+      if (keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_PREV + ".alt2")) {
+         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_PREV + ".alt2");
+         getInputMap().put(ks,MNEMONIC_JUMP_PREV);
+         getActionMap().put(MNEMONIC_JUMP_PREV,prevSession );
+      }
 
       Action hotSpots = new AbstractAction(MNEMONIC_HOTSPOTS) {
             public void actionPerformed(ActionEvent e) {
@@ -525,6 +540,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+   private void setKeyMapping(Action action, String mnemonic) {
+
+
+
+   }
+
    private void dumpStuff(Throwable ex) {
 
       vt.dumpStuff();
@@ -680,6 +701,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //      displayInfo(e,"Pressed " + keyProcessed);
 
       KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(),e.getModifiers(),false);
+
       if (emulatorAction(ks,e)) {
 
          return;
@@ -858,9 +880,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   private void closeSession() {
+   public boolean isOnSignoffScreen() {
+      return vt.isOnSignoffScreen();
+   }
 
-      vt.isOnSignoffScreen();
+   private void closeSession() {
 
       Object[]      message = new Object[1];
       message[0] = LangTool.getString("cs.message");
@@ -881,12 +905,52 @@ public class Gui5250 extends JPanel implements ComponentListener,
          );
 
       if (result == 0) {
-         closeMe();
+         if (!isOnSignoffScreen()) {
+
+            if (confirmClose()) {
+               closeMe();
+
+            }
+         }
+         else {
+            closeMe();
+         }
+
       }
       if (result == 1) {
          me.closingDown((Session)this);
       }
 
+   }
+
+   /**
+    * Check is the parameter to confirm that the Sign On screen is the current
+    * screen.  If it is then we check against the saved Signon Screen in memory
+    * and take the appropriate action.
+    *
+    * @return whether or not the signon on screen is the current screen
+    */
+   private boolean confirmClose() {
+
+      if (sesConfig.isPropertyExists("confirmSignoff") &&
+               sesConfig.getStringProperty("confirmSignoff").equals("Yes")) {
+
+         int result = JOptionPane.showConfirmDialog(
+                this.getParent(),            // the parent that the dialog blocks
+                LangTool.getString("messages.signOff"),  // the dialog message array
+                LangTool.getString("cs.title"),    // the title of the dialog window
+                JOptionPane.CANCEL_OPTION        // option type
+            );
+
+         if (result == 0) {
+            return true;
+         }
+
+         return false;
+      }
+      else {
+         return true;
+      }
    }
 
    private void getFocusForMe() {
@@ -929,7 +993,37 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   public void propertyChange(PropertyChangeEvent pce) {
+//   public void propertyChange(PropertyChangeEvent pce) {
+//
+//      String pn = pce.getPropertyName();
+//
+//      if (pn.equals("keypad")) {
+//         if (((String)pce.getNewValue()).equals("Yes")) {
+//            keyPad.setVisible(true);
+//         }
+//         else {
+//            keyPad.setVisible(false);
+//         }
+//         this.validate();
+//      }
+//
+//      if (pn.equals("doubleClick")) {
+//         if (((String)pce.getNewValue()).equals("Yes")) {
+//            doubleClick = true;
+//         }
+//         else {
+//            doubleClick = false;
+//         }
+//      }
+//
+//      screen.propertyChange(pce);
+//
+//      resizeMe();
+//      repaint();
+//
+//   }
+
+   public void onConfigChanged(SessionConfigEvent pce) {
 
       String pn = pce.getPropertyName();
 
@@ -956,11 +1050,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       resizeMe();
       repaint();
-
-   }
-
-   public void onConfigChanged(SessionConfigEvent changeEvent) {
-
 
    }
 
@@ -1100,23 +1189,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       SessionAttributes sa = new SessionAttributes(parent,sesConfig);
 
-      Vector listeners = sesConfig.getSessionConfigListeners();
-
-      Enumeration e = listeners.elements();
-
-      while (e.hasMoreElements()) {
-         sa.addPropertyChangeListener((Session)e.nextElement());
-      }
-
       sa.showIt();
-
-      listeners = sesConfig.getSessionConfigListeners();
-
-      e = listeners.elements();
-
-      while (e.hasMoreElements()) {
-         sa.removePropertyChangeListener((Session)e.nextElement());
-      }
 
       getFocusForMe();
       sa = null;
@@ -1573,8 +1646,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       try {
          org.tn5250j.spoolfile.SpoolExporter spooler =
-                              new org.tn5250j.spoolfile.SpoolExporter(vt,
-                                                            (Session)this);
+                        new org.tn5250j.spoolfile.SpoolExporter(vt, (Session)this);
          spooler.setVisible(true);
       }
       catch (NoClassDefFoundError ncdfe) {

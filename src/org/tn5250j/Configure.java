@@ -48,6 +48,7 @@ public class Configure implements TN5250jConstants {
    static JComboBox  cpb = null;
    static JCheckBox ec = null;
    static JCheckBox tc = null;
+   static JCheckBox sdn = null;
    static JRadioButton sdNormal = null;
    static JCheckBox useProxy = null;
    static JTextField proxyHost = null;
@@ -65,6 +66,7 @@ public class Configure implements TN5250jConstants {
 
       ec = new JCheckBox(LangTool.getString("conf.labelEnhanced"));
       tc = new JCheckBox(LangTool.getString("conf.labelUseSystemName"));
+      sdn = new JCheckBox(LangTool.getString("conf.labelUseHostName"));
       useProxy = new JCheckBox(LangTool.getString("conf.labelUseProxy"));
       sdNormal = new JRadioButton(LangTool.getString("conf.label24"));
       JRadioButton sdBig = new JRadioButton(LangTool.getString("conf.label27"));
@@ -151,6 +153,15 @@ public class Configure implements TN5250jConstants {
          else
             deviceName = new JTextField(20);
 
+         if (isSpecified("-dn=hostname",args)) {
+            sdn.setSelected(true);
+            deviceName.setEnabled(false);
+         }
+         else {
+            sdn.setSelected(false);
+            deviceName.setEnabled(true);
+         }
+
          if (isSpecified("-spp",args)) {
             proxyPort = new JTextField(getParm("-spp",args),5);
          }
@@ -228,6 +239,16 @@ public class Configure implements TN5250jConstants {
       addLabelComponent(LangTool.getString("conf.labelDeviceName"),
                            deviceName,
                            sip);
+
+      addLabelComponent("",
+                           sdn,
+                           sip);
+
+      sdn.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            doItemStateChanged(e);
+         }
+      });
 
       addLabelComponent(LangTool.getString("conf.labelSSLType"),
                            sslType,
@@ -368,6 +389,22 @@ public class Configure implements TN5250jConstants {
 
   }
 
+   /**
+    * React on the state change for radio buttons
+    *
+    * @param e Item event to react to
+    */
+   private static void doItemStateChanged(ItemEvent e) {
+
+      deviceName.setEnabled(true);
+
+      if (e.getStateChange() == ItemEvent.SELECTED) {
+         if (sdn.isSelected()) {
+            deviceName.setEnabled(false);
+         }
+      }
+   }
+
    private static void addLabelComponent(String text,Component comp,Container container) {
 
       JLabel label = new JLabel(text);
@@ -429,12 +466,15 @@ public class Configure implements TN5250jConstants {
       if (!sdNormal.isSelected())
          sb.append(" -132" );
 
-      if (deviceName.getText() != null)
+      if (deviceName.getText() != null && !sdn.isSelected())
          if (deviceName.getText().trim().length() > 0)
             if (deviceName.getText().trim().length() > 10)
                sb.append(" -dn " + deviceName.getText().trim().substring(0,10).toUpperCase());
             else
                sb.append(" -dn " + deviceName.getText().trim().toUpperCase());
+
+      if (sdn.isSelected())
+         sb.append(" -dn=hostname");
 
       if (useProxy.isSelected())
          sb.append(" -usp" );

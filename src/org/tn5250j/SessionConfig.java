@@ -44,7 +44,6 @@ public class SessionConfig implements TN5250jConstants {
    private int sessionType;
    private Properties sesProps;
    private Vector listeners;
-   private SessionConfigEvent sce;
    private String sslType;
 
    public SessionConfig (String configurationResource,
@@ -71,13 +70,40 @@ public class SessionConfig implements TN5250jConstants {
     *
     * @param state  The state change property object.
     */
-   protected void fireConfigChanged() {
+   protected void fireConfigChanged(SessionConfigEvent sce) {
 
       if (listeners != null) {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             SessionConfigListener target =
                     (SessionConfigListener)listeners.elementAt(i);
+            target.onConfigChanged(sce);
+         }
+      }
+   }
+
+   public void firePropertyChange(Object source, String propertyName,
+            Object oldValue, Object newValue) {
+
+      if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
+         return;
+      }
+
+      java.util.Vector targets = null;
+      synchronized (this) {
+         if (listeners != null) {
+            targets = (java.util.Vector) listeners.clone();
+         }
+      }
+
+      SessionConfigEvent sce = new SessionConfigEvent(source,
+             propertyName, oldValue, newValue);
+
+      if (targets != null) {
+         int size = targets.size();
+         for (int i = 0; i < size; i++) {
+            SessionConfigListener target =
+                    (SessionConfigListener)targets.elementAt(i);
             target.onConfigChanged(sce);
          }
       }
@@ -205,6 +231,11 @@ public class SessionConfig implements TN5250jConstants {
    public Object setProperty(String key, String value ) {
       return sesProps.setProperty(key,value);
    }
+
+   public Object removeProperty(String key) {
+      return sesProps.remove(key);
+   }
+
    public synchronized Vector getSessionConfigListeners () {
 
       return listeners;
