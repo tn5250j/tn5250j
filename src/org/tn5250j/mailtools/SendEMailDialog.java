@@ -145,8 +145,8 @@ public class SendEMailDialog {
 							sem.setMessage(bodyText.getText());
 
 						if (attachmentName.getText().length() > 0)
-							//sem.setAttachmentName(attachmentName.getText());
-							sem.setAttachmentName(fileName);
+							if (!normal.isSelected()) sem.setAttachmentName(attachmentName.getText());
+							else sem.setAttachmentName(fileName);
 
 						if (text.isSelected()) {
 
