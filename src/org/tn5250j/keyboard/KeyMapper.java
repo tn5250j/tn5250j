@@ -44,8 +44,8 @@ public class KeyMapper {
    private static String keyMapName;
    private static String lastKeyMnemonic;
    private static Vector listeners;
+   private static boolean useJava14;
 
-//   private Object keyStroker;
 
    /**
     * String value for the jdk 1.4 version of KeyStroker
@@ -61,6 +61,8 @@ public class KeyMapper {
    private static final Constructor NEW_STROKER3;
 
    static {
+
+      useJava14 = OperatingSystem.hasJava14() && !OperatingSystem.isMacOS();
       Class       stroker_class;
 
       // the different KeyStroker constructors
@@ -75,7 +77,7 @@ public class KeyMapper {
          if (loader == null)
            loader = ClassLoader.getSystemClassLoader();
 
-         if (OperatingSystem.hasJava14())
+         if (useJava14)
             stroker_class       = loader.loadClass(STROKER_NAME14);
          else
             stroker_class       = loader.loadClass(STROKER_NAME);
@@ -124,7 +126,7 @@ public class KeyMapper {
          // my personal preference
          mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
 
-         if (OperatingSystem.hasJava14()) {
+         if (useJava14) {
             mappedKeys.put(newKeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_RIGHT),"[enter]");
             mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_NUMPAD),"[enter].alt2");
          }
@@ -138,12 +140,12 @@ public class KeyMapper {
          mappedKeys.put(newKeyStroker(155, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[insert]");
          mappedKeys.put(newKeyStroker(19, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[clear]");
 
-         if (OperatingSystem.hasJava14())
+         if (useJava14)
             mappedKeys.put(newKeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_LEFT),"[reset]");
          else
             mappedKeys.put(newKeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[reset]");
 
-         if (OperatingSystem.hasJava14())
+         if (useJava14)
             mappedKeys.put(newKeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
          else
             mappedKeys.put(newKeyStroker(27, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
@@ -200,12 +202,12 @@ public class KeyMapper {
 
          mappedKeys.put(newKeyStroker(72, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[hostprint]");
 
-         if (OperatingSystem.hasJava14())
+         if (useJava14)
             mappedKeys.put(newKeyStroker(67, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
          else
             mappedKeys.put(newKeyStroker(67, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
 
-         if (OperatingSystem.hasJava14())
+         if (useJava14)
             mappedKeys.put(newKeyStroker(86, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
          else
             mappedKeys.put(newKeyStroker(86, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
