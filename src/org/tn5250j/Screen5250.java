@@ -99,7 +99,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private int top;
    private int left;
    private Rectangle workR = new Rectangle();
-   private boolean colSepLine = false;
+   private int colSepLine = 0;
    private boolean cursorActive = false;
    private boolean insertMode = false;
    private boolean keyProcessed = false;
@@ -234,7 +234,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (appProps.containsKey("colSeparator")) {
          if (getStringProperty("colSeparator").equals("Line"))
-            colSepLine = true;
+            colSepLine = 0;
+         if (getStringProperty("colSeparator").equals("ShortLine"))
+            colSepLine = 1;
+         if (getStringProperty("colSeparator").equals("Dot"))
+            colSepLine = 2;
       }
 
       if (appProps.containsKey("showAttr")) {
@@ -279,7 +283,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (appProps.containsKey("colSeparator")) {
          if (getStringProperty("colSeparator").equals("Line"))
-            colSepLine = true;
+            colSepLine = 0;
+         if (getStringProperty("colSeparator").equals("ShortLine"))
+            colSepLine = 1;
+         if (getStringProperty("colSeparator").equals("Dot"))
+            colSepLine = 2;
       }
 
       if (appProps.containsKey("cursorSize")) {
@@ -537,9 +545,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (pn.equals("colSeparator")) {
          if (pce.getNewValue().equals("Line"))
-            colSepLine = true;
-         else
-            colSepLine= false;
+            colSepLine = 0;
+         if (pce.getNewValue().equals("ShortLine"))
+            colSepLine = 1;
+         if (pce.getNewValue().equals("Dot"))
+            colSepLine = 2;
       }
 
       if (pn.equals("showAttr")) {
@@ -2265,7 +2275,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return hsBottom;
    }
 
-   public boolean getColSepLine() {
+   public int getColSepLine() {
       return colSepLine;
    }
 

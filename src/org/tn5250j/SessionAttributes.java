@@ -51,6 +51,8 @@ public class SessionAttributes extends JDialog {
    JComboBox colorList;
    JColorChooser jcc;
    JRadioButton csLine;
+   JRadioButton csDot;
+   JRadioButton csShortLine;
    JRadioButton cFull;
    JRadioButton cHalf;
    JRadioButton cLine;
@@ -274,21 +276,27 @@ public class SessionAttributes extends JDialog {
 
       csLine = new JRadioButton(LangTool.getString("sa.csLine"));
       csLine.setActionCommand("Line");
-      JRadioButton csDot = new JRadioButton(LangTool.getString("sa.csDot"));
-      csLine.setActionCommand("Dot");
+      csDot = new JRadioButton(LangTool.getString("sa.csDot"));
+      csDot.setActionCommand("Dot");
+      csShortLine = new JRadioButton(LangTool.getString("sa.csShortLine"));
+      csShortLine.setActionCommand("ShortLine");
 
       // Group the radio buttons.
       ButtonGroup csGroup = new ButtonGroup();
       csGroup.add(csLine);
       csGroup.add(csDot);
+      csGroup.add(csShortLine);
 
       if (getStringProperty("colSeparator").equals("Dot"))
          csDot.setSelected(true);
+      else if (getStringProperty("colSeparator").equals("ShortLine"))
+         csShortLine.setSelected(true);
       else
          csLine.setSelected(true);
 
       csp.add(csLine);
       csp.add(csDot);
+      csp.add(csShortLine);
 
       // define cursor size panel
       JPanel crp = new JPanel();
@@ -983,20 +991,13 @@ public class SessionAttributes extends JDialog {
                            "Line");
          setProperty("colSeparator","Line");
       }
-      else {
+      else if (csShortLine.isSelected()) {
          changes.firePropertyChange("colSeparator",
                            getStringProperty("colSeparator"),
-                           "Dot");
-         setProperty("colSeparator","Dot");
-
+                           "ShortLine");
+         setProperty("colSeparator","ShortLine");
       }
 
-      if (csLine.isSelected()) {
-         changes.firePropertyChange("colSeparator",
-                           getStringProperty("colSeparator"),
-                           "Line");
-         setProperty("colSeparator","Line");
-      }
       else {
          changes.firePropertyChange("colSeparator",
                            getStringProperty("colSeparator"),

@@ -42,6 +42,12 @@ Enhancements/Change Log
                Send Screen -> Via E-Mail
                               To File
 
+29/4/2002   Added another parameter for column separators.  Now they are as
+            follows:
+               Line - Full height line
+               Dot  - A dot like Rumba/Extra
+               Short Line - like Client Access.
+
 27/4/2002   CVS checkin notifications, updates and bug fixes.  Test CVS again
 
 26/4/2002   Fixed a problem that was happening when sending data to the host.
@@ -67,8 +73,8 @@ Enhancements/Change Log
 
                description                command line option
                -----------------          -------------------
-               Open in new frame          -embed
-               Session start monitoring   -d
+               Open in new frame          -noembed
+               Session start monitoring   -d  - default on session configuration
                Start in new JVM           -nc
 
             For more information about these command line options please read
