@@ -29,7 +29,6 @@ package org.tn5250j.beans;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Locale;
 import java.util.Properties;
 
 import java.awt.Dimension;

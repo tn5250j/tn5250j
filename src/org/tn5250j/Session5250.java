@@ -21,7 +21,6 @@
 package org.tn5250j;
 
 import java.util.*;
-import java.awt.Rectangle;
 
 import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
@@ -164,12 +163,12 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
          vt.setProxy((String)sesProps.getProperty(SESSION_PROXY_HOST),
                      proxyPort);
 
-      if (sesProps.containsKey(org.tn5250j.transport.SSLConstants.SSL_TYPE)) {
-         sslType = (String)sesProps.getProperty(org.tn5250j.transport.SSLConstants.SSL_TYPE);
+      if (sesProps.containsKey(org.tn5250j.framework.transport.SSLConstants.SSL_TYPE)) {
+         sslType = (String)sesProps.getProperty(org.tn5250j.framework.transport.SSLConstants.SSL_TYPE);
       }
       else {
          // set default to none
-         sslType = org.tn5250j.transport.SSLConstants.SSL_TYPE_NONE;
+         sslType = org.tn5250j.framework.transport.SSLConstants.SSL_TYPE_NONE;
       }
 
       vt.setSSLType(sslType);

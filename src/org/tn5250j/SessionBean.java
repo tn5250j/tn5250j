@@ -45,7 +45,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 
-import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.Session5250;
 
 

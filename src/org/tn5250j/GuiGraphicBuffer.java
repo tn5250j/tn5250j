@@ -33,7 +33,6 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.font.*;
-import javax.swing.JPanel;
 import java.awt.event.*;
 import java.beans.*;
 import java.awt.*;

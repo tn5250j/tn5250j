@@ -53,7 +53,7 @@ import org.tn5250j.framework.Tn5250jKeyEvents;
 import org.tn5250j.framework.tn5250.*;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
-import org.tn5250j.transport.SocketConnector;
+import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.Session5250;
 

@@ -24,10 +24,8 @@ package org.tn5250j;
 import java.util.*;
 import java.awt.Rectangle;
 
-import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.framework.tn5250.*;
 
 /**

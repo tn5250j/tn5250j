@@ -40,7 +40,6 @@ import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.interfaces.SessionScrollerInterface;
