@@ -1016,11 +1016,16 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void setMacroRunning(boolean mr) {
       macroRunning = mr;
+      if (macroRunning)
+         screen.setSRIndicatorOn();
+      else
+         screen.setSRIndicatorOff();
+
       stopMacro = false;
    }
 
    public void setStopMacroRequested () {
-      stopMacro = true;
+      setMacroRunning(true);
       macroRunning = false;
    }
 

@@ -88,6 +88,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private Rectangle2D mArea; // message area
    private Rectangle2D iArea; // insert indicator
    private Rectangle2D kbArea; // keybuffer indicator
+   private Rectangle2D scriptArea; // script indicator
 
    private char char0 = 0;
    private static final int initAttr = 32;
@@ -3741,7 +3742,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       float Y = (fmHeight * (numRows + 2))- (lm.getLeading() + lm.getDescent());
       g2d.setColor(colorYellow);
       g2d.drawString("KB",(float)kbArea.getX(),Y);
-//      messageLight = true;
       updateImage(kbArea.getBounds());
       g2d.dispose();
 
@@ -3753,9 +3753,23 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       g2d.setColor(colorBg);
       g2d.fill(kbArea);
-//      messageLight = false;
       updateImage(kbArea.getBounds());
       g2d.dispose();
+
+   }
+
+   public void setSRIndicatorOn() {
+
+      bi.drawScriptRunning(colorGreen);
+      updateImage(scriptArea.getBounds());
+
+
+   }
+
+   public void setSRIndicatorOff() {
+
+      bi.eraseScriptRunning(colorBg);
+      updateImage(scriptArea.getBounds());
 
    }
 
@@ -4042,6 +4056,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          pArea = new Rectangle2D.Float(0,0,0,0);
          mArea = new Rectangle2D.Float(0,0,0,0);
          kbArea = new Rectangle2D.Float(0,0,0,0);
+         scriptArea = new Rectangle2D.Float(0,0,0,0);
 
          // Draw Operator Information Area
          drawOIA();
@@ -4106,6 +4121,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       pArea.setRect(bi.getPositionArea());
       mArea.setRect(bi.getMessageArea());
       kbArea.setRect(bi.getKBIndicatorArea());
+      scriptArea.setRect(bi.getScriptIndicatorArea());
 
    }
 

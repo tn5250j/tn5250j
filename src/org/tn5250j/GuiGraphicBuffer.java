@@ -49,6 +49,7 @@ public class GuiGraphicBuffer {
    private Rectangle2D mArea; // message area
    private Rectangle2D iArea; // insert indicator
    private Rectangle2D kbArea; // keybuffer indicator
+   private Rectangle2D scriptArea; // script indicator
    private int width;
    private int height;
    private Rectangle2D cursor = new Rectangle2D.Float();
@@ -69,6 +70,7 @@ public class GuiGraphicBuffer {
       mArea = new Rectangle2D.Float();
       iArea = new Rectangle2D.Float();
       kbArea = new Rectangle2D.Float();
+      scriptArea = new Rectangle2D.Float();
 
    }
 
@@ -153,6 +155,10 @@ public class GuiGraphicBuffer {
                                        fmWidth + fmWidth,
                                        fmHeight);
          kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * fmWidth),
+                                       fmHeight * (numRows + 1),
+                                       fmWidth + fmWidth,
+                                       fmHeight);
+         scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * fmWidth),
                                        fmHeight * (numRows + 1),
                                        fmWidth + fmWidth,
                                        fmHeight);
@@ -277,6 +283,50 @@ public class GuiGraphicBuffer {
          // tell waiting threads to wake up
 //         lock.notify();
 //      }
+
+
+   }
+
+   public void drawScriptRunning(Color color) {
+
+      Graphics2D g2d;
+
+      // get ourselves a global pointer to the graphics
+      g2d = (Graphics2D)bi.getGraphics();
+
+      g2d.setColor(color);
+
+      // set the points for the polygon
+      int[] xs = {(int)scriptArea.getX(),
+                  (int)scriptArea.getX(),
+                  (int)scriptArea.getX() + (int)(scriptArea.getWidth())};
+      int[] ys = {(int)scriptArea.getY(),
+                  (int)scriptArea.getY() + (int)scriptArea.getHeight(),
+                  (int)scriptArea.getY() + (int)(scriptArea.getHeight() / 2)};
+
+      // now lets drawit
+      g2d.fillPolygon(xs,ys,3);
+      g2d.setClip(scriptArea);
+//      drawImageBuffer(g2d,(int)scriptArea.getX(),
+//                        (int)scriptArea.getY(),
+//                        (int)scriptArea.getWidth(),(int)scriptArea.getHeight());
+
+      // get rid of the pointers
+      g2d.dispose();
+
+
+   }
+
+   public void eraseScriptRunning(Color color) {
+
+      Graphics2D g2d;
+
+      // get ourselves a global pointer to the graphics
+      g2d = (Graphics2D)bi.getGraphics();
+
+      g2d.setColor(color);
+      g2d.fill(scriptArea);
+      g2d.dispose();
 
 
    }
@@ -466,6 +516,10 @@ public class GuiGraphicBuffer {
 
    public Rectangle2D getKBIndicatorArea () {
       return kbArea;
+   }
+
+   public Rectangle2D getScriptIndicatorArea () {
+      return scriptArea;
    }
 
    public int getWidth() {
