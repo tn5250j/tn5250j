@@ -20,6 +20,22 @@ major version back is sufficient.
 NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+===============================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+For all users that already have the emulator installed.  The references to
+my5250.jar are changed to reflect tn5250j.jar.  We are starting a new
+distribution mechanism and changing a few things around.  We hope that this
+does not prove to much of an inconvenience.
+
+The binary file downloads will contain a jar file named tn5250j.jar and this
+document reflects these changes by using this name instead of the old my5250.jar
+
+===============================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 For languages supported look at option -L for command line options.
 
 The following sections are available:
@@ -40,20 +56,20 @@ The following sections are available:
 1. Installing
 =======================
 
-1)  Place the my5250.jar file in a directory that you choose.
+1)  Place the tn5250j.jar file in a directory that you choose.
 2)  For e-mailing screen shots please read the e-mail.txt file included in the
        source file that was downloaded.
 
 2. Quick Start
 =======================
-2)  java -jar my5250.jar
+2)  java -jar tn5250j.jar
 
     Select the configure button to define sessions when the session selection
     window is displayed.
            or
-    java -jar my5250.jar host -p port
+    java -jar tn5250j.jar host -p port
            or
-    java -jar my5250.jar host
+    java -jar tn5250j.jar host
 
 
     2a. Command line options:  (If you do not want to use the configure button)
@@ -137,7 +153,7 @@ The following sections are available:
 
                Example command line:
                =====================
-               java -Djava.net.socks.username="kjp1" -Djava.net.socks.password="tn5250j" -jar my5250.jar
+               java -Djava.net.socks.username="kjp1" -Djava.net.socks.password="tn5250j" -jar tn5250j.jar
 
                I have not tried this so please let me know if it works.
 
@@ -179,12 +195,12 @@ The following sections are available:
     Example of command line options
     -------------------------------
 
-    java -jar my5250.jar -L es
+    java -jar tn5250j.jar -L es
 
         This will change the default language of the system to use the languange
         translations of what is specified.
 
-    java -jar my5250.jar hostAS400 -f hostAS400.prop
+    java -jar tn5250j.jar hostAS400 -f hostAS400.prop
 
        This will connect to hostAS400 and use the file hostAS400.prop as the
        property file.  Any properties that are changed will be saved to this
@@ -193,12 +209,12 @@ The following sections are available:
        then those will be read and used.  It uses the code page 37 which is
        default.
 
-    java -jar my5250.jar parisAS400 -f parisAS400.prop -cp 297
+    java -jar tn5250j.jar parisAS400 -f parisAS400.prop -cp 297
 
         This will connect to parisAS400 use the property file as described above
         and use the code page 297 for french.
 
-    java -jar my5250.jar spainAS400 -f spainAS400.prop -cp 284 -e
+    java -jar tn5250j.jar spainAS400 -f spainAS400.prop -cp 284 -e
 
         This will connect to spainAS400 use the property file as described above
         and use the code page 284 for spanish and will notify the as400 that it
