@@ -65,6 +65,7 @@ public class GuiGraphicBuffer {
    protected int offTop = 0;   // offset from top
    protected int offLeft = 0;  // offset from left
    private boolean resized = false;
+   private boolean antialiased;
 
    public GuiGraphicBuffer () {
 
@@ -128,11 +129,11 @@ public class GuiGraphicBuffer {
          Graphics2D g2d;
 
          // get ourselves a global pointer to the graphics
-//         g2d = (Graphics2D)bi.getGraphics();
          g2d = getDrawingArea();
 
-         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-               RenderingHints.VALUE_ANTIALIAS_ON);
+         if (antialiased)
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                  RenderingHints.VALUE_ANTIALIAS_ON);
          g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
                RenderingHints.VALUE_COLOR_RENDER_SPEED);
          g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
@@ -429,8 +430,9 @@ public class GuiGraphicBuffer {
             g2 = bi.createGraphics();
 
             if (g2 != null) {
-               g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                     RenderingHints.VALUE_ANTIALIAS_ON);
+               if (antialiased)
+                  g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
                g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
                      RenderingHints.VALUE_COLOR_RENDER_SPEED);
                g2.setRenderingHint(RenderingHints.KEY_RENDERING,
@@ -448,6 +450,10 @@ public class GuiGraphicBuffer {
          System.out.println("getWritingarea : " + ie.getMessage());
          return null;
       }
+   }
+
+   public void setUseAntialias(boolean antialiased) {
+      this.antialiased = antialiased;
    }
 
    public void setStatus(byte attr,byte value,String s,
