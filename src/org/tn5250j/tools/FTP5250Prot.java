@@ -30,9 +30,13 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 import java.text.*;
+import javax.swing.*;
+import java.awt.*;
+
 import org.tn5250j.*;
 import org.tn5250j.event.*;
 import org.tn5250j.tools.filters.*;
+import org.tn5250j.tools.LangTool;
 
 public class FTP5250Prot {
 
@@ -507,6 +511,8 @@ public class FTP5250Prot {
       BufferedReader dis = null;
       String remoteFile = "QTEMP/FFD";
       String recLength = "";
+      Vector allowsNullFields = null;
+
       try {
          socket = createPassiveSocket("RETR " + remoteFile);
          if(socket == null) {
@@ -530,14 +536,26 @@ public class FTP5250Prot {
                // WHFLDI  Field name internal
                ffDesc.setFieldName(data.substring(129,129+10));
             else {
-               // WHFLD  Field name text description
-               ffDesc.setFieldName(data.substring(168,168+50).trim());
 
-               // if the text description is blanks then use the field name
-               if (ffDesc.getFieldName().trim().length() == 0)
-                  // WHFLDI  Field name internal
-                  ffDesc.setFieldName(data.substring(129,129+10));
+               String text = "";
 
+               // first lets check the column headings
+               text = data.substring(261,261+20).trim() + " " +
+                        data.substring(281,281+20).trim() + " " +
+                        data.substring(301,301+20).trim();
+
+               if (text.length() > 0)
+                  ffDesc.setFieldName(text);
+               else {
+
+                  // WHFLD  Field name text description
+                  ffDesc.setFieldName(data.substring(168,168+50).trim());
+
+                  // if the text description is blanks then use the field name
+                  if (ffDesc.getFieldName().trim().length() == 0)
+                     // WHFLDI  Field name internal
+                     ffDesc.setFieldName(data.substring(129,129+10));
+               }
             }
 
 
@@ -553,6 +571,15 @@ public class FTP5250Prot {
             ffDesc.setFieldType(data.substring(321,321+1));
             // WHFTXT  Text description
             ffDesc.setFieldText(data.substring(168,168+50));
+
+            // WHNULL Allow NULL Data
+            if (data.substring(503,503+1).equals("Y")) {
+               if (allowsNullFields == null)
+                  allowsNullFields = new Vector(3);
+               allowsNullFields.add(ffDesc.getFieldName());
+               printFTPInfo("Warning -- File allows null fields!!!");
+            }
+
             // set selected
             ffDesc.setWriteField(true);
 
@@ -562,6 +589,25 @@ public class FTP5250Prot {
          }
 
          printFTPInfo("Field Information Transfer complete!");
+
+         if (allowsNullFields != null) {
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            JLabel message = new JLabel(LangTool.getString("messages.nullFieldWarning"));
+            JTextArea jta = new JTextArea(6,30);
+            jta.setEditable(false);
+            JScrollPane sp = new JScrollPane(jta);
+            String text = new String();
+
+            for (int x = 0; x < allowsNullFields.size(); x++)
+               text += allowsNullFields.get(x) + "\n";
+
+            jta.setText(text);
+
+            jp.add(message,BorderLayout.NORTH);
+            jp.add(sp,BorderLayout.CENTER);
+            JOptionPane.showMessageDialog(null,jp,"Warning",JOptionPane.WARNING_MESSAGE);
+         }
 
       }
       catch(Exception _ex) {

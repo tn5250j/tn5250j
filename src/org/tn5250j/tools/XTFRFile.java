@@ -36,6 +36,7 @@ import javax.swing.border.*;
 import java.awt.event.*;
 import java.io.*;
 import java.beans.*;
+import java.util.*;
 import java.text.MessageFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -46,6 +47,7 @@ import org.tn5250j.sql.SqlWizard;
 import org.tn5250j.tools.filters.*;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.Session;
+import org.tn5250j.SessionConfig;
 
 public class XTFRFile extends JDialog implements ActionListener, FTPStatusListener,
                                                    ItemListener {
@@ -240,6 +242,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
       if (e.getActionCommand().equals("XTFR")
                   || e.getActionCommand().equals("EMAIL")) {
+
+         saveXTFRFields();
 
          if (e.getActionCommand().equals("EMAIL"))
             emailIt = true;
@@ -695,6 +699,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
       this.setModal(false);
       this.setTitle(LangTool.getString("xtfr.title"));
 
+      initXTFRFields();
 
       // pack it and center it on the screen
       pack();
@@ -708,6 +713,101 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
       // now show the world what we can do
       show();
+
+   }
+
+   private void initXTFRFields() {
+
+      SessionConfig config = session.getConfiguration();
+      Properties props = config.getProperties();
+
+      if (props.containsKey("xtfr.fileName"))
+         hostFile.setText(props.getProperty("xtfr.fileName"));
+
+      if (props.containsKey("xtfr.user"))
+         user.setText(props.getProperty("xtfr.user"));
+
+      if (props.containsKey("xtfr.useQuery")) {
+         if (props.getProperty("xtfr.useQuery").equals("true"))
+            useQuery.setSelected(true);
+         else
+            useQuery.setSelected(false);
+      }
+
+      if (props.containsKey("xtfr.queryStatement")) {
+         queryStatement.setText(props.getProperty("xtfr.queryStatement"));
+      }
+
+      if (props.containsKey("xtfr.allFields")) {
+         if (props.getProperty("xtfr.allFields").equals("true"))
+            allFields.setSelected(true);
+         else
+            allFields.setSelected(false);
+      }
+
+      if (props.containsKey("xtfr.txtDesc")) {
+         if (props.getProperty("xtfr.txtDesc").equals("true"))
+            txtDesc.setSelected(true);
+         else
+            txtDesc.setSelected(false);
+      }
+
+      if (props.containsKey("xtfr.fileFormat"))
+         fileFormat.setSelectedItem(props.getProperty("xtfr.fileFormat"));
+
+      if (props.containsKey("xtfr.localFile"))
+         localFile.setText(props.getProperty("xtfr.localFile"));
+
+      if (props.containsKey("xtfr.decimalSeparator"))
+         decimalSeparator.setSelectedItem(props.get("xtfr.decimalSeparator"));
+
+   }
+
+   private void saveXTFRFields() {
+
+      SessionConfig config = session.getConfiguration();
+      Properties props = config.getProperties();
+
+      if (hostFile.getText().trim().length() > 0)
+         props.setProperty("xtfr.fileName",hostFile.getText().trim());
+      else
+         props.remove("xtfr.fileName");
+
+      if (user.getText().trim().length() > 0)
+         props.setProperty("xtfr.user",user.getText().trim());
+      else
+         props.remove("xtfr.user");
+
+      if (useQuery.isSelected())
+         props.setProperty("xtfr.useQuery","true");
+      else
+         props.remove("xtfr.useQuery");
+
+      if (queryStatement.getText().trim().length() > 0)
+         props.setProperty("xtfr.queryStatement",queryStatement.getText().trim());
+      else
+         props.remove("xtfr.queryStatement");
+
+      if (allFields.isSelected())
+         props.setProperty("xtfr.allFields","true");
+      else
+         props.remove("xtfr.allFields");
+
+      if (txtDesc.isSelected())
+         props.setProperty("xtfr.txtDesc","true");
+      else
+         props.remove("xtfr.txtDesc");
+
+      props.setProperty("xtfr.fileFormat",(String)fileFormat.getSelectedItem());
+
+      if (localFile.getText().trim().length() > 0)
+         props.setProperty("xtfr.localFile",localFile.getText().trim());
+      else
+         props.remove("xtfr.localFile");
+
+      props.setProperty("xtfr.decimalSeparator",(String)decimalSeparator.getSelectedItem());
+
+      config.setModified();
 
    }
 
