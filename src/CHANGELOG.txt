@@ -33,9 +33,14 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
-01/5/2002   Added SMTP configuration dialog for Send via E-mail.  Now the 
+01/5/2002   Added SMTP configuration dialog for Send via E-mail.  Now the
             configuration can be done by selecting Configure button from
             Send via E-mail dialog.
+
+            Added ability to send the screen to text file as text output.
+            This can be referenced vis Send Screen.  It now has two options
+               Send Screen -> Via E-Mail
+                              To File
 
 27/4/2002   CVS checkin notifications, updates and bug fixes.  Test CVS again
 
