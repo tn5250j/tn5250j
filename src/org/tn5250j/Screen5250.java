@@ -264,6 +264,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             colSepLine = 1;
          if (getStringProperty("colSeparator").equals("Dot"))
             colSepLine = 2;
+         if (getStringProperty("colSeparator").equals("Hide"))
+            colSepLine = 3;
       }
 
       if (config.isPropertyExists("showAttr")) {
@@ -313,6 +315,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             colSepLine = 1;
          if (getStringProperty("colSeparator").equals("Dot"))
             colSepLine = 2;
+         if (getStringProperty("colSeparator").equals("Hide"))
+            colSepLine = 3;
       }
 
       if (config.isPropertyExists("cursorSize")) {
@@ -607,6 +611,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             colSepLine = 1;
          if (pce.getNewValue().equals("Dot"))
             colSepLine = 2;
+         if (pce.getNewValue().equals("Hide"))
+            colSepLine = 3;
       }
 
       if (pn.equals("showAttr")) {
@@ -2837,6 +2843,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *          0 - line
     *          1 - dot
     *          2 - short line
+    *          3 - do not show column separator
     */
    public int getColSepLine() {
       return colSepLine;

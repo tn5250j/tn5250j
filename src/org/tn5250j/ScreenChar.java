@@ -551,18 +551,19 @@ public class ScreenChar {
             if(colSep) {
                g.setColor(s.colorSep);
                switch (s.getColSepLine()) {
-                  case 1:
+                  case 0:  // line
+                     g.drawLine(x, y, x, y + s.fmHeight - 1);
+                     g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
+                     break;
+                  case 1:  // short line
                      g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-4, x, y + s.fmHeight);
                      g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4, x + s.fmWidth - 1, y + s.fmHeight);
                      break;
-                  case 2:
+                  case 2:  // dot
                      g.drawLine(x,  y + s.fmHeight - (int)s.lm.getLeading()-3, x, y + s.fmHeight - (int)s.lm.getLeading()-4);
                      g.drawLine(x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-3, x + s.fmWidth - 1, y + s.fmHeight - (int)s.lm.getLeading()-4);
                      break;
-                  default:
-                     g.setColor(bg);
-                     g.drawLine(x, y, x, y + s.fmHeight - 1);
-                     g.drawLine(x + s.fmWidth - 1, y, x + s.fmWidth - 1, y + s.fmHeight);
+                  case 3:  // hide
                      break;
                }
             }
