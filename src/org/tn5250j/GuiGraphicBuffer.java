@@ -893,7 +893,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		//    screen area.
 		if (!gui.rubberband.isAreaSelected()) {
 
-			bounds.setBounds(1, 1, screen.getCols(), screen.getRows());
+			bounds.setBounds(1, 1, screen.getColumns(), screen.getRows());
 		} else {
 			// lets get the bounding area using a rectangle that we have already
 			// allocated
@@ -924,7 +924,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		LineMetrics l;
 		FontRenderContext f = null;
 		k = GUIGraphicsUtils.getDerivedFont(font, width, height, screen.getRows(),
-				screen.getCols(), sfh, sfw, ps132);
+				screen.getColumns(), sfh, sfw, ps132);
 		f = new FontRenderContext(k.getTransform(), true, true);
 
 		l = k.getLineMetrics("Wy", f);
@@ -943,7 +943,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			rowHeight = (int) (font.getStringBounds("g", frc).getHeight()
 					+ lm.getDescent() + lm.getLeading());
 
-			resize(columnWidth * screen.getCols(), rowHeight * (screen.getRows() + 2));
+			resize(columnWidth * screen.getColumns(), rowHeight * (screen.getRows() + 2));
 
 			// set the offsets for the screen centering.
 			offLeft = (width - getWidth()) / 2;
@@ -962,14 +962,14 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 	public final Dimension getPreferredSize() {
 
-		return new Dimension(columnWidth * screen.getCols(), rowHeight * (screen.getRows() + 2));
+		return new Dimension(columnWidth * screen.getColumns(), rowHeight * (screen.getRows() + 2));
 
 	}
 
    public BufferedImage getImageBuffer(int width, int height) {
 
 
-      int width2 = columnWidth * screen.getCols();
+      int width2 = columnWidth * screen.getColumns();
       int height2 = rowHeight * (screen.getRows() + 2);
 //      synchronized (lock) {
          if (bi == null || bi.getWidth() != width2 || bi.getHeight() != height2) {
@@ -992,7 +992,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       public Graphics2D drawOIA () {
 
       	int numRows = screen.getRows();
-      	int numCols = screen.getCols();
+      	int numCols = screen.getColumns();
 
          Graphics2D g2d;
 
@@ -1818,7 +1818,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		int cols = 0;
 		int lc = 0;
 		int lr = screen.getPos(sr,sc);
-      int numCols = screen.getCols();
+      int numCols = screen.getColumns();
 
 
       updateRect = new Data (sr,sc,er,ec);

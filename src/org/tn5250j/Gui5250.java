@@ -940,7 +940,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 	 */
 	public final void printMe() {
 
-		Thread printerThread = new PrinterThread(screen, bi.font, screen.getCols(),
+		Thread printerThread = new PrinterThread(screen, bi.font, screen.getColumns(),
 				screen.getRows(), Color.black, true, (SessionGUI) this);
 
 		printerThread.start();
