@@ -45,7 +45,7 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
    
    public TN5250jTabbedPane() {
       super();
-      this.setUI(new MyBasicTabbedPaneUI());
+//      this.setUI(new MyBasicTabbedPaneUI());
       addMouseListener(this);
       addMouseMotionListener(this);
    }
