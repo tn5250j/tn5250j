@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.6"/>
+   <property name="version" value="0.5.7-rc1"/>
    <property name="year" value="2001-2003"/>
 
    <property name="source.dir" value="${basedir}/src" />
@@ -340,7 +340,7 @@
         <include name="**"/>
       </fileset>
     </copy>
-    
+
     <!-- We call IzPack -->
     <echo message="Makes the installer using IzPack"/>
     <izpack input="${dist.dir}/installer/install.xml"
@@ -348,8 +348,15 @@
             installerType="standard-kunststoff"
             basedir="${dist.dir}"
             izPackDir="/home/jimmy/IzPack/"/>
-    
-   </target>	         
+
+    <echo message="Makes the web installer using IzPack"/>
+    <izpack input="${dist.dir}/installer/install.xml"
+            output="${dist.dir}/tn5250j_install_web.jar"
+            installerType="web-kunststoff"
+            basedir="${dist.dir}"
+            izPackDir="/home/jimmy/IzPack/"/>
+
+   </target>
 <!--               izPackDir="${dist.dir}/"/-->
 
 </project>
