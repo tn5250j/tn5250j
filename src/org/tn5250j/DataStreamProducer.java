@@ -56,31 +56,37 @@ public class DataStreamProducer implements Runnable {
          log.warn(" run() " + ioef.getMessage());
       }
       while (!done) {
-         try {
-
-            byte[] abyte0 = readIncoming();
-
-            // WVL - LDC : 16/07/2003 : TR.000345
-            // When the socket has been closed, the reading returns
-            // no bytes (an empty byte arrray).
-            // But the loadStream fails on this, so we check it here!
-            if (abyte0.length > 0)
-            {
-              loadStream(abyte0, 0);
-            }
-            // WVL - LDC : 16/07/2003 : TR.000345
-            // Returning no bytes means the input buffer has
-            // reached end-of-stream, so we do a disconnect!
-            else
-            {
-              done = true;
-              vt.disconnect();
-            }
+		  try {
+			  
+			  byte[] abyte0 = readIncoming();
+			  
+			  // WVL - LDC : 17/05/2004 : Device name negotiations send TIMING MARK
+			  // Restructured to the readIncoming() method to return null
+			  // on TIMING MARK. Don't process in that case (abyte0 == null)!
+			  if (abyte0 != null)
+			  {
+				  // WVL - LDC : 16/07/2003 : TR.000345
+				  // When the socket has been closed, the reading returns
+				  // no bytes (an empty byte arrray).
+				  // But the loadStream fails on this, so we check it here!
+				  if (abyte0.length > 0)
+				  {
+					  loadStream(abyte0, 0);
+				  }
+				  // WVL - LDC : 16/07/2003 : TR.000345
+				  // Returning no bytes means the input buffer has
+				  // reached end-of-stream, so we do a disconnect!
+				  else
+				  {
+					  done = true;
+					  vt.disconnect();
+				  }
+			  }
 
          }
-         catch (SocketException se) {
-//            System.out.println("   DataStreamProducer thread interrupted and stopping " + se.getMessage());
-            log.warn("   DataStreamProducer thread interrupted and stopping ");
+		 
+		 catch (SocketException se) {
+            log.warn("   DataStreamProducer thread interrupted and stopping " + se.getMessage());
             done = true;
          }
 
@@ -216,18 +222,32 @@ public class DataStreamProducer implements Runnable {
      // after the initial negotiation we might get other options such as
      //    timing marks ??????????????  do we ???????????? look at telnet spec
      // yes we do. rfc860 explains about timing marks.
+	 
+     	 // WVL - LDC : 17/05/2004 : Device name negotiations send TIMING MARK
+     	 //                          to existing device!
+     	 // Handled incorrectly: we cannot continue processing the TIMING MARK DO
+     	 // after we have handled it in the vt.negotiate()
+     	 // We should not return the bytes;
+     	 // ==> restructured to return null after negotiation!
+     	 //     Impacts the run method! Added the null check.
+     	 byte[] rBytes = baosin.toByteArray();
+
+		 if (dumpBytes) {
+			dump(rBytes);
+		 }
+
          if (negotiate) {
             // get the negotiation option
             baosin.write(bin.read());
-            vt.negotiate(baosin.toByteArray());
-         }
+            vt.negotiate(rBytes);
 
-         if (dumpBytes) {
-            dump(baosin.toByteArray());
+            return null;
          }
-
-        return baosin.toByteArray();
-    }
+         else
+         {
+			 return rBytes;
+		 }
+	}
 
    protected final void toggleDebug (CodePage cp) {
 
