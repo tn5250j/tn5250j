@@ -1196,7 +1196,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
 
          screen52.restoreScreen();  // display the screen
-         screen52.homePos = hPos;
+         screen52.setPendingInsert(true,screen52.getRow(pos),
+                                          screen52.getCol(pos));
          screen52.goto_XY(pos);
          screen52.isInField();
          if (screen52.isUsingGuiInterface())

@@ -36,6 +36,10 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+12/4/2002   Update Spanish literals
+
+            Fixed a cursor repositioning problem on screen restores.
+
 11/4/2002   Fixed a problem where the program would never end if there are no
             sessions active and the session connection dialog is cancelled.
 
