@@ -1009,8 +1009,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       getBoundingArea(workR);
 
-      gui.rubberband.reset();
-      gui.repaint();
+//      gui.rubberband.reset();
+//      gui.repaint();
 
 //      System.out.println("Summing");
 
@@ -1176,9 +1176,16 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             }
          }
          else {
-
-            goto_XY(pos);
-            isInField(lastPos);
+            // this is a note to not execute this code here when we implement
+            //   the remain after edit function option.
+            if (gui.rubberband.isAreaSelected()) {
+               gui.rubberband.reset();
+               gui.repaint();
+            }
+            else {
+               goto_XY(pos);
+               isInField(lastPos);
+            }
          }
       }
       gui.requestFocus();
@@ -4125,7 +4132,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       g2d.setClip(x,y,width,height);
       if (!cursorActive && x + width <= bi.getWidth(null) &&
           y + height <= (bi.getHeight(null) - fmWidth)) {
-//      if (!cursorActive) {
          paintComponent2(g2d);
       }
 
@@ -4149,8 +4155,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             gui.rubberband.draw();
          }
 
-         if (!fullRepaint)
+         if (!fullRepaint) {
             bi.drawImageBuffer(gg2d,x,y,width,height);
+         }
          else
             gui.repaint();
 
@@ -4195,6 +4202,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          paintComponent3((Graphics)g2);
          return;
       }
+
       g2.setColor(colorBg);
 //      System.out.println("PaintComponent " + r);
 
@@ -4236,6 +4244,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          }
          lr += numCols;
       }
+
    }
 
    /**
