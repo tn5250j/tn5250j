@@ -32,7 +32,6 @@ import java.util.*;
 import java.text.*;
 
 
-import org.tn5250j.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;

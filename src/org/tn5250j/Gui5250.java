@@ -30,8 +30,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-import java.text.*;
-
 import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
@@ -43,7 +41,6 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.EmulatorActionEvent;
-import org.tn5250j.keyboard.configure.KeyConfigure;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
