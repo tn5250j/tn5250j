@@ -1,9 +1,11 @@
 ######################################################################
-#                              chat400                               #
-# Code : PR MOORE jorjun@mac.com                                     #
-# Interface : Patrick Bielen                                         #
+#                            chat400                                 #
+#====================================================================#
+# Code      : Peter Moore (jorjun@mac.com)                           #
+#             Patrick Bielen (bielen@stafa.nl)                       #
+# Interface : Patrick Bielen (bielen@stafa.nl)                       #
 # ================================================================== #
-# Functionality : Script to send/receive messages to '400 users	     #
+# Functionality : Script to send/receive messages to AS/400 users    #
 # Discussions	: tn5250j-scripting@lists.sourceforge.net            #
 ######################################################################
 import sys
@@ -37,6 +39,8 @@ class Poller(Runnable):
 				entry = dq.read(curUsr,-1,"EQ")
 				self.parent.rpyTxt.append(entry.getString()+"\n")
 				self.parent.rpyTxt.setCaretPosition(len(self.parent.rpyTxt.getText()))
+				self.parent.chatTxt.requestFocus()
+				self.parent.show()
 			except:
 				done=1
 				exc=sys.exc_info()
@@ -56,7 +60,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 	def run(self, server, name, *passw):
 		self.as400 = acc.AS400(server, name, *passw)
 
-# Get user profile descriptions==> usrDct
+		# Get user profile descriptions==> usrDct
 		rUsrLst = rsc.RUserList(self.as400)  
 		rUsrLst.open()
 		rUsrLst.waitForComplete()
@@ -69,7 +73,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 					self.usrDct[key_usr] = tmp_usrText
 		rUsrLst.close()
 		
-# Interactive job list		
+		# Interactive job list		
 		self.jobLst = rsc.RJobList(self.as400)
 		self.jobLst.setSelectionValue(rsc.RJobList.PRIMARY_JOB_STATUSES, \
 									  rsc.RJob.JOB_STATUS_ACTIVE)
@@ -77,10 +81,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 									  rsc.RJob.JOB_TYPE_INTERACTIVE)
 		self.jobLst.setSortValue([rsc.RJob.USER_NAME, rsc.RJob.JOB_NAME])
 
-# Thread of execution to receive instant messages
+		# Thread of execution to receive instant messages
 		self.polchat = Thread(Poller(self))
 
-# Form GUI
+		# Form GUI
 		self.contentPane.setLayout(awt.GridBagLayout())
 		self.addWindowListener(self)
 		self.chkFullNames = swing.JCheckBox("Show user's full name", 1)
@@ -108,12 +112,11 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 	def windowDeiconified(self, event):
 		None
 
-#**************************
-#	Retrieve send-user list
-#**************************
+	#**************************
+	#	Retrieve send-user list
+	#**************************
 	def rtvIntJobs(self):
-		
-# Get interactive job list
+		# Get interactive job list
 		self.jobLst.open()
 		self.jobLst.waitForComplete()
 		self.jobDct = {}
@@ -143,9 +146,9 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 					sts = '*'
 				menuItem = menuItem	+ sts # N.B. * means profile is running an active job
 				self.users.addItem(menuItem)
-#**************************
-#	Send message
-#**************************
+	#**************************
+	#	Send message
+	#**************************
 	def btnActSnd(self, event):
 		cmd = acc.CommandCall(self.as400)
 		curUsr = self.as400.getUserId()
@@ -168,11 +171,11 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			self.statusTxt.text='Message send Failed - Contact your system-operator.'
 		self.chatTxt.requestFocus()
 
-#**************************
+	#**************************
 	def btnActRef(self, event):
 		self.users.removeAllItems()
 		self.rtvIntJobs()
-#**************************
+	#**************************
 	def showGui(self):
 		self.rtvIntJobs()
 
