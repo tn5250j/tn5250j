@@ -128,6 +128,15 @@ public abstract class KeyboardHandler extends KeyAdapter implements
    protected tnvt getVT() {
       return session.getVT();
    }
+   
+   /**
+    *  Remove the references to all listeners before closing
+    *
+    *  Added by Luc to fix a memory leak.
+    */
+   public void sessionClosed(Session session) {
+      keyMap.removeKeyChangeListener(this);
+   }
 
    protected boolean emulatorAction(KeyStroke ks, KeyEvent e){
 

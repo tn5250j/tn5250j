@@ -662,6 +662,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
 
       vt.disconnect();
+      // Added by Luc to fix a memory leak. The keyHandler was still receiving
+      //   events even though nothing was really attached.
+      keyHandler.sessionClosed((Session)this);
+      keyHandler = null;
 
    }
 
