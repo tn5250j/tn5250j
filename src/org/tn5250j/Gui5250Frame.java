@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
@@ -37,22 +38,27 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.TabClosedListener;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.gui.TN5250jTabbedPane;
 
 public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
                                                     TN5250jConstants,
                                                     SessionListener,
+                                                    TabClosedListener,                                                    
                                                     SessionJumpListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
-   JTabbedPane sessionPane = new JTabbedPane();
+   //JTabbedPane sessionPane = new JTabbedPane();
+   TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
    private int selectedIndex = 0;
    private boolean embedded = false;
    private boolean hideTabBar = false;
    public static int count = 0;
    private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
+
    
    //Construct the frame
    public Gui5250Frame(My5250 m) {
@@ -81,6 +87,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       sessionPane.setDoubleBuffered(false);
 
       sessionPane.addChangeListener(this);
+      sessionPane.addtabCloseListener(this);
 
       Properties props = ConfigureFactory.getInstance().
                            getProperties(ConfigureFactory.SESSIONS);
@@ -98,6 +105,7 @@ public class Gui5250Frame extends GUIViewInterface implements
          pack();
       else
          validate();
+      
 
    }
 
@@ -342,6 +350,11 @@ public class Gui5250Frame extends GUIViewInterface implements
       }
    }
 
+   public void tabClosed(int tabToBeClosed){
+      
+      me.closeSession(this.getSessionAt(tabToBeClosed));
+   }
+   
    public void removeSessionView(Session targetSession) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
