@@ -86,7 +86,7 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.tools.DESSHA1;
+import org.tn5250j.tools.DESSHA1;  //test text
 
 public class Connect
 	extends JDialog
