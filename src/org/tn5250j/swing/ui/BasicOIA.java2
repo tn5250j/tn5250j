@@ -1,0 +1,54 @@
+package org.tn5250j.swing.ui;
+
+import java.awt.*;
+import java.awt.font.*;
+import javax.swing.*;
+
+//import org.ohio.*;
+import org.tn5250j.*;
+import org.tn5250j.event.ScreenOIAListener;
+
+public class BasicOIA extends BasicSubUI implements ScreenOIAListener
+{
+  public BasicOIA(ScreenOIA oia)
+  {
+    this.oia = oia;
+  }
+
+  public void onOIAChanged(ScreenOIA oia)
+  {
+  /**
+   * @todo implement the onOIAChange()
+   */
+  }
+
+  public void install()
+  {
+    this.oia.addOIAListener(this);
+    this.onOIAChanged(oia);
+  }
+
+  public void uninstall()
+  {
+    this.oia.removeOIAListener(this);
+
+    this.oia = null;
+  }
+
+  public Dimension getPreferredSize()
+  {
+    return new Dimension(this.columnWidth, this.rowHeight);
+  }
+
+  public void paintComponent(Graphics g)
+  {
+    g.setColor(Color.white);
+    g.drawLine(0, 0, this.width, 0);
+  }
+
+  public final void setPosition(int row, int column)
+  {
+  }
+
+  transient ScreenOIA      oia;
+}
