@@ -22,8 +22,6 @@
  */
 package org.tn5250j.tools.logging;
 
-import org.tn5250j.interfaces.ConfigureFactory;
-
 /**
  * An implementation of the TN5250jLogger to provide logger instances to the
  * console - System.out or System.err.
