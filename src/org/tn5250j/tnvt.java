@@ -746,14 +746,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public void run () {
 
-      while (true) {
+      boolean keepTrucking = true;
+
+      while (keepTrucking) {
 
          try {
             bk = (Stream5250)dsq.get();
          }
          catch (InterruptedException ie) {
-
-            System.out.println(" ie " + ie.getMessage());
+            System.out.println("   vt thread interrupted and stopping ");
+            keepTrucking = false;
+            continue;
          }
 
          // lets play nicely with the others on the playground
@@ -765,6 +768,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
          screen52.setCursorOff();
 
 //      System.out.println("operation code: " + bk.getOpCode());
+         if (bk == null)
+            continue;
+
          switch (bk.getOpCode()) {
             case 00:
 //               System.out.println("No operation");
@@ -1514,7 +1520,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   int ffw1 = 0;
                   int ffw0 = bk.getNextByte() & 0xff;   // FFW
 
-//                  if (!isAttribute(ffw0)) {
                   if ((ffw0 & 0x40) == 0x40) {
                      ffw1 = bk.getNextByte() & 0xff;   // FFW 1
 
