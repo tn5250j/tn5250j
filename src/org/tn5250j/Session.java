@@ -22,6 +22,7 @@ package org.tn5250j;
 
 import java.util.*;
 import javax.swing.*;
+import java.awt.Rectangle;
 
 import org.tn5250j.*;
 import org.tn5250j.interfaces.SessionInterface;
@@ -42,6 +43,8 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    private Vector listeners;
    private SessionChangeEvent sce;
    private String sslType;
+   private boolean firstScreen;
+   private char[] signonSave;
 
    public Session (My5250 m, Properties props, String configurationResource,
                      String sessionName,
@@ -67,8 +70,43 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
    }
 
-   public boolean isOnSignonScreen() {
-      return vt.isOnSignoffScreen();
+   public boolean isOnSignOnScreen() {
+
+      // check to see if we should check.
+      if (firstScreen) {
+
+         char[] so = screen.getScreenAsChars();
+         int size = signonSave.length;
+
+         Rectangle region = super.sesConfig.getRectangleProperty("signOnRegion");
+
+         int fromRow = region.x;
+         int fromCol = region.y;
+         int toRow = region.width;
+         int toCol = region.height;
+
+         // make sure we are within range.
+         if (fromRow == 0)
+            fromRow = 1;
+         if (fromCol == 0)
+            fromCol = 1;
+         if (toRow == 0)
+            toRow = 24;
+         if (toCol == 0)
+            toCol = 80;
+
+         int pos = 0;
+
+         for (int r = fromRow; r <= toRow; r++)
+            for (int c =fromCol;c <= toCol; c++) {
+               pos = screen.getPos(r - 1, c - 1);
+               System.out.println(signonSave[pos]);
+               if (signonSave[pos] != so[pos])
+                  return false;
+            }
+      }
+
+      return true;
    }
 
    public String getSessionName() {
@@ -187,6 +225,21 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
     * @param state  The state change property object.
     */
    protected void fireSessionChanged(int state) {
+
+      switch (state) {
+
+         case TN5250jConstants.STATE_CONNECTED:
+            if (!firstScreen) {
+               firstScreen = true;
+               signonSave = screen.getScreenAsChars();
+               System.out.println("Signon saved");
+            }
+            break;
+         default:
+            firstScreen = false;
+            signonSave = null;
+
+      }
 
       if (listeners != null) {
          int size = listeners.size();
