@@ -73,12 +73,13 @@ public class SendEMailDialog {
          Object[]      message = new Object[1];
          message[0] = semp;
 
-         String[] options = {LangTool.getString("em.optSendLabel"),
-                              LangTool.getString("em.optCancelLabel"),
-                              LangTool.getString("em.optConfigureLabel")};
+         String[] options = new String[3];
 
          int result = 0;
          while (result == 0 || result == 2) {
+
+            setOptions(options);
+
             result = JOptionPane.showOptionDialog(
                 parent,                            // the parent that the dialog blocks
                 message,                           // the dialog message array
@@ -181,12 +182,14 @@ public class SendEMailDialog {
 
          Object[]      message = new Object[1];
          message[0] = semp;
-         String[] options = {LangTool.getString("em.optSendLabel"),
-                              LangTool.getString("em.optCancelLabel"),
-                              LangTool.getString("em.optConfigureLabel")};
+         String[] options = new String[3];
+
 
          int result = 0;
          while (result == 0 || result == 2) {
+
+            setOptions(options);
+
             result = JOptionPane.showOptionDialog(
                 parent,                            // the parent that the dialog blocks
                 message,                           // the dialog message array
@@ -213,21 +216,6 @@ public class SendEMailDialog {
                   if (fileName != null && fileName.length() > 0)
                      sem.setFileName(fileName);
 
-//                  StringBuffer sb = new StringBuffer();
-//                  char[] s = screen.getScreenAsChars();
-//                  int c = screen.getCols();
-//                  int l = screen.getRows() * c;
-//                  int col = 0;
-//                  for (int x = 0; x < l; x++,col++) {
-//                     sb.append(s[x]);
-//                     if (col == c) {
-//                        sb.append('\n');
-//                        col = 0;
-//                     }
-//                  }
-//
-//
-//                  sem.setAttachment(sb.toString());
                   try {
                      sem.send();
                   }
@@ -253,6 +241,23 @@ public class SendEMailDialog {
             }
          }
       }
+   }
+
+   private void setOptions(String[] options) {
+
+
+      options[0] = LangTool.getString("em.optSendLabel");
+      options[1] = LangTool.getString("em.optCancelLabel");
+
+      File smtp = new File("SMTPProperties.cfg");
+
+      if (smtp.exists())
+         options[2] = LangTool.getString("em.optEditLabel");
+      else
+         options[2] = LangTool.getString("em.optConfigureLabel");
+
+
+
    }
 
    private boolean isEMailAvailable() {
