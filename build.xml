@@ -53,6 +53,7 @@
        <exclude name="org/**"/>
        <exclude name="*.gif"/>
        <exclude name="*.properties"/>
+       
     </fileset>
 
     <!-- files for source distribution -->
@@ -141,22 +142,10 @@
         <javac srcdir="${source.dir}"
                 destdir="${build.classes.dir}"
                 excludes="**/Cvs/**,**/*.ini" >
-            <classpath>
-                <path refid="classpath"/>
-            </classpath>
-        </javac>
-    </target>
-
-    <!-- =================================================================== -->
-    <!-- Compiles the source directory with deprecation turned on            -->
-    <!-- =================================================================== -->
-    <target name="compile-dep" depends="prepare" description="Compile your source-files with deprecation turned on">
-        <javac srcdir="${source.dir}"
-                destdir="${build.classes.dir}"
-                includes="**/*.java"
-                debug="${debug}"
-                optimize="${optimize}"
-                deprecation="on">
+            <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
+                     unless ="SSL" />
+            <exclude name="org/tn5250j/transport/SSL/X509*.java"
+                     unless ="SSL" />
             <classpath>
                 <path refid="classpath"/>
             </classpath>
