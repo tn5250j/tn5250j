@@ -26,8 +26,6 @@
 
 package org.tn5250j.event;
 
-import org.tn5250j.Screen5250;
-
 public interface ScreenListener {
 
    public void onScreenChanged(int inUpdate, int startRow, int startCol,
