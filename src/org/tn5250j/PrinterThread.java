@@ -75,12 +75,22 @@ public class PrinterThread extends Thread implements Printable {
       PrinterJob printJob = PrinterJob.getPrinterJob ();
       printJob.setJobName("tn5250j");
 
+      // will have to remember this for the next time.
+      //   Always set a page format before call setPrintable to
+      //   set the orientation.
+      PageFormat pf = printJob.defaultPage();
+      if (numCols == 132)
+         pf.setOrientation(PageFormat.LANDSCAPE);
+      else
+         pf.setOrientation(PageFormat.PORTRAIT);
+
       //--- Set the printable class to this one since we
       //--- are implementing the Printable interface
-      printJob.setPrintable (this);
+      printJob.setPrintable (this,pf);
 
       // set the cursor back
       session.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
 
       //--- Show a print dialog to the user. If the user
       //--- clicks the print button, then print, otherwise
@@ -132,7 +142,6 @@ public class PrinterThread extends Thread implements Printable {
 
          //--- Create a graphic2D object and set the default parameters
          g2 = (Graphics2D) g;
-//         g2.setColor (colorBg);
          g2.setColor (Color.black);
 
          //--- Translate the origin to be (0,0)
