@@ -18,7 +18,7 @@
    <property name="conf.dir" value="${basedir}/conf" />
 
    <property name="main.class" value="org.tn5250j.My5250"/>
-   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar kunststoff.jar"/>
+   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar kunststoff.jar log4j-1.2.8.jar"/>
 
     <!-- compile options -->
     <property name="debug" value="off"/>
@@ -54,7 +54,6 @@
        <exclude name="build.xml"/>
        <exclude name="org/**"/>
        <exclude name="*.gif"/>
-       <exclude name="*.properties"/>
 
     </fileset>
 
@@ -282,6 +281,9 @@
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${lib.dir}/itext.jar">
         </copy>
+        <copy todir="${dist.dir}/${dist.base.name}"
+        		file="${lib.dir}/log4j-1.2.8.jar">
+        </copy>
     </target>
 
     <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
@@ -295,7 +297,7 @@
         <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
             basedir="${dist.dir}/${dist.base.name}"
             includes="**"
-            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar">
+            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar,log4j-1.2.8.jar">
         </zip>
     </target>
 
