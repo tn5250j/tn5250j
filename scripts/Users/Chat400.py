@@ -3,17 +3,19 @@
 #====================================================================#
 # Code      : Peter Moore (jorjun@mac.com)                           #
 #             Patrick Bielen (bielen@stafa.nl)                       #
-# Interface : Patrick Bielen (bielen@stafa.nl)                       #
 # ================================================================== #
 # Functionality : Script to send/receive messages to AS/400 users    #
 # Discussions	: tn5250j-scripting@lists.sourceforge.net            #
 ######################################################################
 import sys
+import string as str
+
 from java.lang import *
 import com.ibm.as400.access as acc
 import com.ibm.as400.resource as rsc
 from javax import swing
 import java.awt as awt
+
 global server, name, passw
 #**************************************************************************
 server = ''
@@ -55,8 +57,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		swing.JFrame.__init__(self, title=\
 							  "CHAT400 - An AS/400 Instant Messenger", \
 							  resizable=0)
-		self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE)
-
+		try:
+			self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE) # JDK1.4?
+		except:
+			None 
 	def run(self, server, name, *passw):
 		self.as400 = acc.AS400(server, name, *passw)
 
@@ -68,9 +72,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		for idx in range(rUsrLst.getListLength()):
 				tmp_rUsr = rUsrLst.resourceAt(idx)
 				key_usr = tmp_rUsr.getAttributeValue(rsc.RUser.USER_PROFILE_NAME)
+				if key_usr.startswith('Q'):
+					continue
 				tmp_usrText = tmp_rUsr.getAttributeValue(rsc.RUser.TEXT_DESCRIPTION)
-				if not key_usr.startswith('Q'):
-					self.usrDct[key_usr] = tmp_usrText
+				self.usrDct[key_usr] = tmp_usrText
 		rUsrLst.close()
 		
 		# Interactive job list		
@@ -87,7 +92,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		# Form GUI
 		self.contentPane.setLayout(awt.GridBagLayout())
 		self.addWindowListener(self)
-		self.chkFullNames = swing.JCheckBox("Show user's full name", 1)
+		#self.chkFullNames = swing.JCheckBox("Show user's full name", 1) --Time to get rid??
 		self.chkActive = swing.JCheckBox("Show only Active Users", 1)
 
 		self.chatTxt = swing.JTextArea(5, 30, lineWrap=1, wrapStyleWord=1)
@@ -100,7 +105,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		self.polchat.interrupt()
 		self.dispose()
 	def windowClosing(self, event):
-		None
+		System.setProperty("chat400", "0")
 	def windowActivated(self, event):
 		None
 	def windowDeactivated(self, event):
@@ -132,20 +137,19 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		for key_usr in keys:
 			menuItem = key_usr
 			sts = ' '
+			if self.jobDct.has_key(key_usr):
+				sts = '*'
 			try:
 				fullName = self.usrDct[key_usr]
 			except:
-				fullName  = "- No description available"
-			if self.chkFullNames.isSelected(): # Show Full names
-				menuItem += ': %s'%(fullName)
-			if self.chkActive.isSelected():   # Active jobs only
-				if self.jobDct.has_key(key_usr):
-					self.users.addItem(menuItem)
-			else:
-				if self.jobDct.has_key(key_usr):
-					sts = '*'
-				menuItem = menuItem	+ sts # N.B. * means profile is running an active job
-				self.users.addItem(menuItem)
+				fullName  = "*NONE"
+			menuItem += ': %s'%(str.ljust(fullName,25))  # Left adjust name into 25 chars max
+			if self.chkActive.isSelected() and sts !="*":   # Active jobs only
+				continue
+
+			menuItem += sts    # N.B. * means profile is running an interactive job
+			self.users.addItem(menuItem)
+
 	#**************************
 	#	Send message
 	#**************************
@@ -153,8 +157,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		cmd = acc.CommandCall(self.as400)
 		curUsr = self.as400.getUserId()
 		selected = self.users.getSelectedItem()
-		usr =selected.split(':')[0]
-		sndUsr = self.jobDct[usr].getAttributeValue(rsc.RJob.USER_NAME)
+		sndUsr =selected.split(':')[0]
 		chatTxt = self.chatTxt.getText()
 		dq = acc.KeyedDataQueue(self.as400, CHATQ)
 		if not dq.exists():
@@ -206,10 +209,10 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 		gbc.insets = awt.Insets(10, 5, 5, 10)
 		self.contentPane.add(self.btnRef, gbc)
 		# Full names checkbox
-		gbc.gridx = 0
-		gbc.gridwidth = 3
-		gbc.insets = awt.Insets(5, 0, 0, 0)
-		self.contentPane.add(self.chkFullNames, gbc)
+		#gbc.gridx = 0
+		#gbc.gridwidth = 3
+		#gbc.insets = awt.Insets(5, 0, 0, 0)
+		#self.contentPane.add(self.chkFullNames, gbc)
 		# Active Users checkbox
 		gbc.gridx = 0
 		gbc.gridwidth = 3
