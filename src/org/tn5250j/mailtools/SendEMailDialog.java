@@ -126,7 +126,12 @@ public class SendEMailDialog {
                   }
                   sem.release();
                   sem = null;
-                  System.out.println("Message sent");
+
+                  JOptionPane.showMessageDialog(parent,
+                                                   LangTool.getString("em.confirmationMessage") +
+                                                   " " + tot.getText(),
+                                                   LangTool.getString("em.titleConfirmation"),
+                                                   JOptionPane.INFORMATION_MESSAGE);
 
                   break;
                case 1: // Cancel
