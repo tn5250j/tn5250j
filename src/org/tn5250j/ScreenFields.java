@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,6 +23,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.io.ByteArrayOutputStream;
 import org.tn5250j.encoding.CodePage;
@@ -55,7 +55,7 @@ public class ScreenFields implements TN5250jConstants {
 
    }
 
-   public boolean existsAtPos(int lastPos) {
+   protected boolean existsAtPos(int lastPos) {
 
       ScreenField sf = null;
 
@@ -79,7 +79,7 @@ public class ScreenFields implements TN5250jConstants {
       return masterMDT;
    }
 
-   public void setMasterMDT() {
+   protected void setMasterMDT() {
       masterMDT = true;
    }
 
@@ -134,31 +134,31 @@ public class ScreenFields implements TN5250jConstants {
       return currentField.isContinuedLast();
    }
 
-   public void saveCurrentField() {
+   protected void saveCurrentField() {
       saveCurrent = currentField;
    }
 
-   public void restoreCurrentField() {
+   protected void restoreCurrentField() {
       currentField = saveCurrent;
    }
 
-   public void setCurrentField(ScreenField sf) {
+   protected void setCurrentField(ScreenField sf) {
       currentField = sf;
    }
 
-   public void setCurrentFieldMDT() {
+   protected void setCurrentFieldMDT() {
       currentField.setMDT();
       masterMDT = true;
    }
 
-   public void setCurrentFieldFFWs(int ffw1, int ffw2) {
+   protected void setCurrentFieldFFWs(int ffw1, int ffw2) {
 
       masterMDT = currentField.setFFWs(ffw1,ffw2);
 
    }
 
 
-   public ScreenField setField(int attr, int row, int col, int len, int ffw1,
+   protected ScreenField setField(int attr, int row, int col, int len, int ffw1,
                            int ffw2, int fcw1, int fcw2) {
 
       ScreenField sf = null;
@@ -209,7 +209,7 @@ public class ScreenFields implements TN5250jConstants {
       return currentField.getCurrentPos();
    }
 
-   public int getCurrentFieldShift() {
+   protected int getCurrentFieldShift() {
       return currentField.getFieldShift();
    }
 

@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,6 +23,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -36,13 +36,13 @@ import java.text.*;
 
 public class ScreenField {
 
-   public ScreenField(Screen5250 s) {
+   protected ScreenField(Screen5250 s) {
 
       this.s = s;
 
    }
 
-   public ScreenField setField(int attr, int len, int ffw1, int ffw2,
+   protected ScreenField setField(int attr, int len, int ffw1, int ffw2,
                      int fcw1, int fcw2) {
       return setField(attr,
                s.getCurrentRow() - 1,
@@ -54,7 +54,7 @@ public class ScreenField {
                fcw2);
    }
 
-   public ScreenField setField(int attr, int row, int col, int len, int ffw1, int ffw2,
+   protected ScreenField setField(int attr, int row, int col, int len, int ffw1, int ffw2,
                      int fcw1, int fcw2) {
 
 //      startRow = row;
@@ -88,7 +88,7 @@ public class ScreenField {
       return length;
    }
 
-   public boolean setFFWs(int ffw1, int ffw2) {
+   protected boolean setFFWs(int ffw1, int ffw2) {
 
       this.ffw1 = ffw1;
       this.ffw2 = ffw2;
@@ -106,7 +106,7 @@ public class ScreenField {
       return ffw2;
    }
 
-   public void setFCWs(int fcw1, int fcw2) {
+   protected void setFCWs(int fcw1, int fcw2) {
 
       this.fcw1 = fcw1;
       this.fcw2 = fcw2;
@@ -138,7 +138,7 @@ public class ScreenField {
       return fieldId;
    }
 
-   public void setFieldId(int fi) {
+   protected void setFieldId(int fi) {
       fieldId = fi;
    }
 
@@ -152,7 +152,7 @@ public class ScreenField {
       return cursorPos % s.getCols();
    }
 
-   public void changePos(int i) {
+   protected void changePos(int i) {
 
       cursorPos += i;
 
@@ -225,12 +225,12 @@ public class ScreenField {
       }
    }
 
-   public void resetMDT() {
+   protected void resetMDT() {
       mdt = false;
 
    }
 
-   public void setMDT() {
+   protected void setMDT() {
 
       //  get the first field of a continued edit field if it is continued
       if (isContinued() && !isContinuedFirst()) {
@@ -333,7 +333,7 @@ public class ScreenField {
 
    }
 
-   public int getKeyPos(int row1, int col1) {
+   protected int getKeyPos(int row1, int col1) {
 
       int x = ((row1 * s.getCols()) + col1);
       int y = x - startPos();
@@ -342,7 +342,7 @@ public class ScreenField {
       return y;
    }
 
-   public int getKeyPos(int pos) {
+   protected int getKeyPos(int pos) {
 
       int y = pos - startPos();
       cursorPos = pos;

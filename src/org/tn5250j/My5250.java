@@ -824,6 +824,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       jarClassPaths = System.getProperty("python.path")
                         + File.pathSeparator + "jython.jar"
+                        + File.pathSeparator + "jythonlib.jar"
                         + File.pathSeparator + "jt400.jar"
                         + File.pathSeparator + "itext.jar";
 

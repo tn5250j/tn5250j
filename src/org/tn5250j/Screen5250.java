@@ -831,7 +831,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
          while (!done) {
 
-
             if (nextChar >= nChars) { /* EOF */
 
                done = true;

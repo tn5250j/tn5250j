@@ -129,35 +129,46 @@ public class GlobalConfigure extends ConfigureFactory {
 
    }
 
+   /**
+    * Loads the emulator setting from the setting(s) file
+    */
    private void loadSettings() {
 
       FileInputStream in = null;
       settings = new Properties();
 
-      try {
-         in = new FileInputStream(settingsFile);
-         settings.load(in);
+      // here we will check for a system property is provided first.
+      if (System.getProperties().containsKey("emulator.settingsDirectory")) {
+         settings.setProperty("emulator.settingsDirectory",
+                                 System.getProperty("emulator.settingsDirectory") +
+                                 File.separator);
+      }
+      else {
 
-      }
-      catch (FileNotFoundException fnfe) {
+         try {
+            in = new FileInputStream(settingsFile);
+            settings.load(in);
 
-         System.out.println(" Information Message: " + fnfe.getMessage()
-                           + ".  The file " + settingsFile + " will"
-                           + " be created for first time use.");
-         checkLegacy();
-         saveSettings();
-      }
-      catch (IOException ioe) {
-         System.out.println("IO Exception accessing File " + settingsFile
-                              + " for the following reason : "
-                              + ioe.getMessage());
-      }
-      catch (SecurityException se) {
-         System.out.println("Security Exception for file " + settingsFile
-                              + "  This file can not be "
-                              + "accessed because : " + se.getMessage());
-      }
+         }
+         catch (FileNotFoundException fnfe) {
 
+            System.out.println(" Information Message: " + fnfe.getMessage()
+                              + ".  The file " + settingsFile + " will"
+                              + " be created for first time use.");
+            checkLegacy();
+            saveSettings();
+         }
+         catch (IOException ioe) {
+            System.out.println("IO Exception accessing File " + settingsFile
+                                 + " for the following reason : "
+                                 + ioe.getMessage());
+         }
+         catch (SecurityException se) {
+            System.out.println("Security Exception for file " + settingsFile
+                                 + "  This file can not be "
+                                 + "accessed because : " + se.getMessage());
+         }
+      }
 
       // we now check to see if the settings directory is a directory.  If not then we create it
       File sd = new File(settings.getProperty("emulator.settingsDirectory"));
