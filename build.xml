@@ -204,10 +204,6 @@
     <target name= "all" depends="clean, compile, package"   description="Clean, Compile, Jar">
     </target>
 
-    <target name= "all-dep" depends="clean, compile-dep, package"   description="Clean, Compile, Jar">
-    </target>
-
-
     <!-- =================================================================== -->
     <!-- Creates the distribution                                            -->
     <!-- =================================================================== -->
