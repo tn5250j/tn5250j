@@ -412,11 +412,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
             System.out.println((String)functions.getSelectedValue());
             String k = "";
             k += ((String)functions.getSelectedValue()).charAt(7);
-            if (isLinux)
+            mapper.removeKeyStroke(k);
+            if (isLinux) {
                mapper.setKeyStroke(k,ke,isAltGr);
-            else
+            }
+            else {
                mapper.setKeyStroke(k,ke);
-
+            }
             strokeDesc.setText(mapper.getKeyStrokeDesc(k));
 
 
