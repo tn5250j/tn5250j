@@ -1296,7 +1296,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
 
          if (keysBuffered) {
-            if (text != null) {
+            if (bufferedKeys != null) {
                text = bufferedKeys + text;
             }
             keysBuffered = false;
