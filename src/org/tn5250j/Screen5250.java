@@ -154,6 +154,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private int cursorBottOffset;
    private boolean defaultPrinter;
    private SessionConfig config;
+   //LDC - 12/02/2003 -  boolean: true: it must be repainted
+   private boolean drawing;
 
    public Screen5250(Gui5250 gui, SessionConfig config) {
 
@@ -2258,7 +2260,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     *
     *
     */
-   protected void crossHair() {
+   public void crossHair() {
       setCursorActive(false);
       crossHair++;
       if (crossHair > 3)
@@ -3616,6 +3618,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     */
    public void updateDirty() {
 
+    //LDC - 12/02/2003 - check if we must repaint it
+    if (drawing == false) return;
       Rectangle r = new Rectangle(dirty);
 
 
@@ -3625,7 +3629,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       //   screen so do not do it again.
 //      int height = (int)(tArea.getHeight() - dirty.height);
 //      if (height > 0)
-      dirty.setBounds(dirty.x,dirty.height,dirty.width,(int)(tArea.getHeight() - dirty.height));
+//      dirty.setBounds(dirty.x,dirty.height,dirty.width,(int)(tArea.getHeight() - dirty.height));
+      //LDC - 12/02/2003 - set drawing to false
+      drawing = false;
 
    }
 
@@ -3633,8 +3639,18 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       int bx = screen[pos].x;
       int by = screen[pos].y;
-      workR.setBounds(bx,by,fmWidth,fmHeight);
-      dirty = dirty.union(workR);
+      //LDC - 12/02/2003 - if we must drawing something, do a union with it
+      //  otherwise only this rectangle must be redrawing
+      if (drawing)
+      {
+        workR.setBounds(bx, by, fmWidth, fmHeight);
+        dirty = dirty.union(workR);
+      }
+      else
+      {
+        dirty.setBounds(bx, by, fmWidth, fmHeight);
+        drawing = true;
+      }
 
    }
 
@@ -3647,6 +3663,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private void resetDirty(int pos) {
 
       dirty.setBounds(screen[pos].x,screen[pos].y,fmWidth,fmHeight);
+      //LDC - 12/02/2003 - It must be painting this area
+      drawing = true;
    }
 
    /**
@@ -4059,7 +4077,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       g2.fillRect(0,0,gui.getWidth(),gui.getHeight());
 
       bi.drawImageBuffer(g2);
-//      System.out.println(" paint 3");
    }
 
    protected void paintComponent2(Graphics2D g2) {
@@ -4231,6 +4248,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          // do not forget to null out gg2d before update or else there will
          //    be a very hard to trace screen resize problem
          gg2d = null;
+         // kjp make sure we redraw the screen;
+         drawing = true;
          updateDirty();
       }
 
