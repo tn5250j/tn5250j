@@ -93,7 +93,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
       BorderLayout borderLayout = new BorderLayout();
 
       mapper = new KeyMapper();
-      mapper.init();
+      KeyMapper.init();
 
 
       keyPanel.setLayout(borderLayout);
@@ -299,8 +299,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
          keyDesc = keyDesc.substring(0,keyDesc.indexOf(KeyStroker.altSuffix));
       }
 
-      strokeDesc.setText(mapper.getKeyStrokeDesc(keyDesc));
-      strokeDescAlt.setText(mapper.getKeyStrokeDesc(keyDesc +
+      strokeDesc.setText(KeyMapper.getKeyStrokeDesc(keyDesc));
+      strokeDescAlt.setText(KeyMapper.getKeyStrokeDesc(keyDesc +
                               KeyStroker.altSuffix));
 
       strokeLocation.setText(getLocationDesc(keyDesc));
@@ -311,9 +311,9 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       String locStr = LangTool.getString("key.labelLocUnknown");
 
-      if (mapper.isKeyStrokeDefined(keyDesc)) {
+      if (KeyMapper.isKeyStrokeDefined(keyDesc)) {
 
-         switch (mapper.getKeyStroker(keyDesc).getLocation()) {
+         switch (KeyMapper.getKeyStroker(keyDesc).getLocation()) {
 
             case KeyStroker.KEY_LOCATION_LEFT:
                locStr = LangTool.getString("key.labelLocLeft");
@@ -462,8 +462,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       if (e.getActionCommand().equals("DONE")) {
          if (mods) {
-            mapper.saveKeyMap();
-            mapper.fireKeyChangeEvent();
+            KeyMapper.saveKeyMap();
+            KeyMapper.fireKeyChangeEvent();
          }
          setVisible(false);
       }
@@ -562,10 +562,10 @@ public class KeyConfigure extends JDialog implements ActionListener,
       boolean exists = true;
 
       if (isLinux) {
-          exists = mapper.isKeyStrokeDefined(ke,isAltGr);
+          exists = KeyMapper.isKeyStrokeDefined(ke,isAltGr);
       }
       else {
-         exists = mapper.isKeyStrokeDefined(ke);
+         exists = KeyMapper.isKeyStrokeDefined(ke);
       }
 
       if (exists) {
@@ -591,9 +591,9 @@ public class KeyConfigure extends JDialog implements ActionListener,
       String desc;
 
       if (isLinux)
-         desc = mapper.getKeyStrokeMnemonic(ke,isAltGr);
+         desc = KeyMapper.getKeyStrokeMnemonic(ke,isAltGr);
       else
-         desc = mapper.getKeyStrokeMnemonic(ke,isAltGr);
+         desc = KeyMapper.getKeyStrokeMnemonic(ke,isAltGr);
 
       if (desc != null && desc.length() > 1 && desc.startsWith("["))
          desc = LangTool.getString("key."+ desc);
@@ -635,7 +635,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
          if (altKey)
             function += KeyStroker.altSuffix;
 
-         mapper.removeKeyStroke(function);
+         KeyMapper.removeKeyStroke(function);
          setKeyInformation(function);
 
 
@@ -655,7 +655,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             if (altKey)
                name += KeyStroker.altSuffix;
 
-            mapper.removeKeyStroke(name);
+            KeyMapper.removeKeyStroke(name);
             setKeyInformation(name);
          }
          if (special) {
@@ -664,7 +664,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             if (altKey)
                k += KeyStroker.altSuffix;
 
-            mapper.removeKeyStroke(k);
+            KeyMapper.removeKeyStroke(k);
             setKeyInformation(k);
          }
       }
@@ -682,10 +682,10 @@ public class KeyConfigure extends JDialog implements ActionListener,
             stroke += KeyStroker.altSuffix;
 
          if (isLinux) {
-            mapper.setKeyStroke(stroke,ke,isAltGr);
+            KeyMapper.setKeyStroke(stroke,ke,isAltGr);
          }
          else {
-            mapper.setKeyStroke(stroke,ke);
+            KeyMapper.setKeyStroke(stroke,ke);
          }
 
          setKeyInformation(stroke);
@@ -705,9 +705,9 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
             System.out.println(macro);
             if (isLinux)
-               mapper.setKeyStroke(macro,ke,isAltGr);
+               KeyMapper.setKeyStroke(macro,ke,isAltGr);
             else
-               mapper.setKeyStroke(macro,ke);
+               KeyMapper.setKeyStroke(macro,ke);
 
             setKeyInformation(macro);
 
@@ -720,13 +720,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
             if (altKey)
                k += KeyStroker.altSuffix;
 
-            mapper.removeKeyStroke(k);
+            KeyMapper.removeKeyStroke(k);
 
             if (isLinux) {
-               mapper.setKeyStroke(k,ke,isAltGr);
+               KeyMapper.setKeyStroke(k,ke,isAltGr);
             }
             else {
-               mapper.setKeyStroke(k,ke);
+               KeyMapper.setKeyStroke(k,ke);
             }
 
             setKeyInformation(k);
