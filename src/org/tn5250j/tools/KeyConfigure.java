@@ -738,7 +738,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
         char c = e.getKeyChar();
         int keyCode = e.getKeyCode();
         int modifiers = e.getModifiers();
-        int location = e.getKeyLocation();
+//        int location = e.getKeyLocation();
 
         if (Character.isISOControl(c)) {
             charString = "key character = "
@@ -778,24 +778,25 @@ public class KeyConfigure extends JDialog implements ActionListener,
             modString += " (no modifiers)";
         }
 
-        switch (location) {
-            case KeyEvent.KEY_LOCATION_LEFT:
-               locString = "location = " + location + " (LEFT)";
-               break;
-            case KeyEvent.KEY_LOCATION_NUMPAD:
-               locString = "location = " + location + " (NUM_PAD)";
-               break;
-            case KeyEvent.KEY_LOCATION_RIGHT:
-               locString = "location = " + location + " (RIGHT)";
-               break;
-            case KeyEvent.KEY_LOCATION_STANDARD:
-               locString = "location = " + location + " (STANDARD)";
-               break;
-            default:
-               locString = "location = " + location + " (UNKNOWN)";
-               break;
-
-        }
+         locString = "location = (UNKNOWN)";
+//        switch (location) {
+//            case KeyEvent.KEY_LOCATION_LEFT:
+//               locString = "location = " + location + " (LEFT)";
+//               break;
+//            case KeyEvent.KEY_LOCATION_NUMPAD:
+//               locString = "location = " + location + " (NUM_PAD)";
+//               break;
+//            case KeyEvent.KEY_LOCATION_RIGHT:
+//               locString = "location = " + location + " (RIGHT)";
+//               break;
+//            case KeyEvent.KEY_LOCATION_STANDARD:
+//               locString = "location = " + location + " (STANDARD)";
+//               break;
+//            default:
+//               locString = "location = " + location + " (UNKNOWN)";
+//               break;
+//
+//        }
 
         isString = "isKeys = isActionKey (" + e.isActionKey() + ")" +
                          " isAltDown (" + e.isAltDown() + ")" +
