@@ -195,13 +195,24 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       if (OperatingSystem.isMacOS() && OperatingSystem.hasJava14())
           fullRepaint = true;
 
-      if (!config.isPropertyExists("font")) {
+      // change by Luc - LDC If the font from the properties file does not exist
+      //    select the default font
+      if (config.isPropertyExists("font"))
+      {
+        fontName = getStringProperty("font");
+        if (GUIGraphicsUtils.isFontNameExists(fontName) == false)
+          fontName = null;
+      }
+
+//      if (!config.isPropertyExists("font")) {
+      if (fontName == null) {
          font = new Font(GUIGraphicsUtils.getDefaultFont(),Font.PLAIN,14);
 //         font = new Font("Courier New",Font.PLAIN,14);
          config.setProperty("font",font.getFontName());
       }
       else {
-         font = new Font(getStringProperty("font"),Font.PLAIN,14);
+         //font = new Font(getStringProperty("font"),Font.PLAIN,14);
+         font = new Font(fontName,Font.PLAIN,14);
       }
 
       gui.setFont(font);
