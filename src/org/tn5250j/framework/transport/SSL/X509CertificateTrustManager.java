@@ -27,6 +27,15 @@ import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import javax.swing.JOptionPane;
 
+/**
+ * This class is used to trust certificates exchanged during an SSL socket
+ * handshake.  It allows the user to accept the certificate so that connections
+ * can be made without requiring the server to have a certificate signed by a
+ * CA (Verisign, Thawte, etc.).
+ *  
+ * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
+ *
+ */
 public class X509CertificateTrustManager implements X509TrustManager {
 
   KeyStore ks = null;
@@ -37,10 +46,17 @@ public class X509CertificateTrustManager implements X509TrustManager {
     ks = keyStore;
   }
 
-  public void checkClientTrusted(X509Certificate[] chain, String type) throws java.security.cert.CertificateException {
-
+  public void checkClientTrusted(X509Certificate[] chain, String type) throws CertificateException {
+  	throw new SecurityException("checkClientTrusted unsupported");
   }
-  public void checkServerTrusted(X509Certificate[] chain, String type) throws java.security.cert.CertificateException {
+  
+  
+  /**
+   * Checks the server certificate.  If it isn't trusted by the trust manager
+   * passed to the constructor, then the user will be prompted to accept the
+   * certificate.
+   */
+  public void checkServerTrusted(X509Certificate[] chain, String type) throws CertificateException {
     try {
       trustManager.checkServerTrusted(chain,type);
       return;

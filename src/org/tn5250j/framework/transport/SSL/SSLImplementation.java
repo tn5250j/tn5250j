@@ -2,7 +2,7 @@ package org.tn5250j.framework.transport.SSL;
 
 /*
  * @(#)SSLImplementation.java
- * @author Steve Kennedy
+ * @author Stephen M. Kennedy
  *
  * Copyright:    Copyright (c) 2001
  *
@@ -30,14 +30,26 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.HandshakeCompletedEvent;
 
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import org.tn5250j.framework.transport.SSLInterface;
-import org.tn5250j.framework.transport.SSLConstants;
 
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
+
+/**
+ * <p>
+ * This class implements the SSLInterface and is used to create SSL socket
+ * instances.
+ * </p>
+ * <p>
+ * This class uses an X509CertificateTrustManager instance to perform
+ * certificate validation during handshaking.
+ * </p> 
+ * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
+ *
+ */
 public class SSLImplementation implements SSLInterface {
 
   SSLContext sslctx = null;
@@ -48,12 +60,16 @@ public class SSLImplementation implements SSLInterface {
   TrustManager[] trustManagers = null;
   String sslType = null;
 
+  private char[] keystorePassword = "changeit".toCharArray();
+  
+  TN5250jLogger logger;
+  
   public SSLImplementation () {
-
+  	logger = TN5250jLogFactory.getLogger(getClass());
   }
 
   public SSLImplementation (String sslType) {
-
+  	this();
     this.sslType = sslType;
   }
 
@@ -61,35 +77,51 @@ public class SSLImplementation implements SSLInterface {
     sslType = type;
   }
 
+  /**
+   * Initialize the keystore where certificates are loaded from and stored to.
+   *
+   */
   private void initKeyStore () {
     try {
-      ks = KeyStore.getInstance("JKS");
-      System.out.println("Loading Keystore...");
+      ks = KeyStore.getInstance(KeyStore.getDefaultType());
+      logger.debug("Loading Keystore...");
+      
       String seperator=System.getProperty("file.separator","/");
+      
       ks.load(new java.io.FileInputStream(System.getProperty("java.home")+
                 seperator+"lib"+seperator+"security"+seperator+"cacerts"),
-                "changeit".toCharArray());
+                keystorePassword);
+      
     }
     catch (Exception e) {
-      System.err.println("MySSLFactory: " + e.getMessage());
+    	logger.error("Failed Initializing Keystore ["+e.getMessage()+"]");
     }
   }
 
+  
+  /**
+   * Initialize the key manager factory  
+   *
+   */
   private void initKeyManagerFactory() {
     try {
-      System.out.println("Initializing KeyManagerFactory...");
-      kmf = KeyManagerFactory.getInstance("SunX509");
-      kmf.init(ks,"changeit".toCharArray());
+    	logger.debug("Initializing KeyManagerFactory...");
+      kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      kmf.init(ks,keystorePassword);
     }
     catch (Exception e) {
-      System.err.println("MySSLFactory: " + e.getMessage());
+    	logger.error("Failed initializing Key Manager Factory ["+e.getMessage()+"]");
     }
   }
 
+  /**
+   * Initialize the trust managers
+   *
+   */
   private void initTrustManagers() {
     try {
-      System.out.println("Instantiating TrustManager...");
-      tmf = TrustManagerFactory.getInstance("SunX509");
+    	logger.debug("Instantiating TrustManager...");
+      tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
       tmf.init(ks);
       trustManagers = tmf.getTrustManagers();
       X509TrustManager myTrustManager = new X509CertificateTrustManager(
@@ -99,59 +131,43 @@ public class SSLImplementation implements SSLInterface {
       trustManagers = newTrustManagers;
     }
     catch (Exception e) {
-      System.err.println("My5250SocketFactory: initTrustManager: " +
-        e.getMessage());
+    	logger.error("Failed initializing Trust Managers ["+e.getMessage()+"]");
     }
   }
 
+  
   private void initPrng() {
-    System.out.println("Initializing PRNG...");
+    logger.debug("Initializing PRNG...");
     SecureRandom prng = new SecureRandom();
     prng.nextInt();
   }
 
   private void initSSLContext(String type) {
     try {
-      System.out.println("Creating and Initializing SSL Context...");
+    	logger.debug("Creating and Initializing SSL Context...");
       sslctx = SSLContext.getInstance(type);
       sslctx.init(kmf.getKeyManagers(),trustManagers,prng);
     }
     catch (Exception e) {
-      System.err.println("MySSLFactory: " + e.getMessage());
+    	logger.error("Failed initializing SSL Context ["+e.getMessage()+"]");
     }
 
   }
 
   public Socket createSSLSocket(String destination, int port) {
+  	SSLSocket socket = null;
     try {
-
       //Using SSL Socket
       initKeyStore();
       initKeyManagerFactory();
       initTrustManagers();
       initPrng();
-      System.out.println("Creating Secure Socket");
-      if (sslType.equals(SSLConstants.SSL_TYPE_SSLv2)) {
-        initSSLContext("SSL");
-      }
-      else if (sslType.equals(SSLConstants.SSL_TYPE_TLS)) {
-        initSSLContext("TLS");
-      }
-      else {
-        System.err.println("SSL Type not Supported");
-        return null;
-      }
-      SSLSocket sslsock = (SSLSocket)sslctx.getSocketFactory().createSocket(destination,port);
-        sslsock.addHandshakeCompletedListener(new HandshakeCompletedListener() {
-          public void handshakeCompleted(HandshakeCompletedEvent hsce) {
-            System.out.println("Handshake Successful: " + hsce.getCipherSuite());
-          }
-      });
-      return sslsock;
+      initSSLContext(sslType);
+      socket = (SSLSocket)sslctx.getSocketFactory().createSocket(destination,port);
     }
     catch (Exception e) {
-      System.err.println("MySSLFactory: createSocket: " + e.getMessage());
+    	logger.error("Error creating ssl socket ["+e.getMessage()+"]");
     }
-    return null;
+    return socket;
   }
 }
