@@ -1,4 +1,3 @@
-package org.tn5250j.tools;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,9 +23,11 @@ package org.tn5250j.tools;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.tools;
 
 import java.io.*;
 import java.util.*;
+import java.text.MessageFormat;
 
 public final class LangTool {
 
@@ -86,6 +87,13 @@ public final class LangTool {
 //         System.out.println(mre.getLocalizedMessage());
          return defaultString;
       }
+
+   }
+
+   public static String messageFormat (String key,Object[] args) {
+
+      return MessageFormat.format(getString(key),args);
+
 
    }
 
