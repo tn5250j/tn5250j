@@ -168,7 +168,7 @@ public class ScreenField {
 
    }
 
-   public String getText() {
+   protected String getText() {
 
 
       StringBuffer text = new StringBuffer();
@@ -205,6 +205,56 @@ public class ScreenField {
          do {
             sf = sf.next;
             text.append(sf.getText());
+         }
+         while (!sf.isContinuedLast());
+
+         sf = null;
+      }
+
+      return text.toString();
+
+   }
+
+   public String getString() {
+
+
+      StringBuffer text = new StringBuffer();
+      getKeyPos(endPos);
+      int x = length;
+      text.setLength(x);
+      int nc = s.getColumns();
+      while (x-- > 0) {
+
+         // here we manipulate the unicode characters a little for attributes
+         //    that are imbedded in input fields.  We will offset them by unicode
+         //    \uff00.   All routines that process these fields will have to
+         //    return them to their proper offsets.
+         //    example:
+         //    if we read an attribute byte of 32 for normal display the unicode
+         //       character for this is \u0020 and the unicode character for
+         //       a space is also \u0020 thus the offset.
+         if (s.planes.isAttributePlace(cursorPos)) {
+            text.setCharAt(x,(char)('\uff00' + s.planes.getCharAttr(cursorPos)));
+         }
+         else {
+            if (s.planes.getChar(cursorPos) < ' ')
+               text.setCharAt(x,' ');
+            else
+               text.setCharAt(x,s.planes.getChar(cursorPos));
+         }
+         changePos(-1);
+
+      }
+
+      // Since only the mdt of the first continued field is set we will get
+      //    the text of the next continued field if we are dealing with continued
+      //    fields.  See routine setMDT for the whys of this.  This is only
+      //    executed if this is the first field of a continued field.
+      if (isContinued() && isContinuedFirst()) {
+         ScreenField sf = this;
+         do {
+            sf = sf.next;
+            text.append(sf.getString());
          }
          while (!sf.isContinuedLast());
 
@@ -455,6 +505,35 @@ public class ScreenField {
    public int endPos() {
 
       return endPos;
+
+   }
+
+   /**
+    * Sets the field's text plane to the specified string. If the string is
+    * shorter than the length of the field, the rest of the field is cleared.
+    * If the string is longer than the field, the text is truncated. A subsequent
+    * call to getText on this field will not show the changed text. To see the
+    * changed text, do a refresh on the iOhioFields collection and retrieve the
+    * refreshed field object.
+    *
+    * @param text - The text to be placed in the field's text plane.
+    */
+   public void setString(String text) {
+
+//      int y = length;
+//      cursorPos = startPos;
+//      int len = text.length();
+//      char[] c = text.toCharArray();
+//      char tc = ' ';
+//      for (int x = 0; x < y; x++) {
+//         tc = ' ';
+//         if (x < len) {
+//            tc = c[x];
+//         }
+//         data[x] = tc;
+         s.setScreenData(text,startPos);
+//         changePos(1);
+//      }
 
    }
 

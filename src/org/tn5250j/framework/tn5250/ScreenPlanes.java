@@ -49,7 +49,7 @@ public class ScreenPlanes implements TN5250jConstants {
    protected char[] screenExtended;   // extended plane
    protected char[] screenIsChanged;
 
-   protected char[] initArray;   
+   protected char[] initArray;
 
    protected char[] errorLine;
    protected char[] errorLineAttr;
@@ -93,7 +93,7 @@ public class ScreenPlanes implements TN5250jConstants {
       screenField = new char[screenSize];
 
       initArray = new char[screenSize];
-      
+
       initalizePlanes();
    }
 
@@ -220,7 +220,7 @@ public class ScreenPlanes implements TN5250jConstants {
 
       screenGUI[pos] = (char)which;
    }
-   
+
    private void disperseAttribute(int pos, int attr) {
 
       char c = 0;
@@ -367,6 +367,7 @@ public class ScreenPlanes implements TN5250jConstants {
 
          case 63:  // nondisplay
             nd = EXTENDED_5250_NON_DSP;
+            cs = EXTENDED_5250_COL_SEP;
             break;
          default:
             c = ( COLOR_BG_BLACK << 8 & 0xff00) |
@@ -390,10 +391,10 @@ public class ScreenPlanes implements TN5250jConstants {
          screenColor[y] = c;
 
       }
-      
-      // here we will just copy the initialized plane onto the other planes 
+
+      // here we will just copy the initialized plane onto the other planes
       // using arraycopy which will be faster.  I hope.
-     
+
       System.arraycopy(initArray,0,screen,0,screenSize);
       System.arraycopy(initArray,0,screenGUI,0,screenSize);
       System.arraycopy(initArray,0,screenIsAttr,0,screenSize);

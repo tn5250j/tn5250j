@@ -2645,6 +2645,46 @@ public class Screen5250 implements TN5250jConstants{
                                     endCol, plane);
    }
 
+   protected synchronized void setScreenData(String text, int location) {
+//                                             throws OhioException {
+
+      if (location < 0 || location > lenScreen) {
+         return;
+//         throw new OhioException(sessionVT.getSessionConfiguration(),
+//         				OhioScreen5250.class.getName(), "osohio.screen.ohio00300", 1);
+      }
+
+      int pos = location;
+
+      int l = text.length();
+      boolean updated = false;
+      boolean flag = false;
+      int x =0;
+      for (; x < l; x++) {
+         if (isInField(pos + x,true)) {
+            if (!screenFields.getCurrentField().isBypassField()) {
+               if (!flag) {
+                  screenFields.getCurrentField().setMDT();
+                  updated = true;
+                  resetDirty(pos + x);
+                  screenFields.setMasterMDT();
+                  flag = true;
+               }
+
+               planes.screen[pos + x] = text.charAt(x);
+//               screenFields.getCurrentField().setFieldChar(pos+x,text.charAt(x));
+               setDirty(pos + x);
+            }
+         }
+
+      }
+      lastPos = pos + x;
+      if (updated) {
+         fireScreenChanged(1);
+      }
+
+   }
+
 	/**
 	 * This routine is based on offset 1,1 not 0,0 it will translate to offset
 	 * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
@@ -3157,7 +3197,7 @@ public class Screen5250 implements TN5250jConstants{
 		lastAttr = attr;
 
 		planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
-		
+
 		setDirty(lastPos);
 
 		advancePos();
@@ -3189,10 +3229,10 @@ public class Screen5250 implements TN5250jConstants{
 				if (gui) {
 					planes.setUseGUI(lastPos,FIELD_MIDDLE);
 				}
-				
+
 				// now we set the field plane attributes
 				planes.setScreenFieldAttr(lastPos,ffw1);
-				
+
 				advancePos();
 
 			}
@@ -3411,7 +3451,7 @@ public class Screen5250 implements TN5250jConstants{
 		while (x-- > 0) {
 			setDirty(pos++);
 		}
-		
+
 		updateDirty();
 
 	}
