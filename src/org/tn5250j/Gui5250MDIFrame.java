@@ -458,42 +458,42 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
             public void internalFrameClosing(InternalFrameEvent e) {
 //               displayMessage("Internal frame closing", e);
-               calculateVisibility();
+//               calculateVisibility();
                disconnectMe();
             }
 
             public void internalFrameClosed(InternalFrameEvent e) {
 //               displayMessage("Internal frame closed", e);
                disconnectMe();
-               calculateVisibility();
+//               calculateVisibility();
             }
 
             public void internalFrameOpened(InternalFrameEvent e) {
 //               displayMessage("Internal frame opened", e);
-               calculateVisibility();
+//               calculateVisibility();
             }
 
             public void internalFrameIconified(InternalFrameEvent e) {
 //               displayMessage("Internal frame iconified", e);
-               calculateVisibility();
+//               calculateVisibility();
 //               e.getInternalFrame().getContentPane().setVisible(false);
             }
 
             public void internalFrameDeiconified(InternalFrameEvent e) {
 //               displayMessage("Internal frame deiconified", e);
-               calculateVisibility();
+//               calculateVisibility();
 //               e.getInternalFrame().getContentPane().setVisible(true);
             }
 
             public void internalFrameActivated(InternalFrameEvent e) {
 //               displayMessage("Internal frame activated", e);
                activated = true;
-               calculateVisibility();
+//               calculateVisibility();
             }
 
             public void internalFrameDeactivated(InternalFrameEvent e) {
                activated = false;
-               calculateVisibility();
+//               calculateVisibility();
 //               displayMessage("Internal frame deactivated", e);
             }
 
