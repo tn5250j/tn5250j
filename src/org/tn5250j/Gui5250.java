@@ -1300,12 +1300,25 @@ public class Gui5250 extends JPanel implements ComponentListener,
            };
          popup.add(action);
 
-         action = new AbstractAction(LangTool.getString("popup.send")) {
+         JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
+
+         popup.add(sendMenu);
+
+
+         action = new AbstractAction(LangTool.getString("popup.email")) {
                public void actionPerformed(ActionEvent e) {
                   sendScreenEMail();
                }
            };
-         popup.add(action);
+         sendMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("popup.file")) {
+               public void actionPerformed(ActionEvent e) {
+                  sendMeToFile();
+               }
+           };
+
+         sendMenu.add(action);
 
          popup.addSeparator();
 
@@ -1344,6 +1357,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+
+   private void sendMeToFile() {
+      new SendScreenToFile(screen);
+
+   }
 
    private void doMeTransfer() {
 
