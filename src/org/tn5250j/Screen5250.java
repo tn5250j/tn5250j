@@ -142,6 +142,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    private final static int ERR_DUP_KEY_NOT_ALLOWED   = 0x19;
    private final static int ERR_NUMERIC_09            = 0x10;
    private final static int ERR_FIELD_MINUS           = 0x16;
+   private final static int ERR_FIELD_EXIT_INVALID    = 0x18;
    private final static int ERR_ENTER_NO_ALLOWED      = 0x20;
    private final static int ERR_MANDITORY_ENTER       = 0x21;
 
@@ -155,6 +156,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    private SessionConfig config;
    private boolean rulerFixed;
    private boolean antialiased = true;
+   private boolean feError;
 
    private boolean fullRepaint;
 //   private Image tileimage;
@@ -1824,6 +1826,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
             break;
          case LEFT :
          case MARK_LEFT :
+
             process_XY(lastPos - 1);
             simulated = true;
             break;
@@ -2056,6 +2059,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                && !screenFields.isCurrentFieldBypassField()) {
 
                resetDirty(lastPos);
+
                if (fieldExit()) {
                   screenFields.setCurrentFieldMDT();
                   if (!screenFields.isCurrentFieldContinued()) {
@@ -2071,6 +2075,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                         screenFields.isCurrentFieldContinuedLast());
                   }
                }
+
                updateDirty();
                simulated  = true;
                if (screenFields.isCurrentFieldAutoEnter())
@@ -2286,6 +2291,18 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
             screenFields.withinCurrentField(lastPos)
             && !screenFields.isCurrentFieldBypassField()) {
 
+            if(screenFields.isCurrentFieldFER() &&
+               !screenFields.withinCurrentField(screenFields.getCurrentFieldPos())
+               && lastPos == screenFields.getCurrentField().endPos()
+               && screenFields.getCurrentFieldPos() >
+                  screenFields.getCurrentField().endPos()) {
+
+               displayError(ERR_FIELD_EXIT_INVALID);
+               feError = true;
+               return false;
+            }
+
+
             switch (screenFields.getCurrentFieldShift()) {
                case 0:  // Alpha shift
                case 2:  // Numeric Shift
@@ -2353,9 +2370,22 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                      }
                      else if (!screenFields.isCurrentFieldFER())
                         gotoFieldNext();
+                     else {
+//                        screenFields.getCurrentField().changePos(1);
+//
+//                        if (screenFields.
+//                        cursorPos == endPos)
+//                           System.out.println("end of field");
+//
+//                        feError != feError;
+//                        if (feError)
+//                           displayError(ERR_FIELD_EXIT_INVALID);
+                     }
+
                   }
                   else
                      goto_XY(screenFields.getCurrentField().getCursorRow() + 1,screenFields.getCurrentField().getCursorCol() + 1);
+
                }
 
                updateImage(dirty);
@@ -2471,6 +2501,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       int count = (end - sf.startPos()) -
                   sf.getKeyPos(pos);
 
+      if (count == 0 && sf.isFER()) {
+         mdt = true;
+         return mdt;
+      }
+
       for (;count >= 0; count--) {
          screen[pos].setChar(initChar);
          setDirty(pos);
@@ -2503,7 +2538,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 
          }
       }
+      else {
 
+         // we need to right adjust signed numeric fields as well.
+         if (sf.isSignedNumeric()) {
+            rightAdjustField(' ');
+         }
+      }
 
       return mdt;
    }
@@ -2722,7 +2763,38 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
          pos = lenScreen + pos ;
       if (pos > lenScreen - 1)
          pos = pos - lenScreen;
-      goto_XY(pos);
+
+      // if there was a field exit error then we need to treat the movement
+      //  of the cursor in a special way that equals that of Client Access.
+      //    If the cursor is moved from the field then we need to reset the
+      //       position within the field so that the last character can be typed
+      //       over again instead of sending the field exit error again.
+      //       We also need to reset the field exit error flag.
+      //
+      //    How we know we have a field exit error is when the field position is
+      //    set beyond the end of the field and a character is then typed we can
+      //    not position that character.  To reset this we need to set the next
+      //    position of the field to not be beyond the end of field but to the
+      //    last character.
+      //
+      //    Now to make it work like Client Access if the cursor is a back space
+      //    then do not move the cursor but place it on the last field.  All
+      //    other keys will reset the field position so that entering over the
+      //    last character will not cause an error but replace that character or
+      //    just plain move the cursor if the key was to do that.
+
+      if (feError) {
+         feError = false;
+         screenFields.getCurrentField().changePos(-1);
+
+         if (screenFields.getCurrentField() != null &&
+               screenFields.getCurrentField().isFER() &&
+               screenFields.getCurrentFieldPos() - 1 == pos) {
+         }
+      }
+      else {
+         goto_XY(pos);
+      }
    }
 
    public boolean isUsingGuiInterface() {
