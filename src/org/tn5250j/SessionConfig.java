@@ -25,6 +25,7 @@ import javax.swing.*;
 import java.io.*;
 import java.text.MessageFormat;
 import java.awt.Color;
+import java.awt.Rectangle;
 
 import org.tn5250j.*;
 import org.tn5250j.tools.LangTool;
@@ -57,6 +58,10 @@ public class SessionConfig implements TN5250jConstants {
    }
 
    public String getConfigurationResource() {
+
+      if (configurationResource == null || configurationResource == "") {
+         configurationResource = "TN5250JDefaults.props";
+      }
 
       return configurationResource;
 
@@ -127,7 +132,7 @@ public class SessionConfig implements TN5250jConstants {
 
          sesProps.remove("saveme");
 
-         Object[] args = {configurationResource};
+         Object[] args = {getConfigurationResource()};
          String message = MessageFormat.format(
                            LangTool.getString("messages.saveSettings"),
                            args);
@@ -145,43 +150,30 @@ public class SessionConfig implements TN5250jConstants {
 
    public void saveSessionProps() {
 
-      if (configurationResource == null || configurationResource == "") {
-         try {
-            FileOutputStream out = new FileOutputStream(configurationResource);
-               // save off the width and height to be restored later
-            sesProps.store(out,"------ Defaults --------");
-         }
-         catch (FileNotFoundException fnfe) {}
-         catch (IOException ioe) {}
+      try {
+         FileOutputStream out = new FileOutputStream(getConfigurationResource());
+            // save off the width and height to be restored later
+         sesProps.store(out,"------ Defaults --------");
       }
+      catch (FileNotFoundException fnfe) {}
+      catch (IOException ioe) {}
    }
 
    private void loadConfigurationResource() {
 
       sesProps = new Properties();
-      boolean loadDefaults = false;
-
-      if (configurationResource == null || configurationResource == "") {
-         loadDefaults = true;
-      }
 
       try {
-         if (loadDefaults) {
-            loadDefaults(sesProps);
-         }
-         else {
-            FileInputStream in = new FileInputStream(configurationResource);
-            sesProps.load(in);
-            if (sesProps.size() == 0)
-               loadDefaults(sesProps);
-         }
-
+         FileInputStream in = new FileInputStream(getConfigurationResource());
+         sesProps.load(in);
+         if (sesProps.size() == 0)
+            loadDefaults();
       }
       catch (IOException ioe) {
          System.out.println("Information Message: Properties file is being "
                               + "created for first time use:  File name "
-                              + configurationResource);
-         loadDefaults(sesProps);
+                              + getConfigurationResource());
+         loadDefaults();
       }
       catch (SecurityException se) {
          System.out.println(se.getMessage());
@@ -189,43 +181,53 @@ public class SessionConfig implements TN5250jConstants {
 
    }
 
-   private void loadDefaults(Properties sesProps) {
+   private void loadDefaults() {
 
       try {
-         Properties schemaProps = new Properties();
-         java.net.URL file=null;
 
-         ClassLoader cl = this.getClass().getClassLoader();
-         if (cl == null)
-            cl = ClassLoader.getSystemClassLoader();
-         file = cl.getResource("tn5250jSchemas.properties");
-         schemaProps.load(file.openStream());
-         // we will now load the default schema
-         String prefix = schemaProps.getProperty("schemaDefault");
-         sesProps.setProperty("colorBg",schemaProps.getProperty(prefix + ".colorBg"));
-         sesProps.setProperty("colorRed",schemaProps.getProperty(prefix + ".colorRed"));
-         sesProps.setProperty("colorTurq",schemaProps.getProperty(prefix + ".colorTurq"));
-         sesProps.setProperty("colorCursor",schemaProps.getProperty(prefix + ".colorCursor"));
-         sesProps.setProperty("colorGUIField",schemaProps.getProperty(prefix + ".colorGUIField"));
-         sesProps.setProperty("colorWhite",schemaProps.getProperty(prefix + ".colorWhite"));
-         sesProps.setProperty("colorYellow",schemaProps.getProperty(prefix + ".colorYellow"));
-         sesProps.setProperty("colorGreen",schemaProps.getProperty(prefix + ".colorGreen"));
-         sesProps.setProperty("colorPink",schemaProps.getProperty(prefix + ".colorPink"));
-         sesProps.setProperty("colorBlue",schemaProps.getProperty(prefix + ".colorBlue"));
-         sesProps.setProperty("colorSep",schemaProps.getProperty(prefix + ".colorSep"));
-         sesProps.setProperty("colorHexAttr",schemaProps.getProperty(prefix + ".colorHexAttr"));
-         sesProps.setProperty("font",GUIGraphicsUtils.getDefaultFont());
+         sesProps = ConfigureFactory.getInstance().getProperties(
+                                    "dfltSessionProps",
+                                    getConfigurationResource());
+         if (sesProps.size() == 0) {
+
+            Properties schemaProps = new Properties();
+
+            java.net.URL file=null;
+
+            ClassLoader cl = this.getClass().getClassLoader();
+            if (cl == null)
+               cl = ClassLoader.getSystemClassLoader();
+            file = cl.getResource("tn5250jSchemas.properties");
+            schemaProps.load(file.openStream());
+
+            // we will now load the default schema
+            String prefix = schemaProps.getProperty("schemaDefault");
+            sesProps.setProperty("colorBg",schemaProps.getProperty(prefix + ".colorBg"));
+            sesProps.setProperty("colorRed",schemaProps.getProperty(prefix + ".colorRed"));
+            sesProps.setProperty("colorTurq",schemaProps.getProperty(prefix + ".colorTurq"));
+            sesProps.setProperty("colorCursor",schemaProps.getProperty(prefix + ".colorCursor"));
+            sesProps.setProperty("colorGUIField",schemaProps.getProperty(prefix + ".colorGUIField"));
+            sesProps.setProperty("colorWhite",schemaProps.getProperty(prefix + ".colorWhite"));
+            sesProps.setProperty("colorYellow",schemaProps.getProperty(prefix + ".colorYellow"));
+            sesProps.setProperty("colorGreen",schemaProps.getProperty(prefix + ".colorGreen"));
+            sesProps.setProperty("colorPink",schemaProps.getProperty(prefix + ".colorPink"));
+            sesProps.setProperty("colorBlue",schemaProps.getProperty(prefix + ".colorBlue"));
+            sesProps.setProperty("colorSep",schemaProps.getProperty(prefix + ".colorSep"));
+            sesProps.setProperty("colorHexAttr",schemaProps.getProperty(prefix + ".colorHexAttr"));
+            sesProps.setProperty("font",GUIGraphicsUtils.getDefaultFont());
+            ConfigureFactory.getInstance().saveSettings("dfltSessionProps",
+                                                         getConfigurationResource(),
+                                                         "");
+         }
       }
       catch (IOException ioe) {
          System.out.println("Information Message: Properties file is being "
                               + "created for first time use:  File name "
-                              + configurationResource);
+                              + getConfigurationResource());
       }
       catch (SecurityException se) {
          System.out.println(se.getMessage());
       }
-
-
    }
 
    public boolean isPropertyExists(String prop) {
@@ -241,7 +243,7 @@ public class SessionConfig implements TN5250jConstants {
 
    }
 
-   public final int getIntegerProperty(String prop) {
+   public int getIntegerProperty(String prop) {
 
       if (sesProps.containsKey(prop)) {
          try {
@@ -257,7 +259,7 @@ public class SessionConfig implements TN5250jConstants {
 
    }
 
-   protected final Color getColorProperty(String prop) {
+   public Color getColorProperty(String prop) {
 
       if (sesProps.containsKey(prop)) {
          Color c = new Color(getIntegerProperty(prop));
@@ -268,7 +270,38 @@ public class SessionConfig implements TN5250jConstants {
 
    }
 
-   protected final float getFloatProperty(String prop) {
+   public Rectangle getRectangleProperty(String key) {
+
+      Rectangle rectProp = new Rectangle();
+
+      if (sesProps.containsKey(key)) {
+         String rect = sesProps.getProperty(key);
+         StringTokenizer stringtokenizer = new StringTokenizer(rect, ",");
+         if (stringtokenizer.hasMoreTokens())
+            rectProp.x = Integer.parseInt(stringtokenizer.nextToken());
+         if (stringtokenizer.hasMoreTokens())
+            rectProp.y = Integer.parseInt(stringtokenizer.nextToken());
+         if (stringtokenizer.hasMoreTokens())
+            rectProp.width = Integer.parseInt(stringtokenizer.nextToken());
+         if (stringtokenizer.hasMoreTokens())
+            rectProp.height = Integer.parseInt(stringtokenizer.nextToken());
+
+      }
+
+      return rectProp;
+
+   }
+
+   public void setRectangleProperty(String key, Rectangle rect) {
+
+      String rectStr = rect.x + "," +
+                        rect.y + "," +
+                        rect.width + "," +
+                        rect.height;
+      sesProps.setProperty(key,rectStr);
+   }
+
+   public float getFloatProperty(String prop) {
 
       if (sesProps.containsKey(prop)) {
          float f = Float.parseFloat((String)sesProps.get(prop));
