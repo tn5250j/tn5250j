@@ -70,6 +70,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private int devSeq = -1;
    private String devName;
    private String devNameUsed;
+   private String user;
+   private String password;
+   private String library;
+   private String initialMenu;
+   private String program;
    private boolean keepTrucking = true;
    private boolean pendingUnlock = false;
 
@@ -97,6 +102,19 @@ public final class tnvt implements Runnable, TN5250jConstants {
       setCodePage("37");
       this.screen52 = screen52;
       dataIncluded = new boolean[24];
+
+      if (System.getProperties().containsKey("user")) {
+         user = System.getProperties().getProperty("user");
+         if (System.getProperties().containsKey("password"))
+            password = System.getProperties().getProperty("password");
+         if (System.getProperties().containsKey("library"))
+            library = System.getProperties().getProperty("library");
+         if (System.getProperties().containsKey("menu"))
+            initialMenu = System.getProperties().getProperty("menu");
+         if (System.getProperties().containsKey("program"))
+            program = System.getProperties().getProperty("program");
+      }
+
       baosp = new ByteArrayOutputStream();
       baosrsp = new ByteArrayOutputStream();
    }
@@ -2694,7 +2712,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         break;
 
                     case NEW_ENVIRONMENT: // 39 rfc1572
-                        if (devName == null) {
+                        if (devName == null && user == null) {
                            baosp.write(IAC);
                            baosp.write(WONT);
                            baosp.write(NEW_ENVIRONMENT);
@@ -2764,9 +2782,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
                      baosp.write(TERMINAL_TYPE);
                      baosp.write(QUAL_IS);
                      if(!support132)
-                         baosp.write((new String("IBM-3179-2")).getBytes());
+                         baosp.write("IBM-3179-2".getBytes());
                      else
-                         baosp.write((new String("IBM-3477-FC")).getBytes());
+                         baosp.write("IBM-3477-FC".getBytes());
                      baosp.write(IAC);
                      baosp.write(SE);
                      writeByte(baosp.toByteArray());
@@ -2796,16 +2814,67 @@ public final class tnvt implements Runnable, TN5250jConstants {
       baosp.write(SB);
       baosp.write(NEW_ENVIRONMENT);
       baosp.write(IS);
-      baosp.write(USERVAR);
 
-      baosp.write((new String("DEVNAME")).getBytes());
+      if (devName != null) {
+         baosp.write(USERVAR);
 
-      baosp.write(VALUE);
+         baosp.write("DEVNAME".getBytes());
 
-      baosp.write(negDeviceName().getBytes());
+         baosp.write(VALUE);
 
+         baosp.write(negDeviceName().getBytes());
+      }
+
+      if (user != null) {
+
+         baosp.write(VAR);
+         baosp.write("USER".getBytes());
+         baosp.write(VALUE);
+         baosp.write(user.getBytes());
+
+         if (password != null) {
+            baosp.write(USERVAR);
+            baosp.write("IBMRSEED".getBytes());
+            baosp.write(VALUE);
+            baosp.write(NEGOTIATE_ESC);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(0x0);
+            baosp.write(USERVAR);
+            baosp.write("IBMSUBSPW".getBytes());
+            baosp.write(VALUE);
+            baosp.write(password.getBytes());
+         }
+
+         if (library != null) {
+            baosp.write(USERVAR);
+            baosp.write("IBMCURLIB".getBytes());
+            baosp.write(VALUE);
+            baosp.write(library.getBytes());
+         }
+
+         if (initialMenu != null) {
+            baosp.write(USERVAR);
+            baosp.write("IBMIMENU".getBytes());
+            baosp.write(VALUE);
+            baosp.write(initialMenu.getBytes());
+         }
+
+         if (program != null) {
+            baosp.write(USERVAR);
+            baosp.write("IBMPROGRAM".getBytes());
+            baosp.write(VALUE);
+            baosp.write(program.getBytes());
+         }
+      }
       baosp.write(IAC);
       baosp.write(SE);
+
       writeByte(baosp.toByteArray());
       baosp.reset();
 
