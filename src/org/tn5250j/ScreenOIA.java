@@ -125,6 +125,13 @@ public class ScreenOIA {
       level = OIA_LEVEL_KEYBOARD;
       boolean oldLocked = locked;
       locked = lockIt;
+		if (!lockIt) {
+
+			if (isKeysBuffered()) {
+				source.sendKeys("");
+			}
+		}      
+		
       if (locked != oldLocked)
          fireOIAChanged();
    }

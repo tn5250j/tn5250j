@@ -366,7 +366,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 		screen52.setStatus(Screen5250.STATUS_SYSTEM,
 				Screen5250.STATUS_VALUE_ON, "X - Disconnected");
-		screen52.setKeyboardLocked(false);
+		screen52.getOIA().setKeyBoardLocked(false);
 		pendingUnlock = false;
 
 		try {
@@ -459,7 +459,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		screen52.setStatus(Screen5250.STATUS_SYSTEM,
 				Screen5250.STATUS_VALUE_ON, null);
 
-		screen52.setKeyboardLocked(true);
+		screen52.getOIA().setKeyBoardLocked(true);
 		pendingUnlock = false;
 		invited = false;
 
@@ -491,7 +491,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		screen52.setStatus(Screen5250.STATUS_SYSTEM,
 				Screen5250.STATUS_VALUE_ON, null);
 
-		screen52.setKeyboardLocked(true);
+		screen52.getOIA().setKeyBoardLocked(true);
 		pendingUnlock = false;
 		invited = false;
 		baosp.write(screen52.getCurrentRow());
@@ -1150,7 +1150,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			}
 
 			if (pendingUnlock && !screen52.isStatusErrorCode()) {
-				screen52.setKeyboardLocked(false);
+				screen52.getOIA().setKeyBoardLocked(false);
 				pendingUnlock = false;
 			}
 
@@ -2115,7 +2115,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		}
 
 		if (lockKeyboard) {
-			screen52.setKeyboardLocked(true);
+			screen52.getOIA().setKeyBoardLocked(true);
 			pendingUnlock = false;
 		} else
 			pendingUnlock = false;

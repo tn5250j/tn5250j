@@ -504,6 +504,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	}
 
+	/**
+	 * This is for blinking cursor but should be moved out
+	 */
 	public void actionPerformed(ActionEvent actionevent) {
 		if (actionevent.getSource() instanceof javax.swing.Timer) {
 
@@ -859,10 +862,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		end.setLocation(x, y);
 
 		return end;
-	}
-
-	public Color getBackground() {
-		return colorBg;
 	}
 
 	/**
@@ -1409,9 +1408,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			boolean unlockIfLocked) {
 		statusErrorCode = setErrorCode;
 		if (oia.isKeyBoardLocked() && unlockIfLocked)
-			setKeyboardLocked(false);
+			oia.setKeyBoardLocked(false);
 		else
-			setKeyboardLocked(lockKeyboard);
+			oia.setKeyBoardLocked(lockKeyboard);
 		bufferedKeys = null;
       oia.setKeysBuffered(false);
 
@@ -3296,26 +3295,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	}
 
 	/**
-	 * Set the keyboard as locked or not depending on the value passed
-	 *
-	 * @param k
-	 *            true of false
-	 */
-	public void setKeyboardLocked(boolean k) {
-
-//		keyboardLocked = k;
-
-      oia.setKeyBoardLocked(k);
-
-		if (!k) {
-
-			if (oia.isKeysBuffered()) {
-				sendKeys("");
-			}
-		}
-	}
-
-	/**
 	 * This routine is based on offset 1,1 not 0,0 it will translate to offset
 	 * 0,0 and call the goto_XY(int pos) it is mostly used from external classes
 	 * that use the 1,1 offset
@@ -3774,7 +3753,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			}
 			break;
 		default:
-			System.err.println(" Invalid roll parameter - please report this");
+			log.warn(" Invalid roll parameter - please report this");
 		}
 		//      System.out.println(" end roll");
 		//      dumpScreen();
@@ -4479,7 +4458,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public void clearTable() {
 
-		setKeyboardLocked(true);
+		oia.setKeyBoardLocked(true);
 		screenFields.clearFFT();
 		pendingInsert = false;
 		homePos = -1;
@@ -4530,16 +4509,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public Graphics2D getDrawingArea() {
 
 		return bi.getDrawingArea();
-	}
-
-	/**
-	 * Returns a pointer to the graphics area that we can write on
-	 *
-	 * @return Graphics2D pointer of graphics buffer
-	 */
-	public Graphics2D getWritingArea() {
-
-		return bi.getWritingArea(font);
 	}
 
 	protected synchronized void updateImage(int x, int y, int width, int height) {
