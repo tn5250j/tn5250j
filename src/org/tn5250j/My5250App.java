@@ -35,6 +35,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
       this.setSize(new Dimension(400,300));
 
       Properties sesProps = new Properties();
+      System.out.println(" We have loaded a new one");
 
       // Start loading properties - Host must exist
       sesProps.put(SESSION_HOST,getParameter("host"));
@@ -107,7 +108,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
 
    /**Get Applet information*/
    public String getAppletInfo() {
-      return "tn5250j - Jave tn5250 Client";
+      return "tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer + " - Jave tn5250 Client";
    }
 
    /**Get parameter info*/

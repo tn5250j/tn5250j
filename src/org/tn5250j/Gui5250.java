@@ -28,8 +28,12 @@ package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
 import javax.swing.*;
 import java.util.*;
+
+
 import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
@@ -38,6 +42,7 @@ import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.EmulatorActionEvent;
@@ -48,6 +53,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
                                                       RubberBandCanvasIF,
                                                       SessionListener,
                                                       SessionConfigListener {
+//                                                      DropTargetListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
    Screen5250 screen = null;
@@ -67,6 +73,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private boolean doubleClick;
    protected SessionConfig sesConfig;
    protected KeyboardHandler keyHandler;
+   protected SessionScrollerInterface scroller;
 
    public Gui5250 () {
 
@@ -144,6 +151,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       });
 
+      scroller = new SessionScroller().getScrollerInstance((Session)this);
+      if (!sesConfig.getStringProperty("mouseWheel").equals("Yes"))
+         scroller.removeMouseWheelListener((Session)this);
+
       keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
 
       macros = new Macronizer();
@@ -173,6 +184,60 @@ public class Gui5250 extends JPanel implements ComponentListener,
          doubleClick = true;
       else
          doubleClick = false;
+
+      DropTargetAdapter dta = new DropTargetAdapter() {
+         public void drop(DropTargetDropEvent dtde) {
+            Transferable tr = dtde.getTransferable();
+            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+            DataFlavor[] dfs = dtde.getCurrentDataFlavors();
+            if(tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+               try {
+                  System.out.println("dtde drop it2 ");
+
+                  java.util.List fileList =
+                     (java.util.List)tr.getTransferData(DataFlavor.javaFileListFlavor);
+                     // implementation for when we are able to process a list
+                     //   of files.
+//                   Iterator iterator = fileList.iterator();
+//                   if (iterator.hasNext()) {
+//                      File file = (File)iterator.next();
+//                   }
+                  java.io.File file = (java.io.File)fileList.get(0);
+                  System.out.println(file.toString());
+                  dtde.dropComplete(true);
+                  doTransfer(file);
+                  return;
+               }
+               catch (UnsupportedFlavorException ufe) {
+                  System.out.println("importData: unsupported data flavor");
+               }
+               catch (java.io.IOException ieo) {
+                  System.out.println("importData: I/O exception");
+               }
+               catch (Exception ex) {
+                  System.out.println(ex.getMessage());
+               }
+               finally {
+                  dtde.dropComplete(false);
+               }
+            }
+         }
+      };
+      DropTarget dt = new DropTarget((JPanel)this,dta);
+
+      setDropTarget(dt);
+
+   }
+
+   private void doTransfer(java.io.File file) {
+
+      try {
+         Properties props = new Properties();
+         props.load(new java.io.FileInputStream(file));
+         org.tn5250j.tools.XTFRFile tfr = new org.tn5250j.tools.XTFRFile(null,
+            vt, (Session)this,props);
+      }
+      catch (Exception exc) {}
 
    }
 
@@ -407,6 +472,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
       }
 
+      if (pn.equals("mouseWheel")) {
+         if (((String)pce.getNewValue()).equals("Yes")) {
+            scroller.addMouseWheelListener((Session)this);
+         }
+         else {
+            scroller.removeMouseWheelListener((Session)this);
+         }
+      }
+
       screen.propertyChange(pce);
 
       resizeMe();
@@ -576,6 +650,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
    public void closeDown() {
 
       sesConfig.saveSessionProps(getParent());
+
+      // Let's stop the cursor blinking as well as it seems to be causing problems
+      if (screen.isBlinkCursor()) {
+         screen.setBlinkCursorStop();
+      }
+
       vt.disconnect();
 
    }
@@ -587,8 +667,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
     */
    public void doAttributes() {
 
-      SessionAttributes sa = new SessionAttributes(
-                                          (JFrame)SwingUtilities.getRoot(this),
+      SessionAttributes sa = new SessionAttributes((Frame)SwingUtilities.getRoot(this),
                                           sesConfig);
       sa.showIt();
 

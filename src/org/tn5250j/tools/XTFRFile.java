@@ -48,6 +48,7 @@ import org.tn5250j.Session;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.gui.TN5250jFileFilter;
 
 public class XTFRFile
 	extends TN5250jFrame
@@ -109,8 +110,33 @@ public class XTFRFile
 
 	public XTFRFile(Frame parent, tnvt pvt, Session session) {
 
-		//super(parent);
-		super();
+      this(parent, pvt, session, null);
+//		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//		this.session = session;
+//		vt = pvt;
+//		ftpProtocol = new FTP5250Prot(vt);
+//		ftpProtocol.addFTPStatusListener(this);
+//		axtfr = new AS400Xtfr(vt);
+//		axtfr.addFTPStatusListener(this);
+//		createProgressMonitor();
+//		initFileFilters();
+//		initXTFRInfo(null);
+//
+//		addWindowListener(new WindowAdapter() {
+//
+//			public void windowClosing(WindowEvent we) {
+//				if (ftpProtocol.isConnected())
+//					ftpProtocol.disconnect();
+//			}
+//
+//		});
+//
+//		messageProgress = LangTool.getString("xtfr.messageProgress");
+//		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	}
+
+	public XTFRFile(Frame parent, tnvt pvt, Session session, Properties XTFRProps) {
+
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.session = session;
 		vt = pvt;
@@ -120,7 +146,7 @@ public class XTFRFile
 		axtfr.addFTPStatusListener(this);
 		createProgressMonitor();
 		initFileFilters();
-		initXTFRInfo();
+		initXTFRInfo(XTFRProps);
 
 		addWindowListener(new WindowAdapter() {
 
@@ -250,6 +276,20 @@ public class XTFRFile
 	}
 
 	public void actionPerformed(ActionEvent e) {
+
+      // process the save transfer information button
+   	if (e.getActionCommand().equals("SAVE")) {
+
+         saveXTFRInfo();
+
+   	}
+
+      // process the save transfer information button
+   	if (e.getActionCommand().equals("LOAD")) {
+
+         loadXTFRInfo();
+
+   	}
 
 		if (e.getActionCommand().equals("XTFR")
 			|| e.getActionCommand().equals("EMAIL")) {
@@ -493,7 +533,7 @@ public class XTFRFile
 	 * Creates the dialog components for prompting the user for the information
 	 * of the transfer
 	 */
-	private void initXTFRInfo() {
+	private void initXTFRInfo(Properties XTFRProps) {
 
 		// create some reusable borders and layouts
 		BorderLayout borderLayout = new BorderLayout();
@@ -762,6 +802,20 @@ public class XTFRFile
 		emailButton.setActionCommand("EMAIL");
 		op.add(emailButton);
 
+      // add transfer save information button
+		JButton saveButton =
+			new JButton(LangTool.getString("xtfr.labelXTFRSave"));
+		saveButton.addActionListener(this);
+		saveButton.setActionCommand("SAVE");
+		op.add(saveButton);
+
+      // add transfer load information button
+		JButton loadButton =
+			new JButton(LangTool.getString("xtfr.labelXTFRLoad"));
+		loadButton.addActionListener(this);
+		loadButton.setActionCommand("LOAD");
+		op.add(loadButton);
+
 		mp.add(sp, BorderLayout.CENTER);
 		mp.add(op, BorderLayout.SOUTH);
 
@@ -780,7 +834,7 @@ public class XTFRFile
 		queryStatement.setLineWrap(true);
 		as400QueryP.add(scrollPane, BorderLayout.CENTER);
 
-		initXTFRFields();
+		initXTFRFields(XTFRProps);
 
 		// pack it and center it on the screen
 		pack();
@@ -799,10 +853,12 @@ public class XTFRFile
 
 	}
 
-	private void initXTFRFields() {
+	private void initXTFRFields(Properties props) {
 
-		SessionConfig config = session.getConfiguration();
-		Properties props = config.getProperties();
+      if (props == null) {
+         SessionConfig config = session.getConfiguration();
+         props = config.getProperties();
+      }
 
 		if (props.containsKey("xtfr.fileName"))
 			hostFile.setText(props.getProperty("xtfr.fileName"));
@@ -852,6 +908,58 @@ public class XTFRFile
 		SessionConfig config = session.getConfiguration();
 		Properties props = config.getProperties();
 
+      saveXTFRFields(props);
+//		if (hostFile.getText().trim().length() > 0)
+//			props.setProperty("xtfr.fileName", hostFile.getText().trim());
+//		else
+//			props.remove("xtfr.fileName");
+//
+//		if (user.getText().trim().length() > 0)
+//			props.setProperty("xtfr.user", user.getText().trim());
+//		else
+//			props.remove("xtfr.user");
+//
+//		if (useQuery.isSelected())
+//			props.setProperty("xtfr.useQuery", "true");
+//		else
+//			props.remove("xtfr.useQuery");
+//
+//		if (queryStatement.getText().trim().length() > 0)
+//			props.setProperty(
+//				"xtfr.queryStatement",
+//				queryStatement.getText().trim());
+//		else
+//			props.remove("xtfr.queryStatement");
+//
+//		if (allFields.isSelected())
+//			props.setProperty("xtfr.allFields", "true");
+//		else
+//			props.remove("xtfr.allFields");
+//
+//		if (txtDesc.isSelected())
+//			props.setProperty("xtfr.txtDesc", "true");
+//		else
+//			props.remove("xtfr.txtDesc");
+//
+//		props.setProperty(
+//			"xtfr.fileFormat",
+//			(String) fileFormat.getSelectedItem());
+//
+//		if (localFile.getText().trim().length() > 0)
+//			props.setProperty("xtfr.localFile", localFile.getText().trim());
+//		else
+//			props.remove("xtfr.localFile");
+//
+//		props.setProperty(
+//			"xtfr.decimalSeparator",
+//			(String) decimalSeparator.getSelectedItem());
+
+		config.setModified();
+
+	}
+
+	private void saveXTFRFields(Properties props) {
+
 		if (hostFile.getText().trim().length() > 0)
 			props.setProperty("xtfr.fileName", hostFile.getText().trim());
 		else
@@ -897,7 +1005,84 @@ public class XTFRFile
 			"xtfr.decimalSeparator",
 			(String) decimalSeparator.getSelectedItem());
 
-		config.setModified();
+	}
+
+	private void saveXTFRInfo() {
+
+      Properties xtfrProps = new Properties();
+      xtfrProps.setProperty("xtfr.destination","FROM");
+      this.saveXTFRFields(xtfrProps);
+		String workingDir = System.getProperty("user.dir");
+		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+
+      // set the file filters for the file chooser
+      TN5250jFileFilter filter = new TN5250jFileFilter("dtf","Transfer from AS/400");
+
+      pcFileChooser.addChoosableFileFilter(filter );
+
+		int ret = pcFileChooser.showSaveDialog(this);
+
+		// check to see if something was actually chosen
+		if (ret == JFileChooser.APPROVE_OPTION) {
+
+			File file = pcFileChooser.getSelectedFile();
+
+         file = new File(filter.setExtension(file));
+
+         try {
+            FileOutputStream out = new FileOutputStream(file);
+               // save off the width and height to be restored later
+            xtfrProps.store(out,"------ Transfer Details --------");
+
+            out.flush();
+            out.close();
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
+
+
+		}
+
+	}
+
+	private void loadXTFRInfo() {
+
+      Properties xtfrProps = new Properties();
+//      xtfrProps.setProperty("xtfr.destination","FROM");
+//      this.saveXTFRFields(xtfrProps);
+		String workingDir = System.getProperty("user.dir");
+		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+
+      // set the file filters for the file chooser
+      TN5250jFileFilter filter = new TN5250jFileFilter("dtf","Transfer from AS/400");
+
+      pcFileChooser.addChoosableFileFilter(filter );
+
+		int ret = pcFileChooser.showOpenDialog(this);
+
+		// check to see if something was actually chosen
+		if (ret == JFileChooser.APPROVE_OPTION) {
+
+			File file = pcFileChooser.getSelectedFile();
+
+         try {
+            FileInputStream in = new FileInputStream(file);
+               // save off the width and height to be restored later
+            xtfrProps.load(in);
+
+            in.close();
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
+
+
+		}
+
+      if (xtfrProps.containsKey("xtfr.destination") &&
+               (xtfrProps.get("xtfr.destination").equals("FROM"))) {
+
+         this.initXTFRFields(xtfrProps);
+      }
 
 	}
 

@@ -1,4 +1,3 @@
-package org.tn5250j.settings;
 /**
  * Title: MouseAttributesPanel
  * Copyright:   Copyright (c) 2001
@@ -24,6 +23,7 @@ package org.tn5250j.settings;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.settings;
 
 import java.awt.*;
 import javax.swing.*;
@@ -34,6 +34,7 @@ import org.tn5250j.SessionConfig;
 public class MouseAttributesPanel extends AttributesPanel {
 
    JCheckBox dceCheck;
+   JCheckBox mwCheck;
 
    public MouseAttributesPanel(SessionConfig config ) {
       super(config,"Mouse");
@@ -58,7 +59,19 @@ public class MouseAttributesPanel extends AttributesPanel {
 
       dcep.add(dceCheck);
 
+      // define double click as enter
+      JPanel mwp = new JPanel();
+      mwp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.mouseWheel")));
+
+      mwCheck = new JCheckBox(LangTool.getString("sa.activateMW"));
+
+      // check if mouse wheel active
+      mwCheck.setSelected(getStringProperty("mouseWheel").equals("Yes"));
+
+      mwp.add(mwCheck);
+
       contentPane.add(dcep);
+      contentPane.add(mwp);
 
    }
 
@@ -68,6 +81,7 @@ public class MouseAttributesPanel extends AttributesPanel {
 
    public void applyAttributes() {
 
+      //  double click enter
       if (dceCheck.isSelected()) {
          changes.firePropertyChange(this,"doubleClick",
                            getStringProperty("doubleClick"),
@@ -79,6 +93,19 @@ public class MouseAttributesPanel extends AttributesPanel {
                            getStringProperty("doubleClick"),
                            "No");
          setProperty("doubleClick","No");
+      }
+
+      if (mwCheck.isSelected()) {
+         changes.firePropertyChange(this,"mouseWheel",
+                           getStringProperty("mouseWheel"),
+                           "Yes");
+         setProperty("mouseWheel","Yes");
+      }
+      else {
+         changes.firePropertyChange(this,"mouseWheel",
+                           getStringProperty("mouseWheel"),
+                           "No");
+         setProperty("mouseWheel","No");
       }
 
    }

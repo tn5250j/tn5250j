@@ -50,7 +50,7 @@ public class SessionAttributes extends JDialog {
    CardLayout cardLayout;
    JPanel jp;
 
-   public SessionAttributes(JFrame parent, SessionConfig config ) {
+   public SessionAttributes(Frame parent, SessionConfig config ) {
       super(parent);
 
       parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

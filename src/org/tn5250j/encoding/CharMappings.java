@@ -73,7 +73,6 @@ public class CharMappings {
 
      // unsupported codepage
      // ==> return default;
-     System.err.println("CodePage" + encoding + " not supported, using default (" + DFT_ENC + ")");
      return NativeCodePage.getCodePage(DFT_ENC);
    }
 

@@ -28,6 +28,7 @@ package org.tn5250j.keyboard.actions;
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
+import java.awt.Frame;
 import javax.swing.*;
 
 import org.tn5250j.TN5250jConstants;
@@ -49,7 +50,7 @@ public class TransferAction extends EmulatorAction implements TN5250jConstants {
    }
 
    public void actionPerformed(ActionEvent e) {
-      XTFRFile xtrf = new XTFRFile((JFrame)SwingUtilities.getRoot(session),
+      XTFRFile xtrf = new XTFRFile((Frame)SwingUtilities.getRoot(session),
                                     session.getVT(),session);
    }
 }

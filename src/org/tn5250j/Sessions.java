@@ -43,22 +43,19 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    public void actionPerformed(ActionEvent e) {
 
-      //String t = new Date(e.getWhen()).toString();
       Session ses;
       for (int x = 0; x < sessions.size(); x++) {
          try {
             ses = (Session)sessions.get(x);
             if (ses.isConnected() && ses.isSendKeepAlive()) {
                ses.getVT().sendHeartBeat();
-               //System.out.println(" sent heartbeat to " +  ses.getSessionName());
+               System.out.println(" sent heartbeat to " +  ses.getSessionName());
             }
          }
          catch (Exception ex) {
             System.out.println(ex.getMessage());
          }
       }
-
-      //System.out.println(" sending heartbeats " +  t);
 
    }
 

@@ -1,4 +1,3 @@
-package org.tn5250j.spoolfile;
 /**
  * Title: SpoolExporter.java
  * Copyright:   Copyright (c) 2002
@@ -24,6 +23,7 @@ package org.tn5250j.spoolfile;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.spoolfile;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -41,7 +41,7 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.Session;
 
-public class SpoolExporter extends JFrame {
+public class SpoolExporter extends TN5250jFrame {
 
    SpoolFilterPane filter;
    // custom table model
@@ -69,6 +69,8 @@ public class SpoolExporter extends JFrame {
    Vector data = new Vector();
    Vector row = new Vector();
    Vector names = new Vector();
+
+   SpooledFileList splfList;
 
    public SpoolExporter(tnvt vt, Session session) {
 
@@ -165,18 +167,21 @@ public class SpoolExporter extends JFrame {
       status.setBorder(BorderFactory.createEtchedBorder());
       this.getContentPane().add(status, BorderLayout.SOUTH);
 
-      pack();
+      packFrame = true;
+      this.centerFrame();
 
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-
-      setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
+//      pack();
+//
+//      //Center the window
+//      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//      Dimension frameSize = getSize();
+//      if (frameSize.height > screenSize.height)
+//         frameSize.height = screenSize.height;
+//      if (frameSize.width > screenSize.width)
+//         frameSize.width = screenSize.width;
+//
+//      setLocation((screenSize.width - frameSize.width) / 2,
+//                     (screenSize.height - frameSize.height) / 2);
 
       addWindowListener(new WindowAdapter() {
          public void windowClosing(WindowEvent event) {
@@ -185,9 +190,15 @@ public class SpoolExporter extends JFrame {
 //               splfList.close();
 
             // close the system connection
-            if (system != null)
-               system.disconnectAllServices();
+            if (system != null) {
+               // close the spool file list if allocated
+               if (splfList != null) {
+                  splfList.close();
+                  splfList = null;
+               }
 
+               system.disconnectAllServices();
+            }
             setVisible(false);
             dispose();
          }
@@ -254,7 +265,15 @@ public class SpoolExporter extends JFrame {
    private void loadSpoolFiles() {
 
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-      SpooledFileList splfList = null;
+//      SpooledFileList splfList = null;
+      if ( splfList != null ) {
+         splfList.removePrintObjectListListener(stm);
+         splfList.close();
+         splfList = null;
+      }
+
+      // clear our data
+      data.clear();
 
       try {
          updateStatus(LangTool.getString("spool.working"));
@@ -275,7 +294,7 @@ public class SpoolExporter extends JFrame {
             splfList.setUserDataFilter(filter.getUserData());
 
          // retrieve the output queues
-         splfList.openSynchronously();
+//         splfList.openSynchronously();
 
          // if we have something update the status
 //         if (splfList != null) {
@@ -284,7 +303,7 @@ public class SpoolExporter extends JFrame {
 //         }
 
          // load the data into our sortable data model
-         int numProcessed = loadDataModel(splfList);
+//         int numProcessed = loadDataModel(splfList);
 
          // set the spool list to be displayed
          stm.setDataVector(data,names);
@@ -298,19 +317,22 @@ public class SpoolExporter extends JFrame {
 
          }
 
+         splfList.openAsynchronously();
+         splfList.addPrintObjectListListener(stm);
+
          // if we have something update the status
          if (splfList != null) {
-            updateStatus(numProcessed + " " + LangTool.getString("spool.count"));
+            updateStatus(splfList.size() + " " + LangTool.getString("spool.count"));
          }
 
-         splfList.close();
+//         splfList.close();
 
       }
       catch(Exception erp) {
          updateStatus(erp.getMessage(),true);
       }
 
-      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
    }
 
    /**
@@ -318,66 +340,66 @@ public class SpoolExporter extends JFrame {
     *
     * @param splfList Spooled File List to load from
     */
-   private int loadDataModel(SpooledFileList splfList) {
-
-      // clear our data
-      data.clear();
-
-      // if there is nothing then do nothing
-      if (splfList == null)
-         return 0;
-
-      int splfListSize = splfList.size();
-
-      // if we have no spooled files then display nothing
-      if (splfListSize <= 0)
-         return 0;
-
-      String text = status.getText();
-
-      boolean spoolFilter = filter.getSpoolName().length() > 0;
-      String spoolName = filter.getSpoolName();
-      int numSpooled = splfList.size();
-      int numProcessed = 0;
-
-      // iterate throw the spooled file list and load the values into our
-      //  data vector
-      int count = 0;
-      Enumeration enumm = (splfList.getObjects());
-      while(enumm.hasMoreElements()) {
-         SpooledFile p = (SpooledFile)enumm.nextElement();
-         Vector row = new Vector();
-
-         updateStatus(text + " " + ++count + " of " + numSpooled);
-
-         if (spoolFilter && !spoolName.equals(p.getName()))
-            continue;
-
-         numProcessed++;
-
-         row.add(p.getName());
-
-         loadIntegerAttribute(p, row, PrintObject.ATTR_SPLFNUM);
-         loadStringAttribute(p, row, PrintObject.ATTR_JOBNAME);
-         loadStringAttribute(p, row, PrintObject.ATTR_JOBUSER);
-         loadStringAttribute(p, row, PrintObject.ATTR_JOBNUMBER);
-         loadStringAttribute(p, row, PrintObject.ATTR_OUTPUT_QUEUE);
-         loadStringAttribute(p, row, PrintObject.ATTR_USERDATA);
-         loadStringAttribute(p, row, PrintObject.ATTR_SPLFSTATUS);
-         loadIntegerAttribute(p, row, PrintObject.ATTR_PAGES);
-         loadIntegerAttribute(p, row, PrintObject.ATTR_CURPAGE);
-         loadIntegerAttribute(p, row, PrintObject.ATTR_COPIES);
-         loadStringAttribute(p, row, PrintObject.ATTR_FORMTYPE);
-         loadStringAttribute(p, row, PrintObject.ATTR_OUTPTY);
-         loadCreateDateTime(p, row);
-         loadIntegerAttribute(p, row, PrintObject.ATTR_NUMBYTES);
-
-         // now add our row of columns into our data
-         data.add(row);
-      }
-
-      return numProcessed;
-   }
+//      private int loadDataModel(SpooledFileList splfList) {
+//
+//         // clear our data
+//         data.clear();
+//
+//         // if there is nothing then do nothing
+//         if (splfList == null)
+//            return 0;
+//
+//         int splfListSize = splfList.size();
+//
+//         // if we have no spooled files then display nothing
+//         if (splfListSize <= 0)
+//            return 0;
+//
+//         String text = status.getText();
+//
+//         boolean spoolFilter = filter.getSpoolName().length() > 0;
+//         String spoolName = filter.getSpoolName();
+//         int numSpooled = splfList.size();
+//         int numProcessed = 0;
+//
+//         // iterate throw the spooled file list and load the values into our
+//         //  data vector
+//         int count = 0;
+//         Enumeration enumm = (splfList.getObjects());
+//         while(enumm.hasMoreElements()) {
+//            SpooledFile p = (SpooledFile)enumm.nextElement();
+//            Vector row = new Vector();
+//
+//            updateStatus(text + " " + ++count + " of " + numSpooled);
+//
+//            if (spoolFilter && !spoolName.equals(p.getName()))
+//               continue;
+//
+//            numProcessed++;
+//
+//            row.add(p.getName());
+//
+//            loadIntegerAttribute(p, row, PrintObject.ATTR_SPLFNUM);
+//            loadStringAttribute(p, row, PrintObject.ATTR_JOBNAME);
+//            loadStringAttribute(p, row, PrintObject.ATTR_JOBUSER);
+//            loadStringAttribute(p, row, PrintObject.ATTR_JOBNUMBER);
+//            loadStringAttribute(p, row, PrintObject.ATTR_OUTPUT_QUEUE);
+//            loadStringAttribute(p, row, PrintObject.ATTR_USERDATA);
+//            loadStringAttribute(p, row, PrintObject.ATTR_SPLFSTATUS);
+//            loadIntegerAttribute(p, row, PrintObject.ATTR_PAGES);
+//            loadIntegerAttribute(p, row, PrintObject.ATTR_CURPAGE);
+//            loadIntegerAttribute(p, row, PrintObject.ATTR_COPIES);
+//            loadStringAttribute(p, row, PrintObject.ATTR_FORMTYPE);
+//            loadStringAttribute(p, row, PrintObject.ATTR_OUTPTY);
+//            loadCreateDateTime(p, row);
+//            loadIntegerAttribute(p, row, PrintObject.ATTR_NUMBYTES);
+//
+//            // now add our row of columns into our data
+//            data.add(row);
+//         }
+//
+//         return numProcessed;
+//      }
 
    /**
     * Load a Printer Object string attribute into our row vector
@@ -747,7 +769,7 @@ public class SpoolExporter extends JFrame {
     * attributes.
     *
     */
-   class SpoolTableModel extends DefaultSortTableModel {
+   class SpoolTableModel extends DefaultSortTableModel implements PrintObjectListListener {
 
       String[] cols;
       int[] colsSizes;
@@ -797,6 +819,90 @@ public class SpoolExporter extends JFrame {
          return false;
       }
 
+      public void listClosed(PrintObjectListEvent e) {
+//                System.out.println("list closed");
+
+         SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+               fireTableDataChanged();
+            }
+         });
+      }
+
+      public void listCompleted(PrintObjectListEvent e) {
+//                System.out.println("list completed");
+         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+         SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+               fireTableDataChanged();
+            }
+         });
+      }
+
+      public void listErrorOccurred(PrintObjectListEvent e) {
+
+         System.err.println("list error occurred : " + e.getException().getMessage());
+
+         SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+               fireTableDataChanged();
+            }
+         });
+      }
+
+      public void listObjectAdded(PrintObjectListEvent e) {
+//         System.out.println("list object added");
+         boolean spoolFilter = filter.getSpoolName().length() > 0;
+         String spoolName = filter.getSpoolName();
+         SpooledFile p = (SpooledFile)e.getObject();
+
+         Vector row = new Vector();
+
+         // do not process if the name is not equal to the filter.
+         if (spoolFilter && !spoolName.equals(p.getName()))
+            return;
+
+         row.add(p.getName());
+
+         loadIntegerAttribute(p, row, PrintObject.ATTR_SPLFNUM);
+         loadStringAttribute(p, row, PrintObject.ATTR_JOBNAME);
+         loadStringAttribute(p, row, PrintObject.ATTR_JOBUSER);
+         loadStringAttribute(p, row, PrintObject.ATTR_JOBNUMBER);
+         loadStringAttribute(p, row, PrintObject.ATTR_OUTPUT_QUEUE);
+         loadStringAttribute(p, row, PrintObject.ATTR_USERDATA);
+         loadStringAttribute(p, row, PrintObject.ATTR_SPLFSTATUS);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_PAGES);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_CURPAGE);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_COPIES);
+         loadStringAttribute(p, row, PrintObject.ATTR_FORMTYPE);
+         loadStringAttribute(p, row, PrintObject.ATTR_OUTPTY);
+         loadCreateDateTime(p, row);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_NUMBYTES);
+
+         //  We need to synchronize here so we will not get any errors if the
+         //   user hits a column header to sort by.
+         synchronized (data) {
+            // now add our row of columns into our data
+            data.add(row);
+         }
+
+         SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+                 fireTableDataChanged();
+                 updateStatus(data.size() + " " + LangTool.getString("spool.count"));
+            }
+         });
+      }
+
+      public void listOpened(PrintObjectListEvent e) {
+         System.out.println("list opened");
+         SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+              fireTableDataChanged();
+            }
+         });
+      }
    }
 
 }

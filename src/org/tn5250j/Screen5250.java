@@ -774,6 +774,20 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       gui.repaint();
    }
 
+   public void setBlinkCursorStop() {
+      if (blinker != null) {
+         blinker.stop();
+         blinker.removeActionListener(this);
+         blinker = null;
+      }
+   }
+
+   public boolean isBlinkCursor() {
+
+      return blinker != null;
+
+   }
+
    public boolean isHotSpots() {
       return hotSpots;
    }
@@ -1605,8 +1619,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 //                        !isStatusErrorCode() && !done) {
                if (strokenizer.hasMoreKeyStrokes()) {
 
-               s = strokenizer.nextKeyStroke();
-               if (s.length() == 1) {
+                  // check to see if position is in a field and if it is then change
+                  //   current field to that field
+                  isInField(lastPos,true);
+                  s = strokenizer.nextKeyStroke();
+                  if (s.length() == 1) {
 //                  setCursorOn();
 //                  if (!keysBuffered) {
 //                     System.out.println(" s two" + s);
@@ -1614,7 +1631,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 //                  }
 
 //                  try { new Thread().sleep(400);} catch (InterruptedException ie) {}
-                  simulateKeyStroke(s.charAt(0));
+                     simulateKeyStroke(s.charAt(0));
 //                     System.out.println(" s two " + s + " " + cursorActive);
 //                  if (cursorActive && !keysBuffered) {
 //                     System.out.println(" s two" + s);
@@ -3456,6 +3473,78 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       }
    }
 
+   /**
+    * Roll the screen up or down.
+    *
+    *  Byte 1:         Bit 0           0 = Roll up
+    *                                                 1 = Roll down
+    *                                 Bits 1-2        Reserved
+    *                                 Bits 3-7        Number of lines that the
+    *                                                 designated area is to be
+    *                                                 rolled
+    *                 Byte 2:         Bits 0-7        Line number defining the top
+    *                                                 line of the area that will
+    *                                                 participate in the roll.
+    *                 Byte 3:         Bits 0-7        Line number defining the
+    *                                                 bottom line of the area that
+    *                                                 will participate in the roll.
+    *
+    * @param direction
+    * @param topLine
+    * @param bottomLine
+    */
+   public void rollScreen(int direction, int topLine, int bottomLine) {
+
+      // get the number of lines which are the last 5 bits
+      int lines = direction & 0x7F;
+      // get the direction of the roll which is the first bit
+      //    0 - up
+      //    1 - down
+      int updown = direction & 0x80;
+
+      // calculate the reference points for the move.
+      int start = this.getPos(topLine - 1,0);
+      int end = this.getPos(bottomLine - 1,numCols - 1);
+      int len = end - start;
+
+//      System.out.println(" starting roll");
+//      dumpScreen();
+      switch(updown) {
+         case 0:
+            //  Now round em up and head em UP.
+            for (int x = start; x < len + numCols; x++) {
+               screen[x].setChar(screen[x + numCols].getChar());
+            }
+            break;
+         case 1:
+            //  Now round em up and head em DOWN.
+            for (int x = end + numCols; x > 0; x--) {
+               screen[x+numCols].setChar(screen[x].getChar());
+            }
+            break;
+         default:
+            System.err.println(" Invalid roll parameter - please report this");
+      }
+//      System.out.println(" end roll");
+//      dumpScreen();
+
+   }
+   public void dumpScreen () {
+
+         StringBuffer sb = new StringBuffer();
+         char[] s = getScreenAsChars();
+         int c = getCols();
+         int l = getRows() * c;
+         int col = 0;
+         for (int x = 0; x < l; x++, col++) {
+            sb.append(s[x]);
+            if (col == c) {
+               sb.append('\n');
+               col = 0;
+            }
+         }
+         System.out.println(sb.toString());
+   }
 
    /**
     * Add a field to the field format table.
@@ -3533,6 +3622,30 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 
    }
 
+   class ChoiceField {
+
+      int x;
+      int y;
+      int width;
+      int height;
+      char mnemonic;
+      int fieldId;
+
+   }
+
+   Vector choices;
+
+   public void addChoiceField(String text) {
+
+      if (choices == null) {
+         choices = new Vector(3);
+      }
+
+      ChoiceField cf = new ChoiceField();
+      cf.fieldId = screenFields.getCurrentField().getFieldId();
+      choices.add(cf);
+
+   }
 //      public void addChoiceField(int attr, int len, int ffw1, int ffw2, int fcw1, int fcw2) {
 //
 //         lastAttr = attr;

@@ -222,6 +222,7 @@ public class Macronizer {
          }
       }
    }
+
    private static boolean checkScripts() {
 
       File directory = new File("scripts");

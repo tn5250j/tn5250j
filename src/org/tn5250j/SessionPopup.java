@@ -607,7 +607,7 @@ public class SessionPopup implements TN5250jConstants {
 
       int result = 0;
 
-      JFrame parent = (JFrame)SwingUtilities.getRoot(session);
+      Frame parent = (Frame)SwingUtilities.getRoot(session);
 
       result = JOptionPane.showOptionDialog(
           parent,   // the parent that the dialog blocks
@@ -660,7 +660,9 @@ public class SessionPopup implements TN5250jConstants {
    private void mapMeKeys() {
       KeyConfigure kc;
 
-      Frame parent = (JFrame)SwingUtilities.getRoot(session);
+      Frame parent = (Frame)SwingUtilities.getRoot(session);
+//      System.out.println("we are fucking here damn it");
+//      Frame parent = null;
 
       if (Macronizer.isMacrosExist()) {
          String[] macrosList = Macronizer.getMacroList();
@@ -680,7 +682,7 @@ public class SessionPopup implements TN5250jConstants {
 
    public void doMeTransfer() {
 
-      XTFRFile xtrf = new XTFRFile((JFrame)SwingUtilities.getRoot(session),
+      XTFRFile xtrf = new XTFRFile((Frame)SwingUtilities.getRoot(session),
                                     vt,session);
 
    }
@@ -703,12 +705,12 @@ public class SessionPopup implements TN5250jConstants {
 
    private void sendScreenEMail() {
 
-      new SendEMailDialog((JFrame)SwingUtilities.getRoot(session),session);
+      new SendEMailDialog((Frame)SwingUtilities.getRoot(session),session);
    }
 
    private void sendQuickEMail() {
 
-      new SendEMailDialog((JFrame)SwingUtilities.getRoot(session),session,false);
+      new SendEMailDialog((Frame)SwingUtilities.getRoot(session),session,false);
    }
 
    private void sendMeToFile() {

@@ -26,29 +26,14 @@
  */
 package org.tn5250j.mailtools;
 
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import org.tn5250j.Screen5250;
 import org.tn5250j.Session;
@@ -60,7 +45,7 @@ import org.tn5250j.tools.encoder.EncodeComponent;
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog {
+public class SendEMailDialog implements Runnable {
 
 	JComboBox toAddress;
 	JTextField subject;
@@ -76,6 +61,7 @@ public class SendEMailDialog {
 	JRadioButton screenshot;
 	JButton browse;
    boolean sendScreen;
+   SendEMail sendEMail;
 
 	/**
 	 * Constructor to send the screen information
@@ -230,10 +216,12 @@ public class SendEMailDialog {
 
 		if (!isEMailAvailable()) {
 
-			JOptionPane.showMessageDialog(parent,
-				"The Java E-Mail API can not be found or is not installed\n"
-				+ "Please read e-mail.txt file for installation instructions.",
-				"Error", JOptionPane.ERROR_MESSAGE, null);
+			JOptionPane.showMessageDialog(
+				parent,
+				LangTool.getString("messages.noEmailAPI"),
+				"Error",
+				JOptionPane.ERROR_MESSAGE,
+				null);
 		}
 		else {
 
@@ -304,36 +292,74 @@ public class SendEMailDialog {
 	 */
 	private void sendIt(Frame parent, SendEMail sem) {
 
-		if (parent == null)
-			parent = new JFrame();
+      setSendEMail(sem);
+      new Thread(this).start();
+//		if (parent == null)
+//			parent = new JFrame();
+//
+//		try {
+//			if (sem.send()) {
+//
+//				JOptionPane.showMessageDialog(
+//					parent,
+//					LangTool.getString("em.confirmationMessage")
+//						+ " "
+//						+ (String) toAddress.getSelectedItem(),
+//					LangTool.getString("em.titleConfirmation"),
+//					JOptionPane.INFORMATION_MESSAGE);
+//
+//				if (session != null) {
+//					config.setProperty(
+//						"emailTo",
+//						getToTokens(
+//							config.getStringProperty("emailTo"),
+//							toAddress));
+//					config.saveSessionProps();
+//					setToCombo(config.getStringProperty("emailTo"), toAddress);
+//				}
+//			}
+//		} catch (IOException ioe) {
+//			System.out.println(ioe.getMessage());
+//		} catch (Exception ex) {
+//			System.out.println(ex.getMessage());
+//		}
+	}
+
+   public void setSendEMail(SendEMail sem) {
+      sendEMail = sem;
+   }
+   public void run() {
+
+//		if (parent == null)
+//			parent = new JFrame();
 
 		try {
-			if (sem.send()) {
+			if (sendEMail.send()) {
 
-				JOptionPane.showMessageDialog(
-					parent,
-					LangTool.getString("em.confirmationMessage")
-						+ " "
-						+ (String) toAddress.getSelectedItem(),
-					LangTool.getString("em.titleConfirmation"),
-					JOptionPane.INFORMATION_MESSAGE);
-
-				if (session != null) {
-					config.setProperty(
-						"emailTo",
-						getToTokens(
-							config.getStringProperty("emailTo"),
-							toAddress));
-					config.saveSessionProps();
-					setToCombo(config.getStringProperty("emailTo"), toAddress);
-				}
+//				JOptionPane.showMessageDialog(
+//					parent,
+//					LangTool.getString("em.confirmationMessage")
+//						+ " "
+//						+ (String) toAddress.getSelectedItem(),
+//					LangTool.getString("em.titleConfirmation"),
+//					JOptionPane.INFORMATION_MESSAGE);
+//
+//				if (session != null) {
+//					config.setProperty(
+//						"emailTo",
+//						getToTokens(
+//							config.getStringProperty("emailTo"),
+//							toAddress));
+//					config.saveSessionProps();
+//					setToCombo(config.getStringProperty("emailTo"), toAddress);
+//				}
 			}
-		} catch (IOException ioe) {
-			System.out.println(ioe.getMessage());
+//		} catch (IOException ioe) {
+//			System.out.println(ioe.getMessage());
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}
-	}
+   }
 
 	/**
 	 * Configure the SMTP server information
@@ -385,7 +411,7 @@ public class SendEMailDialog {
 		JLabel bodyl = new JLabel(LangTool.getString("em.body"));
 		JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
 		JLabel tom = new JLabel(LangTool.getString("em.typeofmail"));
-		
+
 		browse = new JButton(LangTool.getString("em.choosefile"));
 		browse.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -521,7 +547,7 @@ public class SendEMailDialog {
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(5, 5, 10, 10);
 		semp.add(browse, gbc);
-		
+
 		return semp;
 
 	}
@@ -533,7 +559,7 @@ public class SendEMailDialog {
 		int ret = pcFileChooser.showOpenDialog(new JFrame());
 
 		// check to see if something was actually chosen
-		if (ret == JFileChooser.APPROVE_OPTION) {
+		if (ret == TN5250jFileChooser.APPROVE_OPTION) {
 		   File file = pcFileChooser.getSelectedFile();
 		   fileName = file.getName();
 		   attachmentName.setText(file.toString());
@@ -642,6 +668,103 @@ public class SendEMailDialog {
 			return false;
 		}
 
+	}
+
+	/**
+	 * Create a option pane to show status of the transfer
+	 */
+	private class ProgressOptionPane extends JOptionPane {
+
+		ProgressOptionPane(Object messageList) {
+
+			super(
+				messageList,
+				JOptionPane.INFORMATION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION,
+				null,
+				new Object[] {
+					 UIManager.getString("OptionPane.cancelButtonText")},
+				null);
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+		}
+
+		public void setDone() {
+			Object[] option = this.getOptions();
+			option[0] = LangTool.getString("xtfr.tableDone");
+			this.setOptions(option);
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+
+		public void reset() {
+
+			Object[] option = this.getOptions();
+			option[0] = UIManager.getString("OptionPane.cancelButtonText");
+			this.setOptions(option);
+//			monitor.setValue(null);
+
+		}
+
+		public int getMaxCharactersPerLineCount() {
+			return 60;
+		}
+
+		/**
+		 * Returns true if the user hits the Cancel button in the progress dialog.
+		 *
+		 * @return whether or not dialog was cancelled
+		 */
+		public boolean isCanceled() {
+			if (this == null)
+				return false;
+			Object v = this.getValue();
+			return (v != null);
+		}
+
+		// Equivalent to JOptionPane.createDialog,
+		// but create a modeless dialog.
+		// This is necessary because the Solaris implementation doesn't
+		// support Dialog.setModal yet.
+		public JDialog createDialog(Component parentComponent, String title) {
+
+			Frame frame = JOptionPane.getFrameForComponent(parentComponent);
+			final JDialog dialog = new JDialog(frame, title, false);
+			Container contentPane = dialog.getContentPane();
+
+			contentPane.setLayout(new BorderLayout());
+			contentPane.add(this, BorderLayout.CENTER);
+			dialog.pack();
+			dialog.setLocationRelativeTo(parentComponent);
+			dialog.addWindowListener(new WindowAdapter() {
+				boolean gotFocus = false;
+
+				public void windowClosing(WindowEvent we) {
+					setValue(null);
+				}
+
+				public void windowActivated(WindowEvent we) {
+					// Once window gets focus, set initial focus
+					if (!gotFocus) {
+						selectInitialValue();
+						gotFocus = true;
+					}
+				}
+			});
+
+			addPropertyChangeListener(new PropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent event) {
+					if (dialog.isVisible()
+						&& event.getSource() == ProgressOptionPane.this
+						&& (event.getPropertyName().equals(VALUE_PROPERTY)
+							|| event.getPropertyName().equals(
+								INPUT_VALUE_PROPERTY))) {
+						dialog.setVisible(false);
+						dialog.dispose();
+					}
+				}
+			});
+			return dialog;
+		}
 	}
 
 }

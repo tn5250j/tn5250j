@@ -54,6 +54,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements
     * @param session The session that will be sent the keys
     */
    public KeyboardHandler(Session session) {
+
       this.session = session;
       this.screen = session.getScreen();
 
@@ -123,6 +124,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements
 
       return recording;
    }
+
    protected tnvt getVT() {
       return session.getVT();
    }
