@@ -1,6 +1,6 @@
 /**
  *
- * <p>Title: Screen5250.jar</p>
+ * <p>Title: ScreenOIAListener</p>
  * <p>Description: Main interface to draw the graphical image of the screen</p>
  * <p>Copyright: Copyright (c) 2000 - 2002</p>
  * <p>
