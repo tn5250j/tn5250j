@@ -1,4 +1,3 @@
-package org.tn5250j.settings;
 /**
  * Title: SignoffAttributesPanel
  * Copyright:   Copyright (c) 2001
@@ -24,8 +23,11 @@ package org.tn5250j.settings;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.settings;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.util.*;
@@ -36,6 +38,10 @@ import org.tn5250j.SessionConfig;
 public class SignoffAttributesPanel extends AttributesPanel {
 
    JCheckBox signoffCheck;
+   JTextField fromRow;
+   JTextField fromCol;
+   JTextField toRow;
+   JTextField toCol;
 
    public SignoffAttributesPanel(SessionConfig config ) {
       super(config,"Signoff");
@@ -49,18 +55,102 @@ public class SignoffAttributesPanel extends AttributesPanel {
       contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
       add(contentPane,BorderLayout.NORTH);
 
-      // define double click as enter
+      // define signoff confirmation panel
       JPanel soConfirm = new JPanel();
       soConfirm.setBorder(BorderFactory.createTitledBorder(
                            LangTool.getString("sa.titleSignoff")));
 
       signoffCheck = new JCheckBox(LangTool.getString("sa.confirmSignoff"));
 
-      // check if double click sends enter
+      // check if signoff confirmation is to be checked
       signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
 
+      signoffCheck.addItemListener(new java.awt.event.ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            doItemStateChanged(e);
+         }
+      });
+
       soConfirm.add(signoffCheck);
+
+      // define signoff confirmation screen region
+      JPanel soRegion = new JPanel();
+      soRegion.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("sa.titleSignoffRegion")));
+
+      AlignLayout rowcol = new AlignLayout(4,5,5);
+      soRegion.setLayout(rowcol);
+
+      soRegion.add(new JLabel("From Row:"));
+      fromRow = new JTextField("1",5);
+      soRegion.add(fromRow);
+      soRegion.add(new JLabel("From Column:"));
+      fromCol = new JTextField("1",5);
+      soRegion.add(fromCol);
+      soRegion.add(new JLabel("To Row:"));
+      toRow = new JTextField("24",5);
+      soRegion.add(toRow);
+      soRegion.add(new JLabel("To Column:"));
+      toCol = new JTextField("80",5);
+      soRegion.add(toCol);
+
+      loadRegion();
+
+      toggleRegion(signoffCheck.isSelected());
+
       contentPane.add(soConfirm);
+      contentPane.add(soRegion);
+
+   }
+
+   private void loadRegion() {
+
+      Rectangle region = getRectangleProperty("signOnRegion");
+
+      if (region.x == 0)
+         fromRow.setText("1");
+      else
+         fromRow.setText(Integer.toString(region.x));
+
+      if (region.y == 0)
+         fromCol.setText("1");
+      else
+         fromCol.setText(Integer.toString(region.y));
+
+      if (region.width == 0)
+         toRow.setText("24");
+      else
+         toRow.setText(Integer.toString(region.width));
+
+      if (region.height == 0)
+         toCol.setText("80");
+      else
+         toCol.setText(Integer.toString(region.height));
+
+   }
+
+   /**
+    * React on the state change for signoff confirmation
+    *
+    * @param e Item event to react to
+    */
+   private void doItemStateChanged(ItemEvent e) {
+
+      toggleRegion(false);
+
+      if (e.getStateChange() == ItemEvent.SELECTED) {
+         if (signoffCheck.isSelected()) {
+            toggleRegion(true);
+         }
+      }
+   }
+
+   private void toggleRegion(boolean state) {
+
+      fromRow.setEnabled(state);
+      fromCol.setEnabled(state);
+      toRow.setEnabled(state);
+      toCol.setEnabled(state);
 
    }
 
@@ -83,5 +173,19 @@ public class SignoffAttributesPanel extends AttributesPanel {
          setProperty("confirmSignoff","No");
       }
 
+      Rectangle region = new Rectangle(Integer.parseInt(fromRow.getText()),
+                                          Integer.parseInt(fromCol.getText()),
+                                          Integer.parseInt(toRow.getText()),
+                                          Integer.parseInt(toCol.getText()));
+      if (region.x < 0)
+         region.x = 1;
+      if (region.y < 0)
+         region.y = 1;
+      if (region.width > 24)
+         region.width = 24;
+      if (region.height > 80)
+         region.height = 80;
+
+      setRectangleProperty("signOnRegion",region);
    }
 }
