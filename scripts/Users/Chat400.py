@@ -246,31 +246,34 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 
 		self.show()
 
-try:
-	server = _session.getHostName()
-	name = _session.getAllocDeviceName()
-except:
-	None
-try:
-	from LogOn import *
-	login = LogOn()
-	login.txt1.setText(server)
-	login.txt2.setText(name)
-	if server == '':
-		login.txt1.requestFocus()
-	elif name == '':
-		login.txt2.requestFocus()
+isRunning = System.getProperty("chat400")
+if not isRunning == '1':
+	System.setProperty("chat400", "1")
+	try:
+		server = _session.getHostName()
+		name = _session.getAllocDeviceName()
+	except:
+		None
+	try:
+		from LogOn import *
+		login = LogOn()
+		login.txt1.setText(server)
+		login.txt2.setText(name)
+		if server == '':
+			login.txt1.requestFocus()
+		elif name == '':
+			login.txt2.requestFocus()
+		else:
+			login.txt3.requestFocus()
+		login.show()
+		server = login.txt1.getText()
+		name = login.txt2.getText()
+		passw = login.txt3.getText()
+		login.dispose()
+	except:
+		None
+	chatter=Chat400()
+	if passw != '':
+		chatter.run(server, name, passw)
 	else:
-		login.txt3.requestFocus()
-	login.show()
-	server = login.txt1.getText()
-	name = login.txt2.getText()
-	passw = login.txt3.getText()
-	login.dispose()
-except:
-	None
-chatter=Chat400()
-if passw != '':
-	chatter.run(server, name, passw)
-else:
-	chatter.run(server, name)
+		chatter.run(server, name)
