@@ -12,8 +12,8 @@ class LogOn(swing.JDialog):
 	gbc = awt.GridBagConstraints()
 		
 	lbl1 = swing.JLabel("Server", preferredSize=(60, 22))
-	lbl2 = swing.JLabel("Naam", preferredSize=(60, 22))
-	lbl3 = swing.JLabel("Paswoord", preferredSize=(60, 22))
+	lbl2 = swing.JLabel("Name", preferredSize=(60, 22))
+	lbl3 = swing.JLabel("Password", preferredSize=(60, 22))
 	self.txt1 = swing.JTextField(preferredSize=(125, 22))
 	self.txt2 = swing.JTextField(preferredSize=(125, 22))
 	self.txt3 = swing.JTextField(preferredSize=(125, 22))
