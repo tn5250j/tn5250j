@@ -1217,7 +1217,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                   case ScreenChar.BUTTON_LEFT_EB:
                   case ScreenChar.BUTTON_MIDDLE_EB:
                   case ScreenChar.BUTTON_RIGHT_EB:
-                     log.info("Send to external Browser");
+                     StringBuffer eb = new StringBuffer();
+                     while (screen[pos--].getWhichGUI() != ScreenChar.BUTTON_LEFT_EB);
+                     while (screen[pos++].getWhichGUI() != ScreenChar.BUTTON_RIGHT_EB) {
+                        eb.append(screen[pos].getChar());
+                     }
+                     org.tn5250j.tools.system.OperatingSystem.displayURL(eb.toString());                      
+                     // take out the log statement when we are sure it is working
+                     log.info("Send to external Browser: " + eb.toString());
                      break;
 
                   default:
