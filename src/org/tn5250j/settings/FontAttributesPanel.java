@@ -40,6 +40,7 @@ import org.tn5250j.SessionConfig;
 public class FontAttributesPanel extends AttributesPanel {
 
    JComboBox fontsList;
+   JCheckBox useAntialias;
    JTextField verticalScale;
    JTextField horizontalScale;
    JTextField pointSize;
@@ -75,7 +76,11 @@ public class FontAttributesPanel extends AttributesPanel {
 
       fontsList.setSelectedItem(font);
 
+      useAntialias = new JCheckBox(LangTool.getString("sa.useAntialias"));
+      useAntialias.setSelected(getBooleanProperty("useAntialias",true));
+
       flp.add(fontsList);
+      flp.add(useAntialias);
 
       JPanel fsp = new JPanel();
       fsp.setLayout(new AlignLayout(2,5,5));
@@ -118,6 +123,21 @@ public class FontAttributesPanel extends AttributesPanel {
                            (String)fontsList.getSelectedItem());
 
          setProperty("font",(String)fontsList.getSelectedItem());
+      }
+
+      if (useAntialias.isSelected()) {
+         changes.firePropertyChange(this,"useAntialias",
+                           getStringProperty("useAntialias"),
+                           "Yes");
+         setProperty("useAntialias","Yes");
+      }
+      else {
+
+         changes.firePropertyChange(this,"useAntialias",
+                           getStringProperty("useAntialias"),
+                           "No");
+         setProperty("useAntialias","No");
+
       }
 
       changes.firePropertyChange(this,"fontScaleHeight",
