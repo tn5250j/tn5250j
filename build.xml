@@ -7,7 +7,7 @@
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
    <property name="version" value="0.5.7"/>
-   <property name="year" value="2001-2004"/>
+   <property name="year" value="2001-2005"/>
 
    <property name="source.dir" value="${basedir}/src" />
    <property name="build.dir" value="${basedir}/build" />
@@ -20,7 +20,7 @@
    <property name="main.class" value="org.tn5250j.My5250"/>
    <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar kunststoff.jar log4j-1.2.8.jar"/>
 
-    <!-- compile options -->
+	<!-- compile options -->
     <property name="debug" value="off"/>
     <property name="optimize" value="off"/>
 
@@ -392,5 +392,49 @@
 
    </target>
 <!--               izPackDir="${dist.dir}/"/-->
+
+<!-- start jar bundler task -->
+	<taskdef name="jarbundler"
+	                  classpath="${lib.dir}/jarbundler-1.4.jar"
+	                  classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
+	
+    <target name= "dist-bin-jarbundle" depends="dist-bin-prepare"  description="Prepares jar bundle binary distribution">
+    <jarbundler dir="${dist.dir}"
+                   name="${Name}"
+                   mainclass="org.tn5250j.My5250"
+                   icon="${source.dir}/tnicon.icns"
+                   version="${version}"
+                   infostring="${Name} ${version}, (c) ${year}"
+                   aboutmenuname="${Name}"
+                   bundleid="org.tn5250j"
+                   developmentregion="English"
+                   signature="????"
+                   type="APPL"
+                   jvmversion="1.4+"
+                   vmoptions="-Xmx256m"
+                   smalltabs="true"
+                   antialiasedgraphics="true"
+                   antialiasedtext="true"
+                   liveresize="true"
+                   growboxintrudes="false"
+    	               workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+                   screenmenu="true" >
+         <jarfileset dir="${dist.dir}/${dist.base.name}">
+           <include name="**/*.jar" />
+           <exclude name="**/CVS" />
+         </jarfileset>
+       </jarbundler>
+	   </target>
+
+    <target name= "dist-bin-jarbundle-tgz" depends="dist-bin-jarbundle" description="Create a Tgz-File of the jar bundle distribution">
+        <tar tarfile="${dist.dir}/${dist.bin.name}.app.tar"
+            basedir="${dist.dir}/"
+            includes="${Name}.app/**">
+        </tar>
+        <gzip zipfile="${dist.dir}/${dist.bin.name}.app.tgz" src="${dist.dir}/${dist.bin.name}.app.tar" />
+        <delete file="${dist.dir}/${dist.bin.name}.app.tar"/>
+    </target>
+
+<!-- start jar bundler task -->
 
 </project>
