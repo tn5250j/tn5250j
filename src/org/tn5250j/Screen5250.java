@@ -795,6 +795,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    protected final void pasteMe(boolean special) {
 
+      setCursorActive(false);
       Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
       Transferable content = cb.getContents(this);
       try {
@@ -888,7 +889,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
          goto_XY(lr+1,lc+1);
 
-
+         setCursorActive(true);
       }
       catch (Throwable exc) {
          System.err.println(exc);
@@ -1637,16 +1638,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             break;
          case UP :
          case MARK_UP :
-//            setCursorOff();
             process_XY(lastPos - numCols);
-//            setCursorOn();
             simulated = true;
             break;
          case DOWN :
          case MARK_DOWN :
-//            setCursorOff();
             process_XY(lastPos + numCols);
-//            setCursorOn();
             simulated = true;
             break;
          case LEFT :
