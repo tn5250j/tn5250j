@@ -32,6 +32,7 @@ import java.awt.print.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.*;
 
 public class PrinterAttributesPanel extends AttributesPanel {
 
@@ -40,6 +41,8 @@ public class PrinterAttributesPanel extends AttributesPanel {
    JButton setLandAttributes;
    Paper pappyPort;
    Paper pappyLand;
+   JComboBox fontsList;
+   TN5250jFontsSelection fs;
 
    public PrinterAttributesPanel(SessionConfig config ) {
       super(config,"Printer");
@@ -115,6 +118,7 @@ public class PrinterAttributesPanel extends AttributesPanel {
       page.setBorder(BorderFactory.createTitledBorder(
                            LangTool.getString("sa.pageParameters")));
 
+      page.setLayout(new BorderLayout());
       setPortAttributes = new JButton(LangTool.getString("sa.columns24"));
 
 		setPortAttributes.addActionListener(new java.awt.event.ActionListener() {
@@ -131,12 +135,27 @@ public class PrinterAttributesPanel extends AttributesPanel {
 			}
 		});
 
-      page.add(setPortAttributes);
-      page.add(setLandAttributes);
+      // now create page dialog holder panel
+      JPanel pagePage = new JPanel();
 
+      pagePage.add(setPortAttributes);
+      pagePage.add(setLandAttributes);
+
+      page.add(pagePage,BorderLayout.NORTH);
+
+      // now create fonts selection
+      JPanel pageFont = new JPanel();
+      fs = new TN5250jFontsSelection();
+
+      if (getStringProperty("print.font").length() != 0) {
+         fs.setSelectedItem(getStringProperty("print.font"));
+      }
+
+      pageFont.add(fs);
+
+      page.add(pageFont,BorderLayout.SOUTH);
       contentPane.add(ppp);
       contentPane.add(page);
-//      contentPane.add(ppa);
 
    }
 
@@ -250,5 +269,13 @@ public class PrinterAttributesPanel extends AttributesPanel {
                         getStringProperty("print.landImage.Y"),
                         new Double(pappyLand.getImageableY()));
       setProperty("print.landImage.Y",Double.toString(pappyLand.getImageableY()));
+
+
+      if (fs.getSelectedItem() != null) {
+         changes.firePropertyChange(this,"print.font",
+                           getStringProperty("print.font"),
+                           (String)fs.getSelectedItem());
+         setProperty("print.font",(String)fs.getSelectedItem());
+      }
    }
 }

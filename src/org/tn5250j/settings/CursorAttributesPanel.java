@@ -42,6 +42,7 @@ public class CursorAttributesPanel extends AttributesPanel {
    JRadioButton chCross;
    JCheckBox rulerFixed;
    JTextField cursorBottOffset;
+   JRadioButton blink;
 
    public CursorAttributesPanel(SessionConfig config ) {
       super(config,"Cursor");
@@ -138,6 +139,8 @@ public class CursorAttributesPanel extends AttributesPanel {
       chp.add(chHorz);
       chp.add(chVert);
       chp.add(chCross);
+
+
       // define double click as enter
       JPanel rulerFPanel = new JPanel();
       rulerFPanel.setBorder(BorderFactory.createTitledBorder(""));
@@ -148,6 +151,28 @@ public class CursorAttributesPanel extends AttributesPanel {
          rulerFixed.setSelected(false);
 
       rulerFPanel.add(rulerFixed);
+
+      // define cursor ruler panel
+      JPanel blinkPanel = new JPanel();
+      blinkPanel.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.blinkCursor")));
+
+      blink = new JRadioButton(LangTool.getString("sa.blinkYes"));
+      JRadioButton noBlink = new JRadioButton(LangTool.getString("sa.blinkNo"));
+
+      // Group the radio buttons.
+      ButtonGroup blinkGroup = new ButtonGroup();
+      blinkGroup.add(blink);
+      blinkGroup.add(noBlink);
+
+      blink.setSelected(false);
+
+      if (getStringProperty("cursorBlink").equals("Yes"))
+         blink.setSelected(true);
+      else
+         noBlink.setSelected(true);
+
+      blinkPanel.add(blink);
+      blinkPanel.add(noBlink);
 
       // define bottom offset panel for cursor
       JPanel bottOffPanel = new JPanel();
@@ -170,6 +195,7 @@ public class CursorAttributesPanel extends AttributesPanel {
       contentPane.add(crp);
       contentPane.add(chp);
       contentPane.add(rulerFPanel);
+      contentPane.add(blinkPanel);
       contentPane.add(bottOffPanel);
 
    }
@@ -250,6 +276,21 @@ public class CursorAttributesPanel extends AttributesPanel {
                         getStringProperty("cursorBottOffset"),
                         cursorBottOffset.getText());
       setProperty("cursorBottOffset",cursorBottOffset.getText());
+
+      if (blink.isSelected()) {
+         changes.firePropertyChange(this,"cursorBlink",
+                           getStringProperty("cursorBlink"),
+                           "Yes");
+         setProperty("cursorBlink","Yes");
+      }
+      else {
+
+         changes.firePropertyChange(this,"cursorBlink",
+                           getStringProperty("cursorBlink"),
+                           "No");
+         setProperty("cursorBlink","No");
+
+      }
 
    }
 }

@@ -36,7 +36,8 @@ import java.beans.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
 
-public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
+public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
+                                    ActionListener {
 
    ScreenChar[] screen;
    private ScreenChar[] errorLine;
@@ -159,6 +160,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    //LDC - 12/02/2003 -  boolean: true: it must be repainted
    private boolean drawing;
+   private javax.swing.Timer blinker;
 
    public Screen5250(Gui5250 gui, SessionConfig config) {
 
@@ -389,6 +391,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       }
 
+      if (config.getStringProperty("cursorBlink").equals("Yes")) {
+         blinker = new javax.swing.Timer(500,this);
+         blinker.start();
+      }
    }
 
    protected final void loadColors() {
@@ -478,6 +484,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       else
          colorHexAttr = getColorProperty("colorHexAttr");
 
+   }
+
+   public void actionPerformed(ActionEvent actionevent) {
+      if (actionevent.getSource() instanceof javax.swing.Timer) {
+         if (isCursorActive())
+            setCursorActive(false);
+         else
+            setCursorActive(true);
+      }
    }
 
    protected final String getStringProperty(String prop) {
@@ -711,6 +726,25 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (pn.equals("cursorBottOffset")) {
          cursorBottOffset = getIntProperty("cursorBottOffset");
+      }
+
+      if (pn.equals("cursorBlink")) {
+         System.out.println(getStringProperty("cursorBlink"));
+         if (pce.getNewValue().equals("Yes")) {
+
+            if (blinker == null) {
+
+               blinker = new javax.swing.Timer(500,this);
+               blinker.start();
+            }
+         }
+         else {
+
+            if (blinker != null) {
+               blinker.stop();
+               blinker = null;
+            }
+         }
       }
 
       if (updateFont) {
@@ -1326,6 +1360,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       bufferedKeys = null;
       keysBuffered = false;
       setKBIndicatorOff();
+   }
+
+   public boolean isCursorActive() {
+      return cursorActive;
    }
 
    /**

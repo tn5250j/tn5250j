@@ -133,6 +133,12 @@ public class PrinterThread extends Thread implements Printable {
          }
       }
 
+      if (config.getStringProperty("print.font").length() > 0) {
+
+         font = new Font(config.getStringProperty("print.font"),
+                           Font.PLAIN, 8);
+      }
+
       //--- Set the printable class to this one since we
       //--- are implementing the Printable interface
       printJob.setPrintable (this,pf);
