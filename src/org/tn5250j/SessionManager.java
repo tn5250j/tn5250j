@@ -33,8 +33,9 @@ import java.io.*;
  */
 public class SessionManager implements SessionManagerInterface, TN5250jConstants {
 
-   Sessions sessions;
-   Vector configs;
+   static private Sessions sessions;
+   static private Vector configs;
+
    /**
     * A handle to the unique SessionManager class
     */
