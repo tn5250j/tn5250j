@@ -87,10 +87,12 @@ public class AS400Xtfr {
 
          // Get a connection to the database.  Since we do not
          // provide a user id or password, a prompt will appear.
+         // modified the connection string to add the translate binary = true
+         //   as suggested from Luca
          connection = DriverManager.getConnection ("jdbc:as400://" + hostName +
                                                    ";decimal separator=" +
                                                    decChar +
-                                                   ";extended metadata=true",
+                                                ";extended metadata=true;translate binary=true",
                                                       user,pass);
 
          printFTPInfo("jdbc:as400://" + hostName +
