@@ -1,7 +1,3 @@
-package org.tn5250j;
-
-import org.tn5250j.tools.logging.*;
-
 /*
  * @(#)KeyStrokenizer.java
  * Copyright:    Copyright (c) 2001
@@ -22,6 +18,11 @@ import org.tn5250j.tools.logging.*;
  * Boston, MA 02111-1307 USA
  *
  */
+
+package org.tn5250j.framework.tn5250;
+
+import org.tn5250j.tools.logging.*;
+
 
 public class KeyStrokenizer {
    

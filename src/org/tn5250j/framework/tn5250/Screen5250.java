@@ -37,7 +37,7 @@ import org.tn5250j.event.*;
 import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.system.*;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.KeyStrokenizer;
+import org.tn5250j.framework.tn5250.KeyStrokenizer;
 import org.tn5250j.*;
 
 public class Screen5250 implements TN5250jConstants{
