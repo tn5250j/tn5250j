@@ -93,7 +93,7 @@ public class OptionAccess extends OptionAccessFactory implements TN5250jConstant
       restricted.clear();
 		String restrictedProp =
 			ConfigureFactory.getInstance().getProperties(
-				GlobalConfigure.SESSIONS).getProperty("emul.restricted");
+				ConfigureFactory.SESSIONS).getProperty("emul.restricted");
 
       if (restrictedProp != null) {
          int x = 0;

@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -24,6 +23,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
 import java.util.*;
 import java.io.*;
@@ -57,8 +57,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    private Logger log = Logger.getLogger(this.getClass());
    
    My5250 () {
-
-      GlobalConfigure configure = (GlobalConfigure)ConfigureFactory.getInstance();
 
 //      classLoader = this.getClass().getClassLoader();
 
@@ -686,8 +684,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
 
          // save off the session settings before closing down
-         ConfigureFactory.getInstance().saveSettings(GlobalConfigure.SESSIONS,
-                                                      GlobalConfigure.SESSIONS,
+         ConfigureFactory.getInstance().saveSettings(ConfigureFactory.SESSIONS,
+                                                      ConfigureFactory.SESSIONS,
                                                       "------ Defaults --------");
          if (strapper != null) {
             strapper.interrupt();
@@ -742,8 +740,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    protected static void loadSessions() {
 
-      sessions = ((GlobalConfigure)ConfigureFactory.getInstance()).getProperties(
-                     GlobalConfigure.SESSIONS);
+      sessions = ((ConfigureFactory)ConfigureFactory.getInstance()).getProperties(
+                     ConfigureFactory.SESSIONS);
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {

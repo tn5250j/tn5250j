@@ -149,7 +149,7 @@ public class Connect
 
 		props =
 			ConfigureFactory.getInstance().getProperties(
-				GlobalConfigure.SESSIONS);
+				ConfigureFactory.SESSIONS);
 
 		try {
 			jbInit();
@@ -689,7 +689,7 @@ public class Connect
 		setOptionAccess();
 
 		ConfigureFactory.getInstance().saveSettings(
-			GlobalConfigure.SESSIONS,
+			ConfigureFactory.SESSIONS,
 			"------ Session Information --------");
 
 		OptionAccessFactory.getInstance().reload();
