@@ -19,6 +19,7 @@
         <res src="installer/readme.txt" id="InfoPanel.info"/>
         <res src="installer/installShortcutSpec.xml" id="shortcutSpec.xml"/>
         <res src="installer/installer.url" id="WebInstallers.url"/>
+        <res src="installer/NativeLAF" id="useNativeLAF"/>
     </resources>
     <panels>
         <panel classname="HelloPanel"/>
