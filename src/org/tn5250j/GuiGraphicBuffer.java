@@ -184,20 +184,32 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
    }
 
 
-   public void drawCursor(Screen5250 s,int row, int col,
-                           int fmWidth, int fmHeight,
-                           boolean insertMode, int crossHair,
-                           boolean rulerFixed,
-                           int cursorSize, Color colorCursor,
-                           Color colorBg,Color colorWhite,
-                           Font font,int botOffset) {
+   public void drawCursor()   {
+//      public void drawCursor(int row, int col)   {
+//                           int fmWidth, int fmHeight,
+//                           boolean insertMode, int crossHair,
+//                           boolean rulerFixed,
+//                           int cursorSize, Color colorCursor,
+//                           Color colorBg,Color colorWhite,
+//                           Font font,int botOffset) {
 
+      	int row = screen.getRow(screen.getLastPos());
+      	int col = screen.getCol(screen.getLastPos());
+      	
+      	int fmHeight = screen.fmHeight;
+      	int fmWidth = screen.fmWidth;
+      	int botOffset = screen.cursorBottOffset;
+      	int cursorSize = screen.cursorSize;
+      	boolean insertMode = screen.insertMode;
+      	boolean rulerFixed = screen.rulerFixed;
+      	int crossHair = screen.crossHair;
+      	
          Graphics2D g2 = getDrawingArea();
 
-         switch (cursorSize) {
+         switch (screen.cursorSize) {
             case 0:
                cursor.setRect(
-                           fmWidth * (col),
+                     fmWidth * (col),
                            (fmHeight * (row + 1)) - botOffset,
                            fmWidth,
                            1
@@ -205,7 +217,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                break;
             case 1:
                cursor.setRect(
-                           fmWidth * (col),
+                     fmWidth * (col),
                            (fmHeight * (row + 1) - fmHeight / 2),
                            fmWidth,
                            (fmHeight / 2) - botOffset
@@ -213,7 +225,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                break;
             case 2:
                cursor.setRect(
-                           fmWidth * (col),
+                     fmWidth * (col),
                            (fmHeight * row),
                            fmWidth,
                            fmHeight - botOffset
@@ -223,7 +235,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
 
          if (insertMode && cursorSize != 1) {
                cursor.setRect(
-                           fmWidth * (col),
+                     fmWidth * (col),
                            (fmHeight * (row + 1) - fmHeight / 2),
                            fmWidth,
                            (fmHeight / 2) - botOffset
@@ -233,12 +245,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
          Rectangle r = cursor.getBounds();
          r.setSize(r.width,r.height);
 
-         g2.setColor(colorCursor);
-         g2.setXORMode(colorBg);
+         g2.setColor(screen.colorCursor);
+         g2.setXORMode(screen.colorBg);
 
          g2.fill(cursor);
 
-         s.updateImage(r);
+         screen.updateImage(r);
 
          if (!rulerFixed) {
             crossRow = row;
@@ -258,12 +270,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                g2.drawLine(0,(fmHeight * (crossRow + 1))- botOffset,
                            bi.getWidth(null),
                            (fmHeight * (crossRow + 1))- botOffset);
-               s.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
+               screen.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
                               bi.getWidth(null),1);
                break;
             case 2:  // vertical
                g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - fmHeight - fmHeight);
-               s.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
+               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
                break;
 
             case 3:  // horizontal & vertical
@@ -271,23 +283,23 @@ public class GuiGraphicBuffer implements ScreenOIAListener {
                            bi.getWidth(null),
                            (fmHeight * (crossRow + 1))- botOffset);
                g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - fmHeight - fmHeight);
-               s.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
+               screen.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
                               bi.getWidth(null),1);
-               s.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
+               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
                break;
          }
 
          g2.dispose();
-         g2 = getWritingArea(font);
-         g2.setPaint(colorBg);
+         g2 = getWritingArea(screen.font);
+         g2.setPaint(screen.colorBg);
 
          g2.fill(pArea);
-         g2.setColor(colorWhite);
+         g2.setColor(screen.colorWhite);
 
          g2.drawString((row + 1) + "/" + (col + 1)
                         ,(float)pArea.getX(),
                         (float)pArea.getY() + fmHeight);
-         s.updateImage(pArea.getBounds());
+         screen.updateImage(pArea.getBounds());
          g2.dispose();
 
    }

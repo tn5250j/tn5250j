@@ -92,14 +92,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
    private int colSepLine = 0;
 	public boolean cursorActive = false;
 	public boolean cursorShown = false;
-	private boolean insertMode = false;
+	protected boolean insertMode = false;
 	private boolean keyProcessed = false;
 	private Rectangle dirty = new Rectangle();
 	private Graphics2D g2d;
 	protected Graphics2D gg2d;
 	private Point startPoint;
 	private Point endPoint;
-	private int crossHair = 0;
+	protected int crossHair = 0;
 	private boolean messageLight = false;
 	public int homePos = 0;
 	public int saveHomePos = 0;
@@ -107,7 +107,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private boolean updateFont;
 	public boolean pendingInsert = false;
 	private Gui5250 gui;
-	private int cursorSize = 0;
+	protected int cursorSize = 0;
 	private boolean hotSpots = false;
 	private boolean showHex = false;
 	private float sfh = 1.2f; // font scale height
@@ -139,10 +139,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private boolean restrictCursor = false;
 	private Rectangle restriction;
 	private boolean resetRequired;
-	private int cursorBottOffset;
+	protected int cursorBottOffset;
 	private boolean defaultPrinter;
 	private SessionConfig config;
-	private boolean rulerFixed;
+	protected boolean rulerFixed;
 	private boolean antialiased = true;
 	private boolean feError;
 
@@ -1469,9 +1469,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			int row = getRow(lastPos);
 			int col = getCol(lastPos);
 
-			bi.drawCursor(this, row, col, fmWidth, fmHeight, insertMode,
-					crossHair, rulerFixed, cursorSize, colorCursor, colorBg,
-					colorWhite, font, cursorBottOffset);
+//			bi.drawCursor(this, row, col, fmWidth, fmHeight, insertMode,
+//					crossHair, rulerFixed, cursorSize, colorCursor, colorBg,
+//					colorWhite, font, cursorBottOffset);
+			bi.drawCursor();
 
 		}
 	}
