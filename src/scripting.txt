@@ -81,16 +81,12 @@ You can interract with the emulator such as:
 
  5.  from command line for ant execute the following
 
- >ant all-script
-
- The all-script tag is to tell the build to also compile in scripting
- components.  The default is to not include the scripting.  Why because it
- beta.
+ >ant all
 
  6.  Create a directory underneath called "scripts".  This is hardcoded so
  that all scripts are based off the scripts directory.
 
- 7.  When everything builds fire up the emulator making sure the jython.jar
+ 7.  When everything builds, fire up the emulator making sure the jython.jar
  file is in the directoy, same as for setting up e-mail.
 
  8.  Copy the sample scripts to the scripts directory.
@@ -98,5 +94,8 @@ You can interract with the emulator such as:
  9.  Hit Alt-R to receive a Run Script prompt and type in the full name of
  the script.  Such as testwin.py or testlooping.py
 
+ 10. Or from the popup menu all the scripts in the directory should appear
+     in the macros sub menu
+     
 Enjoy!!!
 
