@@ -37,13 +37,15 @@ import java.awt.event.*;
 import java.io.*;
 import java.beans.*;
 import java.text.MessageFormat;
-import org.tn5250j.tools.filters.*;
-import org.tn5250j.mailtools.SendEMailDialog;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+
 import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
+import org.tn5250j.tools.filters.*;
+import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.Session;
 
 public class XTFRFile extends JDialog implements ActionListener, FTPStatusListener,
                                                    ItemListener {
@@ -95,18 +97,20 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    ProgressOptionPane monitor;
    JDialog dialog;
    XTFRFileFilter filter;
+   Session session;
 
    static String messageProgress;
 
-   public XTFRFile (Frame parent,tnvt pvt) {
+   public XTFRFile (Frame parent,tnvt pvt, Session session) {
+
       super(parent);
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      this.session = session;
       vt = pvt;
       ftpProtocol = new FTP5250Prot(vt);
       ftpProtocol.addFTPStatusListener(this);
       axtfr = new AS400Xtfr(vt);
       axtfr.addFTPStatusListener(this);
-
       createProgressMonitor();
       initFileFilters();
       initXTFRInfo();
@@ -188,7 +192,7 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
    private void emailMe() {
 
       SendEMailDialog semd = new SendEMailDialog((Frame)(this.getParent())
-                                 ,localFile.getText());
+                                 ,session ,localFile.getText());
 
    }
 

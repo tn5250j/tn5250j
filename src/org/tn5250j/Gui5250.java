@@ -1572,7 +1572,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void doMeSpool() {
 
       try {
-         org.tn5250j.spoolfile.SpoolExporter spooler = new org.tn5250j.spoolfile.SpoolExporter(vt);
+         org.tn5250j.spoolfile.SpoolExporter spooler =
+                              new org.tn5250j.spoolfile.SpoolExporter(vt,
+                                                            (Session)this);
          spooler.setVisible(true);
       }
       catch (NoClassDefFoundError ncdfe) {

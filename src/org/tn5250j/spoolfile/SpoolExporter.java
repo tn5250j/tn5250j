@@ -31,13 +31,16 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
+
 import com.ibm.as400.access.*;
 import com.ibm.as400.vaccess.*;
+
 import org.tn5250j.gui.*;
 import org.tn5250j.tnvt;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.My5250;
+import org.tn5250j.Session;
 
 public class SpoolExporter extends JFrame {
 
@@ -63,14 +66,17 @@ public class SpoolExporter extends JFrame {
 
    // Connection vt
    tnvt vt;
+   Session session;
 
    Vector data = new Vector();
    Vector row = new Vector();
    Vector names = new Vector();
 
-   public SpoolExporter(tnvt vt) {
+   public SpoolExporter(tnvt vt, Session session) {
 
       this.vt = vt;
+      this.session = session;
+
       try {
          jbInit();
       }
@@ -542,7 +548,8 @@ public class SpoolExporter extends JFrame {
       jpm.addSeparator();
       action = new AbstractAction(LangTool.getString("spool.optionExport")) {
          public void actionPerformed(ActionEvent e) {
-            SpoolExportWizard sew = new SpoolExportWizard(getSpooledFile(row));
+            SpoolExportWizard sew = new SpoolExportWizard(getSpooledFile(row),
+                                                            session);
             sew.show();
          }
       };

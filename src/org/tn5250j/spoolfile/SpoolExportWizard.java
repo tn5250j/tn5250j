@@ -33,6 +33,7 @@ import javax.swing.*;
 import java.io.*;
 import com.ibm.as400.access.*;
 import com.ibm.as400.vaccess.*;
+
 import org.tn5250j.tools.*;
 import org.tn5250j.event.WizardListener;
 import org.tn5250j.event.WizardEvent;
@@ -40,6 +41,8 @@ import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.My5250;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.Session;
+
 import com.lowagie.text.pdf.*;
 import com.lowagie.text.*;
 
@@ -94,6 +97,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
    // Spooled File
    SpooledFile splfile;
 
+   Session session;
+
    JPanel two;
 
    // Wizard
@@ -112,10 +117,11 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
    private String conicalPath;
 
    //Construct the frame
-   public SpoolExportWizard(SpooledFile splfile) {
+   public SpoolExportWizard(SpooledFile splfile, Session session) {
 
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       this.splfile = splfile;
+      this.session = session;
 
       try {
          jbInit();
@@ -472,8 +478,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    private void emailMe() {
 
-      SendEMailDialog semd = new SendEMailDialog(this
-                                 ,conicalPath);
+      SendEMailDialog semd = new SendEMailDialog(this,
+                                 session,conicalPath);
 
    }
 

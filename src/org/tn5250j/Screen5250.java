@@ -118,7 +118,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public boolean pendingInsert = false;
 
    private Gui5250 gui;
-   private Properties appProps = null;
    private int cursorSize = 0;
    private boolean hotSpots = false;
    private boolean showHex = false;
@@ -154,11 +153,16 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private boolean resetRequired;
    private int cursorBottOffset;
    private boolean defaultPrinter;
+   private SessionConfig config;
 
-   public Screen5250(Gui5250 gui, Properties props) {
+   public Screen5250(Gui5250 gui, SessionConfig config) {
+
       this.gui = gui;
 
-      loadProps(props);
+      this.config = config;
+
+      // load the session properties from it's profile.
+      loadProps();
 
       try {
          jbInit();
@@ -170,9 +174,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    void jbInit() throws Exception {
 
-      if (!appProps.containsKey("font")) {
+      if (!config.isPropertyExists("font")) {
          font = new Font("dialoginput",Font.BOLD,14);
-         appProps.setProperty("font","dialoginput");
+         config.setProperty("font","dialoginput");
       }
       else {
          font = new Font(getStringProperty("font"),Font.PLAIN,14);
@@ -235,12 +239,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       gui.repaint();
    }
 
-   public void loadProps(Properties props) {
+   public void loadProps() {
 
-      appProps = props;
       loadColors();
 
-      if (appProps.containsKey("colSeparator")) {
+      if (config.isPropertyExists("colSeparator")) {
          if (getStringProperty("colSeparator").equals("Line"))
             colSepLine = 0;
          if (getStringProperty("colSeparator").equals("ShortLine"))
@@ -249,47 +252,47 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             colSepLine = 2;
       }
 
-      if (appProps.containsKey("showAttr")) {
+      if (config.isPropertyExists("showAttr")) {
          if (getStringProperty("showAttr").equals("Hex"))
             showHex = true;
       }
 
-      if (appProps.containsKey("guiInterface")) {
+      if (config.isPropertyExists("guiInterface")) {
          if (getStringProperty("guiInterface").equals("Yes"))
             guiInterface = true;
          else
             guiInterface = false;
       }
 
-      if (appProps.containsKey("guiShowUnderline")) {
+      if (config.isPropertyExists("guiShowUnderline")) {
          if (getStringProperty("guiShowUnderline").equals("Yes"))
             guiShowUnderline = true;
          else
             guiShowUnderline = false;
       }
 
-      if (appProps.containsKey("hotspots")) {
+      if (config.isPropertyExists("hotspots")) {
          if (getStringProperty("hotspots").equals("Yes"))
             hotSpots = true;
          else
             hotSpots = false;
       }
 
-      if (appProps.containsKey("hsMore")) {
+      if (config.isPropertyExists("hsMore")) {
          if (getStringProperty("hsMore").length() > 0) {
             hsMore.setLength(0);
             hsMore.append(getStringProperty("hsMore"));
          }
       }
 
-      if (appProps.containsKey("hsBottom")) {
+      if (config.isPropertyExists("hsBottom")) {
          if (getStringProperty("hsBottom").length() > 0) {
             hsBottom.setLength(0);
             hsBottom.append(getStringProperty("hsBottom"));
          }
       }
 
-      if (appProps.containsKey("colSeparator")) {
+      if (config.isPropertyExists("colSeparator")) {
          if (getStringProperty("colSeparator").equals("Line"))
             colSepLine = 0;
          if (getStringProperty("colSeparator").equals("ShortLine"))
@@ -298,7 +301,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             colSepLine = 2;
       }
 
-      if (appProps.containsKey("cursorSize")) {
+      if (config.isPropertyExists("cursorSize")) {
          if (getStringProperty("cursorSize").equals("Full"))
             cursorSize = 2;
          if (getStringProperty("cursorSize").equals("Half"))
@@ -308,7 +311,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       }
 
-      if (appProps.containsKey("crossHair")) {
+      if (config.isPropertyExists("crossHair")) {
          if (getStringProperty("crossHair").equals("None"))
             crossHair = 0;
          if (getStringProperty("crossHair").equals("Horz"))
@@ -320,23 +323,23 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       }
 
-      if (appProps.containsKey("fontScaleHeight")) {
+      if (config.isPropertyExists("fontScaleHeight")) {
          sfh = getFloatProperty("fontScaleHeight");
       }
 
-      if (appProps.containsKey("fontScaleWidth")) {
+      if (config.isPropertyExists("fontScaleWidth")) {
          sfw = getFloatProperty("fontScaleWidth");
       }
 
-      if (appProps.containsKey("fontPointSize")) {
+      if (config.isPropertyExists("fontPointSize")) {
          ps132 = getFloatProperty("fontPointSize");
       }
 
-      if (appProps.containsKey("cursorBottOffset")) {
+      if (config.isPropertyExists("cursorBottOffset")) {
          cursorBottOffset = getIntProperty("cursorBottOffset");
       }
 
-      if (appProps.containsKey("defaultPrinter")) {
+      if (config.isPropertyExists("defaultPrinter")) {
          if (getStringProperty("defaultPrinter").equals("Yes"))
             defaultPrinter = true;
          else
@@ -366,66 +369,66 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       colorCursor = Color.white;
 
 
-      if (!appProps.containsKey("colorBg"))
+      if (!config.isPropertyExists("colorBg"))
          setProperty("colorBg",Integer.toString(colorBg.getRGB()));
       else {
          colorBg = getColorProperty("colorBg");
       }
       gui.setBackground(colorBg);
 
-      if (!appProps.containsKey("colorBlue"))
+      if (!config.isPropertyExists("colorBlue"))
          setProperty("colorBlue",Integer.toString(colorBlue.getRGB()));
       else
          colorBlue = getColorProperty("colorBlue");
 
-      if (!appProps.containsKey("colorTurq"))
+      if (!config.isPropertyExists("colorTurq"))
          setProperty("colorTurq",Integer.toString(colorTurq.getRGB()));
       else
          colorTurq = getColorProperty("colorTurq");
 
-      if (!appProps.containsKey("colorRed"))
+      if (!config.isPropertyExists("colorRed"))
          setProperty("colorRed",Integer.toString(colorRed.getRGB()));
       else
          colorRed = getColorProperty("colorRed");
 
-      if (!appProps.containsKey("colorWhite"))
+      if (!config.isPropertyExists("colorWhite"))
          setProperty("colorWhite",Integer.toString(colorWhite.getRGB()));
       else
          colorWhite = getColorProperty("colorWhite");
 
-      if (!appProps.containsKey("colorYellow"))
+      if (!config.isPropertyExists("colorYellow"))
          setProperty("colorYellow",Integer.toString(colorYellow.getRGB()));
       else
          colorYellow = getColorProperty("colorYellow");
 
-      if (!appProps.containsKey("colorGreen"))
+      if (!config.isPropertyExists("colorGreen"))
          setProperty("colorGreen",Integer.toString(colorGreen.getRGB()));
       else
          colorGreen = getColorProperty("colorGreen");
 
-      if (!appProps.containsKey("colorPink"))
+      if (!config.isPropertyExists("colorPink"))
          setProperty("colorPink",Integer.toString(colorPink.getRGB()));
       else
          colorPink = getColorProperty("colorPink");
 
-      if (!appProps.containsKey("colorGUIField"))
+      if (!config.isPropertyExists("colorGUIField"))
          setProperty("colorGUIField",Integer.toString(colorGUIField.getRGB()));
       else
          colorGUIField = getColorProperty("colorGUIField");
 
-      if (!appProps.containsKey("colorCursor"))
+      if (!config.isPropertyExists("colorCursor"))
          setProperty("colorCursor",Integer.toString(colorCursor.getRGB()));
       else
          colorCursor = getColorProperty("colorCursor");
 
-      if (!appProps.containsKey("colorSep")) {
+      if (!config.isPropertyExists("colorSep")) {
          colorSep = colorWhite;
          setProperty("colorSep",Integer.toString(colorSep.getRGB()));
       }
       else
          colorSep = getColorProperty("colorSep");
 
-      if (!appProps.containsKey("colorHexAttr")) {
+      if (!config.isPropertyExists("colorHexAttr")) {
          colorHexAttr = colorWhite;
          setProperty("colorHexAttr",Integer.toString(colorHexAttr.getRGB()));
       }
@@ -436,51 +439,31 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    protected final String getStringProperty(String prop) {
 
-      return (String)appProps.get(prop);
+      return config.getStringProperty(prop);
 
    }
 
    protected final Color getColorProperty(String prop) {
 
-      if (appProps.containsKey(prop)) {
-         Color c = new Color(getIntProperty(prop));
-         return c;
-      }
-      else
-         return null;
+      return config.getColorProperty(prop);
 
    }
 
    protected final float getFloatProperty(String prop) {
 
-      if (appProps.containsKey(prop)) {
-         float f = Float.parseFloat((String)appProps.get(prop));
-         return f;
-      }
-      else
-         return 0.0f;
+      return config.getFloatProperty(prop);
 
    }
 
    protected final int getIntProperty(String prop) {
 
-      if (appProps.containsKey(prop)) {
-         try {
-            int i = Integer.parseInt((String)appProps.get(prop));
-            return i;
-         }
-         catch (NumberFormatException ne) {
-            return 0;
-         }
-      }
-      else
-         return 0;
+      return config.getIntegerProperty(prop);
 
    }
 
    protected final void setProperty(String key, String val) {
 
-      appProps.setProperty(key,val);
+      config.setProperty(key,val);
 
    }
 
@@ -992,7 +975,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       System.out.println(workR);
 
       // loop through all the screen characters to send them to the clip board
-      int m = workR.x - 1;
+      int m = workR.x;
       int i = 0;
       int t = 0;
 
@@ -1017,15 +1000,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       Vector sumVector = new Vector();
 
-      while (workR.height-- > 0) {
+      while (workR.height-- >= 0) {
          t = workR.width;
-         i = workR.y - 1;
-         while (t-- > 0) {
+         i = workR.y;
+         while (t-- >= 0) {
 
             // only copy printable numeric characters (in this case >= ' ')
-            char c = screen[getPos(m,i)].getChar();
+            char c = screen[getPos(m-1,i-1)].getChar();
             if (((c >= '0' && c <= '9') || c== '.' || c == ',' || c == '-')
-                                    && !screen[getPos(m,i)].nonDisplay) {
+                                    && !screen[getPos(m-1,i-1)].nonDisplay) {
                s.append(c);
             }
             i++;
@@ -1218,9 +1201,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //      return getPos((numRows - ((((fmHeight * (numRows)) - y) / fmHeight))),
 //                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
 //                  );
-      return getPos(s0,
-                     s1
-                  );
+      return getPos(s0,s1);
 
 //      return 0;
    }
@@ -2074,6 +2055,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             else {
                setPrehelpState(false,isKeyboardLocked(),false);
             }
+            gui.repaint();
             simulated = true;
             break;
          case COPY :
@@ -4046,7 +4028,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //      }
       if (gui.isVisible()) {
          if (height > 0 && width > 0) {
+
             bi.drawImageBuffer(gg2d,x,y,width,height);
+//      gui.repaint();
+
 //            System.out.println(" something went right finally " + gui.isVisible() +
 //                           " height " + height + " width " + width);
          }
@@ -4062,7 +4047,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    protected void updateImage(Rectangle r) {
       updateImage(r.x,r.y,r.width,r.height);
-
    }
 
    protected void paintComponent3(Graphics g) {
@@ -4079,6 +4063,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    protected void paintComponent2(Graphics2D g2) {
+
+      if (bi == null) {
+         paintComponent3(g2);
+      }
 
       Rectangle r = g2.getClipBounds();
 
@@ -4127,7 +4115,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          }
          lr += numCols;
       }
-
    }
 
    /**

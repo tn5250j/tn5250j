@@ -1,5 +1,3 @@
-package org.tn5250j;
-
 /*
  * @(#)Session.java
  * Copyright:    Copyright (c) 2001
@@ -20,15 +18,16 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
 
+import java.util.*;
+import javax.swing.*;
 
 import org.tn5250j.*;
 import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.scripting.InterpreterDriverManager;
-import java.util.*;
-import javax.swing.*;
 
 /**
  * A host session
@@ -44,10 +43,11 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    private SessionChangeEvent sce;
    private String sslType;
 
-   public Session (My5250 m, Properties props, String configurationResource
-                                                , String sessionName) {
+   public Session (My5250 m, Properties props, String configurationResource,
+                     String sessionName,
+                     SessionConfig config) {
 
-      super(m,configurationResource,false);
+      super(m,config);
       this.configurationResource = configurationResource;
       this.sessionName = sessionName;
       sesProps = props;
@@ -72,7 +72,10 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    }
 
    public String getAllocDeviceName() {
-      return vt.getAllocatedDeviceName();
+      if (vt != null)
+         return vt.getAllocatedDeviceName();
+      else
+         return null;
    }
 
    public int getSessionType() {
