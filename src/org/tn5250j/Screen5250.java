@@ -890,6 +890,40 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    /**
+    * Fills the passed Rectangle with the starting row and column and width
+    * and height of the selected area.
+    *
+    * If there is no area bounded then the full screen area is returned.
+    *
+    * @param bounds
+    */
+   public void getBoundingArea(Rectangle bounds) {
+
+      // check to see if there is an area selected.  If not then return all
+      //    screen area.
+      if (!gui.rubberband.isAreaSelected()) {
+
+         bounds.setBounds(1,1,getRows(),getCols());
+      }
+      else {
+         // lets get the bounding area using a rectangle that we have already
+         // allocated
+         gui.rubberband.getBoundingArea(bounds);
+
+         // get starting row and column
+         int sPos = getRowColFromPoint(bounds.x ,
+                                    bounds.y );
+         // get the width and height
+         int ePos = getRowColFromPoint(bounds.width ,
+                                    bounds.height );
+         int row = getRow(sPos) + 1;
+         int col = getCol(sPos) + 1;
+
+         bounds.setBounds(row,col,getCol(ePos),getRow(ePos));
+      }
+   }
+
+   /**
     *
     * Copy & Paste end code
     *
@@ -905,20 +939,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       StringBuffer s = new StringBuffer();
 
-      // lets get the bounding area using a rectangle that we have already
-      // allocated
-      gui.rubberband.getBoundingArea(workR);
+      getBoundingArea(workR);
 
-      // get starting row and column
-      int sPos = getRowColFromPoint(workR.x ,
-                                 workR.y );
-      // get the width and height
-      int ePos = getRowColFromPoint(workR.width ,
-                                 workR.height );
-      int row = getRow(sPos);
-      int col = getCol(sPos);
-
-      workR.setBounds(row,col,getCol(ePos),getRow(ePos));
       gui.rubberband.reset();
       gui.repaint();
 
@@ -926,7 +948,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       System.out.println(workR);
 
       // loop through all the screen characters to send them to the clip board
-      int m = workR.x;
+      int m = workR.x - 1;
       int i = 0;
       int t = 0;
 
@@ -953,7 +975,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       while (workR.height-- > 0) {
          t = workR.width;
-         i = workR.y;
+         i = workR.y - 1;
          while (t-- > 0) {
 
             // only copy printable numeric characters (in this case >= ' ')
