@@ -5,7 +5,33 @@ because I could not find a 5250 emulator of Linux with the enhanced functions
 like graphical windows, cursor progression, continued edit fields, masked edit
 fields etc.....
 
-new 0.5.7 release candidate 1
+Changes since 0.5.7 pre release 1
+
+Added antialias option for font use
+
+Added Hide tab when only one tab option to connections dialog
+
+Added tabs for options on the connections dialog
+
+Added check to make system name obligatory when adding systems
+
+Fixed connection dialog to allow double click on session to connect instead
+of having to select it first.
+
+Enhanced the spool file dialog to allow entering information and the option is
+automatically selected.
+
+Fixed an error when a window is defined with only a header or footer where
+the window border does not show up.
+
+Made file transfer dialog non modal within it's own frame so that it can
+be minimized or moved out of the way.
+
+Added code page 297 support for finnish
+
+Other small bug fixes
+
+0.5.7 pre release 1
 
 Changed File transfer to add the column headers then text then field depending
 on whether they exist or not for include full text.
