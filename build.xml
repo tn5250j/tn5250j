@@ -2,39 +2,78 @@
 
 <project name="tn5250j" default="info" basedir=".">
 
-	<!-- global properties -->
-	<property name="source.dir"		    value="${basedir}/src" />
-	<property name="build.dir"          value="${basedir}/build" />
-   <property name="build.classes.dir"  value="${build.dir}"/>
-	<property name="dist.dir"           value="${basedir}/dist" />
-	<property name="javadoc.dir"	    value="${basedir}/javadoc" />
-	<property name="lib.dir"		    value="${basedir}/lib" />
-	<property name="conf.dir"		    value="${basedir}/conf" />
-	<property name="jarname"	        value="my5250.jar" />
-	<property name="zipsrcname"	        value="tn5250j_src.zip" />
+    <!-- global properties -->
 
-	<!-- classpath -->
-	<path id="classpath">
-        <pathelement path="${build.classes.dir}" />
-        <pathelement path="${conf.dir}" />
-      	<fileset dir="${lib.dir}" >
-			<include name="*.jar" />
-			<include name="*.zip" />
-		</fileset>
-	</path>
+   <property name="name" value="tn5250j"/>
+   <property name="Name" value="Tn5250j"/>
+   <property name="version" value="0.5.3"/>
+   <property name="year" value="2001-2002"/>
 
+   <property name="source.dir" value="${basedir}/src" />
+   <property name="build.dir" value="${basedir}/build" />
+   <property name="build.classes.dir" value="${build.dir}"/>
+   <property name="dist.dir" value="${basedir}/dist" />
+   <property name="javadoc.dir" value="${build.dir}/javadoc" />
+   <property name="lib.dir" value="${basedir}/lib" />
+   <property name="conf.dir" value="${basedir}/conf" />
 
-	<!-- the ftp task can be used to transfer files to a remote system -->
-	<!--
-	<taskdef name="ftp"
-		 classname="org.apache.tools.ant.taskdefs.optional.net.FTP"
-		 classpath="${ant_home}/lib/optional.jar"
+   <property name="main.class" value="org.tn5250j.My5250"/>
+   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar"/>
+
+    <!-- compile options -->
+    <property name="debug" value="off"/>
+    <property name="optimize" value="off"/>
+
+    <!-- <property name="jarname" value="my5250.jar" />-->
+    <property name="jarname" value="${name}.jar" />
+    <!--<property name="zipsrcname" value="tn5250j_src.zip" />-->
+    <property name="dist.base.name" value="${name}-${version}" />
+    <property name="dist.src.name" value="${dist.base.name}-src" />
+    <property name="dist.bin.name" value="${dist.base.name}-bin" />
+
+    <!-- classpath -->
+    <path id="classpath">
+       <pathelement path="${build.classes.dir}" />
+       <pathelement path="${conf.dir}" />
+       <fileset dir="${lib.dir}" >
+          <include name="*.jar" />
+          <include name="*.zip" />
+       </fileset>
+    </path>
+
+    <!-- files for binary distribution -->
+    <fileset dir="${source.dir}" id="dist.bin">
+       <include name="${build.dir}/${jarname}"/>
+       <include name="COPYING"/>
+       <include name="*.txt"/>
+       <include name="*.html"/>
+       <include name="*.jar"/>
+       <exclude name="antbuild.txt"/>
+       <exclude name="build.xml"/>
+       <exclude name="org/**"/>
+       <exclude name="*.gif"/>
+       <exclude name="*.properties"/>
+    </fileset>
+
+    <!-- files for source distribution -->
+    <!--<fileset dir="${source.dir}" id="dist.src">-->
+    <fileset dir="${basedir}" id="dist.src">
+       <include name="build.xml"/>
+       <include name="src/**"/>
+    </fileset>
+
+    <!-- the ftp task can be used to transfer files to a remote system -->
+    <!--
+    <taskdef name="ftp"
+             classname="org.apache.tools.ant.taskdefs.optional.net.FTP"
+             classpath="${ant_home}/lib/optional.jar"
     />
-	-->
+    -->
 
-
-
-	<target name="info" description="Prints a short summary of this project">
+    <!-- =================================================================== -->
+    <!-- Shows some information                                              -->
+    <!-- =================================================================== -->
+    <target name="info" description="Prints a short summary of this project">
         <echo message="" />
         <echo message="tn5250j:" />
         <echo message="========" />
@@ -42,121 +81,191 @@
         <echo message="This application is an open source implementation" />
         <echo message="of telnet 5250 in java" />
         <echo message="" />
-	</target>
-
-
-
-	<target name="prepare">
-	    <!-- set time stamp -->
-	    <tstamp/>
-	    <!-- directory structure -->
-		<mkdir dir="${build.dir}" />
-		<mkdir dir="${build.classes.dir}" />
-		<mkdir dir="${javadoc.dir}" />
-		<mkdir dir="${dist.dir}" />
-
-	    <!-- printout some useful status information -->
-        <echo message="ant.java.version:      ${ant.java.version}" />
-        <echo message="ant.file:              ${ant.file}" />
         <echo message="" />
-        <!--
-        <echo message="java.version:                   ${java.version}" />
-        <echo message="java.vendor:                    ${java.vendor}" />
-        <echo message="java.vendor.url:                ${java.vendor.url}" />
-        <echo message="java.home:                      ${java.home}" />
+        <echo message="Use 'ant -projecthelp' to show available targets" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Prepares the build directory                                        -->
+    <!-- =================================================================== -->
+    <target name="prepare">
+    <!-- set time stamp -->
+        <tstamp/>
+        <!-- directory structure -->
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${build.classes.dir}" />
+        <mkdir dir="${javadoc.dir}" />
+        <mkdir dir="${dist.dir}" />
+
+        <echo message="------------------- ${Name} ${version} [${year}] ----------------"/>
+
+        <!-- printout some useful status information -->
+        <echo message="ant.java.version:        ${ant.java.version}" />
+        <echo message="ant.file:                ${ant.file}" />
         <echo message="" />
-		-->
+
+        <echo message="java.vm.version:         ${java.vm.version}" />
+        <echo message="java.vm.vendor:          ${java.vm.vendor}" />
+        <echo message="java.vm.name:            ${java.vm.name}" />
+        <echo message="" />
+
+        <echo message="os.name:                 ${os.name}" />
+        <echo message="os.arch:                 ${os.arch}" />
+        <echo message="os.version:              ${os.version}" />
         <!--
-        <echo message="java.vm.specification.version:  ${java.vm.specification.version}" />
-        <echo message="java.vm.specification.vendor:   ${java.vm.specification.vendor}" />
-        <echo message="java.vm.specification.name:     ${java.vm.specification.name}" />
+        <echo message="" />
+        <echo message="file.separator:          ${file.separator}" />
+        <echo message="path.separator:          ${path.separator}" />
+        <echo message="line.separator:          ${line.separator}" />
+        <echo message="" />
+        <echo message="user.name:               ${user.name}" />
+        <echo message="user.home:               ${user.home}" />
+        <echo message="user.dir:                ${user.dir}" />
         -->
-        <echo message="java.vm.version:       ${java.vm.version}" />
-        <echo message="java.vm.vendor:        ${java.vm.vendor}" />
-        <echo message="java.vm.name:          ${java.vm.name}" />
-        <echo message="" />
-        <!--
-        <echo message="java.specification.version:     ${java.specification.version}" />
-        <echo message="java.specification.vendor:      ${java.specification.vendor}" />
-        <echo message="java.specification.name:        ${java.specification.name}" />
-        <echo message="" />
-        <echo message="java.class.version:             ${java.class.version}" />
-        <echo message="java.class.path:                ${java.class.path}" />
-        <echo message="java.ext.dirs:                  ${java.ext.dirs}" />
-        <echo message="" />
-        -->
-        <echo message="os.name:               ${os.name}" />
-        <echo message="os.arch:               ${os.arch}" />
-        <echo message="os.version:            ${os.version}" />
-        <!--
-        <echo message="" />
-        <echo message="file.separator:                 ${file.separator}" />
-        <echo message="path.separator:                 ${path.separator}" />
-        <echo message="line.separator:                 ${line.separator}" />
-        <echo message="" />
-        <echo message="user.name:                      ${user.name}" />
-        <echo message="user.home:                      ${user.home}" />
-        <echo message="user.dir:                       ${user.dir}" />
-		-->
-	</target>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Cleans build directory                                              -->
+    <!-- =================================================================== -->
+    <target name="clean" description="Cleanup your workspace (delete build-directory, ...)">
+        <delete dir="${build.dir}" />
+        <delete dir="${build.classes.dir}" />
+        <delete dir="${javadoc.dir}" />
+        <delete dir="${dist.dir}" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- =================================================================== -->
+    <target name="compile" depends="prepare" description="Compile your source-files">
+        <javac srcdir="${source.dir}"
+                destdir="${build.classes.dir}"
+                excludes="**/Cvs/**,**/*.ini" >
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory with deprecation turned on            -->
+    <!-- =================================================================== -->
+    <target name="compile-dep" depends="prepare" description="Compile your source-files with deprecation turned on">
+        <javac srcdir="${source.dir}"
+                destdir="${build.classes.dir}"
+                includes="**/*.java"
+                debug="${debug}"
+                optimize="${optimize}"
+                deprecation="on">
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the API documentation                                       -->
+    <!-- =================================================================== -->
+    <target name= "javadoc" depends="prepare" description="Creates the javadoc API documentation">
+        <javadoc packagenames="org.*" sourcepath="${source.dir}" destdir="${javadoc.dir}"
+                doctitle="${Name}"
+                windowtitle="Javadoc for ${Name} (Telnet 5250 in Java)"
+                header="tn5250j"
+                footer="tn5250j">
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the Jar                                                     -->
+    <!-- =================================================================== -->
+    <target name= "package" depends="compile" description="Create a Jar-File of your compiled classes">
+        <tstamp><format property="ts" pattern="yyyyMMdd-HHmmss-z"/> </tstamp>
+
+        <jar jarfile="${build.dir}/${jarname}" manifest="${source.dir}/Meta-inf/Manifest.mf">
+            <fileset dir="${build.classes.dir}"
+                    includes="*org/**"/>
+            <fileset dir="${source.dir}"
+                    includes="*.properties,*.props,*.gif,*.jpg"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="${runtime.classpath}"/>
+                <attribute name="Implementation-Title" value="${Name}"/>
+                <attribute name="Implementation-Version" value="${version}"/>
+                <attribute name="Implementation-Vendor" value="http://tn5250j.sourceforge.net"/>
+                <attribute name="Build-Id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}])"/>
+            </manifest>
+        </jar>
+    </target>
 
 
-
-	<target name="clean" description="Cleanup your workspace (delete build-directory, ...)">
-		<delete dir="${build.dir}" />
-		<delete dir="${build.classes.dir}" />
-		<delete dir="${javadoc.dir}" />
-		<delete dir="${dist.dir}" />
-	</target>
+    <target name= "all" depends="clean, compile, package"   description="Clean, Compile, Jar">
+    </target>
 
 
+    <!-- =================================================================== -->
+    <!-- Creates the distribution                                            -->
+    <!-- =================================================================== -->
+    <target name= "dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
+    </target>
 
-	<target name="compile" depends="prepare" description="Compile your source-files">
-		<javac srcdir="${source.dir}" destdir="${build.classes.dir}"
-			excludes="**/Cvs/**,**/*.ini" >
-			<classpath>
-				<path refid="classpath"/>
-			</classpath>
-		</javac>
-	</target>
+    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz" description="Create a Zip and TGZ Archives with all the binary files">
+    </target>
 
+    <target name= "dist-bin-prepare" depends="package"  description="Prepares binary distribution">
+        <delete dir="${dist.dir}/${dist.base.name}"/>
+        <mkdir dir="${dist.dir}/${dist.base.name}"/>
+        <copy todir="${dist.dir}/${dist.base.name}">
+            <fileset refid="dist.bin"/>
+        </copy>
+        <copy todir="${dist.dir}/${dist.base.name}"
+                file="${build.dir}/${jarname}">
+        </copy>
+        </target>
 
+    <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
+        <zip zipfile="${dist.dir}/${dist.bin.name}.zip"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**">
+        </zip>
+    </target>
 
-	<target name= "javadoc" depends="prepare" description="Creates the javadoc API documentation">
-		<javadoc packagenames="org.*" sourcepath="${source.dir}" destdir="${javadoc.dir}"
-		         doctitle="tn5250j"
-		         windowtitle="Telnet 5250 in java"
-		         header="tn5250j"
-		         footer="tn5250j"
-		         >
-			<classpath>
-				<path refid="classpath"/>
-			</classpath>
-		</javadoc>
-	</target>
+    <target name= "dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
+        <tar tarfile="${dist.dir}/${dist.bin.name}.tar"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**">
+        </tar>
+        <gzip zipfile="${dist.dir}/${dist.bin.name}.tgz" src="${dist.dir}/${dist.bin.name}.tar" />
+        <delete file="${dist.dir}/${dist.bin.name}.tar"/>
+    </target>
 
+    <target name= "dist-src" depends="dist-src-zip, dist-src-tgz" description="Create a Zip and TGZ Archives with all source files">
+    </target>
 
+    <target name= "dist-src-prepare" depends="package"  description="Prepares source distribution">
+        <delete dir="${dist.dir}/${dist.base.name}"/>
+        <mkdir dir="${dist.dir}/${dist.base.name}"/>
+        <copy todir="${dist.dir}/${dist.base.name}">
+            <fileset refid="dist.src"/>
+        </copy>
+    </target>
 
-	<target name= "dist" depends="compile"  description="Create a Jar-File of your compiled classes">
-		<jar jarfile="${dist.dir}/${jarname}" manifest="${source.dir}/Meta-inf/Manifest.mf">
-         <fileset dir="${build.dir}"/>
-         <fileset dir="${source.dir}"
-                  includes="*.properties,*.props,*.gif,*.jpg"/>
-      </jar>
-	</target>
+    <target name= "dist-src-zip" depends="dist-src-prepare" description="Create a Zip-File with all the source files">
+        <zip zipfile="${dist.dir}/${dist.src.name}.zip"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**"
+        />
+    </target>
 
-
-
-	<target name= "all" depends="clean, compile, dist"   description="Clean, Compile, Dist">
-	</target>
-
-
-
-	<target name= "zipsrc" depends="prepare"  description="Create a Zip-File with all the source files">
-		<zip zipfile="${dist.dir}/${zipsrcname}"
-		     basedir="${source.dir}"
-		/>
-	</target>
-
+    <target name= "dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
+        <tar tarfile="${dist.dir}/${dist.src.name}.tar"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**">
+        </tar>
+        <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
+        <delete file="${dist.dir}/${dist.src.name}.tar"/>
+    </target>
 
 </project>
