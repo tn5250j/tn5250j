@@ -28,6 +28,8 @@ package org.tn5250j.tools;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.io.*;
+import org.tn5250j.event.KeyChangeListener;
+import javax.swing.KeyStroke;
 
 public class KeyMapper {
 
@@ -35,12 +37,14 @@ public class KeyMapper {
    private static KeyStroker workStroke;
    private static String keyMapName;
    private static String lastKeyMnemonic;
+   private static Vector listeners;
 
    public static void init() {
       if (mappedKeys != null)
          return;
 
       init("keymap");
+      listeners = new Vector();
 
    }
 
@@ -307,6 +311,34 @@ public class KeyMapper {
       return false;
    }
 
+   public final static KeyStroke getKeyStroke(String which) {
+
+      Collection v = mappedKeys.values();
+      Set o = mappedKeys.keySet();
+      Iterator k = o.iterator();
+      Iterator i = v.iterator();
+      while (k.hasNext()) {
+         KeyStroker ks = (KeyStroker)k.next();
+         String keyVal = (String)i.next();
+         if (keyVal.equals(which)) {
+            int mask = 0;
+
+            if (ks.isShiftDown())
+               mask |= KeyEvent.SHIFT_MASK;
+            if (ks.isControlDown())
+               mask |= KeyEvent.CTRL_MASK;
+            if (ks.isAltDown())
+               mask |= KeyEvent.ALT_MASK;
+            if (ks.isAltGrDown())
+               mask |= KeyEvent.ALT_GRAPH_MASK;
+
+            return KeyStroke.getKeyStroke(ks.getKeyCode(),mask);
+         }
+      }
+
+      return KeyStroke.getKeyStroke(0,0);;
+   }
+
    public final static void removeKeyStroke(String which) {
 
       Collection v = mappedKeys.values();
@@ -390,4 +422,36 @@ public class KeyMapper {
 
       return mappedKeys;
    }
+
+   /**
+    * Add a KeyChangeListener to the listener list.
+    *
+    * @param listener  The KeyChangedListener to be added
+    */
+   public static synchronized void addKeyChangeListener(KeyChangeListener listener) {
+
+      if (listeners == null) {
+          listeners = new java.util.Vector(3);
+      }
+      listeners.addElement(listener);
+
+   }
+
+   /**
+    * Notify all registered listeners of the Key Change Event.
+    *
+    */
+   protected static void fireKeyChangeEvent() {
+
+   	if (listeners != null) {
+         System.out.println(" changed key ");
+	      int size = listeners.size();
+	      for (int i = 0; i < size; i++) {
+	         KeyChangeListener target =
+                    (KeyChangeListener)listeners.elementAt(i);
+	         target.onKeyChanged();
+	      }
+   	}
+   }
+
 }

@@ -393,6 +393,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             mapper.setKeyStroke(mnemonicData[functions.getSelectedIndex()],ke);
          strokeDesc.setText(mapper.getKeyStrokeDesc(
                            mnemonicData[functions.getSelectedIndex()]));
+         mapper.fireKeyChangeEvent();
       }
       else {
          if (macros) {
