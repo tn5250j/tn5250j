@@ -34,20 +34,20 @@ import org.tn5250j.Session;
 import org.tn5250j.keyboard.KeyMapper;
 
 /**
- * Copy action
+ * Paste from the clipboard
  */
-public class CopyAction extends EmulatorAction implements TN5250jConstants {
+public class PasteAction extends EmulatorAction implements TN5250jConstants {
 
-   public CopyAction(Session session, KeyMapper keyMap) {
+   public PasteAction(Session session, KeyMapper keyMap) {
       super(session,
-            MNEMONIC_COPY,
-            KeyStroke.getKeyStroke(KeyEvent.VK_C,KeyEvent.ALT_MASK),
+            MNEMONIC_PASTE,
+            KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.ALT_MASK),
             keyMap);
 
    }
 
    public void actionPerformed(ActionEvent e) {
 
-      session.copyMe();
+      session.getScreen().pasteMe(false);
    }
 }

@@ -57,7 +57,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
    static int openFrameCount = 0;
    private Vector myFrameList;
    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
-   
+
    //Construct the frame
    public Gui5250MDIFrame(My5250 m) {
       super(m);
@@ -576,7 +576,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
        public void endDraggingFrame(JComponent f) {
            JInternalFrame frame = (JInternalFrame)f;
-           ((Gui5250)frame.getContentPane()).getScreen().gg2d = null;
+//           ((Gui5250)frame.getContentPane()).getScreen().controllersG2D = null;
             f.validate();
        }
 

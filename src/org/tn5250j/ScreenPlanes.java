@@ -163,7 +163,7 @@ public class ScreenPlanes implements TN5250jConstants {
       screen[pos] = c;
       screenAttr[pos] = (char)attr;
       disperseAttribute(pos,attr);
-      screenIsAttr[pos] = (isAttr ? '1' : '0');
+      screenIsAttr[pos] = (isAttr ? (char)1 : (char)0);
       screenGUI[pos] = initChar;
 
    }
@@ -171,7 +171,7 @@ public class ScreenPlanes implements TN5250jConstants {
    protected void setScreenAttr(int pos, int attr, boolean isAttr) {
 
       screenAttr[pos] = (char)attr;
-      screenIsAttr[pos] = isAttr ? '1' : '0';
+      screenIsAttr[pos] = isAttr ? (char)1 : (char)0;
       disperseAttribute(pos,attr);
       screenGUI[pos] = initChar;
 
@@ -190,7 +190,7 @@ public class ScreenPlanes implements TN5250jConstants {
       //      if (isChanged)
       //         System.out.println(sChar[0] + " - " + c);
       screen[pos] = c;
-      if (screenIsAttr[pos] == '1')
+      if (screenIsAttr[pos] == 1)
          setScreenCharAndAttr(pos,c,32,false);
 
    }
@@ -204,7 +204,7 @@ public class ScreenPlanes implements TN5250jConstants {
    }
 
    protected final boolean isAttributePlace(int pos) {
-      return screenIsAttr[pos] == '1' ? true : false;
+      return screenIsAttr[pos] == 1 ? true : false;
    }
 
    public final void setUseGUI(int pos, int which) {
@@ -221,6 +221,7 @@ public class ScreenPlanes implements TN5250jConstants {
    }
 
    protected void initalizePlanes () {
+
       for (int y = 0;y < screenSize; y++) {
 
          setScreenCharAndAttr(y,initChar,initAttr,false);
@@ -266,20 +267,19 @@ public class ScreenPlanes implements TN5250jConstants {
             System.arraycopy(screenAttr, from, planeChars, 0, len);
             break;
          case PLANE_COLOR:
-//            fillColorPlane(planeChars,from,len);
             System.arraycopy(screenColor, from, planeChars, 0, len);
             break;
          case PLANE_EXTENDED:
             System.arraycopy(screenExtended, from, planeChars, 0, len);
-//            fillExtendedPlane(planeChars,from,len);
             break;
          case PLANE_EXTENDED_GRAPHIC:
             System.arraycopy(screenGUI, from, planeChars, 0, len);
-//            fillExtendedGraphicPlane(screenGUI,from,len);
             break;
          case PLANE_EXTENDED_FIELD:
             System.arraycopy(screenField, from, planeChars, 0, len);
-//            fillExtendedFieldPlane(screenField,from,len);
+            break;
+         case PLANE_IS_ATTR_PLACE:
+            System.arraycopy(screenIsAttr, from, planeChars, 0, len);
             break;
          default:
             System.arraycopy(screen, from, planeChars, 0, len);
@@ -852,9 +852,9 @@ public class ScreenPlanes implements TN5250jConstants {
       screenColor[pos] = c;
       screenExtended[pos] = (char)(ul | cs | nd);
    }
-   
+
    protected boolean checkHotSpots () {
-   
+
    	Screen5250 s = scr;
    	int lenScreen = scr.getScreenLength();
    	boolean hs = false;
@@ -864,20 +864,20 @@ public class ScreenPlanes implements TN5250jConstants {
 	//   Rectangle2D mArea = new Rectangle2D.Float(0,0,0,0);
 	//   Rectangle2D mwArea = new Rectangle2D.Float(0,0,0,0);
 	//   ArrayList mArray = new ArrayList(10);
-	
+
 	      for (int x = 0; x < lenScreen; x++) {
-	
+
 	         hs =false;
 	         if (s.isInField(x,false))
 	            continue;
-	
+
 	         // First check for PF keys
 	         if (x > 0 && screen[x] == 'F') {
 	            if (screen[x + 1] >= '0' &&
 	                     screen[x + 1] <= '9' &&
 	                      screen[x - 1] <= ' ' &&
 	                      (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0) {
-	
+
 	               if (screen[x + 2] >= '0' &&
 	                     screen[x + 2] <= '9' &&
 	                      (screen[x + 3] == '=' ||
@@ -889,10 +889,10 @@ public class ScreenPlanes implements TN5250jConstants {
 	                         screen[x + 3] == '-' ||
 	                         screen[x + 3] == '/')
 	                     hs = true;
-	
+
 	               if (hs) {
 	                  screenGUI[x] = BUTTON_LEFT;
-	
+
 	                  int ns = 0;
 	                  int row = x / numCols;
 	                  while (ns < 2 && ++x / numCols == row) {
@@ -902,19 +902,19 @@ public class ScreenPlanes implements TN5250jConstants {
 	                        ns = 0;
 	                     if (ns <2)
 	                        screenGUI[x] = BUTTON_MIDDLE;
-	
+
 	                  }
-	
+
 	                  // now lets go back and take out gui's that do not belong
 	                  while (screen[--x] <= ' ') {
 	                     screenGUI[x] = NO_GUI;
 	                  }
 	                  screenGUI[x] = BUTTON_RIGHT;
-	
+
 	               }
 	            }
 	         }
-	
+
 	         // now lets check for menus
 	         if (!hs && x > 0 && x < lenScreen - 2 &&
 	               screen[x] == '.' &&
@@ -922,46 +922,46 @@ public class ScreenPlanes implements TN5250jConstants {
 	               (screenExtended[x] & EXTENDED_5250_UNDERLINE) == 0 &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
-	
+
 	            int os = 0;
 	            if ((os = isOption(screen,x,lenScreen,2,3,'.') )> 0) {
 	               hs = true;
-	
+
 	               int stop = x;
 	               int ns = 0;
 	               int row = stop / numCols;
-	
+
 	               while (++stop / numCols == row &&
 	                            (screen[stop] >= ' ' ||
 	                             screen[stop] == 0x0) ) {
-	
+
 	                  if (screen[stop] <= ' ') {
 	                     ns++;
 	                  }
 	                  else
 	                     ns = 0;
-	
+
 	                  if (screen[stop] == '.') {
 	                     int io = 0;
 	                     if ((io = isOption(screen,stop,lenScreen,2,3,'.')) > 0) {
-	
+
 	                        stop = io;
 	                        break;
 	                     }
 	                  }
-	
+
 	                  if (ns > 3)
 	                     break;
 	               }
-	
+
 	               screenGUI[++os] = BUTTON_LEFT;
 	               s.setDirty(os);
-	
+
 	               while (++os < stop) {
 	                  screenGUI[os] = BUTTON_MIDDLE;
 	                  s.setDirty(os);
 	               }
-	
+
 	               // now lets go back and take out gui's that do not belong
 	               while (screen[--stop] <= ' ') {
 	                  screenGUI[stop] = NO_GUI;
@@ -969,10 +969,10 @@ public class ScreenPlanes implements TN5250jConstants {
 	               }
 	               screenGUI[stop] = BUTTON_RIGHT;
 	               s.setDirty(stop);
-	
+
 	            }
 	         }
-	
+
 	         // now lets check for options.
 	         if (!hs && x > 0 && x < lenScreen - 2 &&
 	               screen[x] == '=' &&
@@ -980,59 +980,59 @@ public class ScreenPlanes implements TN5250jConstants {
 	               (screenExtended[x] & EXTENDED_5250_UNDERLINE) == 0 &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
-	
+
 	            int os = 0;
 	            if ((os = isOption(screen,x,lenScreen,2,2,'=') )> 0) {
 	               hs = true;
-	
+
 	               int stop = x;
 	               int ns = 0;
 	               int row = stop / numCols;
-	
+
 	               while (++stop / numCols == row &&
 	                            screen[stop] >= ' ') {
-	
+
 	                  if (screen[stop] == ' ') {
 	                     ns++;
 	                  }
 	                  else
 	                     ns = 0;
-	
+
 	                  if (screen[stop] == '=') {
 	                     int io = 0;
 	                     if ((io = isOption(screen,stop,lenScreen,2,2,'=')) > 0) {
-	
+
 	                        stop = io;
 	                        break;
 	                     }
 	                  }
-	
+
 	                  if (ns > 2)
 	                     break;
 	               }
-	
+
 	               screenGUI[++os] = BUTTON_LEFT;
 	               s.setDirty(os);
-	
+
 	               while (++os < stop) {
 	                  screenGUI[os] = BUTTON_MIDDLE;
 	                  s.setDirty(os);
-	
+
 	               }
-	
+
 	               // now lets go back and take out gui's that do not belong
 	               while (screen[--stop] <= ' ') {
 	                  screenGUI[stop] = NO_GUI;
 	                  s.setDirty(stop);
-	
+
 	               }
 	               screenGUI[stop] = BUTTON_RIGHT;
 	               s.setDirty(stop);
 	            }
 	         }
-	
+
 	         // now lets check for More... .
-	
+
 	         if (!hs && x > 2 && x < lenScreen - hsMore.length() &&
 	               screen[x] == hsMore.charAt(0) &&
 	               screen[x - 1] <= ' ' &&
@@ -1040,7 +1040,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
-	
+
 	            boolean mFlag = true;
 	            int ms = hsMore.length();
 	            int mc = 0;
@@ -1049,22 +1049,22 @@ public class ScreenPlanes implements TN5250jConstants {
 	                  mFlag = false;
 	                  break;
 	               }
-	
+
 	            }
-	
+
 	            if (mFlag) {
 	               hs = true;
-	
+
 	               screenGUI[x] = BUTTON_LEFT_DN;
-	
+
 	               while (--ms > 0) {
 	                  screenGUI[++x] = BUTTON_MIDDLE_DN;
-	
+
 	               }
 	               screenGUI[x] = BUTTON_RIGHT_DN;
 	            }
 	         }
-	
+
 	         // now lets check for Bottom .
 	         if (!hs && x > 2 && x < lenScreen - hsBottom.length() &&
 	               screen[x] == hsBottom.charAt(0) &&
@@ -1073,7 +1073,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
-	
+
 	            boolean mFlag = true;
 	            int bs = hsBottom.length();
 	            int bc = 0;
@@ -1082,22 +1082,22 @@ public class ScreenPlanes implements TN5250jConstants {
 	                  mFlag = false;
 	                  break;
 	               }
-	
+
 	            }
-	
+
 	            if (mFlag) {
 	               hs = true;
-	
+
 	               screenGUI[x] = BUTTON_LEFT_UP;
-	
+
 	               while (--bs > 0) {
 	                  screenGUI[++x] = BUTTON_MIDDLE_UP;
-	
+
 	               }
 	               screenGUI[x] = BUTTON_RIGHT_UP;
 	            }
 	         }
-	
+
 	         // now lets check for HTTP:// .
 	         if (!hs && x > 0 && x < lenScreen - 7 &&
 	               Character.toLowerCase(screen[x]) == 'h' &&
@@ -1105,31 +1105,31 @@ public class ScreenPlanes implements TN5250jConstants {
 	               screenGUI[x] == NO_GUI &&
 	               (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
 	            ) {
-	
+
 	            if (Character.toLowerCase(screen[x+1]) == 't' &&
 	                  Character.toLowerCase(screen[x+2]) == 't' &&
 	                  Character.toLowerCase(screen[x+3]) == 'p' &&
 	                  screen[x+4] == ':' &&
 	                  screen[x+5] == '/' &&
 	                  screen[x+6] == '/' ) {
-	
+
 	               hs = true;
-	
+
 	               screenGUI[x] = BUTTON_LEFT_EB;
-	
+
 	               while (screen[++x] > ' ') {
 	                  screenGUI[x] = BUTTON_MIDDLE_EB;
-	
+
 	               }
 	               screenGUI[--x] = BUTTON_RIGHT_EB;
 	            }
 	         }
 	         if (!retHS && hs)
 	            retHS = true;
-	
+
 	      }
-	      
-	
+
+
 	//      int pos = 0;
 	//
 	//      mArea.setRect(0,0,0,0);
@@ -1173,7 +1173,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	//                                       (int)mArea.getWidth(),
 	//                                       (int)mArea.getHeight()) ));
 	//      }
-	
+
 
       return retHS;
 	}
@@ -1189,7 +1189,7 @@ public class ScreenPlanes implements TN5250jConstants {
 	   int os = 0;
 	   // check to the left for option
 	   while (--sp >=0 &&  screen[sp] <= ' ' ) {
-	
+
 	      if (x - sp > numPref || screen[sp] == suff||
 	               screen[sp] == '.' ||
 	               screen[sp] == '*') {
@@ -1198,12 +1198,12 @@ public class ScreenPlanes implements TN5250jConstants {
 	         break;
 	      }
 	   }
-	
+
 	   // now lets check for how long the option is it has to be numPref or less
 	   os = sp;
 	   while (hs && --os > 0 && screen[os] > ' ' ) {
 	//      System.out.println(" hs2 length " + (sp-os) + " " + screen[os].getChar());
-	
+
 	      if (sp - os >= numPref || screen[os] == suff ||
 	               screen[os] == '.' ||
 	               screen[os] == '*') {
@@ -1215,9 +1215,9 @@ public class ScreenPlanes implements TN5250jConstants {
 	   if (sp - os > 1 && !Character.isDigit(screen[os+1])) {
 	      hs = false;
 	   }
-	
+
 	   sp = x;
-	
+
 	   if (Character.isDigit(screen[sp+1]))
 	      hs = false;
 	   // now lets make sure there are no more than numSuff spaces after option

@@ -48,6 +48,6 @@ public class HotspotsAction extends EmulatorAction implements TN5250jConstants {
 
    public void actionPerformed(ActionEvent e) {
 
-      session.getScreen().toggleHotSpots();
+      session.toggleHotSpots();
    }
 }

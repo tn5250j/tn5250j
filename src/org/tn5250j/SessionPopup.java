@@ -59,7 +59,7 @@ public class SessionPopup implements TN5250jConstants {
       screen = session.getScreen();
       JMenuItem mi;
 
-      final int pos = screen.getPosFromView(me.getX(),me.getY());
+      final int pos = session.getPosFromView(me.getX(),me.getY());
 
       if (!session.rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
          action = new AbstractAction(LangTool.getString("popup.copy")) {
@@ -94,7 +94,7 @@ public class SessionPopup implements TN5250jConstants {
 
          action = new AbstractAction(LangTool.getString("popup.copy")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.copyMe();
+                  session.copyMe();
                   session.getFocusForMe();
                }
            };
@@ -121,7 +121,7 @@ public class SessionPopup implements TN5250jConstants {
          if (session.rubberband.isAreaSelected()) {
 
             // get the bounded area of the selection
-            screen.getBoundingArea(workR);
+            session.getBoundingArea(workR);
 
             popup.addSeparator();
 
@@ -158,7 +158,7 @@ public class SessionPopup implements TN5250jConstants {
 
          action = new AbstractAction(LangTool.getString("popup.printScreen")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.printMe();
+                  session.printMe();
                   session.getFocusForMe();
                }
            };
@@ -506,7 +506,7 @@ public class SessionPopup implements TN5250jConstants {
    private void sumArea(boolean which) {
 
 
-      Vector sumVector = screen.sumThem(which);
+      Vector sumVector = session.sumThem(which);
       Iterator l = sumVector.iterator();
       double sum = 0.0;
       double inter = 0.0;
@@ -641,7 +641,7 @@ public class SessionPopup implements TN5250jConstants {
 
    private void printMe() {
 
-      screen.printMe();
+      session.printMe();
       session.getFocusForMe();
    }
 

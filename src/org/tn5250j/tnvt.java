@@ -1,5 +1,5 @@
 /**
- * Title: tnvt.java 
+ * Title: tnvt.java
  * Copyright: Copyright (c) 2001 Company:
  *
  * @author Kenneth J. Pouncey
@@ -770,6 +770,31 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		}
 	}
 
+        public final void systemRequest(String sr)
+        {
+          byte[] bytes = null;
+
+          if ( (sr != null) && (sr.length() != 0))
+          {
+            for (int i = 0, l = sr.length(); i < l; i++)
+            {
+              baosp.write(codePage.uni2ebcdic(sr.charAt(i)));
+            }
+            bytes = baosp.toByteArray();
+//       baosp.reset();
+          }
+
+          try
+          {
+            writeGDS(4, 0, bytes);
+          }
+          catch (IOException ioe)
+          {
+            System.out.println(ioe.getMessage());
+          }
+          baosp.reset();
+        }
+
 	/**
 	 * Cancel Invite - taken from the rfc1205 - 5250 Telnet interface section
 	 * 4.3
@@ -1149,9 +1174,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			//         execCmd();
 			//      else {
 
-			if (screen52.isHotSpots()) {
-				screen52.checkHotSpots();
-			}
+//			if (screen52.isHotSpots()) {
+//				screen52.checkHotSpots();
+//			}
 
 			try {
 				//               SwingUtilities.invokeAndWait(
@@ -3249,9 +3274,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return codePage;
 	}
 
-	public final Dimension getPreferredSize() {
-		return screen52.getPreferredSize();
-	}
+//	public final Dimension getPreferredSize() {
+//		return screen52.getPreferredSize();
+//	}
 
 	/**
 	 * KJP - 20/02/2003 taken out

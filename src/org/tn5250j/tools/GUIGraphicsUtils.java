@@ -32,7 +32,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.awt.Graphics2D;
+//import java.awt.Graphics2D;
 import java.awt.font.*;
 import java.awt.geom.AffineTransform;
 import javax.swing.JPopupMenu;
@@ -60,7 +60,7 @@ public class GUIGraphicsUtils {
    private static ImageIcon unfocused;
    private static ImageIcon tnicon;
 
-   public static void draw3DLeft(Graphics2D g,int which,
+   public static void draw3DLeft(Graphics g,int which,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -157,7 +157,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void draw3DMiddle(Graphics2D g,int which,
+   public static void draw3DMiddle(Graphics g,int which,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -231,7 +231,7 @@ public class GUIGraphicsUtils {
 
    }
 
-   public static void draw3DRight(Graphics2D g, int which,
+   public static void draw3DRight(Graphics g, int which,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -330,7 +330,7 @@ public class GUIGraphicsUtils {
 
    }
 
-   public static void draw3DOne(Graphics2D g, int which,
+   public static void draw3DOne(Graphics g, int which,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -456,7 +456,7 @@ public class GUIGraphicsUtils {
    }
 
    // draw scroll bar top
-   public static void drawScrollBar(Graphics2D g, int which, int direction,
+   public static void drawScrollBar(Graphics g, int which, int direction,
                                           int x,int y,
                                           int fmWidth, int fmHeight,
                                           Color fg,Color bg) {
@@ -683,7 +683,7 @@ public class GUIGraphicsUtils {
 
    }
 
-   public static void drawWinUpperLeft(Graphics2D g,int which, Color fill,
+   public static void drawWinUpperLeft(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -724,7 +724,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinUpper(Graphics2D g,int which, Color fill,
+   public static void drawWinUpper(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -770,7 +770,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinUpperRight(Graphics2D g,int which, Color fill,
+   public static void drawWinUpperRight(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -828,7 +828,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinLeft(Graphics2D g,int which, Color fill,
+   public static void drawWinLeft(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -875,7 +875,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinRight(Graphics2D g,int which, Color fill,
+   public static void drawWinRight(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -930,7 +930,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinLowerLeft(Graphics2D g,int which, Color fill,
+   public static void drawWinLowerLeft(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -988,7 +988,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinBottom(Graphics2D g,int which, Color fill,
+   public static void drawWinBottom(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 
@@ -1043,7 +1043,7 @@ public class GUIGraphicsUtils {
       g.setColor(oldColor);
    }
 
-   public static void drawWinLowerRight(Graphics2D g,int which, Color fill,
+   public static void drawWinLowerRight(Graphics g,int which, Color fill,
                                           int x,int y,
                                           int fmWidth, int fmHeight) {
 

@@ -35,8 +35,8 @@ import org.tn5250j.event.ScreenOIAListener;
  *
  *
  */
-public class ScreenOIA {
-
+public class ScreenOIA
+  {
    // OIA_LEVEL
    public static final int OIA_LEVEL_INPUT_INHIBITED   =  1;
    public static final int OIA_LEVEL_NOT_INHIBITED   =  2;
@@ -74,7 +74,7 @@ public class ScreenOIA {
 
       level = OIA_LEVEL_INSERT_MODE;
       insertMode = mode;
-      fireOIAChanged();
+      fireOIAChanged(ScreenOIAListener.OIA_CHANGED_INSERT_MODE);
    }
 
    public int getCommCheckCode() {
@@ -118,7 +118,7 @@ public class ScreenOIA {
       boolean oldKB = keysBuffered;
       keysBuffered = kb;
       if (keysBuffered != oldKB)
-         fireOIAChanged();
+         fireOIAChanged(ScreenOIAListener.OIA_CHANGED_KEYS_BUFFERED);
    }
 
    protected void setKeyBoardLocked(boolean lockIt) {
@@ -130,10 +130,10 @@ public class ScreenOIA {
 			if (isKeysBuffered()) {
 				source.sendKeys("");
 			}
-		}      
-		
+		}
+
       if (locked != oldLocked)
-         fireOIAChanged();
+         fireOIAChanged(ScreenOIAListener.OIA_CHANGED_KEYBOARD_LOCKED);
    }
 
    public boolean isMessageWait() {
@@ -143,19 +143,19 @@ public class ScreenOIA {
    protected void setMessageLightOn() {
       level = OIA_LEVEL_MESSAGE_LIGHT_ON;
       messageWait = true;
-      fireOIAChanged();
+      fireOIAChanged(ScreenOIAListener.OIA_CHANGED_MESSAGELIGHT);
    }
 
    protected void setMessageLightOff() {
       level = OIA_LEVEL_MESSAGE_LIGHT_OFF;
       messageWait = false;
-      fireOIAChanged();
+      fireOIAChanged(ScreenOIAListener.OIA_CHANGED_MESSAGELIGHT);
    }
 
    protected void setScriptActive(boolean running) {
       level = OIA_LEVEL_SCRIPT;
       scriptRunning = running;
-      fireOIAChanged();
+      fireOIAChanged(ScreenOIAListener.OIA_CHANGED_SCRIPT);
    }
 
    protected boolean isScriptActive() {
@@ -164,12 +164,12 @@ public class ScreenOIA {
 
    public void setAudibleBell() {
       level = OIA_LEVEL_AUDIBLE_BELL;
-      fireOIAChanged();
+      fireOIAChanged(ScreenOIAListener.OIA_CHANGED_BELL);
    }
 
    protected void clearScreen() {
       level = OIA_LEVEL_CLEAR_SCREEN;
-      fireOIAChanged();
+      fireOIAChanged(ScreenOIAListener.OIA_CHANGED_CLEAR_SCREEN);
    }
 
    /**
@@ -259,7 +259,7 @@ public class ScreenOIA {
 
          saveInhibit = inhibit;
          saveInhibitLevel = level;
-         fireOIAChanged();
+         fireOIAChanged(ScreenOIAListener.OIA_CHANGED_INPUTINHIBITED);
 //      }
    }
 
@@ -267,14 +267,14 @@ public class ScreenOIA {
     * Notify all registered listeners of the onOIAChanged event.
     *
     */
-   private void fireOIAChanged() {
+   private void fireOIAChanged(int change) {
 
       if (listeners != null) {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             ScreenOIAListener target =
                     (ScreenOIAListener)listeners.elementAt(i);
-            target.onOIAChanged((ScreenOIA)this);
+            target.onOIAChanged((ScreenOIA)this, change);
          }
       }
    }

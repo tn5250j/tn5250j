@@ -47,6 +47,6 @@ public class PrintAction extends EmulatorAction implements TN5250jConstants {
    }
 
    public void actionPerformed(ActionEvent e) {
-     session.getScreen().printMe();
+     session.printMe();
    }
 }

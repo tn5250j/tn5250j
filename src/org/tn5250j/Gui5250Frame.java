@@ -47,7 +47,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
                                                     TN5250jConstants,
                                                     SessionListener,
-                                                    TabClosedListener,                                                    
+                                                    TabClosedListener,
                                                     SessionJumpListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
@@ -59,7 +59,7 @@ public class Gui5250Frame extends GUIViewInterface implements
    public static int count = 0;
    private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
-   
+
    //Construct the frame
    public Gui5250Frame(My5250 m) {
       super(m);
@@ -105,7 +105,7 @@ public class Gui5250Frame extends GUIViewInterface implements
          pack();
       else
          validate();
-      
+
 
    }
 
@@ -183,7 +183,9 @@ public class Gui5250Frame extends GUIViewInterface implements
                sessionPane.setIconAt(0,focused);
 
             }
+
             ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+
             setSessionTitle();
        }
       });
@@ -351,10 +353,10 @@ public class Gui5250Frame extends GUIViewInterface implements
    }
 
    public void tabClosed(int tabToBeClosed){
-      
+
       me.closeSession(this.getSessionAt(tabToBeClosed));
    }
-   
+
    public void removeSessionView(Session targetSession) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {

@@ -47,6 +47,6 @@ public class RulerAction extends EmulatorAction implements TN5250jConstants {
    }
 
    public void actionPerformed(ActionEvent e) {
-     session.getScreen().crossHair();
+     session.crossHair();
    }
 }

@@ -8,12 +8,14 @@ import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jSecurityAccessDialog;
 
+import org.tn5250j.swing.JTerminal;
+
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
    private SessionManager manager;
-	
+
    private TN5250jLogger log;
-   
+
    /**Get a parameter value*/
    public String getParameter(String key, String def) {
 
@@ -41,7 +43,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
    /**Component initialization*/
    private void jbInit() throws Exception {
       this.setSize(new Dimension(400,300));
-      
+
       if (isSpecified("-L"))
       	LangTool.init(parseLocale(getParameter("-L")));
       else
@@ -107,12 +109,14 @@ public class My5250App extends JApplet implements TN5250jConstants {
       manager = new SessionManager();
       final Session s = manager.openSession(sesProps,"","Test Applet");
 
-      this.getContentPane().add(s);
+      final JTerminal jt = new JTerminal(s);
+
+      this.getContentPane().add(jt);
 
       s.connect();
       SwingUtilities.invokeLater(new Runnable() {
          public void run() {
-            s.grabFocus();
+            jt.grabFocus();
          }
       });
 

@@ -59,6 +59,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    BorderLayout borderLayout1 = new BorderLayout();
    Screen5250 screen = null;
    String propFileName = null;
+   GuiGraphicBuffer bi;
    tnvt vt = null;
    TNRubberBand rubberband;
    JPanel s = new JPanel();
@@ -90,8 +91,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       sesConfig = config;
 
-      enableEvents(AWTEvent.WINDOW_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
-
       try  {
          jbInit();
       }
@@ -110,13 +109,22 @@ public class Gui5250 extends JPanel implements ComponentListener,
       s.setOpaque(false);
       s.setDoubleBuffered(false);
 
+
       screen = new Screen5250(this,sesConfig);
+
       this.addComponentListener(this);
+
+      if (bi == null) {
+         checkOffScreenImage();
+      }
+
+      setRubberBand(new TNRubberBand(this));
+      keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
 
       if (!sesConfig.isPropertyExists("width") ||
          !sesConfig.isPropertyExists("height"))
          // set the initialize size
-         this.setSize(screen.getPreferredSize());
+         this.setSize(bi.getPreferredSize());
       else {
 
          this.setSize(sesConfig.getIntegerProperty("width"),
@@ -147,7 +155,23 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   screen.sendKeys("[enter]");
                }
                else {
-                  screen.moveCursor(e);
+         			int pos = bi.getPosFromView(e.getX(), e.getY());
+                  if (log.isDebugEnabled()) {
+                     log.debug((screen.getRow(pos)) + "," + (screen.getCol(pos)));
+                     log.debug(e.getX() + "," + e.getY() + "," + bi.columnWidth + ","
+                           + bi.rowHeight);
+                  }
+
+                  screen.moveCursor(e, pos);
+				// this is a note to not execute this code here when we
+				// implement
+				//   the remain after edit function option.
+      				if (rubberband.isAreaSelected()) {
+		      			rubberband.reset();
+				      	repaint();
+      				}
+//		gui.requestFocus();
+
                   repaint();
                   getFocusForMe();
                }
@@ -159,7 +183,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
       if (!sesConfig.getStringProperty("mouseWheel").equals("Yes"))
          scroller.removeMouseWheelListener((Session)this);
 
-      keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
 		log.debug("Initializing macros");
       macros = new Macronizer();
       Macronizer.init();
@@ -178,7 +201,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
       this.add(keyPad,BorderLayout.SOUTH);
       this.add(s,BorderLayout.CENTER);
 
-      setRubberBand(new TNRubberBand(this));
       this.requestFocus();
       jumpEvent = new SessionJumpEvent(this);
 
@@ -189,47 +211,60 @@ public class Gui5250 extends JPanel implements ComponentListener,
       else
          doubleClick = false;
 
-      DropTargetAdapter dta = new DropTargetAdapter() {
-         public void drop(DropTargetDropEvent dtde) {
-            Transferable tr = dtde.getTransferable();
-            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-            DataFlavor[] dfs = dtde.getCurrentDataFlavors();
-            if(tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-               try {
-                  log.debug("dtde drop it2 ");
+//         DropTargetAdapter dta = new DropTargetAdapter() {
+//            public void drop(DropTargetDropEvent dtde) {
+//               Transferable tr = dtde.getTransferable();
+//               dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+//               DataFlavor[] dfs = dtde.getCurrentDataFlavors();
+//               if(tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+//                  try {
+//                     log.debug("dtde drop it2 ");
+//
+//                     java.util.List fileList =
+//                        (java.util.List)tr.getTransferData(DataFlavor.javaFileListFlavor);
+//                        // implementation for when we are able to process a list
+//                        //   of files.
+//   //                   Iterator iterator = fileList.iterator();
+//   //                   if (iterator.hasNext()) {
+//   //                      File file = (File)iterator.next();
+//   //                   }
+//                     java.io.File file = (java.io.File)fileList.get(0);
+//                     System.out.println(file.toString());
+//                     dtde.dropComplete(true);
+//                     doTransfer(file);
+//                     return;
+//                  }
+//                  catch (UnsupportedFlavorException ufe) {
+//                     log.info("importData: unsupported data flavor");
+//                  }
+//                  catch (java.io.IOException ieo) {
+//                     log.warn("importData: I/O exception");
+//                  }
+//                  catch (Exception ex) {
+//                     log.warn(""+ex.getMessage());
+//                  }
+//                  finally {
+//                     dtde.dropComplete(false);
+//                  }
+//               }
+//            }
+//         };
+//         DropTarget dt = new DropTarget((JPanel)this,dta);
+//
+//         setDropTarget(dt);
 
-                  java.util.List fileList =
-                     (java.util.List)tr.getTransferData(DataFlavor.javaFileListFlavor);
-                     // implementation for when we are able to process a list
-                     //   of files.
-//                   Iterator iterator = fileList.iterator();
-//                   if (iterator.hasNext()) {
-//                      File file = (File)iterator.next();
-//                   }
-                  java.io.File file = (java.io.File)fileList.get(0);
-                  System.out.println(file.toString());
-                  dtde.dropComplete(true);
-                  doTransfer(file);
-                  return;
-               }
-               catch (UnsupportedFlavorException ufe) {
-                  log.info("importData: unsupported data flavor");
-               }
-               catch (java.io.IOException ieo) {
-                  log.warn("importData: I/O exception");
-               }
-               catch (Exception ex) {
-                  log.warn(""+ex.getMessage());
-               }
-               finally {
-                  dtde.dropComplete(false);
-               }
-            }
-         }
-      };
-      DropTarget dt = new DropTarget((JPanel)this,dta);
+   }
 
-      setDropTarget(dt);
+   public void setRunningHeadless(boolean headless) {
+      if (headless) {
+         screen.getOIA().removeOIAListener(bi);
+         screen.removeScreenListener(bi);
+      }
+      else {
+         screen.getOIA().addOIAListener(bi);
+         screen.addScreenListener(bi);
+
+      }
 
    }
 
@@ -300,25 +335,25 @@ public class Gui5250 extends JPanel implements ComponentListener,
          // mark left we will mark the column to the right of where the cursor
          // is now.
          if (last.equals("[markleft]"))
-            screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+            bi.getPointFromRowCol(screen.getCurrentRow() - 1,
                                     screen.getCurrentCol() + 1,
                                     p);
          // mark right will mark the current position to the left of the
          // current cursor position
          if (last.equals("[markright]"))
-            screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+            bi.getPointFromRowCol(screen.getCurrentRow() - 1,
                                     screen.getCurrentCol()-2,
                                     p);
 
 
          if (last.equals("[markup]"))
-            screen.getPointFromRowCol(screen.getCurrentRow() + 1,
+            bi.getPointFromRowCol(screen.getCurrentRow() + 1,
                                     screen.getCurrentCol() - 1,
                                     p);
          // mark down will mark the current position minus the current
          // row.
          if (last.equals("[markdown]"))
-            screen.getPointFromRowCol(screen.getCurrentRow() - 2,
+            bi.getPointFromRowCol(screen.getCurrentRow() - 2,
                                     screen.getCurrentCol() - 1,
                                     p);
          MouseEvent me = new MouseEvent(this,
@@ -331,7 +366,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       }
 
-      screen.getPointFromRowCol(screen.getCurrentRow() - 1,
+      bi.getPointFromRowCol(screen.getCurrentRow() - 1,
                                  screen.getCurrentCol() - 1,
                                  p);
 //      rubberband.getCanvas().translateEnd(p);
@@ -489,7 +524,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
       }
 
-      screen.propertyChange(pce);
+//      screen.propertyChange(pce);
 
       resizeMe();
       repaint();
@@ -649,20 +684,20 @@ public class Gui5250 extends JPanel implements ComponentListener,
       setMacroRunning(false);
    }
 
-   public void sendNegResponse2(int ec) {
-
-      vt.sendNegResponse2(ec);
-
-   }
+//   public void sendNegResponse2(int ec) {
+//
+//      vt.sendNegResponse2(ec);
+//
+//   }
 
    public void closeDown() {
 
       sesConfig.saveSessionProps(getParent());
 
       // Let's stop the cursor blinking as well as it seems to be causing problems
-      if (screen.isBlinkCursor()) {
-         screen.setBlinkCursorStop();
-      }
+//      if (screen.isBlinkCursor()) {
+//         screen.setBlinkCursorStop();
+//      }
 
       vt.disconnect();
       // Added by Luc to fix a memory leak. The keyHandler was still receiving
@@ -757,7 +792,16 @@ public class Gui5250 extends JPanel implements ComponentListener,
    public void resizeMe() {
 
 
-      screen.setBounds(getDrawingBounds());
+//      screen.setBounds(getDrawingBounds());
+
+   //this is from screen5250
+		screen.setCursorActive(false);
+      Rectangle r = getDrawingBounds();
+      if (bi != null)
+   		bi.resizeScreenArea(r.width, r.height);
+      repaint();
+//		screen.repaintScreen();
+		screen.setCursorActive(true);
 
    }
 
@@ -791,33 +835,148 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    protected void paintComponent(Graphics g) {
-//	  log.debug("paint from screen");
+	  log.debug("paint from screen");
 
+     if (bi == null) {
+      checkOffScreenImage();
+     }
 //      screen.paintComponent3(g);
 
 		Graphics2D g2 = (Graphics2D) g;
 
 		//      Rectangle r = g.getClipBounds();
 
-		g2.setColor(screen.colorBg);
+		g2.setColor(bi.colorBg);
 		g2.fillRect(0, 0, getWidth(), getHeight());
 
-		screen.bi.drawImageBuffer(g2);
-		
+		bi.drawImageBuffer(g2);
+
       if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
          rubberband.erase();
          rubberband.draw();
       }
-      
+
       keyPad.repaint();
 
    }
 
    public void update(Graphics g) {
-	  log.debug("paint from gui");
+	  log.info("paint from gui");
       paint(g);
 
    }
+
+	public boolean isHotSpots() {
+		return bi.hotSpots;
+	}
+
+	public void toggleHotSpots() {
+		bi.hotSpots = !bi.hotSpots;
+	}
+
+	/**
+	 * @todo: Change to be mnemonic key.
+	 *
+	 * This toggles the ruler line.
+	 *
+	 *
+	 */
+	public void crossHair() {
+		screen.setCursorActive(false);
+		bi.crossHair++;
+		if (bi.crossHair > 3)
+			bi.crossHair = 0;
+		screen.setCursorActive(true);
+	}
+
+	/**
+	 *
+	 * This routine will make sure we have something to draw on
+	 *
+	 */
+	private void checkOffScreenImage() {
+
+		// do we have something already?
+		if (bi == null) {
+
+			bi = new GuiGraphicBuffer(screen,this,sesConfig);
+
+//			if (antialiased) {
+//				bi.setUseAntialias(true);
+//			}
+
+			// allocate a buffer Image with appropriate size
+			bi.getImageBuffer(0, 0);
+
+			// fill in the areas
+//            tArea = new Rectangle2D.Float(0, 0, 0, 0);
+//            cArea = new Rectangle2D.Float(0, 0, 0, 0);
+//            aArea = new Rectangle2D.Float(0, 0, 0, 0);
+//            sArea = new Rectangle2D.Float(0, 0, 0, 0);
+//
+//            // Draw Operator Information Area
+//            drawOIA();
+		}
+
+	}
+
+
+      /**
+       *
+       * Copy & Paste start code
+       *
+       */
+      public final void copyMe() {
+
+         Rectangle workR = new Rectangle();
+         // lets get the bounding area using a rectangle that we have already
+         // allocated
+         getBoundingArea(workR);
+
+         rubberband.reset();
+         repaint();
+
+         log.debug("Copying" + workR);
+
+         screen.copyMe(workR);
+
+      }
+
+	/**
+	 * Sum them
+	 *
+	 * @param which
+	 *            formatting option to use
+	 * @return vector string of numberic values
+	 */
+	protected final Vector sumThem(boolean which) {
+
+		StringBuffer s = new StringBuffer();
+
+      Rectangle workR = new Rectangle();
+		getBoundingArea(workR);
+
+		//      gui.rubberband.reset();
+		//      gui.repaint();
+
+		log.debug("Summing");
+      return screen.sumThem(which,workR);
+	}
+
+	/**
+	 *
+	 * This routine is responsible for setting up a PrinterJob on this component
+	 * and initiating the print session.
+	 *
+	 */
+	public final void printMe() {
+
+		Thread printerThread = new PrinterThread(screen, bi.font, screen.getCols(),
+				screen.getRows(), Color.black, true, (Session) this);
+
+		printerThread.start();
+
+	}
 
    /**
     * Add a SessionJumpListener to the listener list.
@@ -885,7 +1044,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
     */
    public Graphics getDrawingGraphics(){
 
-      return screen.getDrawingArea();
+      return bi.getDrawingArea();
    }
 
    protected final void setRubberBand(TNRubberBand newValue) {
@@ -895,12 +1054,19 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    public Point translateStart(Point start) {
-      return screen.translateStart(start);
+      return bi.translateStart(start);
    }
 
    public Point translateEnd(Point end) {
-      return screen.translateEnd(end);
+      return bi.translateEnd(end);
    }
+	public int getPosFromView(int x, int y) {
+      return bi.getPosFromView(x,y);
+	}
+
+	public void getBoundingArea(Rectangle bounds) {
+      bi.getBoundingArea(bounds);
+	}
 
    public void areaBounded(RubberBand band, int x1, int y1, int x2, int y2) {
 
@@ -916,7 +1082,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       //   back to screen coordinates because we are translating the starting
       //   point to the 5250 screen coordinates
 //      return !screen.isKeyboardLocked() && (screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y));
-      return screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y);
+      return bi.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y);
 
    }
 
@@ -968,7 +1134,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          if(this.endPoint == null) {
             Point p = new Point(0,0);
-            screen.getPointFromRowCol(0,0,p);
+            bi.getPointFromRowCol(0,0,p);
             setEndPoint(p);
          }
          return this.endPoint;
@@ -978,7 +1144,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          if(this.startPoint == null) {
             Point p = new Point(0,0);
-            screen.getPointFromRowCol(0,0,p);
+            bi.getPointFromRowCol(0,0,p);
             setStartPoint(p);
          }
          return this.startPoint;

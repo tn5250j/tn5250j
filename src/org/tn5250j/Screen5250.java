@@ -29,22 +29,19 @@
  */
 package org.tn5250j;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.font.*;
-import java.awt.geom.*;
 import java.text.*;
 import java.util.*;
+
+import java.awt.*;
 import java.awt.datatransfer.*;
-import java.beans.*;
+import java.awt.event.*;
+import java.awt.geom.*;
 
+import org.tn5250j.event.*;
 import org.tn5250j.tools.logging.*;
-import org.tn5250j.tools.*;
-import org.tn5250j.tools.system.OperatingSystem;
-import org.tn5250j.event.ScreenListener;
+import org.tn5250j.tools.system.*;
 
-public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
-		ActionListener {
+public class Screen5250 implements TN5250jConstants{
 
 	private ScreenFields screenFields;
 	public Font font;
@@ -53,32 +50,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private int lastCol;
 	private int lastPos;
 	private int lenScreen;
-	protected GuiGraphicBuffer bi;
 	private KeyStrokenizer strokenizer;
 	private tnvt sessionVT;
 	private int numRows = 0;
 	private int numCols = 0;
-	int fmWidth = 0;
-	int fmHeight = 0;
-	LineMetrics lm;
-	Color colorBlue;
-	Color colorWhite;
-	Color colorRed;
-	Color colorGreen;
-	Color colorPink;
-	Color colorYellow;
-	Color colorBg;
-	Color colorTurq;
-	Color colorGUIField;
-	Color colorCursor;
-	Color colorSep;
-	Color colorHexAttr;
 	private boolean updateCursorLoc;
-	private Rectangle2D cursor = new Rectangle2D.Float();
-	private Rectangle2D tArea; // text area
-	private Rectangle2D aArea; // all screen area
-	private Rectangle2D cArea; // command line area
-	private Rectangle2D sArea; // status area
 	private char char0 = 0;
 	private static final int initAttr = 32;
 	private static final char initChar = 0;
@@ -87,30 +63,16 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private int top;
 	private int left;
 	private Rectangle workR = new Rectangle();
-   private int colSepLine = 0;
 	public boolean cursorActive = false;
 	public boolean cursorShown = false;
 	protected boolean insertMode = false;
 	private boolean keyProcessed = false;
-	private Rectangle dirty = new Rectangle();
-	private Graphics2D g2d;
-	protected Graphics2D gg2d;
-	private Point startPoint;
-	private Point endPoint;
-	protected int crossHair = 0;
-	private boolean messageLight = false;
+	private Rectangle dirtyScreen = new Rectangle();
+
 	public int homePos = 0;
 	public int saveHomePos = 0;
 	private String bufferedKeys;
-	private boolean updateFont;
 	public boolean pendingInsert = false;
-	protected Gui5250 gui;
-	protected int cursorSize = 0;
-	private boolean hotSpots = false;
-	private boolean showHex = false;
-	private float sfh = 1.2f; // font scale height
-	private float sfw = 1.0f; // font scale height
-	private float ps132 = 0; // Font point size
 
 	public final static byte STATUS_SYSTEM = 1;
 	public final static byte STATUS_ERROR_CODE = 2;
@@ -133,15 +95,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	private final static int ERR_MANDITORY_ENTER = 0x21;
 
 	private boolean guiInterface = false;
-	protected boolean guiShowUnderline = true;
 	private boolean restrictCursor = false;
 	private Rectangle restriction;
 	private boolean resetRequired;
-	protected int cursorBottOffset;
 	private boolean defaultPrinter;
 	private SessionConfig config;
-	protected boolean rulerFixed;
-	private boolean antialiased = true;
 	private boolean feError;
 
    // vector of listeners for changes to the screen.
@@ -169,18 +127,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	public Screen5250(Gui5250 gui, SessionConfig config) {
 
+      super();
 		//      ImageIcon ic = new ImageIcon("transtable1.jpg");
 		//      tileimage = ic.getImage();
 
 		//Added by Barry
 		this.keybuf = new StringBuffer();
 
-		this.gui = gui;
-
 		this.config = config;
-
-		// load the session properties from it's profile.
-		loadProps();
 
 		try {
 			jbInit();
@@ -196,28 +150,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		if (OperatingSystem.isMacOS() && OperatingSystem.hasJava14())
 			fullRepaint = true;
 
-		// change by Luc - LDC If the font from the properties file does not
-		// exist
-		//    select the default font
-		String fontName = null;
-		if (config.isPropertyExists("font")) {
-			fontName = getStringProperty("font");
-			if (GUIGraphicsUtils.isFontNameExists(fontName) == false)
-				fontName = null;
-		}
-
-		//      if (!config.isPropertyExists("font")) {
-		if (fontName == null) {
-			font = new Font(GUIGraphicsUtils.getDefaultFont(), Font.PLAIN, 14);
-			//         font = new Font("Courier New",Font.PLAIN,14);
-			config.setProperty("font", font.getFontName());
-		} else {
-			//font = new Font(getStringProperty("font"),Font.PLAIN,14);
-			font = new Font(fontName, Font.PLAIN, 14);
-		}
-
-		gui.setFont(font);
-
 		lastAttr = 32;
 
 		// default number of rows and columns
@@ -229,28 +161,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		restriction = new Rectangle(0, 0);
 
 		updateCursorLoc = false;
-		FontRenderContext frc = new FontRenderContext(font.getTransform(),
-				true, true);
-		lm = font.getLineMetrics("Wy", frc);
-		fmWidth = (int) font.getStringBounds("W", frc).getWidth() + 1;
-		fmHeight = (int) (font.getStringBounds("g", frc).getHeight()
-				+ lm.getDescent() + lm.getLeading());
 
       oia = new ScreenOIA(this);
       oia.setKeyBoardLocked(true);
 
-		checkOffScreenImage();
 		lenScreen = numRows * numCols;
 
       planes = new ScreenPlanes(this,numRows);
-
-//		screen = new ScreenChar[lenScreen];
-//
-//		for (int y = 0; y < lenScreen; y++) {
-//			screen[y] = new ScreenChar(this);
-//			screen[y].setCharAndAttr(' ', initAttr, false);
-//			screen[y].setRowCol(getRow(y), getCol(y));
-//		}
 
 		screenFields = new ScreenFields(this);
 		strokenizer = new KeyStrokenizer();
@@ -274,545 +191,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		lenScreen = numRows * numCols;
 
-//		screen = new ScreenChar[lenScreen];
-//
-//		for (int y = 0; y < lenScreen; y++) {
-//			screen[y] = new ScreenChar(this);
-//			screen[y].setCharAndAttr(' ', initAttr, false);
-//			screen[y].setRowCol(getRow(y), getCol(y));
-//		}
 
       planes.setSize(rows);
 
-		Rectangle r = gui.getDrawingBounds();
-		resizeScreenArea(r.width, r.height);
-		gui.repaint();
 	}
 
-	public void loadProps() {
-
-		loadColors();
-
-		if (config.isPropertyExists("colSeparator")) {
-			if (getStringProperty("colSeparator").equals("Line"))
-				colSepLine = 0;
-			if (getStringProperty("colSeparator").equals("ShortLine"))
-				colSepLine = 1;
-			if (getStringProperty("colSeparator").equals("Dot"))
-				colSepLine = 2;
-			if (getStringProperty("colSeparator").equals("Hide"))
-				colSepLine = 3;
-		}
-
-		if (config.isPropertyExists("showAttr")) {
-			if (getStringProperty("showAttr").equals("Hex"))
-				showHex = true;
-		}
-
-		if (config.isPropertyExists("guiInterface")) {
-			if (getStringProperty("guiInterface").equals("Yes"))
-				guiInterface = true;
-			else
-				guiInterface = false;
-		}
-
-		if (config.isPropertyExists("guiShowUnderline")) {
-			if (getStringProperty("guiShowUnderline").equals("Yes"))
-				guiShowUnderline = true;
-			else
-				guiShowUnderline = false;
-		}
-
-		if (config.isPropertyExists("hotspots")) {
-			if (getStringProperty("hotspots").equals("Yes"))
-				hotSpots = true;
-			else
-				hotSpots = false;
-		}
-
-		if (config.isPropertyExists("hsMore")) {
-			if (getStringProperty("hsMore").length() > 0) {
-				hsMore.setLength(0);
-				hsMore.append(getStringProperty("hsMore"));
-			}
-		}
-
-		if (config.isPropertyExists("hsBottom")) {
-			if (getStringProperty("hsBottom").length() > 0) {
-				hsBottom.setLength(0);
-				hsBottom.append(getStringProperty("hsBottom"));
-			}
-		}
-
-		if (config.isPropertyExists("colSeparator")) {
-			if (getStringProperty("colSeparator").equals("Line"))
-				colSepLine = 0;
-			if (getStringProperty("colSeparator").equals("ShortLine"))
-				colSepLine = 1;
-			if (getStringProperty("colSeparator").equals("Dot"))
-				colSepLine = 2;
-			if (getStringProperty("colSeparator").equals("Hide"))
-				colSepLine = 3;
-		}
-
-		if (config.isPropertyExists("cursorSize")) {
-			if (getStringProperty("cursorSize").equals("Full"))
-				cursorSize = 2;
-			if (getStringProperty("cursorSize").equals("Half"))
-				cursorSize = 1;
-			if (getStringProperty("cursorSize").equals("Line"))
-				cursorSize = 0;
-
-		}
-
-		if (config.isPropertyExists("crossHair")) {
-			if (getStringProperty("crossHair").equals("None"))
-				crossHair = 0;
-			if (getStringProperty("crossHair").equals("Horz"))
-				crossHair = 1;
-			if (getStringProperty("crossHair").equals("Vert"))
-				crossHair = 2;
-			if (getStringProperty("crossHair").equals("Both"))
-				crossHair = 3;
-
-		}
-
-		if (config.isPropertyExists("rulerFixed")) {
-
-			if (getStringProperty("rulerFixed").equals("Yes"))
-				rulerFixed = true;
-			else
-				rulerFixed = false;
-
-		}
-
-		if (config.isPropertyExists("fontScaleHeight")) {
-			sfh = getFloatProperty("fontScaleHeight");
-		}
-
-		if (config.isPropertyExists("fontScaleWidth")) {
-			sfw = getFloatProperty("fontScaleWidth");
-		}
-
-		if (config.isPropertyExists("fontPointSize")) {
-			ps132 = getFloatProperty("fontPointSize");
-		}
-
-		if (config.isPropertyExists("cursorBottOffset")) {
-			cursorBottOffset = getIntProperty("cursorBottOffset");
-		}
-
-		if (config.isPropertyExists("defaultPrinter")) {
-			if (getStringProperty("defaultPrinter").equals("Yes"))
-				defaultPrinter = true;
-			else
-				defaultPrinter = false;
-		}
-
-		if (config.isPropertyExists("resetRequired")) {
-			if (getStringProperty("resetRequired").equals("Yes"))
-				resetRequired = true;
-			else
-				resetRequired = false;
-		}
-
-		if (config.isPropertyExists("useAntialias")) {
-
-			if (getStringProperty("useAntialias").equals("Yes"))
-				antialiased = true;
-			else
-				antialiased = false;
-
-		}
-
-		if (config.getStringProperty("cursorBlink").equals("Yes")) {
-			blinker = new javax.swing.Timer(500, this);
-			blinker.start();
-		}
-	}
-
-	protected final void loadColors() {
-
-		colorBlue = new Color(140, 120, 255);
-		colorTurq = new Color(0, 240, 255);
-		colorRed = Color.red;
-		colorWhite = Color.white;
-		colorYellow = Color.yellow;
-		colorGreen = Color.green;
-		colorPink = Color.magenta;
-		colorGUIField = Color.white;
-		colorSep = Color.white;
-		colorHexAttr = Color.white;
-
-		if (guiInterface)
-			colorBg = Color.lightGray;
-		else
-			colorBg = Color.black;
-
-		colorCursor = Color.white;
-
-		if (!config.isPropertyExists("colorBg"))
-			setProperty("colorBg", Integer.toString(colorBg.getRGB()));
-		else {
-			colorBg = getColorProperty("colorBg");
-		}
-		gui.setBackground(colorBg);
-
-		if (!config.isPropertyExists("colorBlue"))
-			setProperty("colorBlue", Integer.toString(colorBlue.getRGB()));
-		else
-			colorBlue = getColorProperty("colorBlue");
-
-		if (!config.isPropertyExists("colorTurq"))
-			setProperty("colorTurq", Integer.toString(colorTurq.getRGB()));
-		else
-			colorTurq = getColorProperty("colorTurq");
-
-		if (!config.isPropertyExists("colorRed"))
-			setProperty("colorRed", Integer.toString(colorRed.getRGB()));
-		else
-			colorRed = getColorProperty("colorRed");
-
-		if (!config.isPropertyExists("colorWhite"))
-			setProperty("colorWhite", Integer.toString(colorWhite.getRGB()));
-		else
-			colorWhite = getColorProperty("colorWhite");
-
-		if (!config.isPropertyExists("colorYellow"))
-			setProperty("colorYellow", Integer.toString(colorYellow.getRGB()));
-		else
-			colorYellow = getColorProperty("colorYellow");
-
-		if (!config.isPropertyExists("colorGreen"))
-			setProperty("colorGreen", Integer.toString(colorGreen.getRGB()));
-		else
-			colorGreen = getColorProperty("colorGreen");
-
-		if (!config.isPropertyExists("colorPink"))
-			setProperty("colorPink", Integer.toString(colorPink.getRGB()));
-		else
-			colorPink = getColorProperty("colorPink");
-
-		if (!config.isPropertyExists("colorGUIField"))
-			setProperty("colorGUIField", Integer.toString(colorGUIField
-					.getRGB()));
-		else
-			colorGUIField = getColorProperty("colorGUIField");
-
-		if (!config.isPropertyExists("colorCursor"))
-			setProperty("colorCursor", Integer.toString(colorCursor.getRGB()));
-		else
-			colorCursor = getColorProperty("colorCursor");
-
-		if (!config.isPropertyExists("colorSep")) {
-			colorSep = colorWhite;
-			setProperty("colorSep", Integer.toString(colorSep.getRGB()));
-		} else
-			colorSep = getColorProperty("colorSep");
-
-		if (!config.isPropertyExists("colorHexAttr")) {
-			colorHexAttr = colorWhite;
-			setProperty("colorHexAttr", Integer.toString(colorHexAttr.getRGB()));
-		} else
-			colorHexAttr = getColorProperty("colorHexAttr");
-
-	}
-
-	/**
-	 * This is for blinking cursor but should be moved out
-	 */
-	public void actionPerformed(ActionEvent actionevent) {
-		if (actionevent.getSource() instanceof javax.swing.Timer) {
-
-			//         if (!cursorActive)
-			//            return;
-			//
-			//         if (cursorShown)
-			//            setCursorOff();
-			//         else
-			//            setCursorOn();
-			if (cursorActive)
-				setCursorActive(false);
-			else
-				setCursorActive(true);
-		}
-	}
-
-	protected final String getStringProperty(String prop) {
-
-		return config.getStringProperty(prop);
-
-	}
-
-	protected final Color getColorProperty(String prop) {
-
-		return config.getColorProperty(prop);
-
-	}
-
-	protected final float getFloatProperty(String prop) {
-
-		return config.getFloatProperty(prop);
-
-	}
-
-	protected final int getIntProperty(String prop) {
-
-		return config.getIntegerProperty(prop);
-
-	}
-
-	protected final void setProperty(String key, String val) {
-
-		config.setProperty(key, val);
-
-	}
-
-	public void propertyChange(PropertyChangeEvent pce) {
-
-		String pn = pce.getPropertyName();
-		boolean resetAttr = false;
-
-		if (pn.equals("colorBg")) {
-			colorBg = (Color) pce.getNewValue();
-			resetAttr = true;
-
-		}
-
-		if (pn.equals("colorBlue")) {
-			colorBlue = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorTurq")) {
-			colorTurq = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorRed")) {
-			colorRed = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorWhite")) {
-			colorWhite = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorYellow")) {
-			colorYellow = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorGreen")) {
-			colorGreen = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorPink")) {
-			colorPink = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorGUIField")) {
-			colorGUIField = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorCursor")) {
-			colorCursor = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorSep")) {
-			colorSep = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("colorHexAttr")) {
-			colorHexAttr = (Color) pce.getNewValue();
-			resetAttr = true;
-		}
-
-		if (pn.equals("cursorSize")) {
-			if (pce.getNewValue().equals("Full"))
-				cursorSize = 2;
-			if (pce.getNewValue().equals("Half"))
-				cursorSize = 1;
-			if (pce.getNewValue().equals("Line"))
-				cursorSize = 0;
-
-		}
-
-		if (pn.equals("crossHair")) {
-			if (pce.getNewValue().equals("None"))
-				crossHair = 0;
-			if (pce.getNewValue().equals("Horz"))
-				crossHair = 1;
-			if (pce.getNewValue().equals("Vert"))
-				crossHair = 2;
-			if (pce.getNewValue().equals("Both"))
-				crossHair = 3;
-		}
-
-		if (pn.equals("rulerFixed")) {
-			if (pce.getNewValue().equals("Yes"))
-				rulerFixed = true;
-			else
-				rulerFixed = false;
-		}
-
-		if (pn.equals("colSeparator")) {
-			if (pce.getNewValue().equals("Line"))
-				colSepLine = 0;
-			if (pce.getNewValue().equals("ShortLine"))
-				colSepLine = 1;
-			if (pce.getNewValue().equals("Dot"))
-				colSepLine = 2;
-			if (pce.getNewValue().equals("Hide"))
-				colSepLine = 3;
-		}
-
-		if (pn.equals("showAttr")) {
-			if (pce.getNewValue().equals("Hex"))
-				showHex = true;
-			else
-				showHex = false;
-		}
-
-		if (pn.equals("guiInterface")) {
-			if (pce.getNewValue().equals("Yes"))
-				guiInterface = true;
-			else
-				guiInterface = false;
-		}
-
-		if (pn.equals("guiShowUnderline")) {
-			if (pce.getNewValue().equals("Yes"))
-				guiShowUnderline = true;
-			else
-				guiShowUnderline = false;
-		}
-
-		if (pn.equals("hotspots")) {
-			if (pce.getNewValue().equals("Yes"))
-				hotSpots = true;
-			else
-				hotSpots = false;
-		}
-
-		if (pn.equals("defaultPrinter")) {
-			if (pce.getNewValue().equals("Yes"))
-				defaultPrinter = true;
-			else
-				defaultPrinter = false;
-		}
-
-		if (pn.equals("resetRequired")) {
-			if (pce.getNewValue().equals("Yes"))
-				resetRequired = true;
-			else
-				resetRequired = false;
-		}
-
-		if (pn.equals("hsMore")) {
-			hsMore.setLength(0);
-			hsMore.append((String) pce.getNewValue());
-
-		}
-
-		if (pn.equals("hsBottom")) {
-			hsBottom.setLength(0);
-			hsBottom.append((String) pce.getNewValue());
-
-		}
-
-		if (pn.equals("font")) {
-			font = new Font((String) pce.getNewValue(), Font.PLAIN, 14);
-			updateFont = true;
-		}
-
-		if (pn.equals("useAntialias")) {
-			if (pce.getNewValue().equals("Yes"))
-				bi.setUseAntialias(true);
-			else
-				bi.setUseAntialias(false);
-			updateFont = true;
-		}
-
-		if (pn.equals("fontScaleHeight")) {
-
-			//         try {
-			sfh = Float.parseFloat((String) pce.getNewValue());
-			updateFont = true;
-			//         }
-
-		}
-
-		if (pn.equals("fontScaleWidth")) {
-
-			//         try {
-			sfw = Float.parseFloat((String) pce.getNewValue());
-			updateFont = true;
-			//         }
-
-		}
-
-		if (pn.equals("fontPointSize")) {
-
-			//         try {
-			ps132 = Float.parseFloat((String) pce.getNewValue());
-			updateFont = true;
-			//         }
-
-		}
-
-		if (pn.equals("cursorBottOffset")) {
-			cursorBottOffset = getIntProperty("cursorBottOffset");
-		}
-
-		if (pn.equals("cursorBlink")) {
-
-			log.debug(getStringProperty("cursorBlink"));
-			if (pce.getNewValue().equals("Yes")) {
-
-				if (blinker == null) {
-
-					blinker = new javax.swing.Timer(500, this);
-					blinker.start();
-				}
-			} else {
-
-				if (blinker != null) {
-					blinker.stop();
-					blinker = null;
-				}
-			}
-		}
-
-		if (updateFont) {
-			Rectangle r = gui.getDrawingBounds();
-			resizeScreenArea(r.width, r.height);
-			updateFont = false;
-		}
-
-		if (resetAttr) {
-//			for (int y = 0; y < lenScreen; y++) {
-//				screen[y].setAttribute(screen[y].getCharAttr());
-//			}
-			bi.drawOIA();
-		}
-		gui.validate();
-		gui.repaint();
-	}
-
-	public void setBlinkCursorStop() {
-		if (blinker != null) {
-			blinker.stop();
-			blinker.removeActionListener(this);
-			blinker = null;
-		}
-	}
 
 	public boolean isBlinkCursor() {
 
@@ -820,72 +203,65 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	}
 
-	public boolean isHotSpots() {
-		return hotSpots;
-	}
-
-	public void toggleHotSpots() {
-		hotSpots = !hotSpots;
-	}
 
 	public void toggleGUIInterface() {
 		guiInterface = !guiInterface;
 	}
 
-	/**
-	 *
-	 * RubberBanding start code
-	 *
-	 */
-
-	/**
-	 * Translate the starting point of mouse movement to encompass a full
-	 * character
-	 *
-	 * @param start
-	 * @return Point
-	 */
-	public Point translateStart(Point start) {
-
-		// because getRowColFromPoint returns position offset as 1,1 we need
-		// to translate as offset 0,0
-		int pos = getPosFromView(start.x, start.y);
-      int x = fmWidth * getCol(pos);
-      int y = fmHeight * getRow(pos);
-//		start.setLocation(screen[pos].x, screen[pos].y);
-		start.setLocation(x, y);
-		return start;
-
-	}
-
-	/**
-	 * Translate the ending point of mouse movement to encompass a full
-	 * character
-	 *
-	 * @param end
-	 * @return Point
-	 */
-	public Point translateEnd(Point end) {
-
-		// because getRowColFromPoint returns position offset as 1,1 we need
-		// to translate as offset 0,0
-		int pos = getPosFromView(end.x, end.y);
-//		if (pos >= screen.length) {
-//			pos = screen.length - 1;
-//		}
-//		int x = screen[pos].x + fmWidth - 1;
-//		int y = screen[pos].y + fmHeight - 1;
-
-		if (pos >= lenScreen) {
-			pos = lenScreen - 1;
-		}
-		int x =  ((fmWidth * getCol(pos)) + fmWidth) - 1;
-		int y = ((fmHeight * getRow(pos)) + fmHeight) - 1;
-
-		end.setLocation(x, y);
-
-		return end;
-	}
+//      /**
+//       *
+//       * RubberBanding start code
+//       *
+//       */
+//
+//      /**
+//       * Translate the starting point of mouse movement to encompass a full
+//       * character
+//       *
+//       * @param start
+//       * @return Point
+//       */
+//      public Point translateStart(Point start) {
+//
+//         // because getRowColFromPoint returns position offset as 1,1 we need
+//         // to translate as offset 0,0
+//         int pos = getPosFromView(start.x, start.y);
+//         int x = fmWidth * getCol(pos);
+//         int y = fmHeight * getRow(pos);
+//   //		start.setLocation(screen[pos].x, screen[pos].y);
+//         start.setLocation(x, y);
+//         return start;
+//
+//      }
+//
+//      /**
+//       * Translate the ending point of mouse movement to encompass a full
+//       * character
+//       *
+//       * @param end
+//       * @return Point
+//       */
+//      public Point translateEnd(Point end) {
+//
+//         // because getRowColFromPoint returns position offset as 1,1 we need
+//         // to translate as offset 0,0
+//         int pos = getPosFromView(end.x, end.y);
+//   //		if (pos >= screen.length) {
+//   //			pos = screen.length - 1;
+//   //		}
+//   //		int x = screen[pos].x + fmWidth - 1;
+//   //		int y = screen[pos].y + fmHeight - 1;
+//
+//         if (pos >= lenScreen) {
+//            pos = lenScreen - 1;
+//         }
+//         int x =  ((fmWidth * getCol(pos)) + fmWidth) - 1;
+//         int y = ((fmHeight * getRow(pos)) + fmHeight) - 1;
+//
+//         end.setLocation(x, y);
+//
+//         return end;
+//      }
 
 	/**
 	 *
@@ -898,18 +274,19 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * Copy & Paste start code
 	 *
 	 */
-	public final void copyMe() {
+	public final void copyMe(Rectangle area) {
 
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 		StringBuffer s = new StringBuffer();
 
 		// lets get the bounding area using a rectangle that we have already
 		// allocated
-		getBoundingArea(workR);
+//		gui.getBoundingArea(workR);
+//
+//		gui.rubberband.reset();
+//		gui.repaint();
 
-		gui.rubberband.reset();
-		gui.repaint();
-
+      workR.setBounds(area);
 		log.debug("Copying" + workR);
 
 		// loop through all the screen characters to send them to the clip board
@@ -941,7 +318,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	}
 
-	protected final void pasteMe(boolean special) {
+	public final void pasteMe(boolean special) {
 
 		setCursorActive(false);
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1057,39 +434,39 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		screenFields.restoreCurrentField();
 	}
 
-	/**
-	 * Fills the passed Rectangle with the starting row and column and width and
-	 * height of the selected area.
-	 *
-	 * 1 BASED so column 1 row one is returned 1,1
-	 *
-	 * If there is no area bounded then the full screen area is returned.
-	 *
-	 * @param bounds
-	 */
-	public void getBoundingArea(Rectangle bounds) {
-
-		// check to see if there is an area selected. If not then return all
-		//    screen area.
-		if (!gui.rubberband.isAreaSelected()) {
-
-			bounds.setBounds(1, 1, getCols(), getRows());
-		} else {
-			// lets get the bounding area using a rectangle that we have already
-			// allocated
-			gui.rubberband.getBoundingArea(workR);
-
-			// get starting row and column
-			int sPos = getRowColFromPoint(workR.x, workR.y);
-			// get the width and height
-			int ePos = getRowColFromPoint(workR.width, workR.height);
-
-			int row = getRow(sPos) + 1;
-			int col = getCol(sPos) + 1;
-
-			bounds.setBounds(row, col, getCol(ePos) + 1, getRow(ePos) + 1);
-		}
-	}
+//	/**
+//	 * Fills the passed Rectangle with the starting row and column and width and
+//	 * height of the selected area.
+//	 *
+//	 * 1 BASED so column 1 row one is returned 1,1
+//	 *
+//	 * If there is no area bounded then the full screen area is returned.
+//	 *
+//	 * @param bounds
+//	 */
+//	public void getBoundingArea(Rectangle bounds) {
+//
+//		// check to see if there is an area selected. If not then return all
+//		//    screen area.
+//		if (!gui.rubberband.isAreaSelected()) {
+//
+//			bounds.setBounds(1, 1, getCols(), getRows());
+//		} else {
+//			// lets get the bounding area using a rectangle that we have already
+//			// allocated
+//			gui.rubberband.getBoundingArea(workR);
+//
+//			// get starting row and column
+//			int sPos = getRowColFromPoint(workR.x, workR.y);
+//			// get the width and height
+//			int ePos = getRowColFromPoint(workR.width, workR.height);
+//
+//			int row = getRow(sPos) + 1;
+//			int col = getCol(sPos) + 1;
+//
+//			bounds.setBounds(row, col, getCol(ePos) + 1, getRow(ePos) + 1);
+//		}
+//	}
 
 	/**
 	 *
@@ -1104,11 +481,11 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 *            formatting option to use
 	 * @return vector string of numberic values
 	 */
-	protected final Vector sumThem(boolean which) {
+	protected final Vector sumThem(boolean which, Rectangle area) {
 
 		StringBuffer s = new StringBuffer();
 
-		getBoundingArea(workR);
+      workR.setBounds(area);
 
 		//      gui.rubberband.reset();
 		//      gui.repaint();
@@ -1180,15 +557,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		return sumVector;
 	}
 
-	public void moveCursor(MouseEvent e) {
+	public void moveCursor(MouseEvent e, int pos) {
+
 		if (!oia.isKeyBoardLocked()) {
 
-			int pos = getPosFromView(e.getX(), e.getY());
-			if (log.isDebugEnabled()) {
-				log.debug((getRow(pos)) + "," + (getCol(pos)));
-				log.debug(e.getX() + "," + e.getY() + "," + fmWidth + ","
-						+ fmHeight);
-			}
 			if (pos < 0)
 				return;
 			// because getRowColFromPoint returns offset of 1,1 we need to
@@ -1247,7 +619,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					case BUTTON_ONE_UP:
 					case BUTTON_SB_UP:
 					case BUTTON_SB_GUIDE:
-						gui.sendAidKey(tnvt.AID_ROLL_UP);
+						sessionVT.sendAidKey(tnvt.AID_ROLL_UP);
 						break;
 
 					case BUTTON_LEFT_DN:
@@ -1257,7 +629,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					case BUTTON_SB_DN:
 					case BUTTON_SB_THUMB:
 
-						gui.sendAidKey(tnvt.AID_ROLL_DOWN);
+						sessionVT.sendAidKey(tnvt.AID_ROLL_DOWN);
 						break;
 					case BUTTON_LEFT_EB:
 					case BUTTON_MIDDLE_EB:
@@ -1278,9 +650,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					default:
 						int aidKey = Integer.parseInt(aid.toString());
 						if (aidKey >= 1 && aidKey <= 12)
-							gui.sendAidKey(0x30 + aidKey);
+							sessionVT.sendAidKey(0x30 + aidKey);
 						if (aidKey >= 13 && aidKey <= 24)
-							gui.sendAidKey(0xB0 + (aidKey - 12));
+							sessionVT.sendAidKey(0xB0 + (aidKey - 12));
 					}
 				} else {
 					if (screenFields.getCurrentField() != null) {
@@ -1292,7 +664,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 						}
 						//                  System.out.println(aid);
 						screenFields.setCurrentFieldMDT();
-						gui.sendAidKey(tnvt.AID_ENTER);
+						sessionVT.sendAidKey(tnvt.AID_ENTER);
 					}
 
 				}
@@ -1300,125 +672,125 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 				// this is a note to not execute this code here when we
 				// implement
 				//   the remain after edit function option.
-				if (gui.rubberband.isAreaSelected()) {
-					gui.rubberband.reset();
-					gui.repaint();
-				} else {
+//				if (gui.rubberband.isAreaSelected()) {
+//					gui.rubberband.reset();
+//					gui.repaint();
+//				} else {
 					goto_XY(pos);
 					isInField(lastPos);
-				}
+//				}
 			}
 		}
-		gui.requestFocus();
+//		gui.requestFocus();
 	}
 
-	/**
-	 *
-	 *
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public int getPosFromView(int x, int y) {
-
-		// we have to translate the point into a an upper left 0,0 based format
-		// to get the position into the character array which is 0,0 based.
-		// we take the point of x,y and subtract the screen offsets.
-
-		x -= bi.offLeft;
-		y -= bi.offTop;
-
-		if (x > tArea.getMaxX())
-			x = (int) tArea.getMaxX() - 1;
-		if (y > tArea.getMaxY())
-			y = (int) tArea.getMaxY() - 1;
-		if (x < tArea.getMinX())
-			x = 0;
-		if (y < tArea.getMinY())
-			y = 0;
-
-		//      int s = fmWidth * numCols; // image length in pixels
-		//      int t = s - x; // image length minus the x point
-		//      int u = t / fmWidth; //
-		//      int v = numCols - u; //
-
-		int s0 = y / fmHeight;
-		int s1 = x / fmWidth;
-
-		//      System.out.println("row " + s0 + ", column " + s1 + " pos " +
-		// getPos(s0,s1));
-		//      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
-		// fmHeight))),
-		//                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-		//                  );
-		return getPos(s0, s1);
-
-	}
-
-	/**
-	 * Return the row column based on the screen x,y position coordinates
-	 *
-	 * It will calculate a 0,0 based row and column based on the screen point
-	 * coordinate.
-	 *
-	 * @param x
-	 *            screen x position
-	 * @param y
-	 *            screen y position
-	 *
-	 * @return screen array position based 0,0 so position row 1 col 3 would be
-	 *         2
-	 */
-	public int getRowColFromPoint(int x, int y) {
-
-		if (x > tArea.getMaxX())
-			x = (int) tArea.getMaxX() - 1;
-		if (y > tArea.getMaxY())
-			y = (int) tArea.getMaxY() - 1;
-		if (x < tArea.getMinX())
-			x = 0;
-		if (y < tArea.getMinY())
-			y = 0;
-
-		//      int s = fmWidth * numCols; // image length in pixels
-		//      int t = s - x; // image length minus the x point
-		//      int u = t / fmWidth; //
-		//      int v = numCols - u; //
-
-		int s0 = y / fmHeight;
-		int s1 = x / fmWidth;
-
-		//      System.out.println("row " + s0 + ", column " + s1 + " pos " +
-		// getPos(s0,s1));
-		//      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
-		// fmHeight))),
-		//                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-		//                  );
-		return getPos(s0, s1);
-
-		//      return 0;
-	}
-
-	/**
-	 * This will return the screen coordinates of a row and column.
-	 *
-	 * @param r
-	 * @param c
-	 * @param point
-	 */
-	public void getPointFromRowCol(int r, int c, Point point) {
-
-		// here the x + y coordinates of the row and column are obtained from
-		// the character array which is based on a upper left 0,0 coordinate
-		//  we will then add to that the offsets to get the screen position point
-		//  x,y coordinates. Maybe change this to a translate routine method or
-		//  something.
-//		point.x = screen[getPos(r, c)].x + bi.offLeft;
-//		point.y = screen[getPos(r, c)].y + bi.offTop;
-		point.x = (fmWidth * c) + bi.offLeft;
-		point.y = (fmHeight * r) + bi.offTop;
-
-	}
+//      /**
+//       *
+//       *
+//       * @param x
+//       * @param y
+//       * @return
+//       */
+//      public int getPosFromView(int x, int y) {
+//
+//         // we have to translate the point into a an upper left 0,0 based format
+//         // to get the position into the character array which is 0,0 based.
+//         // we take the point of x,y and subtract the screen offsets.
+//
+//         x -= bi.offLeft;
+//         y -= bi.offTop;
+//
+//         if (x > tArea.getMaxX())
+//            x = (int) tArea.getMaxX() - 1;
+//         if (y > tArea.getMaxY())
+//            y = (int) tArea.getMaxY() - 1;
+//         if (x < tArea.getMinX())
+//            x = 0;
+//         if (y < tArea.getMinY())
+//            y = 0;
+//
+//         //      int s = fmWidth * numCols; // image length in pixels
+//         //      int t = s - x; // image length minus the x point
+//         //      int u = t / fmWidth; //
+//         //      int v = numCols - u; //
+//
+//         int s0 = y / fmHeight;
+//         int s1 = x / fmWidth;
+//
+//         //      System.out.println("row " + s0 + ", column " + s1 + " pos " +
+//         // getPos(s0,s1));
+//         //      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
+//         // fmHeight))),
+//         //                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
+//         //                  );
+//         return getPos(s0, s1);
+//
+//      }
+//
+//      /**
+//       * Return the row column based on the screen x,y position coordinates
+//       *
+//       * It will calculate a 0,0 based row and column based on the screen point
+//       * coordinate.
+//       *
+//       * @param x
+//       *            screen x position
+//       * @param y
+//       *            screen y position
+//       *
+//       * @return screen array position based 0,0 so position row 1 col 3 would be
+//       *         2
+//       */
+//      public int getRowColFromPoint(int x, int y) {
+//
+//         if (x > tArea.getMaxX())
+//            x = (int) tArea.getMaxX() - 1;
+//         if (y > tArea.getMaxY())
+//            y = (int) tArea.getMaxY() - 1;
+//         if (x < tArea.getMinX())
+//            x = 0;
+//         if (y < tArea.getMinY())
+//            y = 0;
+//
+//         //      int s = fmWidth * numCols; // image length in pixels
+//         //      int t = s - x; // image length minus the x point
+//         //      int u = t / fmWidth; //
+//         //      int v = numCols - u; //
+//
+//         int s0 = y / fmHeight;
+//         int s1 = x / fmWidth;
+//
+//         //      System.out.println("row " + s0 + ", column " + s1 + " pos " +
+//         // getPos(s0,s1));
+//         //      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
+//         // fmHeight))),
+//         //                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
+//         //                  );
+//         return getPos(s0, s1);
+//
+//         //      return 0;
+//      }
+//
+//      /**
+//       * This will return the screen coordinates of a row and column.
+//       *
+//       * @param r
+//       * @param c
+//       * @param point
+//       */
+//      public void getPointFromRowCol(int r, int c, Point point) {
+//
+//         // here the x + y coordinates of the row and column are obtained from
+//         // the character array which is based on a upper left 0,0 coordinate
+//         //  we will then add to that the offsets to get the screen position point
+//         //  x,y coordinates. Maybe change this to a translate routine method or
+//         //  something.
+//   //		point.x = screen[getPos(r, c)].x + bi.offLeft;
+//   //		point.y = screen[getPos(r, c)].y + bi.offTop;
+//         point.x = (fmWidth * c) + bi.offLeft;
+//         point.y = (fmHeight * r) + bi.offTop;
+//
+//      }
 
 	protected void setVT(tnvt v) {
 
@@ -1482,8 +854,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * Set the cursor on
 	 */
 	public void setCursorOn() {
+		cursorShown = true;
 		updateCursorLoc();
-		cursorShown = false;
 	}
 
 	/**
@@ -1491,8 +863,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public void setCursorOff() {
 
-		updateCursorLoc();
 		cursorShown = false;
+		updateCursorLoc();
 		//      System.out.println("cursor off " + updateCursorLoc + " " +
 		// cursorActive);
 
@@ -1507,15 +879,19 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		// cursorActive);
 		if (cursorActive) {
 
-			int row = getRow(lastPos);
-			int col = getCol(lastPos);
+//			int row = getRow(lastPos);
+//			int col = getCol(lastPos);
 
 //			bi.drawCursor(this, row, col, fmWidth, fmHeight, insertMode,
 //					crossHair, rulerFixed, cursorSize, colorCursor, colorBg,
 //					colorWhite, font, cursorBottOffset);
-			bi.drawCursor();
+//			gui.bi.drawCursor();
+         fireCursorChanged(3);
 
 		}
+//      else {
+//         fireCursorChanged(4);
+//      }
 	}
 
 	//Added by Barry
@@ -2468,14 +1844,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			} else {
 				setPrehelpState(false, oia.isKeyBoardLocked(), false);
 			}
-			gui.repaint();
+//			gui.repaint();
 			simulated = true;
-			break;
-		case COPY:
-			copyMe();
-			break;
-		case PASTE:
-			pasteMe(false);
 			break;
 		case ATTN:
 			sessionVT.sendAttentionKey();
@@ -2531,14 +1901,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 					}
 				}
 			}
-			simulated = true;
-			break;
-		case JUMP_NEXT_SESS:
-			gui.nextSession();
-			simulated = true;
-			break;
-		case JUMP_PREV_SESS:
-			gui.prevSession();
 			simulated = true;
 			break;
 		default:
@@ -2675,7 +2037,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 					}
 
-					updateImage(dirty);
+//					updateImage(dirty);
+//               fireScreenChanged(1,dirty);
+               fireScreenChanged(1);
 
 					if (autoEnter)
 						sendAid(AID_ENTER);
@@ -2690,21 +2054,6 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		}
 		return updatePos;
-	}
-
-	/**
-	 * @todo: Change to be mnemonic key.
-	 *
-	 * This toggles the ruler line.
-	 *
-	 *
-	 */
-	public void crossHair() {
-		setCursorActive(false);
-		crossHair++;
-		if (crossHair > 3)
-			crossHair = 0;
-		setCursorActive(true);
 	}
 
 	/**
@@ -3075,7 +2424,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		saveHomePos = homePos;
 		homePos = lastPos + numCols + 1;
 		pendingInsert = true;
-		gui.sendNegResponse2(ec);
+//		gui.sendNegResponse2(ec);
+      sessionVT.sendNegResponse2(ec);
 
 	}
 
@@ -3283,18 +2633,18 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * @return column separator to be used values: 0 - line 1 - dot 2 - short
 	 *         line 3 - do not show column separator
 	 */
-	public int getColSepLine() {
-		return colSepLine;
-	}
+//	public int getColSepLine() {
+//		return colSepLine;
+//	}
 
 	/**
 	 * Should the screen attributes be show in hex
 	 *
 	 * @return true we should and false we should not
 	 */
-	public boolean isShowHex() {
-		return showHex;
-	}
+//	public boolean isShowHex() {
+//		return showHex;
+//	}
 
 	/**
 	 * Return the whole screen represented as a character array
@@ -4382,7 +3732,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
-		updateImage(dirty);
+//		updateImage(dirty);
+//      fireScreenChanged(1,dirty);
+      fireScreenChanged(1);
 
 	}
 
@@ -4405,7 +3757,9 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
-		updateImage(dirty);
+//		updateImage(dirty);
+//      fireScreenChanged(1,dirty);
+      fireScreenChanged(1);
 
 	}
 
@@ -4532,15 +3886,24 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public void updateDirty() {
 
 		//LDC - 12/02/2003 - check if we must repaint it
-		if (drawing == false)
-			return;
+//		if (drawing == false)
+//			return;
 		//LDC - 18/02/2003 - only update the screen when the window is showing
 		//if (this.gui.isShowing())
 		//{
-		Rectangle r = new Rectangle(dirty);
+//		Rectangle r = new Rectangle(dirty);
 
+      //  I just took out the update image and replaced it with a call to
+      //  fire screen change.
+
+//      log.info(" call from updateDirty :" + dirty);
+
+//      fireScreenChanged(1,dirty);
+      fireScreenChanged(1);
 		// update the image
-		updateImage(r);
+//		updateImage(r);
+
+
 		//}
 		// update dirty to show that we have already painted that region of the
 		//   screen so do not do it again.
@@ -4549,7 +3912,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		//      dirty.setBounds(dirty.x,dirty.height,dirty.width,(int)(tArea.getHeight()
 		// - dirty.height));
 		//LDC - 12/02/2003 - set drawing to false
-		drawing = false;
+//		drawing = false;
 
 	}
 
@@ -4557,17 +3920,32 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 //		int bx = screen[pos].x;
 //		int by = screen[pos].y;
-      int bx = fmWidth * getCol(pos);
-      int by = fmHeight * getRow(pos);
-		//LDC - 12/02/2003 - if we must drawing something, do a union with it
-		//  otherwise only this rectangle must be redrawing
-		if (drawing) {
-			workR.setBounds(bx, by, fmWidth, fmHeight);
-			dirty = dirty.union(workR);
-		} else {
-			dirty.setBounds(bx, by, fmWidth, fmHeight);
-			drawing = true;
-		}
+
+//            int bx = fmWidth * getCol(pos);
+//            int by = fmHeight * getRow(pos);
+//
+//            //LDC - 12/02/2003 - if we must drawing something, do a union with it
+//            //  otherwise only this rectangle must be redrawing
+//            if (drawing) {
+//               workR.setBounds(bx, by, fmWidth, fmHeight);
+//               dirty = dirty.union(workR);
+//
+//            } else {
+//               dirty.setBounds(bx, by, fmWidth, fmHeight);
+//               drawing = true;
+//            }
+
+	   int minr = Math.min(getRow(pos),getRow(dirtyScreen.x));
+	   int minc = Math.min(getCol(pos),getCol(dirtyScreen.x));
+	   
+	   int maxr = Math.max(getRow(pos),getRow(dirtyScreen.y));
+	   int maxc = Math.max(getCol(pos),getCol(dirtyScreen.y));
+	   
+//	   int x1 = Math.min(pos, dirtyScreen.x);
+//      int x2 = Math.max(pos, dirtyScreen.y);
+	   int x1 = getPos(minr,minc);
+      int x2 = getPos(maxr,maxc);
+      dirtyScreen.setBounds(x1,x2,0,0);
 
 	}
 
@@ -4579,15 +3957,23 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 	private void resetDirty(int pos) {
 
-//      int x = s.fmWidth * col;
-//      int y = s.fmHeight * row;
-      int x = fmWidth * getCol(pos);
-      int y = fmHeight * this.getRow(pos);
+//      //      int x = s.fmWidth * col;
+//      //      int y = s.fmHeight * row;
+//            int x = fmWidth * getCol(pos);
+//            int y = fmHeight * this.getRow(pos);
+//      //      if (getCol(pos) == numCols - 1)
+//      //         w = 0;
+//      //      if (getRow(pos) == numRows - 1)
+//      //         h = 0;
+//
+//      //		dirty.setBounds(screen[pos].x, screen[pos].y, fmWidth, fmHeight);
+//            dirty.setBounds(x, y, fmWidth, fmHeight);
+//      //      printRect("RD dirty screen " , dirtyScreen);
+//
+//            //LDC - 12/02/2003 - It must be painting this area
+//            drawing = true;
+      dirtyScreen.setBounds(pos,pos,0,0);
 
-//		dirty.setBounds(screen[pos].x, screen[pos].y, fmWidth, fmHeight);
-		dirty.setBounds(x, y, fmWidth, fmHeight);
-		//LDC - 12/02/2003 - It must be painting this area
-		drawing = true;
 	}
 
 	/**
@@ -4701,8 +4087,14 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 
 		if (planes.isErrorLineSaved()) {
          planes.restoreErrorLine();
-         int y = fmHeight * (planes.getErrorLine()-1);
-			updateImage(0, y, bi.getWidth(), fmHeight);
+
+//         int y = fmHeight * (planes.getErrorLine()-1);
+//			updateImage(0, y, bi.getWidth(), fmHeight);
+//         dirty.setBounds(0,y,bi.getWidth(),fmHeight);
+//         int y = fmHeight * (planes.getErrorLine()-1);
+//			updateImage(0, y, bi.getWidth(), fmHeight);
+
+         fireScreenChanged(1,planes.getErrorLine()-1,0,planes.getErrorLine()-1,numCols - 1);
 		}
 	}
 
@@ -4742,17 +4134,17 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		}
 	}
 
-	public boolean isWithinScreenArea(int x, int y) {
-
-		//      if (x == 0 || y == 0)
-		//         return true;
-		//
-		//      x -= bi.offLeft;
-		//      y -= bi.offTop;
-
-		return tArea.contains(x, y);
-
-	}
+//	public boolean isWithinScreenArea(int x, int y) {
+//
+//		//      if (x == 0 || y == 0)
+//		//         return true;
+//		//
+//		//      x -= bi.offLeft;
+//		//      y -= bi.offTop;
+//
+//		return tArea.contains(x, y);
+//
+//	}
 
 	protected boolean isStatusErrorCode() {
 
@@ -4775,7 +4167,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //		screen[0].setAttribute(initAttr);
       planes.setScreenAttr(0,initAttr);
 		insertMode = false;
-		cursor.setRect(0, 0, 0, 0);
+//		cursor.setRect(0, 0, 0, 0);
       oia.setInsertMode(insertMode);
 	}
 
@@ -4801,7 +4193,8 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 //			screen[x].setUseGUI(NO_GUI);
          planes.setUseGUI(x,NO_GUI);
 		}
-		dirty.setBounds(tArea.getBounds());
+//		dirty.setBounds(tArea.getBounds());
+      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
 		//      dirty.setBounds(fmWidth * numCols,fmHeight * numRows,0,0);
 	}
 
@@ -4811,13 +4204,18 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public void clearScreen() {
 
-		for (int x = 0; x < lenScreen; x++) {
-//			screen[x].setCharAndAttr(' ', initAttr, false);
-//			screen[x].setUseGUI(NO_GUI);
-			planes.setScreenCharAndAttr(x,' ', initAttr, false);
-			planes.setUseGUI(x, NO_GUI);
-		}
-		dirty.setBounds(tArea.getBounds());
+//         for (int x = 0; x < lenScreen; x++) {
+//   //			screen[x].setCharAndAttr(' ', initAttr, false);
+//   //			screen[x].setUseGUI(NO_GUI);
+//            planes.setScreenCharAndAttr(x,' ', initAttr, false);
+//            planes.setUseGUI(x, NO_GUI);
+//         }
+
+      planes.initalizePlanes();
+//		dirty.setBounds(tArea.getBounds());
+//      dirtyScreen.setBounds(lenScreen,0,0,0);
+      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+
 		drawing = true;
       oia.clearScreen();
 
@@ -4826,8 +4224,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	public void restoreScreen() {
 
 		lastAttr = 32;
-		dirty.setBounds(tArea.getBounds());
-		updateImage(dirty);
+//		dirty.setBounds(tArea.getBounds());
+      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+      updateDirty();
+//		updateImage(dirty);
 	}
 
 	/**
@@ -4835,218 +4235,291 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 *
 	 * @return Graphics2D pointer of graphics buffer
 	 */
-	public Graphics2D getDrawingArea() {
+//	public Graphics2D getDrawingArea() {
+//
+//		return bi.getDrawingArea();
+//	}
 
-		return bi.getDrawingArea();
-	}
+//      protected void updateImage(int x, int y, int width, int height) {
+//
+//   //		if (controllersG2D == null) {
+//   //			//System.out.println("was null");
+//   //			controllersG2D = (Graphics2D) gui.getGraphics();
+//   //		}
+//
+//         // check for selected area and erase it before updating screen
+//         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
+//            gui.rubberband.erase();
+//         }
+//
+//   //		if (bi == null || controllersG2D == null) {
+//   //			if (bi == null)
+//   //				System.out.println("bi was null in update image");
+//   //			if (controllersG2D == null)
+//   //				System.out.println("gg2d was null in update image");
+//   //			return;
+//   //		}
+//
+//         biGraphics2d.setClip(x, y, width, height);
+//         if (!cursorActive && x + width <= bi.getWidth(null)
+//               && y + height <= (bi.getHeight(null) - fmWidth)) {
+//            paintComponent2(biGraphics2d);
+//         }
+//
+//         //      if (tileimage != null) {
+//         //
+//         //         AlphaComposite ac =
+//         // AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+//         //         g2d.setComposite(ac);
+//         //         g2d.drawImage(tileimage, null, null);
+//         //      }
+//
+//         // LDC - WVL : 08/09/2003 : TR.000358
+//         // TN5250j overpaints superimposed components
+//         // as swing doesn't support overlay detection when painting a component
+//         // we have to adhere to swing's paint request and use dirty rectangle
+//         // marking
+//         // instead of off-thread painting
+//         // So we replaced the complete block underneath by 1 repaint request
+//
+//         // fix for jdk1.4 - found this while testing under jdk1.4
+//         //   if the height and or the width are equal to zero we skip the
+//         //   the updating of the image.
+//         //      if (gui.isVisible() && height > 0 && width > 0) {
+//         //         bi.drawImageBuffer(gg2d,x,y,width,height);
+//         //      }
+//         //         if (gui.isVisible()) {
+//         //            if (height > 0 && width > 0) {
+//
+//         // We now redraw the selected area rectangle.
+//         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
+//            gui.rubberband.draw();
+//         }
+//
+//         //         if (!fullRepaint) {
+//         //            bi.drawImageBuffer(gg2d,x,y,width,height);
+//         //         }
+//         //         else
+//         //            gui.repaint();
+//
+//         //            System.out.println(" something went right finally " + gui.isVisible()
+//         // +
+//         //                           " height " + height + " width " + width);
+//         //         }
+//         //            else {
+//         //            bi.drawImageBuffer(gg2d);
+//         //            System.out.println(" something is wrong here " + gui.isVisible() +
+//         //                           " height " + height + " width " + width);
+//
+//         //            }
+//         //      }
+//         if (x == 0)
+//            width += bi.offLeft;
+//         else
+//            x += bi.offLeft;
+//         if (y == 0)
+//            height += bi.offTop;
+//         else
+//            y += bi.offTop;
+//
+//         gui.repaint(x, y, width, height);
+//
+//      }
+//
+//      protected void updateImage(Rectangle r) {
+//         updateImage(r.x, r.y, r.width, r.height);
+//      }
 
-	protected void updateImage(int x, int y, int width, int height) {
-
-		if (gg2d == null) {
-			//System.out.println("was null");
-			gg2d = (Graphics2D) gui.getGraphics();
-		}
-
-		// check for selected area and erase it before updating screen
-		if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-			gui.rubberband.erase();
-		}
-
-		if (bi == null || gg2d == null) {
-			if (bi == null)
-				System.out.println("bi was null in update image");
-			if (gg2d == null)
-				System.out.println("gg2d was null in update image");
-			return;
-		}
-
-		g2d.setClip(x, y, width, height);
-		if (!cursorActive && x + width <= bi.getWidth(null)
-				&& y + height <= (bi.getHeight(null) - fmWidth)) {
-			paintComponent2(g2d);
-		}
-
-		//      if (tileimage != null) {
-		//
-		//         AlphaComposite ac =
-		// AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-		//         g2d.setComposite(ac);
-		//         g2d.drawImage(tileimage, null, null);
-		//      }
-
-		// LDC - WVL : 08/09/2003 : TR.000358
-		// TN5250j overpaints superimposed components
-		// as swing doesn't support overlay detection when painting a component
-		// we have to adhere to swing's paint request and use dirty rectangle
-		// marking
-		// instead of off-thread painting
-		// So we replaced the complete block underneath by 1 repaint request
-
-		// fix for jdk1.4 - found this while testing under jdk1.4
-		//   if the height and or the width are equal to zero we skip the
-		//   the updating of the image.
-		//      if (gui.isVisible() && height > 0 && width > 0) {
-		//         bi.drawImageBuffer(gg2d,x,y,width,height);
-		//      }
-		//         if (gui.isVisible()) {
-		//            if (height > 0 && width > 0) {
-
-		// We now redraw the selected area rectangle.
-		if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-			gui.rubberband.draw();
-		}
-
-		//         if (!fullRepaint) {
-		//            bi.drawImageBuffer(gg2d,x,y,width,height);
-		//         }
-		//         else
-		//            gui.repaint();
-
-		//            System.out.println(" something went right finally " + gui.isVisible()
-		// +
-		//                           " height " + height + " width " + width);
-		//         }
-		//            else {
-		//            bi.drawImageBuffer(gg2d);
-		//            System.out.println(" something is wrong here " + gui.isVisible() +
-		//                           " height " + height + " width " + width);
-
-		//            }
-		//      }
-		if (x == 0)
-			width += bi.offLeft;
-		else
-			x += bi.offLeft;
-		if (y == 0)
-			height += bi.offTop;
-		else
-			y += bi.offTop;
-
-		gui.repaint(x, y, width, height);
-
-	}
-
-	protected void updateImage(Rectangle r) {
-		updateImage(r.x, r.y, r.width, r.height);
-	}
-
-	protected void paintComponent3(Graphics g) {
-		//      System.out.println("paint from screen");
-		Graphics2D g2 = (Graphics2D) g;
-
-		//      Rectangle r = g.getClipBounds();
-
-		g2.setColor(colorBg);
-		g2.fillRect(0, 0, gui.getWidth(), gui.getHeight());
-
-		bi.drawImageBuffer(g2);
-	}
+//	protected void paintComponent3(Graphics g) {
+//		//      System.out.println("paint from screen");
+//		Graphics2D g2 = (Graphics2D) g;
+//
+//		//      Rectangle r = g.getClipBounds();
+//
+//		g2.setColor(bi.colorBg);
+//		g2.fillRect(0, 0, gui.getWidth(), gui.getHeight());
+//
+//		bi.drawImageBuffer(g2);
+//	}
 
    /**
     * Notify all registered listeners of the onScreenChanged event.
     *
     */
-   private void fireScreenChanged(int which, int x, int y, int width, int height) {
+   private void fireScreenChanged(int which, int startRow, int startCol,
+                                 int endRow, int endCol) {
 
       if (listeners != null) {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             ScreenListener target =
                     (ScreenListener)listeners.elementAt(i);
-            target.onScreenChanged(1,x,y,width,height);
+            target.onScreenChanged(1,startRow,startCol,endRow,endCol);
+         }
+      }
+      dirtyScreen.setBounds(lenScreen,0,0,0);
+   }
+
+   /**
+    * Notify all registered listeners of the onScreenChanged event.
+    *
+    */
+   private synchronized void fireScreenChanged(int update) {
+      if (dirtyScreen.x > dirtyScreen.y) {
+//         log.info(" x < y " + dirtyScreen);
+         return;
+      }
+
+//      iOhioPosition inStart = new iOhioPosition(getRow(dirty.x) + 1,getColumn(dirty.x)+1);
+//      iOhioPosition inEnd = new iOhioPosition(getRow(dirty.y)+1,getColumn(dirty.y) +1);
+
+      fireScreenChanged(update, getRow(dirtyScreen.x), getCol(dirtyScreen.x),
+                                 getRow(dirtyScreen.y), getCol(dirtyScreen.y));
+
+   }
+
+   /**
+    * Notify all registered listeners of the onScreenChanged event.
+    *
+    */
+//   private synchronized void fireCursorChanged(int update, int row, int col) {
+   private synchronized void fireCursorChanged(int update) {
+//         if (dirtyScreen.x > dirtyScreen.y) {
+//   //         log.info(" x < y " + dirtyScreen);
+//            return;
+//         }
+
+//      iOhioPosition inStart = new iOhioPosition(getRow(dirty.x) + 1,getColumn(dirty.x)+1);
+//      iOhioPosition inEnd = new iOhioPosition(getRow(dirty.y)+1,getColumn(dirty.y) +1);
+      int startRow = getRow(lastPos);
+      int startCol = getCol(lastPos);
+
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            ScreenListener target =
+                    (ScreenListener)listeners.elementAt(i);
+            target.onScreenChanged(update,startRow,startCol,startRow,startCol);
          }
       }
    }
 
-	protected void paintComponent2(Graphics2D g2) {
-
-		if (bi == null) {
-			paintComponent3(g2);
-		}
-
-		Rectangle r = g2.getClipBounds();
-
-		if (r == null) {
-			paintComponent3((Graphics) g2);
-			return;
-		}
-
-		g2.setColor(colorBg);
-		//      System.out.println("PaintComponent " + r);
-
-		g2.fillRect(r.x, r.y, r.width, r.height);
-
-		int sPos = getRowColFromPoint(r.x, r.y);
-
-		int ePos = getRowColFromPoint(r.width, r.height) - numCols;
-		// fix me here
-		int er = (numRows - ((((fmHeight * (numRows + 1)) - ((r.y + r.height) + fmHeight)) / fmHeight)));
-		int ec = (numCols - ((((fmWidth * (numCols + 1)) - ((r.x + r.width) + fmWidth)) / fmWidth)));
-
-		//      int er1 = getRow(ePos);
-		//      int ec2 = getCol(ePos);
-		int sr = getRow(sPos);
-		int c = getCol(sPos);
-		er--;
-		ec--;
-
-      fireScreenChanged(1,sr,c,er,ec);
-
-//         //      System.out.println(sr + "," + c + "," + er + "," + ec);
-      workR.setBounds(sr, c, ec, er);
-
-//         int rows = er - sr;
-//         int cols = 0;
-//         int lr = workR.x;
-//         int lc = 0;
+//      /**
+//       * Notify all registered listeners of the onScreenChanged event.
+//       *
+//       */
+//      private void fireScreenChanged(int which, Rectangle r) {
 //
-//         lr = sPos;
+//         int sPos = getRowColFromPoint(r.x, r.y);
 //
-//         while (rows-- >= 0) {
-//            cols = ec - c;
-//            lc = lr;
-//            while (cols-- >= 0) {
-//               if (lc >= 0 && lc < lenScreen) {
-//   //					screen[lc++].drawChar(g2);
-//                  bi.drawChar(g2,screen[lc],getRow(lc),getCol(lc));
-//                  lc++;
-//               }
-//            }
-//            lr += numCols;
+//         int ePos = getRowColFromPoint(r.width, r.height) - numCols;
+//         // fix me here
+//         int er = (numRows - ((((fmHeight * (numRows + 1)) - ((r.y + r.height) + fmHeight)) / fmHeight)));
+//         int ec = (numCols - ((((fmWidth * (numCols + 1)) - ((r.x + r.width) + fmWidth)) / fmWidth)));
+//
+//         //      int er1 = getRow(ePos);
+//         //      int ec2 = getCol(ePos);
+//         int sr = getRow(sPos);
+//         int c = getCol(sPos);
+//         er--;
+//         ec--;
+//
+//         fireScreenChanged(1,sr,c,er,ec);
+//
+//      }
+
+//      protected void paintComponent2(Graphics2D g2) {
+//
+//         if (bi == null) {
+//            paintComponent3(g2);
 //         }
+//
+//         Rectangle r = g2.getClipBounds();
+//
+//   //		if (r == null) {
+//   //         log.info(" clipping rect is null ");
+//   //			paintComponent3((Graphics) g2);
+//   //			return;
+//   //		}
+//
+//         g2.setColor(colorBg);
+//         //      System.out.println("PaintComponent " + r);
+//
+//         g2.fillRect(r.x, r.y, r.width, r.height);
+//
+//         int sPos = getRowColFromPoint(r.x, r.y);
+//
+//         int ePos = getRowColFromPoint(r.width, r.height) - numCols;
+//         // fix me here
+//         int er = (numRows - ((((fmHeight * (numRows + 1)) - ((r.y + r.height) + fmHeight)) / fmHeight)));
+//         int ec = (numCols - ((((fmWidth * (numCols + 1)) - ((r.x + r.width) + fmWidth)) / fmWidth)));
+//
+//         //      int er1 = getRow(ePos);
+//         //      int ec2 = getCol(ePos);
+//         int sr = getRow(sPos);
+//         int c = getCol(sPos);
+//         er--;
+//         ec--;
+//
+//         fireScreenChanged(1,sr,c,er,ec);
+//   //      fireScreenChanged(1,dirtyScreen.y,dirtyScreen.x,dirtyScreen.height,dirtyScreen.width);
+//
+//   //         //      System.out.println(sr + "," + c + "," + er + "," + ec);
+//   //      workR.setBounds(sr, c, er, ec);
+//
+//   //      printRect(" paint workR ",workR);
+//   //         int rows = er - sr;
+//   //         int cols = 0;
+//   //         int lr = workR.x;
+//   //         int lc = 0;
+//   //
+//   //         lr = sPos;
+//   //
+//   //         while (rows-- >= 0) {
+//   //            cols = ec - c;
+//   //            lc = lr;
+//   //            while (cols-- >= 0) {
+//   //               if (lc >= 0 && lc < lenScreen) {
+//   //   //					screen[lc++].drawChar(g2);
+//   //                  bi.drawChar(g2,screen[lc],getRow(lc),getCol(lc));
+//   //                  lc++;
+//   //               }
+//   //            }
+//   //            lr += numCols;
+//   //         }
+//
+//      }
 
-	}
-
-	/**
-	 *
-	 * This routine will make sure we have something to draw on
-	 *
-	 */
-	private void checkOffScreenImage() {
-
-		// do we have something already?
-		if (bi == null) {
-
-			bi = new GuiGraphicBuffer(this);
-
-			if (antialiased) {
-				bi.setUseAntialias(true);
-			}
-
-			// allocate a buffer Image with appropriate size
-			bi.getImageBuffer(fmWidth * numCols, fmHeight * (numRows + 2));
-
-			// fill in the areas
-			tArea = new Rectangle2D.Float(0, 0, 0, 0);
-			cArea = new Rectangle2D.Float(0, 0, 0, 0);
-			aArea = new Rectangle2D.Float(0, 0, 0, 0);
-			sArea = new Rectangle2D.Float(0, 0, 0, 0);
-
-			// Draw Operator Information Area
-			drawOIA();
-		}
-
-	}
+      /**
+       *
+       * This routine will make sure we have something to draw on
+       *
+       */
+//         private void checkOffScreenImage() {
+//
+//            // do we have something already?
+//            if (bi == null) {
+//
+//               bi = new GuiGraphicBuffer(this,config);
+//
+//      //			if (antialiased) {
+//      //				bi.setUseAntialias(true);
+//      //			}
+//
+//               // allocate a buffer Image with appropriate size
+//               bi.getImageBuffer(fmWidth * numCols, fmHeight * (numRows + 2));
+//
+//               // fill in the areas
+//      //            tArea = new Rectangle2D.Float(0, 0, 0, 0);
+//      //            cArea = new Rectangle2D.Float(0, 0, 0, 0);
+//      //            aArea = new Rectangle2D.Float(0, 0, 0, 0);
+//      //            sArea = new Rectangle2D.Float(0, 0, 0, 0);
+//      //
+//      //            // Draw Operator Information Area
+//      //            drawOIA();
+//            }
+//
+//         }
 
 	/**
 	 * Convinience method to resize the screen area such as when the parent
@@ -5055,68 +4528,68 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * @param width
 	 * @param height
 	 */
-	private final void resizeScreenArea(int width, int height) {
+//	private final void resizeScreenArea(int width, int height) {
 
-		Font k = null;
-		LineMetrics l;
-		FontRenderContext f = null;
-		k = GUIGraphicsUtils.getDerivedFont(font, width, height, numRows,
-				numCols, sfh, sfw, ps132);
-		f = new FontRenderContext(k.getTransform(), true, true);
-
-		l = k.getLineMetrics("Wy", f);
-
-		if (font.getSize() != k.getSize() || updateFont
-				|| (bi.offLeft != (width - bi.getWidth()) / 2)
-				|| (bi.offTop != (height - bi.getHeight()) / 2)) {
-
-			// set up all the variables that are used in calculating the new
-			// size
-			font = k;
-			FontRenderContext frc = new FontRenderContext(font.getTransform(),
-					true, true);
-			lm = font.getLineMetrics("Wy", frc);
-			fmWidth = (int) font.getStringBounds("W", frc).getWidth() + 2;
-			fmHeight = (int) (font.getStringBounds("g", frc).getHeight()
-					+ lm.getDescent() + lm.getLeading());
-
-			bi.resize(fmWidth * numCols, fmHeight * (numRows + 2));
-
-			// set the offsets for the screen centering.
-			bi.offLeft = (width - bi.getWidth()) / 2;
-			bi.offTop = (height - bi.getHeight()) / 2;
-			if (bi.offLeft < 0)
-				bi.offLeft = 0;
-			if (bi.offTop < 0)
-				bi.offTop = 0;
-
-			drawOIA();
-
-			// and loop through the screen buffer to draw the new image with
-			// the correct attributes
-//			for (int m = 0; m < lenScreen; m++) {
-//				screen[m].setRowCol(getRow(m), getCol(m));
+//         Font k = null;
+//         LineMetrics l;
+//         FontRenderContext f = null;
+//         k = GUIGraphicsUtils.getDerivedFont(font, width, height, numRows,
+//               numCols, sfh, sfw, ps132);
+//         f = new FontRenderContext(k.getTransform(), true, true);
 //
-//			}
-			updateFont = false;
-		}
-
-	}
+//         l = k.getLineMetrics("Wy", f);
+//
+//         if (font.getSize() != k.getSize() || updateFont
+//               || (bi.offLeft != (width - bi.getWidth()) / 2)
+//               || (bi.offTop != (height - bi.getHeight()) / 2)) {
+//
+//            // set up all the variables that are used in calculating the new
+//            // size
+//            font = k;
+//            FontRenderContext frc = new FontRenderContext(font.getTransform(),
+//                  true, true);
+//            lm = font.getLineMetrics("Wy", frc);
+//            fmWidth = (int) font.getStringBounds("W", frc).getWidth() + 2;
+//            fmHeight = (int) (font.getStringBounds("g", frc).getHeight()
+//                  + lm.getDescent() + lm.getLeading());
+//
+//            bi.resize(fmWidth * numCols, fmHeight * (numRows + 2));
+//
+//            // set the offsets for the screen centering.
+//            bi.offLeft = (width - bi.getWidth()) / 2;
+//            bi.offTop = (height - bi.getHeight()) / 2;
+//            if (bi.offLeft < 0)
+//               bi.offLeft = 0;
+//            if (bi.offTop < 0)
+//               bi.offTop = 0;
+//
+//            drawOIA();
+//
+//            // and loop through the screen buffer to draw the new image with
+//            // the correct attributes
+//   //			for (int m = 0; m < lenScreen; m++) {
+//   //				screen[m].setRowCol(getRow(m), getCol(m));
+//   //
+//   //			}
+//            updateFont = false;
+//		}
+//      bi.resizeScreenArea(width,height);
+//	}
 
 	/**
 	 * Draw the Operator Information Area for feedback
 	 */
-	private void drawOIA() {
-
-		// get ourselves a global pointer to the graphics
-		g2d = bi.drawOIA();
-
-		tArea.setRect(bi.getTextArea());
-		cArea.setRect(bi.getCommandLineArea());
-		aArea.setRect(bi.getScreenArea());
-		sArea.setRect(bi.getStatusArea());
-
-	}
+//	private void drawOIA() {
+//
+//		// get ourselves a global pointer to the graphics
+//		biGraphics2d = bi.drawOIA();
+//
+//		tArea.setRect(bi.getTextArea());
+//		cArea.setRect(bi.getCommandLineArea());
+//		aArea.setRect(bi.getScreenArea());
+//		sArea.setRect(bi.getStatusArea());
+//
+//	}
 
 	/**
 	 *
@@ -5137,13 +4610,13 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 *
 	 */
 
-	public final void setBounds(int width, int height) {
-
-		setCursorActive(false);
-		resizeScreenArea(width, height);
-		repaintScreen();
-		setCursorActive(true);
-	}
+//	public final void setBounds(int width, int height) {
+//
+//		setCursorActive(false);
+//		bi.resizeScreenArea(width, height);
+//		repaintScreen();
+//		setCursorActive(true);
+//	}
 
 	/**
 	 * This method does a complete refresh of the screen.
@@ -5185,16 +4658,17 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * Utility method to share the repaint behaviour between setBounds() and
 	 * updateScreen.
 	 */
-	private void repaintScreen() {
-		drawing = true;
-		dirty.setBounds(tArea.getBounds());
-		if (gui.getGraphics() != null) {
-			// do not forget to null out gg2d before update or else there will
-			//    be a very hard to trace screen resize problem
-			gg2d = null;
-			updateDirty();
-		}
-
+	protected void repaintScreen() {
+		//drawing = true;
+//         dirty.setBounds(tArea.getBounds());
+         dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+//         if (gui.getGraphics() != null) {
+            // do not forget to null out gg2d before update or else there will
+            //    be a very hard to trace screen resize problem
+   //			controllersG2D = null;
+//            updateDirty();
+//         }
+      fireScreenChanged(1);
 		// restore statuses that were on the screen before resize
 		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
 		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
@@ -5221,10 +4695,10 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 *
 	 * @param r
 	 */
-	public final void setBounds(Rectangle r) {
-
-		setBounds(r.width, r.height);
-	}
+//	public final void setBounds(Rectangle r) {
+//
+//		setBounds(r.width, r.height);
+//	}
 
 	/**
 	 *
@@ -5234,26 +4708,26 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 * @return the value of the preferredSize property
 	 *
 	 */
-	public final Dimension getPreferredSize() {
+//	public final Dimension getPreferredSize() {
+//
+//		return new Dimension(fmWidth * numCols, fmHeight * (numRows + 2));
+//
+//	}
 
-		return new Dimension(fmWidth * numCols, fmHeight * (numRows + 2));
-
-	}
-
-	/**
-	 *
-	 * This routine is responsible for setting up a PrinterJob on this component
-	 * and initiating the print session.
-	 *
-	 */
-	public final void printMe() {
-
-		Thread printerThread = new PrinterThread(this, font, numCols,
-				numRows, colorBg, defaultPrinter, (Session) gui);
-
-		printerThread.start();
-
-	}
+//	/**
+//	 *
+//	 * This routine is responsible for setting up a PrinterJob on this component
+//	 * and initiating the print session.
+//	 *
+//	 */
+//	public final void printMe() {
+//
+//		Thread printerThread = new PrinterThread(this, font, numCols,
+//				numRows, Color.black, defaultPrinter, (Session) gui);
+//
+//		printerThread.start();
+//
+//	}
 
 //	// ADDED BY BARRY
 //	public ScreenChar[] getCharacters() {
@@ -5265,7 +4739,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 		return planes.screen;
 	}
 
-	public Gui5250 getGui() {
-		return this.gui;
-	}
+//	public Gui5250 getGui() {
+//		return this.gui;
+//	}
 }

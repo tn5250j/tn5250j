@@ -386,11 +386,12 @@ public interface TN5250jConstants {
    // PLANES
    public static final int PLANE_TEXT   =  1;
    public static final int PLANE_COLOR   =  2;
-   public static final int PLANE_FIELD   =  4;
-   public static final int PLANE_EXTENDED   =  8;
-   public static final int PLANE_EXTENDED_GRAPHIC   =  16;
-   public static final int PLANE_EXTENDED_FIELD   =  32;
-   public static final int PLANE_ATTR   =  64;
+   public static final int PLANE_FIELD   =  3;
+   public static final int PLANE_EXTENDED   =  4;
+   public static final int PLANE_EXTENDED_GRAPHIC   =  5;
+   public static final int PLANE_EXTENDED_FIELD   =  6;
+   public static final int PLANE_ATTR   =  7;
+   public static final int PLANE_IS_ATTR_PLACE   =  8;
 
    // COLOR_BG
    public static final char COLOR_BG_BLACK   =  0;
