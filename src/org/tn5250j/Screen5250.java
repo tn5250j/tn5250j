@@ -110,13 +110,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private Point endPoint;
    private int crossHair = 0;
    private boolean messageLight = false;
-	public int homePos = 0;
-	public int saveHomePos = 0;
+   public int homePos = 0;
+   public int saveHomePos = 0;
    private boolean keysBuffered;
    private String bufferedKeys;
    private boolean updateFont;
 
-	public boolean pendingInsert = false;
+   public boolean pendingInsert = false;
 
    private Gui5250 gui;
    private Properties appProps = null;
@@ -166,8 +166,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    void jbInit() throws Exception {
 
-      if (!appProps.containsKey("font"))
+      if (!appProps.containsKey("font")) {
          font = new Font("dialoginput",Font.BOLD,14);
+         appProps.setProperty("font","dialoginput");
+      }
       else {
          font = new Font(getStringProperty("font"),Font.PLAIN,14);
       }
@@ -1382,7 +1384,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             }
             break;
          case BACK_TAB :
-            gotoFieldPrev();
+
+            if (screenFields.getCurrentField() != null && screenFields.isCurrentFieldHighlightedEntry()) {
+               resetDirty(screenFields.getCurrentField().startPos);
+               gotoFieldPrev();
+               updateDirty();
+            }
+            else
+               gotoFieldPrev();
 
             if (screenFields.isCurrentFieldContinued()) {
                do {
@@ -1442,8 +1451,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
             break;
          case TAB :
+
             if (screenFields.getCurrentField() != null && !screenFields.isCurrentFieldContinued()) {
-               gotoFieldNext();
+               if (screenFields.isCurrentFieldHighlightedEntry()) {
+                  resetDirty(screenFields.getCurrentField().startPos);
+                  gotoFieldNext();
+                  updateDirty();
+               }
+               else
+                  gotoFieldNext();
             }
             else {
                do {
@@ -1452,6 +1468,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
                while (screenFields.getCurrentField() != null && (screenFields.isCurrentFieldContinuedMiddle() ||
                      screenFields.isCurrentFieldContinuedLast()));
             }
+
             isInField(lastPos);
             simulated  = true;
 
@@ -2236,6 +2253,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       return screenFields.isInField((row * numCols) + col,chgToField);
    }
 
+   public int getScreenLength() {
+
+      return lenScreen;
+   }
 
    public int getRows() {
 
@@ -2441,12 +2462,25 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    private void gotoFieldNext() {
 
+      if (screenFields.isCurrentFieldHighlightedEntry())
+         unsetFieldHighlighted(screenFields.getCurrentField());
+
       screenFields.gotoFieldNext();
+
+      if (screenFields.isCurrentFieldHighlightedEntry())
+         setFieldHighlighted(screenFields.getCurrentField());
    }
 
    private void gotoFieldPrev() {
 
+      if (screenFields.isCurrentFieldHighlightedEntry())
+         unsetFieldHighlighted(screenFields.getCurrentField());
+
       screenFields.gotoFieldPrev();
+
+      if (screenFields.isCurrentFieldHighlightedEntry())
+         setFieldHighlighted(screenFields.getCurrentField());
+
    }
 
    public void createWindow(int depth, int width, int type, boolean gui,
@@ -2848,6 +2882,36 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       int x = sf.length;
 
       while (x-- > 0) {
+         setDirty(pos++);
+      }
+//      updateImage(dirty);
+
+   }
+
+   public void setFieldHighlighted(ScreenField sf) {
+
+      int pos = sf.startPos();
+
+      int x = sf.length;
+      int na = sf.getHighlightedAttr();
+
+      while (x-- > 0) {
+         screen[pos].setAttribute(na);
+         setDirty(pos++);
+      }
+//      updateImage(dirty);
+
+   }
+
+   public void unsetFieldHighlighted(ScreenField sf) {
+
+      int pos = sf.startPos();
+
+      int x = sf.length;
+      int na = sf.getAttr();
+
+      while (x-- > 0) {
+         screen[pos].setAttribute(na);
          setDirty(pos++);
       }
       updateImage(dirty);

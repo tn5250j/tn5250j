@@ -41,7 +41,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.InternalFrameEvent;
 
-public class Gui5250MDIFrame extends JFrame implements GUIViewInterface,
+public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
                                                     ChangeListener,
                                                     TN5250jConstants,
                                                     SessionListener,
@@ -60,9 +60,9 @@ public class Gui5250MDIFrame extends JFrame implements GUIViewInterface,
    static int openFrameCount = 0;
 
    //Construct the frame
-   public Gui5250MDIFrame(My5250 m, int seq) {
+   public Gui5250MDIFrame(My5250 m) {
+      super(m);
       me = m;
-      sequence = seq;
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       try  {
          jbInit();
@@ -77,6 +77,9 @@ public class Gui5250MDIFrame extends JFrame implements GUIViewInterface,
 
       desktop = new JDesktopPane();
       setContentPane(desktop);
+
+      // Install our custom desktop manager
+      desktop.setDesktopManager(new MyDesktopMgr());
 //      this.getContentPane().setLayout(borderLayout1);
 
       String release = "0";
@@ -95,15 +98,14 @@ public class Gui5250MDIFrame extends JFrame implements GUIViewInterface,
 //      sessionPane.setDoubleBuffered(true);
 //      this.getContentPane().add(sessionPane, BorderLayout.CENTER);
 //      sessionPane.addChangeListener(this);
-      centerFrame();
-   }
-
-   public void centerFrame() {
-
       if (packFrame)
          pack();
       else
          validate();
+
+   }
+
+   public void centerFrame() {
 
       //Center the window
       Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -123,7 +125,7 @@ public class Gui5250MDIFrame extends JFrame implements GUIViewInterface,
    protected void processWindowEvent(WindowEvent e) {
       super.processWindowEvent(e);
       if(e.getID() == WindowEvent.WINDOW_CLOSING) {
-//         me.closingDown(this);
+         me.closingDown(this);
       }
    }
 
@@ -168,22 +170,6 @@ public class Gui5250MDIFrame extends JFrame implements GUIViewInterface,
 
       }
 
-//      int index = sessionPane.getSelectedIndex();
-//      sessionPane.setForegroundAt(index,Color.black);
-//      sessionPane.setIconAt(index,unfocused);
-//
-//      if (index < sessionPane.getTabCount() - 1) {
-//         sessionPane.setSelectedIndex(++index);
-//         sessionPane.setForegroundAt(index,Color.blue);
-//         sessionPane.setIconAt(index,focused);
-//
-//      }
-//      else {
-//         sessionPane.setSelectedIndex(0);
-//         sessionPane.setForegroundAt(0,Color.blue);
-//         sessionPane.setIconAt(0,focused);
-//
-//      }
 
    }
 
@@ -422,4 +408,74 @@ public void internalFrameClosing(InternalFrameEvent e) {
       }
 
    }
+
+   // A DesktopManager that keeps its frames inside the desktop.
+     public class MyDesktopMgr extends DefaultDesktopManager {
+
+       // We'll tag internal frames that are being resized using a client
+       // property with the name RESIZING.  Used in setBoundsForFrame().
+       protected static final String RESIZING = "RESIZING";
+
+       public void beginResizingFrame(JComponent f, int dir) {
+         f.putClientProperty(RESIZING, Boolean.TRUE);
+       }
+
+       public void endResizingFrame(JComponent f) {
+         f.putClientProperty(RESIZING, Boolean.FALSE);
+       }
+
+       // This is called any time a frame is moved or resized.  This
+       // implementation keeps the frame from leaving the desktop.
+       public void setBoundsForFrame(JComponent f, int x, int y, int w, int h) {
+         if (f instanceof JInternalFrame == false) {
+           super.setBoundsForFrame(f, x, y, w, h); // only deal w/internal frames
+         }
+         else {
+           JInternalFrame frame = (JInternalFrame)f;
+
+           // Figure out if we are being resized (otherwise it's just a move)
+           boolean resizing = false;
+           Object r = frame.getClientProperty(RESIZING);
+           if (r != null && r instanceof Boolean) {
+             resizing = ((Boolean)r).booleanValue();
+           }
+
+           JDesktopPane desk = frame.getDesktopPane();
+           Dimension d = desk.getSize();
+
+           // Nothing all that fancy below, just figuring out how to adjust
+           // to keep the frame on the desktop.
+           if (x < 0) {              // too far left?
+             if (resizing)
+               w += x;               // don't get wider!
+             x=0;                    // flush against the left side
+           }
+           else {
+             if (x+w>d.width) {      // too far right?
+              if (resizing)
+                w = d.width-x;       // don't get wider!
+              else
+                x = d.width-w;       // flush against the right side
+             }
+           }
+           if (y < 0) {              // too high?
+             if (resizing)
+               h += y;               // don't get taller!
+             y=0;                    // flush against the top
+           }
+           else {
+             if (y+h > d.height) {   // too low?
+               if (resizing)
+                 h = d.height - y;   // don't get taller!
+               else
+                 y = d.height-h;     // flush against the bottom
+             }
+           }
+
+           // Set 'em the way we like 'em
+           super.setBoundsForFrame(f, x, y, w, h);
+         }
+       }
+     }
+
 }

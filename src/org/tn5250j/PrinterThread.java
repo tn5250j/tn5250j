@@ -15,10 +15,19 @@ public class PrinterThread extends Thread implements Printable {
    Color colorBg;
    Font font;
 
-   public PrinterThread (ScreenChar[] screen, Font font, int cols, int rows,
+   public PrinterThread (ScreenChar[] sc, Font font, int cols, int rows,
                            Color colorBg) {
       setPriority(1);
-      this.screen = screen;
+
+      screen = new ScreenChar[sc.length];
+
+      int len = sc.length;
+
+      for (int x = 0; x < len; x++) {
+         screen[x] = new ScreenChar(sc[x].s);
+         screen[x].setCharAndAttr(sc[x].getChar(),sc[x].getCharAttr(),sc[x].isAttributePlace());
+      }
+
       numCols = cols;
       numRows = rows;
       this.colorBg = colorBg;
@@ -46,6 +55,14 @@ public class PrinterThread extends Thread implements Printable {
             PrintException.printStackTrace();
          }
       }
+
+      int len = screen.length;
+
+      for (int x = 0; x < len; x++) {
+         screen[x] = null;
+      }
+
+      screen = null;
 
    }
 

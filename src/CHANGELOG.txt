@@ -33,13 +33,37 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+15/5/2002   Cleaned up some error messages on thread interruptions during session
+            shutdown.
+
+            Added frame persistance meaning that the frames will be restored to
+            the same position and size as when they were closed.
+
+            Fixed a problem on new sessions with the font changing if attributes
+            are changed.  This was causing a random font to be used and replacing
+            the original font used.  You would then have to go in and reset
+            the font.  Not anymore :)
+
+            Added new command line argument for testing of MDI interface instead
+            of tabs.
+              Command Line Option       Description
+               -MDI                     Uses JInternalFrames instead of tabs
+                                        to represent the sessions.
+
+13/5/2002   Fixed a problem in screen print.  It will now only print what was on
+            the screen at the time of initiating the print dialog.  If the user
+            udated the screen the print thread would print what is on the
+            current screen instead of what was there when the print was initiated.
+
+09/5/2002   Added support for Highlighted Entry Fields.
+
 08/5/2002   Fixed a problem with the connect dialog not showing up under some
             versions of the JDK.  I changed the JDialog to be resizable instead
             of non resizable and it worked as it should.  @#$@%@#$@#$
 
             Fixed a problem with the Highlighted Entry Fields being interpreted
             as Cursor progression fields.  Next is to actually get the the
-            Highlighted Entry Fields to actually hightligh when entered :)
+            Highlighted Entry Fields to actually hightlight when entered :)
 
 05/5/2002   Added Enter key as command key to connect that session from the
             session connection dialog.  You can now select the connect button

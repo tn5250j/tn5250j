@@ -80,6 +80,10 @@ public class ScreenField {
       return attr;
    }
 
+   public int getHighlightedAttr(){
+      return fcw2 | 0x20;
+   }
+
    public int getLength(){
       return length;
    }
@@ -267,6 +271,12 @@ public class ScreenField {
    public int getFieldShift () {
 
       return (ffw1 & 0x7);
+
+   }
+
+   public boolean isHiglightedEntry() {
+
+      return (fcw1 == 0x89);
 
    }
 

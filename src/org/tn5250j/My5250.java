@@ -53,7 +53,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    private static BootStrapper strapper = null;
    private SessionManager manager;
    private static Vector frames;
-
+   private static boolean useMDIFrames;
 
    My5250 () {
       try  {
@@ -181,6 +181,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    }
 
    static public void main(String[] args) {
+
+      if (isSpecified("-MDI",args))
+         useMDIFrames = true;
 
       if (!isSpecified("-nc",args)) {
 
@@ -509,14 +512,39 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       if (sessions.containsKey("emul.height"))
          height = Integer.parseInt(sessions.getProperty("emul.height"));
 
-      frame1 = new Gui5250Frame(this, frames.size());
-      frame1.setSize(width,height);
-      frame1.centerFrame();
+      if (useMDIFrames)
+         frame1 = new Gui5250MDIFrame(this);
+      else
+         frame1 = new Gui5250Frame(this);
+
+      if (sessions.containsKey("emul.frame" + frame1.getFrameSequence())) {
+
+         String location = sessions.getProperty("emul.frame" + frame1.getFrameSequence());
+//         System.out.println(location + " seq > " + frame1.getFrameSequence() );
+         restoreFrame(frame1,location);
+      }
+      else {
+         frame1.setSize(width,height);
+         frame1.centerFrame();
+      }
+
       frame1.setIconImage(tnicon.getImage());
       frame1.setIcons(focused,unfocused);
 
       frames.add(frame1);
 
+   }
+
+   private void restoreFrame(Gui5250Frame frame,String location) {
+
+      StringTokenizer tokenizer = new StringTokenizer(location, ",");
+      int x = Integer.parseInt(tokenizer.nextToken());
+      int y = Integer.parseInt(tokenizer.nextToken());
+      int width = Integer.parseInt(tokenizer.nextToken());
+      int height = Integer.parseInt(tokenizer.nextToken());
+
+      frame.setLocation(x,y);
+      frame.setSize(width,height);
    }
 
    void closingDown(Session targetSession) {
@@ -527,10 +555,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    void closingDown(Gui5250Frame view) {
 
       Session jf = null;
-//      tnvt tvt = null;
       Sessions sess = manager.getSessions();
 
-//      System.out.println("number of active sessions we have " + sessionsV.size());
       System.out.println("number of active sessions we have " + sess.getCount());
       int x = 0;
 
@@ -547,23 +573,30 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       }
 
+
+      sessions.setProperty("emul.frame" + view.getFrameSequence(),
+                                    view.getX() + "," +
+                                    view.getY() + "," +
+                                    view.getWidth() + "," +
+                                    view.getHeight());
+
       frames.remove(view);
       view.dispose();
 
       System.out.println("number of active sessions we have after shutting down " + sess.getCount());
 
-      try {
-         FileOutputStream out = new FileOutputStream("sessions");
-         // save off the width and height to be restored later
-         sessions.setProperty("emul.width",Integer.toString(view.getWidth()));
-         sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
-
-         sessions.store(out,"------ Defaults --------");
-      }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
-
       if (sess.getCount() == 0) {
+         try {
+            FileOutputStream out = new FileOutputStream("sessions");
+            // save off the width and height to be restored later
+            sessions.setProperty("emul.width",Integer.toString(view.getWidth()));
+            sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
+
+            sessions.store(out,"------ Defaults --------");
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
+
          if (strapper != null) {
             strapper.interrupt();
          }

@@ -52,12 +52,12 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
    private ImageIcon unfocused = null;
    private int selectedIndex = 0;
    private boolean packFrame = false;
-   private int sequence;
+   private static int sequence;
+   private int frameSeq;
 
    //Construct the frame
-   public Gui5250Frame(My5250 m, int seq) {
+   public Gui5250Frame(My5250 m) {
       me = m;
-      sequence = seq;
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       try  {
          jbInit();
@@ -68,18 +68,21 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
    }
 
    //Component initialization
-  private void jbInit() throws Exception  {
+   private void jbInit() throws Exception  {
 
       this.getContentPane().setLayout(borderLayout1);
 
       String release = "0";
       String version = ".5";
-      String subVer= ".3 RC1";
+      String subVer= ".3 RC2";
 
       if (sequence > 0)
-         setTitle("tn5250j <" + sequence + ">- " + release + version + subVer);
+         setTitle("tn5250j <" + sequence + "> - " + release + version + subVer);
       else
          setTitle("tn5250j - " + release + version + subVer);
+
+      // update the frame sequences
+      frameSeq = sequence++;
 
       sessionPane.setBorder(BorderFactory.createEtchedBorder());
       sessionPane.setBounds(new Rectangle(78, 57, 5, 5));
@@ -88,7 +91,11 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
       sessionPane.setDoubleBuffered(true);
       this.getContentPane().add(sessionPane, BorderLayout.CENTER);
       sessionPane.addChangeListener(this);
-      centerFrame();
+      if (packFrame)
+         pack();
+      else
+         validate();
+
    }
 
    public void centerFrame() {
@@ -112,6 +119,10 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
    }
 
+   public int getFrameSequence() {
+
+      return frameSeq;
+   }
    //Overridden so we can exit on System Close
    protected void processWindowEvent(WindowEvent e) {
       super.processWindowEvent(e);
@@ -268,9 +279,8 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
          case STATE_CONNECTED:
 
             final String d = ses.getAllocDeviceName();
-            System.out.println(changeEvent.getState() + " " +
-                        d);
             if (d != null) {
+               System.out.println(changeEvent.getState() + " " + d);
                final int index = sessionPane.indexOfComponent(ses);
                Runnable tc = new Runnable () {
                   public void run() {

@@ -44,7 +44,6 @@ public class ScreenFields implements TN5250jConstants {
 
       screen = s;
       screenFields = new ScreenField[256];
-
    }
 
    public void clearFFT() {
@@ -74,6 +73,7 @@ public class ScreenFields implements TN5250jConstants {
       }
 
       return false;
+//      return fieldPlane[lastPos];
    }
 
    public boolean isMasterMDT() {
@@ -94,6 +94,10 @@ public class ScreenFields implements TN5250jConstants {
 
    public boolean isCurrentFieldBypassField() {
       return currentField.isBypassField();
+   }
+
+   public boolean isCurrentFieldHighlightedEntry() {
+      return currentField.isHiglightedEntry();
    }
 
    public boolean isCurrentFieldAutoEnter() {
@@ -151,7 +155,9 @@ public class ScreenFields implements TN5250jConstants {
       screenFields[nextField] = new ScreenField(screen);
       screenFields[nextField].setField(attr,row,col,len,ffw1,ffw2,fcw1,fcw2);
       sf = screenFields[nextField++];
+
       sizeFields++;
+
 
       // set the field id if it is not a bypass field
       // this is used for cursor progression
@@ -198,6 +204,10 @@ public class ScreenFields implements TN5250jConstants {
       return currentField.getText();
    }
 
+   public int getCurrentFieldHighlightedAttr(){
+      return currentField.getHighlightedAttr();
+   }
+
    public int getSize() {
 
       return sizeFields;
@@ -219,6 +229,7 @@ public class ScreenFields implements TN5250jConstants {
          sf = screenFields[x];
 
          if (sf.withinField(pos)) {
+
             if (chgToField) {
                currentField = sf;
             }

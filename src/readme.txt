@@ -143,6 +143,14 @@ The following sections are available:
              This option will also change the session name to that
              of the allocated device name.
 
+    -MDI ----> Use the MDI interface represented by JInternalFrames instead of
+               tabs.
+               --------- N O T E ---------
+               New feature for now and is in testing.  Please send comments/
+               feedback/bugs.
+
+
+
     Example of command line options
     -------------------------------
 
@@ -245,7 +253,7 @@ Alt + s		   Toggle Hotspots on and off
 Alt + g		   Toggle GUI Interface on and off
 Alt + t		   Transfer File
 Insert		   Toggle insert mode (cursor changes shape to half height cursor)
-		            Right shift of field characters in insert mode
+                  Right shift of field characters in insert mode
 Delete		   Delete character (with left shift of field characters)
 BackSpace	   Delete Previous Character (with left shift of field characters)
 Keypad plus	   Field Positive Key (works like field exit in non numeric fields)
@@ -313,8 +321,8 @@ Paste - Pastes clipboard data to the screen
 Paste Special - This will paste the data from the clipboard stripping all non
                   letter and non numeric characters.
 
-	Example:
-	--------
+   Example:
+   --------
                                  Display Report
                                               Report width . . . . . :     556
  Position to line  . . . . .              Shift to column  . . . . . .
@@ -327,7 +335,7 @@ Paste Special - This will paste the data from the clipboard stripping all non
  000005         2,010                00069                   D
 
 
-	The Opening Branch...... field has a comma within the field, if you do just a
+   The Opening Branch...... field has a comma within the field, if you do just a
    regular copy and paste into a field you would get 1,091 which sometimes is
    not formatted correctly so you would use the paste special and what would be
    pasted is 1091
