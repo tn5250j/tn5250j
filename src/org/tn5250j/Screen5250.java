@@ -3549,7 +3549,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          screen[pos].setAttribute(na);
          setDirty(pos++);
       }
-//      updateImage(dirty);
+      updateImage(dirty);
 
    }
 

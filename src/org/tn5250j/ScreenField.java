@@ -81,7 +81,7 @@ public class ScreenField {
    }
 
    public int getHighlightedAttr(){
-      return fcw2 | 0x20;
+      return (fcw2 & 0x0f) | 0x20;
    }
 
    public int getLength(){
