@@ -128,6 +128,34 @@ public abstract class AttributesPanel extends JPanel {
 
    }
 
+   protected final boolean getBooleanProperty(String prop) {
+
+      if (changes.isPropertyExists(prop)) {
+         String b = changes.getStringProperty(prop).toLowerCase();
+         if (b.equals("yes") || b.equals("true"))
+            return true;
+         else
+            return false;
+      }
+      else
+         return false;
+
+   }
+
+   protected final boolean getBooleanProperty(String prop, boolean dflt) {
+
+      if (changes.isPropertyExists(prop)) {
+         String b = changes.getStringProperty(prop).toLowerCase();
+         if (b.equals("yes") || b.equals("true"))
+            return true;
+         else
+            return false;
+      }
+      else
+         return dflt;
+
+   }
+
    protected Rectangle getRectangleProperty(String key) {
 
       return changes.getRectangleProperty(key);
