@@ -158,6 +158,11 @@ public class OperatingSystem
    {
       return java14;
    }
+   
+   public static final boolean hasJava15()
+   {
+        return java15;
+   }
 
    /**
     * From JavaWorld Tip 66 - http://www.javaworld.com/javaworld/javatips/jw-javatip66.html
@@ -232,6 +237,7 @@ public class OperatingSystem
 
    private static int os;
    private static boolean java14;
+   private static boolean java15;
 
    //{{{ Class initializer
    static
@@ -273,6 +279,9 @@ public class OperatingSystem
 
       if(System.getProperty("java.version").compareTo("1.4") >= 0)
          java14 = true;
+      
+      if(System.getProperty("java.version").compareTo("1.5") >= 0)
+         java15 = true;
    } //}}}
 
    //}}}

@@ -330,7 +330,6 @@ while not ready:
     screen = _session.getScreen()
     logon = java.lang.StringBuffer()
     screenChars = screen.getScreenAsChars()
-    logon.setLength(0)
     fillWithValues(24, 41, 35, logon)
     if logon.toString() == "(C) COPYRIGHT IBM CORP. 1980, 2000.":
         time.sleep(2)

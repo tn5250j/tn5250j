@@ -94,14 +94,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
       // we only want to try and load the Kunststoff look and feel if it is not
       //  for the MAC operating system.
-      if (!OperatingSystem.isMacOS()) {
+      if (!OperatingSystem.isMacOS() & !OperatingSystem.hasJava15()) {
 
          try  {
             UIManager.setLookAndFeel("com.incors.plaf.kunststoff.KunststoffLookAndFeel");
          }
          catch(Exception e) {
             try {
-               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (ClassNotFoundException e1) {
                e1.printStackTrace();
