@@ -33,6 +33,7 @@ import java.awt.event.ActionEvent;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.tools.*;
 import org.tn5250j.Session;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * New Session emulator action to open new sessions

@@ -773,8 +773,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             try {
                Runtime rt = Runtime.getRuntime();
                String[] cmdArray = {editor.getText(),pcPathInfo.getText()};
-//               Process proc = rt.exec(cmdArray);
                // We need to probably do some checking here in the future
+               // Process proc = rt.exec(cmdArray);
                rt.exec(cmdArray);
 
                // now we set the field to use external viewer or not

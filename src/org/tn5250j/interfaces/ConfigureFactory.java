@@ -75,7 +75,11 @@ public abstract class ConfigureFactory {
    abstract public void saveSettings();
    abstract public String getProperty(String regKey);
    abstract public String getProperty(String regKey, String defaultValue);
-   abstract public Properties  getProperties();
+   abstract public void setProperties(String regKey, Properties regProps);
+
+   abstract public void setProperties(String regKey, String fileName, String  header);
+   abstract public void setProperties(String regKey, String fileName, String  header,
+                              boolean createFile);
    abstract public Properties  getProperties(String regKey);
    abstract public Properties  getProperties(String regKey,String fileName);
    abstract public Properties  getProperties(String regKey,String fileName,

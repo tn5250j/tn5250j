@@ -30,7 +30,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 
-import org.tn5250j.tools.*;
+import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.Session;
 
 /**

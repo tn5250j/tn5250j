@@ -31,7 +31,7 @@ public interface SessionInterface {
    public abstract boolean isConnected();
    public abstract String getSessionName();
    public abstract int getSessionType();
-//   public abstract iOhioScreen getScreen();
+   public abstract boolean isOnSignOnScreen();
    public abstract void connect();
    public abstract void disconnect();
    public abstract void addSessionListener(SessionListener listener);
