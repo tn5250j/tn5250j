@@ -270,8 +270,9 @@ public class ScreenField {
          sf.setMDT();
          sf = null;
       }
-      else
+      else {
          mdt = true;
+      }
 
    }
 
