@@ -214,7 +214,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 //         }
       }
 
-      drawOIA();
+      //drawOIA();
+//      screen.updateScreen();
+//      gui.validate();
+//      gui.repaint();
    }
 
    private void getSettings() {
@@ -1886,6 +1889,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
    }
 
+   public void onScreenSizeChanged(int rows, int cols) {
+      log.info("screen size change");
+      gui.resizeMe();
+   }
+   
    public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
 
 
@@ -1903,7 +1911,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       if (hotSpots)
          screen.checkHotSpots();
 
-      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
+      //log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
 
       int rows = er - sr;
 		int cols = 0;

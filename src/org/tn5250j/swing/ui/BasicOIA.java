@@ -27,6 +27,11 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
     this.clearLayout();
   }
 
+  public void onScreenSizeChanged(int rows, int cols) {
+     
+     
+  }
+  
   public void onScreenChanged(int inUpdate, int startRow, int startCol, int endRow, int endCol)
   {
     if  ((inUpdate == 3) && (locationRectangle != null))
@@ -43,6 +48,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
         case OIA_CHANGED_CLEAR_SCREEN:
           break;
         case OIA_CHANGED_INPUTINHIBITED:
+           addDirtyRectangle(inhibitedRectangle);
           break;
         case OIA_CHANGED_INSERT_MODE:
           break;
@@ -87,6 +93,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
 
     paintRuler(g, clip);
     paintLocation(g, clip);
+    paintInhibited(g, clip);
   }
 
   private void paintRuler(Graphics g, Rectangle clip)
@@ -110,16 +117,61 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
     }
   }
 
+  private void paintInhibited(Graphics g, Rectangle clip)
+  {
+
+     if (inhibitedRectangle.intersects(clip))
+     {
+        if (oia.getInhibitedText() != null)
+           System.out.println(oia.getInhibitedText());
+
+        System.out.println("xsystem " + oia.getLevel() + "," + oia.getInputInhibited());
+
+        g.setColor(BasicTerminalUI.DFT_FOREGROUND);
+
+       Screen5250 s = oia.getSource();
+       int cy = (int)(inhibitedRectangle.y + rowHeight - (metrics.getDescent() + metrics.getLeading()));
+       int attr = oia.getLevel();
+       int value = oia.getInputInhibited();
+       String stext = oia.getInhibitedText();
+
+       g.setColor(Color.black);
+       g.fillRect(inhibitedRectangle.x,inhibitedRectangle.x,inhibitedRectangle.width,
+             inhibitedRectangle.height);
+             
+       switch (oia.getLevel()) {
+          case 7:
+             if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
+             
+	             g.setColor(Color.white);
+	             if (stext != null) {
+	                g.drawChars(stext.toCharArray(),0,
+	                      oia.getInhibitedText().length(),inhibitedRectangle.x,cy);
+	             }
+	             else {
+	                g.drawChars("X - System".toCharArray(),0,
+	                      "X - System".length(),inhibitedRectangle.x,cy);
+	                
+	             }
+             }
+             break;
+       }
+
+     }
+  }
+
   public final void setPosition(int row, int column)
   {
   }
 
   transient ScreenOIA      oia;
   private transient Rectangle locationRectangle;
+  private transient Rectangle inhibitedRectangle;
 
   private void clearLayout()
   {
     locationRectangle = null;
+    inhibitedRectangle = null;
   }
 
   private void doLayout()
@@ -132,6 +184,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
       // Location rectangle
       w = 6 * this.columnWidth;
       locationRectangle = new Rectangle(bounds.width - w, 0, w, this.rowHeight);
+      inhibitedRectangle = new Rectangle(10, 0, 25* this.columnWidth, this.rowHeight);
     }
   }
 

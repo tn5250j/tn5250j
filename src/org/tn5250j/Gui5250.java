@@ -799,8 +799,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
       Rectangle r = getDrawingBounds();
       if (bi != null)
    		bi.resizeScreenArea(r.width, r.height);
-      repaint();
-//		screen.repaintScreen();
+//      repaint();
+		screen.repaintScreen();
 		screen.setCursorActive(true);
 
    }
@@ -835,7 +835,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    protected void paintComponent(Graphics g) {
-	  log.debug("paint from screen");
+	  //log.info("paint from screen");
 
      if (bi == null) {
       checkOffScreenImage();

@@ -17,6 +17,7 @@ import org.tn5250j.*;
 
 public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jConstants
 {
+   boolean graphicsDebugMode = false;
 
   public static void paintSubComponent(Graphics g, BasicSubUI component)
   {
@@ -62,7 +63,6 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
     if (c instanceof JTerminal)
     {
       this.terminal = (JTerminal)c;
-      boolean graphicsDebugMode = false;
       if (graphicsDebugMode)
       {
         javax.swing.RepaintManager repaintManager = javax.swing.RepaintManager.currentManager(terminal);

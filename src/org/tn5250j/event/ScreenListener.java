@@ -31,4 +31,6 @@ public interface ScreenListener {
    public void onScreenChanged(int inUpdate, int startRow, int startCol,
                                              int endRow, int endCol);
 
+   public void onScreenSizeChanged(int rows, int cols);
+
 }

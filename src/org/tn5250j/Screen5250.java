@@ -185,14 +185,18 @@ public class Screen5250 implements TN5250jConstants{
 
 	public final void setRowsCols(int rows, int cols) {
 
+	   int oldRows = numRows;
+	   int oldCols = numCols;
+	   
 		// default number of rows and columns
 		numRows = rows;
 		numCols = cols;
 
 		lenScreen = numRows * numCols;
-
-
       planes.setSize(rows);
+
+      if (oldRows != numRows || oldCols != numCols)
+         fireScreenSizeChanged();
 
 	}
 
@@ -4404,6 +4408,22 @@ public class Screen5250 implements TN5250jConstants{
       }
    }
 
+   /**
+    * Notify all registered listeners of the onScreenSizeChanged event.
+    *
+    */
+   private void fireScreenSizeChanged() {
+
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            ScreenListener target =
+                    (ScreenListener)listeners.elementAt(i);
+            target.onScreenSizeChanged(numRows,numCols);
+         }
+      }
+   }
+
 //      /**
 //       * Notify all registered listeners of the onScreenChanged event.
 //       *
@@ -4668,7 +4688,8 @@ public class Screen5250 implements TN5250jConstants{
    //			controllersG2D = null;
 //            updateDirty();
 //         }
-      fireScreenChanged(1);
+      //fireScreenChanged(1);
+      updateDirty();
 		// restore statuses that were on the screen before resize
 		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
 		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
