@@ -42,6 +42,8 @@ The following sections are available:
    1. Installing
    2. Quick Start
       2a.  Command Line Options (supported languages -L option)
+      2b.  Examples
+      2c Example of command line option -s
    3. Keybindings
    4. Mousebindings
    5. Menu Options Descriptions
@@ -122,7 +124,18 @@ The following sections are available:
     -s ------> Start up emulator using an existing configured session
                   you can specify multiple of these as in -s xxxx -s yyyy
                   and at startup the emulator will start up session xxxx and
-                  yyyy
+                  yyyy.  This does not use the sessions file but the entries
+                  that are defined inside for PRE-EXISTIING session
+                  definitions.
+
+                  format of the session entries:
+                  ------------------------------
+
+                  systemName=route-to-host [options as described above]
+                  
+                  The parameter is used along the systemName entry that
+                  is passed on the command line.  Please see examples 
+                  below.
 
                ==========================================================
                **** NOTE **** Session names are case sensitive!!!!!!!
@@ -192,8 +205,8 @@ The following sections are available:
 
 
 
-    Example of command line options
-    -------------------------------
+    2b Example of command line options
+    -----------------------------------
 
     java -jar tn5250j.jar -L es
 
@@ -222,6 +235,10 @@ The following sections are available:
 
       **** Note the -e can be used on all sessions.
 
+
+    2c Example of command line option -s
+    -------------------------------------
+
        format of the session entries:
        ------------------------------
 
@@ -242,6 +259,25 @@ spain=spain -f spain.prop -cp 284 -e
 **** NOTE **** Session names are case sensitive!!!!!!!
 ==========================================================
 
+    Command line usage follows:
+
+    java -jar tn5250j.jar -s luxembourg
+
+    This will search the session file for the entry luxembourg and if found
+    use the the entry parameters that are defined for that session.
+
+    So using the Sample sessions file described above the program would read
+    the -s option and obtain luxembourg.  It would then search the sessions
+    file for this entry and if found execute the options that where there:
+    
+    system/ip addrss = lux
+    configuration file = luxgui.prop
+    -e = use enhanced mode
+    -gui = start in gui mode
+    
+    If an entry is not found for the -s option then the Connection dialog
+    is displayed for you to enter a new connection or select a pre existing
+    one from the list.
 
 3. Keybindings
 ==============
