@@ -5,7 +5,34 @@ because I could not find a 5250 emulator of Linux with the enhanced functions
 like graphical windows, cursor progression, continued edit fields, masked edit
 fields etc.....
 
+Changes since 0.5.7 pre release 2
+------------------------------------------------------------------------------
+
+Fixed the bounding area.
+Added kunstoff look and feel - Patrick Bielen
+Added access to functions/operations with password access
+Added delete macros functionality - Right click on the macro
+Fixed up some of the panels - Patrick Bielen
+Fixed a lot of problems in E-mail - Patrick Bielen
+Added new options to e-mail functions
+   - New output to image .png
+   - New access to just send quick message with file attachment -
+         Patrick Bielen
+   - Send screen image via e-mail - Fixes by Patrick Bielen
+Added new options to define the margins for the Print Screen
+     function.
+Added auto login support
+New splash screen donated by Carlo Daffara from Conecta http://www.conecta.it
+Added blinking cursor.  Beta code and may leave traces
+Added a new keep alive function to fix some network disconnect problems.
+
+Lot's and lot's of bug fixes and improvements.
+
+Well just run it to see all the new stuff.
+
+==============================================================================
 Changes since 0.5.7 pre release 1
+------------------------------------------------------------------------------
 
 Added antialias option for font use
 
