@@ -220,13 +220,14 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    }
 
-   public void addSessionView(String tabText,Session session) {
+   public void addSessionView(String tabText,Session sessionView) {
+
+      final Session session = sessionView;
 
       if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
 
          this.getContentPane().add(session, BorderLayout.CENTER);
 
-         session.grabFocus();
          session.resizeMe();
          repaint();
          if (packFrame)
@@ -234,6 +235,7 @@ public class Gui5250Frame extends GUIViewInterface implements
          else
             validate();
          embedded = true;
+         session.grabFocus();
       }
       else {
 
@@ -249,9 +251,16 @@ public class Gui5250Frame extends GUIViewInterface implements
             }
             //ses = (Session)(this.getContentPane().getComponent(0));
             sessionPane.addTab(tabText,focused,ses);
-            ses.grabFocus();
-            ses.resizeMe();
-            repaint();
+
+            final Session finalSession = ses;
+
+            SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+                  finalSession.resizeMe();
+                  finalSession.repaint();
+               }
+            });
+
 
             if (ses.getAllocDeviceName() != null)
                sessionPane.setTitleAt(0,ses.getAllocDeviceName());
@@ -262,6 +271,12 @@ public class Gui5250Frame extends GUIViewInterface implements
             ses.addSessionJumpListener(this);
 
             this.getContentPane().add(sessionPane, BorderLayout.CENTER);
+            SwingUtilities.invokeLater(new Runnable() {
+               public void run() {
+                  repaint();
+                  finalSession.grabFocus();
+               }
+            });
          }
 
          sessionPane.addTab(tabText,focused,session);
@@ -276,9 +291,13 @@ public class Gui5250Frame extends GUIViewInterface implements
          session.addSessionListener(this);
          session.addSessionJumpListener(this);
 
-         session.grabFocus();
-         session.resizeMe();
-         session.repaint();
+         SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+               session.resizeMe();
+               session.repaint();
+               session.grabFocus();
+            }
+         });
       }
    }
 
