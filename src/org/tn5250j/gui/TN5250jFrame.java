@@ -23,7 +23,8 @@ package org.tn5250j.gui;
 
 import java.awt.*;
 import javax.swing.JFrame;
-import org.tn5250j.My5250;
+
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 public class TN5250jFrame extends JFrame {
 
@@ -31,7 +32,7 @@ public class TN5250jFrame extends JFrame {
 
    public TN5250jFrame() {
       super();
-      setIconImage(My5250.getTN5250jIcon().getImage());
+      setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
 
    }
 
