@@ -41,11 +41,12 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
+import org.tn5250j.gui.TN5250jFrame;
 
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog implements Runnable {
+public class SendEMailDialog extends TN5250jFrame implements Runnable  {
 
 	JComboBox toAddress;
 	JTextField subject;
@@ -62,6 +63,7 @@ public class SendEMailDialog implements Runnable {
 	JButton browse;
    boolean sendScreen;
    SendEMail sendEMail;
+   Thread myThread = new Thread(this);
 
 	/**
 	 * Constructor to send the screen information
@@ -123,16 +125,18 @@ public class SendEMailDialog implements Runnable {
 
 				switch (result) {
 					case 0 : // Send it
-						SendEMail sem = new SendEMail();
-						sem.setConfigFile("SMTPProperties.cfg");
-						sem.setTo((String) toAddress.getSelectedItem());
-						sem.setSubject(subject.getText());
+						sendEMail = new SendEMail();
+						sendEMail.setConfigFile("SMTPProperties.cfg");
+						sendEMail.setTo((String) toAddress.getSelectedItem());
+						sendEMail.setSubject(subject.getText());
 						if (bodyText.getText().length() > 0)
-							sem.setMessage(bodyText.getText());
+							sendEMail.setMessage(bodyText.getText());
 
 						if (attachmentName.getText().length() > 0)
-							if (!normal.isSelected()) sem.setAttachmentName(attachmentName.getText());
-							else sem.setAttachmentName(fileName);
+							if (!normal.isSelected())
+                        sendEMail.setAttachmentName(attachmentName.getText());
+							else
+                        sendEMail.setAttachmentName(fileName);
 
 						if (text.isSelected()) {
 
@@ -149,7 +153,7 @@ public class SendEMailDialog implements Runnable {
 								}
 							}
 
-							sem.setAttachment(sb.toString());
+							sendEMail.setAttachment(sb.toString());
 						}
 						else if (graphic.isSelected()){
 
@@ -173,7 +177,7 @@ public class SendEMailDialog implements Runnable {
 									EncodeComponent.PNG,
 									session,
 									f);
-								sem.setFileName(f.getName());
+								sendEMail.setFileName(f.getName());
 							}
 							catch (Exception ex) {
 								System.out.println(ex.getMessage());
@@ -182,14 +186,14 @@ public class SendEMailDialog implements Runnable {
 						}
 						else if (attachmentName.getText().length() > 0) {
 							File f = new File(attachmentName.getText());
-							sem.setFileName(f.toString());
+							sendEMail.setFileName(f.toString());
 						}
 
 						// send the information
-						sendIt(parent, sem);
+						sendIt(parent, sendEMail);
 
-						sem.release();
-						sem = null;
+//						sendEMail.release();
+//						sendEMail = null;
 
 						break;
 					case 1 : // Cancel
@@ -252,24 +256,25 @@ public class SendEMailDialog implements Runnable {
 				switch (result) {
 					case 0 : // Send it
 
-						SendEMail sem = new SendEMail();
-						sem.setConfigFile("SMTPProperties.cfg");
-						sem.setTo((String) toAddress.getSelectedItem());
-						sem.setSubject(subject.getText());
+                  sendEMail = new SendEMail();
+
+						sendEMail.setConfigFile("SMTPProperties.cfg");
+						sendEMail.setTo((String) toAddress.getSelectedItem());
+						sendEMail.setSubject(subject.getText());
 						if (bodyText.getText().length() > 0)
-							sem.setMessage(bodyText.getText());
+							sendEMail.setMessage(bodyText.getText());
 
 						if (attachmentName.getText().length() > 0)
-							sem.setAttachmentName(attachmentName.getText());
+							sendEMail.setAttachmentName(attachmentName.getText());
 
 						if (fileName != null && fileName.length() > 0)
-							sem.setFileName(fileName);
+							sendEMail.setFileName(fileName);
 
 						// send the information
-						sendIt(parent, sem);
+						sendIt(parent, sendEMail);
 
-						sem.release();
-						sem = null;
+//						sendEMail.release();
+//						sendEMail = null;
 
 						break;
 					case 1 : // Cancel
@@ -292,8 +297,10 @@ public class SendEMailDialog implements Runnable {
 	 */
 	private void sendIt(Frame parent, SendEMail sem) {
 
-      setSendEMail(sem);
-      new Thread(this).start();
+//      setSendEMail(sem);
+
+//      new Thread(this).start();
+      myThread.start();
 //		if (parent == null)
 //			parent = new JFrame();
 //
@@ -328,6 +335,7 @@ public class SendEMailDialog implements Runnable {
    public void setSendEMail(SendEMail sem) {
       sendEMail = sem;
    }
+
    public void run() {
 
 //		if (parent == null)
@@ -335,7 +343,8 @@ public class SendEMailDialog implements Runnable {
 
 		try {
 			if (sendEMail.send()) {
-
+            sendEMail.release();
+            sendEMail = null;
 //				JOptionPane.showMessageDialog(
 //					parent,
 //					LangTool.getString("em.confirmationMessage")
@@ -431,7 +440,10 @@ public class SendEMailDialog implements Runnable {
 		bodyScrollPane.setVerticalScrollBarPolicy(
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		attachmentName = new JTextField(fileName, 30);
-		attachmentName.setText("");
+      if (fileName != null || fileName.length() > 0)
+         attachmentName.setText(fileName);
+      else
+   		attachmentName.setText("");
 
 		text.addItemListener(new java.awt.event.ItemListener() {
 			public void itemStateChanged(java.awt.event.ItemEvent e) {
