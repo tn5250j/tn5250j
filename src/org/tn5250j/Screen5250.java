@@ -197,6 +197,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 
       // change by Luc - LDC If the font from the properties file does not exist
       //    select the default font
+      String  fontName = null;
       if (config.isPropertyExists("font"))
       {
         fontName = getStringProperty("font");
