@@ -44,7 +44,7 @@ public class QuickEmailAction extends EmulatorAction implements TN5250jConstants
    public QuickEmailAction(Session session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_QUICK_MAIL,
-            KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK),
+            KeyStroke.getKeyStroke(KeyEvent.VK_F,KeyEvent.ALT_MASK),
             keyMap);
 
    }

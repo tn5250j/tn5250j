@@ -486,6 +486,7 @@ public class SendEMailDialog {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(subject, gbc);
@@ -498,6 +499,7 @@ public class SendEMailDialog {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 4;
 		gbc.gridwidth = 2; gbc.gridheight = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(bodyScrollPane, gbc);
@@ -509,8 +511,9 @@ public class SendEMailDialog {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 7;
 		gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 5);
+		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(attachmentName, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 8;
