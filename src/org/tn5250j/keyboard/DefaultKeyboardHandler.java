@@ -150,6 +150,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       new DebugAction(session,keyMap);
       new CopyAction(session,keyMap);
       new SpoolWorkAction(session,keyMap);
+      new QuickEmailAction(session,keyMap);
 
    }
 
