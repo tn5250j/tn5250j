@@ -41,6 +41,21 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+17/08/2002  Updated startup message to be more informational and less error
+            sounding.
+            
+15/08/2002  Fix a problem with splash screen and painting a looking better.
+
+            Added Russian code page 1025 from
+            "Fomin, Leonid" <leonid.fomin@mosnar.com>
+
+14/08/2002  Added splash screen.
+            Added sorting to scripts menu
+
+13/08/2002  Added support for scripting menu to support subdirectories
+
+12/08/2002  Fixed the NULL error problem with keys strokes FOR REAL!!!!
+
 10/08/2002  Fixed a problem with scripts not showing up if no macros where
             defined.
 
