@@ -184,7 +184,7 @@
     <target name= "package" depends="compile" description="Create a Jar-File of your compiled classes">
         <tstamp><format property="ts" pattern="yyyyMMdd-HHmmss-z"/> </tstamp>
 
-        <jar jarfile="${build.dir}/${jarname}" manifest="${source.dir}/Meta-inf/Manifest.mf">
+        <jar jarfile="${build.dir}/${jarname}">
             <fileset dir="${build.classes.dir}"
                     includes="*org/**"/>
             <fileset dir="${source.dir}"
