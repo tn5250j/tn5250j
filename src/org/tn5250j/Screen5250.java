@@ -1949,10 +1949,11 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             screenFields.withinCurrentField(lastPos)
             && !screenFields.isCurrentFieldBypassField()) {
 
-
+            int fs = screenFields.getCurrentFieldShift();
             switch (screenFields.getCurrentFieldShift()) {
                case 0:  // Alpha shift
                case 2:  // Numeric Shift
+               case 4:  // Kakana Shift
                   updateField = true;
                   break;
                case 1:  // Alpha Only
@@ -2992,7 +2993,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       }
 
 //      if (fcw1 != 0 || fcw2 != 0) {
-//
+
 //         System.out.println("lr = " + lastRow + " lc = " + lastCol + " " + sf.toString());
 //      }
       sf = null;

@@ -69,8 +69,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
    boolean isAltGr;
    private Vector listeners = null;
    private SessionJumpEvent jumpEvent;
-   private boolean jumpn;
-   private boolean jumpp;
 
    public Gui5250 () {
 
@@ -185,9 +183,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
       });
       keyMap = new KeyMapper();
       keyMap.init();
-
-      jumpn = keyMap.isKeyStrokeDefined("[jumpnext]");
-      jumpp = keyMap.isKeyStrokeDefined("[jumpprev]");
 
       keyMap.addKeyChangeListener(this);
 
@@ -886,6 +881,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void closeSession() {
 
+      vt.isOnSignoffScreen();
+
       Object[]      message = new Object[1];
       message[0] = LangTool.getString("cs.message");
 
@@ -1346,6 +1343,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
            };
          kbMenu.add(createMenuItem(action,MNEMONIC_PRINT));
 
+         createShortCutItems(kbMenu);
 
          if (screen.isMessageWait()) {
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
@@ -1524,6 +1522,28 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       }
       return mi;
+   }
+
+   private void createShortCutItems(JMenu menu) {
+
+      JMenuItem mi;
+      JMenu sm = new JMenu(LangTool.getString("popup.shortCuts"));
+      menu.addSeparator();
+      menu.add(sm);
+
+      InputMap map = getInputMap();
+      KeyStroke[] allKeys = map.allKeys();
+      ActionMap aMap = getActionMap();
+
+      for (int x = 0; x < allKeys.length; x++) {
+
+         mi =new JMenuItem();
+         Action a = aMap.get((String)map.get(allKeys[x]));
+         mi.setAction(a);
+         mi.setText(LangTool.getString("key." + (String)map.get(allKeys[x])));
+         mi.setAccelerator(allKeys[x]);
+         sm.add(mi);
+      }
    }
 
    private void doConnections() {

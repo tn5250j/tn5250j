@@ -77,6 +77,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    private FileOutputStream fw;
    private BufferedOutputStream dw;
+   private boolean signedOn;
+   private char[] signOnSave;
 
    tnvt (Screen5250 screen52) {
 
@@ -514,6 +516,23 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
    }
 
+   public boolean isOnSignoffScreen() {
+
+      if (signedOn) {
+         char[] so = screen52.getScreenAsChars();
+         int size = signOnSave.length;
+         for (int x = 0; x < size; x++) {
+
+            if (signOnSave[x] != so[x]) {
+               System.out.println(" not on signon screen ");
+               return false;
+            }
+         }
+      }
+
+      return true;
+   }
+
    public final void systemRequest() {
       systemRequest(' ');
    }
@@ -847,6 +866,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
                parseIncoming();
 //               inviteIt =true;
                setInvited();
+               if (!signedOn) {
+                  signedOn = true;
+//                  signOnSave = new char[screen52.getScreenLength()];
+                  signOnSave = screen52.getScreenAsChars();
+                  System.out.println("Signon saved");
+               }
                break;
             case 4:
 //            System.out.println("Save Screen Operation");

@@ -43,6 +43,9 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+23/07/2002  Added all predefined short cuts to a short cuts menu off of the
+            keyboard menu item.
+
 22/07/2002  Added changes from Maurizio to add an all-dep build target to the
             ant build.xml file.
 
