@@ -72,6 +72,7 @@ public class XTFRFile
 	JButton queryWizard;
 	JTextArea queryStatement;
 	JButton customize;
+        JButton xtfrButton;
 
 	JRadioButton intDesc;
 	JRadioButton txtDesc;
@@ -613,6 +614,11 @@ public class XTFRFile
 		as400p.add(pwpLabel, gbc);
 		password = new JPasswordField();
 		password.setColumns(15);
+                password.addKeyListener(new java.awt.event.KeyAdapter() {
+                    public void keyPressed(java.awt.event.KeyEvent evt) {
+                        txtONKeyPressed(evt);
+                    }
+                });
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -795,7 +801,7 @@ public class XTFRFile
 
 		// options panel
 		JPanel op = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-		JButton xtfrButton = new JButton(LangTool.getString("xtfr.labelXTFR"));
+		xtfrButton = new JButton(LangTool.getString("xtfr.labelXTFR"));
 		xtfrButton.addActionListener(this);
 		xtfrButton.setActionCommand("XTFR");
 		op.add(xtfrButton);
@@ -856,8 +862,14 @@ public class XTFRFile
 		show();
 
 	}
-
-	private void initXTFRFields(Properties props) {
+        
+        private void txtONKeyPressed(java.awt.event.KeyEvent evt) {
+            if (evt.getKeyCode() == evt.VK_ENTER) {
+                xtfrButton.doClick();
+            }
+        }
+	
+        private void initXTFRFields(Properties props) {
 
       if (props == null) {
          SessionConfig config = session.getSession().getConfiguration();
