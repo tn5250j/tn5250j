@@ -9,6 +9,7 @@
 ######################################################################
 
 import sys
+import time
 from java.lang import *
 import com.ibm.as400.access as acc
 import com.ibm.as400.resource as rsc
@@ -47,6 +48,11 @@ class Poller(Runnable):
                 msg = mail.split(':', 1)[1]
                 if msg == 'Logged and ready':
                     continue
+                elif msg == 'Logged Out':
+                    # wait for refreshing and give the sessions some time to close.
+                    time.sleep(5)
+                    self.parent.rtvIntJobs()
+                    continue
                 self.parent.rpyTxt.append("--== Received from " + sndUsr \
                 + " ==--\n" + msg + "\n")
                 self.parent.rpyTxt.setCaretPosition(len(self.parent.rpyTxt.getText()))
@@ -56,6 +62,7 @@ class Poller(Runnable):
                 print "Thread interrupted at line ", exc[2].tb_lineno
                 print exc[0]
                 print "type = %s"%type(exc[0])
+                self.statusTxt.text='There was an error, contact the System-Administrator'
             if self.parent.chkActive.isSelected():
                 item = sndUsr + ': ' + self.parent.usrDct[sndUsr]
             else:
@@ -126,11 +133,25 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         self.dispose()
     def windowClosing(self, event):
         System.setProperty("chat400", "None")
+        keys = self.jobDct.keys()
+        keys.sort()
+        dq = acc.KeyedDataQueue(self.as400, CHATQ)
+        for key_usr in keys:
+            user = key_usr
+            if user ==  curUsr:
+                continue
+            if not dq.exists():
+                dq.create(KEYLEN, 512)
+            try:
+                dq.write(user, "%s:%s"%(curUsr, 'Logged Out'))
+            except:
+                None        
         self.sessionManager = _session.getSessionManager()
         self.sessions = self.sessionManager.getSessions()
         self.sessList = self.sessions.getSessionsList()
         for x in self.sessList:
             self.sessionManager.closeSession(x)
+        # _session.closeSession() 
     def windowActivated(self, event):
         None
     def windowDeactivated(self, event):
@@ -288,6 +309,14 @@ try:
     curUsr = _session.getConfigurationResource().upper()
 except:
     None
+ready = 0
+while not ready:
+    if _session.isOnSignonScreen():
+        time.sleep(2)
+    else:
+        ready = 1
+# Take some time to give the user time to logon
+time.sleep(5)
 isRunning = System.getProperty("chat400")
 if not isRunning == curUsr:
     System.setProperty("chat400", curUsr)
