@@ -50,12 +50,11 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    JPanel contentPane;
    JLabel statusBar = new JLabel();
-   BorderLayout borderLayout1 = new BorderLayout();
+
    JPanel spoolPanel = new JPanel();
    JPanel spoolData = new JPanel();
-   BorderLayout borderLayout2 = new BorderLayout();
    JPanel spoolOptions = new JPanel();
-   AlignLayout alignMe = new AlignLayout(2,5,5);
+
    JPanel destPanel = new JPanel();
    JLabel labelSpooledFile = new JLabel();
    JLabel spooledFile = new JLabel();
@@ -131,20 +130,24 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       setIconImage(My5250.tnicon.getImage());
 
+      // create ourselves a new wizard
       wizard = new Wizard();
 
+      // create the event handler as being this module
       wizard.addWizardListener(this);
 
+      // add our wizard to the frame
       this.getContentPane().add(wizard);
 
       WizardPage page;
 
+      // create the first wizard page
       page = new WizardPage(WizardPage.NEXT |
                        WizardPage.FINISH |
                        WizardPage.CANCEL |
                        WizardPage.HELP);
 
-      page.setName("Spool Export Wizard - 1");
+      page.setName(LangTool.getString("spool.titlePage1"));
 
       setTitle(page.getName());
 
@@ -160,7 +163,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                        WizardPage.FINISH |
                        WizardPage.CANCEL |
                        WizardPage.HELP);
-      page.setName("Spool Export Wizard - 2");
+      page.setName(LangTool.getString("spool.titlePage2"));
 
       page.getContentPane().add(pageTwo(), BorderLayout.CENTER);
       wizard.add(page);
@@ -188,25 +191,28 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       JPanel docProps = new JPanel();
 
-      docProps.setBorder(BorderFactory.createTitledBorder("PDF Properties"));
+      docProps.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("spool.labelProps")));
+
       docProps.setLayout(new AlignLayout(2,5,5));
 
-      docProps.add(new JLabel("Title"));
+      docProps.add(new JLabel(LangTool.getString("spool.labelPropsTitle")));
       docProps.add(title = new JTextField(40));
-      docProps.add(new JLabel("Subject"));
+      docProps.add(new JLabel(LangTool.getString("spool.labelPropsSubject")));
       docProps.add(subject = new JTextField(40));
-      docProps.add(new JLabel("Author"));
+      docProps.add(new JLabel(LangTool.getString("spool.labelPropsAuthor")));
       docProps.add(author = new JTextField(40));
 
       JPanel options = new JPanel();
 
-      options.setBorder(BorderFactory.createTitledBorder("Options"));
+      options.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("spool.labelOpts")));
       options.setLayout(new AlignLayout(2,5,5));
 
-      options.add(new JLabel("Font Size"));
+      options.add(new JLabel(LangTool.getString("spool.labelOptsFontSize")));
       options.add(fontSize = new JTextField(5));
 
-      options.add(new JLabel("Page Size"));
+      options.add(new JLabel(LangTool.getString("spool.labelOptsPageSize")));
       options.add(pageSize = new JComboBox());
 
       pageSize.addItem("A3");
@@ -216,8 +222,10 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       pageSize.addItem("LEGAL");
       pageSize.addItem("LEDGER");
 
-      options.add(portrait = new JRadioButton("Portrait"));
-      options.add(landscape = new JRadioButton("Landscape"));
+      options.add(portrait =
+               new JRadioButton(LangTool.getString("spool.labelOptsPortrait")));
+      options.add(landscape =
+               new JRadioButton(LangTool.getString("spool.labelOptsLandscape")));
 
       ButtonGroup orientation = new ButtonGroup();
       orientation.add(portrait);
@@ -227,7 +235,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       two.add(docProps,BorderLayout.NORTH);
       two.add(options,BorderLayout.CENTER);
-//      two.add(statusBar,BorderLayout.SOUTH);
 
       return two;
    }
@@ -236,27 +243,27 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       contentPane = new JPanel();
 
-      contentPane.setLayout(borderLayout1);
+      contentPane.setLayout(new BorderLayout());
       statusBar.setText(" ");
       statusBar.setBorder(BorderFactory.createEtchedBorder());
 
-      spoolPanel.setLayout(borderLayout2);
+      spoolPanel.setLayout(new BorderLayout());
 
-      labelSpooledFile.setText("Spooled file:");
-      labelJobName.setText("Job Name:");
-      labelUser.setText("     User:");
-      labelNumber.setText("     Number:");
-      labelFileNumber.setText("Spooled file number:");
-      labelSystem.setText("System:");
-      labelPages.setText("Total pages:");
+      labelSpooledFile.setText(LangTool.getString("spool.labelSpooledFile"));
+      labelJobName.setText(LangTool.getString("spool.labelJobName"));
+      labelUser.setText(LangTool.getString("spool.labelJobUser"));
+      labelNumber.setText(LangTool.getString("spool.labelJobNumber"));
+      labelFileNumber.setText(LangTool.getString("spool.labelSpoolNumber"));
+      labelSystem.setText(LangTool.getString("spool.labelSystem"));
+      labelPages.setText(LangTool.getString("spool.labelPages"));
 
 
       contentPane.add(statusBar, BorderLayout.SOUTH);
       contentPane.add(spoolPanel, BorderLayout.CENTER);
 
-      spoolData.setLayout(alignMe);
-      spoolData.setBorder(BorderFactory.createTitledBorder("Spooled File Information"));
-//                                       LangTool.getString("spool.filterTitle")));
+      spoolData.setLayout(new AlignLayout(2,5,5));
+      spoolData.setBorder(BorderFactory.createTitledBorder(
+                                       LangTool.getString("spool.labelSpoolInfo")));
 
       spooledFile.setText(splfile.getName());
       jobName.setText(splfile.getJobName());
@@ -291,7 +298,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       AlignLayout alignMe2 = new AlignLayout(3,5,5);
       spoolInfo.setLayout(alignMe2);
-      spoolInfo.setBorder(BorderFactory.createTitledBorder("Export To Information"));
+      spoolInfo.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("spool.labelExportInfo")));
 
       cvtType = new JComboBox();
 
@@ -418,7 +426,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
          filter = new ExportFileFilter("txt","Text Files");
 
       pcFileChooser.addChoosableFileFilter(filter );
-//
+
       int ret = pcFileChooser.showSaveDialog(this);
 
       // check to see if something was actually chosen
@@ -469,15 +477,18 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    }
 
+   /**
+    * Convert spoolfile to text file
+    */
    private void cvtToText() {
 
-      BufferedOutputStream dw;
+      java.io.PrintStream dw;
 
       try {
 
          openOutputFile();
 
-         dw = new BufferedOutputStream(fw);
+         dw = new java.io.PrintStream(fw);
 
          // Create an AS400 object.  The system name was passed
          // as the first command line argument.
@@ -512,6 +523,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
          byte[] buf = new byte[avail + 1];
 
          int read = 0;
+         int totBytes = 0;
+         StringBuffer sb = new StringBuffer();
 
          System.out.println("Starting Output");
          // read the transformed spooled file, creating the jobLog String
@@ -520,19 +533,47 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                buf = new byte[avail + 1];
             }
 
-            read += inStream.read(buf, 0, avail);
+            read = inStream.read(buf, 0, avail);
 
-            dw.write(buf);
+            for (int x = 0; x < read; x++) {
+               switch (buf[x]) {
+                  case 0x0:      // 0x00
+                     break;
+                  // write line feed to the stream
+                  case 0x0A:
+//                     writeChar(sb.toString());
+//                     sb.append((char)buf[x]);
+                     dw.println(sb.toString().toCharArray());
+                     sb.setLength(0);
+//                     sb.append('\n');
+//                     System.out.print(sb);
+//                     sb.setLength(0);
+                     break;
+                  // we will skip the carrage return
+                  case 0x0D:
+//                     sb.append('\n');
+//                     writeChar("\n");
+//                     System.out.println();
+                     break;
+                  // new page
+                  case 0x0C:
+//                     writeChar(sb.toString());
+//                     dw.write(sb.toString().getBytes());
+//                     document.newPage();
+                     dw.println(sb.toString().toCharArray());
+                     sb.setLength(0);
 
-            final int byr = read;
+                     break;
+                  default:
+                     sb.append((char)buf[x]);
+               }
+            }
 
-               SwingUtilities.invokeLater(
-                  new Runnable () {
-                     public void run() {
-                        statusBar.setText("Bytes read " + byr);
-                     }
-                  }
-               );
+//            dw.write(buf);
+
+            totBytes += read;
+
+            updateStatus("Bytes read " + totBytes);
 //            System.out.println("Bytes read " + byr);
 
 //            System.out.println(new String(buf));
@@ -542,34 +583,26 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             avail = inStream.available();
          }
 
+         if (sb.length() > 0)
+            dw.println(sb.toString().toCharArray());
          dw.flush();
          dw.close();
-         final int byr = read;
-         SwingUtilities.invokeLater(
-            new Runnable () {
-               public void run() {
-                  statusBar.setText("Total bytes converted " + byr);
 
-               }
-            }
-         );
+         updateStatus("Total bytes converted " + totBytes);
+
          if (email.isSelected())
             emailMe();
         }
         catch (Exception e) {
-            final String msg = "Error: " + e.getMessage ();
-               SwingUtilities.invokeLater(
-                  new Runnable () {
-                     public void run() {
-                        statusBar.setText(msg);
-                     }
-                  }
-               );
+           updateStatus("Error: " + e.getMessage ());
            System.out.println ("Error: " + e.getMessage ());
         }
 
    }
 
+   /**
+    * Convert spoolfile to PDF file
+    */
    private void cvtToPDF() {
 
       try {
@@ -598,7 +631,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
          StringBuffer sb = new StringBuffer();
 
-         System.out.println("Starting Output");
+         updateStatus("Starting Output");
+
          // read the transformed spooled file, creating the jobLog String
          while (avail > 0) {
             if (avail > buf.length) {
@@ -637,43 +671,22 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
 
             totBytes += read;
-            final int byr = totBytes;
 
-            SwingUtilities.invokeLater(
-               new Runnable () {
-                  public void run() {
-                     statusBar.setText("Bytes read " + byr);
-                  }
-               }
-            );
+            updateStatus("Bytes read " + totBytes);
             //
             // process the data buffer
             //
             avail = inStream.available();
          }
          closeOutputFile();
-         final int byr = totBytes;
-            SwingUtilities.invokeLater(
-               new Runnable () {
-                  public void run() {
-                     statusBar.setText("Total bytes converted " + byr);
-                  }
-               }
-            );
+         updateStatus("Total bytes converted " + totBytes);
+
          if (email.isSelected())
             emailMe();
 
         }
         catch (Exception e) {
-            final String msg = "Error: " + e.getMessage ();
-               SwingUtilities.invokeLater(
-                  new Runnable () {
-                     public void run() {
-                        statusBar.setText(msg);
-
-                     }
-                  }
-               );
+           updateStatus("Error: " + e.getMessage ());
            System.out.println ("Error: " + e.getMessage ());
         }
 
@@ -696,8 +709,10 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       try {
 
-         System.out.println("Opening file");
+         updateStatus("Opening File");
+
          String suffix = ".txt";
+
          if (cvtType.getSelectedIndex() == 0)
             suffix = ".pdf";
 
@@ -725,14 +740,12 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             bos = PdfWriter.getInstance(document,fw);
 
             BaseFont bf = BaseFont.createFont("Courier", "Cp1252", false);
+            float fontsize = 9.0f;
+            if (fontSize.getText().length() > 0)
+               fontsize = Float.parseFloat(fontSize.getText().trim());
 
-            float size = 9.0f;
-
-            if (fontSize.getText().length() > 0) {
-               size = Float.valueOf(fontSize.getText()).floatValue();
-            }
-
-            font = new com.lowagie.text.Font(bf, size, com.lowagie.text.Font.NORMAL);
+            font = new com.lowagie.text.Font(bf, fontsize,
+                                             com.lowagie.text.Font.NORMAL);
 
             if (author.getText().length() > 0)
                document.addAuthor(author.getText());
@@ -741,6 +754,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             if (subject.getText().length() > 0)
                document.addSubject(subject.getText());
 
+            // set the page sizes and the page orientation
             String ps = (String)pageSize.getSelectedItem();
             if (ps.equals("A3")) {
                if (portrait.isSelected())
@@ -795,55 +809,51 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    }
 
-   public void closeOutputFile() {
+   private void closeOutputFile() {
 
          document.close();
          document = null;
 
    }
 
+   private void updateStatus(final String stat) {
+
+      SwingUtilities.invokeLater(
+         new Runnable () {
+            public void run() {
+               statusBar.setText(stat);
+            }
+         }
+      );
+
+   }
+
    public void nextBegin(WizardEvent e) {
-      System.out.println(e.getCurrentPage().getName() + " Next Begin");
-//      WizardPage wiz = (WizardPage)e.getNewPage();
-//      JPanel pan = ((JPanel)wiz.getContentPane());
-//      pan.add(statusBar,BorderLayout.SOUTH);
-//      pan.invalidate();
-//      pan.validate();
-//      pan.repaint();
-//      setTitle(e.getCurrentPage().getName());
+//      System.out.println(e.getCurrentPage().getName() + " Next Begin");
       two.add(statusBar,BorderLayout.SOUTH);
    }
 
    public void nextComplete(WizardEvent e) {
-      System.out.println(e.getCurrentPage().getName() + " Next Complete");
+//      System.out.println(e.getCurrentPage().getName() + " Next Complete");
       setTitle(e.getNewPage().getName());
-
    }
 
    public void previousBegin(WizardEvent e){
-      System.out.println(e.getCurrentPage().getName() + " Prev Begin");
-//      WizardPage wiz = (WizardPage)e.getNewPage();
-//      JPanel pan = ((JPanel)wiz.getContentPane());
-//      pan.add(statusBar,BorderLayout.SOUTH);
-//      pan.invalidate();
-//      pan.validate();
-//      pan.repaint();
+//      System.out.println(e.getCurrentPage().getName() + " Prev Begin");
       contentPane.add(statusBar,BorderLayout.SOUTH);
    }
 
    public void previousComplete(WizardEvent e) {
-      System.out.println(e.getCurrentPage().getName() + " Prev Complete");
+//      System.out.println(e.getCurrentPage().getName() + " Prev Complete");
       setTitle(e.getNewPage().getName());
    }
 
    public void finished(WizardEvent e) {
-      System.out.println("It is finished!");
       doExport();
-      //      closeWizard();
    }
 
    public void canceled(WizardEvent e) {
-      System.out.println("It is canceled!");
+//      System.out.println("It is canceled!");
       this.hide();
       this.dispose();
    }

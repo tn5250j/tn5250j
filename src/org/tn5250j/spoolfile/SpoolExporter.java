@@ -44,21 +44,29 @@ public class SpoolExporter extends JFrame {
    SpoolFilterPane filter;
    // custom table model
    SpoolTableModel stm;
+
    // The scroll pane that holds the table.
    JScrollPane scrollPane;
+
    // ListSelectionModel of our custom table.
    ListSelectionModel rowSM;
+
+   // table of spools to work on
    JSortTable spools;
    // status line
    JLabel status;
    // List of available spooled files
-   SpooledFileList splfList;
+//   SpooledFileList splfList;
 
    // AS400 connection
    AS400 system;
 
    // Connection vt
    tnvt vt;
+
+   Vector data = new Vector();
+   Vector row = new Vector();
+   Vector names = new Vector();
 
    public SpoolExporter(tnvt vt) {
 
@@ -83,6 +91,16 @@ public class SpoolExporter extends JFrame {
 
       // create a table using our custom table model
       spools = new JSortTable(stm);
+
+      TableColumn column = null;
+
+      for (int x = 0;x < stm.getColumnCount(); x++) {
+         column = spools.getColumnModel().getColumn(x);
+         column.setPreferredWidth(stm.getColumnPreferredSize(x));
+
+      }
+
+      spools.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
       // create our mouse listener on the table
       spools.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -130,19 +148,6 @@ public class SpoolExporter extends JFrame {
                   ListSelectionModel lsm =
                       (ListSelectionModel)e.getSource();
 
-//                  if (lsm.isSelectionEmpty()) {
-//                      //no rows are selected
-//                     editButton.setEnabled(false);
-//                     removeButton.setEnabled(false);
-//                     connectButton.setEnabled(false);
-//                  } else {
-//
-//                     int selectedRow = lsm.getMinSelectionIndex();
-//                      //selectedRow is selected
-//                     editButton.setEnabled(true);
-//                     removeButton.setEnabled(true);
-//                     connectButton.setEnabled(true);
-//                  }
               }
           });
 
@@ -171,8 +176,8 @@ public class SpoolExporter extends JFrame {
       addWindowListener(new WindowAdapter() {
          public void windowClosing(WindowEvent event) {
             // close the spool file list
-            if (splfList != null)
-               splfList.close();
+//            if (splfList != null)
+//               splfList.close();
 
             // close the system connection
             if (system != null)
@@ -244,6 +249,7 @@ public class SpoolExporter extends JFrame {
    private void loadSpoolFiles() {
 
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      SpooledFileList splfList = null;
 
       try {
          updateStatus(LangTool.getString("spool.working"));
@@ -260,17 +266,39 @@ public class SpoolExporter extends JFrame {
          splfList.setQueueFilter("/QSYS.LIB/" + filter.getLibrary() + ".LIB/" +
                                  filter.getQueue() + ".OUTQ");
 
+         if (filter.getUserData().length() > 0)
+            splfList.setUserDataFilter(filter.getUserData());
+
          // retrieve the output queues
          splfList.openSynchronously();
 
          // if we have something update the status
-         if (splfList != null) {
-            final int count = splfList.size();
-            updateStatus(count + " " + LangTool.getString("spool.count"));
-         }
+//         if (splfList != null) {
+//            final int count = splfList.size();
+//            updateStatus(count + " " + LangTool.getString("spool.count"));
+//         }
+
+         // load the data into our sortable data model
+         int numProcessed = loadDataModel(splfList);
 
          // set the spool list to be displayed
-         stm.setSpoolList(splfList);
+         stm.setDataVector(data,names);
+
+         // make sure we make the column names fit correct size
+         TableColumn column = null;
+
+         for (int x = 0;x < stm.getColumnCount(); x++) {
+            column = spools.getColumnModel().getColumn(x);
+            column.setPreferredWidth(stm.getColumnPreferredSize(x));
+
+         }
+
+         // if we have something update the status
+         if (splfList != null) {
+            updateStatus(numProcessed + " " + LangTool.getString("spool.count"));
+         }
+
+         splfList.close();
 
       }
       catch(Exception erp) {
@@ -280,6 +308,195 @@ public class SpoolExporter extends JFrame {
       setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
    }
 
+   /**
+    * Load the data model vectors with the information from the Spooled File List
+    *
+    * @param splfList Spooled File List to load from
+    */
+   private int loadDataModel(SpooledFileList splfList) {
+
+      // clear our data
+      data.clear();
+
+      // if there is nothing then do nothing
+      if (splfList == null)
+         return 0;
+
+      int splfListSize = splfList.size();
+
+      // if we have no spooled files then display nothing
+      if (splfListSize <= 0)
+         return 0;
+
+      String text = status.getText();
+
+      boolean spoolFilter = filter.getSpoolName().length() > 0;
+      String spoolName = filter.getSpoolName();
+      int numSpooled = splfList.size();
+      int numProcessed = 0;
+
+      // iterate throw the spooled file list and load the values into our
+      //  data vector
+      int count = 0;
+      Enumeration enumm = (splfList.getObjects());
+      while(enumm.hasMoreElements()) {
+         SpooledFile p = (SpooledFile)enumm.nextElement();
+         Vector row = new Vector();
+
+         updateStatus(text + " " + ++count + " of " + numSpooled);
+
+         if (spoolFilter && !spoolName.equals(p.getName()))
+            continue;
+
+         numProcessed++;
+
+         row.add(p.getName());
+
+         loadIntegerAttribute(p, row, PrintObject.ATTR_SPLFNUM);
+         loadStringAttribute(p, row, PrintObject.ATTR_JOBNAME);
+         loadStringAttribute(p, row, PrintObject.ATTR_JOBUSER);
+         loadStringAttribute(p, row, PrintObject.ATTR_JOBNUMBER);
+         loadStringAttribute(p, row, PrintObject.ATTR_OUTPUT_QUEUE);
+         loadStringAttribute(p, row, PrintObject.ATTR_USERDATA);
+         loadStringAttribute(p, row, PrintObject.ATTR_SPLFSTATUS);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_PAGES);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_CURPAGE);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_COPIES);
+         loadStringAttribute(p, row, PrintObject.ATTR_FORMTYPE);
+         loadStringAttribute(p, row, PrintObject.ATTR_OUTPTY);
+         loadCreateDateTime(p, row);
+         loadIntegerAttribute(p, row, PrintObject.ATTR_NUMBYTES);
+
+         // now add our row of columns into our data
+         data.add(row);
+      }
+
+      return numProcessed;
+   }
+
+   /**
+    * Load a Printer Object string attribute into our row vector
+    *
+    * @param p
+    * @param row
+    * @param attribute
+    */
+   private void loadStringAttribute(SpooledFile p, Vector row, int attribute) {
+      try {
+         row.add(p.getStringAttribute(attribute));
+      }
+      catch (Exception ex) {
+//         System.out.println(ex.getMessage());
+         row.add("Attribute Not supported");
+      }
+   }
+
+   /**
+    * Load a Printer Object integer/numeric attribute into our row vector
+    *
+    * @param p
+    * @param row
+    * @param attribute
+    */
+   private void loadIntegerAttribute(SpooledFile p, Vector row, int attribute) {
+      try {
+         row.add(p.getIntegerAttribute(attribute));
+      }
+      catch (Exception ex) {
+//         System.out.println(ex.getMessage());
+         row.add("Attribute Not supported");
+      }
+   }
+
+   /**
+    * Format the create date and time into a string to be used
+    * @param p
+    * @param row
+    */
+   private void loadCreateDateTime(SpooledFile p, Vector row) {
+
+      try {
+         String datetime = formatDate(p.getStringAttribute(PrintObject.ATTR_DATE)) +
+                           " " +
+                           formatTime(p.getStringAttribute(PrintObject.ATTR_TIME));
+         row.add(datetime);
+      }
+      catch (Exception ex) {
+//         System.out.println(ex.getMessage());
+         row.add("Attribute Not supported");
+      }
+   }
+
+   /**
+    * Format the date string from the string passed
+    *    format is cyymmdd
+    *    c  - century -  0 1900
+    *                   1 2000
+    *    yy -  year
+    *    mm -  month
+    *    dd -  day
+    *
+    * @param dateString String in the format as above
+    * @return  formatted date string
+    */
+   static String formatDate(String dateString) {
+
+      if(dateString != null) {
+
+         char[] dateArray = dateString.toCharArray();
+         // check if the length is correct length for formatting the string should
+         //  be in the format cyymmdd where
+         //    c = 0 -> 19
+         //    c = 1 -> 20
+         if (dateArray.length != 7)
+            return dateString;
+
+         StringBuffer db = new StringBuffer(10);
+
+         // this will strip out the starting century char as described above
+         db.append(dateArray,1,6);
+
+         // now we find out what the century byte was and insert the correct
+         //  2 char number century in the buffer.
+         if (dateArray[0] == '0')
+            db.insert(0,"19");
+         else
+            db.insert(0,"20");
+
+         db.insert(4,'/'); // add the first date seperator
+         db.insert(7,'/'); // add the second date seperator
+         return db.toString();
+      }
+      else
+         return "";
+
+   }
+
+   /**
+    * Format the time string with separator of ':'
+    *
+    * @param timeString
+    * @return
+    */
+   static String formatTime(String timeString) {
+
+      if(timeString != null) {
+
+         StringBuffer tb = new StringBuffer(timeString);
+
+         tb.insert(tb.length()-2,':');
+         tb.insert(tb.length()-5,':');
+         return tb.toString();
+      }
+      else
+         return "";
+
+   }
+
+   /**
+    * Show the popup menu of actions for the current table row.
+    * @param me
+    */
    private void showPopupMenu(MouseEvent me) {
 
       JPopupMenu jpm = new JPopupMenu();
@@ -292,11 +509,10 @@ public class SpoolExporter extends JFrame {
             public void actionPerformed(ActionEvent e) {
                System.out.println(row + " is selected ");
                spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-               final SpooledFile splf = (SpooledFile)splfList.getObject(row);
                SwingUtilities.invokeLater(
                   new Runnable () {
                      public void run() {
-                        displayViewer(splf);
+                        displayViewer(getSpooledFile(row));
                      }
                   }
                );
@@ -308,16 +524,17 @@ public class SpoolExporter extends JFrame {
       action = new AbstractAction(LangTool.getString("spool.optionProps")) {
             public void actionPerformed(ActionEvent e) {
 
-               spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-               final SpooledFile splf = (SpooledFile)splfList.getObject(row);
-               SwingUtilities.invokeLater(
-                  new Runnable () {
-                     public void run() {
-
-                        displayViewer(splf);
-                     }
-                  }
-               );
+//               spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//               SwingUtilities.invokeLater(
+//                  new Runnable () {
+//                     public void run() {
+//
+//                        displayViewer(getSpooledFile(row));
+//                     }
+//                  }
+//               );
+               JOptionPane.showMessageDialog(null,"Not Available yet","Not yet",
+                                    JOptionPane.WARNING_MESSAGE);
             }
       };
       jpm.add(action);
@@ -325,8 +542,7 @@ public class SpoolExporter extends JFrame {
       jpm.addSeparator();
       action = new AbstractAction(LangTool.getString("spool.optionExport")) {
          public void actionPerformed(ActionEvent e) {
-            final SpooledFile splf = (SpooledFile)splfList.getObject(row);
-            SpoolExportWizard sew = new SpoolExportWizard(splf);
+            SpoolExportWizard sew = new SpoolExportWizard(getSpooledFile(row));
             sew.show();
          }
       };
@@ -337,8 +553,7 @@ public class SpoolExporter extends JFrame {
       action = new AbstractAction(LangTool.getString("spool.optionHold")) {
             public void actionPerformed(ActionEvent e) {
 
-               final SpooledFile splf = (SpooledFile)splfList.getObject(row);
-               doSpoolStuff(splf,e.getActionCommand());
+               doSpoolStuff(getSpooledFile(row),e.getActionCommand());
 
             }
       };
@@ -347,8 +562,7 @@ public class SpoolExporter extends JFrame {
       action = new AbstractAction(LangTool.getString("spool.optionRelease")) {
             public void actionPerformed(ActionEvent e) {
 
-               final SpooledFile splf = (SpooledFile)splfList.getObject(row);
-               doSpoolStuff(splf,e.getActionCommand());
+               doSpoolStuff(getSpooledFile(row),e.getActionCommand());
             }
       };
 
@@ -357,8 +571,7 @@ public class SpoolExporter extends JFrame {
       action = new AbstractAction(LangTool.getString("spool.optionDelete")) {
             public void actionPerformed(ActionEvent e) {
 
-               final SpooledFile splf = (SpooledFile)splfList.getObject(row);
-               doSpoolStuff(splf,e.getActionCommand());
+               doSpoolStuff(getSpooledFile(row),e.getActionCommand());
             }
       };
 
@@ -368,6 +581,30 @@ public class SpoolExporter extends JFrame {
 
    }
 
+   /**
+    * Return the spooledfile from the row given from the table
+    *
+    * @param row from the data vector to retreive from
+    * @return Spooled File of selected row
+    */
+   private SpooledFile getSpooledFile(int row) {
+
+      Vector rows = (Vector)data.get(row);
+      SpooledFile splf = new SpooledFile(system,
+                                          (String)rows.get(0), // splf name
+                                          ((Integer)rows.get(1)).intValue(), // splf number
+                                          (String)rows.get(2), // job name
+                                          (String)rows.get(3), // job user
+                                          (String)rows.get(4));   // job number
+
+      return splf;
+   }
+
+   /**
+    * Take the appropriate action on the selected spool file
+    * @param splf Spooled File to work on
+    * @param action Action to take on the spooled file
+    */
    private void doSpoolStuff(SpooledFile splf, String action) {
 
       try {
@@ -385,16 +622,18 @@ public class SpoolExporter extends JFrame {
       }
    }
 
+   /**
+    * Process the mouse event on the table
+    * @param e Mouse event passed
+    */
    void spools_mouseClicked(MouseEvent e) {
       if (e.getClickCount() > 1) {
-         int row = spools.rowAtPoint(e.getPoint());
-         System.out.println(row + " is selected ");
+         final int row = spools.rowAtPoint(e.getPoint());
          spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-         final SpooledFile splf = (SpooledFile)splfList.getObject(row);
          SwingUtilities.invokeLater(
             new Runnable () {
                public void run() {
-                  displayViewer(splf);
+                  displayViewer(getSpooledFile(row));
                }
             }
          );
@@ -402,6 +641,11 @@ public class SpoolExporter extends JFrame {
       }
    }
 
+   /**
+    * Display the spooled file using the internal AS400 toolbox viewer
+    *
+    * @param splf SpooledFile to view
+    */
    private void displayViewer(SpooledFile splf) {
 
       // Create the spooled file viewer
@@ -422,9 +666,15 @@ public class SpoolExporter extends JFrame {
       spools.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
    }
 
-   private void updateStatus(String stat, boolean error) {
+   /**
+    * Update the status bar with the text.  If it is an error then change the
+    * text color red else use black
+    *
+    * @param stat Message to display
+    * @param error Whether it is an error message or not
+    */
+   private void updateStatus(final String stat, boolean error) {
 
-      final String s = stat;
       if (error)
          status.setForeground(Color.red);
       else
@@ -433,140 +683,56 @@ public class SpoolExporter extends JFrame {
       SwingUtilities.invokeLater(
          new Runnable () {
             public void run() {
-               status.setText(s);
+               status.setText(stat);
             }
          }
       );
 
    }
 
+   /**
+    * Update the status bar with the text in normal color
+    *
+    * @param stat Message to display
+    */
    private void updateStatus(String stat) {
 
       updateStatus(stat,false);
    }
 
-   class SpoolTableModel extends AbstractTableModel implements SortTableModel {
+   /**
+    * Custom table model used to display the spooled file list with the
+    * attributes.
+    *
+    */
+   class SpoolTableModel extends DefaultSortTableModel {
 
-//      final String[] cols = {
-//                  LangTool.getString("conf.tableColA"),
-//                  LangTool.getString("conf.tableColB"),
-//                  LangTool.getString("conf.tableColC")};
-      final String[] cols = {"Name","Job Name","User","Job Number","Number","Queue"};
+      String[] cols;
+      int[] colsSizes;
 
-      Vector mySort = new Vector();
-      int sortedColumn = 0;
-      boolean isAscending = true;
-      SpooledFileList splfList;
+      final String colLayout = "Spool Name|100|Spool Number|90|Job Name|100|Job User|100|Job Number|90|Queue|200|User Data|100|Status|100|Total Pages|90|Current Page|90|Copies|90|Form Type|100|Priority|40|Creation Date/Time|175|Size|120";
 
+      /**
+       * Constructor
+       */
       public SpoolTableModel() {
+
          super();
-      }
+         StringTokenizer stringtokenizer = new StringTokenizer(colLayout, "|");
 
-      public void setSpoolList(SpooledFileList sfl) {
-
-         splfList = sfl;
-         resetSorted();
-         fireTableStructureChanged();
-      }
-
-      public void resetSorted() {
-         mySort.clear();
-         if (splfList == null)
-            return;
-
-         int splfListSize = splfList.size();
-         if (splfListSize <= 0)
-            return;
-
-         int x = 0;
-         String ses = null;
-         Enumeration enumm = (splfList.getObjects());
-         while(enumm.hasMoreElements()) {
-           SpooledFile p = (SpooledFile)enumm.nextElement();
-         if (sortedColumn == 0) {
-
-           try {
-            mySort.add(p.getName());
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
+         // allocate the column sizes array
+         colsSizes = new int[stringtokenizer.countTokens() / 2];
+         // allocate the column names array
+         cols = new String[stringtokenizer.countTokens() / 2];
+         int i = 0;
+         while(stringtokenizer.hasMoreTokens())  {
+            cols[i] = stringtokenizer.nextToken();
+            colsSizes[i++] = Integer.parseInt(stringtokenizer.nextToken());
          }
 
-         if (sortedColumn == 1) {
-
-           try {
-            mySort.add(p.getStringAttribute(PrintObject.ATTR_JOBNAME));
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (sortedColumn == 2) {
-
-           try {
-            mySort.add(p.getStringAttribute(PrintObject.ATTR_JOBUSER));
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (sortedColumn == 3) {
-
-           try {
-            mySort.add(p.getStringAttribute(PrintObject.ATTR_JOBNUMBER));
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (sortedColumn == 4) {
-
-           try {
-            mySort.add(p.getIntegerAttribute(PrintObject.ATTR_SPLFNUM).toString());
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (sortedColumn == 5) {
-
-           try {
-            mySort.add(p.getStringAttribute(PrintObject.ATTR_OUTPUT_QUEUE));
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-         }
-
-
-//         sortColumn(sortedColumn,isAscending);
-//         fireTableRowsUpdated(0,splfListSize - 1);
-      }
-
-      public boolean isSortable(int col) {
-//         if (col == 0)
-//            return true;
-//         else
-//            return false;
-         return true;
-      }
-
-      public void sortColumn(int col, boolean ascending) {
-         sortedColumn = col;
-         isAscending = ascending;
-         resetSorted();
-         Collections.sort(mySort, new SpoolComparator(0, ascending));
-         fireTableStructureChanged();
       }
 
       public int getColumnCount() {
-
         return cols.length;
       }
 
@@ -574,233 +740,21 @@ public class SpoolExporter extends JFrame {
         return cols[col];
       }
 
-      public int getRowCount() {
-         return mySort.size();
+      public int getColumnPreferredSize(int col) {
+         return colsSizes[col];
       }
 
-//      /*
-//       * Implement this so that the default session can be selected.
-//       *
-//       */
-//      public void setValueAt(Object value, int row, int col) {
-//
-//           boolean which = ((Boolean)value).booleanValue();
-//           if (which)
-//              props.setProperty("emul.default",getPropValue(row,null));
-//           else
-//              props.setProperty("emul.default","");
-//
-//      }
+      /**
+       * Override to not allow any rows to be editable
+       *
+       * @param row
+       * @param col
+       */
+      public boolean isCellEditable(int row, int col) {
 
-      public Object getValueAt(int row, int col) {
-
-         SpooledFile p = (SpooledFile)splfList.getObject(row);
-
-         if (col == 0) {
-
-           try {
-            return p.getName();
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (col == 1) {
-
-           try {
-            return p.getStringAttribute(PrintObject.ATTR_JOBNAME);
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (col == 2) {
-
-           try {
-            return p.getStringAttribute(PrintObject.ATTR_JOBUSER);
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (col == 3) {
-
-           try {
-            return p.getStringAttribute(PrintObject.ATTR_JOBNUMBER);
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (col == 4) {
-
-           try {
-            return p.getIntegerAttribute(PrintObject.ATTR_SPLFNUM).toString();
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         if (col == 5) {
-
-           try {
-            return p.getStringAttribute(PrintObject.ATTR_OUTPUT_QUEUE);
-           }
-           catch (Exception ex) {
-            System.out.println(ex.getMessage());
-           }
-         }
-
-         return null;
-
+         return false;
       }
 
-//         /*
-//          * We need to implement this so that the default session column can
-//          *    be updated.
-//          */
-//         public boolean isCellEditable(int row, int col) {
-//            //Note that the data/cell address is constant,
-//            //no matter where the cell appears onscreen.
-//   //         if (col == 2) {
-//   //             return true;
-//   //         }
-//   //         else {
-//                return false;
-//   //         }
-//         }
-
-//      /*
-//       * JTable uses this method to determine the default renderer/
-//       * editor for each cell.  If we didn't implement this method,
-//       * then the default column would contain text ("true"/"false"),
-//       * rather than a check box.
-//       */
-//      public Class getColumnClass(int c) {
-//         return " ".getClass();
-//      }
-
-//      private String getPropValue(int row,String param) {
-
-//         String prop = "";
-//         String[] args = new String[NUM_PARMS];
-//         String ses = null;
-//
-//         prop = (String)mySort.get(row);
-//
-//         if (param == null)
-//            return prop;
-//         else {
-//            Configure.parseArgs(props.getProperty(prop),args);
-//            if (param.equals("0"))
-//               return args[0];
-//         }
-//         return null;
-//      }
-
-//      public void addSession() {
-//         resetSorted();
-//         fireTableRowsInserted(props.size()-1,props.size()-1);
-//      }
-//
-//      public void chgSession(int row) {
-//         resetSorted();
-//         fireTableRowsUpdated(row,row);
-//      }
-//
-//      public void removeSession(int row) {
-//         resetSorted();
-//         fireTableRowsDeleted(row,row);
-//      }
-
-   }
-
-   public class SpoolComparator implements Comparator {
-      protected int index;
-      protected boolean ascending;
-
-      public SpoolComparator(int index, boolean ascending) {
-         this.index = index;
-         this.ascending = ascending;
-      }
-
-      public int compare(Object one, Object two) {
-
-         if (one instanceof String &&
-             two instanceof String) {
-
-            String s1 = one.toString();
-            String s2 = two.toString();
-            int result = 0;
-
-            if (ascending)
-               result = s1.compareTo(s2);
-            else
-               result = s2.compareTo(s1);
-
-            if (result < 0) {
-               return -1;
-            }
-            else
-               if (result > 0) {
-                  return 1;
-               }
-               else
-                  return 0;
-         }
-         else {
-
-            if (one instanceof Boolean &&
-                  two instanceof Boolean) {
-               boolean bOne = ((Boolean)one).booleanValue();
-               boolean bTwo = ((Boolean)two).booleanValue();
-
-               if (ascending) {
-                  if (bOne == bTwo) {
-                     return 0;
-                  }
-                  else
-                     if (bOne) { // Define false < true
-                        return 1;
-                     }
-                     else {
-                        return -1;
-                     }
-               }
-               else {
-                  if (bOne == bTwo) {
-                     return 0;
-                  }
-                  else
-                     if (bTwo) { // Define false < true
-                        return 1;
-                     }
-                     else {
-                        return -1;
-                     }
-                  }
-               }
-               else {
-                  if (one instanceof Comparable &&
-                      two instanceof Comparable) {
-                  Comparable cOne = (Comparable)one;
-                  Comparable cTwo = (Comparable)two;
-                  if (ascending) {
-                     return cOne.compareTo(cTwo);
-                  }
-                  else {
-                     return cTwo.compareTo(cOne);
-                  }
-               }
-            }
-            return 1;
-         }
-      }
    }
 
 }

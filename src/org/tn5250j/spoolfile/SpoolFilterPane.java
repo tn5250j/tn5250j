@@ -33,6 +33,9 @@ public class SpoolFilterPane extends JTabbedPane {
 
    private UserTabPanel user;
    private OutputQueueTabPanel queue;
+//   private JobTabPanel job;
+   private SpoolNameTabPanel spoolName;
+   private UserDataTabPanel userData;
 
    public SpoolFilterPane() {
       try {
@@ -45,9 +48,15 @@ public class SpoolFilterPane extends JTabbedPane {
    private void jbInit() throws Exception {
       user = new UserTabPanel();
       queue = new OutputQueueTabPanel();
+//      job = new JobTabPanel();
+      spoolName = new SpoolNameTabPanel();
+      userData = new UserDataTabPanel();
 
       this.addTab("User",user);
       this.addTab("Output Queue",queue);
+//      this.addTab("Job",job);
+      this.addTab("Spool Name",spoolName);
+      this.addTab("User Data",userData);
 
    }
 
@@ -62,6 +71,30 @@ public class SpoolFilterPane extends JTabbedPane {
    public String getLibrary() {
 
       return queue.getLibrary();
+
+   }
+
+   public String getJobName() {
+      return " ";
+   }
+
+   public String getJobUser() {
+      return " ";
+
+   }
+
+   public String getJobNumber() {
+      return " ";
+
+   }
+
+   public String getUserData() {
+      return userData.getUserData();
+
+   }
+
+   public String getSpoolName() {
+      return spoolName.getSpoolName();
 
    }
 
