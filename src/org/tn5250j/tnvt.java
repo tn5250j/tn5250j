@@ -951,8 +951,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
             exd.printStackTrace();
          }
 
-         if (pendingUnlock)
+         if (pendingUnlock && !screen52.isStatusErrorCode()) {
             screen52.setKeyboardLocked(false);
+         }
 
          if (cursorOn && !screen52.isKeyboardLocked()) {
             screen52.setCursorOn();
@@ -1441,7 +1442,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public void sendNegResponse2(int ec) {
 
-
+      screen52.setPrehelpState(true);
       baosp.write(0x00);
       baosp.write(ec);
 
@@ -2430,8 +2431,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    private final void writeErrorCode() throws Exception {
       screen52.goto_XY(screen52.getErrorLine(),1); // Skip the control byte
-      screen52.saveErrorLine();
       screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_ON,null);
+      screen52.saveErrorLine();
       cursorOn = true;
 
    }
@@ -2440,8 +2441,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
       int fromCol = bk.getNextByte() & 0xff;  // from column
       int toCol = bk.getNextByte() & 0xff;  // to column
       screen52.goto_XY(screen52.getErrorLine(),fromCol); // Skip the control byte
-      screen52.saveErrorLine();
       screen52.setStatus(screen52.STATUS_ERROR_CODE,screen52.STATUS_VALUE_ON,null);
+      screen52.saveErrorLine();
       cursorOn = true;
 
    }
