@@ -29,6 +29,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.BoxLayout;
+import javax.swing.Box;
+import javax.swing.*;
+
+import org.tn5250j.tools.LangTool;
 
 /**
  * Class to create and manage a Wizard style framework for you.
@@ -51,14 +55,16 @@ public class WizardPage extends JPanel {
 
    private Action nextAction;
    private Action previousAction;
+   private Action finishAction;
    private Action cancelAction;
    private Action helpAction;
 
    protected static final int GROUP_SPACING = 10;
    protected static final int MARGIN = 10;
+   protected static final int BUTTON_SPACING = 5;
 
    // Box containing the buttons used
-   protected JPanel buttonBox;
+   protected JPanel buttonPanel;
    protected JSeparator separator;
 
    // Pane returned by getContentPane.  This is the pane the
@@ -73,53 +79,80 @@ public class WizardPage extends JPanel {
 
       // set layout as a vertical column
       setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-
+//      setLayout(new BorderLayout());
+      Box pageBox = Box.createVerticalBox();
       contentPane = new JPanel();
-      add(contentPane);
-      add(new JSeparator());
 
-      buttonBox = new JPanel();
-      buttonBox.setName("buttonbox");
-      add(buttonBox);
+      // add the pages contentpane to our wizard page
+      add(contentPane);
+
+      // lets add some glue here but it still does not stop the separator from
+      //  moving up and down.
+      add(Box.createGlue());
+
+      // create the separator between the panels
+      JSeparator js = new JSeparator();
+      js.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+      add(js);
+      add(Box.createRigidArea(new Dimension(10,10)));
+
+      // create the box for the buttons with an x-axis
+      buttonPanel = new JPanel();
+      buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.X_AXIS));
+      buttonPanel.setName("buttonPanel");
+      buttonPanel.add(Box.createHorizontalGlue());
+      add(buttonPanel);
+
       if (button_flags == 0) {
          // no buttons to add :-(
          return;
       }
 
       if ((button_flags & PREVIOUS) != 0) {
-         previousAction = new AbstractAction("Previous") {
+         previousAction = new AbstractAction(LangTool.getString("wiz.previous")) {
                public void actionPerformed(ActionEvent e) {
                }
            };
 
          previousButton = new JButton(previousAction);
-         buttonBox.add(previousButton);
+         buttonPanel.add(Box.createRigidArea(new Dimension(GROUP_SPACING,0)));
+         buttonPanel.add(previousButton);
       }
+
       if ((button_flags & NEXT) != 0) {
-         nextAction = new AbstractAction("Next") {
+         nextAction = new AbstractAction(LangTool.getString("wiz.next")) {
                public void actionPerformed(ActionEvent e) {
                }
            };
 
          nextButton = new JButton(nextAction);
-         buttonBox.add(nextButton);
+         buttonPanel.add(Box.createRigidArea(new Dimension(BUTTON_SPACING,0)));
+         buttonPanel.add(nextButton);
       }
+
       if ((button_flags & FINISH) != 0) {
-         finishButton = new JButton("Finish");
-         buttonBox.add(finishButton);
+         finishAction = new AbstractAction(LangTool.getString("wiz.finish")) {
+               public void actionPerformed(ActionEvent e) {
+               }
+           };
+         finishButton = new JButton(finishAction);
+         buttonPanel.add(Box.createRigidArea(new Dimension(BUTTON_SPACING,0)));
+         buttonPanel.add(finishButton);
       }
+
       if ((button_flags & CANCEL) != 0) {
-         cancelAction = new AbstractAction("Cancel") {
+         cancelAction = new AbstractAction(LangTool.getString("wiz.cancel")) {
                public void actionPerformed(ActionEvent e) {
                }
            };
 
          cancelButton = new JButton(cancelAction);
-
-         buttonBox.add(cancelButton);
+         buttonPanel.add(Box.createRigidArea(new Dimension(GROUP_SPACING,0)));
+         buttonPanel.add(cancelButton);
+         buttonPanel.add(Box.createRigidArea(new Dimension(MARGIN,0)));
       }
       if ((button_flags & HELP) != 0) {
-         helpAction = new AbstractAction("Help") {
+         helpAction = new AbstractAction(LangTool.getString("wiz.help")) {
                public void actionPerformed(ActionEvent e) {
                }
            };
@@ -152,12 +185,13 @@ public class WizardPage extends JPanel {
       if (new_pane == null) {
          throw new NullPointerException("content pane must be non-null");
       }
+      System.out.println("rip all");
       // rip out all components and rebuild
       removeAll();
       contentPane = new_pane;
       add(contentPane);
       add(new JSeparator());
-      add(buttonBox);
+      add(buttonPanel);
    }
 
    /**
