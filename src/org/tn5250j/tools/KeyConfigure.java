@@ -377,7 +377,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
          if (special) {
             String k = "";
             k += ((String)functions.getSelectedValue()).charAt(7);
-            mapper.removeKeyStroke((String)functions.getSelectedValue());
+            mapper.removeKeyStroke(k);
             strokeDesc.setText(mapper.getKeyStrokeDesc(
                               (String)functions.getSelectedValue()));
 
