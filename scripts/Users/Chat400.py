@@ -9,17 +9,14 @@
 ######################################################################
 
 import sys
+
 from java.lang import *
 import com.ibm.as400.access as acc
 import com.ibm.as400.resource as rsc
 from javax import swing
 import java.awt as awt
 
-global server, name, passw
 #**************************************************************************
-server = ''
-name = ''
-passw = ''
 CHATQ = "/QSYS.LIB/QGPL.LIB/chat400.DTAQ"
 KEYLEN = 10
 #==========================================================================
@@ -62,8 +59,8 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE) # JDK1.4?
 		except:
 			None 
-	def run(self, server, name, *passw):
-		self.as400 = acc.AS400(server, name, *passw)
+	def run(server, name):
+		self.as400 = acc.AS400(server, name)
 
 		# Get user profile descriptions==> usrDct
 		rUsrLst = rsc.RUserList(self.as400)  
@@ -132,23 +129,23 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 				self.jobDct[key_usr] = tmp_job
 		self.jobLst.close()
 		
-		keys = self.usrDct.keys()
+		keys = self.usrDct.keys() 
 		keys.sort()
 		for key_usr in keys:
-			menuItem = key_usr
 			sts = ' '
-			if self.jobDct.has_key(key_usr):
-				if not self.chkActive.isSelected():
+			if self.chkActive.isSelected():		# Show only interactive users
+				if not self.jobDct.has_key(key_usr):
+					continue
+			elif self.jobDct.has_key(key_usr):  # Show all users: interactive users highlighted
 					sts = ' *'
+		
 			try:
 				fullName = self.usrDct[key_usr]
 			except:
-				fullName  = "Not Defined"
-			menuItem += ': %s' %fullName
-			if self.chkActive.isSelected() and not self.jobDct.has_key(key_usr):   # Active jobs only
-				continue
+				fullName  = "*NONE"
 
-			menuItem += sts    # N.B. * means profile is running an interactive job
+				menuItem = '%s: %-30s %s'%(key_usr,fullName, sts)  # Left adjust name :30 chars max=======
+
 			self.users.addItem(menuItem)
 
 	#**************************
@@ -251,11 +248,11 @@ if not isRunning == '1':
 	try:
 		server = _session.getHostName()
 		name = _session.getAllocDeviceName()
-		#passw = 'password'
 	except:
-		None
+		server = '' ; name = ''
 	chatter=Chat400()
-	if passw != '':
-		chatter.run(server, name, passw)
-	else:
-		chatter.run(server, name)
+	chatter.run(server, name)
+#	if passw != '':
+#		chatter.run(server, name, passw)
+#	else:
+#		chatter.run(server, name)
