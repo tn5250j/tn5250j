@@ -544,7 +544,8 @@ public class ScreenChar {
                if (!useGui || s.guiShowUnderline) {
                   g.setColor(fg);
 //                  g.drawLine(x, cy -2, (int)(x + s.fmWidth), cy -2);
-                  g.drawLine(x, (int)(y + (s.fmHeight - s.lm.getLeading()-5)), (int)(x + s.fmWidth), (int)(y + (s.fmHeight - s.lm.getLeading())-5));
+//                  g.drawLine(x, (int)(y + (s.fmHeight - s.lm.getLeading()-5)), (int)(x + s.fmWidth), (int)(y + (s.fmHeight - s.lm.getLeading())-5));
+                  g.drawLine(x, (int)(y + (s.fmHeight - (s.lm.getLeading() + s.lm.getDescent()))), (int)(x + s.fmWidth), (int)(y + (s.fmHeight -(s.lm.getLeading() + s.lm.getDescent()))));
 
                }
             }
