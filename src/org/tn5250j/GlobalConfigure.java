@@ -191,6 +191,7 @@ public class GlobalConfigure extends ConfigureFactory {
       else {
 
          settings.setProperty("emulator.settingsDirectory", System.getProperty("user.home") + File.separator + ".tn5250j"  + File.separator);
+         System.out.println("User Home = " + System.getProperty("user.home"));
 
       }
    }
