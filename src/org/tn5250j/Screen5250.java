@@ -4241,7 +4241,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       l = k.getLineMetrics("Wy",f);
 
-      if (font.getSize() != k.getSize() || updateFont) {
+      if (font.getSize() != k.getSize() || updateFont ||
+            (bi.offLeft != (width - bi.getWidth()) / 2) ||
+            (bi.offTop != (height - bi.getHeight()) / 2)) {
 
          // set up all the variables that are used in calculating the new
          // size
