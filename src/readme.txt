@@ -83,7 +83,9 @@ The following sections are available:
     -------------------------
     -p port ----> port to be used - default is port 23 if not specified
 
-    -f filename ----> configuration file
+    -f filename ----> configuration file.  This is defined on the Session 
+                      Configuration screen under Options Tab - Configuration
+                      File Name.
 
     -t ----> use system name instead of system id Host IP Address/DNS Host name.
 
