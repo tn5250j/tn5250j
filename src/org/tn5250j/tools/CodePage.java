@@ -1,4 +1,5 @@
 package org.tn5250j.tools;
+
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -25,8 +26,6 @@ package org.tn5250j.tools;
  *
  */
 
-//import java.io.*;
-//import java.util.*;
 import org.tn5250j.CharMappings;
 
 public class CodePage {
@@ -36,131 +35,6 @@ public class CodePage {
    private String codePage = "";
    private char unicode[] = new char[256];
    private boolean convert;
-
-   public CodePage(String codePage) {
-
-      setCodePage(codePage);
-   }
-
-   public byte getEBCDIC(int index) {
-      return (byte)ascii[index & 0xff];
-
-   }
-
-   public char getEBCDICChar(int index) {
-      return (char)ascii[index & 0xff];
-
-   }
-
-   public byte getASCII(int index) {
-
-      return (byte)ascii[index];
-
-   }
-
-   public char getASCIIChar(int index) {
-      return (char)ebcdic[index & 0xff];
-   }
-
-   public String getCodePage () {
-
-      return codePage;
-   }
-
-   public void setCodePage (String newCodePage) {
-
-      if (!codePage.toLowerCase().equals(newCodePage.toLowerCase())) {
-         codePage = newCodePage;
-
-         int i = 0;
-
-         int[] cp = CharMappings.getCodePage(codePage);
-         do {
-
-            ebcdic[i] = cp[i];
-            ascii[cp[i]] = i;
-         } while(++i < 256);
-
-         if (codePage.toLowerCase().startsWith("870")) {
-
-            unicode = uni1250;
-            convert = true;
-//            System.out.println("using conversion");
-         }
-         else {
-            convert = false;
-//            System.out.println("not using conversion");
-         }
-      }
-   }
-
-   /**
-    * This routine will convert an ebcdic value to a displayable unicode
-    *    value.
-    *
-    * If the codepage needs to be converted:
-    *    1. first check if a conversion is to take place from ascii to unicode
-    *    2. if conversion then first get the ascii value from the ebcdic to
-    *          ascii lookup array then obtain the unicode value to from the ascii
-    *          to unicode array
-    *
-    *    For example Code page 870 ebcdic will translate to ascii latin 2
-    *       (ISO 8859-2) and we need to convert latin 2 (ISO 8859-2) to
-    *       latin 1 (ISO 8859-1) unicode 1250.
-    *
-    *    So in reality we have an intermediate value to be converted to something
-    *       we understand for display.
-    *
-    */
-
-   public char ebcdic2uni (int index) {
-
-      if (convert) {
-
-         int ea = ebcdic[index & 0xff];
-         if (ea > 0x7F) {
-//            System.out.println("conversion found for index: " + index + " "  + ea + " "  + (char)ebcdic[index & 0xff] + " " + unicode[ea]);
-            return unicode[ea];
-         }
-         else
-            return (char)ea;
-
-      }
-      else
-         return (char)ebcdic[index & 0xff];
-   }
-
-   /**
-    * This routine will convert an unicode value to ebcdic value
-    *
-    * If the unicode values need to be converted:
-    *    1. first check if a conversion is to take place from unicode to ascii
-    *    2. if conversion then convert unicode values to ascii
-    *    3. convert from ascii to ebcdic
-    *
-    *  See ebcdic2uni for a description but goes the opposite direction
-    */
-
-   public byte uni2ebcdic (char index) {
-
-      if (convert) {
-         int ind = index;
-         int len = unicode.length;
-         if (index > '\u007F')
-            for (int x = 0x80; x < len; x++) {
-               if (unicode[x] == index) {
-//                  System.out.println("conversion found " + (char)index + " " + unicode[x]);
-                  ind = x;
-                  break;
-               }
-            }
-
-//         System.out.println("using conversion");
-         return (byte)ascii[ind & 0xff];
-      }
-      else
-         return (byte)ascii[index & 0xff];
-   }
 
    private static final char[] uni1250 = {
       '\u0000', '\u0001', '\u0002', '\u0003' , '\u0004', '\u0005', '\u0006', '\u0007',	/*   0 -   7  */
@@ -197,4 +71,157 @@ public class CodePage {
       '\u0159', '\u016F', '\u00FA', '\u0171', '\u00FC' , '\u00FD', '\u0163', '\u02D9', /* 248 - 255  */
    };
 
+   // Added 1025 code pages by Fomin, Leonid <leonid.fomin@mosnar.com>
+   private static final char[] uni1025 = {
+     '\u0000','\u0001','\u0002','\u0003','\u0004','\u0005','\u0006','\u0007',
+     '\u0008','\u0009',0x0A,'\u000B','\u000C',0x0D,'\u000E','\u000F',
+     '\u0010','\u0011','\u0012','\u0013','\u0014','\u0015','\u0016','\u0017',
+     '\u0018','\u0019','\u001A','\u001b','\u001c','\u001d','\u001e','\u001f',
+     '\u0020','\u0021','\u0022','\u0023','\u0024','\u0025','\u0026',0x27,
+     '\u0028','\u0029','\u002a','\u002b','\u002c','\u002d','\u002e','\u002f',
+     '\u0030','\u0031','\u0032','\u0033','\u0034','\u0035','\u0036','\u0037',
+     '\u0038','\u0039','\u003a','\u003b','\u003c','\u003d','\u003e','\u003f',
+     '\u0040','\u0041','\u0042','\u0043','\u0044','\u0045','\u0046','\u0047',
+     '\u0048','\u0049','\u004a','\u004b','\u004c','\u004d','\u004e','\u004f',
+     '\u0050','\u0051','\u0052','\u0053','\u0054','\u0055','\u0056','\u0057',
+     '\u0058','\u0059','\u005a','\u005b',0x5c,'\u005d','\u005e','\u005f',
+     '\u0060','\u0061','\u0062','\u0063','\u0064','\u0065','\u0066','\u0067',
+     '\u0068','\u0069','\u006A','\u006B','\u006C','\u006D','\u006E','\u006F',
+     '\u0070','\u0071','\u0072','\u0073','\u0074','\u0075','\u0076','\u0077',
+     '\u0078','\u0079','\u007A','\u007B','\u007C','\u007D','\u007E','\u007F',
+     '\u0402','\u0403','\u201A','\u0453','\u201E','\u2026','\u2020','\u2021',
+     '\u20AC','\u2030','\u0409','\u2039','\u040A','\u040C','\u040B','\u040F',
+     '\u0452','\u2018','\u2019','\u201C','\u201D','\u2022','\u2013','\u2014',
+     '\u0098','\u2122','\u0459','\u203A','\u045A','\u045C','\u045B','\u045F',
+     '\u00A0','\u040E','\u045E','\u0408','\u00A4','\u0490','\u00A6','\u00A7',
+     '\u00A8','\u00A9','\u0404','\u00AB','\u00AC','\u00AD','\u00AE','\u0407',
+     '\u00B0','\u00B1','\u0406','\u0456','\u0491','\u00B5','\u00B6','\u00B7',
+     '\u0451','\u2116','\u0454','\u00BB','\u0458','\u0405','\u0455','\u0457',
+     '\u0410','\u0411','\u0412','\u0413','\u0414','\u0415','\u0416','\u0417',
+     '\u0418','\u0419','\u041A','\u041B','\u041C','\u041D','\u041E','\u041E',
+     '\u0420','\u0421','\u0422','\u0423','\u0424','\u0425','\u0426','\u0427',
+     '\u0428','\u0429','\u042a','\u042b','\u042c','\u042d','\u042e','\u042f',
+     '\u0430','\u0431','\u0432','\u0433','\u0434','\u0435','\u0436','\u0437',
+     '\u0438','\u0439','\u043a','\u043b','\u043c','\u043d','\u043e','\u043f',
+     '\u0440','\u0441','\u0442','\u0443','\u0444','\u0445','\u0446','\u0447',
+     '\u0448','\u0449','\u044a','\u044b','\u044c','\u044d','\u044E','\u044F'
+     };
+
+   public CodePage(String codePage) {
+
+      setCodePage(codePage);
+   }
+   /**
+    * This routine will convert an ebcdic value to a displayable unicode
+    *    value.
+    *
+    * If the codepage needs to be converted:
+    *    1. first check if a conversion is to take place from ascii to unicode
+    *    2. if conversion then first get the ascii value from the ebcdic to
+    *          ascii lookup array then obtain the unicode value to from the ascii
+    *          to unicode array
+    *
+    *    For example Code page 870 ebcdic will translate to ascii latin 2
+    *       (ISO 8859-2) and we need to convert latin 2 (ISO 8859-2) to
+    *       latin 1 (ISO 8859-1) unicode 1250.
+    *
+    *    So in reality we have an intermediate value to be converted to something
+    *       we understand for display.
+    *
+    */
+
+   public char ebcdic2uni (int index) {
+
+      if (convert) {
+
+         int ea = ebcdic[index & 0xff];
+         if (ea > 0x7F) {
+//            System.out.println("conversion found for index: " + index + " "  + ea + " "  + (char)ebcdic[index & 0xff] + " " + unicode[ea]);
+            return unicode[ea];
+         }
+         else
+            return (char)ea;
+
+      }
+      else
+         return (char)ebcdic[index & 0xff];
+   }
+   public byte getASCII(int index) {
+
+      return (byte)ascii[index];
+
+   }
+   public char getASCIIChar(int index) {
+      return (char)ebcdic[index & 0xff];
+   }
+   public String getCodePage () {
+
+      return codePage;
+   }
+   public byte getEBCDIC(int index) {
+      return (byte)ascii[index & 0xff];
+
+   }
+   public char getEBCDICChar(int index) {
+      return (char)ascii[index & 0xff];
+
+   }
+   public void setCodePage (String newCodePage) {
+
+      if (!codePage.toLowerCase().equals(newCodePage.toLowerCase())) {
+         codePage = newCodePage;
+
+         int i = 0;
+         int[] cp = CharMappings.getCodePage(codePage);
+         do {
+
+            ebcdic[i] = cp[i];
+            ascii[cp[i]] = i;
+         } while(++i < 256);
+
+         if (codePage.toLowerCase().startsWith("870")) {
+            unicode = uni1250;
+            convert = true;
+//            System.out.println("using conversion");
+        } else if(codePage.toLowerCase().startsWith("1025")) {
+            unicode = uni1025;
+            convert = true;
+//            System.out.println("using conversion");
+         } else {
+            convert = false;
+//            System.out.println("not using conversion");
+         }
+      }
+   }
+   /**
+    * This routine will convert an unicode value to ebcdic value
+    *
+    * If the unicode values need to be converted:
+    *    1. first check if a conversion is to take place from unicode to ascii
+    *    2. if conversion then convert unicode values to ascii
+    *    3. convert from ascii to ebcdic
+    *
+    *  See ebcdic2uni for a description but goes the opposite direction
+    */
+
+   public byte uni2ebcdic (char index) {
+
+      if (convert) {
+         int ind = index;
+         int len = unicode.length;
+         if (index > '\u007F')
+            for (int x = 0x80; x < len; x++) {
+               if (unicode[x] == index) {
+//                  System.out.println("conversion found " + (char)index + " " + unicode[x]);
+                  ind = x;
+                  break;
+               }
+            }
+
+//         System.out.println("using conversion");
+         return (byte)ascii[ind & 0xff];
+      }
+      else
+         return (byte)ascii[index & 0xff];
+   }
 }
