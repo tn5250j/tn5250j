@@ -5,14 +5,32 @@ because I could not find a 5250 emulator of Linux with the enhanced functions
 like graphical windows, cursor progression, continued edit fields, masked edit
 fields etc.....
 
-new 0.5.6 pre release 5
+new 0.5.6 release
 
 *** NOTE *** *** NOTE *** *** NOTE *** *** NOTE ***
 
 With this release you will have to remap your keyboard if
 using JDK 1.4 or greater.  This is for existing installs only.
 
+If using the installer for linux or Mac you will have to chmod +x the
+tn5250j script in the bin directory of the install path used.
+
+The interface may look like it is locked while using the web installer.
+This happens while downloading the pack file from the website.  It will
+install do not worry.
+
 *** NOTE *** *** NOTE *** *** NOTE *** *** NOTE ***
+
+Added a new web installer module.
+
+Translations of German by Christian
+
+Translations of Dutch by Patrick
+
+Added a the scripting directory from the settings directory to
+also be displayed in scripts menu items
+
+Fixed a threading problem with exporting of spooled files.
 
 Fixed another problem with defaults reported by Christian
 
@@ -23,13 +41,15 @@ Added support for multiple key bindings.
 Added support for verification of mapping to existing keys.
 
 The ant build file now checks for the existence of the the
-correct jdk version and compiles the correct support 
+correct jdk version and compiles the correct support
 automatically.
 
 Added a signoff region verification.
 
+Added Icelandic codepage 871 by Karl Helgason, kalli@midverk.is
+
 Added new default startup fonts per system.  This caused
-problems because some fonts did not exist.  
+problems because some fonts did not exist.
 
 Fixed resize of frame not causing a re centering of the screen.  Report from James
 
