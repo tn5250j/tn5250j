@@ -34,7 +34,7 @@ public class CharMappings {
    private static final String[] acp = {"37","37PT","273","280","284","285",
                                        "277-dk","277-no","297","424","500-ch",
                                        "870-pl","870-sk","875","1025-r","1026",
-                                       "1141","1140"};
+                                       "1141","1140","1112"};
 
    /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM037..ISO-8859-1 (reversible).  */

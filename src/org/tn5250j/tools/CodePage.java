@@ -235,6 +235,18 @@ public class CodePage {
             return c;
          }
 
+         if (codePage.equals("1112")) {
+            char c = ' ';
+            try {
+               byte[] b = new byte[1];
+               b[0] = (byte)index;
+               c = (new String(b, "Cp1112")).charAt(0);
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return c;
+         }
+
          int ea = ebcdic[index & 0xff];
          if (ea > 0x7F) {
 //            System.out.println("conversion found for index: " + index + " "  + ea + " "  + (char)ebcdic[index & 0xff] + " " + unicode[ea]);
@@ -283,14 +295,17 @@ public class CodePage {
       if (!codePage.toLowerCase().equals(newCodePage.toLowerCase())) {
          codePage = newCodePage;
 
-         int i = 0;
-         int[] cp = CharMappings.getCodePage(codePage);
-         do {
+         if (!newCodePage.equals("1112")) {
 
-            ebcdic[i] = cp[i];
-            ascii[cp[i]] = i;
-         } while(++i < 256);
-
+            int i = 0;
+            int[] cp = CharMappings.getCodePage(codePage);
+            do {
+            
+               ebcdic[i] = cp[i];
+               ascii[cp[i]] = i;
+            } while(++i < 256);
+         }
+           
          if (codePage.toLowerCase().startsWith("870-pl")) {
             unicode = uni1250;
             convert = true;
@@ -310,6 +325,8 @@ public class CodePage {
          } else if(codePage.toLowerCase().startsWith("1141")) {
              convert = true;
          } else if(codePage.toLowerCase().startsWith("1140")) {
+             convert = true;
+         } else if(codePage.toLowerCase().startsWith("1112")) {
              convert = true;
          } else {
             convert = false;
@@ -347,6 +364,16 @@ public class CodePage {
             byte b = 0x0;
             try {
                b = characterToString(index).getBytes("Cp1140")[0];
+            } catch (java.io.UnsupportedEncodingException uee) {
+               uee.printStackTrace();
+            }
+            return b;
+         }
+
+         if (codePage.equals("1112")) {
+            byte b = 0x0;
+            try {
+               b = characterToString(index).getBytes("Cp1112")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
