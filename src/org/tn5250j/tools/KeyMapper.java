@@ -262,8 +262,6 @@ public class KeyMapper {
          lastKeyMnemonic = (String)mappedKeys.get(workStroke);
       }
 
-      System.out.println("getKeyStrokeText " + lastKeyMnemonic);
-
       return lastKeyMnemonic;
 
    }
