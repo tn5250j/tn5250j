@@ -7,7 +7,7 @@ Implement the insert (right shift of characters) for continued edit fields.
 
 Add support for maintaining macros.  Think GUI interface.
 
-Translate to french.  Still have not done this.  Anybody volunteer?????
+Translate to french.  Done.
 
 Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
 large to implement this - 57 pages worth of specs and the such.  Work has begun.
@@ -20,8 +20,6 @@ Fix throttling code that is causing wierd painting problems.  I found it now
 have to make it more intelligent.
 
 Add option for sending partial screen information to file and/or e-mail.
-
-Think about a way to e-mail from file transfer.
 
 Add restore of session sizes in MDI session interface.
 
@@ -43,6 +41,17 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+03/08/2002  Added new categories to the session attributes screen:
+               Cursor - Moved from display cat and added Ruler follows cursor
+               Signoff - not implemented yet
+               On Connect - added support to run a macro on connect
+               Mouse - added double click send enter
+               
+            Fixed another problem with keybuffering hopefully the null as well
+
+02/08/2002  Fixed a problem with the keybuffering where when there is an error
+            it will clear the buffer and lock the keyboard.
+
 31/07/2002  Fixed a problem with gui windows not restoring the screen correctly.
 
             Added support for multiple macros running at the same time for
