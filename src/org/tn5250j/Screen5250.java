@@ -1,5 +1,3 @@
-package org.tn5250j;
-
 /**
  *
  * <p>Title: Screen5250.jar</p>
@@ -24,6 +22,8 @@ package org.tn5250j;
  * @author Kenneth J. Pouncey
  * @version 0.5
  */
+package org.tn5250j;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -38,7 +38,9 @@ import java.io.*;
 import java.awt.print.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
+
 import org.tn5250j.tools.*;
+import org.tn5250j.tools.system.OperatingSystem;
 
 public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
@@ -157,6 +159,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private SessionConfig config;
    private boolean rulerFixed;
    private boolean antialiased = true;
+
+   private boolean fullRepaint;
 //   private Image tileimage;
 
    //LDC - 12/02/2003 -  boolean: true: it must be repainted
@@ -184,9 +188,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    void jbInit() throws Exception {
 
+      // damn I hate putting this in but it is the only way to get
+      //  it to work correctly.  What a pain in the ass.
+      if (OperatingSystem.isMacOS() && OperatingSystem.hasJava14())
+          fullRepaint = true;
+
       if (!config.isPropertyExists("font")) {
-         font = new Font("Courier New",Font.PLAIN,14);
-         config.setProperty("font","Courier New");
+         font = new Font(GUIGraphicsUtils.getDefaultFont(),Font.PLAIN,14);
+//         font = new Font("Courier New",Font.PLAIN,14);
+         config.setProperty("font",font.getFontName());
       }
       else {
          font = new Font(getStringProperty("font"),Font.PLAIN,14);
@@ -4129,11 +4139,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //      if (gui.isVisible() && height > 0 && width > 0) {
 //         bi.drawImageBuffer(gg2d,x,y,width,height);
 //      }
-      if (gui.isVisible()) {
-         if (height > 0 && width > 0) {
+         if (gui.isVisible()) {
+            if (height > 0 && width > 0) {
 
+         if (!fullRepaint)
             bi.drawImageBuffer(gg2d,x,y,width,height);
-//      gui.repaint();
+         else
+            gui.repaint();
 
 //            System.out.println(" something went right finally " + gui.isVisible() +
 //                           " height " + height + " width " + width);
