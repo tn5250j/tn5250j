@@ -1,4 +1,4 @@
-import javax.swing as swing
+import javax as swing
 import java.awt as awt
 
 print "--------------- tn5250j test script start ------------"
