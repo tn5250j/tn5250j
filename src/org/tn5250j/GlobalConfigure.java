@@ -56,7 +56,9 @@ public class GlobalConfigure extends ConfigureFactory {
    static final public String MACROS = "macros";
    static final public String KEYMAP = "keymap";
 
-   static final private String settingsFile = "tn5250jstartup.cfg";
+   static final private String settingsFile = 
+   System.getProperty("user.home") + File.separator + ".tn5250j" + 
+   File.separator + "tn5250jstartup.cfg";
 
    /**
     * The constructor is made protected to allow overriding.
