@@ -1,7 +1,6 @@
-package org.tn5250j.tools;
 /**
  * Title: tn5250J
- * Copyright:   Copyright (c) 2001
+ * Copyright:   Copyright (c) 2001,202,2003
  * Company:
  * @author  Kenneth J. Pouncey
  * @version 0.4
@@ -24,6 +23,8 @@ package org.tn5250j.tools;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.tools;
+
 import java.awt.Component;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -39,7 +40,10 @@ import javax.swing.JPopupMenu;
 import java.awt.Point;
 import javax.swing.SwingUtilities;
 import java.awt.Toolkit;
+import java.awt.GraphicsEnvironment;
+
 import org.tn5250j.*;
+import org.tn5250j.tools.system.OperatingSystem;
 
 public class GUIGraphicsUtils {
 
@@ -49,6 +53,7 @@ public class GUIGraphicsUtils {
    public static final int INSET = 2;
    public static final int WINDOW_NORMAL = 3;
    public static final int WINDOW_GRAPHIC = 4;
+   private static String defaultFont;
 
    public static void draw3DLeft(Graphics2D g,int which,
                                           int x,int y,
@@ -1437,4 +1442,77 @@ public class GUIGraphicsUtils {
       jpm.show(component, x != 0 ? x : xCoord, y != 0 ? y : yCoord);
    }
 
+   /**
+    * Windows fonts to search for in order of precedence
+    */
+   static final String[] windowsFonts = {"Andale Mono","Letter Gothic Bold",
+                                          "Lucida Sans Typewriter Regular",
+                                          "Lucida Sans Typewriter Bold",
+                                          "Lucida Console",
+                                          "Courier New Bold",
+                                          "Courier New", "Courier"};
+
+   /**
+    * *nix fonts to search for in order of precedence
+    */
+   static final String[] nixFonts = {"Lucida Sans Typewriter Regular",
+                                       "Lucida Sans Typewriter Bold",
+                                       "Courier New Bold",
+                                       "Courier New",
+                                       "Courier Bold",
+                                       "Courier"};
+
+   /**
+    * Mac fonts to search for in order of precedence
+    */
+   static final String[] macFonts = {"Monaco",
+                                       "Courier New Bold",
+                                       "Courier New", "Courier"};
+
+   public static String getDefaultFont() {
+
+      if (defaultFont == null) {
+         String[] fonts = windowsFonts;
+         if (OperatingSystem.isMacOS()) {
+            fonts = macFonts;
+         }
+         else if (OperatingSystem.isUnix()) {
+            fonts = nixFonts;
+         }
+
+         for (int x = 0; x < fonts.length; x++) {
+            if (isFontNameExists(fonts[x])) {
+               defaultFont = fonts[x];
+               break;
+            }
+         }
+
+         // we will just make if a space at this time until we come up with
+         //  a better solution
+         if (defaultFont == null) {
+            defaultFont = "";
+         }
+      }
+
+      return defaultFont;
+   }
+
+   /**
+    * Checks to see if the font name exists within our environment
+    *
+    * @return whether the font passed exists or not.
+    */
+   public static boolean isFontNameExists(String fontString) {
+
+      // fonts from the environment
+      Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+
+      for (int x = 0; x < fonts.length; x++) {
+         if (fonts[x].getFontName().indexOf('.') < 0)
+            if (fonts[x].getFontName().equals(fontString))
+               return true;
+      }
+
+      return false;
+   }
 }
