@@ -36,7 +36,7 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
-27/4/2002   CVS checkin notifications, updates and bug fixes.  Test CVS
+27/4/2002   CVS checkin notifications, updates and bug fixes.  Test CVS again
 
 26/4/2002   Fixed a problem that was happening when sending data to the host.
             on a READ_MDT_FIELDS command 0x52 when should send blanks instead of
