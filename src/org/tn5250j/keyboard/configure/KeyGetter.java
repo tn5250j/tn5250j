@@ -153,18 +153,18 @@ public class KeyGetter extends KeyGetterInterface {
       displayInfo(e);
       int keyCode = e.getKeyCode();
 
-      if (isLinux && keyCode == e.VK_ALT_GRAPH) {
+      if (isLinux && keyCode == KeyEvent.VK_ALT_GRAPH) {
 
          isAltGr = true;
       }
 
       // be careful with the control key
-      if (keyCode == e.VK_UNDEFINED ||
-            keyCode == e.VK_CAPS_LOCK ||
-            keyCode == e.VK_SHIFT ||
-            keyCode == e.VK_ALT ||
-            keyCode == e.VK_ALT_GRAPH ||
-            keyCode == e.VK_CONTROL
+      if (keyCode == KeyEvent.VK_UNDEFINED ||
+            keyCode == KeyEvent.VK_CAPS_LOCK ||
+            keyCode == KeyEvent.VK_SHIFT ||
+            keyCode == KeyEvent.VK_ALT ||
+            keyCode == KeyEvent.VK_ALT_GRAPH ||
+            keyCode == KeyEvent.VK_CONTROL
          ) {
 
          return;
@@ -208,7 +208,7 @@ public class KeyGetter extends KeyGetterInterface {
 
    void processVTKeyReleased(KeyEvent e){
          displayInfo(e);
-      if (isLinux && e.getKeyCode() == e.VK_ALT_GRAPH) {
+      if (isLinux && e.getKeyCode() == KeyEvent.VK_ALT_GRAPH) {
 
          isAltGr = false;
       }
