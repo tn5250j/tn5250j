@@ -23,8 +23,12 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Properties;
 
 import org.tn5250j.tools.logging.*;
+import org.tn5250j.interfaces.*;
 
 /**
  * Operating system detection routines.
@@ -165,53 +169,105 @@ public class OperatingSystem
    }
 
    /**
-    * From JavaWorld Tip 66 - http://www.javaworld.com/javaworld/javatips/jw-javatip66.html
-    * Display a file in the system browser.  If you want to display a
-    * file, you must include the absolute path name.
-    *
-    * @param url the file's url (the url must start with either "http://" or
-    * "file://").
+    * From JavaWorld Tip 66 -
+    * http://www.javaworld.com/javaworld/javatips/jw-javatip66.html Display a
+    * file in the system browser. If you want to display a file, you must
+    * include the absolute path name.
+    * 
+    * @param url the file's url (the url must start with either "http://",
+    *           "mailto:" or "file://").
     */
    public static void displayURL(String url) {
-       boolean windows = isWindows();
-       String cmd = null;
-       try {
-           if (windows) {
+
+      // first let's check if we have an external protocol program defined
+      String command = null;
+      String protocol = "";
+      java.net.URL urlUrl = null;
+      try {
+         urlUrl = new java.net.URL(url);
+         protocol = urlUrl.getProtocol();
+      }
+      catch (MalformedURLException e) {
+         log.warn(e.getMessage());
+      }
+      
+      Properties props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
+
+      if (props.getProperty("emul.protocol." + protocol,
+            ConfigureFactory.SESSIONS).trim().length() > 0) {
+         String commandTemplate = props.getProperty(
+               "emul.protocol." + protocol, ConfigureFactory.SESSIONS).trim();
+         java.text.MessageFormat format = new java.text.MessageFormat(
+               commandTemplate);
+         try {
+            command = format.format(url);
+         }
+         catch (Exception exx) {
+            log.warn("Unable to parse the url " + url + " using command " + 
+                  commandTemplate);
+         }
+      }
+
+      if (command != null && command.length() > 0) {
+
+         try {
+            Process p = Runtime.getRuntime().exec(command);
+            // wait for exit code -- if it's 0, command worked,
+            // otherwise we need to start the browser up.
+            int exitCode = p.waitFor();
+            if (exitCode != 0) {
+               log.warn("Error processing protocol, command='" + command + "'");
+            }
+         }
+         catch (InterruptedException exc) {
+            log.warn("Error processing protocol, command='" + command + "'");
+            log.warn("Caught: " + exc.getMessage());
+         }
+         catch (IOException ioe) {
+            log.warn("Error processing protocol, command='" + command + "'");
+            log.warn("Caught: " + ioe.getMessage());
+         }
+      }
+      else {
+         boolean windows = isWindows();
+         String cmd = null;
+         try {
+            if (windows) {
                // cmd = 'rundll32 url.dll,FileProtocolHandler http://...'
                cmd = WIN_PATH + " " + WIN_FLAG + " " + url;
                Process p = Runtime.getRuntime().exec(cmd);
-           }
-           else {
+            }
+            else {
                // Under Unix, Netscape has to be running for the "-remote"
-               // command to work.  So, we try sending the command and
-               // check for an exit value.  If the exit command is 0,
+               // command to work. So, we try sending the command and
+               // check for an exit value. If the exit command is 0,
                // it worked, otherwise we need to start the browser.
                // cmd = 'netscape -remote openURL(http://www.javaworld.com)'
                cmd = UNIX_PATH + " " + UNIX_FLAG + "(" + url + ")";
                Process p = Runtime.getRuntime().exec(cmd);
                try {
-                   // wait for exit code -- if it's 0, command worked,
-                   // otherwise we need to start the browser up.
-                   int exitCode = p.waitFor();
-                   if (exitCode != 0) {
-                       // Command failed, start up the browser
-                       // cmd = 'netscape http://www.javaworld.com'
-                       cmd = UNIX_PATH + " "  + url;
-                       p = Runtime.getRuntime().exec(cmd);
-                   }
+                  // wait for exit code -- if it's 0, command worked,
+                  // otherwise we need to start the browser up.
+                  int exitCode = p.waitFor();
+                  if (exitCode != 0) {
+                     // Command failed, start up the browser
+                     // cmd = 'netscape http://www.javaworld.com'
+                     cmd = UNIX_PATH + " " + url;
+                     p = Runtime.getRuntime().exec(cmd);
+                  }
                }
-               catch(InterruptedException x) {
-                   log.warn("Error bringing up browser, cmd='" +
-                   cmd + "'");
-                   log.warn("Caught: " + x);
+               catch (InterruptedException x) {
+                  log.warn("Error bringing up browser, cmd='" + cmd + "'");
+                  log.warn("Caught: " + x);
                }
-           }
-       }
-       catch(java.io.IOException x) {
-           // couldn't exec browser
-           log.warn("Could not invoke browser, command=" + cmd);
-           log.warn("Caught: " + x);
-       }
+            }
+         }
+         catch (java.io.IOException x) {
+            // couldn't exec browser
+            log.warn("Could not invoke browser, command=" + cmd);
+            log.warn("Caught: " + x);
+         }
+      }
    }
 
  //}}}

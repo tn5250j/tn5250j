@@ -67,6 +67,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -88,6 +89,7 @@ import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.DESSHA1;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.AlignLayout;
 
 public class Connect
 	extends JDialog
@@ -107,6 +109,7 @@ public class Connect
 	JPanel loggingPanel = new JPanel();
 	JPanel levelPanel = new JPanel();
 	JPanel appenderPanel = new JPanel();
+	JPanel externalPanel = new JPanel();
 
 	JTable sessions = null;
 	GridBagConstraints gbc;
@@ -157,6 +160,9 @@ public class Connect
 	private JRadioButton intConsole;
 	private JRadioButton intFile;
 	private JRadioButton intBoth;
+	
+	private JTextField browser;
+	private JTextField mailer;
 
 	public Connect(Frame frame, String title, Properties prop) {
 
@@ -199,6 +205,10 @@ public class Connect
 		optionTabs.addTab(LangTool.getString("ss.labelLogging"), loggingPanel);
 		createAccessPanel();
 		optionTabs.addTab(LangTool.getString("ss.labelOptions2"), accessPanel);
+		
+		// create external programs panel
+		createExternalProgramsPanel();
+		optionTabs.addTab(LangTool.getString("ss.labelExternal"), externalPanel);
 
 		// add the panels to our dialog
 		getContentPane().add(optionTabs, BorderLayout.CENTER);
@@ -679,6 +689,41 @@ public class Connect
 
 	}
 
+	private void createExternalProgramsPanel() {
+
+		// create external options panel
+		
+		JPanel externalPrograms = new JPanel();
+		
+	      // define layout
+	    externalPanel.setLayout(new BorderLayout());
+		externalPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 5));
+
+		externalPrograms.setLayout(new AlignLayout(3,5,5));
+		externalPrograms.setBorder(BorderFactory.createTitledBorder(
+				LangTool.getString("external.title")));
+		
+		externalPrograms.add(new JLabel(LangTool.getString("external.http")));
+		browser = new JTextField(30);
+		if (props.containsKey("emul.protocol.http")) {
+			browser.setText(props.getProperty("emul.protocol.http"));
+		}
+		externalPrograms.add(browser);
+		externalPrograms.add(new JButton("..."));
+
+		externalPrograms.add(new JLabel(LangTool.getString("external.mailto")));
+		mailer = new JTextField(30);
+		if (props.containsKey("emul.protocol.mailto")) {
+			mailer.setText(props.getProperty("emul.protocol.mailto"));
+		}
+		externalPrograms.add(mailer);
+		externalPrograms.add(new JButton("..."));
+
+		externalPanel.add(externalPrograms, BorderLayout.NORTH);
+
+		
+	}
+
 	private void doSomethingEntered() {
 
 		if (props.getProperty("emul.accessDigest") != null) {
@@ -821,6 +866,8 @@ public class Connect
 	private void saveProps() {
 
 		setOptionAccess();
+		
+		setExternalPrograms();
 
 		ConfigureFactory.getInstance().saveSettings(
 			ConfigureFactory.SESSIONS,
@@ -829,6 +876,36 @@ public class Connect
 		OptionAccessFactory.getInstance().reload();
 	}
 
+	/**
+	 * Set the external programs that are to be used globally within the
+	 * emulator.
+	 * 
+	 * Right now external browser and mail programs are supported
+	 *
+	 */
+	private void setExternalPrograms() {
+		
+		// set the external browser program to use
+		if (browser.getText().trim().length() > 0) {
+			
+			props.setProperty("emul.protocol.http", browser.getText().trim());
+		}
+		else {
+			
+			props.remove("emul.protocol.http");
+		}
+		
+		// set the external mailer program to use
+		if (mailer.getText().trim().length() > 0) {
+			
+			props.setProperty("emul.protocol.mailto", mailer.getText().trim());
+		}
+		else {
+			
+			props.remove("emul.protocol.mailto");
+		}
+
+	}
 	private void setOptionAccess() {
 
 		Vector options = OptionAccessFactory.getInstance().getOptions();
