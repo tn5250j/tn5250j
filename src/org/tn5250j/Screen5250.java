@@ -154,6 +154,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private int cursorBottOffset;
    private boolean defaultPrinter;
    private SessionConfig config;
+   private boolean rulerFixed;
+
    //LDC - 12/02/2003 -  boolean: true: it must be repainted
    private boolean drawing;
 
@@ -325,6 +327,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       }
 
+      if (config.isPropertyExists("rulerFixed")) {
+
+         if (getStringProperty("rulerFixed").equals("Yes"))
+            rulerFixed = true;
+         else
+            rulerFixed = false;
+
+      }
+
       if (config.isPropertyExists("fontScaleHeight")) {
          sfh = getFloatProperty("fontScaleHeight");
       }
@@ -346,6 +357,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             defaultPrinter = true;
          else
             defaultPrinter = false;
+      }
+
+      if (config.isPropertyExists("resetRequired")) {
+         if (getStringProperty("resetRequired").equals("Yes"))
+            resetRequired = true;
+         else
+            resetRequired = false;
       }
 
    }
@@ -554,7 +572,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             crossHair = 2;
          if (pce.getNewValue().equals("Both"))
             crossHair = 3;
+      }
 
+      if (pn.equals("rulerFixed")) {
+         if (pce.getNewValue().equals("Yes"))
+            rulerFixed = true;
+         else
+            rulerFixed = false;
       }
 
       if (pn.equals("colSeparator")) {
@@ -599,6 +623,13 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             defaultPrinter = true;
          else
             defaultPrinter = false;
+      }
+
+      if (pn.equals("resetRequired")) {
+         if (pce.getNewValue().equals("Yes"))
+            resetRequired = true;
+         else
+            resetRequired = false;
       }
 
       if (pn.equals("hsMore")) {
@@ -1306,6 +1337,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
          bi.drawCursor(this,row,col,
                            fmWidth,fmHeight,
                            insertMode, crossHair,
+                           rulerFixed,
                            cursorSize,colorCursor,
                            colorBg,colorWhite,
                            font,cursorBottOffset);

@@ -59,6 +59,9 @@ public class GuiGraphicBuffer {
    public final static byte STATUS_VALUE_OFF    = 2;
    private final static String xSystem = "X - System";
    private final static String xError = "X - II";
+   private int crossRow;
+   private int crossCol;
+   private Rectangle crossRect = new Rectangle();
 
    public GuiGraphicBuffer () {
 
@@ -175,6 +178,7 @@ public class GuiGraphicBuffer {
    public void drawCursor(Screen5250 s,int row, int col,
                            int fmWidth, int fmHeight,
                            boolean insertMode, int crossHair,
+                           boolean rulerFixed,
                            int cursorSize, Color colorCursor,
                            Color colorBg,Color colorWhite,
                            Font font,int botOffset) {
@@ -219,28 +223,51 @@ public class GuiGraphicBuffer {
 
          Rectangle r = cursor.getBounds();
          r.setSize(r.width,r.height);
+
          g2.setColor(colorCursor);
          g2.setXORMode(colorBg);
 
          g2.fill(cursor);
+
          s.updateImage(r);
+
+         if (!rulerFixed) {
+            crossRow = row;
+            crossCol = col;
+            crossRect.setBounds(r);
+         }
+         else {
+            if (crossHair == 0) {
+               crossRow = row;
+               crossCol = col;
+               crossRect.setBounds(r);
+            }
+         }
 
          switch (crossHair) {
             case 1:  // horizontal
-               g2.drawLine(0,(fmHeight * (row + 1))- botOffset,bi.getWidth(null),(fmHeight * (row + 1))- botOffset);
-               s.updateImage(0,fmHeight * (row + 1)- botOffset,bi.getWidth(null),1);
+               g2.drawLine(0,(fmHeight * (crossRow + 1))- botOffset,
+                           bi.getWidth(null),
+                           (fmHeight * (crossRow + 1))- botOffset);
+               s.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
+                              bi.getWidth(null),1);
                break;
             case 2:  // vertical
-               g2.drawLine(r.x,0,r.x,bi.getHeight(null) - fmHeight - fmHeight);
-               s.updateImage(r.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
+               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - fmHeight - fmHeight);
+               s.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
                break;
+
             case 3:  // horizontal & vertical
-               g2.drawLine(0,(fmHeight * (row + 1))- botOffset,bi.getWidth(null),(fmHeight * (row + 1))- botOffset);
-               g2.drawLine(r.x,0,r.x,bi.getHeight(null) - fmHeight - fmHeight);
-               s.updateImage(0,(fmHeight * (row + 1)) - botOffset,bi.getWidth(null),1);
-               s.updateImage(r.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
+               g2.drawLine(0,(fmHeight * (crossRow + 1))- botOffset,
+                           bi.getWidth(null),
+                           (fmHeight * (crossRow + 1))- botOffset);
+               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - fmHeight - fmHeight);
+               s.updateImage(0,fmHeight * (crossRow + 1)- botOffset,
+                              bi.getWidth(null),1);
+               s.updateImage(crossRect.x,0,1,bi.getHeight(null) - fmHeight - fmHeight);
                break;
          }
+
          g2.dispose();
          g2 = getWritingArea(font);
          g2.setPaint(colorBg);
