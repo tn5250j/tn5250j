@@ -39,6 +39,7 @@ import org.tn5250j.event.WizardEvent;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.gui.TN5250jFrame;
+import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.Session;
 import org.tn5250j.mailtools.SendEMailDialog;
 
@@ -516,7 +517,7 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
    private void getPCFile() {
 
       String workingDir = System.getProperty("user.dir");
-      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
+      TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
       // set the file filters for the file chooser
       ExportFileFilter filter;
@@ -544,27 +545,6 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
     */
    private void getIFSFile() {
 
-//      String workingDir = System.getProperty("user.dir");
-//      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
-//
-//      // set the file filters for the file chooser
-//      ExportFileFilter filter;
-//
-//      if (((String)cvtType.getSelectedItem()).equals(LangTool.getString("spool.toPDF")))
-//         filter = new ExportFileFilter("pdf","PDF Files");
-//      else
-//         filter = new ExportFileFilter("txt","Text Files");
-//
-//      pcFileChooser.addChoosableFileFilter(filter );
-//
-//      int ret = pcFileChooser.showSaveDialog(this);
-//
-//      // check to see if something was actually chosen
-//      if (ret == JFileChooser.APPROVE_OPTION) {
-//         File file = pcFileChooser.getSelectedFile();
-//         pcPathInfo.setText(filter.setExtension(file));
-//
-//      }
       IFSFileDialog fd = new IFSFileDialog(this, "Save As", splfile.getSystem());
       com.ibm.as400.vaccess.FileFilter[] filterList =
                                        new com.ibm.as400.vaccess.FileFilter[2];
@@ -595,7 +575,7 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
    private void getEditor() {
 
       String workingDir = System.getProperty("user.dir");
-      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
+      TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
       int ret = pcFileChooser.showOpenDialog(this);
 
@@ -1126,22 +1106,6 @@ public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
 
    public void help(WizardEvent e) {
       System.out.println(e.getCurrentPage().getName());
-   }
-
-
-    /**
-     * This is to fix
-     * Bug Id - 4416982
-     * Synopsis JFileChooser does not use its resources to size itself initially
-     */
-   class MyFileChooser extends JFileChooser {
-      MyFileChooser(String dir) {
-         super(dir);
-      }
-
-      public Dimension getPreferredSize() {
-         return getLayout().preferredLayoutSize(this);
-      }
    }
 
    /**

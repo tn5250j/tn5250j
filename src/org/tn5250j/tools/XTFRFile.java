@@ -1,5 +1,3 @@
-package org.tn5250j.tools;
-
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -25,6 +23,8 @@ package org.tn5250j.tools;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.tools;
+
 import org.tn5250j.*;
 import org.tn5250j.event.*;
 import java.awt.*;
@@ -47,6 +47,7 @@ import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.Session;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFrame;
+import org.tn5250j.gui.TN5250jFileChooser;
 
 public class XTFRFile extends TN5250jFrame implements ActionListener, FTPStatusListener,
                                                    ItemListener {
@@ -447,7 +448,7 @@ public class XTFRFile extends TN5250jFrame implements ActionListener, FTPStatusL
    private void getPCFile() {
 
       String workingDir = System.getProperty("user.dir");
-      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
+      TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
       // set the file filters for the file chooser
       filter = getFilterByDescription();
@@ -1040,20 +1041,5 @@ public class XTFRFile extends TN5250jFrame implements ActionListener, FTPStatusL
          return dialog;
       }
     }
-
-    /**
-     * This is to fix
-     * Bug Id - 4416982
-     * Synopsis JFileChooser does not use its resources to size itself initially
-     */
-   class MyFileChooser extends JFileChooser {
-      MyFileChooser(String dir) {
-         super(dir);
-      }
-
-      public Dimension getPreferredSize() {
-         return getLayout().preferredLayoutSize(this);
-      }
-   }
 
 }
