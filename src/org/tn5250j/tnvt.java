@@ -69,6 +69,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private String devName;
    private String devNameUsed;
    private boolean keepTrucking = true;
+   private boolean pendingUnlock = false;
 
    private boolean[] dataIncluded;
 
@@ -233,6 +234,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,"X - Disconnected");
       screen52.setKeyboardLocked(false);
+      pendingUnlock =false;
 
       try {
          if (bin != null)
@@ -312,6 +314,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
 
       screen52.setKeyboardLocked(true);
+      pendingUnlock = false;
       invited = false;
 
       screen52.getScreenFields().readFormatTable(baosp,readType,codePage);
@@ -342,6 +345,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          screen52.setStatus(screen52.STATUS_SYSTEM,screen52.STATUS_VALUE_ON,null);
 
       screen52.setKeyboardLocked(true);
+      pendingUnlock = false;
       invited = false;
       baosp.write(screen52.getCurrentRow());
       baosp.write(screen52.getCurrentCol());
@@ -782,7 +786,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
             case 1:
 //               System.out.println("Invite Operation");
                parseIncoming();
-               screen52.setKeyboardLocked(false);
+//               screen52.setKeyboardLocked(false);
+               pendingUnlock = true;
                cursorOn = true;
                setInvited();
                break;
@@ -870,6 +875,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
          catch (Exception exd ) {
             System.out.println(" tnvt.run: " + exd.getMessage());
          }
+
+         if (pendingUnlock)
+            screen52.setKeyboardLocked(false);
 
          if (cursorOn && !screen52.isKeyboardLocked()) {
             screen52.setCursorOn();
@@ -1280,7 +1288,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   screen52.goHome();
 //                  screen52.setCursorOn();
                   waitingForInput = true;
-                  screen52.setKeyboardLocked(false);
+                  pendingUnlock = true;
+//                  screen52.setKeyboardLocked(false);
                   break;
                case CMD_READ_MDT_IMMEDIATE_ALT: // 0x53 83
                   readType = b;
@@ -1721,7 +1730,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       if (lockKeyboard) {
          screen52.setKeyboardLocked(true);
+         pendingUnlock = false;
       }
+      else
+         pendingUnlock =false;
 
       if (resetMDT ||
             resetMDTAll ||

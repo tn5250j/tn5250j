@@ -1076,7 +1076,16 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void doAttributes() {
 
-      SessionAttributes sa = new SessionAttributes(propFileName,
+      SessionAttributes sa = null;
+
+      // if me is null then we must be called from an applet so we create
+      //   a new frame object.
+      if (me == null)
+         sa = new SessionAttributes(propFileName,
+                                       defaultProps,
+                                       new JFrame());
+      else
+         sa = new SessionAttributes(propFileName,
                                        defaultProps,
                                        (Frame)me.getParentView((Session)this));
       sa.addPropertyChangeListener(screen);
@@ -1444,12 +1453,19 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void mapMeKeys() {
       KeyConfigure kc;
 
+      Frame parent = null;
+
+      if (me == null)
+         parent = new JFrame();
+      else
+         parent = me.getParentView((Session)this);
+
       if (macros.isMacrosExist()) {
          String[] macrosList = macros.getMacroList();
-         kc = new KeyConfigure(me.getParentView((Session)this),macrosList,vt.getCodePage());
+         kc = new KeyConfigure(parent,macrosList,vt.getCodePage());
       }
       else
-         kc = new KeyConfigure(me.getParentView((Session)this),null,vt.getCodePage());
+         kc = new KeyConfigure(parent,null,vt.getCodePage());
 
    }
 
@@ -1531,8 +1547,17 @@ public class Gui5250 extends JPanel implements ComponentListener,
                            LangTool.getString("hm.optCancel")};
 
       int result = 0;
+
+      // if me is null then we are running as an applet and we need to create
+      //   a frame to pass
+      JFrame parent = null;
+      if (me == null)
+         parent = new JFrame();
+      else
+         parent = me.getParentView((Session)this);
+
       result = JOptionPane.showOptionDialog(
-          me.getParentView((Session)this),   // the parent that the dialog blocks
+          parent,   // the parent that the dialog blocks
           message,                           // the dialog message array
           LangTool.getString("hm.title"),    // the title of the dialog window
           JOptionPane.DEFAULT_OPTION,        // option type

@@ -33,7 +33,8 @@ The following sections are available:
    7. Compiling the source
    8. Sending screen by e-mail
    9. Emulator used as an applet
-  10. Acknowledgements
+  10. Proxy Support
+  12. Acknowledgements
 
 
 1. Installing
@@ -127,7 +128,19 @@ The following sections are available:
                is embed so add a new session tab in the visible frame.
 
     -usp ----> Use Socks Proxy
-    -sph ----> Socks Proxy Host
+    -sph ----> Socks Proxy Host - please read step 10 below.
+               I do believe that you can set the user name and password to be
+               used by supplying the following on the the command line to start
+               the emulator.
+               -Djava.net.socks.username="username" <- replace user name with yours
+               -Djava.net.socks.password="password" <- replace password with yours
+
+               Example command line:
+               =====================
+               java -Djava.net.socks.username="kjp1" -Djava.net.socks.password="tn5250j" -jar my5250.jar
+
+               I have not tried this so please let me know if it works.
+
     -spp ----> Socks Proxy Port
 
     -dn -----> This option takes a device name parameter to be used
@@ -456,8 +469,8 @@ MAC OS
 It works and I have screen shots now.  Thank you for sending me screen shots.
 I still do not have any specifics of the JDK/JVM used.
 
-7. Compiling the sourc
-======================
+7. Compiling the source
+=======================
    Please read the antbuild.tx file for compiling via Ant
 
 8. Sending screen by e-mail
@@ -468,7 +481,26 @@ I still do not have any specifics of the JDK/JVM used.
 =============================
    Please read the applet.txt file for using the emulator as an applet
 
-10. Acknowledgements
+10. Proxy Support
+=================
+SOCKS protocol support settings
+The SOCKS username and password are acquired in the following way.
+First, if the application has registered a java.net.Authenticator default
+instance, then this will be queried with the protocol set to the string
+"SOCKS5", and the prompt set to to the string "SOCKS authentication".
+If the authenticator does not return a username/password or if no authenticator
+is registered then the system checks for the user preferences
+"java.net.socks.username" and "java.net.socks.password". If these preferences do
+not exist, then the system property "user.name" is checked for a username. In
+this case, no password is supplied.
+
+The previous information is taken from the Java Documentation and is copyrighted
+by Sun Microsystems.
+
+I think I got this correct.  Please see command line option -sph above for
+example use of username and password.  Let me know if this works.
+
+11. Acknowledgements
 ====================
 
 Special thanks go out to the pre-beta testers that test the constant changes before
@@ -480,6 +512,7 @@ Jesus Irausquin
 Didac Lopez
 Ricardo Fermin
 Patrick Bielen
+Christian Geisert
 
 Without their constant testing and feedback there would be a lot more bugs.
 
@@ -493,6 +526,9 @@ To post to the list, send mail to tn5250j-general@lists.sourceforge.net
 If that's too much trouble, email me at the following:
 
 kjpou@hotmail.com
+
+Make sure you reference tn5250j in the subject or there is a chance I might
+delete it without opening the mail.
 
 Sourceforge at http://sourceforge.net/projects/tn5250j/
 

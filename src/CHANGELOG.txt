@@ -5,7 +5,7 @@ TODO/WISHLIST
 
 Implement the insert (right shift of characters) for continued edit fields.
 
-Add support for maintaining macros.
+Add support for maintaining macros.  Think GUI interface.
 
 Translate to french.  Still have not done this.  Anybody volunteer?????
 
@@ -13,9 +13,6 @@ Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
 large to implement this - 57 pages worth of specs and the such.  Work has begun.
 
 Implement support for images on the background. Wishlist for the future
-
-Fix focus problem on connections screen with screen presentation options for
-jdk 1.4
 
 Autologin support request.
 
@@ -38,6 +35,16 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+03/07/2002  Added a another color schema which is the Default Green on
+            Black.
+
+            Fixed focus problem with the connections dialog.  It now defaults to
+            the sessions selection panel instead of screen appearance.
+
+02/07/2002  Fixed screen repainting problem with keybuffering.
+
+01/07/2002  Fixed some null pointer errors when running as an applet.
+
 28/06/2002  Fixed another problem with restore of changed fields after a popup
             not being recognized as being change.  Thanks for the report, again,
             James

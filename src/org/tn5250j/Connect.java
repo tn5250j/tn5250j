@@ -236,7 +236,7 @@ public class Connect extends JDialog implements ActionListener,
          sessions.getSelectionModel().setSelectionInterval(0,0);
       }
 
-
+      sessions.requestFocus();
       // now show the world what we and they can do
       this.setVisible(true);
 
