@@ -204,9 +204,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void sendMeToFile() {
       new SendScreenToFile(screen);
-
    }
 
+   private void sendMeToImageFile() {
+      new SendScreenImageToFile((Session)this);
+   }
    /**
     * This routine allows areas to be bounded by using the keyboard
     *
@@ -583,6 +585,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    private void doPopup (MouseEvent me) {
+
       JMenuItem menuItem;
       Action action;
       popup = new JPopupMenu();
@@ -908,11 +911,20 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   getFocusForMe();
                }
            };
+
          sendMenu.add(createMenuItem(action,MNEMONIC_E_MAIL));
 
          action = new AbstractAction(LangTool.getString("popup.file")) {
                public void actionPerformed(ActionEvent e) {
                   sendMeToFile();
+               }
+           };
+
+         sendMenu.add(action);
+
+         action = new AbstractAction(LangTool.getString("popup.toImage")) {
+               public void actionPerformed(ActionEvent e) {
+                  sendMeToImageFile();
                }
            };
 
@@ -1229,7 +1241,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       switch(result) {
          case 0: // Insert character
             String k = "";
-            if (((String)hm.getSelectedValue()).length() > 7)
+            if (((String)hm.getSelectedValue()).length() > 8)
                k += ((String)hm.getSelectedValue()).charAt(9);
             else
                k += ((String)hm.getSelectedValue()).charAt(7);
