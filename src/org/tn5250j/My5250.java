@@ -80,10 +80,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          Class.forName("org.tn5250j.scripting.JPythonInterpreterDriver");
       }
       catch (java.lang.NoClassDefFoundError ncdfe) {
-         System.out.println("Failed to load interpreter drivers " + ncdfe);
+         System.out.println("Warning scripting will not be available: Failed to "
+                    + "load interpreter drivers " + ncdfe);
       }
       catch (Exception ex) {
-         System.out.println("Failed to load interpreter drivers " + ex);
+         System.out.println("Warning scripting will not be available: Failed to "
+                    + "load interpreter drivers " + ex);
       }
 
       splash.updateProgress(++step);
