@@ -46,11 +46,11 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    private boolean firstScreen;
    private char[] signonSave;
 
-   public Session (My5250 m, Properties props, String configurationResource,
+   public Session (Properties props, String configurationResource,
                      String sessionName,
                      SessionConfig config) {
 
-      super(m,config);
+      super(config);
       this.configurationResource = configurationResource;
       this.sessionName = sessionName;
       sesProps = props;
@@ -62,6 +62,15 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
       return configurationResource;
 
+   }
+
+   public SessionConfig getConfiguration() {
+
+      return sesConfig;
+   }
+
+   public SessionManager getSessionManager() {
+      return SessionManager.instance();
    }
 
    public boolean isConnected() {
@@ -100,7 +109,7 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
          for (int r = fromRow; r <= toRow; r++)
             for (int c =fromCol;c <= toCol; c++) {
                pos = screen.getPos(r - 1, c - 1);
-               System.out.println(signonSave[pos]);
+//               System.out.println(signonSave[pos]);
                if (signonSave[pos] != so[pos])
                   return false;
             }
@@ -136,11 +145,11 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
 
    }
 
-   public SessionManager getSessionManager() {
-
-      return this.me.manager;
-
-   }
+//      public SessionManager getSessionManager() {
+//
+//   //      return this.me.manager;
+//
+//      }
 
    public void connect() {
 
