@@ -167,7 +167,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    private javax.swing.Timer blinker;
 
    private Logger log = Logger.getLogger(this.getClass());
-   
+
    public Screen5250(Gui5250 gui, SessionConfig config) {
 
 //      ImageIcon ic = new ImageIcon("transtable1.jpg");
@@ -743,7 +743,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       }
 
       if (pn.equals("cursorBlink")) {
-      	
+
          log.debug(getStringProperty("cursorBlink"));
          if (pce.getNewValue().equals("Yes")) {
 
@@ -1222,7 +1222,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                      while (screen[pos++].getWhichGUI() != ScreenChar.BUTTON_RIGHT_EB) {
                         eb.append(screen[pos].getChar());
                      }
-                     org.tn5250j.tools.system.OperatingSystem.displayURL(eb.toString());                      
+                     org.tn5250j.tools.system.OperatingSystem.displayURL(eb.toString());
                      // take out the log statement when we are sure it is working
                      log.info("Send to external Browser: " + eb.toString());
                      break;
@@ -1554,8 +1554,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
     *
     * @see #sendAid
     *
+    * Added synchronized to fix a StringOutOfBounds error - Luc Gorren LDC
     */
-   public void sendKeys(String text) {
+   public synchronized void sendKeys(String text) {
 
 //      if (text == null) {
 //         return;
@@ -3009,6 +3010,38 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    public boolean isShowHex() {
       return showHex;
    }
+
+   /**
+    * Return the whole screen represented as a character array
+    *
+    * @return character array containing the text
+    *
+    * Added by Luc - LDC
+    *
+    * Note to KJP - Have to ask what the difference is between this method
+    * and the other
+    */
+   public char[] getScreenAsAllChars()
+     {
+     char[] sac = new char[lenScreen];
+     char c;
+
+     for (int x = 0; x < lenScreen; x++)
+     {
+       c = screen[x].getChar();
+       // only draw printable characters (in this case >= ' ')
+       if ( (c >= ' ') && (!screen[x].isAttributePlace()) )
+       {
+         sac[x] = c;
+         if (screen[x].underLine && c <= ' ')
+           sac[x] = '_';
+       }
+       else
+         sac[x] = ' ';
+       }
+
+       return sac;
+    }
 
    /**
     *

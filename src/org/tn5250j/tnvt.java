@@ -68,6 +68,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private int devSeq = -1;
    private String devName;
    private String devNameUsed;
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   private boolean scan; // = false;
+   private static int STRSCAN = 1;
+
    private String user;
    private String password;
    private String library;
@@ -87,9 +92,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private String connectMacro;
    private String sslType;
    WTDSFParser sfParser;
-	
+
    private Logger log = Logger.getLogger(this.getClass());
-   
+
    tnvt (Screen5250 screen52) {
 
       this(screen52,false,false);
@@ -297,6 +302,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    public final boolean disconnect() {
 
+      // Added by LUC - LDC to fix a null pointer exception.
+      if (!connected)
+         return false;
+
       if (me != null && me.isAlive()) {
          me.interrupt();
          keepTrucking = false;
@@ -318,6 +327,15 @@ public final class tnvt implements Runnable, TN5250jConstants {
             bout.close();
          connected = false;
          firstScreen = false;
+
+         // WVL - LDC : TR.000345 : properly disconnect and clear screen
+         // Is this the right place to set screen realestate on disconnect?
+         //controller.getScreen().clearAll();
+         screen52.goto_XY(0);
+         screen52.setCursorActive(false);
+         screen52.clearAll();
+         screen52.restoreScreen();
+
          controller.fireSessionChanged(TN5250jConstants.STATE_DISCONNECTED);
 
       }
@@ -855,6 +873,105 @@ public final class tnvt implements Runnable, TN5250jConstants {
       invited = true;
    }
 
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * Activate or deactivate the command scanning behaviour.
+    *
+    * @param scan if true, scanning is enabled; disabled otherwise.
+    *
+    * @see scan4Cmd()
+    */
+   public void setScanningEnabled(boolean scan)
+   {
+     this.scan = scan;
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * Checks whether command scanning is enabled.
+    *
+    * @return true is command scanning is enabled; false otherwise.
+    */
+   public boolean isScanningEnabled()
+   {
+     return this.scan;
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * When command scanning is activated, the terminal reads the first and
+    * second character in the datastream (the zero position allows to
+    * devisualize the scan stream). If the sequence <code>#!</code> is
+    * encountered and if this sequence is <strong>not</strong> followed by a
+    * blank character, the {@link parseCommand(ScreenChar[])} is called.
+    */
+   private void scan()
+   {
+//     System.out.println("Checking command : " + screen52.screen[1].getChar() + screen52.screen[2].getChar());
+     ScreenChar[] screen = screen52.screen;
+     if (  (screen[STRSCAN].getChar() == '#')
+        && (screen[STRSCAN+1].getChar() == '!')
+        && (screen[STRSCAN+2].getChar() != ' ')
+        )
+      {
+        try
+        {
+          parseCommand();
+        }
+        catch (Throwable t)
+        {
+          System.out.println("Exec cmd: " + t.getMessage());
+          t.printStackTrace();
+        }
+      }
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * The screen is parsed starting from second position until a white space
+    * is encountered. When found the {@link Session#execCommand(String, int)}
+    * is called with the parsed string. The position immediately following the
+    * encountered white space, separating the command from the rest of the
+    * screen, is passed as starting index.
+    *
+    * Note that the character at the starting position can potentially
+    * be a white space itself. The starting position in <code>execCommand</code>
+    * provided to make the scanning sequence more flexible.
+    * We'd like for example to embed also a <code>+</code> or <code>-</code>
+    * sign to indicate whether the tnvt should trigger a repaint or not.
+    * This would allow the flashing of command sequences without them becoming
+    * visible.
+    *
+    * <ul>
+    * <li><strong>PRE</strong> The screen character at position
+    * <code>STRSCAN + 2</code> is not a white space.
+    * </li>
+    * </ul>
+    */
+  private void parseCommand()
+  {
+    // Search for the command i.e. the first token in the stream
+    // after the #! sequence separated by a space from the rest
+    // of the screen.
+    char[] screen = screen52.getScreenAsAllChars();
+    for (int  s = STRSCAN + 2, i = s; i < screen.length; i++)
+    {
+      if (screen[i] == ' ')
+      {
+        String command   = new String(screen, s, i-s);
+
+        // Skip all white spaces between the command and the rest of
+        // the screen.
+        //for (; (i < screen.length) && (screen[i] == ' '); i++);
+
+        String remainder = new String(screen, i+1, screen.length - (i+1));
+//        System.out.println("Sensing action command in the input! = " + command);
+        controller.scanned(command, remainder);
+        break;
+      }
+    }
+  }
+
    public void run () {
 
       if (enhanced)
@@ -969,6 +1086,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          if (screen52.isUsingGuiInterface())
             screen52.drawFields();
 
+
 //      if (screen52.screen[0][1].getChar() == '#' &&
 //         screen52.screen[0][2].getChar() == '!')
 //         execCmd();
@@ -1014,7 +1132,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    }
 
    public void dumpStuff() {
-	  
+
 	  if(log.isDebugEnabled()) {
 	      log.debug(" Pending unlock " + pendingUnlock);
 	      log.debug(" Status Error " + screen52.isStatusErrorCode());
@@ -1385,6 +1503,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
                case CMD_WRITE_TO_DISPLAY:    // 0x11 17 write to display
                   error = writeToDisplay(true);
+                  // WVL - LDC : TR.000300 : Callback scenario from 5250
+                  // Only scan when WRITE_TO_DISPLAY operation (i.e. refill screen buffer)
+                  // has been issued!
+                  if (scan)
+                    scan();
+
                   break;
                case CMD_RESTORE_SCREEN:   // 0x12 18 Restore Screen
                case 13:   // 0x13 19 Restore Partial Screen
