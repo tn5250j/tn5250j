@@ -64,9 +64,6 @@ public class GlobalConfigure extends ConfigureFactory {
     * The constructor is made protected to allow overriding.
     */
    public GlobalConfigure() {
-       System.setProperty("python.cachedir", 
-       System.getProperty("user.home") + File.separator + ".tn5250j" + 
-       File.separator);
        if (_instance == null) {
            // initialize the settings information
            initialize();
