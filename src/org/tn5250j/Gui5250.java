@@ -665,7 +665,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          lastKeyStroke = keyMap.getKeyStrokeText(e);
 //      System.out.println("lastKeyStroke " + lastKeyStroke);
 
-      if (lastKeyStroke != null) {
+      if (lastKeyStroke != null && !lastKeyStroke.equals("null")) {
 
          if (lastKeyStroke.startsWith("[") || lastKeyStroke.length() == 1) {
 
