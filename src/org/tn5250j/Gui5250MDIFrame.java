@@ -41,20 +41,18 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.InternalFrameEvent;
 
-public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
+public class Gui5250MDIFrame extends GUIViewInterface implements
                                                     ChangeListener,
                                                     TN5250jConstants,
                                                     SessionListener,
                                                     SessionJumpListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
-   My5250 me;
+//   My5250 me;
 //   private SessionManager manager;
    private ImageIcon focused = null;
    private ImageIcon unfocused = null;
    private int selectedIndex = 0;
-   private boolean packFrame = false;
-   private int sequence;
    private JDesktopPane desktop;
    static int openFrameCount = 0;
    private Vector myFrameList;
@@ -62,7 +60,6 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
    //Construct the frame
    public Gui5250MDIFrame(My5250 m) {
       super(m);
-      me = m;
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       try  {
          jbInit();

@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -25,15 +24,17 @@ package org.tn5250j;
  *
  */
 
+package org.tn5250j;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-//import java.io.*;
 import java.util.*;
 import java.text.*;
 import java.beans.*;
+
 import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
@@ -43,13 +44,13 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.KeyChangeListener;
+import org.tn5250j.keyboard.KeyboardHandler;
+import org.tn5250j.keyboard.DefaultKeyboardHandler;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
                                                       TN5250jConstants,
-//                                                      PropertyChangeListener ,
                                                       RubberBandCanvasIF,
-                                                      KeyChangeListener,
                                                       SessionListener,
                                                       SessionConfigListener {
 
@@ -62,22 +63,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
    JPanel s = new JPanel();
    KeyPad keyPad = new KeyPad();
    private JPopupMenu popup = null;
-   boolean keyProcessed = false;
-   boolean gui = false;
-   KeyMapper keyMap;
    Macronizer macros;
-   String lastKeyStroke = null;
-   StringBuffer recordBuffer;
-   boolean recording;
    String newMacName;
-   boolean isLinux;
-   boolean isAltGr;
    private Vector listeners = null;
    private SessionJumpEvent jumpEvent;
    private boolean macroRunning;
    private boolean stopMacro;
    private boolean doubleClick;
    private SessionConfig sesConfig;
+   private KeyboardHandler keyHandler;
 
    public Gui5250 () {
 
@@ -92,13 +86,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       sesConfig = config;
 
-      String os = System.getProperty("os.name");
-      if (os.toLowerCase().indexOf("linux") != -1) {
-         System.out.println("using os " + os);
-         isLinux = true;
-      }
+      enableEvents(AWTEvent.WINDOW_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
 
-      enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       try  {
          jbInit();
       }
@@ -162,35 +151,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       });
 
-      addKeyListener(new KeyAdapter() {
-
-         public void keyTyped(KeyEvent e) {
-               processVTKeyTyped(e);
-
-         }
-
-         public void keyPressed(KeyEvent ke) {
-
-            processVTKeyPressed(ke);
-         }
-
-         public void keyReleased(KeyEvent e) {
-
-
-            processVTKeyReleased(e);
-
-         }
-
-      });
-      keyMap = new KeyMapper();
-      keyMap.init();
-
-      keyMap.addKeyChangeListener(this);
-
-      /**
-       * this is taken out right now look at the method for description
-       */
-      initKeyBindings();
+      keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
 
       macros = new Macronizer();
       macros.init();
@@ -222,329 +183,14 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   /**
-    * This is here for keybindings using the swing input map - the preferred
-    *    way to use the keyboard.
-    *
-    * Unfortunantely I could not get this working correctly on linux so have
-    *    abandoned it for now.  Also under different JVM's was having different
-    *    sparatic results like the bindings not firing at all.
-    */
-   private void initKeyBindings() {
+   public void processKeyEvent(KeyEvent evt) {
 
-      KeyStroke ks;
+      keyHandler.processKeyEvent(evt);
 
-      Action newSession = new AbstractAction(MNEMONIC_OPEN_NEW) {
-            public void actionPerformed(ActionEvent e) {
-               me.startNewSession();
-            }
-        };
-
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_OPEN_NEW)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_N,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_OPEN_NEW);
-      }
-
-      getInputMap().put(ks,MNEMONIC_OPEN_NEW);
-      getActionMap().put(MNEMONIC_OPEN_NEW,newSession );
-
-      Action chgSession = new AbstractAction(MNEMONIC_TOGGLE_CONNECTION) {
-            public void actionPerformed(ActionEvent e) {
-               changeConnection();
-            }
-        };
-
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_TOGGLE_CONNECTION)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_X,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_TOGGLE_CONNECTION);
-      }
-
-      getInputMap().put(ks,MNEMONIC_TOGGLE_CONNECTION);
-      getActionMap().put(MNEMONIC_TOGGLE_CONNECTION,chgSession );
-
-      Action nxtSession = new AbstractAction(MNEMONIC_JUMP_NEXT) {
-            public void actionPerformed(ActionEvent e) {
-               nextSession();
-            }
-        };
-
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_NEXT)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_NEXT);
-      }
-
-      getInputMap().put(ks,MNEMONIC_JUMP_NEXT);
-      getActionMap().put(MNEMONIC_JUMP_NEXT,nxtSession );
-
-      // check for alternate
-      if (keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_NEXT + ".alt2")) {
-         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_NEXT + ".alt2");
-         getInputMap().put(ks,MNEMONIC_JUMP_NEXT);
-         getActionMap().put(MNEMONIC_JUMP_NEXT,nxtSession );
-      }
-
-
-      Action prevSession = new AbstractAction(MNEMONIC_JUMP_PREV) {
-            public void actionPerformed(ActionEvent e) {
-               prevSession();
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_PREV)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_PREV);
-      }
-      getInputMap().put(ks,MNEMONIC_JUMP_PREV);
-      getActionMap().put(MNEMONIC_JUMP_PREV,prevSession );
-
-      // check for alternate
-      if (keyMap.isKeyStrokeDefined(MNEMONIC_JUMP_PREV + ".alt2")) {
-         ks = keyMap.getKeyStroke(MNEMONIC_JUMP_PREV + ".alt2");
-         getInputMap().put(ks,MNEMONIC_JUMP_PREV);
-         getActionMap().put(MNEMONIC_JUMP_PREV,prevSession );
-      }
-
-      Action hotSpots = new AbstractAction(MNEMONIC_HOTSPOTS) {
-            public void actionPerformed(ActionEvent e) {
-               screen.toggleHotSpots();
-               System.out.println(MNEMONIC_HOTSPOTS);
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_HOTSPOTS)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_HOTSPOTS);
-      }
-
-      getInputMap().put(ks,MNEMONIC_HOTSPOTS);
-      getActionMap().put(MNEMONIC_HOTSPOTS,hotSpots );
-
-      Action gui = new AbstractAction(MNEMONIC_GUI) {
-            public void actionPerformed(ActionEvent e) {
-               screen.toggleGUIInterface();
-            }
-        };
-
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_GUI)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_G,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_GUI);
-      }
-      getInputMap().put(ks,MNEMONIC_GUI);
-      getActionMap().put(MNEMONIC_GUI,gui );
-
-      Action msg = new AbstractAction(MNEMONIC_DISP_MESSAGES) {
-            public void actionPerformed(ActionEvent e) {
-               vt.systemRequest('4');
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_DISP_MESSAGES)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_M,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_DISP_MESSAGES);
-      }
-      getInputMap().put(ks,MNEMONIC_DISP_MESSAGES);
-      getActionMap().put(MNEMONIC_DISP_MESSAGES,msg );
-
-      Action attr = new AbstractAction(MNEMONIC_DISP_ATTRIBUTES) {
-            public void actionPerformed(ActionEvent e) {
-               doAttributes();
-
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_DISP_ATTRIBUTES)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_D,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_DISP_ATTRIBUTES);
-      }
-      getInputMap().put(ks,MNEMONIC_DISP_ATTRIBUTES);
-      getActionMap().put(MNEMONIC_DISP_ATTRIBUTES,attr );
-
-      Action print = new AbstractAction(MNEMONIC_PRINT_SCREEN) {
-            public void actionPerformed(ActionEvent e) {
-               printMe();
-
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_PRINT_SCREEN)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_PRINT_SCREEN);
-      }
-      getInputMap().put(ks,MNEMONIC_PRINT_SCREEN);
-      getActionMap().put(MNEMONIC_PRINT_SCREEN,print );
-
-      Action cursor = new AbstractAction(MNEMONIC_CURSOR) {
-            public void actionPerformed(ActionEvent e) {
-               screen.crossHair();
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_CURSOR)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_L,KeyEvent.ALT_MASK,false);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_CURSOR);
-      }
-      getInputMap().put(ks,MNEMONIC_CURSOR);
-      getActionMap().put(MNEMONIC_CURSOR,cursor );
-
-      Action debug = new AbstractAction(MNEMONIC_DEBUG) {
-            public void actionPerformed(ActionEvent e) {
-               vt.toggleDebug();
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_DEBUG)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_DEBUG);
-      }
-      getInputMap().put(ks,MNEMONIC_DEBUG);
-      getActionMap().put(MNEMONIC_DEBUG,debug );
-
-      Action close = new AbstractAction(MNEMONIC_CLOSE) {
-            public void actionPerformed(ActionEvent e) {
-               closeSession();
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_CLOSE)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_CLOSE);
-      }
-      getInputMap().put(ks,MNEMONIC_CLOSE);
-      getActionMap().put(MNEMONIC_CLOSE,close );
-
-      Action transfer = new AbstractAction(MNEMONIC_FILE_TRANSFER) {
-            public void actionPerformed(ActionEvent e) {
-               doMeTransfer();
-            }
-        };
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_FILE_TRANSFER)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_FILE_TRANSFER);
-      }
-      getInputMap().put(ks,MNEMONIC_FILE_TRANSFER);
-      getActionMap().put(MNEMONIC_FILE_TRANSFER,transfer );
-
-      Action e_mail = new AbstractAction(MNEMONIC_E_MAIL) {
-            public void actionPerformed(ActionEvent e) {
-               sendScreenEMail();
-            }
-        };
-
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_E_MAIL)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_E_MAIL);
-      }
-      getInputMap().put(ks,MNEMONIC_E_MAIL);
-      getActionMap().put(MNEMONIC_E_MAIL,e_mail );
-
-      Action runScript = new AbstractAction(MNEMONIC_RUN_SCRIPT) {
-            public void actionPerformed(ActionEvent e) {
-               runScript();
-            }
-        };
-
-      if (!keyMap.isKeyStrokeDefined(MNEMONIC_RUN_SCRIPT)) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_R,KeyEvent.ALT_MASK);
-      }
-      else {
-         ks = keyMap.getKeyStroke(MNEMONIC_RUN_SCRIPT);
-      }
-      getInputMap().put(ks,MNEMONIC_RUN_SCRIPT);
-      getActionMap().put(MNEMONIC_RUN_SCRIPT,runScript );
-
-      Action spclDump = new AbstractAction("special dump") {
-            public void actionPerformed(ActionEvent e) {
-               dumpStuff(new Throwable());
-            }
-        };
-
-//      if (!keyMap.isKeyStrokeDefined("special dump")) {
-         ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
-//      }
-//      else {
-//         ks = keyMap.getKeyStroke(MNEMONIC_RUN_SCRIPT);
-//      }
-      getInputMap().put(ks,"special dump");
-      getActionMap().put("special dump",spclDump );
-
-//
-//         Action ohshit = new AbstractAction() {
-//               public void actionPerformed(ActionEvent e) {
-//                  System.out.println(e.getActionCommand());
-//               }
-//           };
-//   //         HashMap hm = keyMap.getKeyMap();
-//   //
-//   //         Collection v = hm.values();
-//   //         Set o = hm.keySet();
-//   //         Iterator k = o.iterator();
-//   //         Iterator i = v.iterator();
-//   //
-//   //         while (k.hasNext()) {
-//   //            KeyStroker ksr = (KeyStroker)k.next();
-//   //            String keyVal = (String)i.next();
-//   //            Action ohshit = new AbstractAction(keyVal) {
-//   //               public void actionPerformed(ActionEvent e) {
-//   //                  System.out.println("action command :" + e);
-//   //               }
-//   //            };
-//   //            int mask = 0;
-//   //            if (ksr.isAltDown())
-//   //               mask |= KeyEvent.ALT_MASK;
-//   //            if (ksr.isControlDown())
-//   //               mask |= KeyEvent.CTRL_MASK;
-//   //            if (ksr.isShiftDown())
-//   //               mask |= KeyEvent.SHIFT_MASK;
-//   //            if (ksr.isAltGrDown())
-//   //               mask |= KeyEvent.META_MASK;
-//   //
-//   //            ohshit.putValue(Action.NAME, keyVal);
-//   //
-//   //            ks = KeyStroke.getKeyStroke(ksr.getKeyCode(),mask);
-//   //
-//   //            System.out.println(keyVal + " " + ks);
-//   //            getInputMap().put(ks,keyVal);
-//   //            getActionMap().put(keyVal,new MyAction(keyVal) );
-//   //
-//   //   //         if (keyVal.equals(which)) {
-//   //   //            mappedKeys.remove(ks);
-//   //   //            mappedKeys.put(new KeyStroker(ke.getKeyCode(),
-//   //   //                                          ke.isShiftDown(),
-//   //   //                                          ke.isControlDown(),
-//   //   //                                          ke.isAltDown(),
-//   //   //                                          isAltGr),keyVal);
-//   //   //            return;
-//   //   //         }
-//   //      }
-
-
+      if(!evt.isConsumed())
+         super.processKeyEvent(evt);
    }
 
-   private void setKeyMapping(Action action, String mnemonic) {
-
-
-
-   }
 
    private void dumpStuff(Throwable ex) {
 
@@ -555,279 +201,14 @@ public class Gui5250 extends JPanel implements ComponentListener,
       ex.printStackTrace();
    }
 
-   public void onKeyChanged() {
-
-      getInputMap().clear();
-      getActionMap().clear();
-      initKeyBindings();
-
-   }
-
-   /**
-    * MyAction is used so that I can attach a string command to the action
-    *    I tried using just the default versions but it was not returning
-    *    correctly or just showing up as null depending on the version of the
-    *    JVM.  These are know and reported problems on the Bug Database.
-    */
-//   private class MyAction extends AbstractAction {
-//
-//      private String de;
-//      public MyAction (String desc) {
-//
-//         super(desc);
-//         de = desc;
-//
-//      }
-//      public void actionPerformed (ActionEvent ae) {
-//         System.out.println("MyAction : " + de);
-//      }
-//   }
-
-    /*
-     * We have to jump through some hoops to avoid
-     * trying to print non-printing characters
-     * such as Shift.  (Not only do they not print,
-     * but if you put them in a String, the characters
-     * afterward won't show up in the text area.)
-     */
-    protected void displayInfo(KeyEvent e, String s){
-        String charString, keyCodeString, modString, tmpString,isString;
-
-        char c = e.getKeyChar();
-        int keyCode = e.getKeyCode();
-        int modifiers = e.getModifiers();
-
-        if (Character.isISOControl(c)) {
-            charString = "key character = "
-                       + "(an unprintable control character)";
-        } else {
-            charString = "key character = '"
-                       + c + "'";
-        }
-
-        keyCodeString = "key code = " + keyCode
-                        + " ("
-                        + KeyEvent.getKeyText(keyCode)
-                        + ")";
-         if(keyCode == KeyEvent.VK_PREVIOUS_CANDIDATE) {
-
-            keyCodeString += " previous candidate ";
-
-         }
-
-         if(keyCode == KeyEvent.VK_DEAD_ABOVEDOT ||
-               keyCode == KeyEvent.VK_DEAD_ABOVERING ||
-               keyCode == KeyEvent.VK_DEAD_ACUTE ||
-               keyCode == KeyEvent.VK_DEAD_BREVE ||
-               keyCode == KeyEvent.VK_DEAD_CIRCUMFLEX
-
-            ) {
-
-            keyCodeString += " dead key ";
-
-         }
-
-        modString = "modifiers = " + modifiers;
-        tmpString = KeyEvent.getKeyModifiersText(modifiers);
-        if (tmpString.length() > 0) {
-            modString += " (" + tmpString + ")";
-        } else {
-            modString += " (no modifiers)";
-        }
-
-        isString = "isKeys = isActionKey (" + e.isActionKey() + ")" +
-                         " isAltDown (" + e.isAltDown() + ")" +
-                         " isAltGraphDown (" + e.isAltGraphDown() + ")" +
-                         " isAltGraphDownLinux (" + isAltGr + ")" +
-                         " isControlDown (" + e.isControlDown() + ")" +
-                         " isMetaDown (" + e.isMetaDown() + ")" +
-                         " isShiftDown (" + e.isShiftDown() + ")";
-
-
-         String newline = "\n";
-        System.out.println(s + newline
-                           + "    " + charString + newline
-                           + "    " + keyCodeString + newline
-                           + "    " + modString + newline
-                           + "    " + isString + newline);
-
-    }
-
-   protected boolean emulatorAction(KeyStroke ks, KeyEvent e){
-//					int condition, boolean pressed) {
-//	InputMap map = getInputMap(condition, false);
-      InputMap map = getInputMap();
-      ActionMap am = getActionMap();
-
-      if(map != null && am != null && isEnabled()) {
-         Object binding = map.get(ks);
-         Action action = (binding == null) ? null : am.get(binding);
-         if (action != null) {
-            return true;
-         }
-      }
-      return false;
-   }
-
-   private void processVTKeyPressed(KeyEvent e){
-
-      keyProcessed = true;
-//      displayInfo(e,"Pressed " + keyProcessed);
-      int keyCode = e.getKeyCode();
-
-      if (isLinux && keyCode == e.VK_ALT_GRAPH) {
-
-         isAltGr = true;
-      }
-
-//      if (linux)
-//      if (keyCode == e.VK_UNDEFINED ||
-//      if (keyCode == e.VK_ALT) {
-//         System.out.println(" cursor active " + screen.cursorActive);
-//         e.consume();
-//         return;
-//      }
-
-      if (      keyCode == e.VK_CAPS_LOCK ||
-            keyCode == e.VK_SHIFT ||
-            keyCode == e.VK_ALT ||
-            keyCode == e.VK_ALT_GRAPH
-         ) {
-//         displayInfo(e,"Pressed ");
-
-         return;
-      }
-
-//      displayInfo(e,"Pressed " + keyProcessed);
-
-      KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(),e.getModifiers(),false);
-
-      if (emulatorAction(ks,e)) {
-
-         return;
-      }
-
-      if (isLinux)
-         lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
-      else
-         lastKeyStroke = keyMap.getKeyStrokeText(e);
-
-      //System.out.println("lastKeyStroke " + lastKeyStroke);
-
-      if (lastKeyStroke != null && !lastKeyStroke.equals("null")) {
-
-         if (lastKeyStroke.startsWith("[") || lastKeyStroke.length() == 1) {
-
-            screen.sendKeys(lastKeyStroke);
-            if (recording)
-               recordBuffer.append(lastKeyStroke);
-         }
-         else {
-            executeMeMacro(lastKeyStroke);
-         }
-         if (lastKeyStroke.equals("[markleft]") ||
-               lastKeyStroke.equals("[markright]") ||
-               lastKeyStroke.equals("[markup]") ||
-               lastKeyStroke.equals("[markdown]")) {
-            doKeyBoundArea(e,lastKeyStroke);
-         }
-      }
-      else
-         keyProcessed = false;
-
-      if (keyProcessed)
-         e.consume();
-
-
-   }
-
-   private void processVTKeyTyped(KeyEvent e){
-
-      char kc = e.getKeyChar();
-//      displayInfo(e,"Typed processed " + keyProcessed);
-      // Hack to make german umlauts work under Linux
-      // The problem is that these umlauts don't generate a keyPressed event
-      // and so keyProcessed is true (even if is hasn't been processed)
-      // so we check if it's a letter (with or without shift) and skip return
-      if (isLinux) {
-
-         if (!((Character.isLetter(kc))  && (e.getModifiers() == 0
-            || e.getModifiers() == Event.SHIFT_MASK))) {
-
-            if (Character.isISOControl(kc) || keyProcessed) {
-               return;
-            }
-         }
-      }
-      else {
-         if (Character.isISOControl(kc) || keyProcessed) {
-            return;
-         }
-      }
-//      displayInfo(e,"Typed processed " + keyProcessed);
-      String s = "";
-//      if (isLinux) {
-//         lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
-//         System.out.println("last " + lastKeyStroke);
-//         if (lastKeyStroke != null) {
-//            s = lastKeyStroke;
-//            System.out.println("last " + s);
-//         }
-//         else
-//            s +=kc;
-//      }
-//      else
-         s += kc;
-      if (!vt.isConnected()   )
-         return;
-      screen.sendKeys(s);
-      if (recording)
-         recordBuffer.append(s);
-      keyProcessed = true;
-      e.consume();
-   }
-
-   private void processVTKeyReleased(KeyEvent e){
-
-
-      if (isLinux && e.getKeyCode() == e.VK_ALT_GRAPH) {
-
-         isAltGr = false;
-      }
-
-      if (Character.isISOControl(e.getKeyChar()) || keyProcessed || e.isConsumed() )
-         return;
-
-//      displayInfo(e,"Released " + keyProcessed);
-
-      String s = keyMap.getKeyStrokeText(e);
-
-      if (s != null) {
-
-         if (s.startsWith("[")) {
-            screen.sendKeys(s);
-            if (recording)
-               recordBuffer.append(s);
-         }
-         else
-            executeMeMacro(s);
-
-      }
-      else
-         keyProcessed = false;
-
-      if (keyProcessed)
-         e.consume();
-   }
-
    public SessionConfig getConfiguration() {
 
       return sesConfig;
    }
 
-   private void sendScreenEMail() {
+   public void sendScreenEMail() {
 
-      new SendEMailDialog(me.getParentView((Session)this),(Session)this);
+      new SendEMailDialog((JFrame)SwingUtilities.getRoot(this),(Session)this);
    }
 
    private void sendMeToFile() {
@@ -835,7 +216,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   private void doKeyBoundArea(KeyEvent ke,String last) {
+   public void doKeyBoundArea(KeyEvent ke,String last) {
 
       Point p = new Point();
 
@@ -884,7 +265,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       return vt.isOnSignoffScreen();
    }
 
-   private void closeSession() {
+   public void closeSession() {
 
       Object[]      message = new Object[1];
       message[0] = LangTool.getString("cs.message");
@@ -993,36 +374,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-//   public void propertyChange(PropertyChangeEvent pce) {
-//
-//      String pn = pce.getPropertyName();
-//
-//      if (pn.equals("keypad")) {
-//         if (((String)pce.getNewValue()).equals("Yes")) {
-//            keyPad.setVisible(true);
-//         }
-//         else {
-//            keyPad.setVisible(false);
-//         }
-//         this.validate();
-//      }
-//
-//      if (pn.equals("doubleClick")) {
-//         if (((String)pce.getNewValue()).equals("Yes")) {
-//            doubleClick = true;
-//         }
-//         else {
-//            doubleClick = false;
-//         }
-//      }
-//
-//      screen.propertyChange(pce);
-//
-//      resizeMe();
-//      repaint();
-//
-//   }
-
+   /**
+    * Update the configuration settings
+    * @param pce
+    */
    public void onConfigChanged(SessionConfigEvent pce) {
 
       String pn = pce.getPropertyName();
@@ -1072,12 +427,25 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+   public tnvt getVT() {
+
+      return vt;
+
+   }
+
+   public void toggleDebug() {
+      vt.toggleDebug();
+   }
+
+   public void startNewSession() {
+      me.startNewSession();
+   }
    public void sendAidKey(int whichOne) {
 
       vt.sendAidKey(whichOne);
    }
 
-   protected void changeConnection() {
+   public void changeConnection() {
 
       if (vt.isConnected()) {
 
@@ -1104,13 +472,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   protected void nextSession() {
+   public void nextSession() {
 
       fireSessionJump(JUMP_NEXT);
 
    }
 
-   protected void prevSession() {
+   public void prevSession() {
 
       fireSessionJump(JUMP_PREVIOUS);
 
@@ -1176,19 +544,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
     * settings of the session.
     *
     */
-   private void doAttributes() {
+   public void doAttributes() {
 
-      Frame parent = null;
-
-      // if me is null then we must be called from an applet so we create
-      //   a new frame object.
-      if (me == null)
-         parent = new JFrame();
-      else
-         parent = (Frame)me.getParentView((Session)this);
-
-      SessionAttributes sa = new SessionAttributes(parent,sesConfig);
-
+      SessionAttributes sa = new SessionAttributes(
+                                          (JFrame)SwingUtilities.getRoot(this),
+                                          sesConfig);
       sa.showIt();
 
       getFocusForMe();
@@ -1463,7 +823,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
             JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
 
-            if (recording) {
+            if (keyHandler.isRecording()) {
                action = new AbstractAction(LangTool.getString("popup.stop")) {
                      public void actionPerformed(ActionEvent e) {
                         stopRecordingMe();
@@ -1591,8 +951,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       mi =new JMenuItem();
       mi.setAction(action);
-      if (keyMap.isKeyStrokeDefined(accelKey))
-         mi.setAccelerator(keyMap.getKeyStroke(accelKey));
+      if (keyHandler.isKeyStrokeDefined(accelKey))
+         mi.setAccelerator(keyHandler.getKeyStroke(accelKey));
       else {
 
          InputMap map = getInputMap();
@@ -1636,9 +996,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
       me.startNewSession();
    }
 
-   private void doMeTransfer() {
+   public void doMeTransfer() {
 
-      XTFRFile xtrf = new XTFRFile(me.getParentView((Session)this),vt,(Session)this);
+      XTFRFile xtrf = new XTFRFile((JFrame)SwingUtilities.getRoot(this),
+                                    vt,(Session)this);
 
    }
 
@@ -1711,7 +1072,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
    private void closeMe() {
 
       me.closeSession((Session)this);
-      keyMap.removeKeyChangeListener(this);
+
+//      keyMap.removeKeyChangeListener(this);
    }
 
    public void executeMeMacro(ActionEvent ae) {
@@ -1746,12 +1108,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    private void stopRecordingMe() {
-      recording = false;
-      if (recordBuffer.length() > 0) {
-         macros.setMacro(newMacName,recordBuffer.toString());
-         System.out.println(recordBuffer);
+      if (keyHandler.getRecordBuffer().length() > 0) {
+         macros.setMacro(newMacName,keyHandler.getRecordBuffer());
+         System.out.println(keyHandler.getRecordBuffer());
       }
-      recordBuffer = null;
+
+      keyHandler.stopRecording();
    }
 
    private void startRecordingMe() {
@@ -1765,68 +1127,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
          if (macName.length() > 0) {
             System.out.println(macName);
             newMacName = macName;
-            recording = true;
-            recordBuffer = new StringBuffer();
+            keyHandler.startRecording();
          }
       }
    }
 
-   private void runScript () {
+   public void runScript () {
 
-         JPanel rsp = new JPanel();
-         rsp.setLayout(new BorderLayout());
-         JLabel jl = new JLabel("Enter script to run");
-         final JTextField rst = new JTextField();
-         rsp.add(jl,BorderLayout.NORTH);
-         rsp.add(rst,BorderLayout.CENTER);
-         Object[]      message = new Object[1];
-         message[0] = rsp;
-         String[] options = {"Run","Cancel"};
-
-         final JOptionPane pane = new JOptionPane(
-
-                message,                           // the dialog message array
-                JOptionPane.QUESTION_MESSAGE,      // message type
-                JOptionPane.DEFAULT_OPTION,        // option type
-                null,                              // optional icon, use null to use the default icon
-                options,                           // options string array, will be made into buttons//
-                options[0]);                       // option that should be made into a default button
-
-
-         // create a dialog wrapping the pane
-         final JDialog dialog = pane.createDialog(null, // parent frame
-                           "Run Script"  // dialog title
-                           );
-
-         // add the listener that will set the focus to
-         // the desired option
-         dialog.addWindowListener( new WindowAdapter() {
-            public void windowOpened( WindowEvent e) {
-               super.windowOpened( e );
-
-               // now we're setting the focus to the desired component
-               // it's not the best solution as it depends on internals
-               // of the OptionPane class, but you can use it temporarily
-               // until the bug gets fixed
-               // also you might want to iterate here thru the set of
-               // the buttons and pick one to call requestFocus() for it
-
-               rst.requestFocus();
-            }
-         });
-         dialog.show();
-
-         // now we can process the value selected
-         String value = (String)pane.getValue();
-
-         if (value.equals(options[0])) {
-            // send option along with system request
-            if (rst.getText().length() > 0) {
-               macros.invoke(rst.getText(),(Session)this);
-            }
-         }
-         getFocusForMe();
-
+      Macronizer.showRunScriptDialog((Session)this);
+      getFocusForMe();
 
    }
 
@@ -1844,7 +1153,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
       Set set = new TreeSet();
       for (int x =0;x < 256; x++) {
          char c = vt.ebcdic2uni(x);
-         char ac = vt.getASCIIChar(x);
+//         char ac = vt.getASCIIChar(x);
+         char ac = vt.ebcdic2uni(x);
          if (!Character.isISOControl(ac)) {
             sb.setLength(0);
             if (Integer.toHexString(ac).length() == 1){
@@ -1918,7 +1228,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   private void printMe() {
+   public void printMe() {
 
       screen.printMe();
       getFocusForMe();
@@ -2096,3 +1406,4 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
 }
+

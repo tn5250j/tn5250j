@@ -36,15 +36,16 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.awt.font.*;
 import java.awt.geom.*;
+import java.net.*;
+
 import org.tn5250j.tools.*;
 import org.tn5250j.event.*;
 import org.tn5250j.gui.TN5250jSplashScreen;
-import java.net.*;
-
+import org.tn5250j.interfaces.GUIViewInterface;
 
 public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
-   protected Gui5250Frame frame1;
+   protected GUIViewInterface frame1;
    private String[] sessionArgs = null;
    private static Properties sessions = new Properties();
    private static ImageIcon focused;
@@ -97,6 +98,11 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       manager.setController(this);
       splash.updateProgress(++step);
 
+   }
+
+   public static ImageIcon getTN5250jIcon() {
+
+      return tnicon;
    }
 
    /**
@@ -581,6 +587,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       if (useMDIFrames)
          frame1 = new Gui5250MDIFrame(this);
+//         frame1 = new Gui5250SplitFrame(this);
       else
          frame1 = new Gui5250Frame(this);
 
@@ -597,14 +604,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          frame1.centerFrame();
       }
 
-      frame1.setIconImage(tnicon.getImage());
       frame1.setIcons(focused,unfocused);
 
       frames.add(frame1);
 
    }
 
-   private void restoreFrame(Gui5250Frame frame,String location) {
+   private void restoreFrame(GUIViewInterface frame,String location) {
 
       StringTokenizer tokenizer = new StringTokenizer(location, ",");
       int x = Integer.parseInt(tokenizer.nextToken());
@@ -621,7 +627,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       closingDown(getParentView(targetSession));
    }
 
-   void closingDown(Gui5250Frame view) {
+   void closingDown(GUIViewInterface view) {
 
       Session jf = null;
       Sessions sess = manager.getSessions();
@@ -677,7 +683,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
    protected void closeSession(Session targetSession) {
 
-      Gui5250Frame f = getParentView(targetSession);
+      GUIViewInterface f = getParentView(targetSession);
       if (f == null)
          return;
       int tabs = f.getSessionViewCount();
@@ -746,12 +752,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    }
 
 
-   public Gui5250Frame getParentView(Session session) {
+   public GUIViewInterface getParentView(Session session) {
 
-      Gui5250Frame f = null;
+      GUIViewInterface f = null;
 
       for (int x = 0; x < frames.size(); x++) {
-         f = (Gui5250Frame)frames.get(x);
+         f = (GUIViewInterface)frames.get(x);
          if (f.containsSession(session))
             return f;
       }

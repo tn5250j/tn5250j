@@ -38,27 +38,20 @@ import org.tn5250j.interfaces.GUIViewInterface;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
-public class Gui5250Frame extends JFrame implements GUIViewInterface,
+public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
                                                     TN5250jConstants,
                                                     SessionListener,
                                                     SessionJumpListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
-   My5250 me;
    JTabbedPane sessionPane = new JTabbedPane();
-   private SessionManager manager;
-   private ImageIcon focused = null;
-   private ImageIcon unfocused = null;
    private int selectedIndex = 0;
-   private boolean packFrame = false;
-   private static int sequence;
-   private int frameSeq;
    private boolean embedded = true;
 
    //Construct the frame
    public Gui5250Frame(My5250 m) {
-      me = m;
+      super(m);
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       try  {
          jbInit();
@@ -122,6 +115,7 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
 
       return frameSeq;
    }
+
    //Overridden so we can exit on System Close
    protected void processWindowEvent(WindowEvent e) {
       super.processWindowEvent(e);
@@ -190,12 +184,6 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
       }
 
       ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
-   }
-
-   public void setIcons(ImageIcon focused, ImageIcon unfocused) {
-
-      this.focused = focused;
-      this.unfocused = unfocused;
    }
 
    public void stateChanged(ChangeEvent e) {
