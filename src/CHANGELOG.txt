@@ -41,18 +41,33 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+25/08/2002  Sort of the keyboard functions on Map Keys...
+
+            Fixed the remapping of keyboard operations for special characters
+            
+            Fixed for Tabs when closing a session to set focus on the next
+            session instead of always first one.  Next is MDI.  Hopefully
+            fixes problem with bug report 595892
+
+            Fixed error with System Request screen and Escape is used to
+            dismiss the dialog.
+
 24/08/2002  Fixed a number of problems since the last changelog entry
 
             Keybuffering problem with cursor disappearing, and doing all
             sorts of other things.  Complete rewrite of cursor handling.
-            
+
             Added new cursor offset from bottom parameter.
-            
-            Fixed problem with hanging the emulator due to starting a 
+
+            Fixed problem with hanging the emulator due to starting a
             new session in other window.  Caused by splashscreen
-            
+
             Printing not showing up lightly.  Now prints in Black
-            
+
+            Error messages for script errors
+
+            Added a script running indicator.
+
 17/08/2002  Updated startup message to be more informational and less error
             sounding.
 
