@@ -15,7 +15,7 @@ package org.tn5250j.tools;
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILreITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -297,8 +297,10 @@ public class KeyConfigure extends JDialog implements ActionListener,
    public void actionPerformed(ActionEvent e) {
 
       if (e.getActionCommand().equals("DONE")) {
-         if (mods)
+         if (mods) {
             mapper.saveKeyMap();
+            mapper.fireKeyChangeEvent();
+         }
          setVisible(false);
       }
 
@@ -381,6 +383,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
          }
       }
+      mods = true;
 
    }
 
@@ -393,7 +396,6 @@ public class KeyConfigure extends JDialog implements ActionListener,
             mapper.setKeyStroke(mnemonicData[functions.getSelectedIndex()],ke);
          strokeDesc.setText(mapper.getKeyStrokeDesc(
                            mnemonicData[functions.getSelectedIndex()]));
-         mapper.fireKeyChangeEvent();
       }
       else {
          if (macros) {
