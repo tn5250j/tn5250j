@@ -7,6 +7,9 @@ fields etc.....
 
 new 0.5.7 release candidate 1
 
+Changed File transfer to add the column headers then text then field depending
+on whether they exist or not for include full text.
+
 Added CodePage 1047 French Euro.
 
 Added bypass signon System parameters.  Will add these to the session
