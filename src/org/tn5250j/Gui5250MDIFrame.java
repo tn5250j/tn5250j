@@ -256,7 +256,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    }
 
-   public void addSessionView(String tabText,Session session) {
+   public void addSessionView(String tabText,SessionGUI session) {
 
       MyInternalFrame frame = new MyInternalFrame();
       frame.setVisible(true);
@@ -279,7 +279,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    }
 
-   public void removeSessionView(Session targetSession) {
+   public void removeSessionView(SessionGUI targetSession) {
 
       int index = getIndexOfSession(targetSession);
       MyInternalFrame nextMIF = getNextInternalFrame();
@@ -315,17 +315,17 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
       return desktop.getAllFrames().length;
    }
 
-   public Session getSessionAt( int index) {
+   public SessionGUI getSessionAt( int index) {
 
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
-      Session s = (Session)frames[index].getContentPane();
+      SessionGUI s = (SessionGUI)frames[index].getContentPane();
 
       return s;
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-      Session ses = (Session)changeEvent.getSource();
+      SessionGUI ses = (SessionGUI)changeEvent.getSource();
 
       switch (changeEvent.getState()) {
          case STATE_CONNECTED:
@@ -353,19 +353,19 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    }
 
-   public boolean containsSession(Session session) {
+   public boolean containsSession(SessionGUI session) {
 
       return getIndexOfSession(session) >= 0;
 
    }
 
-   public int getIndexOfSession(Session session) {
+   public int getIndexOfSession(SessionGUI session) {
 
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
       int index = -1;
 
       for (int idx = 0; idx < frames.length; idx++) {
-         Session ses = (Session)frames[idx].getContentPane();
+         SessionGUI ses = (SessionGUI)frames[idx].getContentPane();
          if (ses.equals(session)) {
             index = idx;
             return index;
@@ -535,14 +535,14 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
          private void disconnectMe() {
 
-            Session s = (Session)getContentPane();
+            SessionGUI s = (SessionGUI)getContentPane();
             me.closeSession(s);
          }
 
          public void resizeMe() {
 
-            if (getContentPane() instanceof Session) {
-               Session s = (Session)getContentPane();
+            if (getContentPane() instanceof SessionGUI) {
+               SessionGUI s = (SessionGUI)getContentPane();
                s.resizeMe();
             }
          }

@@ -54,12 +54,10 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    private static boolean useMDIFrames;
    private TN5250jSplashScreen splash;
    private int step;
-   private static String jarClassPaths;	
+   private static String jarClassPaths;
    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
-   
-   My5250 () {
 
-//      classLoader = this.getClass().getClassLoader();
+   My5250 () {
 
       splash = new TN5250jSplashScreen("tn5250jSplash.jpg");
       splash.setSteps(5);
@@ -94,13 +92,14 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
       // we only want to try and load the Kunststoff look and feel if it is not
       //  for the MAC operating system.
-      if (!OperatingSystem.isMacOS() & !OperatingSystem.hasJava15()) {
+      if (!OperatingSystem.isMacOS()) {
 
          try  {
             UIManager.setLookAndFeel("com.incors.plaf.kunststoff.KunststoffLookAndFeel");
          }
          catch(Exception e) {
             try {
+               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (ClassNotFoundException e1) {
                e1.printStackTrace();
@@ -458,16 +457,16 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       }
    }
 
-   void startDuplicateSession(Session ses) {
+   void startDuplicateSession(SessionGUI ses) {
 
       loadSessions();
       if (ses == null) {
          Sessions sess = manager.getSessions();
          for (int x = 0; x < sess.getCount(); x++) {
 
-            if (sess.item(x).isVisible()) {
+            if (((SessionGUI)sess.item(x).getGUI()).isVisible()) {
 
-               ses = sess.item(x);
+               ses = (SessionGUI)sess.item(x).getGUI();
                break;
             }
          }
@@ -562,7 +561,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       if (isSpecified("-hb",args))
          sesProps.put(SESSION_HEART_BEAT,"1");
 
-      Session s = manager.openSession(sesProps,propFileName,sel);
+      Session5250 s2 = manager.openSession(sesProps,propFileName,sel);
+      SessionGUI s = new SessionGUI(s2);
 
       if (!frame1.isVisible()) {
          splash.updateProgress(++step);
@@ -642,14 +642,14 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       frame.setSize(width,height);
    }
 
-   void closingDown(Session targetSession) {
+   void closingDown(SessionGUI targetSession) {
 
       closingDown(getParentView(targetSession));
    }
 
    void closingDown(GUIViewInterface view) {
 
-      Session jf = null;
+      SessionGUI jf = null;
       Sessions sess = manager.getSessions();
 
       log.info("number of active sessions we have " + sess.getCount());
@@ -697,18 +697,18 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    }
 
-   protected void closeSession(Session targetSession) {
+   protected void closeSession(SessionGUI targetSession) {
 
       GUIViewInterface f = getParentView(targetSession);
       if (f == null)
          return;
       int tabs = f.getSessionViewCount();
       Sessions sessions = manager.getSessions();
-      Session session = null;
+      SessionGUI session = null;
 
       if (tabs > 1) {
 
-         if ((sessions.item(targetSession)) != null) {
+         if ((sessions.item(targetSession.getSession())) != null) {
 
             f.removeSessionView(targetSession);
             manager.closeSession(targetSession);
@@ -747,7 +747,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-      Session ses = (Session)changeEvent.getSource();
+      SessionGUI ses = (SessionGUI)changeEvent.getSource();
 
       switch (changeEvent.getState()) {
          case STATE_REMOVE:
@@ -758,7 +758,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    public void onEmulatorAction(EmulatorActionEvent actionEvent) {
 
-      Session ses = (Session)actionEvent.getSource();
+      SessionGUI ses = (SessionGUI)actionEvent.getSource();
 
       switch (actionEvent.getAction()) {
          case EmulatorActionEvent.CLOSE_SESSION:
@@ -776,7 +776,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       }
    }
 
-   public GUIViewInterface getParentView(Session session) {
+   public GUIViewInterface getParentView(SessionGUI session) {
 
       GUIViewInterface f = null;
 

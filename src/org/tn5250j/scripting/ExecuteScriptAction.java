@@ -12,13 +12,13 @@ package org.tn5250j.scripting;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 
 public class ExecuteScriptAction extends AbstractAction {
    String _scriptFile;
-   Session ses;
+   SessionGUI ses;
 
-   public ExecuteScriptAction(String name, String scriptFile, Session session) {
+   public ExecuteScriptAction(String name, String scriptFile, SessionGUI session) {
       super(name);
       _scriptFile = scriptFile;
       ses = session;

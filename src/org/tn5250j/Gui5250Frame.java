@@ -184,7 +184,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
             }
 
-            ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+            ((SessionGUI)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
 
             setSessionTitle();
        }
@@ -214,7 +214,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
             }
 
-            ((Session)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
+            ((SessionGUI)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
             setSessionTitle();
        }
       });
@@ -227,10 +227,10 @@ public class Gui5250Frame extends GUIViewInterface implements
       p.setForegroundAt(selectedIndex,Color.black);
       p.setIconAt(selectedIndex,unfocused);
 
-      Session sg = (Session)p.getComponentAt(selectedIndex);
+      SessionGUI sg = (SessionGUI)p.getComponentAt(selectedIndex);
       sg.setVisible(false);
 
-      sg = (Session)p.getSelectedComponent();
+      sg = (SessionGUI)p.getSelectedComponent();
 
       if (sg == null)
          return;
@@ -248,7 +248,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    private void setSessionTitle() {
 
-      Session ses = getSessionAt(selectedIndex);
+      SessionGUI ses = getSessionAt(selectedIndex);
 
       if (ses != null && ses.getAllocDeviceName() != null && ses.isConnected()) {
          if (sequence - 1 > 0)
@@ -268,9 +268,9 @@ public class Gui5250Frame extends GUIViewInterface implements
 
    }
 
-   public void addSessionView(String tabText,Session sessionView) {
+   public void addSessionView(String tabText,SessionGUI sessionView) {
 
-      final Session session = sessionView;
+      final SessionGUI session = sessionView;
 
       if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
 
@@ -290,11 +290,11 @@ public class Gui5250Frame extends GUIViewInterface implements
       else {
 
          if (hideTabBar && sessionPane.getTabCount() == 0 ) {
-            Session ses = null;
+            SessionGUI ses = null;
             for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-               if (this.getContentPane().getComponent(x) instanceof Session) {
-                  ses = (Session)(this.getContentPane().getComponent(x));
+               if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
+                  ses = (SessionGUI)(this.getContentPane().getComponent(x));
                   this.getContentPane().remove(x);
                   break;
                }
@@ -303,7 +303,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             //ses = (Session)(this.getContentPane().getComponent(0));
             sessionPane.addTab(tabText,focused,ses);
 
-            final Session finalSession = ses;
+            final SessionGUI finalSession = ses;
 
             SwingUtilities.invokeLater(new Runnable() {
                public void run() {
@@ -357,12 +357,12 @@ public class Gui5250Frame extends GUIViewInterface implements
       me.closeSession(this.getSessionAt(tabToBeClosed));
    }
 
-   public void removeSessionView(Session targetSession) {
+   public void removeSessionView(SessionGUI targetSession) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < getContentPane().getComponentCount(); x++) {
 
-            if (getContentPane().getComponent(x) instanceof Session) {
+            if (getContentPane().getComponent(x) instanceof SessionGUI) {
                getContentPane().remove(x);
             }
          }
@@ -382,7 +382,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             sessionPane.setSelectedIndex(index);
             sessionPane.setForegroundAt(index,Color.blue);
             sessionPane.setIconAt(index,focused);
-            ((Session)sessionPane.getComponentAt(index)).requestFocus();
+            ((SessionGUI)sessionPane.getComponentAt(index)).requestFocus();
          }
          else {
 
@@ -390,7 +390,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                sessionPane.setSelectedIndex(0);
                sessionPane.setForegroundAt(0,Color.blue);
                sessionPane.setIconAt(0,focused);
-               ((Session)sessionPane.getComponentAt(0)).requestFocus();
+               ((SessionGUI)sessionPane.getComponentAt(0)).requestFocus();
             }
 
          }
@@ -402,7 +402,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-            if (this.getContentPane().getComponent(x) instanceof Session) {
+            if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
                return 1;
             }
          }
@@ -412,13 +412,13 @@ public class Gui5250Frame extends GUIViewInterface implements
          return sessionPane.getTabCount();
    }
 
-   public Session getSessionAt( int index) {
+   public SessionGUI getSessionAt( int index) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-            if (this.getContentPane().getComponent(x) instanceof Session) {
-               return (Session)getContentPane().getComponent(x);
+            if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
+               return (SessionGUI)getContentPane().getComponent(x);
             }
          }
          return null;
@@ -426,13 +426,14 @@ public class Gui5250Frame extends GUIViewInterface implements
       else {
          if (sessionPane.getTabCount() <= 0)
             return null;
-         return (Session)sessionPane.getComponentAt(index);
+         return (SessionGUI)sessionPane.getComponentAt(index);
       }
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-      Session ses = (Session)changeEvent.getSource();
+      Session5250 ses5250 = (Session5250)changeEvent.getSource();
+      SessionGUI ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
          case STATE_CONNECTED:
@@ -456,13 +457,13 @@ public class Gui5250Frame extends GUIViewInterface implements
       }
    }
 
-   public boolean containsSession(Session session) {
+   public boolean containsSession(SessionGUI session) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-            if (this.getContentPane().getComponent(x) instanceof Session) {
-               return ((Session)getContentPane().getComponent(x)).equals(session);
+            if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
+               return ((SessionGUI)getContentPane().getComponent(x)).equals(session);
             }
          }
          return false;

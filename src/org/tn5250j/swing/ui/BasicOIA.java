@@ -27,11 +27,10 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
     this.clearLayout();
   }
 
-  public void onScreenSizeChanged(int rows, int cols) {
-     
-     
-  }
-  
+   public void onScreenSizeChanged(int rows, int cols) {
+
+   }
+
   public void onScreenChanged(int inUpdate, int startRow, int startCol, int endRow, int endCol)
   {
     if  ((inUpdate == 3) && (locationRectangle != null))
@@ -138,11 +137,11 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
        g.setColor(Color.black);
        g.fillRect(inhibitedRectangle.x,inhibitedRectangle.x,inhibitedRectangle.width,
              inhibitedRectangle.height);
-             
+
        switch (oia.getLevel()) {
-          case 7:
-             if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
-             
+          case 1:
+             if (value == 1) {
+
 	             g.setColor(Color.white);
 	             if (stext != null) {
 	                g.drawChars(stext.toCharArray(),0,
@@ -151,7 +150,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
 	             else {
 	                g.drawChars("X - System".toCharArray(),0,
 	                      "X - System".length(),inhibitedRectangle.x,cy);
-	                
+
 	             }
              }
              break;

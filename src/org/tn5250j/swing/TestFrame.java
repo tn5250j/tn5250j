@@ -38,8 +38,8 @@ public class TestFrame
       String config = system + ".properties";
 
       session = new SessionBean(config, system);
-      session.setHostName("www.netshare400.com");
-      session.setCodePage("Cp1148");
+      session.setHostName("193.168.51.1");
+      session.setCodePage("Cp1141");
       session.connect();
     }
     catch (Exception e)
@@ -48,7 +48,7 @@ public class TestFrame
       System.exit(-1);
     }
 
-    terminal = new JTerminal(session);
+    terminal = new JTerminal(session.getSession());
 
 //    RepaintManager repaintManager = RepaintManager.currentManager(terminal);
 //    repaintManager.setDoubleBufferingEnabled(false);

@@ -153,10 +153,10 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
       if (whichOne < 0 || whichOne > sessionList.size() - 1)
          return;
 
-      Session session = (Session)sessionList.get(whichOne);
+      SessionGUI session = (SessionGUI)sessionList.get(whichOne);
       sessionPicker.setSelectedIndex(whichOne);
 
-      Session current = getCurrentViewedSession();
+      SessionGUI current = getCurrentViewedSession();
 
       if (current != null)
          current.setVisible(false);
@@ -198,17 +198,17 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
     *
     * @return
     */
-   private Session getCurrentViewedSession() {
+   private SessionGUI getCurrentViewedSession() {
 
-      Session current = null;
+      SessionGUI current = null;
       Component[] comps = sessionPanel.getComponents();
       int count = comps.length;
       // make the current session non visible to keep from over writting the
       //  session screens.
       for (int x = 0; x < count; x++) {
 
-         if (comps[x] instanceof Session) {
-            current = (Session)comps[x];
+         if (comps[x] instanceof SessionGUI) {
+            current = (SessionGUI)comps[x];
          }
       }
 
@@ -221,7 +221,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
     */
    private void nextSession() {
 
-      Session current = getCurrentViewedSession();
+      SessionGUI current = getCurrentViewedSession();
 
       int index = sessionList.indexOf(current) + 1;
 
@@ -238,7 +238,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
     */
    private void prevSession() {
 
-      Session current = getCurrentViewedSession();
+      SessionGUI current = getCurrentViewedSession();
 
       int index = sessionList.indexOf(current) - 1;
 
@@ -257,7 +257,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
     * @param sessionName
     * @param session
     */
-   public void addSessionView(String sessionName,Session session) {
+   public void addSessionView(String sessionName,SessionGUI session) {
 
       lm.addElement(session);
 
@@ -284,7 +284,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
 
    }
 
-   public void removeSessionView(Session targetSession) {
+   public void removeSessionView(SessionGUI targetSession) {
 
 
       int index = sessionList.indexOf(targetSession);
@@ -318,9 +318,9 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
     * @param index
     * @return
     */
-   public Session getSessionAt( int index) {
+   public SessionGUI getSessionAt( int index) {
 
-      return (Session)sessionList.get(index);
+      return (SessionGUI)sessionList.get(index);
    }
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
@@ -337,7 +337,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
       scroller.repaint();
    }
 
-   public boolean containsSession(Session session) {
+   public boolean containsSession(SessionGUI session) {
 
       return sessionList.contains(session);
 
@@ -369,7 +369,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
 
          //Get the selected index. (The index param isn't
          //always valid, so just use the value.)
-         Session ses = (Session)value;
+         SessionGUI ses = (SessionGUI)value;
 
          // set the correct focused or unfocused and selected or unselected
          //  colors

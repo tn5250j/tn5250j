@@ -3,7 +3,7 @@ package org.tn5250j.scripting;
 
 
 import java.util.*;
-import org.tn5250j.Session;
+import org.tn5250j.SessionGUI;
 /**
  * Class for managing interpreter drivers.
  * This manager is responsible for keeping track of loaded
@@ -47,7 +47,7 @@ public class InterpreterDriverManager {
     * @param script script to be executed
     * @param language language for interpreting the script string
     */
-   public static void executeScript(Session session, String script, String language)
+   public static void executeScript(SessionGUI session, String script, String language)
                         throws InterpreterDriver.InterpreterException {
       InterpreterDriver driver
                   = (InterpreterDriver)_languageDriverMap.get(language);
@@ -66,7 +66,7 @@ public class InterpreterDriverManager {
      * is deduced from file name extension
      * @param scriptFile file name containing script
      */
-   public static void executeScriptFile(Session session,String scriptFile)
+   public static void executeScriptFile(SessionGUI session,String scriptFile)
                      throws InterpreterDriver.InterpreterException {
       String extension
              = scriptFile.substring(scriptFile

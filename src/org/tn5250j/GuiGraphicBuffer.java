@@ -106,9 +106,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	private float ps132 = 0; // Font point size
 	protected boolean guiInterface = false;
 	public boolean guiShowUnderline = true;
-	private boolean restrictCursor = false;
-	private Rectangle restriction;
-	private boolean resetRequired;
 	protected int cursorBottOffset;
 	private boolean defaultPrinter;
 	protected boolean rulerFixed;
@@ -192,11 +189,17 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			//            setCursorOff();
 			//         else
 			//            setCursorOn();
-//			if (cursorActive)
-//				setCursorActive(false);
-//			else
-//				setCursorActive(true);
+			if (screen.isCursorActive())
+				screen.setCursorActive(false);
+			else
+				screen.setCursorActive(true);
 		}
+	}
+
+	public boolean isBlinkCursor() {
+
+		return blinker != null;
+
 	}
 
    public void resize(int width, int height) {
@@ -214,22 +217,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 //         }
       }
 
-      //drawOIA();
-//      screen.updateScreen();
-//      gui.validate();
-//      gui.repaint();
    }
 
-   private void getSettings() {
+      private void getSettings() {
 
-//      columnWidth = screen.fmWidth;
-//      rowHeight = screen.fmHeight;
-//      font = screen.font;
-//      lm = screen.lm;
-//      showHex = screen.isShowHex();
-      lenScreen = screen.getScreenLength();
+         lenScreen = screen.getScreenLength();
 
-   }
+      }
 
 	protected final void loadColors() {
 
@@ -338,10 +332,14 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		}
 
 		if (config.isPropertyExists("guiInterface")) {
-			if (getStringProperty("guiInterface").equals("Yes"))
-				guiInterface = true;
-			else
-				guiInterface = false;
+			if (getStringProperty("guiInterface").equals("Yes")) {
+				screen.setUseGUIInterface(true);
+            guiInterface = true;
+			}
+			else {
+				screen.setUseGUIInterface(false);
+            guiInterface = false;
+			}
 		}
 
 		if (config.isPropertyExists("guiShowUnderline")) {
@@ -439,9 +437,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (config.isPropertyExists("resetRequired")) {
 			if (getStringProperty("resetRequired").equals("Yes"))
-				resetRequired = true;
+            screen.setResetRequired(true);
 			else
-				resetRequired = false;
+            screen.setResetRequired(false);
 		}
 
 		if (config.isPropertyExists("useAntialias")) {
@@ -610,10 +608,14 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		}
 
 		if (pn.equals("guiInterface")) {
-			if (pce.getNewValue().equals("Yes"))
+			if (pce.getNewValue().equals("Yes")) {
+            screen.setUseGUIInterface(true);
 				guiInterface = true;
-			else
+			}
+			else {
+            screen.setUseGUIInterface(true);
 				guiInterface = false;
+			}
 		}
 
 		if (pn.equals("guiShowUnderline")) {
@@ -639,9 +641,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (pn.equals("resetRequired")) {
 			if (pce.getNewValue().equals("Yes"))
-				resetRequired = true;
+            screen.setResetRequired(true);
 			else
-				resetRequired = false;
+            screen.setResetRequired(false);
 		}
 
 		if (pn.equals("hsMore")) {
@@ -731,6 +733,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 //			}
 			drawOIA();
 		}
+
 		gui.validate();
 		gui.repaint();
 	}
@@ -760,20 +763,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		if (y < tArea.getMinY())
 			y = 0;
 
-		//      int s = fmWidth * numCols; // image length in pixels
-		//      int t = s - x; // image length minus the x point
-		//      int u = t / fmWidth; //
-		//      int v = numCols - u; //
-
 		int s0 = y / rowHeight;
 		int s1 = x / columnWidth;
 
-		//      System.out.println("row " + s0 + ", column " + s1 + " pos " +
-		// getPos(s0,s1));
-		//      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
-		// fmHeight))),
-		//                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-		//                  );
 		return screen.getPos(s0, s1);
 
 	}
@@ -803,23 +795,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		if (y < tArea.getMinY())
 			y = 0;
 
-		//      int s = fmWidth * numCols; // image length in pixels
-		//      int t = s - x; // image length minus the x point
-		//      int u = t / fmWidth; //
-		//      int v = numCols - u; //
-
 		int s0 = y / rowHeight;
 		int s1 = x / columnWidth;
 
-		//      System.out.println("row " + s0 + ", column " + s1 + " pos " +
-		// getPos(s0,s1));
-		//      return getPos((numRows - ((((fmHeight * (numRows)) - y) /
-		// fmHeight))),
-		//                     (numCols - ((((fmWidth * (numCols)) - x) / fmWidth)))
-		//                  );
 		return screen.getPos(s0, s1);
 
-		//      return 0;
 	}
 
 
@@ -837,20 +817,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		//  we will then add to that the offsets to get the screen position point
 		//  x,y coordinates. Maybe change this to a translate routine method or
 		//  something.
-//		point.x = screen[getPos(r, c)].x + bi.offLeft;
-//		point.y = screen[getPos(r, c)].y + bi.offTop;
 		point.x = (columnWidth * c) + offLeft;
 		point.y = (rowHeight * r) + offTop;
 
 	}
 
 	public boolean isWithinScreenArea(int x, int y) {
-
-		//      if (x == 0 || y == 0)
-		//         return true;
-		//
-		//      x -= bi.offLeft;
-		//      y -= bi.offTop;
 
 		return tArea.contains(x, y);
 
@@ -876,7 +848,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		int pos = getPosFromView(start.x, start.y);
       int x = columnWidth * screen.getCol(pos);
       int y = rowHeight * screen.getRow(pos);
-//		start.setLocation(screen[pos].x, screen[pos].y);
 		start.setLocation(x, y);
 		return start;
 
@@ -894,11 +865,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		// because getRowColFromPoint returns position offset as 1,1 we need
 		// to translate as offset 0,0
 		int pos = getPosFromView(end.x, end.y);
-//		if (pos >= screen.length) {
-//			pos = screen.length - 1;
-//		}
-//		int x = screen[pos].x + fmWidth - 1;
-//		int y = screen[pos].y + fmHeight - 1;
 
 		if (pos >= lenScreen) {
 			pos = lenScreen - 1;
@@ -989,14 +955,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 			drawOIA();
 
-//         bi.drawImageBuffer(g2);
-
-			// and loop through the screen buffer to draw the new image with
-			// the correct attributes
-//			for (int m = 0; m < lenScreen; m++) {
-//				screen[m].setRowCol(getRow(m), getCol(m));
-//
-//			}
 			updateFont = false;
 		}
 
@@ -1085,14 +1043,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
    public void drawCursor(int row, int col)   {
 
-//      	int row = screen.getRow(screen.getLastPos());
-//      	int col = screen.getCol(screen.getLastPos());
-
       	int botOffset = cursorBottOffset;
-//      	int cursorSize = cursorSize;
       	boolean insertMode = screen.insertMode;
-//      	boolean rulerFixed = rulerFixed;
-//      	int crossHair = crossHair;
 
          Graphics2D g2 = getDrawingArea();
 
@@ -1160,14 +1112,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
                            bi.getWidth(null),
                            (rowHeight * (crossRow + 1))- botOffset);
-//               screen.updateImage(0,rowHeight * (crossRow + 1)- botOffset,
-//                              bi.getWidth(null),1);
                updateImage(0,rowHeight * (crossRow + 1)- botOffset,
                               bi.getWidth(null),1);
                break;
             case 2:  // vertical
                g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
-//               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
                updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
                break;
 
@@ -1176,9 +1125,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                            bi.getWidth(null),
                            (rowHeight * (crossRow + 1))- botOffset);
                g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
-//               screen.updateImage(0,rowHeight * (crossRow + 1)- botOffset,
-//                              bi.getWidth(null),1);
-//               screen.updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
                updateImage(0,rowHeight * (crossRow + 1)- botOffset,
                               bi.getWidth(null),1);
                updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
@@ -1293,23 +1239,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 	protected void updateImage(int x, int y, int width, int height) {
 
-//		if (controllersG2D == null) {
-//			//System.out.println("was null");
-//			controllersG2D = (Graphics2D) gui.getGraphics();
-//		}
-
 		// check for selected area and erase it before updating screen
 		if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
 			gui.rubberband.erase();
 		}
-
-//		if (bi == null || controllersG2D == null) {
-//			if (bi == null)
-//				System.out.println("bi was null in update image");
-//			if (controllersG2D == null)
-//				System.out.println("gg2d was null in update image");
-//			return;
-//		}
 
 		gg2d.setClip(x, y, width, height);
 //		if (!cursorActive && x + width <= bi.getWidth(null)
@@ -1347,23 +1280,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			gui.rubberband.draw();
 		}
 
-		//         if (!fullRepaint) {
-		//            bi.drawImageBuffer(gg2d,x,y,width,height);
-		//         }
-		//         else
-		//            gui.repaint();
-
-		//            System.out.println(" something went right finally " + gui.isVisible()
-		// +
-		//                           " height " + height + " width " + width);
-		//         }
-		//            else {
-		//            bi.drawImageBuffer(gg2d);
-		//            System.out.println(" something is wrong here " + gui.isVisible() +
-		//                           " height " + height + " width " + width);
-
-		//            }
-		//      }
 		if (x == 0)
 			width += offLeft;
 		else
@@ -1393,15 +1309,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 //      synchronized (lock) {
 
-//         // lets calculate the offsets
-//         Rectangle r = gg2d.getClipBounds();
-//         offLeft = (r.width - width) / 2;
-//         offTop = (r.height - height) / 2;
-//         resized = false;
-//         if (offLeft < 0)
-//            offLeft = 0;
-//         if (offTop <0 )
-//            offTop = 0;
          gg2d.drawImage(bi,null,offLeft,offTop);
          // tell waiting threads to wake up
 //         lock.notifyAll();
@@ -1757,7 +1664,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                            g.drawChars(sChar, 0, 1, x, cy -2);
                   }
                   catch (IllegalArgumentException iae) {
-                     System.out.println(" ScreenChar iae " + iae.getMessage());
+                     System.out.println(" drawChar iae " + iae.getMessage());
 
                   }
             }
@@ -1765,8 +1672,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
                if (!useGui || guiShowUnderline) {
                   g.setColor(fg);
-//                  g.drawLine(x, cy -2, (int)(x + columnWidth), cy -2);
-//                  g.drawLine(x, (int)(y + (rowHeight - s.lm.getLeading()-5)), (int)(x + columnWidth), (int)(y + (rowHeight - s.lm.getLeading())-5));
                   g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (int)(x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
 
                }
@@ -1892,15 +1797,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    public void onScreenSizeChanged(int rows, int cols) {
       log.info("screen size change");
       gui.resizeMe();
+//      screen.setCursorActive(false);
+//      screen.setCursorActive(true);
    }
-   
+
    public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
 
 
-//		workR.setBounds(sr, sc, ec, er);
-
-//      if (screen.cursorShown)
-//         this.drawCursor();
       if (which == 3 || which == 4) {
 //         log.info("cursor updated -> " +  sr + ", " + sc + "-> active " +
 //                        screen.cursorActive + " -> shown " + screen.cursorShown);
@@ -1911,12 +1814,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       if (hotSpots)
          screen.checkHotSpots();
 
-      //log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
+//      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
 
       int rows = er - sr;
 		int cols = 0;
 		int lc = 0;
-//      int lenScreen = screen.getScreenLength();
 		int lr = screen.getPos(sr,sc);
       int numCols = screen.getCols();
 
@@ -1931,18 +1833,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       Rectangle clipper = new Rectangle();
 
       int pos = 0;
-//         while (rows-- >= 0) {
-//            cols = ec - sc;
-//            lc = lr;
-//            while (cols-- >= 0) {
-//               if (lc >= 0 && lc < lenScreen) {
-//                  drawChar(gg2d,pos++,screen.getRow(lc),screen.getCol(lc));
-//   //					drawChar(gg2d,pos++,sr-rows,lc);
-//                  lc++;
-//               }
-//            }
-//            lr += numCols;
-//         }
 
       lc = ec;
       clipper.x      =   sc * columnWidth;
@@ -1953,7 +1843,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       gg2d.setClip(clipper.getBounds());
 
 		gg2d.setColor(colorBg);
-		//      System.out.println("PaintComponent " + r);
 
 		gg2d.fillRect(clipper.x, clipper.y, clipper.width, clipper.height);
 
@@ -1962,14 +1851,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			lc = sc;
 			while (cols-- >= 0) {
 				if (sc + cols <= ec) {
-//					drawChar(gg2d,pos++,screen.getRow(lc),screen.getCol(lc));
 					drawChar(gg2d,pos++,sr,lc);
-//               if (clipper == null) {
-//                  clipper = new Rectangle(workR);
-//               }
-//               else {
-//                  clipper.union(workR);
-//               }
                lc++;
 				}
 			}
@@ -1981,10 +1863,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
       updateImage(clipper);
 
-//      if (screen.cursorShown)
-//         this.drawCursor();
-
-//      screen.dumpScreen();
    }
 
    public void onOIAChanged(ScreenOIA changedOIA, int change) {
@@ -2163,7 +2041,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          field = null;
 
          if (size == lenScreen) {
-//            log.info("full screen" + size);
 	         screen.GetScreen(text, size, PLANE_TEXT);
 	         screen.GetScreen(attr, size, PLANE_ATTR);
 	         screen.GetScreen(isAttr, size, PLANE_IS_ATTR_PLACE);

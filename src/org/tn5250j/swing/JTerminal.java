@@ -14,7 +14,7 @@ public class JTerminal extends JComponent implements TN5250jConstants
 
      KeyboardHandler keyHandler;
 
-  public JTerminal(Session session)
+  public JTerminal(Session5250 session)
   {
     super();
     this.session = session;
@@ -28,7 +28,7 @@ public class JTerminal extends JComponent implements TN5250jConstants
      this.setUI(org.tn5250j.swing.ui.BasicTerminalUI.createUI(this));
   }
 
-  public Session getSession()
+  public Session5250 getSession()
   {
     return this.session;
   }
@@ -118,5 +118,5 @@ public class JTerminal extends JComponent implements TN5250jConstants
 //    map.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false), OS_OHIO_MNEMONIC_UP);
   }
 
-  private Session session;
+  private Session5250 session;
 }

@@ -71,7 +71,7 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
       }
 
       this.session  = terminal.getSession();
-      session.setRunningHeadless(true);
+//      session.setRunningHeadless(true);
       installComponents();
       installListeners();
       installDefaults();
@@ -579,7 +579,7 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
   //                             V a r i a b l e s
   //============================================================================
   transient JTerminal              terminal;
-  transient Session           session;
+  transient Session5250            session;
 
   transient BasicScreen            screen;
   transient BasicOIA               oia;

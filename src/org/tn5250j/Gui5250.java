@@ -57,14 +57,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //                                                      DropTargetListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
-   Screen5250 screen = null;
-   String propFileName = null;
+   Screen5250 screen;
+   String propFileName;
+   protected Session5250 session;
    GuiGraphicBuffer bi;
-   tnvt vt = null;
+//   tnvt vt;
    TNRubberBand rubberband;
    JPanel s = new JPanel();
    KeyPad keyPad = new KeyPad();
-   private JPopupMenu popup = null;
+   private JPopupMenu popup;
    Macronizer macros;
    String newMacName;
    private Vector listeners = null;
@@ -85,11 +86,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    //Construct the frame
-   public Gui5250(SessionConfig config) {
+   public Gui5250(Session5250 session) {
+   //, SessionConfig config) {
 
-      propFileName = config.getConfigurationResource();
+      this.session = session;
+      propFileName = session.getConfigurationResource();
 
-      sesConfig = config;
+      sesConfig = session.getConfiguration();
 
       try  {
          jbInit();
@@ -109,8 +112,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
       s.setOpaque(false);
       s.setDoubleBuffered(false);
 
+      session.setGUI((SessionGUI)this);
 
-      screen = new Screen5250(this,sesConfig);
+//      screen = new Screen5250(this,sesConfig);
+      screen = session.getScreen();
 
       this.addComponentListener(this);
 
@@ -119,7 +124,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
 
       setRubberBand(new TNRubberBand(this));
-      keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
+      keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
       if (!sesConfig.isPropertyExists("width") ||
          !sesConfig.isPropertyExists("height"))
@@ -139,7 +144,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //            if (e.isPopupTrigger()) {
             // using SwingUtilities because popuptrigger does not work on linux
             if (SwingUtilities.isRightMouseButton(e)) {
-               doPopup(e);
+               actionPopup(e);
             }
 
          }
@@ -179,9 +184,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       });
 
-      scroller = new SessionScroller().getScrollerInstance((Session)this);
+      scroller = new SessionScroller().getScrollerInstance((SessionGUI)this);
       if (!sesConfig.getStringProperty("mouseWheel").equals("Yes"))
-         scroller.removeMouseWheelListener((Session)this);
+         scroller.removeMouseWheelListener((SessionGUI)this);
 
 		log.debug("Initializing macros");
       macros = new Macronizer();
@@ -268,13 +273,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   private void doTransfer(java.io.File file) {
+   private void actionTransfer(java.io.File file) {
 
       try {
          Properties props = new Properties();
          props.load(new java.io.FileInputStream(file));
          org.tn5250j.tools.XTFRFile tfr = new org.tn5250j.tools.XTFRFile(null,
-            vt, (Session)this,props);
+            session.getVT(), (SessionGUI)this,props);
       }
       catch (Exception exc) {
       	log.warn(""+exc.getMessage());
@@ -293,7 +298,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void dumpStuff(Throwable ex) {
 
-      vt.dumpStuff();
+      session.getVT().dumpStuff();
       if (null == ex) {
          return;
       }
@@ -302,7 +307,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void sendScreenEMail() {
 
-      new SendEMailDialog((JFrame)SwingUtilities.getRoot(this),(Session)this);
+      new SendEMailDialog((JFrame)SwingUtilities.getRoot(this),(SessionGUI)this);
    }
 
    private void sendMeToFile() {
@@ -312,7 +317,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void sendMeToImageFile() {
       // Change sent by LUC - LDC to add a parent frame to be passed
-      new SendScreenImageToFile((JFrame)SwingUtilities.getRoot(this),(Session)this);
+      new SendScreenImageToFile((JFrame)SwingUtilities.getRoot(this),(SessionGUI)this);
    }
    /**
     * This routine allows areas to be bounded by using the keyboard
@@ -401,7 +406,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          );
 
       if (result == 0) {
-         if (!((Session)this).isOnSignOnScreen()) {
+         if (!((SessionGUI)this).isOnSignOnScreen()) {
 
             if (confirmClose()) {
                closeMe();
@@ -467,12 +472,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   public Screen5250 getScreen() {
-
-      return screen;
-
-   }
-
    public void actionPerformed(ActionEvent actionevent) {
 
       Object obj = actionevent.getSource();
@@ -517,10 +516,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       if (pn.equals("mouseWheel")) {
          if (((String)pce.getNewValue()).equals("Yes")) {
-            scroller.addMouseWheelListener((Session)this);
+            scroller.addMouseWheelListener((SessionGUI)this);
          }
          else {
-            scroller.removeMouseWheelListener((Session)this);
+            scroller.removeMouseWheelListener((SessionGUI)this);
          }
       }
 
@@ -538,28 +537,21 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
             String mac = sesConfig.getStringProperty("connectMacro");
             if (mac.length() > 0)
-               executeMeMacro(mac);
+               executeMacro(mac);
             break;
       }
    }
 
-   protected void setVT(tnvt v) {
-
-      vt = v;
-      screen.setVT(vt);
-
-   }
-
    public tnvt getVT() {
 
-      return vt;
+      return session.getVT();
 
    }
 
    public void toggleDebug() {
-      vt.toggleDebug();
+      session.getVT().toggleDebug();
       try {
-         vt.sendHeartBeat();
+         session.getVT().sendHeartBeat();
       }
       catch (Exception exc) {
          log.warn(exc.getMessage());
@@ -576,21 +568,21 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void sendAidKey(int whichOne) {
 
-      vt.sendAidKey(whichOne);
+      session.getVT().sendAidKey(whichOne);
    }
 
    public void changeConnection() {
 
-      if (vt.isConnected()) {
+      if (session.getVT().isConnected()) {
 
-         vt.disconnect();
+         session.getVT().disconnect();
 
       }
       else {
          // lets set this puppy up to connect within its own thread
          Runnable connectIt = new Runnable() {
             public void run() {
-               vt.connect();
+               session.getVT().connect();
             }
 
            };
@@ -699,10 +691,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //         screen.setBlinkCursorStop();
 //      }
 
-      vt.disconnect();
+      session.getVT().disconnect();
       // Added by Luc to fix a memory leak. The keyHandler was still receiving
       //   events even though nothing was really attached.
-      keyHandler.sessionClosed((Session)this);
+      keyHandler.sessionClosed((SessionGUI)this);
       keyHandler = null;
 
    }
@@ -712,7 +704,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
     * settings of the session.
     *
     */
-   public void doAttributes() {
+   public void actionAttributes() {
 
       SessionAttributes sa = new SessionAttributes((Frame)SwingUtilities.getRoot(this),
                                           sesConfig);
@@ -722,18 +714,18 @@ public class Gui5250 extends JPanel implements ComponentListener,
       sa = null;
    }
 
-   private void doPopup (MouseEvent me) {
+   private void actionPopup (MouseEvent me) {
 
-      new SessionPopup((Session)this,me);
+      new SessionPopup((SessionGUI)this,me);
 
 
    }
 
-   public void doMeSpool() {
+   public void actionSpool() {
 
       try {
          org.tn5250j.spoolfile.SpoolExporter spooler =
-                        new org.tn5250j.spoolfile.SpoolExporter(vt, (Session)this);
+                        new org.tn5250j.spoolfile.SpoolExporter(session.getVT(), (SessionGUI)this);
          spooler.setVisible(true);
       }
       catch (NoClassDefFoundError ncdfe) {
@@ -751,15 +743,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
-   public void executeMeMacro(ActionEvent ae) {
+   public void executeMacro(ActionEvent ae) {
 
-      executeMeMacro(ae.getActionCommand());
+      executeMacro(ae.getActionCommand());
 
    }
 
-   public void executeMeMacro(String macro) {
+   public void executeMacro(String macro) {
 
-      Macronizer.invoke(macro,(Session)this);
+      Macronizer.invoke(macro,(SessionGUI)this);
 
    }
 
@@ -802,6 +794,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //      repaint();
 		screen.repaintScreen();
 		screen.setCursorActive(true);
+      Graphics g = getGraphics();
+      if (g != null)
+         g.setClip(0,0,this.getWidth(),this.getHeight());
+      repaint(0,0,getWidth(),getHeight());
 
    }
 
@@ -835,7 +831,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    protected void paintComponent(Graphics g) {
-	  //log.info("paint from screen");
+	  log.debug("paint from screen");
 
      if (bi == null) {
       checkOffScreenImage();
@@ -844,7 +840,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 		Graphics2D g2 = (Graphics2D) g;
 
-		//      Rectangle r = g.getClipBounds();
+		//Rectangle r = g.getClipBounds();
 
 		g2.setColor(bi.colorBg);
 		g2.fillRect(0, 0, getWidth(), getHeight());
@@ -856,14 +852,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
          rubberband.draw();
       }
 
-      // this was a fix for a keypad drawing problem under JDK1.2/1.3
-      // but caused problems under Linux/JDK1.4
-      //keyPad.repaint();
+//      keyPad.repaint();
 
    }
 
    public void update(Graphics g) {
-	  log.info("paint from gui");
+	  log.info("update paint from gui");
       paint(g);
 
    }
@@ -928,7 +922,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
        * Copy & Paste start code
        *
        */
-      public final void copyMe() {
+      public final void actionCopy() {
 
          Rectangle workR = new Rectangle();
          // lets get the bounding area using a rectangle that we have already
@@ -974,7 +968,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 	public final void printMe() {
 
 		Thread printerThread = new PrinterThread(screen, bi.font, screen.getCols(),
-				screen.getRows(), Color.black, true, (Session) this);
+				screen.getRows(), Color.black, true, (SessionGUI) this);
 
 		printerThread.start();
 

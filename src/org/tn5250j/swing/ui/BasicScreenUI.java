@@ -106,10 +106,10 @@ public final class iOhioPosition {
 
 }
 
-	public void onScreenSizeChanged(int rows, int cols) {
-	   
-	}
-	
+   public void onScreenSizeChanged(int rows, int cols) {
+
+   }
+
 //  public void onScreenChanged(int inUpdate, iOhioPosition inStart, iOhioPosition inEnd)
   public void onScreenChanged(int inUpdate, int startRow, int startCol, int endRow, int endCol)
 
@@ -117,8 +117,8 @@ public final class iOhioPosition {
 
       iOhioPosition inStart = new iOhioPosition(startRow,startCol);
       iOhioPosition inEnd = new iOhioPosition(endRow,endCol);
-      System.out.println("screen updated -> " +  startRow + ", "
-                           + startCol + ", " + endRow + ", " + endCol);
+//      System.out.println("screen updated -> " +  startRow + ", "
+//                           + startCol + ", " + endRow + ", " + endCol);
       lastScreenUpdate = inUpdate;
 
     switch (inUpdate)
