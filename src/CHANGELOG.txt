@@ -54,23 +54,9 @@ Enhancements/Change Log
 
             Added blinking cursor.  Beta and may leave traces
 
-            
+            Well just run it to see all the new stuff
 
-           Well just run it to see all the new stuff
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+---------------------------------------------------------------------------------
 05/09/2002  Lots of clean up for bounding area selection.
 
 04/09/2002  Added support to map scripts to the Key Mapping
