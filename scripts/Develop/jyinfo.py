@@ -33,7 +33,30 @@ from javax.swing.tree import TreeModel
 from javax.swing.event import TreeModelEvent
 from java.lang import Exception
 from java.lang import Object
+#------------------------------------------------------------------------------#
+# GridBag taken from pawt package, included here to obviate need for jython lib
+#------------------------------------------------------------------------------#
+# GridBag class
+class GridBag:
+	def __init__(self, frame, **defaults):
+		self.frame = frame
+		self.gridbag = awt.GridBagLayout()
+		self.defaults = defaults
+		frame.setLayout(self.gridbag)
 
+	def addRow(self, widget, **kw):
+		kw['gridwidth'] = 'REMAINDER'
+		apply(self.add, (widget, ), kw)
+
+	def add(self, widget, **kw):
+		constraints = awt.GridBagConstraints()
+
+		for key, value in self.defaults.items()+kw.items():
+			if isinstance(value, type('')):
+				value = getattr(awt.GridBagConstraints, value)
+			setattr(constraints, key, value)
+		self.gridbag.setConstraints(widget, constraints)
+		self.frame.add(widget)
 #------------------------------------------------------------------------------#
 # The tree code and property/event code is adapted from
 # Python Programming with the Java Class Libraries: A Tutorial for Building Web 
@@ -290,7 +313,6 @@ def parseMethDict(mdict):
 from javax.swing import JFrame, JTextField, JButton, JPanel, JTree, JScrollPane, JLabel
 import java.awt as awt
 import java.lang as lang
-from pawt import GridBag
 import imp
 
 
