@@ -320,14 +320,7 @@ public class SessionAttributes extends JDialog {
          }
       }
 
-      try {
-         FileOutputStream out = new FileOutputStream(fileName);
-         props.store(out,"------ Defaults --------");
-
-      }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
-
+      changes.saveSessionProps();
 
    }
 

@@ -419,24 +419,28 @@ public class GlobalConfigure extends ConfigureFactory {
    }
 
    /**
-    * Not implemented yet
+    * Returns the setting from the given key of the global properties or the
+    * default passed if the property does not exist.
     *
     * @param key
     * @param def
     * @return
     */
    public String getProperty(String key, String def) {
-      return def;
+      if (settings.containsKey(key))
+         return settings.getProperty(key);
+      else
+         return def;
    }
 
    /**
-    * Not implemented yet
+    * Returns the setting from the given key of the global properties.
     *
     * @param key
     * @return
     */
    public String getProperty(String key) {
-      return "";
+      return settings.getProperty(key);
    }
 
    /**
@@ -451,7 +455,7 @@ public class GlobalConfigure extends ConfigureFactory {
    }
 
    /**
-    * Not sure yet
+    * Not sure yet so be careful using this.
     *
     * @return
     */

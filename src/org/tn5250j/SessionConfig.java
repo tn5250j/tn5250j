@@ -47,6 +47,7 @@ public class SessionConfig implements TN5250jConstants {
    private Properties sesProps;
    private Vector listeners;
    private String sslType;
+   private boolean usingDefaults;
 
    public SessionConfig (String configurationResource,
                            String sessionName) {
@@ -61,6 +62,7 @@ public class SessionConfig implements TN5250jConstants {
 
       if (configurationResource == null || configurationResource == "") {
          configurationResource = "TN5250JDefaults.props";
+         usingDefaults = true;
       }
 
       return configurationResource;
@@ -150,13 +152,22 @@ public class SessionConfig implements TN5250jConstants {
 
    public void saveSessionProps() {
 
-      try {
-         FileOutputStream out = new FileOutputStream(getConfigurationResource());
-            // save off the width and height to be restored later
-         sesProps.store(out,"------ Defaults --------");
+      if (usingDefaults) {
+
+         ConfigureFactory.getInstance().saveSettings("dfltSessionProps",
+                                                      getConfigurationResource(),
+                                                      "");
+
       }
-      catch (FileNotFoundException fnfe) {}
-      catch (IOException ioe) {}
+      else {
+         try {
+            FileOutputStream out = new FileOutputStream(getConfigurationResource());
+               // save off the width and height to be restored later
+            sesProps.store(out,"------ Defaults --------");
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
+      }
    }
 
    private void loadConfigurationResource() {
@@ -187,7 +198,8 @@ public class SessionConfig implements TN5250jConstants {
 
          sesProps = ConfigureFactory.getInstance().getProperties(
                                     "dfltSessionProps",
-                                    getConfigurationResource());
+                                    getConfigurationResource(),true,
+                                    "Default Settings");
          if (sesProps.size() == 0) {
 
             Properties schemaProps = new Properties();
