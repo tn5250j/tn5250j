@@ -131,7 +131,7 @@ public class Screen5250 implements TN5250jConstants{
 		numRows = 24;
 		numCols = 80;
 
-		gotoRowCol(1, 1); // set initial cursor position
+		setCursor(1, 1); // set initial cursor position
 
 		restriction = new Rectangle(0, 0);
 
@@ -410,7 +410,7 @@ public class Screen5250 implements TN5250jConstants{
 			screenFields.restoreCurrentField();
 			updateDirty();
 
-			gotoRowCol(lr + 1, lc + 1);
+			setCursor(lr + 1, lc + 1);
 
 			setCursorActive(true);
 		} catch (Throwable exc) {
@@ -1462,7 +1462,7 @@ public class Screen5250 implements TN5250jConstants{
 				int where = endOfField(screenFields.getCurrentField()
 						.startPos(), true);
 				if (where > 0) {
-					gotoRowCol((where / numCols) + 1, (where % numCols) + 1);
+					setCursor((where / numCols) + 1, (where % numCols) + 1);
 				}
 				simulated = true;
 			} else {
@@ -1779,7 +1779,7 @@ public class Screen5250 implements TN5250jConstants{
 				if (startRow == getRows())
 					startRow = 0;
 
-				gotoRowCol(++startRow, 1);
+				setCursor(++startRow, 1);
 
 				if (!isInField() && screenFields.getCurrentField() != null
 						&& !screenFields.isCurrentFieldBypassField()) {
@@ -1929,7 +1929,7 @@ public class Screen5250 implements TN5250jConstants{
 							}
 
 						} else
-							gotoRowCol(screenFields.getCurrentField()
+							setCursor(screenFields.getCurrentField()
 									.getCursorRow() + 1, screenFields
 									.getCurrentField().getCursorCol() + 1);
 
@@ -2781,7 +2781,7 @@ public class Screen5250 implements TN5250jConstants{
 	 * @param row
 	 * @param col
 	 */
-	public void gotoRowCol(int row, int col) {
+	public void setCursor(int row, int col) {
 		goto_XY(((row - 1) * numCols) + (col - 1));
 	}
 
@@ -3764,12 +3764,12 @@ public class Screen5250 implements TN5250jConstants{
 		//    - A default starting address of row 1 column 1.
 
 		if (pendingInsert && homePos > 0) {
-			gotoRowCol(getRow(homePos), getCol(homePos));
+			setCursor(getRow(homePos), getCol(homePos));
 			isInField(); // we now check if we are in a field
 		} else {
 			if (!gotoField(1)) {
 				homePos = getPos(1, 1);
-				gotoRowCol(1, 1);
+				setCursor(1, 1);
 				isInField(0, 0); // we now check if we are in a field
 			} else {
 				homePos = getPos(getCurrentRow(), getCurrentCol());
@@ -3784,7 +3784,7 @@ public class Screen5250 implements TN5250jConstants{
 		}
 
 		if (!isStatusErrorCode()) {
-			gotoRowCol(icX, icY);
+			setCursor(icX, icY);
 		}
 	}
 

@@ -515,7 +515,7 @@ public class WTDSFParser implements TN5250jConstants {
 
                case 0x10:  // Choice Text minor structure
 
-                  screen52.gotoRowCol(chcRowStart++,chcColStart);
+                  screen52.setCursor(chcRowStart++,chcColStart);
                   cnt = 5;
                   int flagCT1 = segment[pos++];
                   int flagCT2 = segment[pos++];
