@@ -1215,7 +1215,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
       switch(result) {
          case 0: // Insert character
             String k = "";
-            k += ((String)hm.getSelectedValue()).charAt(7);
+            if (((String)hm.getSelectedValue()).length() > 7)
+               k += ((String)hm.getSelectedValue()).charAt(9);
+            else
+               k += ((String)hm.getSelectedValue()).charAt(7);
             screen.sendKeys(k);
             break;
          case 1: // Cancel

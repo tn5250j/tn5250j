@@ -42,8 +42,11 @@ public class PrinterThread extends Thread implements Printable {
 
    public PrinterThread (ScreenChar[] sc, Font font, int cols, int rows,
                            Color colorBg, boolean toDefaultPrinter, Session ses) {
+
+
       setPriority(1);
       session = ses;
+      session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       screen = new ScreenChar[sc.length];
       toDefault = toDefaultPrinter;
 
@@ -76,6 +79,8 @@ public class PrinterThread extends Thread implements Printable {
       //--- are implementing the Printable interface
       printJob.setPrintable (this);
 
+      // set the cursor back
+      session.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
       //--- Show a print dialog to the user. If the user
       //--- clicks the print button, then print, otherwise
