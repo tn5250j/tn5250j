@@ -320,14 +320,11 @@ def default_tree():
     tree_model = SampleModel("None")
     return tree_model
 
-def exit(event):
-    lang.System.exit(0)      
-
 class InfoFrame(JFrame):
     def __init__(self, title=""):
         JFrame.__init__(self, title)
         self.size = 400,500
-        self.windowClosing = exit
+        self.windowClosing = self.closing
         
         label = JLabel(text="Class Name:") 
         label.horizontalAlignment = JLabel.RIGHT
@@ -348,6 +345,10 @@ class InfoFrame(JFrame):
         bag = GridBag(self.contentPane)
         bag.addRow(tpanel, fill='HORIZONTAL', weightx=1.0, weighty=0.5)
         bag.addRow(bpanel, fill='BOTH', weightx=0.5, weighty=1.0) 
+
+    def closing(self, event):
+        self.hide()
+        self.dispose()
         
     def entered(self, event):
         name = self.text.getText()
@@ -387,7 +388,9 @@ class InfoFrame(JFrame):
                 
 
 #------------------------------------------------------------------------------#
+def main():
+	frame = InfoFrame("Java-to-Jython Event/Property/Method Browser")
+	frame.show()
 
-frame = InfoFrame("Java-to-Jython Event/Property/Method Browser")
-frame.show()
-
+if __name__=='main' or __name__ =='__main__':
+	main()        
