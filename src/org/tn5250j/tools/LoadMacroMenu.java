@@ -116,17 +116,29 @@ public final class LoadMacroMenu {
 
    private static void doOptionsPopup(MouseEvent e, Session session) {
 
+      Action action;
+
       JPopupMenu j = new JPopupMenu("test");
-      Action action = new AbstractAction("Delete " + ((JMenuItem)e.getSource()).getText()) {
-               public void actionPerformed(ActionEvent e) {
-                  StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
-                  macro.delete(0,"Delete".length()+1);
-                  Macronizer.removeMacroByName(macro.toString());
-               }
-           };
+      action = new AbstractAction("Delete " + ((JMenuItem)e.getSource()).getText()) {
+         public void actionPerformed(ActionEvent e) {
+            StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
+            macro.delete(0,"Delete".length()+1);
+            Macronizer.removeMacroByName(macro.toString());
+         }
+      };
 
       j.add(action);
-      j.add(new JMenuItem("Execute "+ ((JMenuItem)e.getSource()).getText()));
+
+      final Session ses = session;
+      action = new AbstractAction("Execute " + ((JMenuItem)e.getSource()).getText()) {
+         public void actionPerformed(ActionEvent e) {
+            StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
+            macro.delete(0,"Execute".length()+1);
+            Macronizer.invoke(macro.toString(),ses);
+         }
+      };
+
+      j.add(action);
       MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem)e.getSource(),e,session);
       GUIGraphicsUtils.positionPopup(session,j,et.getX(),et.getY());
 
