@@ -107,16 +107,17 @@ public class My5250App extends JApplet implements TN5250jConstants {
       loadSystemProperty("SESSION_CONNECT_MENU");
 
       manager = new SessionManager();
-      final Session s = manager.openSession(sesProps,"","Test Applet");
+      final Session5250 s = manager.openSession(sesProps,"","Test Applet");
+      final SessionGUI gui = new SessionGUI(s);
+//      final JTerminal jt = new JTerminal(s);
 
-      final JTerminal jt = new JTerminal(s);
-
-      this.getContentPane().add(jt);
+      this.getContentPane().add(gui);
 
       s.connect();
       SwingUtilities.invokeLater(new Runnable() {
          public void run() {
-            jt.grabFocus();
+//            jt.grabFocus();
+            gui.grabFocus();
          }
       });
 
