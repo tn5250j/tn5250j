@@ -497,9 +497,10 @@ public class Connect
 
 		accessOptions.setSelectedIndices(si);
 
-		accessOptions.setSourceHeader(LangTool.getString("ss.labelActive"));
-		accessOptions.setSelectionHeader(
-			LangTool.getString("ss.labelRestricted"));
+		accessOptions.setSourceHeader(LangTool.getString("ss.labelActive")
+                                    ,JLabel.CENTER);
+		accessOptions.setSelectionHeader(LangTool.getString("ss.labelRestricted")
+                                    ,JLabel.CENTER);
 
 		// create emulator options panel
 		accessPanel.setLayout(new BorderLayout());

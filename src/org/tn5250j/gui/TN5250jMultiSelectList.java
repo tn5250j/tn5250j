@@ -167,13 +167,13 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
       buttonPanel = new JPanel();
       buttonPanel.setLayout(new FlowLayout());
       buttonPanel.setBorder(BorderFactory.createEmptyBorder(11, 0, 0, 0));
-      selectItemButton = initButton(new SelectionButton(SELECT_ITEM), 
+      selectItemButton = initButton(new SelectionButton(SELECT_ITEM),
 		LangTool.getString("oaa.AddSelected"));
-      selectAllButton = initButton(new SelectionButton(SELECT_ALL), 
+      selectAllButton = initButton(new SelectionButton(SELECT_ALL),
 		LangTool.getString("oaa.AddAll"));
-      deselectItemButton = initButton(new SelectionButton(DESELECT_ITEM), 
+      deselectItemButton = initButton(new SelectionButton(DESELECT_ITEM),
 		LangTool.getString("oaa.RemoveSelected"));
-      deselectAllButton = initButton(new SelectionButton(DESELECT_ALL), 
+      deselectAllButton = initButton(new SelectionButton(DESELECT_ALL),
 		LangTool.getString("oaa.RemoveAll"));
 
       Dimension dimButton = getButtonSize();
@@ -340,8 +340,19 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
     */
    public void setSourceHeader(String header) {
 
+      setSourceHeader(header, JLabel.LEFT);
+
+   }
+
+   /**
+    * Sets the header of the source list
+    * @param header
+    * @param horizontalAlignment
+    */
+   public void setSourceHeader(String header, int horizontalAlignment) {
+
       sourceHeader = header;
-      sourcePanel.add(new JLabel(header, JLabel.CENTER),BorderLayout.NORTH);
+      sourcePanel.add(new JLabel(header, horizontalAlignment),BorderLayout.NORTH);
 
    }
 
@@ -351,11 +362,21 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
     */
    public void setSelectionHeader(String header) {
 
-      selectionHeader = header;
-      selectionPanel.add(new JLabel(header, JLabel.CENTER),BorderLayout.NORTH);
+      setSelectionHeader(header,JLabel.LEFT);
 
    }
 
+   /**
+    * Sets the header of the selection list
+    * @param header
+    * @param horizontalAlignment
+    */
+   public void setSelectionHeader(String header, int horizontalAlignment) {
+
+      selectionHeader = header;
+      selectionPanel.add(new JLabel(header, horizontalAlignment),BorderLayout.NORTH);
+
+   }
 
    //================== ListModel interface methods ==================
 
