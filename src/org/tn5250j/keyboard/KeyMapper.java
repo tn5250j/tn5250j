@@ -144,7 +144,7 @@ public class KeyMapper {
             mappedKeys.put(newKeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[reset]");
 
          if (OperatingSystem.hasJava14())
-            mappedKeys.put(newKeyStroker(27, false, true, false, false,KeyStroker.KEY_LOCATION_LEFT),"[sysreq]");
+            mappedKeys.put(newKeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
          else
             mappedKeys.put(newKeyStroker(27, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
 
