@@ -28,9 +28,13 @@ package org.tn5250j.spoolfile;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import org.tn5250j.tools.*;
 
-public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface {
+import org.tn5250j.tools.*;
+import org.tn5250j.event.ToggleDocumentListener;
+import org.tn5250j.gui.ToggleDocument;
+
+public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface,
+                                                         ToggleDocumentListener {
 
    JRadioButton all;
    JRadioButton select;
@@ -61,9 +65,13 @@ public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface 
       });
 
       library = new JTextField(10);
+      ToggleDocument td1 = new ToggleDocument();
+      td1.addToggleDocumentListener(this);
+      library.setDocument(td1);
       queue = new JTextField(10);
-      queue.setEnabled(false);
-      library.setEnabled(false);
+      ToggleDocument td2 = new ToggleDocument();
+      td2.addToggleDocumentListener(this);
+      queue.setDocument(td2);
 
       ButtonGroup bg = new ButtonGroup();
       bg.add(all);
@@ -92,14 +100,24 @@ public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface 
    }
 
    void select_itemStateChanged(ItemEvent e) {
-      if (select.isSelected()) {
-         queue.setEnabled(true);
-         library.setEnabled(true);
-      }
-      else {
-         queue.setEnabled(false);
-         library.setEnabled(false);
-      }
+//      if (select.isSelected()) {
+//         queue.setEnabled(true);
+//         library.setEnabled(true);
+//      }
+//      else {
+//         queue.setEnabled(false);
+//         library.setEnabled(false);
+//      }
+   }
+
+   public void toggleNotEmpty() {
+
+      select.setSelected(true);
+
+   }
+
+   public void toggleEmpty() {
+
    }
 
    public String getQueue() {

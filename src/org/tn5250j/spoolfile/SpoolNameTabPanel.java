@@ -1,4 +1,3 @@
-package org.tn5250j.spoolfile;
 /**
  * Title: SpoolNamePanel.java
  * Copyright:   Copyright (c) 2002
@@ -24,13 +23,18 @@ package org.tn5250j.spoolfile;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.spoolfile;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import org.tn5250j.tools.AlignLayout;
 
-public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface {
+import org.tn5250j.event.ToggleDocumentListener;
+import org.tn5250j.gui.ToggleDocument;
+
+public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface,
+                                                         ToggleDocumentListener {
 
    JRadioButton all;
    JRadioButton select;
@@ -62,7 +66,11 @@ public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface {
       });
 
       spoolName = new JTextField(15);
-      spoolName.setEnabled(false);
+      ToggleDocument td = new ToggleDocument();
+      td.addToggleDocumentListener(this);
+      spoolName.setDocument(td);
+
+//      spoolName.setEnabled(false);
 
       ButtonGroup bg = new ButtonGroup();
       bg.add(all);
@@ -82,17 +90,27 @@ public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface {
     */
    public void reset() {
 
-      spoolName.setEnabled(false);
+//      spoolName.setEnabled(false);
       spoolName.setText("");
       all.setSelected(true);
 
    }
 
    void select_itemStateChanged(ItemEvent e) {
-      if (select.isSelected())
-         spoolName.setEnabled(true);
-      else
-         spoolName.setEnabled(false);
+//      if (select.isSelected())
+//         spoolName.setEnabled(true);
+//      else
+//         spoolName.setEnabled(false);
+   }
+
+   public void toggleNotEmpty() {
+
+      select.setSelected(true);
+
+   }
+
+   public void toggleEmpty() {
+
    }
 
    public String getSpoolName() {

@@ -40,6 +40,7 @@ import org.tn5250j.event.WizardEvent;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.My5250;
+import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.Session;
 import org.tn5250j.mailtools.SendEMailDialog;
 
@@ -49,7 +50,7 @@ import com.lowagie.text.*;
 /**
  *
  */
-public class SpoolExportWizard extends JFrame implements WizardListener {
+public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
 
    JPanel contentPane;
    JLabel statusBar = new JLabel();
@@ -148,8 +149,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    //Component initialization
    private void jbInit() throws Exception  {
-
-      setIconImage(My5250.tnicon.getImage());
 
       // create ourselves a new wizard
       wizard = new Wizard();
@@ -1148,10 +1147,10 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
    }
 
    /**
-    * Converts a byte to a char 
+    * Converts a byte to a char
     *
     * @param b the byte to be converted
-    * @param charsetName the name of a charset in the which the byte is encoded 
+    * @param charsetName the name of a charset in the which the byte is encoded
     * @return the converted char
     */
    public static char byte2char(byte b, String charsetName) {
