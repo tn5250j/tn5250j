@@ -36,13 +36,13 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
       System.getProperty("user.home") + File.separator + ".tn5250j" + 
       File.separator);
       
-//      try {
+      try {
         _instance = new JPythonInterpreterDriver();
-//      }
-//      catch (Exception ex) {
+      }
+      catch (Exception ex) {
           
           
-//      }
+      }
       InterpreterDriverManager.registerDriver(_instance);
    }
 
