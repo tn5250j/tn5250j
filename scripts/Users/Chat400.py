@@ -40,7 +40,8 @@ class Poller(Runnable):
                 entry = dq.read(curUsr,-1,"EQ")
                 mail = entry.getString()
                 sndUsr = mail.split(':')[0]
-                msg = mail.split(':')[1]
+                # Split only once do avoid problems text containing more :'s
+                msg = mail.split(':', 1)[1]
                 self.parent.rpyTxt.append("--== Received from " + sndUsr \
                 + " ==--\n" + msg + "\n")
                 self.parent.rpyTxt.setCaretPosition(len(self.parent.rpyTxt.getText()))
@@ -168,7 +169,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         cmd = acc.CommandCall(self.as400)
         curUsr = self.as400.getUserId()
         selected = self.users.getSelectedItem()
-        sndUsr =selected.split(':')[0]
+        sndUsr = selected.split(':')[0]
         chatTxt = self.chatTxt.getText()
         dq = acc.KeyedDataQueue(self.as400, CHATQ)
         if not dq.exists():
