@@ -508,6 +508,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
             sesProps.put(SESSION_PROXY_PORT ,getParm("-spp",args));
       }
 
+      // are we to use a ssl and if we are what type
+      if (isSpecified("-sslType",args)) {
+
+         sesProps.put(SSL_TYPE,getParm("-sslType",args));
+      }
+
       // check if device name is specified
       if (isSpecified("-dn",args))
          sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));

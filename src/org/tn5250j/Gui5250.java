@@ -1112,7 +1112,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       try {
          FileInputStream in = new FileInputStream(propFileName);
-
+         //InputStream in = getClass().getClassLoader().getResourceAsStream(propFileName);
          defaultProps.load(in);
 
       }

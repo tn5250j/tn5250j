@@ -6,7 +6,6 @@ import java.applet.*;
 import javax.swing.*;
 import java.util.*;
 import org.tn5250j.tools.LangTool;
-//import ca.stevekennedy.tn5250j.ssl.SSLConstants;
 
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
@@ -80,11 +79,6 @@ public class My5250App extends JApplet implements TN5250jConstants {
          LangTool.init(parseLocale(getParameter("-L")));
       else
          LangTool.init();
-
-      //smk: For SSL compatibility.
-//      if (isSpecified("SSL")) {
-          //System.setProperty(SSLConstants.SSL_TYPE,getParameter("SSL"));
-//      }
 
       manager = new SessionManager();
       Session s = manager.openSession(sesProps,"","Test Applet");

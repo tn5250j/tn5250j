@@ -35,7 +35,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.lang.reflect.*;
 import org.tn5250j.tools.CodePage;
-//import ca.stevekennedy.tn5250j.ssl.SocketConnector;
+import org.tn5250j.transport.SocketConnector;
 
 public final class tnvt implements Runnable, TN5250jConstants {
 
@@ -82,6 +82,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private char[] signOnSave;
    private boolean onConnect;
    private String connectMacro;
+   private String sslType;
 
    tnvt (Screen5250 screen52) {
 
@@ -108,6 +109,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
    public void setController(Session c) {
 
       controller = c;
+   }
+
+   public void setSSLType(String type) {
+      sslType = type;
    }
 
    public void setDeviceName(String name) {
@@ -175,11 +180,19 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          }
 
-         sock = new Socket(s, port);
+//         sock = new Socket(s, port);
          //smk - For SSL compability
-//         sock = new SocketConnector().createSocket(s,port);
-         if (sock == null)
+         SocketConnector sc = new SocketConnector();
+         if (sslType != null)
+            sc.setSSLType(sslType);
+         sock = sc.createSocket(s,port);
+
+         if (sock == null) {
             System.out.println("I did not get a socket");
+            disconnect();
+            return false;
+         }
+
          connected = true;
          // used for JDK1.3
          sock.setKeepAlive(true);

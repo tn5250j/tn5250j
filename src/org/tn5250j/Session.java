@@ -35,13 +35,14 @@ import javax.swing.*;
  */
 public class Session extends Gui5250 implements SessionInterface,TN5250jConstants {
 
-   private String configurationResource = null;
-   private String sessionName = null;
-   private boolean connected = false;
-   private int sessionType = 0;
+   private String configurationResource;
+   private String sessionName;
+   private boolean connected;
+   private int sessionType;
    private Properties sesProps;
-   private Vector listeners = null;
+   private Vector listeners;
    private SessionChangeEvent sce;
+   private String sslType;
 
    public Session (My5250 m, Properties props, String configurationResource
                                                 , String sessionName) {
@@ -117,6 +118,15 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
          vt.setProxy((String)sesProps.getProperty(SESSION_PROXY_HOST),
                      proxyPort);
 
+      if (sesProps.containsKey(org.tn5250j.transport.SSLConstants.SSL_TYPE)) {
+         sslType = (String)sesProps.getProperty(org.tn5250j.transport.SSLConstants.SSL_TYPE);
+      }
+      else {
+         // set default to none
+         sslType = org.tn5250j.transport.SSLConstants.SSL_TYPE_NONE;
+      }
+
+      vt.setSSLType(sslType);
 
       if (sesProps.containsKey(SESSION_CODE_PAGE))
          vt.setCodePage((String)sesProps.getProperty(SESSION_CODE_PAGE));
