@@ -116,7 +116,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //      this.setOpaque(false);
       setDoubleBuffered(true);
       s.setOpaque(false);
-      s.setDoubleBuffered(true);
+      s.setDoubleBuffered(false);
 
       loadProps();
       screen = new Screen5250(this,defaultProps);
@@ -462,6 +462,21 @@ public class Gui5250 extends JPanel implements ComponentListener,
       getInputMap().put(ks,MNEMONIC_RUN_SCRIPT);
       getActionMap().put(MNEMONIC_RUN_SCRIPT,runScript );
 
+      Action spclDump = new AbstractAction("special dump") {
+            public void actionPerformed(ActionEvent e) {
+               dumpStuff(new Throwable());
+            }
+        };
+
+//      if (!keyMap.isKeyStrokeDefined("special dump")) {
+         ks = KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK);
+//      }
+//      else {
+//         ks = keyMap.getKeyStroke(MNEMONIC_RUN_SCRIPT);
+//      }
+      getInputMap().put(ks,"special dump");
+      getActionMap().put("special dump",spclDump );
+
 //
 //         Action ohshit = new AbstractAction() {
 //               public void actionPerformed(ActionEvent e) {
@@ -515,6 +530,14 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    }
 
+   private void dumpStuff(Throwable ex) {
+
+      vt.dumpStuff();
+      if (null == ex) {
+         return;
+      }
+      ex.printStackTrace();
+   }
    public void onKeyChanged() {
 
       getInputMap().clear();

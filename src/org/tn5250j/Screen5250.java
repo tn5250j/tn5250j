@@ -3635,6 +3635,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    public void updateDirty() {
 
       Rectangle r = new Rectangle(dirty);
+
+
       // update the image
       updateImage(r);
       // update dirty to show that we have already painted that region of the
@@ -4017,11 +4019,17 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
    protected synchronized void updateImage(int x, int y , int width, int height) {
       if (gg2d == null) {
-         gg2d = (Graphics2D)gui.getGraphics();
-//         System.out.println("was null");
+         //System.out.println("was null");
+            gg2d = (Graphics2D)gui.getGraphics();
       }
-      if (bi == null || gg2d == null)
+
+      if (bi == null || gg2d == null) {
+         if (bi == null)
+             System.out.println("bi was null in update image");
+         if (gg2d == null)
+             System.out.println("gg2d was null in update image");
          return;
+      }
 
       g2d.setClip(x,y,width,height);
       if (!cursorActive && x + width <= bi.getWidth(null) &&
@@ -4042,12 +4050,12 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 //            System.out.println(" something went right finally " + gui.isVisible() +
 //                           " height " + height + " width " + width);
          }
-            else {
+//            else {
    //            bi.drawImageBuffer(gg2d);
 //            System.out.println(" something is wrong here " + gui.isVisible() +
 //                           " height " + height + " width " + width);
 
-            }
+//            }
       }
 
    }
@@ -4074,6 +4082,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       Rectangle r = g2.getClipBounds();
 
+      if (r == null) {
+         paintComponent3((Graphics)g2);
+         return;
+      }
       g2.setColor(colorBg);
 //      System.out.println("PaintComponent " + r);
 

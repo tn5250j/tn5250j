@@ -944,6 +944,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //                  }
 //               );
             screen52.updateDirty();
+            controller.validate();
 //            System.out.println("update dirty");
          }
          catch (Exception exd ) {
@@ -953,6 +954,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          if (pendingUnlock && !screen52.isStatusErrorCode()) {
             screen52.setKeyboardLocked(false);
+            pendingUnlock = false;
          }
 
          if (cursorOn && !screen52.isKeyboardLocked()) {
@@ -961,13 +963,24 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
 
          // lets play nicely with the others on the playground
-//         me.yield();
+         me.yield();
          pthread.yield();
 
 
       }
    }
 
+   public void dumpStuff() {
+
+      System.out.println(" Pending unlock " + pendingUnlock);
+      System.out.println(" Status Error " + screen52.isStatusErrorCode());
+      System.out.println(" Keyboard Locked " + screen52.isKeyboardLocked());
+      System.out.println(" Cursor On " + cursorOn);
+      System.out.println(" Cursor Active " + screen52.cursorActive);
+
+
+
+   }
 //      private final void execCmd() {
 //         String name = "";
 //         String argString = "";

@@ -506,10 +506,10 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
             System.out.println(s + '\n');
          }
 
-         void hideMe() {
-            this.setVisible(false);
-
-         }
+//         void hideMe() {
+//            this.setVisible(false);
+//
+//         }
 
          public int getInternalId() {
 
@@ -543,9 +543,21 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
          public void resizeMe() {
 
-            Session s = (Session)getContentPane();
-            s.resizeMe();
+            if (getContentPane() instanceof Session) {
+               Session s = (Session)getContentPane();
+               s.resizeMe();
+            }
          }
+
+         public void setBounds(int newX, int newY, int newWidth, int newHeight) {
+
+            boolean didResize = (getWidth() != newWidth || getHeight() != newHeight);
+            super.setBounds(newX, newY, newWidth, newHeight);
+            if (didResize)
+               resizeMe();
+
+         }
+
    }
 
    // A DesktopManager that keeps its frames inside the desktop.
@@ -567,7 +579,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
        public void endDraggingFrame(JComponent f) {
            JInternalFrame frame = (JInternalFrame)f;
            ((Gui5250)frame.getContentPane()).getScreen().gg2d = null;
-
+            f.validate();
        }
 
       // workaround for bug 4326562
@@ -581,11 +593,11 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
        public void setBoundsForFrame(JComponent f, int x, int y, int w, int h) {
 
          System.out.println(" we are adjusting ");
-         if (f instanceof JInternalFrame == false) {
+         if (f instanceof MyInternalFrame == false) {
            super.setBoundsForFrame(f, x, y, w, h); // only deal w/internal frames
          }
          else {
-           JInternalFrame frame = (JInternalFrame)f;
+           MyInternalFrame frame = (MyInternalFrame)f;
 
            // Figure out if we are being resized (otherwise it's just a move)
            boolean resizing = false;
@@ -628,9 +640,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
            // Set 'em the way we like 'em
            super.setBoundsForFrame(f, x, y, w, h);
-           ((MyInternalFrame)f).resizeMe();
+//           ((MyInternalFrame)f).resizeMe();
          }
-
 
        }
 

@@ -33,7 +33,7 @@ public class CharMappings {
 
    private static final String[] acp = {"37","37PT","273","280","284","285",
                                        "277-dk","277-no","297","424","500-ch",
-                                       "870-pl","870-sk","1025-r"};
+                                       "870-pl","870-sk","1025-r","1026"};
 
    /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM037..ISO-8859-1 (reversible).  */
@@ -491,9 +491,8 @@ public class CharMappings {
       0x38, 0x39, 0xCF, 0xDB, 0xDC, 0x8D, 0xDA, 0xBB,
    };
 
-/* Conversion table generated mechanically by Free `recode' 3.5
+   /* Conversion table generated mechanically by Free `recode' 3.5
    for sequence IBM870..ISO-8859-1 (reversible).  */
-
    private static final int[] codePage870sk = {
 
       0,   1,   2,   3, 156,   9, 134, 127,	/*   0 -   7  */
@@ -567,6 +566,43 @@ public class CharMappings {
    56,  57,  199,  216,  221,  217,  215,  187,
    };
 
+   /* Added 1026 code pages by Omer Guclu <oguclu@superonline.com */
+   /* Conversion table generated mechanically by my own hands. */
+    private static final int[] codePage1026 = {
+        0, 1, 2, 3, 156, 9, 134, 127,
+        151, 141, 142, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 157, 133, 8, 135,
+        24, 25, 146, 143, 28, 29, 30, 31,
+        128, 129, 130, 131, 132, 10, 23, 27,
+        136, 137, 138, 139, 140, 5, 6, 7,
+        144, 145, 22, 147, 148, 149, 150, 4,
+        152, 153, 154, 155, 20, 21, 158, 26,
+        32, 160, 226, 228, 224, 225, 227, 229,
+        123, 241, 199, 46, 60, 40, 43, 33,
+        38, 233, 234, 235, 232, 237, 238, 239,
+        236, 223, 208, 221, 42, 41, 59, 94,
+        45, 47, 194, 196, 192, 193, 195, 197,
+        91, 209, 254, 44, 37, 95, 62, 63,
+        248, 201, 202, 203, 200, 205, 206, 207,
+        204, 253, 58, 214, 222, 39, 61, 220,
+        216, 97, 98, 99, 100, 101, 102, 103,
+        104, 105, 171, 187, 125, 96, 166, 177,
+        176, 106, 107, 108, 109, 110, 111, 112,
+        113, 114, 170, 186, 230, 184, 198, 164,
+        181, 246, 115, 116, 117, 118, 119, 120,
+        121, 122, 161, 191, 93, 36, 64, 174,
+        162, 163, 165, 183, 169, 167, 182, 188,
+        189, 190, 172, 124, 175, 168, 180, 215,
+        231, 65, 66, 67, 68, 69, 70, 71,
+        72, 73, 173, 244, 126, 242, 243, 245,
+        240, 74, 75, 76, 77, 78, 79, 80,
+        81, 82, 185, 251, 92, 249, 250, 255,
+        252, 247, 83, 84, 85, 86, 87, 88,
+        89, 90, 178, 212, 35, 210, 211, 213,
+        48, 49, 50, 51, 52, 53, 54, 55,
+        56, 57, 179, 219, 34, 217, 218, 159,
+    };
+
    public static final int[] getCodePage(String cp) {
 
       if (cp.equals("37"))
@@ -597,6 +633,8 @@ public class CharMappings {
          return codePage870sk;
       if (cp.equals("1025-r"))
          return codePage1025;
+      if (cp.equals("1026"))
+         return codePage1026;
 
       return codePage37;
 
