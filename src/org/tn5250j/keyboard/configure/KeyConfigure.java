@@ -1,5 +1,5 @@
 /**
- * Title: tn5250J
+ * Title: KeyConfigure
  * Copyright:   Copyright (c) 2001
  * Company:
  * @author  Kenneth J. Pouncey
@@ -34,13 +34,15 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import java.text.*;
+import java.lang.reflect.*;
 
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.scripting.InterpreterDriverManager;
-import org.tn5250j.*;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.tools.KeyStroker;
+import org.tn5250j.keyboard.KeyStroker;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.system.OperatingSystem;
 
 
@@ -52,6 +54,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
    JPanel options = new JPanel();
    JTextArea strokeDesc = new JTextArea();
    JTextArea strokeDescAlt = new JTextArea();
+   JLabel strokeLocation = new JLabel();
+   JLabel strokeLocationAlt = new JLabel();
    JList functions;
    KeyMapper mapper;
    JFrame jf = null;
@@ -74,8 +78,6 @@ public class KeyConfigure extends JDialog implements ActionListener,
       macrosList = macros;
 
       if (OperatingSystem.isUnix() && !OperatingSystem.isMacOS()) {
-//      if (System.getProperty("os.name").toLowerCase().indexOf("linux") != -1) {
-//         System.out.println("using os " + os);
          isLinux = true;
       }
 
@@ -95,6 +97,40 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       mapper = new KeyMapper();
       mapper.init();
+
+
+      keyPanel.setLayout(borderLayout);
+      keyPanel.add(createFunctionsPanel(),BorderLayout.WEST);
+
+      keyPanel.add(createMappingPanel(),BorderLayout.CENTER);
+
+      // add the panels to our dialog
+      getContentPane().add(keyPanel,BorderLayout.CENTER);
+      getContentPane().add(options, BorderLayout.SOUTH);
+
+
+      // add option buttons to options panel
+      addOptButton(LangTool.getString("key.labelDone","Done"),"DONE",options,true);
+
+      this.setModal(true);
+      this.setTitle(LangTool.getString("key.title"));
+
+      // pack it and center it on the screen
+      pack();
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension frameSize = getSize();
+      if (frameSize.height > screenSize.height)
+         frameSize.height = screenSize.height;
+      if (frameSize.width > screenSize.width)
+         frameSize.width = screenSize.width;
+      setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+
+      // now show the world what we can do
+      show();
+
+   }
+
+   private JPanel createFunctionsPanel() {
 
       functions = new JList(lm);
 
@@ -136,6 +172,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
       fp.add(whichKeys);
       fp.add(functionsScroll);
 
+      return fp;
+
+   }
+
+   private JPanel createMappingPanel () {
+
+      // set the descriptions defaults
       strokeDesc.setColumns(30);
       strokeDesc.setBackground(functions.getBackground());
       strokeDesc.setEditable(false);
@@ -144,62 +187,74 @@ public class KeyConfigure extends JDialog implements ActionListener,
       strokeDescAlt.setBackground(functions.getBackground());
       strokeDescAlt.setEditable(false);
 
+      // create main panel
       JPanel dp = new JPanel();
       dp.setBorder(BorderFactory.createTitledBorder(
                                     LangTool.getString("key.labelMapTo")));
 
       dp.setLayout(new BoxLayout(dp,BoxLayout.Y_AXIS));
 
+      // create primary map panel
+      JPanel primeKeyMapPanel = new JPanel();
+      primeKeyMapPanel.setLayout(new BorderLayout());
+
+      // create key description panel
       JPanel primeKeyPanel = new JPanel();
+
+      primeKeyPanel.setLayout(new AlignLayout(3,5,5));
 
       primeKeyPanel.add(strokeDesc);
 
+      // add the option buttons
       addOptButton(LangTool.getString("key.labelMap","Map Key"),"MAP-Prime",
                                        primeKeyPanel,true);
       addOptButton(LangTool.getString("key.labelRemove","Remove"),"REMOVE-Prime",
                                        primeKeyPanel,true);
 
+      // add the description to primary map panel
+      primeKeyMapPanel.add(primeKeyPanel,BorderLayout.NORTH);
+
+      // create the location description panel
+      JPanel loc1 = new JPanel();
+      loc1.setLayout(new BorderLayout());
+      loc1.add(strokeLocation,BorderLayout.NORTH);
+
+      // add the location description panel to the primary map panel
+      primeKeyMapPanel.add(loc1,BorderLayout.CENTER);
+
+
+      // create the alternate map panel
+      JPanel altKeyMapPanel = new JPanel();
+      altKeyMapPanel.setLayout(new BorderLayout());
+
+      // create the alternate description panel
       JPanel altKeyPanel = new JPanel();
+      altKeyPanel.setLayout(new AlignLayout(3,5,5));
+
       altKeyPanel.add(strokeDescAlt);
 
+      // add the options to the description panel
       addOptButton(LangTool.getString("key.labelMap","Map Key"),"MAP-Alt",
                                        altKeyPanel,true);
       addOptButton(LangTool.getString("key.labelRemove","Remove"),"REMOVE-Alt",
                                        altKeyPanel,true);
 
-      dp.add(primeKeyPanel);
-      dp.add(altKeyPanel);
+      // add the description panel to the alternate map panel
+      altKeyMapPanel.add(altKeyPanel,BorderLayout.NORTH);
 
-      keyPanel.setLayout(borderLayout);
-      keyPanel.add(fp,BorderLayout.WEST);
-      keyPanel.add(dp,BorderLayout.CENTER);
+      // create the alternate location description panel
+      JPanel locAlt = new JPanel();
+      locAlt.setLayout(new BorderLayout());
+      locAlt.add(strokeLocationAlt,BorderLayout.NORTH);
 
-      // add the panels to our dialog
-      getContentPane().add(keyPanel,BorderLayout.CENTER);
-      getContentPane().add(options, BorderLayout.SOUTH);
+      // add the alternate location description panel to alternate map panel
+      altKeyMapPanel.add(locAlt,BorderLayout.CENTER);
 
+      // add the map panels for display
+      dp.add(primeKeyMapPanel);
+      dp.add(altKeyMapPanel);
 
-      // add option buttons to options panel
-//      addOptButton(LangTool.getString("key.labelMap","Map Key"),"MAP",options,true);
-//      addOptButton(LangTool.getString("key.labelRemove","Remove"),"REMOVE",options,true);
-      addOptButton(LangTool.getString("key.labelDone","Done"),"DONE",options,true);
-
-      this.setModal(true);
-      this.setTitle(LangTool.getString("key.title"));
-
-      // pack it and center it on the screen
-      pack();
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-      setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-
-      // now show the world what we can do
-      show();
-
+      return dp;
    }
 
    private void setKeyDescription(int index) {
@@ -209,30 +264,28 @@ public class KeyConfigure extends JDialog implements ActionListener,
          if (!macros && !special) {
 
             KeyDescription kd = (KeyDescription)lm.getElementAt(index);
-            strokeDesc.setText(mapper.getKeyStrokeDesc(mnemonicData[kd.getIndex()]));
-            strokeDescAlt.setText(mapper.getKeyStrokeDesc(mnemonicData[kd.getIndex()] + ".alt2"));
+
+            setKeyInformation(mnemonicData[kd.getIndex()]);
          }
          else {
             if (macros) {
                Object o = lm.getElementAt(index);
                if (o instanceof String) {
                   System.out.println((String)o);
-                  strokeDesc.setText(mapper.getKeyStrokeDesc((String)o));
-                  strokeDescAlt.setText(mapper.getKeyStrokeDesc((String)o + ".alt2"));
+                  setKeyInformation((String)o);
                }
                else
                   if (o instanceof Macro) {
 
                      Macro m = (Macro)o;
-                     strokeDesc.setText(mapper.getKeyStrokeDesc(m.getFullName()));
-                     strokeDescAlt.setText(mapper.getKeyStrokeDesc(m.getFullName() + ".alt2"));
+                     setKeyInformation(m.getFullName());
                   }
             }
 
             if (special) {
                System.out.println((String)lm.getElementAt(index));
                String k = parseSpecialCharacter((String)lm.getElementAt(index));
-               strokeDesc.setText(mapper.getKeyStrokeDesc(k));
+               setKeyInformation(k);
             }
          }
       }
@@ -240,6 +293,51 @@ public class KeyConfigure extends JDialog implements ActionListener,
          System.out.println("ar at index " + index + " - " + ar.getMessage());
       }
 
+   }
+
+   private void setKeyInformation(String keyDesc) {
+
+      if (keyDesc.endsWith(KeyStroker.altSuffix)) {
+
+         keyDesc = keyDesc.substring(0,keyDesc.indexOf(KeyStroker.altSuffix));
+      }
+
+      strokeDesc.setText(mapper.getKeyStrokeDesc(keyDesc));
+      strokeDescAlt.setText(mapper.getKeyStrokeDesc(keyDesc +
+                              KeyStroker.altSuffix));
+
+      strokeLocation.setText(getLocationDesc(keyDesc));
+      strokeLocationAlt.setText(getLocationDesc(keyDesc + KeyStroker.altSuffix));
+   }
+
+   private String getLocationDesc(String keyDesc) {
+
+      String locStr = LangTool.getString("key.labelLocUnknown");
+
+      if (mapper.isKeyStrokeDefined(keyDesc)) {
+
+         switch (mapper.getKeyStroker(keyDesc).getLocation()) {
+
+            case KeyStroker.KEY_LOCATION_LEFT:
+               locStr = LangTool.getString("key.labelLocLeft");
+               break;
+
+            case KeyStroker.KEY_LOCATION_RIGHT:
+               locStr = LangTool.getString("key.labelLocRight");
+               break;
+
+            case KeyStroker.KEY_LOCATION_STANDARD:
+               locStr = LangTool.getString("key.labelLocStandard");
+               break;
+
+            case KeyStroker.KEY_LOCATION_NUMPAD:
+               locStr = LangTool.getString("key.labelLocNumPad");
+               break;
+
+         }
+      }
+
+      return locStr;
    }
 
    private String parseSpecialCharacter(String value) {
@@ -405,7 +503,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
       Object[]      message = new Object[1];
 
       JPanel kgp = new JPanel();
-      final KeyGetter kg = new KeyGetter();
+      final KeyGetterInterface kg = getMeAKeyProcessor();
       kg.setForeground(Color.blue);
       message[0] = kgp;
 
@@ -436,6 +534,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       dialog = opain.createDialog(this, getTitle());
 
+      kg.setDialog(dialog);
+
       // add window listener to the dialog so that we can place focus on the
       //   key getter label instead of default and set the new key value when
       //   the window is closed.
@@ -459,13 +559,44 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
    }
 
+   private KeyGetterInterface getMeAKeyProcessor() {
+
+      ClassLoader loader = KeyConfigure.class.getClassLoader();
+      if (loader == null)
+         loader = ClassLoader.getSystemClassLoader();
+
+      Class       keyProcessorClass;
+      Constructor keyProcessorConstructor;
+
+      try {
+         String className = "org.tn5250j.keyboard.configure.KeyGetter";
+         if (!OperatingSystem.hasJava14())
+            className += "13";
+
+         keyProcessorClass = loader.loadClass(className);
+         keyProcessorConstructor = keyProcessorClass.getConstructor(null);
+         Object obj = keyProcessorConstructor.newInstance(null);
+         return (KeyGetterInterface)obj;
+      }
+      catch (Throwable t) {
+
+      }
+
+      return new KeyGetter13();
+   }
+
    private void removeIt() {
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
 
-         mapper.removeKeyStroke(mnemonicData[index]);
-         strokeDesc.setText(mapper.getKeyStrokeDesc(
-                           mnemonicData[index]));
+         String function = mnemonicData[index];
+
+         if (altKey)
+            function += KeyStroker.altSuffix;
+
+         mapper.removeKeyStroke(function);
+         setKeyInformation(function);
+
 
       }
       else {
@@ -479,17 +610,21 @@ public class KeyConfigure extends JDialog implements ActionListener,
             else {
                name = (String)o;
             }
+
+            if (altKey)
+               name += KeyStroker.altSuffix;
+
             mapper.removeKeyStroke(name);
-            strokeDesc.setText(mapper.getKeyStrokeDesc(
-                              name));
+            setKeyInformation(name);
          }
          if (special) {
             String k = "";
             k += ((String)functions.getSelectedValue()).charAt(7);
-            mapper.removeKeyStroke(k);
-            strokeDesc.setText(mapper.getKeyStrokeDesc(
-                              (String)functions.getSelectedValue()));
+            if (altKey)
+               k += KeyStroker.altSuffix;
 
+            mapper.removeKeyStroke(k);
+            setKeyInformation(k);
          }
       }
       mods = true;
@@ -503,7 +638,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
          String stroke = mnemonicData[index];
 
          if (altKey)
-            stroke += ".alt2";
+            stroke += KeyStroker.altSuffix;
 
          if (isLinux) {
             mapper.setKeyStroke(stroke,ke,isAltGr);
@@ -512,12 +647,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             mapper.setKeyStroke(stroke,ke);
          }
 
-         if (altKey)
-            strokeDescAlt.setText(mapper.getKeyStrokeDesc(
-                              stroke));
-         else
-            strokeDesc.setText(mapper.getKeyStrokeDesc(
-                              stroke));
+         setKeyInformation(stroke);
 
       }
       else {
@@ -529,28 +659,36 @@ public class KeyConfigure extends JDialog implements ActionListener,
             else
                macro = (String)o;
 
+            if (altKey)
+               macro += KeyStroker.altSuffix;
+
             System.out.println(macro);
             if (isLinux)
                mapper.setKeyStroke(macro,ke,isAltGr);
             else
                mapper.setKeyStroke(macro,ke);
 
-            strokeDesc.setText(mapper.getKeyStrokeDesc(
-                              macro));
+            setKeyInformation(macro);
+
          }
+
          if (special) {
             System.out.println((String)functions.getSelectedValue());
             String k = parseSpecialCharacter((String)functions.getSelectedValue());
-//            k += ((String)functions.getSelectedValue()).charAt(7);
+
+            if (altKey)
+               k += KeyStroker.altSuffix;
+
             mapper.removeKeyStroke(k);
+
             if (isLinux) {
                mapper.setKeyStroke(k,ke,isAltGr);
             }
             else {
                mapper.setKeyStroke(k,ke);
             }
-            strokeDesc.setText(mapper.getKeyStrokeDesc(k));
 
+            setKeyInformation(k);
 
          }
 
@@ -757,225 +895,4 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
    }
 
-
-   /**
-    * This class extends label so that we can display text as well as capture
-    * the key stroke(s) to assign to keys.
-    */
-   private class KeyGetter extends JLabel {
-
-      KeyEvent keyevent;
-
-      public KeyGetter() {
-         super();
-         addKeyListener(new KeyAdapter() {
-
-               public void keyTyped(KeyEvent e) {
-                     processVTKeyTyped(e);
-
-               }
-
-               public void keyPressed(KeyEvent ke) {
-
-                  processVTKeyPressed(ke);
-               }
-
-               public void keyReleased(KeyEvent e) {
-
-                  processVTKeyReleased(e);
-
-               }
-
-         });
-
-      }
-
-      public boolean isFocusTraversable () {
-         return true;
-      }
-
-      /**
-       * Override to inform focus manager that component is managing focus changes.
-       * This is to capture the tab and shift+tab keys.
-       */
-      public boolean isManagingFocus() {
-         return true;
-      }
-
-       /*
-        * We have to jump through some hoops to avoid
-        * trying to print non-printing characters
-        * such as Shift.  (Not only do they not print,
-        * but if you put them in a String, the characters
-        * afterward won't show up in the text area.)
-        */
-       protected void displayInfo(KeyEvent e, String s){
-
-        String charString, keyCodeString, modString, tmpString,isString,locString;
-
-        char c = e.getKeyChar();
-        int keyCode = e.getKeyCode();
-        int modifiers = e.getModifiers();
-//        int location = e.getKeyLocation();
-
-        if (Character.isISOControl(c)) {
-            charString = "key character = "
-                       + "(an unprintable control character)";
-        } else {
-            charString = "key character = '"
-                       + c + "'";
-        }
-
-        keyCodeString = "key code = " + keyCode
-                        + " ("
-                        + KeyEvent.getKeyText(keyCode)
-                        + ")";
-         if(keyCode == KeyEvent.VK_PREVIOUS_CANDIDATE) {
-
-            keyCodeString += " previous candidate ";
-
-         }
-
-         if(keyCode == KeyEvent.VK_DEAD_ABOVEDOT ||
-               keyCode == KeyEvent.VK_DEAD_ABOVERING ||
-               keyCode == KeyEvent.VK_DEAD_ACUTE ||
-               keyCode == KeyEvent.VK_DEAD_BREVE ||
-               keyCode == KeyEvent.VK_DEAD_CIRCUMFLEX
-
-            ) {
-
-            keyCodeString += " dead key ";
-
-         }
-
-        modString = "modifiers = " + modifiers;
-        tmpString = KeyEvent.getKeyModifiersText(modifiers);
-        if (tmpString.length() > 0) {
-            modString += " (" + tmpString + ")";
-        } else {
-            modString += " (no modifiers)";
-        }
-
-        locString = "location = (UNKNOWN)";
-
-//        switch (location) {
-//            case KeyEvent.KEY_LOCATION_LEFT:
-//               locString = "location = " + location + " (LEFT)";
-//               break;
-//            case KeyEvent.KEY_LOCATION_NUMPAD:
-//               locString = "location = " + location + " (NUM_PAD)";
-//               break;
-//            case KeyEvent.KEY_LOCATION_RIGHT:
-//               locString = "location = " + location + " (RIGHT)";
-//               break;
-//            case KeyEvent.KEY_LOCATION_STANDARD:
-//               locString = "location = " + location + " (STANDARD)";
-//               break;
-//            default:
-//               locString = "location = " + location + " (UNKNOWN)";
-//               break;
-//
-//        }
-
-        isString = "isKeys = isActionKey (" + e.isActionKey() + ")" +
-                         " isAltDown (" + e.isAltDown() + ")" +
-                         " isAltGraphDown (" + e.isAltGraphDown() + ")" +
-                         " isAltGraphDownLinux (" + isAltGr + ")" +
-                         " isControlDown (" + e.isControlDown() + ")" +
-                         " isMetaDown (" + e.isMetaDown() + ")" +
-                         " isShiftDown (" + e.isShiftDown() + ")";
-
-
-         String newline = "\n";
-        System.out.println(s + newline
-                           + "    " + charString + newline
-                           + "    " + keyCodeString + newline
-                           + "    " + modString + newline
-                           + "    " + locString + newline
-                           + "    " + isString + newline);
-
-       }
-
-      private void processVTKeyPressed(KeyEvent e){
-
-         displayInfo(e,"Pressed ");
-         int keyCode = e.getKeyCode();
-
-         if (isLinux && keyCode == e.VK_ALT_GRAPH) {
-
-            isAltGr = true;
-         }
-         // be careful with the control key
-         if (keyCode == e.VK_UNDEFINED ||
-               keyCode == e.VK_CAPS_LOCK ||
-               keyCode == e.VK_SHIFT ||
-               keyCode == e.VK_ALT ||
-               keyCode == e.VK_ALT_GRAPH ||
-               keyCode == e.VK_CONTROL
-            ) {
-
-            return;
-         }
-
-         // be careful with the control key !!!!!!
-         if (!e.isAltDown() ||
-            !e.isShiftDown() ||
-            !e.isControlDown() ||
-            keyCode != KeyEvent.VK_CONTROL &&  // be careful about removing this line
-            !e.isActionKey()) {
-
-//            if (keyCode == KeyEvent.VK_ESCAPE ||
-//               keyCode == KeyEvent.VK_CONTROL ||
-//               keyCode == KeyEvent.VK_BACK_SPACE) {
-//               displayInfo(e,"Pressed added");
-               keyevent = e;
-               dialog.setVisible(false);
-               dialog.dispose();
-//            }
-         }
-
-
-      }
-
-      private void processVTKeyTyped(KeyEvent e){
-
-          displayInfo(e,"Typed ");
-         int keycode = e.getKeyCode();
-         if (e.isAltDown() ||
-            e.isShiftDown() ||
-            e.isControlDown() ||
-            e.isActionKey() ||
-            keycode == KeyEvent.VK_CONTROL) {
-
-            keyevent = e;
-//            displayInfo(e,"Released added ");
-            dialog.setVisible(false);
-            dialog.dispose();
-         }
-
-      }
-
-      private void processVTKeyReleased(KeyEvent e){
-            displayInfo(e,"Released ");
-         if (isLinux && e.getKeyCode() == e.VK_ALT_GRAPH) {
-
-            isAltGr = false;
-         }
-         int keycode = e.getKeyCode();
-         if (e.isAltDown() ||
-            e.isShiftDown() ||
-            e.isControlDown() ||
-            e.isActionKey() ||
-            keycode == KeyEvent.VK_CONTROL) {
-
-
-            keyevent = e;
-//            displayInfo(e,"Released added");
-            dialog.setVisible(false);
-            dialog.dispose();
-         }
-     }
-
-
-   }
 }
