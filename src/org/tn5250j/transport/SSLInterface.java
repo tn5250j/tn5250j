@@ -22,7 +22,6 @@ package org.tn5250j.transport;
  *
  */
 import java.net.Socket;
-import org.tn5250j.transport.SSLConstants;
 
 public interface SSLInterface {
 

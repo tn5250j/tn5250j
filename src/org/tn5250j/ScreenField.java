@@ -25,15 +25,6 @@
  */
 package org.tn5250j;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.*;
-import java.io.*;
-import java.awt.event.*;
-import java.awt.*;
-
-import java.text.*;
-
 public class ScreenField {
 
    protected ScreenField(Screen5250 s) {

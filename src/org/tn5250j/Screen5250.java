@@ -26,16 +26,10 @@ package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.border.*;
 import java.awt.font.*;
 import java.awt.geom.*;
 import java.text.*;
 import java.util.*;
-import java.awt.image.*;
-import java.io.*;
-import java.awt.print.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
 
@@ -3787,7 +3781,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       //  now we try to move to first input field according to
       //  14.6 WRITE TO DISPLAY Command
-      //    ° If the WTD command is valid, after the command is processed,
+      //    ? If the WTD command is valid, after the command is processed,
       //          the cursor moves to one of three locations:
       //    - The location set by an insert cursor order (unless control
       //          character byte 1, bit 1 is equal to B'1'.)

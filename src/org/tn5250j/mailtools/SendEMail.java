@@ -25,11 +25,7 @@
  */
 package org.tn5250j.mailtools;
 
-import java.util.Hashtable;
-import java.io.*;
-import java.beans.*;
 import java.util.*;
-import java.math.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.activation.*;

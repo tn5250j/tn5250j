@@ -29,8 +29,6 @@ import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import javax.swing.*;
-import javax.swing.border.*;
-import java.util.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;

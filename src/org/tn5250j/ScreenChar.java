@@ -28,11 +28,9 @@ package org.tn5250j;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.*;
-import java.io.*;
-import java.awt.font.*;
 import java.awt.Font;
-import org.tn5250j.tools.GUIGraphicsUtils;
 
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 public class ScreenChar {
 

@@ -28,11 +28,6 @@ package org.tn5250j.keyboard;
 
 import javax.swing.KeyStroke;
 import java.awt.event.*;
-import java.awt.Toolkit;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-import javax.swing.Action;
-import javax.swing.AbstractAction;
 
 import org.tn5250j.Session;
 import org.tn5250j.keyboard.actions.*;
@@ -265,7 +260,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       // so we check if it's a letter (with or without shift) and skip return
       if (isLinux) {
 
-         //if (!((Character.isLetter(kc) || kc == '¤')  && (e.getModifiers() == 0
+         //if (!((Character.isLetter(kc) || kc == '?')  && (e.getModifiers() == 0
          if (!((Character.isLetter(kc) || kc == '\u20AC')  && (e.getModifiers() == 0
             || e.getModifiers() == KeyEvent.SHIFT_MASK))) {
 

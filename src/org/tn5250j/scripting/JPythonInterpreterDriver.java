@@ -11,15 +11,11 @@
 
 package org.tn5250j.scripting;
 
-
-import java.io.*;
-
 import org.python.util.PythonInterpreter;
 import org.python.core.*;
 import org.tn5250j.Session;
-import javax.swing.SwingUtilities;
+
 import javax.swing.JOptionPane;
-import java.util.Properties;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 

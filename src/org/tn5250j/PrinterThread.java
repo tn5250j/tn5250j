@@ -26,7 +26,6 @@ package org.tn5250j;
  */
 import java.awt.print.*;
 import java.awt.*;
-import javax.swing.*;
 import java.awt.font.*;
 import org.tn5250j.Session;
 

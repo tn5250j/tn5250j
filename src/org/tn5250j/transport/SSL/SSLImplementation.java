@@ -24,7 +24,6 @@ package org.tn5250j.transport.SSL;
  */
 
 import java.net.Socket;
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.KeyManagerFactory;

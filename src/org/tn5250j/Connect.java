@@ -32,7 +32,6 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
-import java.io.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.gui.*;

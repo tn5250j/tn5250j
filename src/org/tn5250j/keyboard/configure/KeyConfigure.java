@@ -27,8 +27,6 @@ package org.tn5250j.keyboard.configure;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
 import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
@@ -44,7 +42,6 @@ import org.tn5250j.keyboard.KeyStroker;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.system.OperatingSystem;
-
 
 public class KeyConfigure extends JDialog implements ActionListener,
                                                          TN5250jConstants {

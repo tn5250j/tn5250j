@@ -24,16 +24,13 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
-
 import java.util.*;
-import java.text.*;
 import java.net.Socket;
-import java.net.*;
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.lang.reflect.*;
+
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.transport.SocketConnector;
@@ -2182,22 +2179,22 @@ public final class tnvt implements Runnable, TN5250jConstants {
          //
          //  The following shows the input for window with a title
          //
-         //      +0000 019A12A0 00000400 00020411 00200107  .ª.µ..œ...œ..€.
-         //      +0010 00000018 00000011 06131500 37D95180  ........†.…..RéØ
-         //      +0020 00000A24 0D018023 23404040 40404040  ..Ž„..Øƒƒ
+         //      +0000 019A12A0 00000400 00020411 00200107  .?.?..?...?..?.
+         //      +0010 00000018 00000011 06131500 37D95180  ........?.?..R??
+         //      +0020 00000A24 0D018023 23404040 40404040  ..??..???
          //      +0030 40211000 000000D7 C2C1D9C4 C5D4D67A   \uFFFD.....PBARDEMO:
          //      +0040 40D79996 879985A2 A2408281 99408485   Progress bar de
-         //      +0050 94961108 1520D5A4 94828599 40968640  mo.—…€Number of
-         //      +0060 8595A399 8985A24B 4B4B4B4B 4B7A2011  entries......:€.
-         //      +0070 082E2040 404040F5 F0F06BF0 F0F02011  —.€    500,000€.
-         //      +0080 091520C3 A4999985 95A34085 95A399A8  \uFFFD…€Current entry
-         //      +0090 4095A494 8285994B 4B4B7A20 11092E20   number...:€.\uFFFD.€
-         //      +00A0 40404040 4040F56B F0F0F020 110A1520        5,000€.Ž…€
+         //      +0050 94961108 1520D5A4 94828599 40968640  mo.???Number of
+         //      +0060 8595A399 8985A24B 4B4B4B4B 4B7A2011  entries......:?.
+         //      +0070 082E2040 404040F5 F0F06BF0 F0F02011  ?.?    500,000?.
+         //      +0080 091520C3 A4999985 95A34085 95A399A8  \uFFFD??Current entry
+         //      +0090 4095A494 8285994B 4B4B7A20 11092E20   number...:?.\uFFFD.?
+         //      +00A0 40404040 4040F56B F0F0F020 110A1520        5,000?.???
          //      +00B0 D9859481 89958995 87408595 A3998985  Remaining entrie
-         //      +00C0 A24B4B4B 4B4B4B7A 20110A2E 20404040  s......:€.Ž.€
-         //      +00D0 40F4F9F5 6BF0F0F0 20110C15 20E2A381   495,000€..…€Sta
+         //      +00C0 A24B4B4B 4B4B4B7A 20110A2E 20404040  s......:?.?.?
+         //      +00D0 40F4F9F5 6BF0F0F0 20110C15 20E2A381   495,000?..??Sta
          //      +00E0 99A340A3 8994854B 4B4B4B4B 4B4B4B4B  rt time.........
-         //      +00F0 4B4B4B4B 7A20110C 2F2040F7 7AF5F37A  ....:€...€ 7:53:
+         //      +00F0 4B4B4B4B 7A20110C 2F2040F7 7AF5F37A  ....:?...? 7:53:
 
                               case 0x10 : // Window title/footer
                                  if (!windowDefined) {

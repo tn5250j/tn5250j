@@ -26,11 +26,6 @@
 package org.tn5250j.keyboard.configure;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
-import javax.swing.JLabel;
-import javax.swing.JDialog;
-
-import org.tn5250j.tools.system.OperatingSystem;
 
 /**
  * This class extends label so that we can display text as well as capture

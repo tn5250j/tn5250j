@@ -28,12 +28,8 @@ package org.tn5250j;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.*;
-import java.io.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.encoding.*;

@@ -27,7 +27,6 @@
 package org.tn5250j.encoding;
 
 import java.lang.reflect.*;
-import java.io.UnsupportedEncodingException;
 
 class ToolboxCodePage
      extends CodePage

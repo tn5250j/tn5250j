@@ -20,12 +20,9 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
-
-
-import org.tn5250j.*;
 import org.tn5250j.interfaces.SessionManagerInterface;
+
 import java.util.*;
-import java.io.*;
 
 /**
  * The SessionManager is the central repository for access to all sessions.

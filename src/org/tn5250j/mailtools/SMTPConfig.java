@@ -26,7 +26,6 @@
 package org.tn5250j.mailtools;
 
 import java.awt.*;
-import java.io.*;
 import javax.swing.*;
 import java.util.Properties;
 import java.awt.event.*;

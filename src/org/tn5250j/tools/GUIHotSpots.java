@@ -24,8 +24,6 @@ package org.tn5250j.tools;
  * Boston, MA 02111-1307 USA
  *
  */
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import org.tn5250j.*;
 
 public class GUIHotSpots {

@@ -34,7 +34,6 @@ import com.ibm.as400.access.*;
 import java.sql.*;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.GUIGraphicsUtils;
-import org.tn5250j.My5250;
 import org.tn5250j.tools.system.OperatingSystem;
 
 /**

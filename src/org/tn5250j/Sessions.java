@@ -20,9 +20,8 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
-
-import org.tn5250j.*;
 import org.tn5250j.interfaces.SessionsInterface;
+
 import java.util.*;
 
 /**

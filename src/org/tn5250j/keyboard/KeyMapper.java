@@ -27,7 +27,6 @@ package org.tn5250j.keyboard;
 
 import java.awt.event.KeyEvent;
 import java.util.*;
-import java.io.*;
 import java.lang.reflect.*;
 import javax.swing.KeyStroke;
 

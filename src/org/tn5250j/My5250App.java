@@ -1,8 +1,6 @@
 package org.tn5250j;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.applet.*;
 import javax.swing.*;
 import java.util.*;
 import org.tn5250j.tools.LangTool;

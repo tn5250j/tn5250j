@@ -28,7 +28,6 @@ package org.tn5250j.spoolfile;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 import java.io.*;
 import com.ibm.as400.access.*;
@@ -39,7 +38,6 @@ import org.tn5250j.event.WizardListener;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
-import org.tn5250j.My5250;
 import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.Session;
 import org.tn5250j.mailtools.SendEMailDialog;

@@ -26,7 +26,6 @@
 package org.tn5250j;
 
 import java.util.Properties;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.io.*;
 

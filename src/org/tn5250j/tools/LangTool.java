@@ -25,7 +25,6 @@
  */
 package org.tn5250j.tools;
 
-import java.io.*;
 import java.util.*;
 import java.text.MessageFormat;
 

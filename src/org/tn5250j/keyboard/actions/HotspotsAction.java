@@ -25,13 +25,11 @@
  */
 package org.tn5250j.keyboard.actions;
 
-
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.tools.*;
 import org.tn5250j.Session;
 import org.tn5250j.keyboard.KeyMapper;
 

@@ -21,9 +21,7 @@ package org.tn5250j.transport.SSL;
  * Boston, MA 02111-1307 USA
  *
  */
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;

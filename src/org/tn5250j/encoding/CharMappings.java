@@ -26,7 +26,6 @@
  */
 package org.tn5250j.encoding;
 
-import java.lang.reflect.*;
 import java.util.HashMap;
 
 /**

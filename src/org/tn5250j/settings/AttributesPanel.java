@@ -27,7 +27,6 @@ package org.tn5250j.settings;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.util.*;
 
 import org.tn5250j.tools.*;

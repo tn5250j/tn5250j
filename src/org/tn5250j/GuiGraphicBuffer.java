@@ -29,10 +29,8 @@ import java.awt.image.*;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.*;
-import java.awt.image.*;
 import java.awt.Color;
 import java.awt.Rectangle;
-import javax.swing.SwingUtilities;
 import java.awt.Font;
 import java.awt.font.*;
 

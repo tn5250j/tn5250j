@@ -26,8 +26,6 @@ package org.tn5250j.spoolfile;
  */
 
 import javax.swing.JTabbedPane;
-import javax.swing.BorderFactory;
-
 
 public class SpoolFilterPane extends JTabbedPane {
 

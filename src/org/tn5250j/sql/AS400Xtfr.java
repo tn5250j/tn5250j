@@ -28,7 +28,6 @@ package org.tn5250j.sql;
 
 import java.util.*;
 import java.io.*;
-import java.net.*;
 import java.text.*;
 import org.tn5250j.*;
 import org.tn5250j.event.*;

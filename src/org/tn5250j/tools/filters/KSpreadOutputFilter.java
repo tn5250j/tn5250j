@@ -23,7 +23,6 @@ package org.tn5250j.tools.filters;
 
 import java.io.*;
 import java.util.ArrayList;
-import org.tn5250j.tools.*;
 
 public class KSpreadOutputFilter implements OutputFilterInterface {
 

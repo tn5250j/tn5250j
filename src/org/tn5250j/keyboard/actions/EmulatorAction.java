@@ -28,7 +28,6 @@ package org.tn5250j.keyboard.actions;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.KeyStroke;
-import java.awt.event.KeyEvent;
 
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.Session;

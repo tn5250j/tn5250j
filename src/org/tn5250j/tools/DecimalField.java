@@ -1,7 +1,6 @@
 package org.tn5250j.tools;
 
 import javax.swing.*;
-import javax.swing.text.*;
 
 import java.awt.Toolkit;
 import java.text.*;

@@ -20,15 +20,12 @@
  */
 package org.tn5250j.interfaces;
 
-import java.awt.*;
 import javax.swing.*;
 
 import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.Session;
 import org.tn5250j.My5250;
-import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.tools.GUIGraphicsUtils;
 

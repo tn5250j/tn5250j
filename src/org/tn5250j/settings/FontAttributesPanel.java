@@ -26,13 +26,8 @@
 package org.tn5250j.settings;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import java.text.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;

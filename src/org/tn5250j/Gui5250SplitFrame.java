@@ -28,7 +28,6 @@ package org.tn5250j;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.*;
 import java.util.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,7 +37,6 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.interfaces.GUIViewInterface;
 
 public class Gui5250SplitFrame extends GUIViewInterface implements
                                                     TN5250jConstants,

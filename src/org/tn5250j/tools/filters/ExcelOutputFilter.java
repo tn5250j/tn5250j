@@ -23,7 +23,6 @@ package org.tn5250j.tools.filters;
 
 import java.io.*;
 import java.util.ArrayList;
-import org.tn5250j.tools.*;
 import java.util.Vector;
 
 public class ExcelOutputFilter implements OutputFilterInterface {

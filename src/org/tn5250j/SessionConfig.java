@@ -27,9 +27,7 @@ import java.text.MessageFormat;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import org.tn5250j.*;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.interfaces.ConfigureFactory;

@@ -32,7 +32,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Graphics2D;
 import java.awt.font.*;
 import java.awt.geom.AffineTransform;
@@ -44,7 +43,6 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.ImageIcon;
 import java.net.URL;
 
-import org.tn5250j.*;
 import org.tn5250j.tools.system.OperatingSystem;
 
 public class GUIGraphicsUtils {

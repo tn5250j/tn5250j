@@ -14,11 +14,9 @@ package org.tn5250j.gui;
 =====================================================================
 */
 
-import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.*;
 
 public class JSortTable extends JTable implements MouseListener {

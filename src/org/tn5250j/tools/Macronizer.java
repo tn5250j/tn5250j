@@ -26,7 +26,6 @@
 package org.tn5250j.tools;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;

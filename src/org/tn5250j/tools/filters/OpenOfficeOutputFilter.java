@@ -25,7 +25,6 @@ import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.ArrayList;
-import org.tn5250j.tools.*;
 
 public class OpenOfficeOutputFilter implements OutputFilterInterface {
 
@@ -139,190 +138,190 @@ public class OpenOfficeOutputFilter implements OutputFilterInterface {
             case '\u0026': // &
                sb.append("&amp;");
                break;
-            case '\u00c0': // À  // &Agrave;  À  capital A, grave accent
+            case '\u00c0': // ?  // &Agrave;  ?  capital A, grave accent
                sb.append("&Agrave;");
                break;
-            case '\u00e0': // à  // &agrave;  à  small a, grave accent
+            case '\u00e0': // ?  // &agrave;  ?  small a, grave accent
                sb.append("&agrave;");
                break;
-            case '\u00c1': // Á
+            case '\u00c1': // ?
                sb.append("&Aacute;");
                break;
-            case '\u00e1': // á
+            case '\u00e1': // ?
                sb.append("&aacute;");
                break;
-            case '\u00c2': // Â
+            case '\u00c2': // ?
                sb.append("&Acirc;");
                break;
-            case '\u00e2': // â
+            case '\u00e2': // ?
                sb.append("&acirc;");
                break;
-            case '\u00c3': // Ã
+            case '\u00c3': // ?
                sb.append("&Atilde;");
                break;
-            case '\u00e3': // ã
+            case '\u00e3': // ?
                sb.append("&atilde;");
                break;
-            case '\u00c4': // Ä
+            case '\u00c4': // ?
                sb.append("&Auml;");
                break;
-            case '\u00e4': // ä
+            case '\u00e4': // ?
                sb.append("&auml;");
                break;
-            case '\u00c5': // Å
+            case '\u00c5': // ?
                sb.append("&Aring;");
                break;
-            case '\u00e5': // å
+            case '\u00e5': // ?
                sb.append("&aring;");
                break;
-            case '\u00c6': // Æ
+            case '\u00c6': // ?
                sb.append("&AElig;");
                break;
-            case '\u00e6': // æ
+            case '\u00e6': // ?
                sb.append("&aelig;");
                break;
-            case '\u00c7': // Ç
+            case '\u00c7': // ?
                sb.append("&Ccedil;");
                break;
-            case '\u00e7': // ç
+            case '\u00e7': // ?
                sb.append("&ccedil;");
                break;
-            case '\u00c8': // È
+            case '\u00c8': // ?
                sb.append("&Egrave;");
                break;
-            case '\u00e8': // è
+            case '\u00e8': // ?
                sb.append("&egrave;");
                break;
-            case '\u00c9': // É
+            case '\u00c9': // ?
                sb.append("&Eacute;");
                break;
-            case '\u00e9': // é
+            case '\u00e9': // ?
                sb.append("&eacute;");
                break;
-            case '\u00ca': // Ê
+            case '\u00ca': // ?
                sb.append("&Ecirc;");
                break;
-            case '\u00ea': // ê
+            case '\u00ea': // ?
                sb.append("&ecirc;");
                break;
-            case '\u00cb': // Ë
+            case '\u00cb': // ?
                sb.append("&Euml;");
                break;
-            case '\u00eb': // ë
+            case '\u00eb': // ?
                sb.append("&euml;");
                break;
-            case '\u00cc': // Ì
+            case '\u00cc': // ?
                sb.append("&Igrave;");
                break;
-            case '\u00ec': // ì
+            case '\u00ec': // ?
                sb.append("&igrave;");
                break;
-            case '\u00cd': // Í
+            case '\u00cd': // ?
                sb.append("&Iacute;");
                break;
-            case '\u00ed': // í
+            case '\u00ed': // ?
                sb.append("&iacute;");
                break;
-            case '\u00ce': // Î
+            case '\u00ce': // ?
                sb.append("&Icirc;");
                break;
-            case '\u00ee': // î
+            case '\u00ee': // ?
                sb.append("&icirc;");
                break;
-            case '\u00cf': // Ï
+            case '\u00cf': // ?
                sb.append("&Iuml;");
                break;
-            case '\u00ef': // ï
+            case '\u00ef': // ?
                sb.append("&iuml;");
                break;
-            case '\u00d0': // Ð
+            case '\u00d0': // ?
                sb.append("&ETH;");
                break;
-            case '\u00f0': // ð
+            case '\u00f0': // ?
                sb.append("&eth;");
                break;
-            case '\u00d1': // Ñ
+            case '\u00d1': // ?
                sb.append("&Ntilde;");
                break;
-            case '\u00f1': // ñ
+            case '\u00f1': // ?
                sb.append("&ntilde;");
                break;
-            case '\u00d2': // Ò
+            case '\u00d2': // ?
                sb.append("&Ograve;");
                break;
-            case '\u00f2': // ò
+            case '\u00f2': // ?
                sb.append("&ograve;");
                break;
-            case '\u00d3': // Ó
+            case '\u00d3': // ?
                sb.append("&Oacute;");
                break;
-            case '\u00f3': // ó
+            case '\u00f3': // ?
                sb.append("&oacute;");
                break;
-            case '\u00d4': // Ô
+            case '\u00d4': // ?
                sb.append("&Ocirc;");
                break;
-            case '\u00f4': // ô
+            case '\u00f4': // ?
                sb.append("&ocirc;");
                break;
-            case '\u00d5': // Õ
+            case '\u00d5': // ?
                sb.append("&Otilde;");
                break;
-            case '\u00f5': // õ
+            case '\u00f5': // ?
                sb.append("&otilde;");
                break;
-            case '\u00d6': // Ö
+            case '\u00d6': // ?
                sb.append("&Ouml;");
                break;
-            case '\u00f6': // ö
+            case '\u00f6': // ?
                sb.append("&ouml;");
                break;
-            case '\u00d8': // Ø
+            case '\u00d8': // ?
                sb.append("&Oslash;");
                break;
-            case '\u00f8': // ø
+            case '\u00f8': // ?
                sb.append("&oslash;");
                break;
-            case '\u00d9': // Ù
+            case '\u00d9': // ?
                sb.append("&Ugrave;");
                break;
-            case '\u00f9': // ù
+            case '\u00f9': // ?
                sb.append("&ugrave;");
                break;
-            case '\u00da': // Ú
+            case '\u00da': // ?
                sb.append("&Uacute;");
                break;
-            case '\u00fa': // ú
+            case '\u00fa': // ?
                sb.append("&uacute;");
                break;
-            case '\u00db': // Û
+            case '\u00db': // ?
                sb.append("&Ucirc;");
                break;
-            case '\u00fb': // û
+            case '\u00fb': // ?
                sb.append("&ucirc;");
                break;
-            case '\u00dc': // Ü
+            case '\u00dc': // ?
                sb.append("&Uuml;");
                break;
-            case '\u00fc': // ü
+            case '\u00fc': // ?
                sb.append("&uuml;");
                break;
-            case '\u00dd': // Ý
+            case '\u00dd': // ?
                sb.append("&Yacute;");
                break;
-            case '\u00fd': // ý
+            case '\u00fd': // ?
                sb.append("&yacute;");
                break;
-            case '\u00de': // Þ
+            case '\u00de': // ?
                sb.append("&THORN;");
                break;
-            case '\u00fe': // þ
+            case '\u00fe': // ?
                sb.append("&thorn;");
                break;
-            case '\u00df': // ß
+            case '\u00df': // ?
                sb.append("&szlig;");
                break;
-            case '\u00ff': // ÿ
+            case '\u00ff': // ?
                sb.append("&yuml;");
                break;
             default:

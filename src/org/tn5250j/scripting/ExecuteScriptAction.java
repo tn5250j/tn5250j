@@ -13,7 +13,6 @@ package org.tn5250j.scripting;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import org.tn5250j.Session;
-import javax.swing.JOptionPane;
 
 public class ExecuteScriptAction extends AbstractAction {
    String _scriptFile;

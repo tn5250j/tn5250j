@@ -28,7 +28,6 @@ package org.tn5250j;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.io.*;
 import java.util.*;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
@@ -38,7 +37,6 @@ import org.tn5250j.interfaces.GUIViewInterface;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.event.InternalFrameEvent;
 
 public class Gui5250MDIFrame extends GUIViewInterface implements

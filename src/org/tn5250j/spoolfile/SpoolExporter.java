@@ -39,7 +39,6 @@ import org.tn5250j.gui.*;
 import org.tn5250j.tnvt;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.My5250;
 import org.tn5250j.Session;
 
 public class SpoolExporter extends JFrame {

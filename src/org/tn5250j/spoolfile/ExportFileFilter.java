@@ -23,7 +23,6 @@ package org.tn5250j.spoolfile;
  * @author Jeff Dinkins
  */
 import java.io.File;
-import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.util.*;
 

@@ -30,7 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
-import javax.swing.*;
 
 import org.tn5250j.tools.LangTool;
 

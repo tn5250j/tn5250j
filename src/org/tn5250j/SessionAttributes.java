@@ -28,16 +28,12 @@ package org.tn5250j;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.TreeSelectionModel;
 import java.util.*;
 import java.beans.*;
-import java.io.*;
-import java.net.*;
-import java.text.*;
 
 import org.tn5250j.tools.*;
 import org.tn5250j.settings.*;

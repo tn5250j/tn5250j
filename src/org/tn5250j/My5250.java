@@ -26,16 +26,10 @@ package org.tn5250j;
  */
 
 import java.util.*;
-import java.util.zip.*;
-import java.text.*;
 import java.io.*;
 import javax.swing.UIManager;
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-import java.awt.font.*;
-import java.awt.geom.*;
 import java.net.*;
 
 import org.tn5250j.tools.*;
