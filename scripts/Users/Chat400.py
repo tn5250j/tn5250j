@@ -1,10 +1,10 @@
 ######################################################################
-#							   chat400								 #
-# Code : PR MOORE jorjun@mac.com					                 #
-# Interface : Patrick Bielen										 #
+#                              chat400                               #
+# Code : PR MOORE jorjun@mac.com                                     #
+# Interface : Patrick Bielen                                         #
 # ================================================================== #
-# Functionality : Script to send/receive messages to '400 users		 #
-# Discussions	: tn5250j-scripting@lists.sourceforge.net			 #
+# Functionality : Script to send/receive messages to '400 users	     #
+# Discussions	: tn5250j-scripting@lists.sourceforge.net            #
 ######################################################################
 import sys
 from java.lang import *
@@ -137,6 +137,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
 			if self.chkActive.isSelected():   # Active jobs only
 				if not self.jobDct.has_key(key_usr):
 					continue
+			else:
 				sts = '*'
 			menuItem = menuItem	+ sts # N.B. * means profile is running an active job
 			self.users.addItem(menuItem)
