@@ -48,8 +48,9 @@ import org.tn5250j.tools.filters.*;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.Session;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.TN5250jFrame;
 
-public class XTFRFile extends JDialog implements ActionListener, FTPStatusListener,
+public class XTFRFile extends TN5250jFrame implements ActionListener, FTPStatusListener,
                                                    ItemListener {
 
    FTP5250Prot ftpProtocol;
@@ -105,7 +106,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
    public XTFRFile (Frame parent,tnvt pvt, Session session) {
 
-      super(parent);
+      //super(parent);
+      super();
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       this.session = session;
       vt = pvt;
@@ -696,7 +698,8 @@ public class XTFRFile extends JDialog implements ActionListener, FTPStatusListen
 
       this.getContentPane().add(mp,BorderLayout.CENTER);
 
-      this.setModal(false);
+//      this.setModal(false);
+//      this.setModal(true);
       this.setTitle(LangTool.getString("xtfr.title"));
 
       initXTFRFields();
