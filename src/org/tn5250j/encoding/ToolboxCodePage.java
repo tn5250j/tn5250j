@@ -75,7 +75,8 @@ class ToolboxCodePage
 
   public static CodePage getCodePage(String encoding)
   {
-    System.err.println("Trying ToolboxCodePage:" + encoding);
+    String codePageName = "Cp" + encoding;
+    System.err.println("Trying ToolboxCodePage:" + codePageName);
     
     if (CONVERTER_CONSTRUCTOR == null)
       return null;
@@ -83,16 +84,17 @@ class ToolboxCodePage
     Object conv;
     try
     {
-      conv = CONVERTER_CONSTRUCTOR.newInstance(new Object[] {encoding});
+      conv = CONVERTER_CONSTRUCTOR.newInstance(new Object[] {codePageName});
     }
     catch (Throwable t)
     {
       System.err.println("Error while loading " + CONVERTER_NAME + ": " + t);
+      t.printStackTrace();
       conv = null;
     }
 
     if (conv != null)
-      return new ToolboxCodePage(encoding, conv);
+      return new ToolboxCodePage(codePageName, conv);
 
     return null;
   }
