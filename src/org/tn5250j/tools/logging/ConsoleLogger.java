@@ -38,9 +38,9 @@ public class ConsoleLogger extends TN5250jLogger {
 
    public void initialize(final String clazz) {
       this.clazz = clazz;
-      logLevel = Integer.parseInt(ConfigureFactory.getInstance().getProperty(
-                  "emulator.logLevel", INFO + ""));
-
+//      logLevel = Integer.parseInt(ConfigureFactory.getInstance().getProperty(
+//                  "emulator.logLevel", INFO + ""));
+      logLevel = INFO;
    }
 
    // printing methods:
