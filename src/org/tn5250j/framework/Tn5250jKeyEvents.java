@@ -18,16 +18,17 @@
 */
 package org.tn5250j.framework;
 
-import org.tn5250j.Screen5250;
+//import org.tn5250j.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250;
 
 public class Tn5250jKeyEvents extends Tn5250jEvent {
 	private String keystrokes;
-	
+
 	public Tn5250jKeyEvents(Screen5250 screen, String strokes) {
 		super(screen);
 		this.keystrokes = strokes;
 	}
-	
+
 	public String getKeystrokes() {
 		return this.keystrokes;
 	}

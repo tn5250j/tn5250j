@@ -18,9 +18,10 @@
 */
 package org.tn5250j.framework;
 
-import org.tn5250j.Screen5250;
-//import org.tn5250j.ScreenChar;
-import org.tn5250j.ScreenFields;
+//import org.tn5250j.Screen5250;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.ScreenFields;
+//import org.tn5250j.ScreenFields;
 
 public class Tn5250jEvent {
 
