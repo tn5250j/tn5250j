@@ -47,6 +47,7 @@ import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.EmulatorActionEvent;
+import org.tn5250j.framework.tn5250.*;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
@@ -536,12 +537,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void toggleDebug() {
       session.getVT().toggleDebug();
-      try {
-         session.getVT().sendHeartBeat();
-      }
-      catch (Exception exc) {
-         log.warn(exc.getMessage());
-      }
    }
 
    public void startNewSession() {
@@ -769,22 +764,14 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void resizeMe() {
 
-
-//      screen.setBounds(getDrawingBounds());
-
-   //this is from screen5250
-		screen.setCursorActive(false);
       Rectangle r = getDrawingBounds();
       if (bi != null)
-   		bi.resizeScreenArea(r.width, r.height);
-//      repaint();
-		screen.repaintScreen();
-		screen.setCursorActive(true);
+         bi.resizeScreenArea(r.width, r.height);
+      screen.repaintScreen();
       Graphics g = getGraphics();
       if (g != null)
          g.setClip(0,0,this.getWidth(),this.getHeight());
       repaint(0,0,getWidth(),getHeight());
-
    }
 
    public Rectangle getDrawingBounds() {
@@ -825,6 +812,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 //      screen.paintComponent3(g);
 
 		Graphics2D g2 = (Graphics2D) g;
+         if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
+            rubberband.erase();
+//   //         rubberband.draw();
+         }
 
 		//Rectangle r = g.getClipBounds();
 
@@ -834,7 +825,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 		bi.drawImageBuffer(g2);
 
       if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
-         rubberband.erase();
+//         rubberband.erase();
          rubberband.draw();
       }
 
@@ -916,9 +907,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
          getBoundingArea(workR);
 
          rubberband.reset();
-         repaint();
 
-         log.debug("Copying" + workR);
+         screen.repaintScreen();
 
          screen.copyMe(workR);
 

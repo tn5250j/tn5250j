@@ -28,6 +28,7 @@ import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.interfaces.ScanListener;
+import org.tn5250j.framework.tn5250.*;
 
 /**
  * A host GUI session
@@ -37,11 +38,7 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
    private String configurationResource;
    private String sessionName;
    private boolean connected;
-   private int sessionType;
-   private Properties sesProps;
    private Vector listeners;
-   private SessionChangeEvent sce;
-   private String sslType;
    private boolean firstScreen;
    private char[] signonSave;
 
@@ -51,8 +48,6 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
 
       this.configurationResource = session.getConfigurationResource();
       this.sessionName = session.getSessionName();
-      sesProps = session.sesProps;
-      sce = new SessionChangeEvent(this);
 
       session.getConfiguration().addSessionConfigListener(this);
       session.addSessionListener(this);
@@ -123,12 +118,6 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
          return null;
    }
 
-   public int getSessionType() {
-
-      return sessionType;
-
-   }
-
    public String getHostName() {
       return session.getVT().getHostName();
    }
@@ -154,10 +143,21 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
 
       switch (changeEvent.getState()) {
          case STATE_CONNECTED:
+            // first we check for the signon save or now
+            if (!firstScreen) {
+               firstScreen = true;
+               signonSave = screen.getScreenAsChars();
+//               System.out.println("Signon saved");
+            }
+
+            // check for on connect macro
             String mac = sesConfig.getStringProperty("connectMacro");
             if (mac.length() > 0)
                executeMacro(mac);
             break;
+         default:
+            firstScreen = false;
+            signonSave = null;
       }
    }
 
