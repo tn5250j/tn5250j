@@ -170,6 +170,16 @@
     </target>
 
     <!-- =================================================================== -->
+    <!-- Runs the compiled program                                           -->
+    <!-- =================================================================== -->
+    <target name="run" depends="package" description="Run the program">
+        <java jar="${build.dir}/${jarname}"
+              fork="yes">
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    
+    <!-- =================================================================== -->
     <!-- Creates the API documentation                                       -->
     <!-- =================================================================== -->
     <target name= "javadoc" depends="prepare" description="Creates the javadoc API documentation">
