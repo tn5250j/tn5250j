@@ -185,10 +185,10 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       if (mif != null) {
          try {
 
-            mif.setSelected(true);
-            if (mif.isIcon())
+            if (mif.isIcon()) {
                mif.setIcon(false);
-
+            }
+            mif.setSelected(true);
 
          }
          catch (java.beans.PropertyVetoException e) {
@@ -235,9 +235,11 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       }
 
       try {
-         ((MyInternalFrame)myFrameList.get(index)).setSelected(true);
-            if (((MyInternalFrame)myFrameList.get(index)).isIcon())
-               ((MyInternalFrame)myFrameList.get(index)).setIcon(false);
+         MyInternalFrame mif = (MyInternalFrame)myFrameList.get(index);
+         if (mif.isIcon()) {
+            mif.setIcon(false);
+         }
+         mif.setSelected(true);
 
       }
       catch (java.beans.PropertyVetoException e) {
@@ -264,6 +266,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       myFrameList.add(frame);
       selectedIndex = desktop.getComponentCount();
       frame.setContentPane(session);
+
       try {
          frame.setSelected(true);
       } catch (java.beans.PropertyVetoException e) {}
@@ -334,13 +337,14 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
                System.out.println(changeEvent.getState() + " " + d);
                final int index = getIndexOfSession(ses);
 
-               System.out.println(" index of session " + index + " num frames " + desktop.getAllFrames().length);
+//               System.out.println(" index of session " + index + " num frames " + desktop.getAllFrames().length);
                if (index == -1)
                   return;
                Runnable tc = new Runnable () {
                   public void run() {
                      JInternalFrame[] frames = desktop.getAllFrames();
-                     frames[index].setTitle(frames[index].getTitle() + " " + d);
+                     int id = ((MyInternalFrame)frames[index]).getInternalId();
+                     frames[index].setTitle("#" + id + " " + d);
                   }
                };
                SwingUtilities.invokeLater(tc);
@@ -374,6 +378,59 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    }
 
+   private void calculateVisibility() {
+      JInternalFrame[] frames = desktop.getAllFrames();
+      for (int i = 0; i < frames.length; i++) {
+          JInternalFrame frame = frames[i];
+          if (!frame.isIcon()) {
+              Component[] c = frame.getContentPane().getComponents();
+              for (int j = 0; j < c.length; j++) {
+                  Component component = c[j];
+                  if (desktop.getBounds().intersects(calculateBoundsInFrame(component))) {
+                      component.setVisible(true);
+                  }
+                  else {
+                      //off desktop
+                      component.setVisible(false);
+                  }
+              }
+          }
+      }
+
+      for (int i = 0; i < frames.length; i++) {
+          JInternalFrame frame1 = frames[i];
+          if (!frame1.isIcon()) {
+              for (int j = 0; j < frames.length; j++) {
+                  JInternalFrame frame2 = frames[j];
+                  if (!frame2.isIcon()) {
+                      //Is frame 1 in front of frame 2?
+                      if (desktop.getIndexOf(frame1) < desktop.getIndexOf(frame2)) {
+                          Component[] c = frame2.getContentPane().getComponents();
+                          for (int k = 0; k < c.length; k++) {
+                              Component component = c[k];
+                              if (frame1.getBounds().contains(calculateBoundsInFrame(component))) {
+                                  component.setVisible(false);
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+
+   private Rectangle calculateBoundsInFrame(Component component) {
+     Rectangle componentBoundsInFrame = component.getBounds();
+     //This only works in the simplest case, need to recurse to JInternalFrame
+     Point p1 = component.getParent().getLocation();
+     Point p2 = component.getParent().getParent().getLocation();
+     Point p3 = component.getParent().getParent().getParent().getLocation();
+     Point p4 = component.getParent().getParent().getParent().getParent().getLocation();
+     componentBoundsInFrame = new Rectangle(p1.x + p2.x + p3.x + p4.x, p1.y + p2.y + p3.y + p4.y, componentBoundsInFrame.width, componentBoundsInFrame.height);
+     componentBoundsInFrame = componentBoundsInFrame.intersection(desktop.getBounds());
+     return componentBoundsInFrame;
+   }
+
    public class MyInternalFrame extends JInternalFrame {
 
       static final int xOffset = 30, yOffset = 30;
@@ -401,37 +458,42 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
             public void internalFrameClosing(InternalFrameEvent e) {
 //               displayMessage("Internal frame closing", e);
+               calculateVisibility();
                disconnectMe();
             }
 
             public void internalFrameClosed(InternalFrameEvent e) {
 //               displayMessage("Internal frame closed", e);
                disconnectMe();
+               calculateVisibility();
             }
 
             public void internalFrameOpened(InternalFrameEvent e) {
 //               displayMessage("Internal frame opened", e);
+               calculateVisibility();
             }
 
             public void internalFrameIconified(InternalFrameEvent e) {
 //               displayMessage("Internal frame iconified", e);
+               calculateVisibility();
+//               e.getInternalFrame().getContentPane().setVisible(false);
             }
 
             public void internalFrameDeiconified(InternalFrameEvent e) {
 //               displayMessage("Internal frame deiconified", e);
-
-               repaint();
+               calculateVisibility();
+//               e.getInternalFrame().getContentPane().setVisible(true);
             }
 
             public void internalFrameActivated(InternalFrameEvent e) {
 //               displayMessage("Internal frame activated", e);
                activated = true;
-               repaint();
+               calculateVisibility();
             }
 
             public void internalFrameDeactivated(InternalFrameEvent e) {
                activated = false;
-
+               calculateVisibility();
 //               displayMessage("Internal frame deactivated", e);
             }
 
@@ -477,8 +539,12 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
             Session s = (Session)getContentPane();
             me.closeSession(s);
-//            this.setVisible(false);
-//            disconnectMe(s);
+         }
+
+         public void resizeMe() {
+
+            Session s = (Session)getContentPane();
+            s.resizeMe();
          }
    }
 
@@ -495,18 +561,20 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
        public void endResizingFrame(JComponent f) {
          f.putClientProperty(RESIZING, Boolean.FALSE);
+
        }
 
        public void endDraggingFrame(JComponent f) {
-//         super.endDraggingFrame(f);
            JInternalFrame frame = (JInternalFrame)f;
-//           JDesktopPane desk = frame.getDesktopPane();
-//           desk.repaint();
-//           frame.validate();
-//           frame.repaint();
            ((Gui5250)frame.getContentPane()).getScreen().gg2d = null;
 
        }
+
+      // workaround for bug 4326562
+      public void deiconifyFrame(JInternalFrame f) {
+          super.deiconifyFrame(f);
+          f.toFront();
+      }
 
        // This is called any time a frame is moved or resized.  This
        // implementation keeps the frame from leaving the desktop.
@@ -560,35 +628,11 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
            // Set 'em the way we like 'em
            super.setBoundsForFrame(f, x, y, w, h);
+           ((MyInternalFrame)f).resizeMe();
          }
+
+
        }
-//         public JInternalFrame getSelectedFrame() {
-//           int i, count;
-//           JInternalFrame[] results;
-//   //        Vector vResults = new Vector(10);
-//           Object next, tmp;
-//            System.out.println(" get selected one ");
-//           count = getComponentCount();
-//           for(i = 0; i < count; i++) {
-//               next = getComponent(i);
-//               if(next instanceof JInternalFrame) {
-//                  JInternalFrame n = (JInternalFrame)next;
-//                   if (n.isSelected())
-//                     return n;
-//               }
-//               else if(next instanceof JInternalFrame.JDesktopIcon)  {
-//                   JInternalFrame n = ((JInternalFrame.JDesktopIcon)next).getInternalFrame();
-//                   if (n != null & n.isSelected())
-//                     return n;
-//   //                if(tmp != null)
-//   //                    vResults.addElement(tmp);
-//               }
-//           }
-//
-//           return null;
-//
-//         }
+
      }
-
-
 }

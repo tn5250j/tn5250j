@@ -337,11 +337,11 @@ public class GuiGraphicBuffer {
          return;
       }
 
-      //synchronized (lock) {
+      synchronized (lock) {
          gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x,y);
          // tell waiting threads to wake up
-         //lock.notifyAll();
-      //}
+         lock.notifyAll();
+      }
 
    }
 
@@ -355,11 +355,11 @@ public class GuiGraphicBuffer {
          return;
       }
 
-      //synchronized (lock) {
+      synchronized (lock) {
          gg2d.drawImage(bi,null,0,0);
          // tell waiting threads to wake up
-         //lock.notifyAll();
-      //}
+         lock.notifyAll();
+      }
 
 
    }
