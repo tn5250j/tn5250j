@@ -29,6 +29,7 @@ import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.framework.common.SessionManager;
 
 /**
  * A host session
@@ -96,7 +97,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
 
    }
 
-   protected boolean isSendKeepAlive() {
+   public boolean isSendKeepAlive() {
       return heartBeat;
    }
 

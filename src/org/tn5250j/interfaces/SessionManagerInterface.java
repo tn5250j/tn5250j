@@ -1,5 +1,3 @@
-package org.tn5250j.interfaces;
-
 /*
  * @(#)SessionManagerInterface.java
  * Copyright:    Copyright (c) 2001
@@ -20,9 +18,13 @@ package org.tn5250j.interfaces;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.interfaces;
+
+import java.util.*;
 
 import org.tn5250j.*;
-import java.util.*;
+import org.tn5250j.framework.common.*;;
+
 
 public interface SessionManagerInterface {
 

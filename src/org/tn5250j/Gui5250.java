@@ -168,17 +168,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
                            + bi.rowHeight);
                   }
 
-                  screen.moveCursor(e, pos);
-				// this is a note to not execute this code here when we
-				// implement
-				//   the remain after edit function option.
-      				if (rubberband.isAreaSelected()) {
-		      			rubberband.reset();
-				      	repaint();
-      				}
-//		gui.requestFocus();
-
-                  repaint();
+                  boolean moved = screen.moveCursor(e, pos);
+				      // this is a note to not execute this code here when we
+      				// implement the remain after edit function option.
+                  if (moved) {
+                     if (rubberband.isAreaSelected()) {
+                        rubberband.reset();
+                     }
+                     screen.repaintScreen();
+                  }
                   getFocusForMe();
                }
          }

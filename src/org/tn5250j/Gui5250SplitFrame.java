@@ -38,6 +38,7 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.framework.common.SessionManager;
 
 public class Gui5250SplitFrame extends GUIViewInterface implements
                                                     TN5250jConstants,
@@ -55,9 +56,9 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
    private JPanel sessionPanel;
    private JScrollPane scroller;
    private JPanel toolsPanel;
-	
+
    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
-   
+
    //Construct the frame
    public Gui5250SplitFrame(My5250 m) {
 

@@ -7,6 +7,7 @@ import java.util.*;
 import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jSecurityAccessDialog;
+import org.tn5250j.framework.common.*;
 
 import org.tn5250j.swing.JTerminal;
 
@@ -106,7 +107,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
       loadSystemProperty("SESSION_CONNECT_LIBRARY");
       loadSystemProperty("SESSION_CONNECT_MENU");
 
-      manager = new SessionManager();
+      manager = SessionManager.instance();
       final Session5250 s = manager.openSession(sesProps,"","Test Applet");
       final SessionGUI gui = new SessionGUI(s);
 //      final JTerminal jt = new JTerminal(s);

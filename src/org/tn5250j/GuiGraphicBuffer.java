@@ -1798,8 +1798,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    public void onScreenSizeChanged(int rows, int cols) {
       log.info("screen size change");
       gui.resizeMe();
-//      screen.setCursorActive(false);
-//      screen.setCursorActive(true);
    }
 
    public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
