@@ -41,9 +41,21 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+24/08/2002  Fixed a number of problems since the last changelog entry
+
+            Keybuffering problem with cursor disappearing, and doing all
+            sorts of other things.  Complete rewrite of cursor handling.
+            
+            Added new cursor offset from bottom parameter.
+            
+            Fixed problem with hanging the emulator due to starting a 
+            new session in other window.  Caused by splashscreen
+            
+            Printing not showing up lightly.  Now prints in Black
+            
 17/08/2002  Updated startup message to be more informational and less error
             sounding.
-            
+
 15/08/2002  Fix a problem with splash screen and painting a looking better.
 
             Added Russian code page 1025 from
