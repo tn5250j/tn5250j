@@ -232,27 +232,25 @@ public class SendEMailDialog {
          parent = new JFrame();
 
       try {
-         sem.send();
+         if (sem.send()) {
 
-         JOptionPane.showMessageDialog(parent,
-                                          LangTool.getString("em.confirmationMessage") +
-                                          " " + (String)toAddress.getSelectedItem(),
-                                          LangTool.getString("em.titleConfirmation"),
-                                          JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(parent,
+                                             LangTool.getString("em.confirmationMessage") +
+                                             " " + (String)toAddress.getSelectedItem(),
+                                             LangTool.getString("em.titleConfirmation"),
+                                             JOptionPane.INFORMATION_MESSAGE);
 
-         if (session != null) {
-            config.setProperty("emailTo",
-                  getToTokens(config.getStringProperty("emailTo"),
-                                 toAddress));
-            config.saveSessionProps();
-            setToCombo(config.getStringProperty("emailTo"),toAddress);
+            if (session != null) {
+               config.setProperty("emailTo",
+                     getToTokens(config.getStringProperty("emailTo"),
+                                    toAddress));
+               config.saveSessionProps();
+               setToCombo(config.getStringProperty("emailTo"),toAddress);
+            }
          }
       }
       catch (IOException ioe) {
          System.out.println(ioe.getMessage());
-      }
-      catch (SendFailedException sfe) {
-         showFailedException(parent, sfe);
       }
       catch (Exception ex) {
          System.out.println(ex.getMessage());

@@ -34,6 +34,9 @@ import java.math.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.activation.*;
+import javax.swing.*;
+
+import org.tn5250j.tools.LangTool;
 
 public class SendEMail {
 
@@ -164,11 +167,11 @@ public class SendEMail {
    /**
     * This method processes the send request from the compose form
     */
-   public void send() throws Exception, AddressException, MessagingException {
+   public boolean send() throws Exception, AddressException, MessagingException {
 
-//      try {
+      try {
          if(!loadConfig(configFile))
-            return;
+            return false;
 
          Session session = Session.getDefaultInstance(SMTPProperties, null);
          session.setDebug(false);
@@ -242,20 +245,42 @@ public class SendEMail {
 
          // send the message
          Transport.send(msg);
-//      }
-//      catch (SendFailedException sfe) {
-//         System.out.println("Send Failed Exception " + sfe.toString());
-//         JOptionPane.showMessageDialog(parent,
-//                                          LangTool.getString("em.confirmationMessage") +
-//                                          " " + tot.getText(),
-//                                          LangTool.getString("em.titleConfirmation"),
-//                                          JOptionPane.INFORMATION_ERROR);
-//
-//
-//      }
-//      catch (Exception mex) {
-//         System.out.println(mex.toString());
-//      }
+         return true;
+      }
+      catch (SendFailedException sfe) {
+         showFailedException(sfe);
+      }
+      return false;
+   }
+
+   /**
+    * Show the error list from the e-mail API if there are errors
+    *
+    * @param parent
+    * @param sfe
+    */
+   private void showFailedException(SendFailedException sfe) {
+
+      String error = sfe.getMessage() + "\n";
+
+      Address[] ia = sfe.getInvalidAddresses();
+
+      for (int x = 0; x < ia.length; x++) {
+         error += "Invalid Address: " + ia[x].toString() + "\n";
+      }
+
+      JTextArea ea = new JTextArea(error,6,50);
+      JScrollPane errorScrollPane = new JScrollPane(ea);
+      errorScrollPane.setHorizontalScrollBarPolicy(
+      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      errorScrollPane.setVerticalScrollBarPolicy(
+      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      JOptionPane.showMessageDialog(null,
+                                       errorScrollPane,
+                                       LangTool.getString("em.titleConfirmation"),
+                                       JOptionPane.ERROR_MESSAGE);
+
+
    }
 
 }
