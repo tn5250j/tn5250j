@@ -30,6 +30,8 @@
     <property name="dist.base.name" value="${name}-${version}" />
     <property name="dist.src.name" value="${dist.base.name}-src" />
     <property name="dist.bin.name" value="${dist.base.name}-bin" />
+    <property name="dist-run.name" value="${dist.base.name}-run"/>
+    <property name="dist-run.dir"  value="${dist.dir}/${dist-run.name}"/>
 
     <!-- classpath -->
     <path id="classpath">
@@ -109,7 +111,6 @@
         <mkdir dir="${build.dir}" />
         <mkdir dir="${build.classes.dir}" />
         <mkdir dir="${javadoc.dir}" />
-        <mkdir dir="${dist.dir}" />
 
         <echo message="------------------- ${Name} ${version} [${year}] ----------------"/>
 
@@ -173,10 +174,17 @@
     <!-- =================================================================== -->
     <!-- Runs the compiled program                                           -->
     <!-- =================================================================== -->
-    <target name="run" depends="package" description="Run the program">
-        <java jar="${build.dir}/${jarname}"
+    <target name="run" depends="dist-run-prepare" description="Run the program">
+        <java jar="${dist-run.dir}/${jarname}"
               fork="yes">
-            <classpath refid="classpath"/>
+          <classpath>
+            <fileset dir="${dist-run.dir}" >
+              <include name="*.jar" />
+              <include name="*.JAR" />
+              <include name="*.zip" />
+              <include name="*.ZIP" />
+            </fileset>
+          </classpath>
         </java>
     </target>
 
@@ -227,6 +235,28 @@
     <target name= "dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
     </target>
 
+    <target name= "dist-run-prepare" depends="package"  description="Prepares all-in-one distribution">
+        <mkdir dir="${dist-run.dir}"/>
+        <copy todir="${dist-run.dir}">
+          <fileset refid="dist.bin"/>
+          <fileset dir="${build.dir}">
+            <include name="${jarname}"/>
+          </fileset>
+          <fileset dir="${lib.dir}">
+            <include name="**.jar"/>
+            <include name="**.JAR"/>
+            <include name="**.zip"/>
+            <include name="**.ZIP"/>
+          </fileset>
+        </copy>
+        <mkdir dir="${dist-run.dir}/scripts"/>
+        <copy todir="${dist-run.dir}/scripts">
+          <fileset dir="./scripts">
+            <include name="**"/>
+          </fileset>
+        </copy>
+    </target>
+    
     <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-nosubdir-zip, dist-bin-scripting-nosubdir-zip" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
@@ -251,7 +281,7 @@
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${lib.dir}/itext.jar">
         </copy>
-        </target>
+    </target>
 
     <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
         <zip zipfile="${dist.dir}/${dist.bin.name}.zip"
