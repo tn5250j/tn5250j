@@ -1,5 +1,7 @@
 package org.tn5250j;
 
+import org.apache.log4j.Logger;
+
 /*
  * @(#)KeyStrokenizer.java
  * Copyright:    Copyright (c) 2001
@@ -22,7 +24,9 @@ package org.tn5250j;
  */
 
 public class KeyStrokenizer {
-
+   
+   private Logger log = Logger.getLogger(this.getClass());
+   
    public KeyStrokenizer() {
 
       sb = new StringBuffer();
@@ -33,7 +37,7 @@ public class KeyStrokenizer {
 
       if (strokes != null) {
          keyStrokes.setLength(0);
-//         System.out.println("set "+ keyStrokes);
+		 log.debug("set "+ keyStrokes);
          length = strokes.length();
       }
       else {
@@ -67,7 +71,7 @@ public class KeyStrokenizer {
 
                // we need to throw an error here
                if(index >= length) {
-                  System.out.println(" mnemonic key was incomplete :1 " +
+                  log.warn(" mnemonic key was incomplete :1 " +
                                        "at position " + index + " len " + length );
                }
                else {
@@ -89,7 +93,7 @@ public class KeyStrokenizer {
                            // we need to throw an error here because we did not
                            //   find an ending for the potential mnemonic
                            if(index >= length) {
-                              System.out.println(
+                              log.warn(
                               " mnemonic key was incomplete ending not found :2 " +
                                           "at position " + index);
                            }
@@ -103,7 +107,7 @@ public class KeyStrokenizer {
             case ']':
                index++;
                if(index >= length) {
-                  System.out.println(
+                  log.warn(
                   " mnemonic key was incomplete ending not found :3 " +
                               "at position " + index);
                   sb.append(c);
@@ -117,7 +121,7 @@ public class KeyStrokenizer {
                      index++;
                   }
                   else {
-                     System.out.println(
+                     log.warn(
                      " mnemonic key was incomplete beginning not found :4 " +
                                  "at position " + index);
                   }
@@ -133,7 +137,7 @@ public class KeyStrokenizer {
          }
 
       }
-//      System.out.println("next "+ keyStrokes);
+	  log.debug("next "+ keyStrokes);
 
       return s;
    }

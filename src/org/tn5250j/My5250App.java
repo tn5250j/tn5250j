@@ -3,12 +3,16 @@ package org.tn5250j;
 import java.awt.*;
 import javax.swing.*;
 import java.util.*;
+
+import org.apache.log4j.Logger;
 import org.tn5250j.tools.LangTool;
 
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
    private SessionManager manager;
-
+	
+   private Logger log = Logger.getLogger(this.getClass());
+   
    /**Get a parameter value*/
    public String getParameter(String key, String def) {
 
@@ -26,7 +30,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
          jbInit();
       }
       catch(Exception e) {
-         e.printStackTrace();
+         log.warn("In constructor: ", e);
       }
    }
 
@@ -35,7 +39,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
       this.setSize(new Dimension(400,300));
 
       Properties sesProps = new Properties();
-      System.out.println(" We have loaded a new one");
+      log.info(" We have loaded a new one");
 
       // Start loading properties - Host must exist
       sesProps.put(SESSION_HOST,getParameter("host"));
@@ -122,7 +126,7 @@ public class My5250App extends JApplet implements TN5250jConstants {
    private boolean isSpecified(String parm) {
 
       if (getParameter(parm) != null) {
-         System.out.println("Parameter " + parm + " is specified as: " + getParameter(parm));
+         log.info("Parameter " + parm + " is specified as: " + getParameter(parm));
          return true;
       }
       return false;

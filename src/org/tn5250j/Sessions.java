@@ -20,6 +20,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+import org.apache.log4j.Logger;
 import org.tn5250j.interfaces.SessionsInterface;
 
 import java.util.*;
@@ -35,7 +36,9 @@ public class Sessions implements SessionsInterface,ActionListener {
    private Vector sessions = null;
    private int count = 0;
    private Timer heartBeater;
-
+   
+   private Logger log = Logger.getLogger(this.getClass());
+   
    public Sessions() {
 
       sessions = new Vector();
@@ -49,11 +52,11 @@ public class Sessions implements SessionsInterface,ActionListener {
             ses = (Session)sessions.get(x);
             if (ses.isConnected() && ses.isSendKeepAlive()) {
                ses.getVT().sendHeartBeat();
-               System.out.println(" sent heartbeat to " +  ses.getSessionName());
+               log.info(" sent heartbeat to " +  ses.getSessionName());
             }
          }
          catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            log.warn(ex.getMessage());
          }
       }
 
@@ -61,6 +64,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    protected void addSession(Session newSession) {
       sessions.add(newSession);
+      log.debug("adding Session: "+newSession.getSessionName());
       if (newSession.isSendKeepAlive() && heartBeater == null) {
          heartBeater = new Timer(15000,this);
 //         heartBeater = new Timer(3000,this);
@@ -71,6 +75,7 @@ public class Sessions implements SessionsInterface,ActionListener {
    }
 
    protected void removeSession(Session session) {
+      log.debug("Removing session: "+session.getSessionName());
       if (session != null) {
          if (session.isConnected())
             session.disconnect();
@@ -80,12 +85,13 @@ public class Sessions implements SessionsInterface,ActionListener {
    }
 
    protected void removeSession(String sessionName) {
-
+      log.debug("Remove session by name: "+sessionName);
       removeSession((Session)item(sessionName));
 
    }
 
    protected void removeSession(int index) {
+   	  log.debug("Remove session by index: "+index);
       removeSession((Session)item(index));
    }
 

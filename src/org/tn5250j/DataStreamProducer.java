@@ -2,6 +2,8 @@ package org.tn5250j;
 
 import java.io.*;
 import java.net.*;
+
+import org.apache.log4j.Logger;
 import org.tn5250j.encoding.CodePage;
 
 public class DataStreamProducer implements Runnable {
@@ -17,7 +19,9 @@ public class DataStreamProducer implements Runnable {
    private BufferedOutputStream dw;
    private boolean dumpBytes = false;
    private CodePage codePage;
-
+   
+   private Logger log = Logger.getLogger(this.getClass());
+   
    public DataStreamProducer(tnvt vt, BufferedInputStream in, DataStreamQueue queue, byte[] init) {
       bin = in;
       this.vt = vt;
@@ -49,7 +53,7 @@ public class DataStreamProducer implements Runnable {
          loadStream(abyte2, 0);
       }
       catch (IOException ioef) {
-         System.out.println(" run() " + ioef.getMessage());
+         log.warn(" run() " + ioef.getMessage());
       }
       while (!done) {
          try {
@@ -76,20 +80,20 @@ public class DataStreamProducer implements Runnable {
          }
          catch (SocketException se) {
 //            System.out.println("   DataStreamProducer thread interrupted and stopping " + se.getMessage());
-            System.out.println("   DataStreamProducer thread interrupted and stopping ");
+            log.warn("   DataStreamProducer thread interrupted and stopping ");
             done = true;
          }
 
          catch (IOException ioe) {
 
-//              System.out.println(ioe.getMessage());
+		   log.warn(ioe.getMessage());
            if (me.isInterrupted())
               done = true;
 
          }
          catch (Exception ex) {
 
-           System.out.println(ex.getMessage());
+           log.warn(ex.getMessage());
            if (me.isInterrupted())
               done = true;
 
@@ -116,13 +120,13 @@ public class DataStreamProducer implements Runnable {
          saveStream = null;
          inter = null;
          j = (abyte0[i] & 0xff) << 8 | abyte0[i + 1] & 0xff;
-//         System.out.println("partial stream found");
+		 log.debug("partial stream found");
       }
 
       if (j > size) {
          saveStream = new byte[abyte0.length];
          System.arraycopy(abyte0, 0, saveStream, 0, abyte0.length);
-//         System.out.println("partial stream saved");
+		 log.debug("partial stream saved");
       }
       else {
          byte abyte1[];
@@ -136,7 +140,7 @@ public class DataStreamProducer implements Runnable {
          }
          catch (Exception ex) {
 
-           System.out.println("load stream error " + ex.getMessage());
+           log.warn("load stream error " + ex.getMessage());
    //        ex.printStackTrace();
    //        dump(abyte0);
 
@@ -240,7 +244,7 @@ public class DataStreamProducer implements Runnable {
             }
          }
          catch (FileNotFoundException fnfe) {
-            System.out.println(fnfe.getMessage());
+            log.warn(fnfe.getMessage());
          }
 
       }
@@ -258,17 +262,17 @@ public class DataStreamProducer implements Runnable {
          }
          catch(IOException ioe) {
 
-            System.out.println(ioe.getMessage());
+            log.warn(ioe.getMessage());
          }
       }
 
-      System.out.println("Data Stream output is now " + dumpBytes);
+      log.info("Data Stream output is now " + dumpBytes);
    }
 
    public void dump (byte[] abyte0) {
       try {
 
-         System.out.print("\n Buffer Dump of data from AS400: ");
+         log.info("\n Buffer Dump of data from AS400: ");
          dw.write("\r\n Buffer Dump of data from AS400: ".getBytes());
 
          StringBuffer h = new StringBuffer();
@@ -316,7 +320,7 @@ public class DataStreamProducer implements Runnable {
       }
       catch(EOFException _ex) { }
       catch(Exception _ex) {
-         System.out.println("Cannot dump from host\n\r");
+         log.warn("Cannot dump from host\n\r");
       }
 
    }

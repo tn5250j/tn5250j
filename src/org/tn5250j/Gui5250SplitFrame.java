@@ -32,6 +32,7 @@ import java.util.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
@@ -54,7 +55,9 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
    private JPanel sessionPanel;
    private JScrollPane scroller;
    private JPanel toolsPanel;
-
+	
+   private Logger log = Logger.getLogger(this.getClass());
+   
    //Construct the frame
    public Gui5250SplitFrame(My5250 m) {
 
@@ -65,7 +68,7 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
          jbInit();
       }
       catch(Exception e) {
-         e.printStackTrace();
+         log.warn("In constructor: "+e);
       }
    }
 

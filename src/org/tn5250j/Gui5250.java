@@ -34,6 +34,7 @@ import javax.swing.*;
 import java.util.*;
 
 
+import org.apache.log4j.Logger;
 import org.tn5250j.tools.*;
 import org.tn5250j.mailtools.*;
 import org.tn5250j.event.SessionJumpEvent;
@@ -74,7 +75,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
    protected SessionConfig sesConfig;
    protected KeyboardHandler keyHandler;
    protected SessionScrollerInterface scroller;
-
+   
+   private Logger log = Logger.getLogger(this.getClass());
+   private Logger graphics = Logger.getLogger("GFX");
    public Gui5250 () {
 
    }
@@ -92,7 +95,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          jbInit();
       }
       catch(Exception e) {
-         e.printStackTrace();
+         log.warn("Error in constructor: "+e.getMessage());
       }
 
    }
@@ -156,7 +159,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          scroller.removeMouseWheelListener((Session)this);
 
       keyHandler = KeyboardHandler.getKeyboardHandlerInstance((Session)this);
-
+		log.debug("Initializing macros");
       macros = new Macronizer();
       Macronizer.init();
 
@@ -192,7 +195,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
             DataFlavor[] dfs = dtde.getCurrentDataFlavors();
             if(tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                try {
-                  System.out.println("dtde drop it2 ");
+                  log.debug("dtde drop it2 ");
 
                   java.util.List fileList =
                      (java.util.List)tr.getTransferData(DataFlavor.javaFileListFlavor);
@@ -209,13 +212,13 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   return;
                }
                catch (UnsupportedFlavorException ufe) {
-                  System.out.println("importData: unsupported data flavor");
+                  log.info("importData: unsupported data flavor");
                }
                catch (java.io.IOException ieo) {
-                  System.out.println("importData: I/O exception");
+                  log.warn("importData: I/O exception");
                }
                catch (Exception ex) {
-                  System.out.println(ex.getMessage());
+                  log.warn(""+ex.getMessage());
                }
                finally {
                   dtde.dropComplete(false);
@@ -237,7 +240,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
          org.tn5250j.tools.XTFRFile tfr = new org.tn5250j.tools.XTFRFile(null,
             vt, (Session)this,props);
       }
-      catch (Exception exc) {}
+      catch (Exception exc) {
+      	log.warn(""+exc.getMessage());
+      }
 
    }
 
@@ -519,7 +524,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          vt.sendHeartBeat();
       }
       catch (Exception exc) {
-         System.out.println(exc.getMessage());
+         log.warn(exc.getMessage());
       }
    }
 
@@ -719,7 +724,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    protected void stopRecordingMe() {
       if (keyHandler.getRecordBuffer().length() > 0) {
          Macronizer.setMacro(newMacName,keyHandler.getRecordBuffer());
-         System.out.println(keyHandler.getRecordBuffer());
+         log.debug(keyHandler.getRecordBuffer());
       }
 
       keyHandler.stopRecording();
@@ -734,7 +739,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       if (macName != null) {
          macName = macName.trim();
          if (macName.length() > 0) {
-            System.out.println(macName);
+            log.info(macName);
             newMacName = macName;
             keyHandler.startRecording();
          }
@@ -779,7 +784,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    protected void paintComponent(Graphics g) {
-//      System.out.println("paint from screen");
+	  log.debug("paint from screen");
 
       screen.paintComponent3(g);
       if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
@@ -791,7 +796,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    public void update(Graphics g) {
-//      System.out.println("paint from gui");
+	  log.debug("paint from gui");
       paint(g);
 
    }
@@ -884,7 +889,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 //      repaint(x1,y1,x2-1,y2-1);
       repaint();
-//      System.out.println(" bound " + band.getEndPoint());
+	  log.debug(" bound " + band.getEndPoint());
    }
 
    public boolean canDrawRubberBand(RubberBand b) {

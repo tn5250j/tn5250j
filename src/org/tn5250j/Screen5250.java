@@ -33,6 +33,7 @@ import java.util.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
 
+import org.apache.log4j.Logger;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
 
@@ -165,6 +166,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
    private boolean drawing;
    private javax.swing.Timer blinker;
 
+   private Logger log = Logger.getLogger(this.getClass());
+   
    public Screen5250(Gui5250 gui, SessionConfig config) {
 
 //      ImageIcon ic = new ImageIcon("transtable1.jpg");
@@ -181,7 +184,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
          jbInit();
       }
       catch(Exception ex) {
-         ex.printStackTrace();
+         log.warn("In constructor: ", ex);
       }
    }
 
@@ -740,7 +743,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       }
 
       if (pn.equals("cursorBlink")) {
-         System.out.println(getStringProperty("cursorBlink"));
+      	
+         log.debug(getStringProperty("cursorBlink"));
          if (pce.getNewValue().equals("Yes")) {
 
             if (blinker == null) {
@@ -834,7 +838,9 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       // because getRowColFromPoint returns position offset as 1,1 we need
       // to translate as offset 0,0
       int pos = getPosFromView(end.x,end.y);
-
+	  if(pos >= screen.length) {
+	  	pos = screen.length-1;
+	  }
       int x = screen[pos].x + fmWidth - 1;
       int y = screen[pos].y + fmHeight - 1;
 
@@ -871,7 +877,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       gui.rubberband.reset();
       gui.repaint();
 
-      System.out.println("Copying" + workR);
+      log.debug("Copying" + workR);
 
       // loop through all the screen characters to send them to the clip board
       int m = workR.x;
@@ -959,7 +965,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                   skipLF = true;
                }
             }
-            System.out.println("pasted >" + pd + "<");
+            log.debug("pasted >" + pd + "<");
 
             int col = getCol(lastPos);
             int t = numCols - col;
@@ -997,7 +1003,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
          setCursorActive(true);
       }
       catch (Throwable exc) {
-         System.err.println(exc);
+         log.warn(""+exc.getMessage());
       }
    }
 
@@ -1007,7 +1013,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       StringBuffer s = new StringBuffer();
       screenFields.saveCurrentField();
       isInField(pos);
-      System.out.println("Copying");
+      log.debug("Copying");
       StringSelection contents = new StringSelection(screenFields.getCurrentFieldText());
       cb.setContents(contents, null);
       screenFields.restoreCurrentField();
@@ -1071,7 +1077,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 //      gui.rubberband.reset();
 //      gui.repaint();
 
-//      System.out.println("Summing");
+		log.debug("Summing");
 
       // obtain the decimal format for parsing
       DecimalFormat df =
@@ -1132,7 +1138,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
          s.setLength(0);
          m++;
       }
-//      System.out.println(sum);
+	  log.debug(""+sum);
       return sumVector;
    }
 
@@ -1140,8 +1146,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
       if(!keyboardLocked) {
 
          int pos = getPosFromView(e.getX(),e.getY());
-//         System.out.println((getRow(pos)) + "," + (getCol(pos)));
-//         System.out.println(e.getX() + "," + e.getY()+ "," + fmWidth+ "," + fmHeight);
+		 if(log.isDebugEnabled()) {
+			 log.debug((getRow(pos)) + "," + (getCol(pos)));
+			 log.debug(e.getX() + "," + e.getY()+ "," + fmWidth+ "," + fmHeight);
+		 }
          if (pos < 0)
             return ;
          // because getRowColFromPoint returns offset of 1,1 we need to
@@ -1177,8 +1185,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                      aid.append(screen[pos + 1].getChar());
                   }
                   else {
-//                        System.out.println(" Hotspot clicked!!! we will send character " +
-//                                    screen[pos].getChar());
+					log.debug(" Hotspot clicked!!! we will send character " +
+                                    screen[pos].getChar());
 //
                      aid.append(screen[pos].getChar());
                   }
@@ -1209,7 +1217,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
                   case ScreenChar.BUTTON_LEFT_EB:
                   case ScreenChar.BUTTON_MIDDLE_EB:
                   case ScreenChar.BUTTON_RIGHT_EB:
-                     System.out.println("Send to external Browser");
+                     log.info("Send to external Browser");
                      break;
 
                   default:
@@ -1648,7 +1656,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
 //                  }
                   }
                   else
-                     System.out.println(" send keys mnemonic " + s);
+                     log.info(" send keys mnemonic " + s);
                }
                if (keyboardLocked) {
 
@@ -2280,7 +2288,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants,
             simulated = true;
             break;
          default :
-            System.out.println(" Mnemonic not supported " + mnem);
+            log.info(" Mnemonic not supported " + mnem);
             break;
 
       }

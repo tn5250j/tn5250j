@@ -29,6 +29,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
+
+import org.apache.log4j.Logger;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionListener;
@@ -54,7 +56,8 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
    private JDesktopPane desktop;
    static int openFrameCount = 0;
    private Vector myFrameList;
-
+   private Logger log = Logger.getLogger(this.getClass());
+   
    //Construct the frame
    public Gui5250MDIFrame(My5250 m) {
       super(m);
@@ -63,7 +66,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
          jbInit();
       }
       catch(Exception e) {
-         e.printStackTrace();
+         log.warn("In constructor: "+e);
       }
    }
 
@@ -152,9 +155,9 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
       for (int x = 0; x < myFrameList.size(); x++) {
 
          MyInternalFrame mif = (MyInternalFrame)myFrameList.get(x);
-//         System.out.println(" current index " + x + " count " + frames.length + " has focus " +
-//                        mif.isActive() + " title " + mif.getTitle() + " seq " + seq +
-//                        " id " + mif.getInternalId());
+		 log.debug(" current index " + x + " count " + frames.length + " has focus " +
+                        mif.isActive() + " title " + mif.getTitle() + " seq " + seq +
+                       " id " + mif.getInternalId());
 
          if (mix.equals(mif)) {
             index = x + 1;
@@ -187,7 +190,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
          }
          catch (java.beans.PropertyVetoException e) {
-            System.out.println(e.getMessage());
+            log.warn(e.getMessage());
          }
       }
 //      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
@@ -215,9 +218,9 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
       for (int x = 0; x < myFrameList.size(); x++) {
 
          MyInternalFrame mif = (MyInternalFrame)myFrameList.get(x);
-//         System.out.println(" current index " + x + " count " + frames.length + " has focus " +
-//                        mif.isActive() + " title " + mif.getTitle() + " seq " + seq +
-//                        " id " + mif.getInternalId());
+		 log.debug(" current index " + x + " count " + frames.length + " has focus " +
+                        mif.isActive() + " title " + mif.getTitle() + " seq " + seq +
+                        " id " + mif.getInternalId());
 
          if (mix.equals(mif)) {
             index = x - 1;
@@ -238,7 +241,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
       }
       catch (java.beans.PropertyVetoException e) {
-         System.out.println(e.getMessage());
+         log.warn(e.getMessage());
       }
 //      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
 
@@ -271,7 +274,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
          frame.setMaximum(true);
       }
       catch (java.beans.PropertyVetoException pve) {
-         System.out.println("Can not set maximum " + pve.getMessage());
+         log.warn("Can not set maximum " + pve.getMessage());
       }
 
    }
@@ -280,15 +283,15 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
       int index = getIndexOfSession(targetSession);
       MyInternalFrame nextMIF = getNextInternalFrame();
-      System.out.println("session found and closing down " + index);
+      log.info("session found and closing down " + index);
       targetSession.removeSessionListener(this);
       targetSession.removeSessionJumpListener(this);
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
       MyInternalFrame mif = (MyInternalFrame)frames[index];
       int count = getSessionViewCount();
-//      System.out.println(" num of frames before removal " + myFrameList.size());
+	  log.debug(" num of frames before removal " + myFrameList.size());
       myFrameList.remove(mif);
-//      System.out.println(" num of frames left " + myFrameList.size());
+	  log.debug(" num of frames left " + myFrameList.size());
       desktop.remove(index);
 
       if (nextMIF != null) {
@@ -299,7 +302,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
          }
          catch (java.beans.PropertyVetoException e) {
-            System.out.println(e.getMessage());
+            log.warn(e.getMessage());
          }
       }
 
@@ -329,10 +332,10 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
             final String d = ses.getAllocDeviceName();
             if (d != null) {
-               System.out.println(changeEvent.getState() + " " + d);
+               log.info(changeEvent.getState() + " " + d);
                final int index = getIndexOfSession(ses);
 
-//               System.out.println(" index of session " + index + " num frames " + desktop.getAllFrames().length);
+			   log.debug(" index of session " + index + " num frames " + desktop.getAllFrames().length);
                if (index == -1)
                   return;
                Runnable tc = new Runnable () {
@@ -587,7 +590,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
        // implementation keeps the frame from leaving the desktop.
        public void setBoundsForFrame(JComponent f, int x, int y, int w, int h) {
 
-         System.out.println(" we are adjusting ");
+         log.info(" we are adjusting ");
          if (f instanceof MyInternalFrame == false) {
            super.setBoundsForFrame(f, x, y, w, h); // only deal w/internal frames
          }

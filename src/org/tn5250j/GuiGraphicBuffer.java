@@ -34,6 +34,8 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.font.*;
 
+import org.apache.log4j.Logger;
+
 public class GuiGraphicBuffer {
 
    private BufferedImage bi;
@@ -64,7 +66,9 @@ public class GuiGraphicBuffer {
    protected int offLeft = 0;  // offset from left
    private boolean resized = false;
    private boolean antialiased;
-
+   
+   private Logger log = Logger.getLogger("GFX");
+   
    public GuiGraphicBuffer () {
 
       tArea = new Rectangle2D.Float();
@@ -340,7 +344,7 @@ public class GuiGraphicBuffer {
          synchronized (lock) {
             // wait until there is something to read
             while (bi == null) {
-               System.out.println(" bi = null ");
+               log.debug(" bi = null ");
                lock.wait();
             }
             // we have the lock and state we're seeking
@@ -353,7 +357,7 @@ public class GuiGraphicBuffer {
          }
       }
       catch (InterruptedException ie) {
-         System.out.println("getDrawingarea : " + ie.getMessage());
+         log.warn("getDrawingarea : " + ie.getMessage());
          return null;
       }
    }
@@ -364,7 +368,7 @@ public class GuiGraphicBuffer {
         * @todo this is a hack and should be fixed at the root of the problem
         */
       if (gg2d == null) {
-         System.out.println(" we got a null graphic object ");
+         log.debug(" we got a null graphic object ");
          return;
       }
 
@@ -382,7 +386,7 @@ public class GuiGraphicBuffer {
         * @todo this is a hack and should be fixed at the root of the problem
         */
       if (gg2d == null) {
-//         System.out.println(" we got a null graphic object ");
+		 log.debug(" we got a null graphic object ");
          return;
       }
 
@@ -419,7 +423,7 @@ public class GuiGraphicBuffer {
          synchronized (lock) {
             // wait until there is something to read
             while (bi == null) {
-               System.out.println( " bi = null wa ");
+               log.debug( " bi = null wa ");
                lock.wait();
             }
                // we have the lock and state we're seeking
@@ -444,7 +448,7 @@ public class GuiGraphicBuffer {
          }
       }
       catch (InterruptedException ie) {
-         System.out.println("getWritingarea : " + ie.getMessage());
+         log.warn("getWritingarea : " + ie.getMessage());
          return null;
       }
    }
@@ -501,7 +505,7 @@ public class GuiGraphicBuffer {
       }
       catch (Exception e) {
 
-         System.out.println(" gui graphics setStatus " + e.getMessage());
+         log.warn(" gui graphics setStatus " + e.getMessage());
 
       }
    }

@@ -20,6 +20,7 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+import org.apache.log4j.Logger;
 import org.tn5250j.interfaces.SessionManagerInterface;
 
 import java.util.*;
@@ -32,7 +33,8 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    static private Sessions sessions;
    static private Vector configs;
-
+   
+   private Logger log = Logger.getLogger(this.getClass());
    /**
     * A handle to the unique SessionManager class
     */
@@ -42,7 +44,6 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
     * The constructor is made protected to allow overriding.
     */
    protected SessionManager() {
-
       if (_instance == null) {
          // initialize the settings information
          initialize();
@@ -65,7 +66,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
    }
 
    private void initialize() {
-
+      log.info("New session Manager initialized");
       sessions = new Sessions();
       configs = new Vector(3);
 

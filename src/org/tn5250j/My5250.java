@@ -33,6 +33,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.*;
 
+import org.apache.log4j.Logger;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
 import org.tn5250j.event.*;
@@ -52,8 +53,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    private static boolean useMDIFrames;
    private TN5250jSplashScreen splash;
    private int step;
-   private static String jarClassPaths;
-
+   private static String jarClassPaths;	
+   private Logger log = Logger.getLogger(this.getClass());
+   
    My5250 () {
 
       GlobalConfigure configure = (GlobalConfigure)ConfigureFactory.getInstance();
@@ -152,8 +154,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    }
 
    public void bootOptionsReceived(BootEvent bootEvent) {
-
-      System.out.println(" boot options received " + bootEvent.getNewSessionOptions());
+	  log.info(" boot options received " + bootEvent.getNewSessionOptions());
+      //System.out.println(" boot options received " + bootEvent.getNewSessionOptions());
 
       // If the options are not equal to the string 'null' then we have
       //    boot options
@@ -651,18 +653,18 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       Session jf = null;
       Sessions sess = manager.getSessions();
 
-      System.out.println("number of active sessions we have " + sess.getCount());
+      log.info("number of active sessions we have " + sess.getCount());
       int x = 0;
 
       while (view.getSessionViewCount() > 0) {
 
          jf = view.getSessionAt(0);
 
-         System.out.println("session found and closing down");
+         log.info("session found and closing down");
          view.removeSessionView(jf);
          manager.closeSession(jf);
-         System.out.println("disconnecting socket");
-         System.out.println("socket closed");
+         log.info("disconnecting socket");
+         log.info("socket closed");
          jf = null;
 
       }
@@ -676,7 +678,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       frames.remove(view);
       view.dispose();
 
-      System.out.println("number of active sessions we have after shutting down " + sess.getCount());
+      log.info("number of active sessions we have after shutting down " + sess.getCount());
 
       if (sess.getCount() == 0) {
 
@@ -799,12 +801,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          Class.forName("org.tn5250j.scripting.JPythonInterpreterDriver");
       }
       catch (java.lang.NoClassDefFoundError ncdfe) {
-         System.out.println("Information Message: Can not find scripting support"
+         log.warn("Information Message: Can not find scripting support"
                            + " files, scripting will not be available: "
                            + "Failed to load interpreter drivers " + ncdfe);
       }
       catch (Exception ex) {
-         System.out.println("Information Message: Can not find scripting support"
+         log.warn("Information Message: Can not find scripting support"
                            + " files, scripting will not be available: "
                            + "Failed to load interpreter drivers " + ex);
       }

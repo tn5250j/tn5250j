@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.io.*;
 import javax.swing.*;
 
+import org.apache.log4j.Logger;
 import org.tn5250j.interfaces.ConfigureFactory;
 
 /**
@@ -59,7 +60,8 @@ public class GlobalConfigure extends ConfigureFactory {
    static final public String KEYMAP = "keymap";
 
    static final private String settingsFile = "tn5250jstartup.cfg";
-
+   private Logger log = Logger.getLogger(this.getClass());
+   
    /**
     * The constructor is made protected to allow overriding.
     */
@@ -159,30 +161,30 @@ public class GlobalConfigure extends ConfigureFactory {
                    settings.load(again); 
                }
                catch (FileNotFoundException fnfea) {
-                   System.out.println(" Information Message: " 
+                   log.info(" Information Message: " 
                    + fnfea.getMessage() + ".  The file " + settingsFile 
                    + " will be created for first time use.");
                    checkLegacy();
                    saveSettings();
                }
                catch (IOException ioea) {
-                   System.out.println("IO Exception accessing File " 
+                   log.warn("IO Exception accessing File " 
                    + settingsFile + " for the following reason : "
                    + ioea.getMessage());
                }
                catch (SecurityException sea) {
-                   System.out.println("Security Exception for file " 
+                   log.warn("Security Exception for file " 
                    + settingsFile + "  This file can not be "
                    + "accessed because : " + sea.getMessage());
                }
            }
            catch (IOException ioe) {
-               System.out.println("IO Exception accessing File " 
+               log.warn("IO Exception accessing File " 
                + settingsFile + " for the following reason : "
                + ioe.getMessage());
            }
            catch (SecurityException se) {
-               System.out.println("Security Exception for file " 
+               log.warn("Security Exception for file " 
                + settingsFile + "  This file can not be "
                + "accessed because : " + se.getMessage());
            }
@@ -258,10 +260,10 @@ public class GlobalConfigure extends ConfigureFactory {
            rmvFile.delete();
            }
            catch (FileNotFoundException e) {
-               System.out.println(srcFile + " not found !");
+               log.warn(srcFile + " not found !");
            }
            catch (IOException e) {
-               System.out.println("Global io-error !");
+               log.warn("Global io-error !");
            }
            catch (ArrayIndexOutOfBoundsException e) {
            }
@@ -322,17 +324,17 @@ public class GlobalConfigure extends ConfigureFactory {
             out.close();
          }
          catch (FileNotFoundException fnfe) {
-            System.out.println("File not found : writing file "
+            log.warn("File not found : writing file "
                                  + fileName + ".  Description of error is "
                                  + fnfe.getMessage());
          }
          catch (IOException ioe) {
-            System.out.println("IO Exception : writing file "
+            log.warn("IO Exception : writing file "
                                  + fileName + ".  Description of error is "
                                  + ioe.getMessage());
          }
          catch (SecurityException se) {
-            System.out.println("Security Exception : writing file "
+            log.warn("Security Exception : writing file "
                                  + fileName + ".  Description of error is "
                                  + se.getMessage());
          }
@@ -388,7 +390,7 @@ public class GlobalConfigure extends ConfigureFactory {
       catch (FileNotFoundException fnfe) {
 
          if (createFile) {
-            System.out.println(" Information Message: " + fnfe.getMessage()
+            log.info(" Information Message: " + fnfe.getMessage()
                               + ".  The file " + fileName + " will"
                               + " be created for first time use.");
 
@@ -397,18 +399,18 @@ public class GlobalConfigure extends ConfigureFactory {
          }
          else {
 
-            System.out.println(" Information Message: " + fnfe.getMessage()
+            log.info(" Information Message: " + fnfe.getMessage()
                               + ".");
 
          }
       }
       catch (IOException ioe) {
-         System.out.println("IO Exception accessing File "+ fileName +
+         log.warn("IO Exception accessing File "+ fileName +
                               " for the following reason : "
                               + ioe.getMessage());
       }
       catch (SecurityException se) {
-         System.out.println("Security Exception for file "+ fileName
+         log.warn("Security Exception for file "+ fileName
                               + ".  This file can not be accessed because : "
                               + se.getMessage());
       }
@@ -463,7 +465,7 @@ public class GlobalConfigure extends ConfigureFactory {
          catch (FileNotFoundException fnfe) {
 
             if (createFile) {
-               System.out.println(" Information Message: " + fnfe.getMessage()
+               log.info(" Information Message: " + fnfe.getMessage()
                                  + ".  The file " + fileName + " will"
                                  + " be created for first time use.");
 
@@ -476,18 +478,18 @@ public class GlobalConfigure extends ConfigureFactory {
             }
             else {
 
-               System.out.println(" Information Message: " + fnfe.getMessage()
+               log.info(" Information Message: " + fnfe.getMessage()
                                  + ".");
 
             }
          }
          catch (IOException ioe) {
-            System.out.println("IO Exception accessing File "+ fileName +
+            log.warn("IO Exception accessing File "+ fileName +
                                  " for the following reason : "
                                  + ioe.getMessage());
          }
          catch (SecurityException se) {
-            System.out.println("Security Exception for file "+ fileName
+            log.warn("Security Exception for file "+ fileName
                                  + ".  This file can not be accessed because : "
                                  + se.getMessage());
          }

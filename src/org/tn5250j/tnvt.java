@@ -31,6 +31,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
+import org.apache.log4j.Logger;
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.transport.SocketConnector;
@@ -86,7 +87,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private String connectMacro;
    private String sslType;
    WTDSFParser sfParser;
-
+	
+   private Logger log = Logger.getLogger(this.getClass());
+   
    tnvt (Screen5250 screen52) {
 
       this(screen52,false,false);
@@ -185,7 +188,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       systemProperties.put("socksProxyPort",proxyPort);
 
       System.setProperties(systemProperties);
-      System.out.println(" socks set ");
+      log.info(" socks set ");
    }
 
    public final boolean connect(String s, int port) {
@@ -209,7 +212,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          }
          catch (Exception exc) {
-            System.out.println("setStatus(ON) " + exc.getMessage());
+            log.warn("setStatus(ON) " + exc.getMessage());
 
          }
 
@@ -221,7 +224,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          sock = sc.createSocket(s,port);
 
          if (sock == null) {
-            System.out.println("I did not get a socket");
+            log.warn("I did not get a socket");
             disconnect();
             return false;
          }
@@ -244,7 +247,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
             screen52.setCursorActive(false);
          }
          catch (Exception excc) {
-            System.out.println("setCursorOff " + excc.getMessage());
+            log.warn("setCursorOff " + excc.getMessage());
 
          };
 
@@ -268,7 +271,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          }
          catch (Exception exc) {
-            System.out.println("setStatus(OFF) " + exc.getMessage());
+            log.warn("setStatus(OFF) " + exc.getMessage());
          }
 
          keepTrucking = true;
@@ -280,10 +283,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
       catch(Exception exception) {
          if (exception.getMessage() == null)
             exception.printStackTrace();
-         System.out.println("connect() " + exception.getMessage());
+         log.warn("connect() " + exception.getMessage());
 
          if (sock == null)
-            System.out.println("I did not get a socket");
+            log.warn("I did not get a socket");
 
          disconnect();
          return false;
@@ -306,7 +309,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       try {
          if (sock != null) {
-            System.out.println("Closing socket");
+            log.info("Closing socket");
             sock.close();
          }
          if (bin != null)
@@ -319,7 +322,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
       }
       catch(Exception exception) {
-         System.out.println(exception.getMessage());
+         log.warn(exception.getMessage());
          connected = false;
          devSeq = -1;
          return false;
@@ -402,7 +405,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
         baosp.reset();
       }
       baosp.reset();
@@ -438,7 +441,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
         baosp.reset();
         return false;
       }
@@ -530,7 +533,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
       baosp.reset();
    }
@@ -561,7 +564,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
    }
 
@@ -660,7 +663,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   }
                   catch (IOException ioe) {
 
-                    System.out.println(ioe.getMessage());
+                    log.warn(ioe.getMessage());
                   }
                   baosp.reset();
                }
@@ -671,7 +674,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   }
                   catch (IOException ioe) {
 
-                    System.out.println(ioe.getMessage());
+                    log.warn(ioe.getMessage());
                   }
                }
             }
@@ -687,7 +690,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
          }
          catch (IOException ioe) {
             baosp.reset();
-            System.out.println(ioe.getMessage());
+            log.warn(ioe.getMessage());
          }
          baosp.reset();
       }
@@ -718,7 +721,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
 
    }
@@ -757,7 +760,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
       baosp.reset();
    }
@@ -845,7 +848,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    private final void setInvited() {
 
-//      System.out.println("invited");
+      log.debug("invited");
       if (!screen52.isStatusErrorCode())
          screen52.setStatus(Screen5250.STATUS_SYSTEM, Screen5250.STATUS_VALUE_OFF,null);
 
@@ -863,7 +866,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
             bk = (Stream5250)dsq.get();
          }
          catch (InterruptedException ie) {
-            System.out.println("   vt thread interrupted and stopping ");
+            log.warn("   vt thread interrupted and stopping ");
             keepTrucking = false;
             continue;
          }
@@ -883,10 +886,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          switch (bk.getOpCode()) {
             case 00:
-//               System.out.println("No operation");
+			   log.debug("No operation");
                break;
             case 1:
-//               System.out.println("Invite Operation");
+			   log.debug("Invite Operation");
                parseIncoming();
 //               screen52.setKeyboardLocked(false);
                pendingUnlock = true;
@@ -894,7 +897,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                setInvited();
                break;
             case 2:
-//               System.out.println("Output Only");
+			   log.debug("Output Only");
                parseIncoming();
 //               System.out.println(screen52.dirty);
                screen52.updateDirty();
@@ -903,7 +906,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
                break;
             case 3:
-//               System.out.println("Put/Get Operation");
+			   log.debug("Put/Get Operation");
                parseIncoming();
 //               inviteIt =true;
                setInvited();
@@ -913,48 +916,48 @@ public final class tnvt implements Runnable, TN5250jConstants {
                }
                break;
             case 4:
-//            System.out.println("Save Screen Operation");
+			   log.debug("Save Screen Operation");
                parseIncoming();
                break;
 
             case 5:
-//               System.out.println("Restore Screen Operation");
+			   log.debug("Restore Screen Operation");
                parseIncoming();
                break;
             case 6:
-//               System.out.println("Read Immediate");
+			   log.debug("Read Immediate");
                sendAidKey(0);
                break;
             case 7:
-//               System.out.println("Reserved");
+			   log.debug("Reserved");
                break;
             case 8:
-//               System.out.println("Read Screen Operation");
+		       log.debug("Read Screen Operation");
                try {
                   readScreen();
                }
                catch (IOException ex) {
-
+					log.warn(ex.getMessage());
                }
                break;
 
             case 9:
-//               System.out.println("Reserved");
+			   log.debug("Reserved");
                break;
 
             case 10:
-//               System.out.println("Cancel Invite Operation");
+			   log.debug("Cancel Invite Operation");
                cancelInvite();
                break;
 
             case 11:
-//               System.out.println("Turn on message light");
+			   log.debug("Turn on message light");
                screen52.setMessageLightOn();
                screen52.setCursorActive(true);
 
                break;
             case 12:
-//               System.out.println("Turn off Message light");
+			   log.debug("Turn off Message light");
                screen52.setMessageLightOff();
                screen52.setCursorActive(true);
 
@@ -985,10 +988,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //               );
             screen52.updateDirty();
             controller.validate();
-//            System.out.println("update dirty");
+			log.debug("update dirty");
          }
          catch (Exception exd ) {
-            System.out.println(" tnvt.run: " + exd.getMessage());
+            log.warn(" tnvt.run: " + exd.getMessage());
             exd.printStackTrace();
          }
 
@@ -1011,13 +1014,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
    }
 
    public void dumpStuff() {
-
-      System.out.println(" Pending unlock " + pendingUnlock);
-      System.out.println(" Status Error " + screen52.isStatusErrorCode());
-      System.out.println(" Keyboard Locked " + screen52.isKeyboardLocked());
-      System.out.println(" Cursor On " + cursorOn);
-      System.out.println(" Cursor Active " + screen52.cursorActive);
-
+	  
+	  if(log.isDebugEnabled()) {
+	      log.debug(" Pending unlock " + pendingUnlock);
+	      log.debug(" Status Error " + screen52.isStatusErrorCode());
+	      log.debug(" Keyboard Locked " + screen52.isKeyboardLocked());
+	      log.debug(" Cursor On " + cursorOn);
+	      log.debug(" Cursor Active " + screen52.cursorActive);
+	  }
 
 
    }
@@ -1202,8 +1206,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
             sc.write((byte)sf.getFFW2() & 0xff);
             sc.write((byte)sf.getFCW1() & 0xff);
             sc.write((byte)sf.getFCW2() & 0xff);
-//            System.out.println("Saved ");
-//            System.out.println(sf.toString());
+			log.debug("Saved ");
+			log.debug(sf.toString());
 
             x++;
          }
@@ -1220,11 +1224,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
 
       sc = null;
-//      System.out.println("Save Screen end ");
+	  log.debug("Save Screen end ");
    }
 
    /**
@@ -1235,7 +1239,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
         throws IOException   {
       int which = 0;
       try {
-//         System.out.println("Restore ");
+		 log.debug("Restore ");
 
          bk.getNextByte();
          bk.getNextByte();
@@ -1281,7 +1285,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
          int numFields = bk.getNextByte() << 8 & 0xff00;
          numFields |= bk.getNextByte() & 0xff;
-//         System.out.println("number of fields " + numFields);
+		 log.debug("number of fields " + numFields);
 
          if (numFields > 0) {
             int x = 0;
@@ -1324,11 +1328,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   sf.setMDT();
                   screen52.getScreenFields().setMasterMDT();
                }
-
-//               System.out.println("/nRestored ");
-//               System.out.println(sf.toString());
-//
-               x++;
+				if(log.isDebugEnabled()) {
+					log.debug("/nRestored ");
+					log.debug(sf.toString());
+				}
+                x++;
             }
          }
 
@@ -1341,7 +1345,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
             screen52.drawFields();
       }
       catch (Exception e) {
-         System.out.println("error restoring screen " + which + " with " + e.getMessage());
+         log.warn("error restoring screen " + which + " with " + e.getMessage());
       }
    }
 
@@ -1368,7 +1372,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
                case CMD_SAVE_SCREEN:   // 0x02 2 Save Screen
                case 3:   // 0x03 3 Save Partial Screen
-//                  System.out.println("save screen partial");
+				  log.debug("save screen partial");
                   saveScreen();
                   break;
 
@@ -1384,14 +1388,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
                case CMD_RESTORE_SCREEN:   // 0x12 18 Restore Screen
                case 13:   // 0x13 19 Restore Partial Screen
-//                  System.out.println("restore screen partial");
+				  log.debug("restore screen partial");
                   restoreScreen();
                   break;
 
                case CMD_CLEAR_UNIT_ALTERNATE:    // 0x20 32 clear unit alternate
                   int param = bk.getNextByte();
                   if (param != 0) {
-//                     System.out.println(" clear unit alternate error " + Integer.toHexString(param));
+				  log.debug(" clear unit alternate error " + Integer.toHexString(param));
                      sendNegResponse(NR_REQUEST_ERROR,03,01,05,
                                     " clear unit alternate not supported");
                      done = true;
@@ -1470,7 +1474,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                done = true;
          }
       }
-      catch (Exception exc) {System.out.println("incoming " + exc.getMessage());};
+      catch (Exception exc) {log.warn("incoming " + exc.getMessage());};
    }
 
    /**
@@ -1500,7 +1504,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (Exception e) {
 
-        System.out.println("Send Negative Response error " +  e.getMessage());
+        log.warn("Send Negative Response error " +  e.getMessage());
       }
 
 
@@ -1514,7 +1518,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
       baosp.reset();
 
@@ -1531,7 +1535,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
       catch (IOException ioe) {
 
-        System.out.println(ioe.getMessage());
+        log.warn(ioe.getMessage());
       }
 
       baosp.reset();
@@ -1564,12 +1568,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
             switch (bk.getNextByte()) {
 
                case 1:     // SOH - Start of Header Order
-
+				  log.debug("SOH - Start of Header Order");
                   error = processSOH();
 
                   break;
                case 02:    // RA - Repeat to address
-
+				  log.debug("RA - Repeat to address");
                   int row = screen52.getCurrentRow();
                   int col = screen52.getCurrentCol();
 
@@ -1608,6 +1612,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 03:    // EA - Erase to address
+                  log.debug("EA - Erase to address");
                   int EArow = screen52.getCurrentRow();
                   int EAcol = screen52.getCurrentCol();
 
@@ -1638,14 +1643,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   }
                   break;
                case 04:    // Command - Escape
+                  log.debug("Command - Escape");
                   done = true;
                   break;
 
                case 16:    // TD - Transparent Data
+                  log.debug("TD - Transparent Data");
                   int j = (bk.getNextByte() & 0xff) << 8 | bk.getNextByte() & 0xff;  // length
                   break;
 
                case 17:    // SBA - set buffer address order (row column)
+                  log.debug("SBA - set buffer address order (row column)");
                   int saRow = bk.getNextByte();
                   int saCol = bk.getNextByte() & 0xff;
                   // make sure it is in bounds
@@ -1671,11 +1679,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 18:    // WEA - Extended Attribute
+                  log.debug("WEA - Extended Attribute");
                   bk.getNextByte();
                   bk.getNextByte();
                   break;
 
                case 19:    // IC - Insert Cursor
+                  log.debug("IC - Insert Cursor");
                   int icX = bk.getNextByte();
                   int icY = bk.getNextByte() & 0xff;
                   if (icX >= 0 &&
@@ -1683,7 +1693,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         icY >= 0 &&
                         icY <= saCols) {
 
-//                     System.out.println(" IC " + icX + " " + icY);
+					 log.debug(" IC " + icX + " " + icY);
                      screen52.setPendingInsert(true,icX,icY);
                   }
                   else {
@@ -1694,6 +1704,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 20:    // MC - Move Cursor
+                  log.debug("MC - Move Cursor");
                   int imcX = bk.getNextByte();
                   int imcY = bk.getNextByte() & 0xff;
                   if (imcX >= 0 &&
@@ -1701,7 +1712,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         imcY >= 0 &&
                         imcY <= saCols) {
 
-//                     System.out.println(" MC " + imcX + " " + imcY);
+					 log.debug(" MC " + imcX + " " + imcY);
                      screen52.setPendingInsert(false,imcX,imcY);
                   }
                   else {
@@ -1712,6 +1723,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 21:    // WTDSF - Write To Display Structured Field order
+                  log.debug("WTDSF - Write To Display Structured Field order");
                   byte[] seg = bk.getSegment();
                   error = sfParser.parseWriteToDisplayStructuredField(seg);
 
@@ -1719,6 +1731,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                case 29:    // SF - Start of Field
+                  log.debug("SF - Start of Field");
                   int fcw1 = 0;
                   int fcw2 = 0;
                   int ffw1 = 0;
@@ -1765,6 +1778,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   break;
 
                default:    // all others must be output to screen
+                  log.debug("all others must be output to screen");
                   byte byte0 = bk.getByteOffset(-1);
                   if (isAttribute(byte0)) {
                      screen52.setAttr(byte0);
@@ -1804,7 +1818,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       }
 
       catch (Exception e) {
-         System.out.println("write to display " + e.getMessage());
+         log.warn("write to display " + e.getMessage());
          e.printStackTrace();
       };
 
@@ -1817,7 +1831,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    private boolean processSOH() throws Exception {
 
       int l = bk.getNextByte();  // length
-//      System.out.println(" byte 0 " + l);
+	  log.debug(" byte 0 " + l);
 
       if (l > 0 && l <= 7) {
          bk.getNextByte(); // flag byte 2
@@ -1869,13 +1883,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
             dataIncluded[1] = (byte1 & 0x2) == 0x2;
             dataIncluded[0] = (byte1 & 0x1) == 0x1;
          }
-
-//         if (l >= 5)
-//            System.out.println(" byte 5 " + Integer.toBinaryString(bk.getNextByte()));
-//         if (l >= 6)
-//            System.out.println(" byte 6 " + Integer.toBinaryString(bk.getNextByte()));
-//         if (l == 7)
-//            System.out.println(" byte 7 " + Integer.toBinaryString(bk.getNextByte()));
+		 if(log.isDebugEnabled()) {
+			if (l >= 5)
+			   log.debug(" byte 5 " + Integer.toBinaryString(bk.getNextByte()));
+			if (l >= 6)
+			   log.debug(" byte 6 " + Integer.toBinaryString(bk.getNextByte()));
+			if (l == 7)
+			   log.debug(" byte 7 " + Integer.toBinaryString(bk.getNextByte()));
+		 }
 
          return false;
       }
@@ -1887,7 +1902,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    }
 
    private void processCC0 (byte byte0) {
-//      System.out.println(" Control byte0 " + Integer.toBinaryString(byte0 & 0xff));
+	  log.debug(" Control byte0 " + Integer.toBinaryString(byte0 & 0xff));
       boolean lockKeyboard = true;
       boolean resetMDT=false;
       boolean resetMDTAll = false;
@@ -1969,7 +1984,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    }
 
    private void processCC1 (byte byte1) {
-//      System.out.println(" Control byte1 " + Integer.toBinaryString(byte1 & 0xff));
+	 log.debug(" Control byte1 " + Integer.toBinaryString(byte1 & 0xff));
 
       if ((byte1 & 0x04) == 0x04) {
          Toolkit.getDefaultToolkit().beep();
@@ -1995,14 +2010,14 @@ public final class tnvt implements Runnable, TN5250jConstants {
       // this seems to work so far
       if ((byte1 & 0x20) == 0x20 && (byte1 & 0x08) == 0x00) {
          screen52.setPendingInsert(false);
-//         System.out.println(" WTD position no move");
+		 log.debug(" WTD position no move");
       }
       else {
 
          screen52.setPendingInsert(true);
-//         System.out.println(" WTD position move to home" + screen52.homePos +
-//                              " row " + screen52.getRow(screen52.homePos) +
-//                              " col " + screen52.getCol(screen52.homePos) );
+		 log.debug(" WTD position move to home" + screen52.homePos +
+                              " row " + screen52.getRow(screen52.homePos) +
+                              " col " + screen52.getCol(screen52.homePos) );
 
       }
       // in enhanced mode we sometimes only receive bit 6 turned on which
@@ -2597,12 +2612,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         sendQueryResponse();
                         break;
                      default:
-                        System.out.println("invalid structured field sub command " + bk.getByteOffset(-1));
+                        log.debug("invalid structured field sub command " + bk.getByteOffset(-1));
                         break;
                   }
                   break;
                default:
-                  System.out.println("invalid structured field command " + bk.getByteOffset(-1));
+                  log.debug("invalid structured field command " + bk.getByteOffset(-1));
                   break;
             }
          }
@@ -2646,7 +2661,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
    public final void sendQueryResponse()
          throws IOException {
 
-      System.out.println("sending query response");
+      log.info("sending query response");
       byte abyte0[] = new byte[64];
       abyte0[0] = 0;       // Cursor Row/column (set to zero)
       abyte0[1] = 0;       //           ""
@@ -2726,7 +2741,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //         abyte0[53] = 0x5E;      //  0x5E turns on ehnhanced mode
 //         abyte0[53] = 0x27;      //  0x5E turns on ehnhanced mode
          abyte0[53] = 0x7;      //  0x5E turns on ehnhanced mode
-         System.out.println("enhanced options");
+         log.info("enhanced options");
       }
       else
          abyte0[53] = 0x0;      //  0x0 is normal emulation
