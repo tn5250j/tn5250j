@@ -153,6 +153,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       new EmailAction(session,keyMap);
       new RunScriptAction(session,keyMap);
       new DebugAction(session,keyMap);
+      new CopyAction(session,keyMap);
 
    }
 
