@@ -135,18 +135,19 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       }
    }
 
-   private void nextSession() {
+   private MyInternalFrame getNextInternalFrame() {
+
 
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
       JInternalFrame miv = desktop.getSelectedFrame();
 
       if (miv == null)
-         return;
+         return null;
 
       int index = desktop.getIndexOf(miv);
 
       if (index == -1)
-         return;
+         return null;
 
       MyInternalFrame mix = (MyInternalFrame)frames[index];
 
@@ -170,11 +171,27 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          index = 0;
       }
 
-      try {
-         ((MyInternalFrame)myFrameList.get(index)).setSelected(true);
-      }
-      catch (java.beans.PropertyVetoException e) {
-         System.out.println(e.getMessage());
+      return (MyInternalFrame)myFrameList.get(index);
+
+
+
+   }
+
+   private void nextSession() {
+
+
+      MyInternalFrame mif = getNextInternalFrame();
+
+      if (mif != null) {
+         try {
+
+            mif.setSelected(true);
+
+
+         }
+         catch (java.beans.PropertyVetoException e) {
+            System.out.println(e.getMessage());
+         }
       }
 //      System.out.println(" current index " + index + " count " + desktop.getComponentCount());
 
@@ -259,22 +276,29 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
    public void removeSessionView(Session targetSession) {
 
       int index = getIndexOfSession(targetSession);
+      MyInternalFrame nextMIF = getNextInternalFrame();
       System.out.println("session found and closing down " + index);
       targetSession.removeSessionListener(this);
       targetSession.removeSessionJumpListener(this);
       JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
       MyInternalFrame mif = (MyInternalFrame)frames[index];
+      int count = getSessionViewCount();
 //      System.out.println(" num of frames before removal " + myFrameList.size());
       myFrameList.remove(mif);
 //      System.out.println(" num of frames left " + myFrameList.size());
       desktop.remove(index);
-//      if (myFrameList.size() > 0)
-//         try {
-//            ((MyInternalFrame)myFrameList.get(1)).setSelected(true);
-//         }
-//         catch (java.beans.PropertyVetoException e) {
-//            System.out.println(e.getMessage());
-//         }
+
+      if (nextMIF != null) {
+         try {
+
+            nextMIF.setSelected(true);
+
+
+         }
+         catch (java.beans.PropertyVetoException e) {
+            System.out.println(e.getMessage());
+         }
+      }
 
       this.repaint();
 
@@ -427,6 +451,11 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
             return activated;
 
+         }
+
+         public void setSelected(boolean selected)
+               throws java.beans.PropertyVetoException {
+            super.setSelected(selected);
          }
 
          public void paintme() {
