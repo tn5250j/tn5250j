@@ -37,6 +37,7 @@ import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.system.OperatingSystem;
 import org.tn5250j.event.*;
+import org.tn5250j.framework.Tn5250jController;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.interfaces.ConfigureFactory;
@@ -85,7 +86,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       setDefaultLocale();
       manager = SessionManager.instance();
       splash.updateProgress(++step);
-
+      Tn5250jController.getCurrent();
    }
 
 
