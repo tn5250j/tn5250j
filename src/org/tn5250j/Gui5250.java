@@ -41,7 +41,6 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.KeyChangeListener;
-import org.tn5250j.scripting.InterpreterDriverManager;
 
 public class Gui5250 extends JPanel implements ComponentListener,
                                                       ActionListener,
@@ -659,102 +658,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          return;
       }
-//				    (pressed ? false:true));
 
-//         if (keyCode == KeyEvent.VK_N &&
-//               e.isAltDown() && !e.isControlDown()) {
-//
-//            me.startNewSession();
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_X &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            changeConnection();
-//            return;
-//         }
-//
-//         if (!jumpn && keyCode == KeyEvent.VK_PAGE_UP &&
-//               e.isAltDown() && !e.isControlDown()) {
-//
-//            nextSession();
-//            return;
-//         }
-//
-//         if (!jumpp && keyCode == KeyEvent.VK_PAGE_DOWN &&
-//               e.isAltDown() && !e.isControlDown()) {
-//
-//            prevSession();
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_S &&
-//               e.isAltDown() && !e.isControlDown()) {
-//
-//            screen.toggleHotSpots();
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_G &&
-//               e.isAltDown() && !e.isControlDown()) {
-//
-//            screen.toggleGUIInterface();
-//   //         repaint();
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_M &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            vt.systemRequest('4');
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_D &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            doAttributes();
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_P &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            screen.printMe();
-//            return;
-//         }
-//
-//   //      if (keyCode == KeyEvent.VK_L &&
-//   //            e.isAltDown() && !e.isControlDown()) {
-//   //         screen.crossHair();
-//   //         return;
-//   //      }
-//
-//         if (keyCode == KeyEvent.VK_O &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            vt.toggleDebug();
-//            return;
-//         }
-//
-//         if (keyCode == KeyEvent.VK_Q &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            closeSession();
-//            return;
-//         }
-//
-//         // file transfer
-//         if (keyCode == KeyEvent.VK_T &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            doMeTransfer();
-//            return;
-//         }
-//
-//         // send screen via e-mail
-//         if (keyCode == KeyEvent.VK_E &&
-//               e.isAltDown() && !e.isControlDown()) {
-//            sendScreenEMail();
-//            return;
-//         }
-//
-
-//      if (!keyMap.isEqualLast(e))
       if (isLinux)
          lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
       else
@@ -1695,9 +1599,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void executeMeMacro(String macro) {
 
-      String keys = macros.getMacroByName(macro);
-      if (keys != null)
-         screen.sendKeys(keys);
+      macros.invoke(macro,(Session)this);
 
    }
 
@@ -1797,13 +1699,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          if (value.equals(options[0])) {
             // send option along with system request
             if (rst.getText().length() > 0) {
-               try {
-                  InterpreterDriverManager.executeScriptFile((Session)this,"scripts" +
-                        File.separatorChar + rst.getText());
-               }
-               catch (Exception ex) {
-                  System.err.println(ex);
-               }
+               macros.invoke(rst.getText(),(Session)this);
             }
          }
          getFocusForMe();
