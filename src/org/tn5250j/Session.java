@@ -26,6 +26,7 @@ import java.awt.Rectangle;
 import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.interfaces.ScanListener;
 
 /**
  * A host session
@@ -43,6 +44,10 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
    private boolean firstScreen;
    private char[] signonSave;
    private boolean heartBeat = false;
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   private boolean scan; // = false;
+   private ScanListener scanListener; // = null;
 
    public Session (Properties props, String configurationResource,
                      String sessionName,
@@ -231,6 +236,88 @@ public class Session extends Gui5250 implements SessionInterface,TN5250jConstant
       connected = false;
       vt.disconnect();
 
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   protected void setVT(tnvt v)
+   {
+     super.setVT(v);
+
+     if (v != null)
+       v.setScanningEnabled(this.scan);
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * Enables or disables scanning.
+    *
+    * @param scan enables scanning when true; disables otherwise.
+    *
+    * @see tnvt#setCommandScanning(boolean);
+    * @see tnvt#isCommandScanning();
+    * @see tnvt#scan();
+    * @see tnvt#parseCommand();
+    * @see scanned(String,String)
+    */
+   public void setScanningEnabled(boolean scan)
+   {
+     this.scan = scan;
+
+     if (this.vt != null)
+       this.vt.setScanningEnabled(scan);
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * Checks whether scanning is enabled.
+    *
+    * @return true if command scanning is enabled; false otherwise.
+    *
+    * @see tnvt#setCommandScanning(boolean);
+    * @see tnvt#isCommandScanning();
+    * @see tnvt#scan();
+    * @see tnvt#parseCommand();
+    * @see scanned(String,String)
+    */
+   public boolean isScanningEnabled()
+   {
+     if (this.vt != null)
+       return this.vt.isScanningEnabled();
+
+     return this.scan;
+   }
+
+   // WVL - LDC : TR.000300 : Callback scenario from 5250
+   /**
+    * This is the callback method for the TNVT when sensing the action cmd
+    * screen pattern (!# at position 0,0).
+    *
+    * This is <strong>NOT a threadsafe method</strong> and will be called
+    * from the TNVT read thread!
+    *
+    * @param command discovered in the 5250 stream.
+    * @param remainder are all the other characters on the screen.
+    *
+    * @see tnvt#setCommandScanning(boolean);
+    * @see tnvt#isCommandScanning();
+    * @see tnvt#scan();
+    * @see tnvt#parseCommand();
+    * @see scanned(String,String)
+    */
+  protected void scanned(String command, String remainder)
+  {
+    if (scanListener != null)
+      scanListener.scanned(command, remainder);
+   }
+
+   public void addScanListener(ScanListener listener)
+   {
+     scanListener = ScanMulticaster.add(scanListener, listener);
+   }
+
+   public void removeScanListener(ScanListener listener)
+   {
+     scanListener = ScanMulticaster.remove(scanListener, listener);
    }
 
    /**
