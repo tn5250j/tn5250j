@@ -529,9 +529,18 @@ public class FTP5250Prot {
             if (useInternal)
                // WHFLDI  Field name internal
                ffDesc.setFieldName(data.substring(129,129+10));
-            else
+            else {
                // WHFLD  Field name text description
                ffDesc.setFieldName(data.substring(168,168+50).trim());
+
+               // if the text description is blanks then use the field name
+               if (ffDesc.getFieldName().trim().length() == 0)
+                  // WHFLDI  Field name internal
+                  ffDesc.setFieldName(data.substring(129,129+10));
+
+            }
+
+
             // WHFOBO  Field starting offset
             ffDesc.setStartOffset(data.substring(149,149+5));
             // WHFLDB  Field length
@@ -852,6 +861,7 @@ public class FTP5250Prot {
                         status.setCurrentRecord(c / recordLength);
                         fireStatusEvent();
                      }
+                     getThread.yield();
          //            if ((c / recordLength) == 200)
          //               aborted = true;
                   }
@@ -896,6 +906,7 @@ public class FTP5250Prot {
       };
 
       getThread = new Thread(getRun);
+      getThread.setPriority(2);
       getThread.start();
 
       return flag;
