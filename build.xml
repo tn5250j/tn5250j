@@ -63,6 +63,18 @@
        <include name="src/**"/>
     </fileset>
 
+  <!-- ===================================================================== -->
+  <!-- Test Java version.                                                    -->
+  <!-- ===================================================================== -->
+ 
+   <target name="testjava">
+      <condition property="oldJava">
+         <or>
+            <equals arg1="1.3" arg2="${ant.java.version}" />
+         </or>
+      </condition>
+   </target>
+    
     <!-- the ftp task can be used to transfer files to a remote system -->
     <!--
     <taskdef name="ftp"
@@ -138,14 +150,18 @@
     <!-- =================================================================== -->
     <!-- Compiles the source directory                                       -->
     <!-- =================================================================== -->
-    <target name="compile" depends="prepare" description="Compile your source-files">
+    <target name="compile" depends="prepare,testjava" description="Compile your source-files">
         <javac srcdir="${source.dir}"
                 destdir="${build.classes.dir}"
                 excludes="**/Cvs/**,**/*.ini" >
             <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
-                     unless ="SSL" />
+                      if="oldJava" />
             <exclude name="org/tn5250j/transport/SSL/X509*.java"
-                     unless ="SSL" />
+                      if="oldJava" />
+            <exclude name="org/tn5250j/keyboard/KeyStroker14.java"
+                      if="oldJava" />
+            <exclude name="org/tn5250j/keyboard/configure/KeyGetter.java"
+                      if="oldJava" />
             <classpath>
                 <path refid="classpath"/>
             </classpath>
