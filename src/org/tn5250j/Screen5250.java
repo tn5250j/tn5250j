@@ -1224,37 +1224,65 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     */
    public void sendKeys(String text) {
 
-      if (keysBuffered) {
-         text = bufferedKeys + text;
-         keysBuffered = false;
-         bufferedKeys = "";
+
+      if (keyboardLocked) {
+
+         if(text.equals("[reset]") || text.equals("[sysreq]") || text.equals("[attn]")) {
+            bufferedKeys = "";
+            keysBuffered = false;
+         }
+         else {
+            keysBuffered = true;
+            if(bufferedKeys == null){
+               bufferedKeys = text;
+               return;
+            }
+            else {
+               bufferedKeys += text;
+                  return;
+            }
+         }
+
       }
+      else {
 
-      // check to see if position is in a field and if it is then change
-      //   current field to that field
-      isInField(lastPos,true);
-
-      strokenizer.setKeyStrokes(text);
-      String s;
-      boolean done = false;
-      while (strokenizer.hasMoreKeyStrokes() && !done) {
-         s = strokenizer.nextKeyStroke();
-         if (s.length() == 1) {
-            simulateKeyStroke(s.charAt(0));
+         if (keysBuffered) {
+            text = bufferedKeys + text;
+            keysBuffered = false;
+            bufferedKeys = "";
+         }
+         // check to see if position is in a field and if it is then change
+         //   current field to that field
+         isInField(lastPos,true);
+         if (text.length() == 1 && !text.equals("[") && !text.equals("]")) {
+               simulateKeyStroke(text.charAt(0));
          }
          else {
 
-            if (s != null)
-               simulateMnemonic(getMnemonicValue(s));
-            else
+            strokenizer.setKeyStrokes(text);
+            String s;
+            boolean done = false;
 
-               System.out.println(" mnemonic " + s);
-         }
-         if (keyboardLocked) {
-            bufferedKeys = strokenizer.getUnprocessedKeyStroked();
-            if (bufferedKeys != null)
-               keysBuffered = true;
-            done = true;
+            while (strokenizer.hasMoreKeyStrokes() && !done) {
+               s = strokenizer.nextKeyStroke();
+               if (s.length() == 1) {
+                  simulateKeyStroke(s.charAt(0));
+               }
+               else {
+
+                  if (s != null)
+                     simulateMnemonic(getMnemonicValue(s));
+                  else
+
+                     System.out.println(" mnemonic " + s);
+               }
+               if (keyboardLocked) {
+                  bufferedKeys = strokenizer.getUnprocessedKeyStroked();
+                  if (bufferedKeys != null)
+                     keysBuffered = true;
+                  done = true;
+               }
+            }
          }
       }
    }

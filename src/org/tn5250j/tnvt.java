@@ -140,7 +140,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       systemProperties.put("socksProxyPort",proxyPort);
 
       System.setProperties(systemProperties);
-
+      System.out.println(" socks set ");
    }
 
    public final boolean connect(String s, int port) {

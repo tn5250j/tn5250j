@@ -142,51 +142,51 @@ public class SendEMail {
          if(!loadConfig(configFile))
             return;
 
-   		Session session = Session.getDefaultInstance(SMTPProperties, null);
-	   	session.setDebug(false);
+         Session session = Session.getDefaultInstance(SMTPProperties, null);
+         session.setDebug(false);
 
          Message msg = new MimeMessage(session);
-	      InternetAddress[] toAddrs = null, ccAddrs = null;
+         InternetAddress[] toAddrs = null, ccAddrs = null;
 
          toAddrs = InternetAddress.parse(to, false);
          msg.setRecipients(Message.RecipientType.TO, toAddrs);
 
          if (cc != null) {
-		      ccAddrs = InternetAddress.parse(cc, false);
+            ccAddrs = InternetAddress.parse(cc, false);
             msg.setRecipients(Message.RecipientType.CC, ccAddrs);
          }
 
          if (subject != null)
-		      msg.setSubject(subject.trim());
+            msg.setSubject(subject.trim());
 
          if (from != null && from.length() > 0)
-	         msg.setFrom(new InternetAddress(from));
+            msg.setFrom(new InternetAddress(from));
 
          msg.setSentDate(new Date());
 
-	    // create and fill the first message part
-	    MimeBodyPart mbp = new MimeBodyPart();
+       // create and fill the first message part
+       MimeBodyPart mbp = new MimeBodyPart();
 
-	    mbp.setText(message,"us-ascii");
+       mbp.setText(message,"us-ascii");
 
        if (fileName == null || fileName.length() == 0)
           mbp.setFileName("tn5250j.txt");
        else
          mbp.setFileName(fileName);
 
-	    // create the Multipart and its parts to it
-	    Multipart mp = new MimeMultipart();
-	    mp.addBodyPart(mbp);
+       // create the Multipart and its parts to it
+       Multipart mp = new MimeMultipart();
+       mp.addBodyPart(mbp);
 
-	    // add the Multipart to the message
-	    msg.setContent(mp);
+       // add the Multipart to the message
+       msg.setContent(mp);
 
-	    // send the message
-	    Transport.send(msg);
+       // send the message
+       Transport.send(msg);
       }
       catch (Exception mex) {
          System.out.println(mex.toString());
-	   }
+      }
    }
 
 }

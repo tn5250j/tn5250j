@@ -25,26 +25,25 @@ public class KeyStrokenizer {
 
    public KeyStrokenizer() {
 
+      sb = new StringBuffer();
       setKeyStrokes(null);
    }
 
    public void setKeyStrokes (String strokes) {
 
       if (strokes != null) {
-//         keyStrokes.setLength(0);
-         keyStrokes.append(strokes);
+         keyStrokes.setLength(0);
 //         System.out.println("set "+ keyStrokes);
-//         index = 0;
-         length = keyStrokes.length();
+         length = strokes.length();
       }
       else {
 
          keyStrokes = new StringBuffer();
-         sb = new StringBuffer();
-         index = 0;
          length = 0;
 
       }
+      keyStrokes.append(strokes);
+      index = 0;
 
    }
 
@@ -65,10 +64,11 @@ public class KeyStrokenizer {
             case '[':
                sb.append(c);
                index++;
+
                // we need to throw an error here
                if(index >= length) {
                   System.out.println(" mnemonic key was incomplete :1 " +
-                                       "at position " + index);
+                                       "at position " + index + " len " + length );
                }
                else {
                   c = keyStrokes.charAt(index);
@@ -90,7 +90,7 @@ public class KeyStrokenizer {
                            //   find an ending for the potential mnemonic
                            if(index >= length) {
                               System.out.println(
-                              " mnemonic key was not not complete ending not found :2 " +
+                              " mnemonic key was incomplete ending not found :2 " +
                                           "at position " + index);
                            }
                            c = keyStrokes.charAt(index);
@@ -104,21 +104,25 @@ public class KeyStrokenizer {
                index++;
                if(index >= length) {
                   System.out.println(
-                  " mnemonic key was not not complete ending not found :3 " +
+                  " mnemonic key was incomplete ending not found :3 " +
                               "at position " + index);
-               }
-               c = keyStrokes.charAt(index);
-               if(c == ']') {
                   sb.append(c);
                   index++;
+
                }
                else {
-                  System.out.println(
-                  " mnemonic key was not complete beginning not found :4 " +
-                              "at position " + index);
+                  c = keyStrokes.charAt(index);
+                  if(c == ']') {
+                     sb.append(c);
+                     index++;
+                  }
+                  else {
+                     System.out.println(
+                     " mnemonic key was incomplete beginning not found :4 " +
+                                 "at position " + index);
+                  }
                }
                break;
-
             default:
                sb.append(c);
                index++;
@@ -126,11 +130,6 @@ public class KeyStrokenizer {
          }
          if(sb != null) {
             s = new String(sb);
-//            System.out.println("next before "+ keyStrokes + " " + start + " " + index + " " + length);
-            keyStrokes.delete(start,index);
-            index = 0;
-            length = keyStrokes.length();
-//            System.out.println("next before "+ keyStrokes + " " + start + " " + index + " " + length);
          }
 
       }
@@ -143,13 +142,9 @@ public class KeyStrokenizer {
 
 
       if(index >= length)
-//      if (keyStrokes.length() == 0)
          return null;
       else {
-//         return keyStrokes.toString();
-         String ks = keyStrokes.substring(index);
-         keyStrokes.setLength(0);
-         return ks;
+         return keyStrokes.substring(index);
       }
 
    }

@@ -33,6 +33,12 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+13/06/2002  Added some fixes for key buffering.
+
+            Fixed a dump that was being caused by the java e-mail apis not being
+            available.  It will now display a message notifying that it is not
+            found and the document to read to install these api's.
+
 12/06/2002  Fixed some problems with the Multiple Document Interface sessions.
 
             Added jdk1.3 socket option for keep alive.  This means that you can
