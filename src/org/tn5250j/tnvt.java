@@ -164,7 +164,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
             System.out.println("I did not get a socket");
          connected = true;
          // used for JDK1.3
-//         sock.setKeepAlive(true);
+         sock.setKeepAlive(true);
          sock.setTcpNoDelay(true);
          sock.setSoLinger(false,0);
          InputStream in = sock.getInputStream();

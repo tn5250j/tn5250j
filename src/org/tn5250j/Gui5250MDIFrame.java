@@ -49,8 +49,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    BorderLayout borderLayout1 = new BorderLayout();
    My5250 me;
-   JTabbedPane sessionPane = new JTabbedPane();
-   private SessionManager manager;
+//   private SessionManager manager;
    private ImageIcon focused = null;
    private ImageIcon unfocused = null;
    private int selectedIndex = 0;
@@ -76,10 +75,9 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
   private void jbInit() throws Exception  {
 
       desktop = new JDesktopPane();
-      setContentPane(desktop);
-
       // Install our custom desktop manager
       desktop.setDesktopManager(new MyDesktopMgr());
+      setContentPane(desktop);
 
       if (sequence > 0)
          setTitle("tn5250j <" + sequence + ">- " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
@@ -289,7 +287,7 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
    public boolean containsSession(Session session) {
 
-      return desktop.getIndexOf(session) >= 0;
+      return getIndexOfSession(session) >= 0;
 
    }
 
@@ -299,7 +297,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
       int index = -1;
 
       for (int idx = 0; idx < frames.length; idx++) {
-         if (frames[idx].getContentPane().equals(session)) {
+         Session ses = (Session)frames[idx].getContentPane();
+         if (ses.equals(session)) {
             index = idx;
             return index;
          }
@@ -398,7 +397,8 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
 
          private void disconnectMe() {
 
-            me.closeSession((Session)this.getContentPane());
+            Session s = (Session)getContentPane();
+            me.closeSession(s);
 
          }
    }
@@ -418,9 +418,22 @@ public class Gui5250MDIFrame extends Gui5250Frame implements GUIViewInterface,
          f.putClientProperty(RESIZING, Boolean.FALSE);
        }
 
+       public void endDraggingFrame(JComponent f) {
+//         super.endDraggingFrame(f);
+           JInternalFrame frame = (JInternalFrame)f;
+//           JDesktopPane desk = frame.getDesktopPane();
+//           desk.repaint();
+//           frame.validate();
+//           frame.repaint();
+           ((Gui5250)frame.getContentPane()).getScreen().gg2d = null;
+
+         System.out.println(" Endi dragging ");
+       }
+
        // This is called any time a frame is moved or resized.  This
        // implementation keeps the frame from leaving the desktop.
        public void setBoundsForFrame(JComponent f, int x, int y, int w, int h) {
+
          if (f instanceof JInternalFrame == false) {
            super.setBoundsForFrame(f, x, y, w, h); // only deal w/internal frames
          }

@@ -1,7 +1,7 @@
 package org.tn5250j;
 
 /*
- * @(#)OhioConstants.java
+ * @(#)TN5250jConstants.java
  * Copyright:    Copyright (c) 2001
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ public interface TN5250jConstants {
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".5";
-   public static final String tn5250jSubVer= ".3a";
+   public static final String tn5250jSubVer= ".4rc1";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;

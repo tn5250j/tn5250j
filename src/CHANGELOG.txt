@@ -33,6 +33,11 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+12/06/2002  Fixed some problems with the Multiple Document Interface sessions.
+
+            Added jdk1.3 socket option for keep alive.  This means that you can
+            not use jdk1.2 versions anymore.
+
 06/06/2002  Fixed a problem with restore of changed fields after a popup not
             being recognized as being change.  Thanks for the report James
 

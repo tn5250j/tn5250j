@@ -5,8 +5,20 @@ because I could not find a 5250 emulator of Linux with the enhanced functions
 like graphical windows, cursor progression, continued edit fields, masked edit
 fields etc.....
 
-This, the 0.4.x release, is beta but is stable and being used in a development
+This, the 0.5.x release, is beta but is stable and being used in a development
 environment so should not cause to many headaches but may contain bugs :-))
+
+===============================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+From version 0.5.4 on I will only be supporting 1.3 versions of the JDK/JRE and
+greater.  I can not keep testing on every version of the JDK and think that one
+major version back is sufficient.
+
+===============================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 For languages supported look at option -L for command line options.
 
@@ -399,13 +411,25 @@ Left mouse button held down allows you to specify a bounding area.
 6. Tested Systems/Operating systems
 ===================================
 
+===============================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+From version 0.5.4 on I will only be supporting 1.3 versions of the JDK/JRE and
+greater.  I can not keep testing on every version of the JDK and think that one
+major version back is sufficient.
+
+===============================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 The JDK's tested are from Sun.  If there are any others please let me know.
 
 MicroSoft
 ---------
-Windows NT   - JDK 1.2.2, 1.3, 1.3.1, 1.4 beta3
-Window 98    - JDK 1.2.2, 1.3
-Window 2000  - JDK 1.2.2, 1.3, 1.3.1
+Windows NT   - 1.3, 1.3.1, 1.4
+Window 98    - 1.3, 1.4
+Window 2000  - 1.3, 1.3.1, 1.4
 
 The 1.4 beta 3 on windows and linux is closing the gap between consistency !!!!!
 
@@ -416,7 +440,7 @@ Redhat 7.2
 
    Sun
    ---
- - JDK 1.3.x, JDK 1.4 beta 3 (still some problems here) Sun JDK
+ - JDK 1.3.x, JDK 1.4 Sun JDK
 
  The 1.4 beta 3 on windows and linux is closing the gap between consistency !!!!!
 

@@ -105,7 +105,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private boolean keyProcessed = false;
    private Rectangle dirty = new Rectangle();
    private Graphics2D g2d;
-   private Graphics2D gg2d;
+   protected Graphics2D gg2d;
    private Point startPoint;
    private Point endPoint;
    private int crossHair = 0;

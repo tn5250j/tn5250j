@@ -51,7 +51,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    String propFileName = null;
    tnvt vt = null;
    My5250 me;
-	TNRubberBand rubberband;
+   TNRubberBand rubberband;
    JPanel s = new JPanel();
    KeyPad keyPad = new KeyPad();
    private JPopupMenu popup = null;
@@ -204,7 +204,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       this.add(keyPad,BorderLayout.SOUTH);
       this.add(s,BorderLayout.CENTER);
 
-   	setRubberBand(new TNRubberBand(this));
+      setRubberBand(new TNRubberBand(this));
       this.requestFocus();
       jumpEvent = new SessionJumpEvent(this);
 
@@ -1009,15 +1009,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
     */
    protected void fireSessionJump(int dir) {
 
-   	if (listeners != null) {
-	      int size = listeners.size();
-	      for (int i = 0; i < size; i++) {
-	         SessionJumpListener target =
+      if (listeners != null) {
+         int size = listeners.size();
+         for (int i = 0; i < size; i++) {
+            SessionJumpListener target =
                     (SessionJumpListener)listeners.elementAt(i);
             jumpEvent.setJumpDirection(dir);
-	         target.onSessionJump(jumpEvent);
-	      }
-   	}
+            target.onSessionJump(jumpEvent);
+         }
+      }
    }
 
    public void sendNegResponse2(int ec) {
@@ -1658,7 +1658,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    protected final void setRubberBand(TNRubberBand newValue) {
 
-	   rubberband = newValue;
+      rubberband = newValue;
 
    }
 
