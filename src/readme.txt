@@ -25,6 +25,10 @@ Added auto login support
 New splash screen donated by Carlo Daffara from Conecta http://www.conecta.it
 Added blinking cursor.  Beta code and may leave traces
 Added a new keep alive function to fix some network disconnect problems.
+Fixed the tab hiding function
+Added the an option to include the session name on the main panel.
+Fixed Hex Map panel that had an error parsing.
+Added an "open same" session mapped to Alt-U
 
 Lot's and lot's of bug fixes and improvements.
 
