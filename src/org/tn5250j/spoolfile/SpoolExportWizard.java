@@ -40,8 +40,8 @@ import org.tn5250j.event.WizardEvent;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.My5250;
-import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.Session;
+import org.tn5250j.mailtools.SendEMailDialog;
 
 import com.lowagie.text.pdf.*;
 import com.lowagie.text.*;
@@ -78,6 +78,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
    JTextField pcPathInfo;
    JTextField ifsPathInfo;
    JButton pcSave;
+   JButton ifsSave;
 
    JRadioButton pc;
    JRadioButton ifs;
@@ -94,15 +95,25 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
    JRadioButton portrait;
    JRadioButton landscape;
 
+   // Text Options
+   JCheckBox openAfter;
+   JTextField editor;
+   JButton getEditor;
+
    // Spooled File
    SpooledFile splfile;
 
+   // Session object
    Session session;
 
-   JPanel two;
+   JPanel twoPDF;
+   JPanel twoText;
 
    // Wizard
    Wizard wizard;
+   WizardPage page;
+   WizardPage pagePDF;
+   WizardPage pageText;
    JButton nextButton;
 
    // pdf variables
@@ -112,6 +123,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    // output stream
    private FileOutputStream fw;
+   private IFSFileOutputStream ifsfw;
 
    // conical path of file
    private String conicalPath;
@@ -145,8 +157,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       // add our wizard to the frame
       this.getContentPane().add(wizard);
 
-      WizardPage page;
-
       // create the first wizard page
       page = new WizardPage(WizardPage.NEXT |
                        WizardPage.FINISH |
@@ -165,14 +175,23 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       wizard.add(page);
 
-      page = new WizardPage(WizardPage.PREVIOUS |
+      pagePDF = new WizardPage(WizardPage.PREVIOUS |
                        WizardPage.FINISH |
                        WizardPage.CANCEL |
                        WizardPage.HELP);
-      page.setName(LangTool.getString("spool.titlePage2"));
+      pagePDF.setName(LangTool.getString("spool.titlePage2PDF"));
 
-      page.getContentPane().add(pageTwo(), BorderLayout.CENTER);
-      wizard.add(page);
+      pagePDF.getContentPane().add(pageTwoPDF(), BorderLayout.CENTER);
+      wizard.add(pagePDF);
+
+      pageText = new WizardPage(WizardPage.PREVIOUS |
+                       WizardPage.FINISH |
+                       WizardPage.CANCEL |
+                       WizardPage.HELP);
+      pageText.setName(LangTool.getString("spool.titlePage2Txt"));
+
+      pageText.getContentPane().add(pageTwoText(), BorderLayout.CENTER);
+      wizard.add(pageText);
 
       pack();
 
@@ -189,11 +208,16 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    }
 
-   private JPanel pageTwo () {
+   /**
+    * Create the second page of the wizard pages for PDF
+    *
+    * @return
+    */
+   private JPanel pageTwoPDF () {
 
-      two = new JPanel();
+      twoPDF = new JPanel();
 
-      two.setLayout(new BorderLayout());
+      twoPDF.setLayout(new BorderLayout());
 
       JPanel docProps = new JPanel();
 
@@ -239,12 +263,61 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       landscape.setSelected(true);
 
-      two.add(docProps,BorderLayout.NORTH);
-      two.add(options,BorderLayout.CENTER);
+      twoPDF.add(docProps,BorderLayout.NORTH);
+      twoPDF.add(options,BorderLayout.CENTER);
 
-      return two;
+      return twoPDF;
    }
 
+   /**
+    * Create the second page of the wizard pages for Text
+    *
+    * @return
+    */
+   private JPanel pageTwoText () {
+
+      twoText = new JPanel();
+
+      twoText.setLayout(new BorderLayout());
+
+      JPanel textProps = new JPanel();
+
+      textProps.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("spool.labelTextProps")));
+
+      textProps.setLayout(new AlignLayout(2,5,5));
+
+      textProps.add(openAfter =
+                  new JCheckBox(LangTool.getString("spool.labelUseExternal")));
+      textProps.add(new JLabel());
+      textProps.add(editor = new JTextField(30));
+      getEditor = new JButton("Browse");
+
+      getEditor.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            getEditor();
+         }
+      });
+      textProps.add(getEditor);
+
+      // see if we have an external viewer defined and if we use it or not
+      if (session.getConfiguration().isPropertyExists("useExternal"))
+         openAfter.setEnabled(true);
+
+      if (session.getConfiguration().isPropertyExists("externalViewer"))
+         editor.setText(session.getConfiguration().getStringProperty("externalViewer"));
+
+      twoText.add(textProps,BorderLayout.CENTER);
+
+      return twoText;
+   }
+
+   /**
+    * Create the first page of the export wizard
+    *
+    * @return
+    * @throws Exception
+    */
    private JPanel pageOne () throws Exception {
 
       contentPane = new JPanel();
@@ -255,6 +328,10 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       spoolPanel.setLayout(new BorderLayout());
 
+      contentPane.add(spoolPanel, BorderLayout.CENTER);
+      contentPane.add(statusBar, BorderLayout.SOUTH);
+
+      // create the labels to be used for the spooled file data
       labelSpooledFile.setText(LangTool.getString("spool.labelSpooledFile"));
       labelJobName.setText(LangTool.getString("spool.labelJobName"));
       labelUser.setText(LangTool.getString("spool.labelJobUser"));
@@ -263,14 +340,11 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       labelSystem.setText(LangTool.getString("spool.labelSystem"));
       labelPages.setText(LangTool.getString("spool.labelPages"));
 
-
-      contentPane.add(statusBar, BorderLayout.SOUTH);
-      contentPane.add(spoolPanel, BorderLayout.CENTER);
-
       spoolData.setLayout(new AlignLayout(2,5,5));
       spoolData.setBorder(BorderFactory.createTitledBorder(
                                        LangTool.getString("spool.labelSpoolInfo")));
 
+      // create the data fields to be used for the spooled file data
       spooledFile.setText(splfile.getName());
       jobName.setText(splfile.getJobName());
       user.setText(splfile.getJobUser());
@@ -278,8 +352,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       number.setText(splfile.getJobNumber());
       systemName.setText(splfile.getSystem().getSystemName());
       pages.setText(splfile.getIntegerAttribute(splfile.ATTR_PAGES).toString());
-
-      spoolPanel.add(spoolData,  BorderLayout.CENTER);
 
       spoolData.add(labelSystem, null);
       spoolData.add(systemName, null);
@@ -298,6 +370,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
       spoolPanel.add(spoolOptions,  BorderLayout.SOUTH);
 
+      // set the spool export panel
+      spoolPanel.add(spoolData,  BorderLayout.CENTER);
+
       spoolOptions.setLayout(new BorderLayout());
 
       JPanel spoolInfo = new JPanel();
@@ -312,14 +387,19 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       cvtType.addItem(LangTool.getString("spool.toPDF"));
       cvtType.addItem(LangTool.getString("spool.toText"));
 
-      cvtType.addItemListener(new java.awt.event.ItemListener() {
-         public void itemStateChanged(ItemEvent e) {
-            if (((String)cvtType.getSelectedItem()).equals(LangTool.getString("spool.toText")))
-               nextButton.setEnabled(false);
-            else
-               nextButton.setEnabled(true);
-         }
-      });
+//         cvtType.addItemListener(new java.awt.event.ItemListener() {
+//            public void itemStateChanged(ItemEvent e) {
+//   //            if (((String)cvtType.getSelectedItem()).equals(
+//   //                                          LangTool.getString("spool.toText"))) {
+//   //               twoText.setVisible(true);
+//   //               twoPDF.setVisible(false);
+//   //            }
+//   //            else {
+//   //               twoText.setVisible(false);
+//   //               twoPDF.setVisible(true);
+//   //            }
+//            }
+//         });
 
       spoolInfo.add(new JLabel(LangTool.getString("spool.labelFormat")));
       spoolInfo.add(cvtType);
@@ -343,9 +423,17 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       ifs = new JRadioButton(LangTool.getString("spool.labelIFSPath"));
       ifsPathInfo = new JTextField(30);
 
+      ifsSave = new JButton("...");
+
+      ifsSave.addActionListener(new java.awt.event.ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+            getIFSFile();
+         }
+      });
+
       spoolInfo.add(ifs);
       spoolInfo.add(ifsPathInfo);
-      spoolInfo.add(new JLabel(""));
+      spoolInfo.add(ifsSave);
 
       email = new JRadioButton(LangTool.getString("spool.labelEmail"));
 
@@ -383,11 +471,17 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       return contentPane;
    }
 
+   /**
+    * React on the state change for radio buttons
+    *
+    * @param e Item event to react to
+    */
    private void doItemStateChanged(ItemEvent e) {
 
       pcPathInfo.setEnabled(false);
       ifsPathInfo.setEnabled(false);
       pcSave.setEnabled(false);
+      ifsSave.setEnabled(false);
 
       if (e.getStateChange() == ItemEvent.SELECTED) {
          if (pc.isSelected()) {
@@ -398,6 +492,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
          if (ifs.isSelected()) {
             ifsPathInfo.setEnabled(true);
+            ifsSave.setEnabled(true);
             ifsPathInfo.grabFocus();
          }
       }
@@ -444,7 +539,81 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    }
 
-   //Overridden so we can exit when window is closed
+   /**
+    * Get the IFS file from a file chooser
+    */
+   private void getIFSFile() {
+
+//      String workingDir = System.getProperty("user.dir");
+//      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
+//
+//      // set the file filters for the file chooser
+//      ExportFileFilter filter;
+//
+//      if (((String)cvtType.getSelectedItem()).equals(LangTool.getString("spool.toPDF")))
+//         filter = new ExportFileFilter("pdf","PDF Files");
+//      else
+//         filter = new ExportFileFilter("txt","Text Files");
+//
+//      pcFileChooser.addChoosableFileFilter(filter );
+//
+//      int ret = pcFileChooser.showSaveDialog(this);
+//
+//      // check to see if something was actually chosen
+//      if (ret == JFileChooser.APPROVE_OPTION) {
+//         File file = pcFileChooser.getSelectedFile();
+//         pcPathInfo.setText(filter.setExtension(file));
+//
+//      }
+      IFSFileDialog fd = new IFSFileDialog(this, "Save As", splfile.getSystem());
+      com.ibm.as400.vaccess.FileFilter[] filterList =
+                                       new com.ibm.as400.vaccess.FileFilter[2];
+      filterList[0] = new com.ibm.as400.vaccess.FileFilter("All files (*.*)",
+                                                            "*.*");
+
+      // Set up the filter based on the type of export specifed
+      if (cvtType.getSelectedIndex() == 0) {
+         filterList[1] = new com.ibm.as400.vaccess.FileFilter("PDF files (*.pdf)",
+                                                               "*.pdf");
+      }
+      else {
+         filterList[1] = new com.ibm.as400.vaccess.FileFilter("Text files (*.txt)",
+                                                               "*.txt");
+
+      }
+      fd.setFileFilter(filterList, 1);
+
+      // show the dialog and obtain the file if selected
+      if (fd.showDialog() == IFSFileDialog.OK) {
+         ifsPathInfo.setText(fd.getAbsolutePath());
+      }
+   }
+
+   /**
+    * Get the local file from a file chooser
+    */
+   private void getEditor() {
+
+      String workingDir = System.getProperty("user.dir");
+      MyFileChooser pcFileChooser = new MyFileChooser(workingDir);
+
+      int ret = pcFileChooser.showOpenDialog(this);
+
+      // check to see if something was actually chosen
+      if (ret == JFileChooser.APPROVE_OPTION) {
+         File file = pcFileChooser.getSelectedFile();
+         try {
+            editor.setText(file.getCanonicalPath());
+         }
+         catch (IOException e) {
+
+         }
+      }
+   }
+
+   /**
+    * Overridden so we can exit when window is closed
+    */
    protected void processWindowEvent(WindowEvent e) {
       super.processWindowEvent(e);
       if (e.getID() == WindowEvent.WINDOW_CLOSING) {
@@ -453,6 +622,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       }
    }
 
+   /**
+    * Export the spool file
+    */
    private void doExport() {
 
       if (!pagesValid())
@@ -476,6 +648,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       cvt.start();
    }
 
+   /**
+    * E-mail the information after export
+    */
    private void emailMe() {
 
       SendEMailDialog semd = new SendEMailDialog(this,
@@ -494,7 +669,10 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
          openOutputFile();
 
-         dw = new java.io.PrintStream(fw);
+         if (ifs.isSelected())
+            dw = new java.io.PrintStream(ifsfw);
+         else
+            dw = new java.io.PrintStream(fw);
 
          // Create an AS400 object.  The system name was passed
          // as the first command line argument.
@@ -532,7 +710,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
          int totBytes = 0;
          StringBuffer sb = new StringBuffer();
 
-         System.out.println("Starting Output");
+         updateStatus("Starting Output");
+
          // read the transformed spooled file, creating the jobLog String
          while (avail > 0) {
             if (avail > buf.length) {
@@ -547,13 +726,8 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                      break;
                   // write line feed to the stream
                   case 0x0A:
-//                     writeChar(sb.toString());
-//                     sb.append((char)buf[x]);
                      dw.println(sb.toString().toCharArray());
                      sb.setLength(0);
-//                     sb.append('\n');
-//                     System.out.print(sb);
-//                     sb.setLength(0);
                      break;
                   // we will skip the carrage return
                   case 0x0D:
@@ -565,7 +739,6 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                   case 0x0C:
 //                     writeChar(sb.toString());
 //                     dw.write(sb.toString().getBytes());
-//                     document.newPage();
                      dw.println(sb.toString().toCharArray());
                      sb.setLength(0);
 
@@ -575,14 +748,9 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                }
             }
 
-//            dw.write(buf);
-
             totBytes += read;
 
             updateStatus("Bytes read " + totBytes);
-//            System.out.println("Bytes read " + byr);
-
-//            System.out.println(new String(buf));
             //
             // process the data buffer
             //
@@ -596,9 +764,42 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
          updateStatus("Total bytes converted " + totBytes);
 
+         // if we are to open it afterwards then execute the program with the
+         //  text file as a parameter
+         if (openAfter.isSelected()) {
+
+            // not sure if this works on linux yet but here we go.
+            try {
+               Runtime rt = Runtime.getRuntime();
+               String[] cmdArray = {editor.getText(),pcPathInfo.getText()};
+               Process proc = rt.exec(cmdArray);
+
+               // now we set the field to use external viewer or not
+               if (openAfter.isSelected())
+                  session.getConfiguration().setProperty("useExternal","");
+               else
+                  session.getConfiguration().removeProperty("useExternal");
+
+               // now we set the property for external viewer
+               session.getConfiguration().setProperty("externalViewer",
+                                                      editor.getText());
+               // save it off
+               session.getConfiguration().saveSessionProps();
+            }
+            catch (Throwable t) {
+               // print a stack trace
+               t.printStackTrace();
+               // throw up the message error
+               JOptionPane.showMessageDialog(this,t.getMessage(),"error",
+                                                JOptionPane.ERROR_MESSAGE);
+            }
+
+         }
+
          if (email.isSelected())
             emailMe();
         }
+
         catch (Exception e) {
            updateStatus("Error: " + e.getMessage ());
            System.out.println ("Error: " + e.getMessage ());
@@ -666,7 +867,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                      break;
                   // new page
                   case 0x0C:
-                     writeChar(sb.toString());
+                     writeBuffer(sb.toString());
                      document.newPage();
                      sb.setLength(0);
                      break;
@@ -691,14 +892,18 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
             emailMe();
 
         }
+
         catch (Exception e) {
            updateStatus("Error: " + e.getMessage ());
            System.out.println ("Error: " + e.getMessage ());
         }
-
    }
 
-   private void writeChar(String s) {
+   /**
+    *
+    * @param s
+    */
+   private void writeBuffer(String s) {
 
       if (!document.isOpen())
          document.open();
@@ -711,48 +916,93 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
       }
    }
 
+   /**
+    * Open the correct type of output file depending on selection(s)
+    */
    public void openOutputFile() {
 
       try {
 
+         // update status
          updateStatus("Opening File");
 
+         // default to txt extention
          String suffix = ".txt";
+         String fileName = "";
 
+         // if pdf then change to pdf extenstion
          if (cvtType.getSelectedIndex() == 0)
             suffix = ".pdf";
 
-         String fileName = pcPathInfo.getText().trim();
 
+         // for e-mailing setup a temporary file
          if (email.isSelected()) {
             File dir = new File(System.getProperty("user.dir"));
-            File f = File.createTempFile(number.getText().trim(),suffix,dir);
+
+            //  setup the temp file name
+            String tempFile = spooledFile.getText().trim() + '_' +
+                              jobName.getText().trim() + '_' +
+                              user.getText().trim() + '_' +
+                              spooledFileNumber.getText().trim() + '_' +
+                              number.getText().trim();
+
+            // create the temporary file
+            File f = File.createTempFile(tempFile,suffix,dir);
 
             System.out.println(f.getName());
             System.out.println(f.getCanonicalPath());
+
             conicalPath = f.getCanonicalPath();
+
+            // set it to delete on exit
             f.deleteOnExit();
+
+            // create the file
             fw = new FileOutputStream(f);
          }
          else
-            fw = new FileOutputStream(fileName);
 
+            if (ifs.isSelected()) {
+               fileName = ifsPathInfo.getText().trim();
+               ifsfw = new IFSFileOutputStream(splfile.getSystem(),fileName);
+            }
+            else {
+               fileName = pcPathInfo.getText().trim();
+               fw = new FileOutputStream(fileName);
+            }
+
+         // if not PDF then this is all we have to do so return
          if (cvtType.getSelectedIndex() > 0)
             return;
 
+         // On pdf's then we need to create a PDF document
          if (document == null) {
+
             document = new Document();
 
-            bos = PdfWriter.getInstance(document,fw);
+            // create the pdf writer based on selection of pc or ifs file
+            if (ifs.isSelected()) {
+               bos = PdfWriter.getInstance(document,ifsfw);
+            }
+            else {
+               bos = PdfWriter.getInstance(document,fw);
+            }
 
+            // create the base font
             BaseFont bf = BaseFont.createFont("Courier", "Cp1252", false);
+
+            // set the default size of the font to 9.0
             float fontsize = 9.0f;
+
+            // if we have a font selectd then try to use it
             if (fontSize.getText().length() > 0)
                fontsize = Float.parseFloat(fontSize.getText().trim());
 
+            // create the pdf font to use within the document
             font = new com.lowagie.text.Font(bf, fontsize,
                                              com.lowagie.text.Font.NORMAL);
 
+            // set the PDF properties of the supplied properties
             if (author.getText().length() > 0)
                document.addAuthor(author.getText());
             if (title.getText().length() > 0)
@@ -762,6 +1012,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
             // set the page sizes and the page orientation
             String ps = (String)pageSize.getSelectedItem();
+
             if (ps.equals("A3")) {
                if (portrait.isSelected())
                   document.setPageSize(PageSize.A3);
@@ -801,16 +1052,14 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
                else
                   document.setPageSize(PageSize.LEDGER.rotate());
             }
-
-
          }
       }
       catch(IOException _ex) {
-         System.out.println("Cannot open");
+         System.out.println("Cannot open 1 " + _ex.getMessage());
 
       }
-      catch(Exception _ex) {
-         System.out.println("Cannot open");
+      catch(Exception _ex2) {
+         System.out.println("Cannot open 2 " + _ex2.getMessage());
       }
 
    }
@@ -836,7 +1085,17 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    public void nextBegin(WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Next Begin");
-      two.add(statusBar,BorderLayout.SOUTH);
+      if (((String)cvtType.getSelectedItem()).equals(
+                                    LangTool.getString("spool.toText"))) {
+         twoText.add(statusBar,BorderLayout.SOUTH);
+         e.setNewPage(pageText);
+      }
+      else {
+         twoPDF.add(statusBar,BorderLayout.SOUTH);
+         e.setNewPage(pagePDF);
+
+      }
+
    }
 
    public void nextComplete(WizardEvent e) {
@@ -846,6 +1105,7 @@ public class SpoolExportWizard extends JFrame implements WizardListener {
 
    public void previousBegin(WizardEvent e){
 //      System.out.println(e.getCurrentPage().getName() + " Prev Begin");
+      e.setNewPage(page);
       contentPane.add(statusBar,BorderLayout.SOUTH);
    }
 

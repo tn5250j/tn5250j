@@ -84,8 +84,8 @@ public class UserDataTabPanel extends JPanel implements QueueFilterInterface {
 
       userData.setEnabled(false);
       userData.setText("");
-      //select.setSelected(false);
       all.setSelected(true);
+
    }
 
    void select_itemStateChanged(ItemEvent e) {
@@ -100,5 +100,10 @@ public class UserDataTabPanel extends JPanel implements QueueFilterInterface {
          return "";
       else
          return userData.getText().trim();
+   }
+
+   public void setUserData(String filter) {
+
+      userData.setText(filter);
    }
 }

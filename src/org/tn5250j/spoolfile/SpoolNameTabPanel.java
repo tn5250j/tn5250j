@@ -84,7 +84,6 @@ public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface {
 
       spoolName.setEnabled(false);
       spoolName.setText("");
-      //select.setSelected(false);
       all.setSelected(true);
 
    }
@@ -101,5 +100,10 @@ public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface {
          return "";
       else
          return spoolName.getText().trim();
+   }
+
+   public void setSpoolName(String filter) {
+
+      spoolName.setText(filter);
    }
 }

@@ -64,6 +64,11 @@ public class SpoolFilterPane extends JTabbedPane {
       return user.getUser();
    }
 
+   public void setUser(String filter) {
+      user.setUser(filter);
+      setSelectedComponent(user);
+   }
+
    public String getQueue() {
       return queue.getQueue();
    }
@@ -93,9 +98,21 @@ public class SpoolFilterPane extends JTabbedPane {
 
    }
 
+   public void setUserData(String filter) {
+
+      userData.setUserData(filter);
+      setSelectedComponent(userData);
+   }
+
    public String getSpoolName() {
       return spoolName.getSpoolName();
 
+   }
+
+   public void setSpoolName(String filter) {
+
+      spoolName.setSpoolName(filter);
+      setSelectedComponent(spoolName);
    }
 
    /**

@@ -100,4 +100,9 @@ public class UserTabPanel extends JPanel implements QueueFilterInterface {
       else
          return user.getText().trim();
    }
+
+   public void setUser(String filter) {
+
+      user.setText(filter);
+   }
 }

@@ -56,10 +56,9 @@ public class SpoolExporter extends JFrame {
 
    // table of spools to work on
    JSortTable spools;
+
    // status line
    JLabel status;
-   // List of available spooled files
-//   SpooledFileList splfList;
 
    // AS400 connection
    AS400 system;
@@ -84,6 +83,7 @@ public class SpoolExporter extends JFrame {
          e.printStackTrace();
       }
    }
+
    private void jbInit() throws Exception {
 
       this.setTitle(LangTool.getString("spool.title"));
@@ -510,6 +510,10 @@ public class SpoolExporter extends JFrame {
       Action action;
 
       final int row = spools.rowAtPoint(me.getPoint());
+      final int col = spools.convertColumnIndexToModel(
+                        spools.columnAtPoint(me.getPoint()));
+//      System.out.println(" column clicked " + col);
+//      System.out.println(" column clicked to model " + spools.convertColumnIndexToModel(col));
 
       action = new AbstractAction(LangTool.getString("spool.optionView")) {
             public void actionPerformed(ActionEvent e) {
@@ -530,15 +534,6 @@ public class SpoolExporter extends JFrame {
       action = new AbstractAction(LangTool.getString("spool.optionProps")) {
             public void actionPerformed(ActionEvent e) {
 
-//               spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//               SwingUtilities.invokeLater(
-//                  new Runnable () {
-//                     public void run() {
-//
-//                        displayViewer(getSpooledFile(row));
-//                     }
-//                  }
-//               );
                JOptionPane.showMessageDialog(null,"Not Available yet","Not yet",
                                     JOptionPane.WARNING_MESSAGE);
             }
@@ -556,6 +551,21 @@ public class SpoolExporter extends JFrame {
 
       jpm.add(action);
       jpm.addSeparator();
+
+      switch (col) {
+         case 0:
+         case 3:
+         case 6:
+            action = new AbstractAction(LangTool.getString("spool.labelFilter")) {
+               public void actionPerformed(ActionEvent e) {
+                  setFilter(row,col);
+               }
+            };
+
+            jpm.add(action);
+            jpm.addSeparator();
+            break;
+      }
 
       action = new AbstractAction(LangTool.getString("spool.optionHold")) {
             public void actionPerformed(ActionEvent e) {
@@ -673,6 +683,32 @@ public class SpoolExporter extends JFrame {
       spools.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
    }
 
+   /**
+    * Calls the filter object to set the appropriate filter in the filter options
+    *
+    * @param row
+    * @param col
+    */
+   private void setFilter(int row, int col) {
+
+      switch (col) {
+
+         case 0:
+            filter.setSpoolName((String)spools.getModel().getValueAt(row,col));
+            break;
+         case 3:
+            filter.setUser((String)spools.getModel().getValueAt(row,col));
+            break;
+         case 6:
+            filter.setUserData((String)spools.getModel().getValueAt(row,col));
+            break;
+         default:
+            break;
+
+      }
+      System.out.println((String)spools.getModel().getValueAt(row,col));
+
+   }
    /**
     * Update the status bar with the text.  If it is an error then change the
     * text color red else use black
