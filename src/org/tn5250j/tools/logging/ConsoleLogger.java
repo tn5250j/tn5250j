@@ -56,7 +56,6 @@ public class ConsoleLogger extends TN5250jLogger {
    public void warn(Object message, Throwable obj1) {
       System.out.println("WARN ["+clazz+"] "+ new StringBuffer(32).append(message)
                                                     .append(obj1.getMessage()));
-       
    }
 
    public void error(Object message) {
