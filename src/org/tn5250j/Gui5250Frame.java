@@ -238,19 +238,24 @@ public class Gui5250Frame extends JFrame implements GUIViewInterface,
       System.out.println("session found and closing down " + index);
       targetSession.removeSessionListener(this);
       targetSession.removeSessionJumpListener(this);
+      int tabs = sessionPane.getTabCount();
       sessionPane.remove(index);
+      tabs--;
 
-      if (index < (sessionPane.getTabCount() - 2)) {
+
+      if (index < tabs) {
          sessionPane.setSelectedIndex(index);
          sessionPane.setForegroundAt(index,Color.blue);
          sessionPane.setIconAt(index,focused);
+         ((Session)sessionPane.getComponentAt(index)).requestFocus();
       }
       else {
 
-         if (sessionPane.getTabCount() > 0) {
+         if (tabs > 0) {
             sessionPane.setSelectedIndex(0);
             sessionPane.setForegroundAt(0,Color.blue);
             sessionPane.setIconAt(0,focused);
+            ((Session)sessionPane.getComponentAt(0)).requestFocus();
          }
 
       }

@@ -614,8 +614,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          jf = view.getSessionAt(0);
 
          System.out.println("session found and closing down");
-         manager.closeSession(jf);
          view.removeSessionView(jf);
+         manager.closeSession(jf);
          System.out.println("disconnecting socket");
          System.out.println("socket closed");
          jf = null;
