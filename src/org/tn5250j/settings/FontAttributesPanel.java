@@ -1,4 +1,3 @@
-package org.tn5250j.settings;
 /**
  * Title: ColorAttributesPanel
  * Copyright:   Copyright (c) 2001
@@ -24,6 +23,7 @@ package org.tn5250j.settings;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j.settings;
 
 import java.awt.*;
 import java.awt.event.*;
