@@ -1113,7 +1113,15 @@ public final class tnvt implements Runnable, TN5250jConstants {
                sac--;
                sa[sac++] = (byte)la;
             }
-            sa[sac++] = (byte)getEBCDIC(screen52.screen[y].getChar());
+            //LDC: Check to see if it is an displayable character. If not,
+            //  do not convert the character.
+            //  The characters on screen are in unicode
+            //sa[sac++] = (byte)getEBCDIC(screen52.screen[y].getChar());
+            char ch = screen52.screen[y].getChar();
+            byte byteCh = (byte) ch;
+            if (isDataUnicode(ch))
+              byteCh = this.uni2ebcdic(ch);
+            sa[sac++] = byteCh;
          }
       }
    }
@@ -1228,9 +1236,16 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
             }
             else {
+              //LDC - 12/02/2003 - Check to see if it is an displayable character. If not,
+              //  do not convert the character.
+              //  The characters on screen are in unicode
+              char ch = (char) b;
+              if (isDataEBCDIC(b))
+                ch = ebcdic2uni(b);
 
                screen52.screen[y].setCharAndAttr(
-                              getASCIIChar(b),
+                              //getASCIIChar(b),
+                              ch,
                               la,
                               false);
             }
@@ -1537,7 +1552,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
                         screen52.clearScreen();
                      else {
                         if (repeat != 0)
-                           repeat = getASCIIChar(repeat);
+                        {
+                           //LDC - 13/02/2003 - convert it to unicode
+                           repeat = this.ebcdic2uni(repeat);
+                           //repeat = getASCIIChar(repeat);
+                        }
 
                         int times = ((toRow * screen52.getCols()) + toCol) -
                                  ((row * screen52.getCols()) + col);
@@ -1716,7 +1735,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
                   }
                   else {
                      if (!screen52.isStatusErrorCode()) {
-                        if (!isData(byte0)) {
+                        if (!isDataEBCDIC(byte0)) {
 //                           if (byte0 == 255) {
 //                              sendNegResponse(NR_REQUEST_ERROR,0x05,0x01,0x42,
 //                              " Attempt to send FF to screen");
@@ -1726,14 +1745,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
                            screen52.setChar(byte0);
                         }
                         else
-//                           screen52.setChar(getASCIIChar(byte0));
+                           //LDC - 13/02/2003 - Convert it to unicode
+                           //screen52.setChar(getASCIIChar(byte0));
                            screen52.setChar(codePage.ebcdic2uni(byte0));
                      }
                      else {
                         if (byte0 == 0)
                            screen52.setChar(byte0);
                         else
-                           screen52.setChar(getASCIIChar(byte0));
+                           //LDC - 13/02/2003 - Convert it to unicode
+                          //screen52.setChar(getASCIIChar(byte0));
+                          screen52.setChar(codePage.ebcdic2uni(byte0));
                      }
                   }
 
@@ -1962,7 +1984,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
       return (byte1 & 0xe0) == 0x20;
    }
 
-   private boolean isData(int byte0) {
+  //LDC - 12/02/2003 - Function name changed from isData to isDataEBCDIC
+   private boolean isDataEBCDIC(int byte0) {
       int byte1 = byte0 & 0xff;
       // here it should always be less than 255
       if (byte1 >= 64 && byte1 < 255)
@@ -1971,6 +1994,16 @@ public final class tnvt implements Runnable, TN5250jConstants {
       else
          return false;
 
+   }
+
+  //LDC - 12/02/2003 - Test if the unicode character is a displayable character.
+  //  The first 32 characters are non displayable characters
+  //  This is normally the inverse of isDataEBCDIC (That's why there is a
+  //  check on 255 -> 0xFFFF
+   private boolean isDataUnicode(int byte0) {
+     return (((byte0 < 0) ||
+              (byte0 >= 32)) &&
+             (byte0 != 0xFFFF));
    }
 
    private boolean writeToDisplayStructuredField() {
@@ -2065,35 +2098,43 @@ public final class tnvt implements Runnable, TN5250jConstants {
                                  // if minor length is greater than 5 then
                                  //    the border characters are specified
                                  if (ml > 5) {
-                                    ul = getASCIIChar(bk.getNextByte());
+                                    ul = codePage.ebcdic2uni(bk.getNextByte());
+//                                    ul = getASCIIChar(bk.getNextByte());
                                     if (ul == 0)
                                        ul = '.';
 
-                                    upper = getASCIIChar(bk.getNextByte());
+                                    upper = codePage.ebcdic2uni(bk.getNextByte());
+//                                    upper = getASCIIChar(bk.getNextByte());
                                     if (upper == 0)
                                        upper = '.';
 
-                                    ur = getASCIIChar(bk.getNextByte());
+                                    ur = codePage.ebcdic2uni(bk.getNextByte());
+//                                    ur = getASCIIChar(bk.getNextByte());
                                     if (ur == 0)
                                        ur = '.';
 
-                                    left = getASCIIChar(bk.getNextByte());
+                                    left = codePage.ebcdic2uni(bk.getNextByte());
+//                                    left = getASCIIChar(bk.getNextByte());
                                     if (left == 0)
                                        left = ':';
 
-                                    right = getASCIIChar(bk.getNextByte());
+                                    right = codePage.ebcdic2uni(bk.getNextByte());
+//                                    right = getASCIIChar(bk.getNextByte());
                                     if (right == 0)
                                        right = ':';
 
-                                    ll = getASCIIChar(bk.getNextByte());
+                                    ll = codePage.ebcdic2uni(bk.getNextByte());
+//                                    ll = getASCIIChar(bk.getNextByte());
                                     if (ll == 0)
                                        ll = ':';
 
-                                    bottom = getASCIIChar(bk.getNextByte());
+                                    bottom = codePage.ebcdic2uni(bk.getNextByte());
+//                                    bottom = getASCIIChar(bk.getNextByte());
                                     if (bottom == 0)
                                        bottom = '.';
 
-                                    lr = getASCIIChar(bk.getNextByte());
+                                    lr = codePage.ebcdic2uni(bk.getNextByte());
+//                                    lr = getASCIIChar(bk.getNextByte());
                                     if (lr == 0)
                                        lr = ':';
                                  }
@@ -2152,7 +2193,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
                                  StringBuffer hfBuffer = new StringBuffer(ml);
                                  while (ml-- > 0) {
-                                    hfBuffer.append(getASCIIChar(bk.getNextByte()));
+                                    //LDC - 13/02/2003 - Convert it to unicode
+                                    hfBuffer.append(codePage.ebcdic2uni(bk.getNextByte()));
+//                                    hfBuffer.append(getASCIIChar(bk.getNextByte()));
 
                                  }
 
@@ -2848,14 +2891,22 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
    }
 
-   public byte getASCII(int index) {
-      return codePage.getASCII(index);
-
-   }
-
-   public char getASCIIChar(int index) {
-      return codePage.getASCIIChar(index);
-   }
+//      /**
+//       * LDC - 13/02/2003 -
+//   //    * @deprecated
+//       */
+//      public byte getASCII(int index) {
+//         return codePage.getASCII(index);
+//
+//      }
+//
+//      /**
+//       * LDC - 13/02/2003 -
+//   //    * @deprecated
+//       */
+//      public char getASCIIChar(int index) {
+//         return codePage.getASCIIChar(index);
+//      }
 
    public char ebcdic2uni(int index) {
       return codePage.ebcdic2uni(index);
