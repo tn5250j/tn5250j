@@ -49,6 +49,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -76,11 +77,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.gui.SortTableModel;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jMultiSelectList;
+import org.tn5250j.interfaces.OptionAccessFactory;
 
 public class Connect
 	extends JDialog
@@ -92,8 +95,7 @@ public class Connect
 	JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
 	JPanel interfacePanel = new JPanel();
 	JPanel sessionOpts = new JPanel();
-	JPanel sessionOptPanel = new JPanel(new FlowLayout(
-		FlowLayout.CENTER, 30, 10));
+	JPanel sessionOptPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
 	JPanel emulOptPanel = new JPanel();
 	JPanel emptyPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 	JPanel accessPanel = new JPanel();
@@ -128,6 +130,8 @@ public class Connect
 	// create some reusable borders and layouts
 	Border etchedBorder = BorderFactory.createEtchedBorder();
 	BorderLayout borderLayout = new BorderLayout();
+
+   TN5250jMultiSelectList accessOptions;
 
 	//  Selection value for connection
 	String connectKey = null;
@@ -167,13 +171,11 @@ public class Connect
 
 		optionTabs.addChangeListener(this);
 
-		optionTabs.addTab(
-			LangTool.getString("ss.labelConnections"),
-			sessionPanel);
+		optionTabs.addTab(LangTool.getString("ss.labelConnections"),sessionPanel);
 		optionTabs.addTab(LangTool.getString("ss.labelOptions1"), emulOptPanel);
 
       createAccessPanel();
-		optionTabs.addTab("Option Access", accessPanel);
+		optionTabs.addTab(LangTool.getString("ss.labelOptions2"), accessPanel);
 
 		// add the panels to our dialog
 		getContentPane().add(optionTabs, BorderLayout.CENTER);
@@ -446,28 +448,43 @@ public class Connect
 
    private void createAccessPanel() {
 
-      TN5250jMultiSelectList sel = new TN5250jMultiSelectList();
-      Vector v = new Vector();
-      for (int x = 0;x < 40; x++) {
+      accessOptions = new TN5250jMultiSelectList();
 
-         v.add("option " + x);
+      Vector options = OptionAccessFactory.getInstance().getOptions();
 
+      // set up a hashtable of option descriptions to options
+      Hashtable ht = new Hashtable(options.size());
+      for (int x = 0; x < options.size(); x++) {
+         ht.put(LangTool.getString("key."+options.get(x)),options.get(x));
       }
 
-      sel.setListData(v);
+      // get the sorted descriptions of the options
+      Vector descriptions = OptionAccessFactory.getInstance().getOptionDescriptions();
 
-      int[] indexes = {5,15,20};
+      // set the option descriptions
+      accessOptions.setListData(descriptions);
 
-      sel.setSelectedIndices(indexes);
-      sel.setSourceColumnHeader("Active");
-      sel.setSelectionColumnHeader("In Active");
+      // we now mark the invalid options
+      int num = OptionAccessFactory.getInstance().getNumberOfRestrictedOptions();
+      int[] si = new int[num];
+      int i = 0;
+      for (int x = 0;x < descriptions.size();x++) {
+         if (!OptionAccessFactory.getInstance().isValidOption(
+                  (String)ht.get(descriptions.get(x))  ) )
+            si[i++] = x;
+      }
 
-      sel.setSourceHeader("Active");
-      sel.setSelectionHeader("In Active");
+      accessOptions.setSelectedIndices(si);
+//      accessOptions.setSourceColumnHeader("Active");
+//      accessOptions.setSelectionColumnHeader("In Active");
+
+      accessOptions.setSourceHeader(LangTool.getString("ss.labelActive"));
+      accessOptions.setSelectionHeader(LangTool.getString("ss.labelRestricted"));
+
 		// create emulator options panel
 		accessPanel.setLayout(new BorderLayout());
 
-      accessPanel.add(sel,BorderLayout.CENTER);
+      accessPanel.add(accessOptions,BorderLayout.CENTER);
 
    }
 
@@ -586,11 +603,35 @@ public class Connect
 
 	private void saveProps() {
 
+      setOptionAccess();
+
 		ConfigureFactory.getInstance().saveSettings(
 			GlobalConfigure.SESSIONS,
 			"------ Session Information --------");
 
+      OptionAccessFactory.getInstance().reload();
 	}
+
+   private void setOptionAccess() {
+
+      Vector options = OptionAccessFactory.getInstance().getOptions();
+
+      // set up a hashtable of option descriptions to options
+      Hashtable ht = new Hashtable(options.size());
+      for (int x = 0; x < options.size(); x++) {
+         ht.put(LangTool.getString("key."+options.get(x)),options.get(x));
+      }
+
+      // get the sorted descriptions of the options
+      Vector descriptions = OptionAccessFactory.getInstance().getOptionDescriptions();
+
+      Object[] restrict = accessOptions.getSelectedValues();
+      String s = "";
+      for (int x = 0; x < restrict.length; x++) {
+         s +=ht.get(restrict[x]) + ";";
+      }
+      props.setProperty("emul.restricted",s);
+   }
 
 	private void addLabelComponent(
 		String text,

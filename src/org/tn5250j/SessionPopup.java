@@ -35,9 +35,10 @@ import java.text.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.interfaces.OptionAccessFactory;
 
 /**
- * Custom 
+ * Custom
  */
 public class SessionPopup implements TN5250jConstants {
 
@@ -175,32 +176,40 @@ public class SessionPopup implements TN5250jConstants {
                   mapMeKeys();
                }
            };
+
          kbMenu.add(action);
 
          kbMenu.addSeparator();
 
-         action = new AbstractAction(LangTool.getString("key.[attn]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[attn]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_ATTN));
+         createKeyboardItem(kbMenu,MNEMONIC_ATTN);
 
-         action = new AbstractAction(LangTool.getString("key.[reset]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[reset]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_RESET));
+//         action = new AbstractAction(LangTool.getString("key.[attn]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[attn]");
+//               }
+//           };
+//
+//         kbMenu.add(createMenuItem(action,MNEMONIC_ATTN));
 
-         action = new AbstractAction(LangTool.getString("key.[sysreq]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[sysreq]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_SYSREQ));
+         createKeyboardItem(kbMenu,MNEMONIC_RESET);
+//         action = new AbstractAction(LangTool.getString("key.[reset]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[reset]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_RESET));
 
-         if (screen.isMessageWait()) {
+         createKeyboardItem(kbMenu,MNEMONIC_SYSREQ);
+//         action = new AbstractAction(LangTool.getString("key.[sysreq]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[sysreq]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_SYSREQ));
+
+         if (screen.isMessageWait() &&
+               OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
+
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
                   public void actionPerformed(ActionEvent e) {
                      vt.systemRequest('4');
@@ -212,61 +221,74 @@ public class SessionPopup implements TN5250jConstants {
 
          kbMenu.addSeparator();
 
-         action = new AbstractAction(LangTool.getString("key.[dupfield]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[dupfield]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_DUP_FIELD));
+         createKeyboardItem(kbMenu,MNEMONIC_DUP_FIELD);
 
-         action = new AbstractAction(LangTool.getString("key.[help]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[help]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_HELP));
+//         action = new AbstractAction(LangTool.getString("key.[dupfield]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[dupfield]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_DUP_FIELD));
 
-         action = new AbstractAction(LangTool.getString("key.[eraseeof]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[eraseeof]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_ERASE_EOF));
+         createKeyboardItem(kbMenu,MNEMONIC_HELP);
+//         action = new AbstractAction(LangTool.getString("key.[help]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[help]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_HELP));
 
-         action = new AbstractAction(LangTool.getString("key.[field+]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[field+]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_PLUS));
+         createKeyboardItem(kbMenu,MNEMONIC_ERASE_EOF);
+//         action = new AbstractAction(LangTool.getString("key.[eraseeof]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[eraseeof]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_ERASE_EOF));
 
+         createKeyboardItem(kbMenu,MNEMONIC_FIELD_PLUS);
 
-         action = new AbstractAction(LangTool.getString("key.[field-]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[field-]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_MINUS));
+//         action = new AbstractAction(LangTool.getString("key.[field+]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[field+]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_PLUS));
 
 
-         action = new AbstractAction(LangTool.getString("key.[newline]")) {
-               public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys("[newline]");
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_NEW_LINE));
+         createKeyboardItem(kbMenu,MNEMONIC_FIELD_MINUS);
+
+//         action = new AbstractAction(LangTool.getString("key.[field-]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[field-]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_FIELD_MINUS));
 
 
-         action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
-               public void actionPerformed(ActionEvent e) {
-                  vt.hostPrint(1);
-               }
-           };
-         kbMenu.add(createMenuItem(action,MNEMONIC_PRINT));
+         createKeyboardItem(kbMenu,MNEMONIC_NEW_LINE);
+//         action = new AbstractAction(LangTool.getString("key.[newline]")) {
+//               public void actionPerformed(ActionEvent e) {
+//                  screen.sendKeys("[newline]");
+//               }
+//           };
+//         kbMenu.add(createMenuItem(action,MNEMONIC_NEW_LINE));
+
+
+         if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_PRINT)) {
+            action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
+                  public void actionPerformed(ActionEvent e) {
+                     vt.hostPrint(1);
+                  }
+              };
+            kbMenu.add(createMenuItem(action,MNEMONIC_PRINT));
+         }
 
          createShortCutItems(kbMenu);
 
-         if (screen.isMessageWait()) {
+         if (screen.isMessageWait() &&
+            OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
+
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
                   public void actionPerformed(ActionEvent e) {
                      vt.systemRequest('4');
@@ -294,14 +316,17 @@ public class SessionPopup implements TN5250jConstants {
            };
          popup.add(createMenuItem(action,""));
 
-         action = new AbstractAction(LangTool.getString("popup.settings")) {
-               public void actionPerformed(ActionEvent e) {
-                  session.doAttributes();
-                 session.getFocusForMe();
-               }
-           };
-         popup.add(createMenuItem(action,MNEMONIC_DISP_ATTRIBUTES));
+         if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_ATTRIBUTES)) {
 
+            action = new AbstractAction(LangTool.getString("popup.settings")) {
+                  public void actionPerformed(ActionEvent e) {
+                     session.doAttributes();
+                    session.getFocusForMe();
+                  }
+              };
+            popup.add(createMenuItem(action,MNEMONIC_DISP_ATTRIBUTES));
+
+         }
 
          popup.addSeparator();
 
@@ -347,47 +372,55 @@ public class SessionPopup implements TN5250jConstants {
 
          JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
 
-         action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
-               public void actionPerformed(ActionEvent e) {
-                  doMeTransfer();
-                  session.getFocusForMe();
-               }
-           };
+         if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_FILE_TRANSFER)) {
 
-         xtfrMenu.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
+            action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
+                  public void actionPerformed(ActionEvent e) {
+                     doMeTransfer();
+                     session.getFocusForMe();
+                  }
+              };
 
-         action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
-               public void actionPerformed(ActionEvent e) {
-                  doMeSpool();
-                  session.getFocusForMe();
-               }
-           };
+            xtfrMenu.add(createMenuItem(action,MNEMONIC_FILE_TRANSFER));
+         }
 
-         xtfrMenu.add(action);
+         if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_SPOOL_FILE)) {
+
+            action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
+                  public void actionPerformed(ActionEvent e) {
+                     doMeSpool();
+                     session.getFocusForMe();
+                  }
+              };
+
+            xtfrMenu.add(action);
+         }
 
          popup.add(xtfrMenu);
 
          JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
          popup.add(sendMenu);
 
-		action = new AbstractAction(LangTool.getString("popup.quickmail")) {
-					   public void actionPerformed(ActionEvent e) {
-						  sendScreenEMail();
-						 session.getFocusForMe();
-					   }
-				   };
-
-		sendMenu.add(action);
-
-
-         action = new AbstractAction(LangTool.getString("popup.email")) {
+		   action = new AbstractAction(LangTool.getString("popup.quickmail")) {
                public void actionPerformed(ActionEvent e) {
-                  sendScreenEMail();
+                 sendQuickEMail();
                  session.getFocusForMe();
                }
-           };
+            };
 
-         sendMenu.add(createMenuItem(action,MNEMONIC_E_MAIL));
+		   sendMenu.add(action);
+
+         if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_E_MAIL)) {
+
+            action = new AbstractAction(LangTool.getString("popup.email")) {
+                  public void actionPerformed(ActionEvent e) {
+                     sendScreenEMail();
+                    session.getFocusForMe();
+                  }
+              };
+
+            sendMenu.add(createMenuItem(action,MNEMONIC_E_MAIL));
+         }
 
          action = new AbstractAction(LangTool.getString("popup.file")) {
                public void actionPerformed(ActionEvent e) {
@@ -409,47 +442,73 @@ public class SessionPopup implements TN5250jConstants {
 
       }
 
-      action = new AbstractAction(LangTool.getString("popup.connections")) {
-            public void actionPerformed(ActionEvent e) {
-               session.doConnections();
-            }
-        };
+      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_OPEN_NEW)) {
 
-      popup.add(createMenuItem(action,MNEMONIC_OPEN_NEW));
+         action = new AbstractAction(LangTool.getString("popup.connections")) {
+               public void actionPerformed(ActionEvent e) {
+                  session.doConnections();
+               }
+           };
+
+         popup.add(createMenuItem(action,MNEMONIC_OPEN_NEW));
+      }
 
       popup.addSeparator();
 
-      if (vt.isConnected()) {
-         action = new AbstractAction(LangTool.getString("popup.disconnect")) {
+      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_TOGGLE_CONNECTION)) {
+
+         if (vt.isConnected()) {
+            action = new AbstractAction(LangTool.getString("popup.disconnect")) {
+                  public void actionPerformed(ActionEvent e) {
+                     changeConnection();
+                     session.getFocusForMe();
+                  }
+              };
+         }
+         else {
+
+            action = new AbstractAction(LangTool.getString("popup.connect")) {
+                  public void actionPerformed(ActionEvent e) {
+                     changeConnection();
+                    session.getFocusForMe();
+                  }
+              };
+
+
+         }
+
+         popup.add(createMenuItem(action,MNEMONIC_TOGGLE_CONNECTION));
+      }
+
+      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_CLOSE)) {
+
+         action = new AbstractAction(LangTool.getString("popup.close")) {
                public void actionPerformed(ActionEvent e) {
-                  changeConnection();
-                  session.getFocusForMe();
+                  session.closeSession();
                }
            };
-      }
-      else {
 
-         action = new AbstractAction(LangTool.getString("popup.connect")) {
-               public void actionPerformed(ActionEvent e) {
-                  changeConnection();
-                 session.getFocusForMe();
-               }
-           };
-
+         popup.add(createMenuItem(action,MNEMONIC_CLOSE));
 
       }
-      popup.add(createMenuItem(action,MNEMONIC_TOGGLE_CONNECTION));
-
-      action = new AbstractAction(LangTool.getString("popup.close")) {
-            public void actionPerformed(ActionEvent e) {
-               session.closeSession();
-            }
-        };
-
-      popup.add(createMenuItem(action,MNEMONIC_CLOSE));
 
       GUIGraphicsUtils.positionPopup(me.getComponent(),popup,
                me.getX(),me.getY());
+
+   }
+
+   private void createKeyboardItem (JMenu menu, String key) {
+
+      if (OptionAccessFactory.getInstance().isValidOption(key)) {
+         final String key2 = key;
+         Action action = new AbstractAction(LangTool.getString("key." + key)) {
+               public void actionPerformed(ActionEvent e) {
+                  screen.sendKeys(key2);
+               }
+           };
+
+         menu.add(createMenuItem(action,key));
+      }
 
    }
 
@@ -459,6 +518,7 @@ public class SessionPopup implements TN5250jConstants {
    }
 
    private JMenuItem createMenuItem(Action action, String accelKey) {
+
       JMenuItem mi;
 
       mi = new JMenuItem();
@@ -701,9 +761,14 @@ public class SessionPopup implements TN5250jConstants {
 
    }
 
-   public void sendScreenEMail() {
+   private void sendScreenEMail() {
 
       new SendEMailDialog((JFrame)SwingUtilities.getRoot(session),session);
+   }
+
+   private void sendQuickEMail() {
+
+      new SendEMailDialog((JFrame)SwingUtilities.getRoot(session),session,false);
    }
 
    private void sendMeToFile() {

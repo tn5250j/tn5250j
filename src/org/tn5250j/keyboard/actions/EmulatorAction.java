@@ -31,6 +31,7 @@ import javax.swing.KeyStroke;
 
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.Session;
+import org.tn5250j.interfaces.OptionAccessFactory;
 
 /**
  * Base class for all emulator actions
@@ -55,10 +56,10 @@ public abstract class EmulatorAction extends AbstractAction {
 
    protected void setKeyStroke(String action, KeyStroke ks, KeyMapper keyMap) {
 
+      if (OptionAccessFactory.getInstance().isRestrictedOption(action))
+         return;
+
       if (KeyMapper.isKeyStrokeDefined(action)) {
-//         ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP,KeyEvent.ALT_MASK);
-//      }
-//      else {
          ks = KeyMapper.getKeyStroke(action);
       }
 

@@ -75,7 +75,18 @@ public class SendEMailDialog {
 	JRadioButton normal;
 	JRadioButton screenshot;
 	JButton browse;
-	
+   boolean sendScreen;
+
+	/**
+	 * Constructor to send the screen information
+	 *
+	 * @param parent
+	 * @param session
+    * @param sendScreen
+	 */
+	public SendEMailDialog(Frame parent, Session session) {
+      this(parent,session,true);
+	}
 
 	/**
 	 * Constructor to send the screen information
@@ -83,7 +94,7 @@ public class SendEMailDialog {
 	 * @param parent
 	 * @param session
 	 */
-	public SendEMailDialog(Frame parent, Session session) {
+	public SendEMailDialog(Frame parent, Session session, boolean sendScreen) {
 
 		if (!isEMailAvailable()) {
 
@@ -94,11 +105,12 @@ public class SendEMailDialog {
 				JOptionPane.ERROR_MESSAGE,
 				null);
 
-		} 
+		}
 		else {
 
 			this.session = session;
 			Screen5250 screen = session.getScreen();
+         this.sendScreen = sendScreen;
 
 			Object[] message = new Object[1];
 			message[0] = setupMailPanel("tn5250j.txt");
@@ -114,7 +126,7 @@ public class SendEMailDialog {
 				result = JOptionPane.showOptionDialog(parent,
 					// the parent that the dialog blocks
 					message, // the dialog message array
-					LangTool.getString("em.title"), 
+					LangTool.getString("em.title"),
 					// the title of the dialog window
 					JOptionPane.DEFAULT_OPTION, // option type
 					JOptionPane.PLAIN_MESSAGE, // message type
@@ -152,7 +164,7 @@ public class SendEMailDialog {
 							}
 
 							sem.setAttachment(sb.toString());
-						} 
+						}
 						else if (graphic.isSelected()){
 
 							File dir = new File(System.getProperty("user.dir"));
@@ -176,11 +188,11 @@ public class SendEMailDialog {
 									session,
 									f);
 								sem.setFileName(f.getName());
-							} 
+							}
 							catch (Exception ex) {
 								System.out.println(ex.getMessage());
 							}
-														
+
 						}
 						else if (attachmentName.getText().length() > 0) {
 							File f = new File(attachmentName.getText());
@@ -222,7 +234,7 @@ public class SendEMailDialog {
 				"The Java E-Mail API can not be found or is not installed\n"
 				+ "Please read e-mail.txt file for installation instructions.",
 				"Error", JOptionPane.ERROR_MESSAGE, null);
-		} 
+		}
 		else {
 
 			this.session = session;
@@ -352,7 +364,7 @@ public class SendEMailDialog {
 
 		text = new JRadioButton(LangTool.getString("em.text"));
 		graphic = new JRadioButton(LangTool.getString("em.graphic"));
-		normal = new JRadioButton(LangTool.getString("em.normalmail"));
+		normal = new JRadioButton(LangTool.getString("em.normalmail"),true);
 		screenshot = new JRadioButton(LangTool.getString("em.screenshot"));
 
 		// Group the radio buttons.
@@ -363,7 +375,6 @@ public class SendEMailDialog {
 		mGroup.add(normal);
 		mGroup.add(screenshot);
 
-		normal.setSelected(true);
 		text.setSelected(false);
 		text.setEnabled(false);
 		graphic.setEnabled(false);
@@ -374,6 +385,13 @@ public class SendEMailDialog {
 		JLabel bodyl = new JLabel(LangTool.getString("em.body"));
 		JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
 		JLabel tom = new JLabel(LangTool.getString("em.typeofmail"));
+		
+		browse = new JButton(LangTool.getString("em.choosefile"));
+		browse.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				browse_actionPerformed(e);
+			}
+		});
 
 		toAddress = new JComboBox();
 		toAddress.setPreferredSize(new Dimension(175, 25));
@@ -400,6 +418,13 @@ public class SendEMailDialog {
 			}
 		});
 
+      if (sendScreen) {
+         screenshot.setSelected(true);
+      }
+      else {
+   		normal.setSelected(true);
+      }
+
 		config = null;
 
 		if (session != null) {
@@ -409,14 +434,7 @@ public class SendEMailDialog {
 				setToCombo(config.getStringProperty("emailTo"), toAddress);
 			}
 		}
-		
-		browse = new JButton(LangTool.getString("em.choosefile"));
-		browse.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				browse_actionPerformed(e);
-			}
-		});
-		
+
 		semp.setBorder(BorderFactory.createEtchedBorder());
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 0;
@@ -451,60 +469,60 @@ public class SendEMailDialog {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 10, 5, 5);						
+		gbc.insets = new Insets(5, 10, 5, 5);
 		semp.add(tol, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 2;
 		gbc.gridwidth = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 10);		
+		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(toAddress, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 10, 5, 5);		
+		gbc.insets = new Insets(5, 10, 5, 5);
 		semp.add(subl, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 10);		
+		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(subject, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 4;
 		gbc.gridheight = 3;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 10, 5, 5);		
+		gbc.insets = new Insets(5, 10, 5, 5);
 		semp.add(bodyl, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 4;
 		gbc.gridwidth = 2; gbc.gridheight = 3;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 10);		
+		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(bodyScrollPane, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0; gbc.gridy = 7;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 10, 5, 5);		
+		gbc.insets = new Insets(5, 10, 5, 5);
 		semp.add(fnl, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 7;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(5, 5, 5, 5);		
+		gbc.insets = new Insets(5, 5, 5, 5);
 		semp.add(attachmentName, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 8;
 		gbc.gridwidth = 2;
 		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.insets = new Insets(5, 5, 10, 10);		
-		semp.add(browse, gbc);		
-
+		gbc.insets = new Insets(5, 5, 10, 10);
+		semp.add(browse, gbc);
+		
 		return semp;
 
 	}
-	
+
 	private void browse_actionPerformed(ActionEvent e) {
 		String workingDir = System.getProperty("user.dir");
 		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
@@ -523,14 +541,18 @@ public class SendEMailDialog {
 
 		if (text.isSelected()) {
 			attachmentName.setText("tn5250j.txt");
-		} 
+
+		}
+		else if (normal.isSelected()) {
+			attachmentName.setText("tn5250j.png");
+		}
 		else {
 			attachmentName.setText("tn5250j.png");
 		}
-		browse.setEnabled(false);
 	}
-	
+
 	private void setTypeOfMail() {
+
 		if (normal.isSelected()) {
 			text.setEnabled(false);
 			graphic.setEnabled(false);

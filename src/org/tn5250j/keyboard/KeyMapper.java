@@ -35,6 +35,7 @@ import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
+import org.tn5250j.interfaces.OptionAccessFactory;
 
 public class KeyMapper {
 
@@ -44,7 +45,6 @@ public class KeyMapper {
    private static String lastKeyMnemonic;
    private static Vector listeners;
    private static boolean useJava14;
-
 
    /**
     * String value for the jdk 1.4 version of KeyStroker
@@ -313,6 +313,11 @@ public class KeyMapper {
       Enumeration ke = keystrokes.propertyNames();
       while (ke.hasMoreElements()) {
          theKey = (String)ke.nextElement();
+
+         if (OptionAccessFactory.getInstance().isRestrictedOption(theKey)) {
+            continue;
+         }
+
          theStringList = keystrokes.getProperty(theKey);
          int x = 0;
          int kc = 0;
