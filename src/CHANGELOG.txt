@@ -24,6 +24,8 @@ default that I set up.  This is for JVM supplied by IBM.
 
 Enhancements/Change Log
 -----------------------
+13/03/2004  Fixed some field exit problems.
+
 15/02/2004  Well we have not kept this up to date at all.  Hopefully
             we can catch it up to date from now on.
 
