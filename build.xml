@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.5beta3"/>
+   <property name="version" value="0.5.5beta4"/>
    <property name="year" value="2001-2002"/>
 
    <property name="source.dir" value="${basedir}/src" />
@@ -18,7 +18,7 @@
    <property name="conf.dir" value="${basedir}/conf" />
 
    <property name="main.class" value="org.tn5250j.My5250"/>
-   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar"/>
+   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar"/>
 
     <!-- compile options -->
     <property name="debug" value="off"/>
@@ -53,7 +53,7 @@
        <exclude name="org/**"/>
        <exclude name="*.gif"/>
        <exclude name="*.properties"/>
-       
+
     </fileset>
 
     <!-- files for source distribution -->
