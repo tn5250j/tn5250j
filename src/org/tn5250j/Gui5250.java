@@ -1109,7 +1109,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void executeMeMacro(String macro) {
 
-      macros.invoke(macro,(Session)this);
+      Macronizer.invoke(macro,(Session)this);
 
    }
 
@@ -1118,8 +1118,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       Frame parent = (JFrame)SwingUtilities.getRoot(this);
 
-      if (macros.isMacrosExist()) {
-         String[] macrosList = macros.getMacroList();
+      if (Macronizer.isMacrosExist()) {
+         String[] macrosList = Macronizer.getMacroList();
          kc = new KeyConfigure(parent,macrosList,vt.getCodePage());
       }
       else
@@ -1129,7 +1129,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    private void stopRecordingMe() {
       if (keyHandler.getRecordBuffer().length() > 0) {
-         macros.setMacro(newMacName,keyHandler.getRecordBuffer());
+         Macronizer.setMacro(newMacName,keyHandler.getRecordBuffer());
          System.out.println(keyHandler.getRecordBuffer());
       }
 
