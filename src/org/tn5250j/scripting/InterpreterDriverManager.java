@@ -102,6 +102,19 @@ public class InterpreterDriverManager {
       driver.executeScriptFile(scriptFile);
    }
 
+
+    /**
+     * Check if there is a driver that supports the language.
+     * @param scriptFile file name containing script
+     */
+   public static boolean isScriptSupported(String scriptFile) {
+      String extension
+             = scriptFile.substring(scriptFile
+                  .lastIndexOf(EXTENSION_SEPARATOR)+1);
+
+      return _extensionDriverMap.containsKey(extension);
+   }
+
 }
 
 
