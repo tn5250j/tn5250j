@@ -16,7 +16,7 @@
 <body>
 <br>
 
-<a href="<?php echo "$codebase/instructions.html"; ?>">Client Setup Instructions</a>
+<a href="<?php echo "$codebase/SSLinstructions.html"; ?>">Client Setup Instructions</a>
 
 <form method="post" action="My5250SSLApplet.php">
     <input name="CODEBASE" type="hidden" id="CODEBASE" 
