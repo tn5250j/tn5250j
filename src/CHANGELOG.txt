@@ -45,6 +45,9 @@ Enhancements/Change Log
             already exists then the option will read edit config instead of
             always config
 
+            Added ability to list scripts on the macros menu from scripts 
+            directory only
+            
 03/08/2002  Added new categories to the session attributes screen:
                Cursor - Moved from display cat and added Ruler follows cursor
                Signoff - not implemented yet
