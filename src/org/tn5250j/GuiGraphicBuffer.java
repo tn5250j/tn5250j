@@ -778,12 +778,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       Screen5250 s = screen;
       ScreenPlanes planes = s.planes;
 
-//      int attr = planes.getCharAttr(pos);
       int attr = updateRect.attr[pos];
       sChar[0] = updateRect.text[pos];
       setDrawAttr(pos);
       boolean attributePlace = planes.isAttributePlace(s.getPos(row,col));
-      //attributePlace = true;
       int whichGui = updateRect.graphic[pos];
       boolean useGui = whichGui == 0 ? false : true;
 
@@ -793,10 +791,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
       int x = csArea.x;
       int y = csArea.y;
       int cy = (int)(y + rowHeight - (s.lm.getDescent() + s.lm.getLeading()));
-
-//      int x = sc.x;
-//      int y = sc.y;
-//      int cy = sc.cy;
 
       if (attributePlace && s.isShowHex()) {
 //      if ((sc.sChar[0] == 0x20 || sc.sChar[0] == 0x0 || nonDisplay) && s.isShowHex()) {
@@ -810,7 +804,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener, TN52
          g.drawChars(a, 1, 1, x+(int)(columnWidth/2),
             (int)(y + rowHeight - (s.lm.getDescent() + s.lm.getLeading())-2));
          g.setFont(f);
-//return;
       }
 
       if(!nonDisplay && !attributePlace) {

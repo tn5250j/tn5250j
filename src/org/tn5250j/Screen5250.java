@@ -5248,7 +5248,7 @@ public class Screen5250 implements PropertyChangeListener, TN5250jConstants,
 	 */
 	public final void printMe() {
 
-		Thread printerThread = new PrinterThread(planes.screen, font, numCols,
+		Thread printerThread = new PrinterThread(this, font, numCols,
 				numRows, colorBg, defaultPrinter, (Session) gui);
 
 		printerThread.start();

@@ -1,4 +1,3 @@
-package org.tn5250j;
 /**
  * Title: PrinterThread
  * Copyright:   Copyright (c) 2001
@@ -24,15 +23,20 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  *
  */
+package org.tn5250j;
+
 import java.awt.print.*;
 import java.awt.*;
 import java.awt.font.*;
 import org.tn5250j.Session;
 import org.tn5250j.SessionConfig;
 
-public class PrinterThread extends Thread implements Printable {
+public class PrinterThread extends Thread implements Printable, TN5250jConstants {
 
    char[] screen;
+   char[] screenAttr;
+   char[] screenAttrPlace;
+   Screen5250 scr;
    int numCols;
    int numRows;
    Color colorBg;
@@ -41,7 +45,7 @@ public class PrinterThread extends Thread implements Printable {
    boolean toDefault;
    SessionConfig config;
 
-   public PrinterThread (char[] sc, Font font, int cols, int rows,
+   public PrinterThread (Screen5250 scr, Font font, int cols, int rows,
                            Color colorBg, boolean toDefaultPrinter, Session ses) {
 
 
@@ -49,18 +53,12 @@ public class PrinterThread extends Thread implements Printable {
       session = ses;
       session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       config = ses.getConfiguration();
-
-      screen = new char[sc.length];
-		System.arraycopy(sc, 0, screen, 0, sc.length);
+      int len = scr.getScreenLength();
+      screen = new char[len];
+      screenAttr = new char[len];
+      int ret = scr.GetScreen(screen, len, PLANE_TEXT);
+      ret = scr.GetScreen(screenAttr, len, PLANE_EXTENDED);
       toDefault = toDefaultPrinter;
-
-      int len = sc.length;
-
-      // we need to fix this to use the access methods to planes
-//      for (int x = 0; x < len; x++) {
-//         screen[x] = new ScreenChar(sc[x].s);
-//         screen[x].setCharAndAttr(sc[x].getChar(),sc[x].getCharAttr(),sc[x].isAttributePlace());
-//      }
 
       numCols = cols;
       numRows = rows;
@@ -168,13 +166,8 @@ public class PrinterThread extends Thread implements Printable {
 
       session = null;
 
-//      int len = screen.length;
-//
-//      for (int x = 0; x < len; x++) {
-//         screen[x] = null;
-//      }
-//
-//      screen = null;
+      screen = null;
+      screenAttr = null;
 
    }
 
@@ -254,19 +247,16 @@ public class PrinterThread extends Thread implements Printable {
                y = h1 * (m + 1);
 
                // only draw printable characters (in this case >= ' ')
-//               if (screen[getPos(m,i)].getChar() >= ' ' && !screen[getPos(m,i)].nonDisplay) {
-               //  TODO:  Fix me for detecting non display
-               if (screen[getPos(m,i)] >= ' ') {  // && !screen[getPos(m,i)].nonDisplay) {
+               if (screen[getPos(m,i)] >= ' ' && ((screen[getPos(m,i)] & EXTENDED_5250_NON_DSP) == 0)) {
 
-//                  g2.drawChars(screen[getPos(m,i)], 0, 1,x , (int)(y + h1 - (l.getDescent() + l.getLeading())-2));
                   g2.drawChars(screen, getPos(m,i), 1,x , (int)(y + h1 - (l.getDescent() + l.getLeading())-2));
 
                }
 
-               //  TODO:  Fix me for detecting non display
                // if it is underlined then underline the character
 //               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
-//                  g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (int)(x + w1), (int)(y + (h1 - l.getLeading())-3));
+               if ((screenAttr[getPos(m,i)] & EXTENDED_5250_UNDERLINE) == 1)
+                  g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (int)(x + w1), (int)(y + (h1 - l.getLeading())-3));
 
             }
 
