@@ -39,7 +39,6 @@ import java.awt.print.*;
 import java.awt.datatransfer.*;
 import java.beans.*;
 import org.tn5250j.tools.*;
-import org.tn5250j.tools.system.OperatingSystem;
 
 public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
@@ -157,8 +156,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    private boolean defaultPrinter;
    private SessionConfig config;
    private boolean rulerFixed;
-
-   private boolean fullRepaint;
+   private boolean antialiased = true;
 //   private Image tileimage;
 
    //LDC - 12/02/2003 -  boolean: true: it must be repainted
@@ -185,11 +183,6 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
    }
 
    void jbInit() throws Exception {
-
-      // damn I hate putting this in but it is the only way to get
-      //  it to work correctly.  What a pain in the ass.
-      if (OperatingSystem.isMacOS() && OperatingSystem.hasJava14())
-         fullRepaint = true;
 
       if (!config.isPropertyExists("font")) {
          font = new Font("Courier New",Font.PLAIN,14);
@@ -377,6 +370,15 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
             resetRequired = true;
          else
             resetRequired = false;
+      }
+
+      if (config.isPropertyExists("useAntialias")) {
+
+         if (getStringProperty("useAntialias").equals("Yes"))
+            antialiased = true;
+         else
+            antialiased = false;
+
       }
 
    }
@@ -659,6 +661,14 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
 
       if (pn.equals("font")) {
          font = new Font((String)pce.getNewValue(),Font.PLAIN,14);
+         updateFont = true;
+      }
+
+      if (pn.equals("useAntialias")) {
+         if (pce.getNewValue().equals("Yes"))
+            bi.setUseAntialias(true);
+         else
+            bi.setUseAntialias(false);
          updateFont = true;
       }
 
@@ -2629,6 +2639,7 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
     * <tr><td>    ERR_FIELD_MINUS</td><td> 0x16</td></tr>
     * <tr><td>    ERR_ENTER_NOT_ALLOWED</td><td> 0x20</td></tr>
     * <tr><td>    ERR_MANDITORY_ENTER</td><td> 0x21</td></tr>
+    * <tr><td>    ERR_ENTER_NOT_ALLOWED</td><td> 0x20</td></tr>
     *
     * </table>
     *    I am tired of typing and they should be self explanitory.  Finding them
@@ -4121,10 +4132,8 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       if (gui.isVisible()) {
          if (height > 0 && width > 0) {
 
-            if (!fullRepaint)
-               bi.drawImageBuffer(gg2d,x,y,width,height);
-            else
-               gui.repaint();
+            bi.drawImageBuffer(gg2d,x,y,width,height);
+//      gui.repaint();
 
 //            System.out.println(" something went right finally " + gui.isVisible() +
 //                           " height " + height + " width " + width);
@@ -4221,6 +4230,10 @@ public class Screen5250  implements PropertyChangeListener,TN5250jConstants {
       if (bi == null) {
 
          bi = new GuiGraphicBuffer();
+
+         if (antialiased) {
+            bi.setUseAntialias(true);
+         }
 
          // allocate a buffer Image with appropriate size
          bi.getImageBuffer(fmWidth * numCols,fmHeight * (numRows + 2));
