@@ -1675,10 +1675,26 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
                      fcw1 = bk.getNextByte() & 0xff;   // check for field control word
 
+                     // check if the first fcw1 is an 0x81 if it is then get the
+                     // next pair for checking
+                     if (fcw1 == 0x81) {
+                        bk.getNextByte();
+                        fcw1 = bk.getNextByte() & 0xff;   // check for field control word
+                     }
+
                      if (!isAttribute(fcw1)) {
+
                         fcw2 = bk.getNextByte() & 0xff;   // FCW 2
                         attr = bk.getNextByte() & 0xff;   // attribute field
 
+                        while(!isAttribute(attr)) {
+                           System.out.print(Integer.toHexString(fcw1) + " " +
+                                             Integer.toHexString(fcw2) + " ");
+                           System.out.println(Integer.toHexString(attr) + " " +
+                                                Integer.toHexString(bk.getNextByte() & 0xff));
+//                           bk.getNextByte();
+                           attr = bk.getNextByte() & 0xff;   // attribute field
+                        }
                      }
                      else {
                         attr = fcw1;      // attribute of field
