@@ -1825,7 +1825,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					// make sure it is in bounds
 					if (saRow >= 0 && saRow <= screen52.getRows() && saCol >= 0
 							&& saCol <= screen52.getCols()) {
-						screen52.goto_XY(saRow, saCol); // now set screen
+						screen52.gotoRowCol(saRow, saCol); // now set screen
 														// position for output
 
 					} else {
@@ -2795,7 +2795,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	}
 
 	private final void writeErrorCode() throws Exception {
-		screen52.goto_XY(screen52.getErrorLine(), 1); // Skip the control byte
+		screen52.gotoRowCol(screen52.getErrorLine(), 1); // Skip the control byte
 		screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
 				Screen5250.STATUS_VALUE_ON, null);
 		screen52.saveErrorLine();
@@ -2806,7 +2806,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private final void writeErrorCodeToWindow() throws Exception {
 		int fromCol = bk.getNextByte() & 0xff; // from column
 		int toCol = bk.getNextByte() & 0xff; // to column
-		screen52.goto_XY(screen52.getErrorLine(), fromCol); // Skip the control
+		screen52.gotoRowCol(screen52.getErrorLine(), fromCol); // Skip the control
 															// byte
 		screen52.setStatus(Screen5250.STATUS_ERROR_CODE,
 				Screen5250.STATUS_VALUE_ON, null);

@@ -131,7 +131,7 @@ public class Screen5250 implements TN5250jConstants{
 		numRows = 24;
 		numCols = 80;
 
-		goto_XY(1, 1); // set initial cursor position
+		gotoRowCol(1, 1); // set initial cursor position
 
 		restriction = new Rectangle(0, 0);
 
@@ -410,7 +410,7 @@ public class Screen5250 implements TN5250jConstants{
 			screenFields.restoreCurrentField();
 			updateDirty();
 
-			goto_XY(lr + 1, lc + 1);
+			gotoRowCol(lr + 1, lc + 1);
 
 			setCursorActive(true);
 		} catch (Throwable exc) {
@@ -1462,7 +1462,7 @@ public class Screen5250 implements TN5250jConstants{
 				int where = endOfField(screenFields.getCurrentField()
 						.startPos(), true);
 				if (where > 0) {
-					goto_XY((where / numCols) + 1, (where % numCols) + 1);
+					gotoRowCol((where / numCols) + 1, (where % numCols) + 1);
 				}
 				simulated = true;
 			} else {
@@ -1779,7 +1779,7 @@ public class Screen5250 implements TN5250jConstants{
 				if (startRow == getRows())
 					startRow = 0;
 
-				goto_XY(++startRow, 1);
+				gotoRowCol(++startRow, 1);
 
 				if (!isInField() && screenFields.getCurrentField() != null
 						&& !screenFields.isCurrentFieldBypassField()) {
@@ -1929,7 +1929,7 @@ public class Screen5250 implements TN5250jConstants{
 							}
 
 						} else
-							goto_XY(screenFields.getCurrentField()
+							gotoRowCol(screenFields.getCurrentField()
 									.getCursorRow() + 1, screenFields
 									.getCurrentField().getCursorCol() + 1);
 
@@ -2781,7 +2781,7 @@ public class Screen5250 implements TN5250jConstants{
 	 * @param row
 	 * @param col
 	 */
-	public void goto_XY(int row, int col) {
+	public void gotoRowCol(int row, int col) {
 		goto_XY(((row - 1) * numCols) + (col - 1));
 	}
 
@@ -2792,21 +2792,6 @@ public class Screen5250 implements TN5250jConstants{
 		lastPos = pos;
 		//      setCursorOn();
 		updateCursorLoc();
-	}
-
-	/**
-	 * This returns whether or not any of the fields currently on the screen
-	 * have been changed in any way.
-	 *
-	 * Convinience class to ScreenFields
-	 *
-	 * @return true or false
-	 * @see org#tn5250j#ScreenFields
-	 */
-	protected boolean isMasterMDT() {
-
-		return screenFields.isMasterMDT();
-
 	}
 
 	/**
@@ -2855,19 +2840,13 @@ public class Screen5250 implements TN5250jConstants{
 	 * Convenience class to position the cursor to the next word on the screen
 	 *
 	 */
-	/**
-	 * Convenience class to position the cursor to the next word on the screen
-	 *
-	 */
 	private void gotoNextWord() {
 
 		int pos = lastPos;
 
-//		if (screen[lastPos].getChar() > ' ') {
 		if (planes.getChar(lastPos) > ' ') {
 			advancePos();
 			// get the next space character
-//			while (screen[lastPos].getChar() > ' ' && pos != lastPos) {
 			while (planes.getChar(lastPos) > ' ' && pos != lastPos) {
 				advancePos();
 			}
@@ -2876,7 +2855,6 @@ public class Screen5250 implements TN5250jConstants{
 
 		// now that we are positioned on the next space character get the
 		// next none space character
-//		while (screen[lastPos].getChar() <= ' ' && pos != lastPos) {
 		while (planes.getChar(lastPos) <= ' ' && pos != lastPos) {
 			advancePos();
 		}
@@ -2895,7 +2873,6 @@ public class Screen5250 implements TN5250jConstants{
 		changePos(-1);
 
 		// position previous white space character
-//		while (screen[lastPos].getChar() <= ' ') {
 		while (planes.getChar(lastPos) <= ' ') {
 			changePos(-1);
 			if (pos == lastPos)
@@ -2904,7 +2881,6 @@ public class Screen5250 implements TN5250jConstants{
 
 		changePos(-1);
 		// get the previous space character
-//		while (screen[lastPos].getChar() > ' ' && pos != lastPos) {
 		while (planes.getChar(lastPos) > ' ' && pos != lastPos) {
 			changePos(-1);
 		}
@@ -3033,7 +3009,6 @@ public class Screen5250 implements TN5250jConstants{
 		advancePos();
 
 		// set ending attribute byte
-//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 		planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 
 		setDirty(lastPos);
@@ -3043,17 +3018,14 @@ public class Screen5250 implements TN5250jConstants{
 		while (depth-- > 0) {
 
 			// set leading attribute byte
-//			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 			planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 			setDirty(lastPos);
 			advancePos();
 
 			// set left
-//			screen[lastPos].setCharAndAttr((char) left, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos, (char) left, colorAttr, false);
 
 			if (gui) {
-//				screen[lastPos].setUseGUI(LEFT);
 				planes.setUseGUI(lastPos,GUI_LEFT);
 			}
 			setDirty(lastPos);
@@ -3107,10 +3079,8 @@ public class Screen5250 implements TN5250jConstants{
 		w = width;
 		// draw bottom row
 		while (w-- >= 0) {
-//			screen[lastPos].setCharAndAttr((char) bottom, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos,(char) bottom, colorAttr, false);
 			if (gui) {
-//				screen[lastPos].setUseGUI(BOTTOM);
 				planes.setUseGUI(lastPos,BOTTOM);
 			}
 			setDirty(lastPos);
@@ -3118,17 +3088,14 @@ public class Screen5250 implements TN5250jConstants{
 		}
 
 		// set lower right
-//		screen[lastPos].setCharAndAttr((char) lr, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos, (char) lr, colorAttr, false);
 		if (gui) {
-//			screen[lastPos].setUseGUI(LOWER_RIGHT);
 			planes.setUseGUI(lastPos,LOWER_RIGHT);
 		}
 		setDirty(lastPos);
 		advancePos();
 
 		// set ending attribute byte
-//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 		planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 		setDirty(lastPos);
 
@@ -3164,28 +3131,21 @@ public class Screen5250 implements TN5250jConstants{
 
 		int thumbPos = (int) (size * (float) ((float) sliderColPos / (float) totalColScrollable));
 		//      System.out.println(thumbPos);
-//		screen[sp].setCharAndAttr(' ', 32, false);
-//		screen[sp].setUseGUI(BUTTON_SB_UP);
 		planes.setScreenCharAndAttr(sp,' ', 32, false);
 		planes.setUseGUI(sp,BUTTON_SB_UP);
 
 		int ctr = 0;
 		while (ctr < size) {
 			sp += numCols;
-//			screen[sp].setCharAndAttr(' ', 32, false);
 			planes.setScreenCharAndAttr(sp,' ', 32, false);
 			if (ctr == thumbPos)
-//				screen[sp].setUseGUI(BUTTON_SB_THUMB);
 				planes.setUseGUI(sp,BUTTON_SB_THUMB);
 			else
-//				screen[sp].setUseGUI(BUTTON_SB_GUIDE);
 				planes.setUseGUI(sp, BUTTON_SB_GUIDE);
 			ctr++;
 		}
 		sp += numCols;
 
-//		screen[sp].setCharAndAttr(' ', 32, false);
-//		screen[sp].setUseGUI(BUTTON_SB_DN);
 
 		planes.setScreenCharAndAttr(sp, ' ', 32, false);
 		planes.setUseGUI(sp, BUTTON_SB_DN);
@@ -3235,8 +3195,6 @@ public class Screen5250 implements TN5250jConstants{
 		//                              + "," + getCol(pos) + "," + ((orientation >> 6) & 0xf0));
 
 		for (int x = 0; x < len; x++) {
-//			screen[pos].setChar(title.charAt(x));
-//			screen[pos++].setUseGUI(NO_GUI);
 			planes.setChar(pos, title.charAt(x));
 			planes.setUseGUI(pos++, NO_GUI);
 
@@ -3276,14 +3234,12 @@ public class Screen5250 implements TN5250jConstants{
 		case 0:
 			//  Now round em up and head em UP.
 			for (int x = start; x < len + numCols; x++) {
-//				screen[x].setChar(screen[x + numCols].getChar());
 				planes.setChar(x, planes.getChar(x + numCols));
 			}
 			break;
 		case 1:
 			//  Now round em up and head em DOWN.
 			for (int x = end + numCols; x > 0; x--) {
-//				screen[x + numCols].setChar(screen[x].getChar());
 				planes.setChar(x + numCols, planes.getChar(x));
 			}
 			break;
@@ -3334,7 +3290,6 @@ public class Screen5250 implements TN5250jConstants{
 
 		lastAttr = attr;
 
-//		screen[lastPos].setCharAndAttr(initChar, lastAttr, true);
 		planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
 
 		setDirty(lastPos);
@@ -3360,18 +3315,12 @@ public class Screen5250 implements TN5250jConstants{
 
 			while (x-- > 0) {
 
-//				if (screen[lastPos].getChar() == 0)
-//					screen[lastPos].setCharAndAttr(' ', lastAttr, false);
-//				else
-//					screen[lastPos].setAttribute(lastAttr);
-
 				if (planes.getChar(lastPos) == 0)
 					planes.setScreenCharAndAttr(lastPos, ' ', lastAttr, false);
 				else
 					planes.setScreenAttr(lastPos,lastAttr);
 
 				if (gui) {
-//					screen[lastPos].setUseGUI(FIELD_MIDDLE);
 					planes.setUseGUI(lastPos,FIELD_MIDDLE);
 				}
 
@@ -3381,12 +3330,7 @@ public class Screen5250 implements TN5250jConstants{
 
 			if (gui)
 				if (len > 1) {
-//					screen[sf.startPos()].setUseGUI(FIELD_LEFT);
 					planes.setUseGUI(sf.startPos(), FIELD_LEFT);
-//					if (lastPos > 0)
-//						screen[lastPos - 1].setUseGUI(FIELD_RIGHT);
-//					else
-//						screen[lastPos].setUseGUI(FIELD_RIGHT);
 
 					if (lastPos > 0)
 						planes.setUseGUI(lastPos - 1, FIELD_RIGHT);
@@ -3395,7 +3339,6 @@ public class Screen5250 implements TN5250jConstants{
 
 				}
             else {
-//					screen[lastPos - 1].setUseGUI(FIELD_ONE);
 					planes.setUseGUI(lastPos - 1,FIELD_ONE);
             }
 
@@ -3560,25 +3503,21 @@ public class Screen5250 implements TN5250jConstants{
 					while (l-- > 0) {
 
 						if (guiInterface && f) {
-//							screen[pos].setUseGUI(FIELD_LEFT);
 							planes.setUseGUI(pos,FIELD_LEFT);
 							f = false;
 						} else {
 
-//							screen[pos].setUseGUI(FIELD_MIDDLE);
 							planes.setUseGUI(pos,FIELD_MIDDLE);
 
 						}
 
 						if (guiInterface && l == 0) {
-//							screen[pos].setUseGUI(FIELD_RIGHT);
 							planes.setUseGUI(pos,FIELD_RIGHT);
 						}
 
 						pos++;
 					}
 				} else {
-//					screen[pos].setUseGUI(FIELD_ONE);
 					planes.setUseGUI(pos,FIELD_ONE);
 				}
 			}
@@ -3603,7 +3542,8 @@ public class Screen5250 implements TN5250jConstants{
 		while (x-- > 0) {
 			setDirty(pos++);
 		}
-		//      updateImage(dirty);
+		
+		updateDirty();
 
 	}
 
@@ -3621,12 +3561,9 @@ public class Screen5250 implements TN5250jConstants{
 		int na = sf.getHighlightedAttr();
 
 		while (x-- > 0) {
-//			screen[pos].setAttribute(na);
 			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
-//		updateImage(dirty);
-//      fireScreenChanged(1,dirty);
       fireScreenChanged(1);
 
 	}
@@ -3646,7 +3583,6 @@ public class Screen5250 implements TN5250jConstants{
 		int na = sf.getAttr();
 
 		while (x-- > 0) {
-//			screen[pos].setAttribute(na);
 			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
@@ -3828,12 +3764,12 @@ public class Screen5250 implements TN5250jConstants{
 		//    - A default starting address of row 1 column 1.
 
 		if (pendingInsert && homePos > 0) {
-			goto_XY(getRow(homePos), getCol(homePos));
+			gotoRowCol(getRow(homePos), getCol(homePos));
 			isInField(); // we now check if we are in a field
 		} else {
 			if (!gotoField(1)) {
 				homePos = getPos(1, 1);
-				goto_XY(1, 1);
+				gotoRowCol(1, 1);
 				isInField(0, 0); // we now check if we are in a field
 			} else {
 				homePos = getPos(getCurrentRow(), getCurrentCol());
@@ -3848,7 +3784,7 @@ public class Screen5250 implements TN5250jConstants{
 		}
 
 		if (!isStatusErrorCode()) {
-			goto_XY(icX, icY);
+			gotoRowCol(icX, icY);
 		}
 	}
 
@@ -4000,118 +3936,6 @@ public class Screen5250 implements TN5250jConstants{
       updateDirty();
 	}
 
-	/**
-	 * Returns a pointer to the graphics area that we can draw on
-	 *
-	 * @return Graphics2D pointer of graphics buffer
-	 */
-//	public Graphics2D getDrawingArea() {
-//
-//		return bi.getDrawingArea();
-//	}
-
-//      protected void updateImage(int x, int y, int width, int height) {
-//
-//   //		if (controllersG2D == null) {
-//   //			//System.out.println("was null");
-//   //			controllersG2D = (Graphics2D) gui.getGraphics();
-//   //		}
-//
-//         // check for selected area and erase it before updating screen
-//         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-//            gui.rubberband.erase();
-//         }
-//
-//   //		if (bi == null || controllersG2D == null) {
-//   //			if (bi == null)
-//   //				System.out.println("bi was null in update image");
-//   //			if (controllersG2D == null)
-//   //				System.out.println("gg2d was null in update image");
-//   //			return;
-//   //		}
-//
-//         biGraphics2d.setClip(x, y, width, height);
-//         if (!cursorActive && x + width <= bi.getWidth(null)
-//               && y + height <= (bi.getHeight(null) - fmWidth)) {
-//            paintComponent2(biGraphics2d);
-//         }
-//
-//         //      if (tileimage != null) {
-//         //
-//         //         AlphaComposite ac =
-//         // AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-//         //         g2d.setComposite(ac);
-//         //         g2d.drawImage(tileimage, null, null);
-//         //      }
-//
-//         // LDC - WVL : 08/09/2003 : TR.000358
-//         // TN5250j overpaints superimposed components
-//         // as swing doesn't support overlay detection when painting a component
-//         // we have to adhere to swing's paint request and use dirty rectangle
-//         // marking
-//         // instead of off-thread painting
-//         // So we replaced the complete block underneath by 1 repaint request
-//
-//         // fix for jdk1.4 - found this while testing under jdk1.4
-//         //   if the height and or the width are equal to zero we skip the
-//         //   the updating of the image.
-//         //      if (gui.isVisible() && height > 0 && width > 0) {
-//         //         bi.drawImageBuffer(gg2d,x,y,width,height);
-//         //      }
-//         //         if (gui.isVisible()) {
-//         //            if (height > 0 && width > 0) {
-//
-//         // We now redraw the selected area rectangle.
-//         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-//            gui.rubberband.draw();
-//         }
-//
-//         //         if (!fullRepaint) {
-//         //            bi.drawImageBuffer(gg2d,x,y,width,height);
-//         //         }
-//         //         else
-//         //            gui.repaint();
-//
-//         //            System.out.println(" something went right finally " + gui.isVisible()
-//         // +
-//         //                           " height " + height + " width " + width);
-//         //         }
-//         //            else {
-//         //            bi.drawImageBuffer(gg2d);
-//         //            System.out.println(" something is wrong here " + gui.isVisible() +
-//         //                           " height " + height + " width " + width);
-//
-//         //            }
-//         //      }
-//         if (x == 0)
-//            width += bi.offLeft;
-//         else
-//            x += bi.offLeft;
-//         if (y == 0)
-//            height += bi.offTop;
-//         else
-//            y += bi.offTop;
-//
-//         gui.repaint(x, y, width, height);
-//
-//      }
-//
-//      protected void updateImage(Rectangle r) {
-//         updateImage(r.x, r.y, r.width, r.height);
-//      }
-
-//	protected void paintComponent3(Graphics g) {
-//		//      System.out.println("paint from screen");
-//		Graphics2D g2 = (Graphics2D) g;
-//
-//		//      Rectangle r = g.getClipBounds();
-//
-//		g2.setColor(bi.colorBg);
-//		g2.fillRect(0, 0, gui.getWidth(), gui.getHeight());
-//
-//		bi.drawImageBuffer(g2);
-//	}
-
    /**
     * Notify all registered listeners of the onScreenChanged event.
     *
@@ -4140,9 +3964,6 @@ public class Screen5250 implements TN5250jConstants{
          return;
       }
 
-//      iOhioPosition inStart = new iOhioPosition(getRow(dirty.x) + 1,getColumn(dirty.x)+1);
-//      iOhioPosition inEnd = new iOhioPosition(getRow(dirty.y)+1,getColumn(dirty.y) +1);
-
       fireScreenChanged(update, getRow(dirtyScreen.x), getCol(dirtyScreen.x),
                                  getRow(dirtyScreen.y), getCol(dirtyScreen.y));
 
@@ -4152,15 +3973,7 @@ public class Screen5250 implements TN5250jConstants{
     * Notify all registered listeners of the onScreenChanged event.
     *
     */
-//   private synchronized void fireCursorChanged(int update, int row, int col) {
    private synchronized void fireCursorChanged(int update) {
-//         if (dirtyScreen.x > dirtyScreen.y) {
-//   //         log.info(" x < y " + dirtyScreen);
-//            return;
-//         }
-
-//      iOhioPosition inStart = new iOhioPosition(getRow(dirty.x) + 1,getColumn(dirty.x)+1);
-//      iOhioPosition inEnd = new iOhioPosition(getRow(dirty.y)+1,getColumn(dirty.y) +1);
       int startRow = getRow(lastPos);
       int startCol = getCol(lastPos);
 
@@ -4189,220 +4002,6 @@ public class Screen5250 implements TN5250jConstants{
             }
          }
       }
-
-//      /**
-//       * Notify all registered listeners of the onScreenChanged event.
-//       *
-//       */
-//      private void fireScreenChanged(int which, Rectangle r) {
-//
-//         int sPos = getRowColFromPoint(r.x, r.y);
-//
-//         int ePos = getRowColFromPoint(r.width, r.height) - numCols;
-//         // fix me here
-//         int er = (numRows - ((((fmHeight * (numRows + 1)) - ((r.y + r.height) + fmHeight)) / fmHeight)));
-//         int ec = (numCols - ((((fmWidth * (numCols + 1)) - ((r.x + r.width) + fmWidth)) / fmWidth)));
-//
-//         //      int er1 = getRow(ePos);
-//         //      int ec2 = getCol(ePos);
-//         int sr = getRow(sPos);
-//         int c = getCol(sPos);
-//         er--;
-//         ec--;
-//
-//         fireScreenChanged(1,sr,c,er,ec);
-//
-//      }
-
-//      protected void paintComponent2(Graphics2D g2) {
-//
-//         if (bi == null) {
-//            paintComponent3(g2);
-//         }
-//
-//         Rectangle r = g2.getClipBounds();
-//
-//   //		if (r == null) {
-//   //         log.info(" clipping rect is null ");
-//   //			paintComponent3((Graphics) g2);
-//   //			return;
-//   //		}
-//
-//         g2.setColor(colorBg);
-//         //      System.out.println("PaintComponent " + r);
-//
-//         g2.fillRect(r.x, r.y, r.width, r.height);
-//
-//         int sPos = getRowColFromPoint(r.x, r.y);
-//
-//         int ePos = getRowColFromPoint(r.width, r.height) - numCols;
-//         // fix me here
-//         int er = (numRows - ((((fmHeight * (numRows + 1)) - ((r.y + r.height) + fmHeight)) / fmHeight)));
-//         int ec = (numCols - ((((fmWidth * (numCols + 1)) - ((r.x + r.width) + fmWidth)) / fmWidth)));
-//
-//         //      int er1 = getRow(ePos);
-//         //      int ec2 = getCol(ePos);
-//         int sr = getRow(sPos);
-//         int c = getCol(sPos);
-//         er--;
-//         ec--;
-//
-//         fireScreenChanged(1,sr,c,er,ec);
-//   //      fireScreenChanged(1,dirtyScreen.y,dirtyScreen.x,dirtyScreen.height,dirtyScreen.width);
-//
-//   //         //      System.out.println(sr + "," + c + "," + er + "," + ec);
-//   //      workR.setBounds(sr, c, er, ec);
-//
-//   //      printRect(" paint workR ",workR);
-//   //         int rows = er - sr;
-//   //         int cols = 0;
-//   //         int lr = workR.x;
-//   //         int lc = 0;
-//   //
-//   //         lr = sPos;
-//   //
-//   //         while (rows-- >= 0) {
-//   //            cols = ec - c;
-//   //            lc = lr;
-//   //            while (cols-- >= 0) {
-//   //               if (lc >= 0 && lc < lenScreen) {
-//   //   //					screen[lc++].drawChar(g2);
-//   //                  bi.drawChar(g2,screen[lc],getRow(lc),getCol(lc));
-//   //                  lc++;
-//   //               }
-//   //            }
-//   //            lr += numCols;
-//   //         }
-//
-//      }
-
-      /**
-       *
-       * This routine will make sure we have something to draw on
-       *
-       */
-//         private void checkOffScreenImage() {
-//
-//            // do we have something already?
-//            if (bi == null) {
-//
-//               bi = new GuiGraphicBuffer(this,config);
-//
-//      //			if (antialiased) {
-//      //				bi.setUseAntialias(true);
-//      //			}
-//
-//               // allocate a buffer Image with appropriate size
-//               bi.getImageBuffer(fmWidth * numCols, fmHeight * (numRows + 2));
-//
-//               // fill in the areas
-//      //            tArea = new Rectangle2D.Float(0, 0, 0, 0);
-//      //            cArea = new Rectangle2D.Float(0, 0, 0, 0);
-//      //            aArea = new Rectangle2D.Float(0, 0, 0, 0);
-//      //            sArea = new Rectangle2D.Float(0, 0, 0, 0);
-//      //
-//      //            // Draw Operator Information Area
-//      //            drawOIA();
-//            }
-//
-//         }
-
-	/**
-	 * Convinience method to resize the screen area such as when the parent
-	 * frame is resized.
-	 *
-	 * @param width
-	 * @param height
-	 */
-//	private final void resizeScreenArea(int width, int height) {
-
-//         Font k = null;
-//         LineMetrics l;
-//         FontRenderContext f = null;
-//         k = GUIGraphicsUtils.getDerivedFont(font, width, height, numRows,
-//               numCols, sfh, sfw, ps132);
-//         f = new FontRenderContext(k.getTransform(), true, true);
-//
-//         l = k.getLineMetrics("Wy", f);
-//
-//         if (font.getSize() != k.getSize() || updateFont
-//               || (bi.offLeft != (width - bi.getWidth()) / 2)
-//               || (bi.offTop != (height - bi.getHeight()) / 2)) {
-//
-//            // set up all the variables that are used in calculating the new
-//            // size
-//            font = k;
-//            FontRenderContext frc = new FontRenderContext(font.getTransform(),
-//                  true, true);
-//            lm = font.getLineMetrics("Wy", frc);
-//            fmWidth = (int) font.getStringBounds("W", frc).getWidth() + 2;
-//            fmHeight = (int) (font.getStringBounds("g", frc).getHeight()
-//                  + lm.getDescent() + lm.getLeading());
-//
-//            bi.resize(fmWidth * numCols, fmHeight * (numRows + 2));
-//
-//            // set the offsets for the screen centering.
-//            bi.offLeft = (width - bi.getWidth()) / 2;
-//            bi.offTop = (height - bi.getHeight()) / 2;
-//            if (bi.offLeft < 0)
-//               bi.offLeft = 0;
-//            if (bi.offTop < 0)
-//               bi.offTop = 0;
-//
-//            drawOIA();
-//
-//            // and loop through the screen buffer to draw the new image with
-//            // the correct attributes
-//   //			for (int m = 0; m < lenScreen; m++) {
-//   //				screen[m].setRowCol(getRow(m), getCol(m));
-//   //
-//   //			}
-//            updateFont = false;
-//		}
-//      bi.resizeScreenArea(width,height);
-//	}
-
-	/**
-	 * Draw the Operator Information Area for feedback
-	 */
-//	private void drawOIA() {
-//
-//		// get ourselves a global pointer to the graphics
-//		biGraphics2d = bi.drawOIA();
-//
-//		tArea.setRect(bi.getTextArea());
-//		cArea.setRect(bi.getCommandLineArea());
-//		aArea.setRect(bi.getScreenArea());
-//		sArea.setRect(bi.getStatusArea());
-//
-//	}
-
-	/**
-	 *
-	 * This routine will calculate the new image size that will be displayed
-	 * when the frame that holds it is resized.
-	 *
-	 * The font characteristics are changed to fit the new size as will as the
-	 * screen buffer row column offsets so that the characters that make of the
-	 * screen are displayed correctly
-	 *
-	 * Changes made by Luc - LDC This routine was split into two separate
-	 * functions. setBounds and repaintScreen. This allowed a public function
-	 * called updateScreen to be introduced.
-	 *
-	 * @param width
-	 * @param height
-	 *
-	 *
-	 */
-
-//	public final void setBounds(int width, int height) {
-//
-//		setCursorActive(false);
-//		bi.resizeScreenArea(width, height);
-//		repaintScreen();
-//		setCursorActive(true);
-//	}
 
 	/**
 	 * This method does a complete refresh of the screen.
@@ -4445,17 +4044,9 @@ public class Screen5250 implements TN5250jConstants{
 	 * updateScreen.
 	 */
 	public void repaintScreen() {
-		//drawing = true;
-//         dirty.setBounds(tArea.getBounds());
-         dirtyScreen.setBounds(0,lenScreen - 1,0,0);
-//         if (gui.getGraphics() != null) {
-            // do not forget to null out gg2d before update or else there will
-            //    be a very hard to trace screen resize problem
-   //			controllersG2D = null;
-//            updateDirty();
-//         }
-//      fireScreenChanged(1);
-      setCursorOff();
+
+	   setCursorOff();
+      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
       updateDirty();
 		// restore statuses that were on the screen before resize
 		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
@@ -4473,62 +4064,10 @@ public class Screen5250 implements TN5250jConstants{
       setCursorOn();
 	}
 
-	/**
-	 *
-	 * This routine will calculate the new image size that will be displayed
-	 * when the frame that holds it is resized.
-	 *
-	 * The font characteristics are changed to fit the new size as will as the
-	 * screen buffer row column offsets so that the characters that make of the
-	 * screen are displayed correctly
-	 *
-	 * @param r
-	 */
-//	public final void setBounds(Rectangle r) {
-//
-//		setBounds(r.width, r.height);
-//	}
-
-	/**
-	 *
-	 * This routine returns the preferred size of the component that wants to be
-	 * displayed
-	 *
-	 * @return the value of the preferredSize property
-	 *
-	 */
-//	public final Dimension getPreferredSize() {
-//
-//		return new Dimension(fmWidth * numCols, fmHeight * (numRows + 2));
-//
-//	}
-
-//	/**
-//	 *
-//	 * This routine is responsible for setting up a PrinterJob on this component
-//	 * and initiating the print session.
-//	 *
-//	 */
-//	public final void printMe() {
-//
-//		Thread printerThread = new PrinterThread(this, font, numCols,
-//				numRows, Color.black, defaultPrinter, (Session) gui);
-//
-//		printerThread.start();
-//
-//	}
-
-//	// ADDED BY BARRY
-//	public ScreenChar[] getCharacters() {
-//		return this.screen;
-//	}
 	// ADDED BY BARRY - changed by Kenneth to use the character plane
    //  This should be replaced with the getPlane methods when they are implemented
 	public char[] getCharacters() {
 		return planes.screen;
 	}
 
-//	public Gui5250 getGui() {
-//		return this.gui;
-//	}
 }
