@@ -70,6 +70,8 @@ public class Gui5250 extends JPanel implements ComponentListener,
    boolean isAltGr;
    private Vector listeners = null;
    private SessionJumpEvent jumpEvent;
+   private boolean macroRunning;
+   private boolean stopMacro;
 
    public Gui5250 () {
 
@@ -1066,6 +1068,26 @@ public class Gui5250 extends JPanel implements ComponentListener,
       }
    }
 
+   public boolean isMacroRunning() {
+
+      return macroRunning;
+   }
+
+   public boolean isStopMacroRequested() {
+
+      return stopMacro;
+   }
+
+   public void setMacroRunning(boolean mr) {
+      macroRunning = mr;
+      stopMacro = false;
+   }
+
+   public void setStopMacroRequested () {
+      stopMacro = true;
+      macroRunning = false;
+   }
+
    public void sendNegResponse2(int ec) {
 
       vt.sendNegResponse2(ec);
@@ -1402,33 +1424,43 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          popup.addSeparator();
 
-         JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
-
-         if (recording) {
-            action = new AbstractAction(LangTool.getString("popup.stop")) {
+         if (isMacroRunning()) {
+            action = new AbstractAction(LangTool.getString("popup.stopScript")) {
                   public void actionPerformed(ActionEvent e) {
-                     stopRecordingMe();
-                     getFocusForMe();
+                     setStopMacroRequested();
                   }
-            };
-
+              };
+            popup.add(action);
          }
          else {
-            action = new AbstractAction(LangTool.getString("popup.record")) {
-                  public void actionPerformed(ActionEvent e) {
-                     startRecordingMe();
-                     getFocusForMe();
 
-                  }
-            };
-         }
-         macMenu.add(action);
-         if (macros.isMacrosExist()) {
-            // this will add a sorted list of the macros to the macro menu
-            addMacros(macMenu);
-         }
+            JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
 
-         popup.add(macMenu);
+            if (recording) {
+               action = new AbstractAction(LangTool.getString("popup.stop")) {
+                     public void actionPerformed(ActionEvent e) {
+                        stopRecordingMe();
+                        getFocusForMe();
+                     }
+               };
+
+            }
+            else {
+               action = new AbstractAction(LangTool.getString("popup.record")) {
+                     public void actionPerformed(ActionEvent e) {
+                        startRecordingMe();
+                        getFocusForMe();
+
+                     }
+               };
+            }
+            macMenu.add(action);
+            if (macros.isMacrosExist()) {
+               // this will add a sorted list of the macros to the macro menu
+               addMacros(macMenu);
+            }
+            popup.add(macMenu);
+         }
 
          popup.addSeparator();
 
@@ -1515,6 +1547,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       menu.addSeparator();
 
+
       String[] macrosList = macros.getMacroList();
 
 
@@ -1533,7 +1566,6 @@ public class Gui5250 extends JPanel implements ComponentListener,
          menu.add(action);
 
       }
-
    }
 
    private JMenuItem createMenuItem(Action action, String accelKey) {

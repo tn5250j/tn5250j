@@ -43,6 +43,8 @@ Database for all the problems with this in linux.
 
 Enhancements/Change Log
 -----------------------
+27/07/2002  Added scripting to emulator using jython.  We now have scripting!!!
+
 25/07/2002  Add the macros in ascending order.  This and the session sorting
             have been needed for a long time.  Thanks Roy for the request.
 

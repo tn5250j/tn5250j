@@ -17,6 +17,7 @@ import java.io.*;
 import org.python.util.PythonInterpreter;
 import org.python.core.*;
 import org.tn5250j.Session;
+import javax.swing.SwingUtilities;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -32,8 +33,10 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
    public void executeScript(Session session, String script)
          throws InterpreterDriver.InterpreterException {
       try {
+         session.setMacroRunning(true);
          _interpreter.set("session",session);
          _interpreter.exec(script);
+         session.setMacroRunning(false);
       }
       catch (PyException ex) {
          throw new InterpreterDriver.InterpreterException(ex);
@@ -54,11 +57,29 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
                   throws InterpreterDriver.InterpreterException {
 
       try {
-         _interpreter.set("session",session);
-         _interpreter.execfile(scriptFile);
+         final Session s1 = session;
+         final String s2 = scriptFile;
+
+         s1.setMacroRunning(true);
+         Runnable interpretIt = new Runnable() {
+            public void run() {
+               _interpreter.set("session",s1);
+               _interpreter.execfile(s2);
+            }
+
+           };
+
+         // lets start interpreting it.
+         Thread interpThread = new Thread(interpretIt);
+         interpThread.setDaemon(true);
+         interpThread.start();
+
       }
       catch (PyException ex) {
          throw new InterpreterDriver.InterpreterException(ex);
+      }
+      catch (Exception ex2) {
+         throw new InterpreterDriver.InterpreterException(ex2);
       }
    }
 
