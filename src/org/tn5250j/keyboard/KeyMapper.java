@@ -119,7 +119,7 @@ public class KeyMapper {
       if (!loadKeyStrokes(keys)) {
          // keycode shift control alternate
 
-         // Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown
+         // Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown, location
 
          // my personal preference
          mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
@@ -356,7 +356,7 @@ public class KeyMapper {
 
       map.clear();
 
-      // save off the width and height to be restored later
+      // save off the keystrokes in the keymap
       Collection v = mappedKeys.values();
       Set o = mappedKeys.keySet();
       Iterator k = o.iterator();
@@ -368,7 +368,7 @@ public class KeyMapper {
       }
 
       ConfigureFactory.getInstance().saveSettings(GlobalConfigure.KEYMAP,
-      "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown --------");
+      "------ Key Map key=keycode,isShiftDown,isControlDown,isAltDown,isAltGrDown,location --------");
    }
 
    public final static String getKeyStrokeText(KeyEvent ke) {
@@ -389,6 +389,26 @@ public class KeyMapper {
       }
 
       return lastKeyMnemonic;
+
+   }
+
+   public final static String getKeyStrokeMnemonic(KeyEvent ke) {
+      return getKeyStrokeMnemonic(ke,false);
+   }
+
+   public final static String getKeyStrokeMnemonic(KeyEvent ke,boolean isAltGr) {
+
+      workStroke.setAttributes(ke,isAltGr);
+      String keyMnemonic = (String)mappedKeys.get(workStroke);
+
+      if (keyMnemonic != null &&
+            keyMnemonic.endsWith(KeyStroker.altSuffix)) {
+
+         keyMnemonic = keyMnemonic.substring(0,
+                        keyMnemonic.indexOf(KeyStroker.altSuffix));
+      }
+
+      return keyMnemonic;
 
    }
 
@@ -442,6 +462,17 @@ public class KeyMapper {
       }
 
       return false;
+   }
+
+   public final static boolean isKeyStrokeDefined(KeyEvent ke) {
+      return isKeyStrokeDefined(ke,false);
+   }
+
+   public final static boolean isKeyStrokeDefined(KeyEvent ke,boolean isAltGr) {
+
+      workStroke.setAttributes(ke,isAltGr);
+      return (null != (String)mappedKeys.get(workStroke));
+
    }
 
    public final static KeyStroke getKeyStroke(String which) {

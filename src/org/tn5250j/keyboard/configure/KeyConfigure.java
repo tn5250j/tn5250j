@@ -542,7 +542,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
       dialog.addWindowListener(new WindowAdapter() {
          boolean gotFocus = false;
          public void windowClosed(WindowEvent we) {
-            setNewKeyStrokes(kg.keyevent);
+            if (isAvailable(kg.keyevent))
+               setNewKeyStrokes(kg.keyevent);
          }
 
          public void windowActivated(WindowEvent we) {
@@ -559,6 +560,51 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
    }
 
+   private boolean isAvailable(KeyEvent ke) {
+
+      boolean exists = true;
+
+      if (isLinux) {
+          exists = mapper.isKeyStrokeDefined(ke,isAltGr);
+      }
+      else {
+         exists = mapper.isKeyStrokeDefined(ke);
+      }
+
+      System.out.println(" key is available " + !exists);
+
+      if (exists) {
+
+         Object[] args = {getKeyDescription(ke)};
+
+         int result = JOptionPane.showConfirmDialog(this,
+                     LangTool.messageFormat("messages.mapKeyWarning",args),
+                     LangTool.getString("key.labelKeyExists"),
+                     JOptionPane.YES_NO_OPTION,
+                     JOptionPane.WARNING_MESSAGE);
+
+         if (result == JOptionPane.YES_OPTION)
+            return true;
+         else
+            return false;
+      }
+      return !exists;
+   }
+
+   private String getKeyDescription(KeyEvent ke) {
+
+      String desc;
+
+      if (isLinux)
+         desc = mapper.getKeyStrokeMnemonic(ke,isAltGr);
+      else
+         desc = mapper.getKeyStrokeMnemonic(ke,isAltGr);
+
+      if (desc != null && desc.length() > 1 && desc.startsWith("["))
+         desc = LangTool.getString("key."+ desc);
+
+      return desc;
+   }
    private KeyGetterInterface getMeAKeyProcessor() {
 
       ClassLoader loader = KeyConfigure.class.getClassLoader();
