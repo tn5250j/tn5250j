@@ -38,6 +38,7 @@ import java.awt.font.*;
 import java.awt.geom.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.event.*;
+import org.tn5250j.gui.TN5250jSplashScreen;
 import java.net.*;
 
 
@@ -54,8 +55,19 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
    private SessionManager manager;
    private static Vector frames;
    private static boolean useMDIFrames;
+   private static TN5250jSplashScreen splash;
+   private int step;
 
    My5250 () {
+
+      splash = new TN5250jSplashScreen(createImageIcon("tn5250jSplash.jpg"));
+      splash.setSteps(4);
+      splash.setVisible(true);
+
+      focused = createImageIcon("focused.gif");
+      unfocused = createImageIcon("unfocused.gif");
+      tnicon = createImageIcon("tnicon.jpg");
+
       try  {
          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       }
@@ -63,6 +75,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       }
 
       loadSessions();
+      splash.updateProgress(++step);
       try {
          Class.forName("org.tn5250j.scripting.JPythonInterpreterDriver");
       }
@@ -73,9 +86,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          System.out.println("Failed to load interpreter drivers " + ex);
       }
 
-      focused = createImageIcon("focused.gif");
-      unfocused = createImageIcon("unfocused.gif");
-      tnicon = createImageIcon("tnicon.jpg");
+      splash.updateProgress(++step);
 
       // sets the starting frame type.  At this time there are tabs which is
       //    default and Multiple Document Interface.
@@ -88,6 +99,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
       setDefaultLocale();
       manager = new SessionManager();
       manager.setController(this);
+      splash.updateProgress(++step);
+
    }
 
    /**
@@ -271,7 +284,10 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
                   m.sessionArgs = null;
                }
                else {
+                  m.splash.updateProgress(++m.step);
                   m.frame1.setVisible(true);
+                  m.splash.setVisible(false);
+                  m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                   LangTool.init();
                   m.sessionArgs = args;
                }
@@ -326,8 +342,12 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          for (int x = 1; x < os400_sessions.size(); x++ ) {
             String sel = os400_sessions.elementAt(x).toString();
 
-            if (!m.frame1.isVisible())
+            if (!m.frame1.isVisible()) {
+               m.splash.updateProgress(++m.step);
                m.frame1.setVisible(true);
+               m.splash.setVisible(false);
+               m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
 
             m.sessionArgs = new String[NUM_PARMS];
             m.parseArgs(sessions.getProperty(sel),m.sessionArgs);
@@ -498,12 +518,20 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
 
       Session s = manager.openSession(sesProps,propFileName,sel);
 
-      if (!frame1.isVisible())
+      if (!frame1.isVisible()) {
+         splash.updateProgress(++step);
          frame1.setVisible(true);
+         splash.setVisible(false);
+         frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+      }
       else {
          if (isSpecified("-noembed",args)) {
+            splash.updateProgress(++step);
             newView();
             frame1.setVisible(true);
+            splash.setVisible(false);
+            frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
          }
       }
 
@@ -531,6 +559,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener {
          frame1 = new Gui5250MDIFrame(this);
       else
          frame1 = new Gui5250Frame(this);
+
+      frame1.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
       if (sessions.containsKey("emul.frame" + frame1.getFrameSequence())) {
 
