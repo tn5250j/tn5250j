@@ -28,6 +28,8 @@ package org.tn5250j.tools;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.io.*;
+import org.tn5250j.Session;
+import org.tn5250j.scripting.InterpreterDriverManager;
 
 public class Macronizer {
 
@@ -151,4 +153,24 @@ public class Macronizer {
 
    }
 
+   public final static void invoke (String macro, Session session) {
+
+      String keys = getMacroByName(macro);
+      if (keys != null)
+         session.getScreen().sendKeys(keys);
+      else {
+         try {
+            if (!macro.endsWith(".py"))
+               macro = macro + ".py";
+            InterpreterDriverManager.executeScriptFile((Session)session,"scripts" +
+                  File.separatorChar + macro);
+         }
+         catch (Exception ex) {
+            System.err.println(ex);
+         }
+      }
+
+
+
+   }
 }
