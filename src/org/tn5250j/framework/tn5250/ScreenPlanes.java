@@ -47,9 +47,9 @@ public class ScreenPlanes implements TN5250jConstants {
    protected char[] screenField;
    protected char[] screenColor;   // color plane
    protected char[] screenExtended;   // extended plane
-   protected boolean[] screenIsChanged;
+   protected char[] screenIsChanged;
 
-   protected static char[] initArray;   
+   protected char[] initArray;   
 
    protected char[] errorLine;
    protected char[] errorLineAttr;
@@ -89,10 +89,10 @@ public class ScreenPlanes implements TN5250jConstants {
       screenColor = new char[screenSize];
       screenExtended = new char[screenSize];
       fieldExtended = new char[screenSize];
-      screenIsChanged = new boolean[screenSize];
+      screenIsChanged = new char[screenSize];
       screenField = new char[screenSize];
 
-      initArray = null;
+      initArray = new char[screenSize];
       
       initalizePlanes();
    }
@@ -167,7 +167,7 @@ public class ScreenPlanes implements TN5250jConstants {
       screenAttr[pos] = (char)attr;
       disperseAttribute(pos,attr);
       screenIsAttr[pos] = (isAttr ? (char)1 : (char)0);
-      screenGUI[pos] = initChar;
+      screenGUI[pos] = NO_GUI;
 
    }
 
@@ -195,9 +195,7 @@ public class ScreenPlanes implements TN5250jConstants {
    }
 
    protected final void setChar(int pos, char c) {
-      screenIsChanged[pos] = screen[pos] == c ? false : true;
-      //      if (isChanged)
-      //         System.out.println(sChar[0] + " - " + c);
+      screenIsChanged[pos] = screen[pos] == c ? '0' : '1';
       screen[pos] = c;
       if (screenIsAttr[pos] == 1)
          setScreenCharAndAttr(pos,c,32,false);
@@ -218,29 +216,213 @@ public class ScreenPlanes implements TN5250jConstants {
 
    public final void setUseGUI(int pos, int which) {
 
-      screenIsChanged[pos] = screenGUI[pos] == which ? false : true;
+      screenIsChanged[pos] = screenGUI[pos] == which ? '0' : '1';
 
       screenGUI[pos] = (char)which;
+   }
+   
+   private void disperseAttribute(int pos, int attr) {
+
+      char c = 0;
+      char cs = 0;
+      char ul = 0;
+      char nd = 0;
+
+      if(attr == 0)
+         return;
+
+      switch(attr) {
+         case 32: // green normal
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_GREEN & 0xff);
+            break;
+
+         case 33: // green/revers
+            c = (COLOR_BG_GREEN << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 34: // white normal
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_WHITE & 0xff);
+            break;
+
+         case 35: // white/reverse
+            c = (COLOR_BG_WHITE << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 36: // green/underline
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_GREEN & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 37: // green/reverse/underline
+            c = (COLOR_BG_GREEN << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 38: // white/underline
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_WHITE & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 39:
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+
+         case 40:
+         case 42: // red/normal
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_RED & 0xff);
+            break;
+
+         case 41:
+         case 43: // red/reverse
+            c = (COLOR_BG_RED << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 44:
+         case 46: // red/underline
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_RED & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 45: // red/reverse/underline
+            c = ( COLOR_BG_RED << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 47:
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+
+         case 48:
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_CYAN & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 49:
+            c = (COLOR_BG_CYAN << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 50:
+            c = (COLOR_BG_BLACK << 8 & 0xff00) |
+            (COLOR_FG_YELLOW & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 51:
+            c = (COLOR_BG_YELLOW << 8 & 0xff00) |
+            (COLOR_FG_BLACK & 0xff);
+            cs = EXTENDED_5250_COL_SEP;
+            break;
+
+         case 52:
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_CYAN & 0xff);
+//            colSep = true;
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 53:
+            c = ( COLOR_BG_CYAN << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+//            colSep = true;
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 54:
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_YELLOW & 0xff);
+//            colSep = true;
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 55:
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+
+         case 56: // pink
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_MAGENTA & 0xff);
+            break;
+
+         case 57: // pink/reverse
+            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 58: // blue/reverse
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_BLUE & 0xff);
+            break;
+
+         case 59: // blue
+            c = ( COLOR_BG_BLUE << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            break;
+
+         case 60: // pink/underline
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_MAGENTA & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 61: // pink/reverse/underline
+            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
+            ( COLOR_FG_BLACK & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 62: // blue/underline
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_BLUE & 0xff);
+            ul = EXTENDED_5250_UNDERLINE;
+            break;
+
+         case 63:  // nondisplay
+            nd = EXTENDED_5250_NON_DSP;
+            break;
+         default:
+            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
+            ( COLOR_FG_YELLOW & 0xff);
+            break;
+
+      }
+
+      screenColor[pos] = c;
+      screenExtended[pos] = (char)(ul | cs | nd);
    }
 
    protected void initalizePlanes () {
 
+      char c = (COLOR_BG_BLACK << 8 & 0xff00) |
+      (COLOR_FG_GREEN & 0xff);
+
       for (int y = 0;y < screenSize; y++) {
 
-         setScreenCharAndAttr(y,initChar,initAttr,false);
-         screenGUI[y] = NO_GUI;
-         screenIsChanged[y] = false;
+         screenAttr[y] = initAttr;
+         screenColor[y] = c;
 
       }
       
-      if (initArray == null) {
-         initArray = new char[screenSize];
-         System.arraycopy(screen,0,initArray,0,screenSize);
-        
-      }
       // here we will just copy the initialized plane onto the other planes 
       // using arraycopy which will be faster.  I hope.
-      
+     
+      System.arraycopy(initArray,0,screen,0,screenSize);
+      System.arraycopy(initArray,0,screenGUI,0,screenSize);
+      System.arraycopy(initArray,0,screenIsAttr,0,screenSize);
+      System.arraycopy(initArray,0,screenExtended,0,screenSize);
       System.arraycopy(initArray,0,fieldExtended,0,screenSize);
       System.arraycopy(initArray,0,screenField,0,screenSize);
    }
@@ -256,7 +438,7 @@ public class ScreenPlanes implements TN5250jConstants {
    }
 
    protected final boolean isChanged(int pos) {
-      return screenIsChanged[pos];
+      return screenIsChanged[pos] == 0 ? false : true;
    }
 
    protected final boolean isUseGui(int pos) {
@@ -591,189 +773,6 @@ public class ScreenPlanes implements TN5250jConstants {
       }
 
       return numBytes;
-   }
-
-   public final void disperseAttribute(int pos, int attr) {
-
-      char c = 0;
-      char cs = 0;
-      char ul = 0;
-      char nd = 0;
-
-      if(attr == 0)
-         return;
-
-      switch(attr) {
-         case 32: // green normal
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_GREEN & 0xff);
-            break;
-
-         case 33: // green/revers
-            c = (COLOR_BG_GREEN << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
-            break;
-
-         case 34: // white normal
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_WHITE & 0xff);
-            break;
-
-         case 35: // white/reverse
-            c = (COLOR_BG_WHITE << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
-            break;
-
-         case 36: // green/underline
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_GREEN & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 37: // green/reverse/underline
-            c = (COLOR_BG_GREEN << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 38: // white/underline
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_WHITE & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 39:
-            nd = EXTENDED_5250_NON_DSP;
-            break;
-
-         case 40:
-         case 42: // red/normal
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_RED & 0xff);
-            break;
-
-         case 41:
-         case 43: // red/reverse
-            c = (COLOR_BG_RED << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
-            break;
-
-         case 44:
-         case 46: // red/underline
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_RED & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 45: // red/reverse/underline
-            c = ( COLOR_BG_RED << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 47:
-            nd = EXTENDED_5250_NON_DSP;
-            break;
-
-         case 48:
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_CYAN & 0xff);
-            cs = EXTENDED_5250_COL_SEP;
-            break;
-
-         case 49:
-            c = (COLOR_BG_CYAN << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
-            cs = EXTENDED_5250_COL_SEP;
-            break;
-
-         case 50:
-            c = (COLOR_BG_BLACK << 8 & 0xff00) |
-            (COLOR_FG_YELLOW & 0xff);
-            cs = EXTENDED_5250_COL_SEP;
-            break;
-
-         case 51:
-            c = (COLOR_BG_YELLOW << 8 & 0xff00) |
-            (COLOR_FG_BLACK & 0xff);
-            cs = EXTENDED_5250_COL_SEP;
-            break;
-
-         case 52:
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_CYAN & 0xff);
-//            colSep = true;
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 53:
-            c = ( COLOR_BG_CYAN << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
-//            colSep = true;
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 54:
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_YELLOW & 0xff);
-//            colSep = true;
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 55:
-            nd = EXTENDED_5250_NON_DSP;
-            break;
-
-         case 56: // pink
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_MAGENTA & 0xff);
-            break;
-
-         case 57: // pink/reverse
-            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
-            break;
-
-         case 58: // blue/reverse
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_BLUE & 0xff);
-            break;
-
-         case 59: // blue
-            c = ( COLOR_BG_BLUE << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
-            break;
-
-         case 60: // pink/underline
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_MAGENTA & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 61: // pink/reverse/underline
-            c = ( COLOR_BG_MAGENTA << 8 & 0xff00) |
-            ( COLOR_FG_BLACK & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 62: // blue/underline
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_BLUE & 0xff);
-            ul = EXTENDED_5250_UNDERLINE;
-            break;
-
-         case 63:  // nondisplay
-            nd = EXTENDED_5250_NON_DSP;
-            break;
-         default:
-            c = ( COLOR_BG_BLACK << 8 & 0xff00) |
-            ( COLOR_FG_YELLOW & 0xff);
-            break;
-
-      }
-
-      screenColor[pos] = c;
-      screenExtended[pos] = (char)(ul | cs | nd);
    }
 
    protected boolean checkHotSpots () {
