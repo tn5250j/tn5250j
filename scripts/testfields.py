@@ -8,7 +8,7 @@ fields = screenfields.getFields()
 
 for x in fields:
     print x.toString()
-    print x.getText()
+    print x.getString()
 
 print "number of fields %s " % screenfields.getSize()
 
