@@ -259,7 +259,7 @@ public class SessionBean
           {
             try
             {
-              Thread.sleep(100);
+              Thread.currentThread().sleep(100);
             }
             catch (InterruptedException ex)
             {

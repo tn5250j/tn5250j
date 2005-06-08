@@ -311,6 +311,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			colorHexAttr = getColorProperty("colorHexAttr");
 
 	}
+
 	public void loadProps() {
 
 		loadColors();
@@ -454,6 +455,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		if (config.getStringProperty("cursorBlink").equals("Yes")) {
 			blinker = new javax.swing.Timer(500, this);
 			blinker.start();
+		}
+
+		if (config.isPropertyExists("backspaceError")) {
+			if (getStringProperty("backspaceError").equals("Yes"))
+            screen.setBackspaceError(true);
+			else
+            screen.setBackspaceError(false);
 		}
 	}
 
@@ -719,6 +727,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 					blinker = null;
 				}
 			}
+		}
+
+		if (pn.equals("backspaceError")) {
+			if (pce.getNewValue().equals("Yes"))
+            screen.setBackspaceError(true);
+			else
+            screen.setBackspaceError(false);
 		}
 
 		if (updateFont) {
@@ -1027,6 +1042,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * columnWidth),
                rowHeight * (numRows + 1),
                columnWidth + columnWidth,
+               rowHeight);
+         iArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (25 * columnWidth),
+               rowHeight * (numRows + 1),
+               columnWidth,
                rowHeight);
 
          separatorLine.setLine(0,
@@ -1922,6 +1941,30 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          case ScreenOIA.OIA_LEVEL_NOT_INHIBITED:
          case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
             setStatus(changedOIA);
+            break;
+         case ScreenOIA.OIA_LEVEL_INSERT_MODE:
+            if (changedOIA.isInsertMode()) {
+               g2d = getWritingArea(font);
+               Y = (rowHeight * (screen.getRows() + 2))
+                     - (lm.getLeading() + lm.getDescent());
+               g2d.setColor(colorBlue);
+               g2d.drawLine((int)iArea.getX(),(int)Y,(int)(iArea.getX() + ((iArea.getWidth()/2)-1)),(int)(Y-(rowHeight/2)));
+               g2d.drawLine((int)(iArea.getX() + iArea.getWidth()-1),(int)Y,(int)(iArea.getX() + (iArea.getWidth()/2)),(int)(Y-(rowHeight/2)));
+               //g2d.drawString("I", (float) iArea.getX(), Y);
+
+               updateImage(iArea.getBounds());
+               g2d.dispose();
+            }
+            else {
+
+               g2d = getWritingArea(font);
+
+               g2d.setColor(colorBg);
+               g2d.fill(iArea);
+               updateImage(iArea.getBounds());
+               g2d.dispose();
+
+            }
             break;
 
       }

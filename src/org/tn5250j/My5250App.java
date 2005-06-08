@@ -9,6 +9,8 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jSecurityAccessDialog;
 import org.tn5250j.framework.common.*;
 
+//import org.tn5250j.swing.JTerminal;
+
 public class My5250App extends JApplet implements TN5250jConstants {
    boolean isStandalone = true;
    private SessionManager manager;
@@ -99,10 +101,6 @@ public class My5250App extends JApplet implements TN5250jConstants {
       if (isSpecified("-dn"))
          sesProps.put(SESSION_DEVICE_NAME ,getParameter("-dn"));
 
-      if (isSpecified("-sslType"))
-      	sesProps.put(TN5250jConstants.SSL_TYPE,getParameter("-sslType"));
-      
-      
       loadSystemProperty("SESSION_CONNECT_USER");
       loadSystemProperty("SESSION_CONNECT_PASSWORD");
       loadSystemProperty("SESSION_CONNECT_PROGRAM");

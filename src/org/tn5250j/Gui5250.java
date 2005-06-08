@@ -28,6 +28,8 @@ package org.tn5250j;
 
 import java.awt.*;
 import java.awt.event.*;
+//import java.awt.dnd.*;
+//import java.awt.datatransfer.*;
 import javax.swing.*;
 import java.util.*;
 
@@ -151,9 +153,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
 
          public void mouseClicked(MouseEvent e) {
-         	if (SwingUtilities.isRightMouseButton(e)) {
-                return;
-            }
+
+               if (SwingUtilities.isRightMouseButton(e)) {
+                  return;
+               }
+
                if (e.getClickCount() == 2 & doubleClick) {
 
                   screen.sendKeys("[enter]");

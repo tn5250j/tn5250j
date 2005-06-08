@@ -26,7 +26,7 @@ public interface TN5250jConstants {
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".5";
-   public static final String tn5250jSubVer= ".8 alpha 1";
+   public static final String tn5250jSubVer= ".8 alpha 2";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
@@ -61,7 +61,8 @@ public interface TN5250jConstants {
    public static final String NO_CHECK_RUNNING = "NO_CHECK_RUNNING";
    public static final String START_MONITOR_THREAD = "START_MONITOR_THREAD";
 
-   public static final String SSL_TYPE = "TN5250J_SSL_TYPE";
+//   public static final String SSL_TYPE = "TN5250J_SSL_TYPE";
+   public static final String SSL_TYPE = "-sslType";
    public static final String SSL_TYPE_NONE = "NONE";
    public static final String SSL_TYPE_SSLv2 = "SSLv2";
    public static final String SSL_TYPE_SSLv3 = "SSLv3";
@@ -151,7 +152,10 @@ public interface TN5250jConstants {
    public static final int SPOOL_FILE = 5015;
    public static final int QUICK_MAIL = 5016;
    public static final int OPEN_SAME = 5017;
-
+   public static final int FAST_CURSOR_DOWN = 5018;
+   public static final int FAST_CURSOR_UP = 5019;
+   public static final int FAST_CURSOR_RIGHT = 5020;
+   public static final int FAST_CURSOR_LEFT = 5021;
 
    // PF Keys
    public static final int PF1 = 0x31;
@@ -199,7 +203,7 @@ public interface TN5250jConstants {
         "[opennew]","[togcon]","[hotspots]","[gui]","[dspmsgs]",
         "[dspattr]","[print]","[cursor]","[debug]","[close]",
         "[transfer]","[e-mail]","[runscript]","[spoolfile]","[quick-mail]",
-        "[open-same]"
+        "[open-same]","[fastcursordown]","[fastcursorup]","[fastcursorright]","[fastcursorleft]"
    };
 
    public static final int mnemonicValue[] = {
@@ -222,7 +226,7 @@ public interface TN5250jConstants {
         5002, 5003, 5004, 5005, 5006,
         5007, 5008, 5009, 5010, 5011,
         5012, 5013, 5014, 5015, 5016,
-        5017
+        5017, 5018, 5019, 5020, 5021
    };
 
    public static final String MNEMONIC_CLEAR   =  "[clear]";
@@ -319,7 +323,10 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_SPOOL_FILE   =  "[spoolfile]";
    public static final String MNEMONIC_QUICK_MAIL   =  "[quick-mail]";
    public static final String MNEMONIC_OPEN_SAME   =  "[open-same]";
-
+   public static final String MNEMONIC_FAST_CURSOR_DOWN   =  "[fastcursordown]";
+   public static final String MNEMONIC_FAST_CURSOR_UP   =  "[fastcursorup]";
+   public static final String MNEMONIC_FAST_CURSOR_RIGHT   =  "[fastcursorright]";
+   public static final String MNEMONIC_FAST_CURSOR_LEFT   =  "[fastcursorleft]";
 
    // AID-Generating Keys
    public static final int AID_CLEAR = 0xBD;
@@ -484,7 +491,7 @@ public interface TN5250jConstants {
    													( COLOR_FG_BLACK & 0xff);
    public static final char ATTR_62 = ( COLOR_BG_BLACK << 8 & 0xff00) |
    													( COLOR_FG_BLUE & 0xff);
-   
+
    public static final int NO_GUI = 0;
    public static final int UPPER_LEFT = 1;
    public static final int UPPER = 2;

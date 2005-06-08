@@ -28,6 +28,7 @@ package org.tn5250j;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 import java.util.*;
 
 import javax.swing.event.ChangeListener;
@@ -51,7 +52,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                                                     SessionJumpListener {
 
    BorderLayout borderLayout1 = new BorderLayout();
-   //JTabbedPane sessionPane = new JTabbedPane();
+//   JTabbedPane sessionPane = new JTabbedPane();
    TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
    private int selectedIndex = 0;
    private boolean embedded = false;
@@ -79,7 +80,29 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       // update the frame sequences
       frameSeq = sequence++;
-
+      
+      
+//      try
+//      {
+//        ClassLoader loader = Gui5250Frame.class.getClassLoader();
+//        if (loader == null)
+//          loader = ClassLoader.getSystemClassLoader();
+//
+//        Class       tabClass;
+//        Constructor keyProcessorConstructor;
+//
+//        try {
+//           String className = "org.tn5250j.gui.TN5250jTabbedPane";
+//           if (!OperatingSystem.hasJava14())
+//              className += "13";
+//
+//           tabClass = loader.loadClass(className);
+//           tabConstructor = tabkeyProcessorClass.getConstructor(null);
+//           Object obj = keyProcessorConstructor.newInstance(null);
+//      }
+//      catch (Throwable t) {
+//      }
+      
       sessionPane.setBorder(BorderFactory.createEtchedBorder());
       sessionPane.setBounds(new Rectangle(78, 57, 5, 5));
       sessionPane.setOpaque(true);
@@ -209,7 +232,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                sessionPane.setSelectedIndex(sessionPane.getTabCount() - 1);
                sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
 //               sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
-               sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
+               sessionPane.setIconAt(focused,sessionPane.getSelectedIndex());
 
             }
             else {
