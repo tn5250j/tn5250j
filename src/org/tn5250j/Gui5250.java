@@ -151,7 +151,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
          }
 
          public void mouseClicked(MouseEvent e) {
-
+         	if (SwingUtilities.isRightMouseButton(e)) {
+                return;
+            }
                if (e.getClickCount() == 2 & doubleClick) {
 
                   screen.sendKeys("[enter]");

@@ -712,227 +712,114 @@ public class Screen5250 implements TN5250jConstants {
 	public boolean moveCursor(MouseEvent e, int pos) {
 
 		if (!oia.isKeyBoardLocked()) {
-
 			if (pos < 0)
-
 				return false;
-
 			// because getRowColFromPoint returns offset of 1,1 we need to
-
 			//    translate to offset 0,0
-
 			//         pos -= (numCols + 1);
-
 			int g = planes.getWhichGUI(pos);
-
+			System.out.println(g);
 			// lets check for hot spots
-
 			if (g >= BUTTON_LEFT && g <= BUTTON_LAST) {
-
 				StringBuffer aid = new StringBuffer();
-
 				boolean aidFlag = true;
-
 				switch (g) {
-
-				case BUTTON_RIGHT:
-
-				case BUTTON_MIDDLE:
-
-					while (planes.getWhichGUI(--pos) != BUTTON_LEFT) {
-
-					}
-
-				case BUTTON_LEFT:
-
-					if (planes.getChar(pos) == 'F') {
-
-						pos++;
-
-					} else
-
-						aidFlag = false;
-
-					if (planes.getChar(pos + 1) != '='
-
-					&& planes.getChar(pos + 1) != '.'
-
-					&& planes.getChar(pos + 1) != '/') {
-
-						//                     System.out.println(" Hotspot clicked!!! we will send
-
-						// characters " +
-
-						//                                    screen[pos].getChar() +
-
-						//                                    screen[pos+1].getChar());
-
-						aid.append(planes.getChar(pos));
-
-						aid.append(planes.getChar(pos + 1));
-
-					} else {
-
-						log.debug(" Hotspot clicked!!! we will send character "
-
-						+ planes.getChar(pos));
-
-						aid.append(planes.getChar(pos));
-
-					}
-
-					break;
-
+					case BUTTON_RIGHT:
+					case BUTTON_MIDDLE:
+						while (planes.getWhichGUI(--pos) != BUTTON_LEFT) {
+						}
+					case BUTTON_LEFT:
+						if (planes.getChar(pos) == 'F') {
+							pos++;
+						} else aidFlag = false;
+						if (planes.getChar(pos + 1) != '='
+						&& planes.getChar(pos + 1) != '.'
+					    && planes.getChar(pos + 1) != '/') {
+							// System.out.println(" Hotspot clicked!!! we will send
+							// characters " +
+							// screen[pos].getChar() +
+							// screen[pos+1].getChar());
+							aid.append(planes.getChar(pos));
+							aid.append(planes.getChar(pos + 1));
+						} else {
+							log.debug(" Hotspot clicked!!! we will send character "
+									+ planes.getChar(pos));
+							aid.append(planes.getChar(pos));
+						}
+						break;
 				}
-
 				if (aidFlag) {
-
 					switch (g) {
-
-					case BUTTON_LEFT_UP:
-
-					case BUTTON_MIDDLE_UP:
-
-					case BUTTON_RIGHT_UP:
-
-					case BUTTON_ONE_UP:
-
-					case BUTTON_SB_UP:
-
-					case BUTTON_SB_GUIDE:
-
-						sessionVT.sendAidKey(tnvt.AID_ROLL_UP);
-
-						break;
-
-					case BUTTON_LEFT_DN:
-
-					case BUTTON_MIDDLE_DN:
-
-					case BUTTON_RIGHT_DN:
-
-					case BUTTON_ONE_DN:
-
-					case BUTTON_SB_DN:
-
-					case BUTTON_SB_THUMB:
-
-						sessionVT.sendAidKey(tnvt.AID_ROLL_DOWN);
-
-						break;
-
-					case BUTTON_LEFT_EB:
-
-					case BUTTON_MIDDLE_EB:
-
-					case BUTTON_RIGHT_EB:
-
-						StringBuffer eb = new StringBuffer();
-
-						while (planes.getWhichGUI(pos--) != BUTTON_LEFT_EB)
-
-							;
-
-						while (planes.getWhichGUI(pos++) != BUTTON_RIGHT_EB) {
-
-							eb.append(planes.getChar(pos));
-
-						}
-
-						org.tn5250j.tools.system.OperatingSystem.displayURL(eb
-
-						.toString());
-
-						// take out the log statement when we are sure it is
-
-						// working
-
-						log.info("Send to external Browser: " + eb.toString());
-
-						break;
-
-					default:
-
-						int aidKey = Integer.parseInt(aid.toString());
-
-						if (aidKey >= 1 && aidKey <= 12)
-
-							sessionVT.sendAidKey(0x30 + aidKey);
-
-						if (aidKey >= 13 && aidKey <= 24)
-
-							sessionVT.sendAidKey(0xB0 + (aidKey - 12));
-
+						case BUTTON_LEFT_UP:
+						case BUTTON_MIDDLE_UP:
+						case BUTTON_RIGHT_UP:
+						case BUTTON_ONE_UP:
+						case BUTTON_SB_UP:
+						case BUTTON_SB_GUIDE:
+							sessionVT.sendAidKey(tnvt.AID_ROLL_UP);
+							break;
+						case BUTTON_LEFT_DN:
+						case BUTTON_MIDDLE_DN:
+						case BUTTON_RIGHT_DN:
+						case BUTTON_ONE_DN:
+						case BUTTON_SB_DN:
+						case BUTTON_SB_THUMB:
+							sessionVT.sendAidKey(tnvt.AID_ROLL_DOWN);
+							break;
+						case BUTTON_LEFT_EB:
+						case BUTTON_MIDDLE_EB:
+						case BUTTON_RIGHT_EB:
+							StringBuffer eb = new StringBuffer();
+							while (planes.getWhichGUI(pos--) != BUTTON_LEFT_EB);
+							while (planes.getWhichGUI(pos++) != BUTTON_RIGHT_EB) {
+								eb.append(planes.getChar(pos));
+							}
+							org.tn5250j.tools.system.OperatingSystem.displayURL(eb
+									.toString());
+							// take out the log statement when we are sure it is
+							// working
+							log.info("Send to external Browser: " + eb.toString());
+							break;
+						default:
+							int aidKey = Integer.parseInt(aid.toString());
+							if (aidKey >= 1 && aidKey <= 12)
+								sessionVT.sendAidKey(0x30 + aidKey);
+							if (aidKey >= 13 && aidKey <= 24)
+								sessionVT.sendAidKey(0xB0 + (aidKey - 12));
 					}
-
 				} else {
-
 					if (screenFields.getCurrentField() != null) {
-
 						int xPos = screenFields.getCurrentField().startPos();
-
 						for (int x = 0; x < aid.length(); x++) {
-
 							//                  System.out.println(sr + "," + (sc + x) + " " +
-
 							// aid.charAt(x));
-
 							planes.setChar(xPos + x, aid.charAt(x));
-
 						}
-
 						//                  System.out.println(aid);
-
 						screenFields.setCurrentFieldMDT();
-
 						sessionVT.sendAidKey(tnvt.AID_ENTER);
-
 					}
-
 				}
-
 				// return back to the calling routine that the cursor was not moved
-
 				// but something else here was done like aid keys or the such
-
 				return false;
-
 			}
-
 			else {
-
 				// this is a note to not execute this code here when we
-
-				// implement
-
-				//   the remain after edit function option.
-
+				// implement the remain after edit function option.
 				//				if (gui.rubberband.isAreaSelected()) {
-
 				//					gui.rubberband.reset();
-
 				//					gui.repaint();
-
 				//				} else {
-
 				goto_XY(pos);
-
 				isInField(lastPos);
-
 				// return back to the calling object that the cursor was indeed
-
 				//  moved with in the screen object
-
 				return true;
-
 				//				}
-
 			}
-
 		}
-
 		return false;
-
 	}
 
 	public void setVT(tnvt v) {
