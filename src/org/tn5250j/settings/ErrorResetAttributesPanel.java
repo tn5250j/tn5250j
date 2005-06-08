@@ -34,6 +34,7 @@ import org.tn5250j.SessionConfig;
 public class ErrorResetAttributesPanel extends AttributesPanel {
 
    JCheckBox resetRequired;
+   JCheckBox backspaceError;
 
    public ErrorResetAttributesPanel(SessionConfig config ) {
       super(config,"ErrorReset");
@@ -47,7 +48,7 @@ public class ErrorResetAttributesPanel extends AttributesPanel {
       contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
       add(contentPane,BorderLayout.NORTH);
 
-      // define double click as enter
+      // define error reset
       JPanel reset = new JPanel();
       reset.setBorder(BorderFactory.createTitledBorder(
                            LangTool.getString("sa.titleErrorReset")));
@@ -58,7 +59,21 @@ public class ErrorResetAttributesPanel extends AttributesPanel {
       resetRequired.setSelected(getStringProperty("resetRequired").equals("Yes"));
 
       reset.add(resetRequired);
+
+      // define backspace error
+      JPanel backspace = new JPanel();
+      backspace.setBorder(BorderFactory.createTitledBorder(
+                           LangTool.getString("sa.titleBackspace")));
+
+      backspaceError = new JCheckBox(LangTool.getString("sa.errorBackspace"));
+
+      // check if backspace error is set or not
+      backspaceError.setSelected(getStringProperty("backspaceError","Yes").equals("Yes"));
+
+      backspace.add(backspaceError);
+
       contentPane.add(reset);
+      contentPane.add(backspace);
 
    }
 
@@ -79,6 +94,19 @@ public class ErrorResetAttributesPanel extends AttributesPanel {
                            getStringProperty("resetRequired"),
                            "No");
          setProperty("resetRequired","No");
+      }
+
+      if (backspaceError.isSelected()) {
+         changes.firePropertyChange(this,"backspaceError",
+                           getStringProperty("backspaceError"),
+                           "Yes");
+         setProperty("backspaceError","Yes");
+      }
+      else {
+         changes.firePropertyChange(this,"backspaceError",
+                           getStringProperty("backspaceError"),
+                           "No");
+         setProperty("backspaceError","No");
       }
 
    }
