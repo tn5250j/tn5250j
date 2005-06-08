@@ -256,7 +256,7 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
       SessionGUI newGui = new SessionGUI(newses);
 		frame.getContentPane().add(newGui);
 		frame.setBounds(50, 50, 960, 700);
-		frame.setVisible(true);
+		frame.show();
 		newses.connect();
 		return newses.getScreen();
 	}

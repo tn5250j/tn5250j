@@ -664,11 +664,23 @@ public class ScreenFields implements TN5250jConstants {
                        readType == CMD_READ_MDT_IMMEDIATE_ALT)) {
 
                      baosp.write(17);   // start of field data
+                  if (sf.isSelectionField()) {
+                     baosp.write(screen.getRow(sf.selectionPos)+1);
+                     baosp.write(screen.getCol(sf.selectionPos)+1);
+                  }
+                  else {
                      baosp.write(sf.startRow()+1);
                      baosp.write(sf.startCol()+1);
                   }
 
+                  }
 //                  int len = sb.length();
+                  if (sf.isSelectionField()) {
+                     baosp.write(0);
+                     baosp.write(sf.selectionIndex + 0x1F);
+
+                  }
+                  else {
                   for (int k = 0; k < len3; k++) {
                      c = sb.charAt(k);
                      // here we have to check for special instances of the
@@ -698,6 +710,7 @@ public class ScreenFields implements TN5250jConstants {
                            baosp.write(codePage.uni2ebcdic(c));
 
                      }
+                  }
                   }
                }
             }

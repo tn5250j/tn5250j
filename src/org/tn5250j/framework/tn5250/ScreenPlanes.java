@@ -54,6 +54,7 @@ public class ScreenPlanes implements TN5250jConstants {
    protected char[] errorLine;
    protected char[] errorLineAttr;
    protected char[] errorLineIsAttr;
+   protected char[] errorLineGui;
 
    public ScreenPlanes(Screen5250 s5250, int size) {
 
@@ -126,6 +127,7 @@ public class ScreenPlanes implements TN5250jConstants {
          errorLine = new char[numCols];
          errorLineAttr = new char[numCols];
          errorLineIsAttr = new char[numCols];
+         errorLineGui = new char[numCols];
 
          int r = scr.getPos(errorLineNum-1,0);
 
@@ -133,6 +135,7 @@ public class ScreenPlanes implements TN5250jConstants {
             errorLine[x] = screen[r+x];
             errorLineAttr[x] = screenAttr[r+x];
             errorLineIsAttr[x] = screenIsAttr[r+x];
+            errorLineGui[x] = screenGUI[r+x];
          }
       }
    }
@@ -150,10 +153,13 @@ public class ScreenPlanes implements TN5250jConstants {
 			for (int x = 0; x < numCols - 1; x++) {
             setScreenCharAndAttr(r+x,errorLine[x],errorLineAttr[x],
                   					(errorLineIsAttr[x] == '1' ? true : false));
+            screenGUI[x] = errorLineGui[x];
 			}
+
 			errorLine = null;
 			errorLineAttr = null;
          errorLineIsAttr = null;
+         errorLineGui = null;
 		}
 	}
 
@@ -183,7 +189,7 @@ public class ScreenPlanes implements TN5250jConstants {
    protected void setScreenAttr(int pos, int attr) {
 
       screenAttr[pos] = (char)attr;
-      screenGUI[pos] = initChar;
+      //screenGUI[pos] = initChar;
       disperseAttribute(pos,attr);
 
    }
@@ -217,7 +223,6 @@ public class ScreenPlanes implements TN5250jConstants {
    public final void setUseGUI(int pos, int which) {
 
       screenIsChanged[pos] = screenGUI[pos] == which ? '0' : '1';
-
       screenGUI[pos] = (char)which;
    }
 
@@ -993,7 +998,8 @@ public class ScreenPlanes implements TN5250jConstants {
 	            }
 	         }
 
-	         // now lets check for HTTP:// .
+            // Submitted by Richard Houston of RLH Consulting rhouston@rlhc.net
+            // now lets check for HTTP:// or HTTPS://.
 	         if (!hs && x > 0 && x < lenScreen - 7 &&
 	               Character.toLowerCase(screen[x]) == 'h' &&
 	               screen[x - 1] <= ' ' &&
@@ -1016,8 +1022,30 @@ public class ScreenPlanes implements TN5250jConstants {
 	                  screenGUI[x] = BUTTON_MIDDLE_EB;
 
 	               }
+
 	               screenGUI[--x] = BUTTON_RIGHT_EB;
 	            }
+
+	            else if (Character.toLowerCase(screen[x+1]) == 't' &&
+		                  Character.toLowerCase(screen[x+2]) == 't' &&
+		                  Character.toLowerCase(screen[x+3]) == 'p' &&
+						  Character.toLowerCase(screen[x+4]) == 's' &&
+		                  screen[x+5] == ':' &&
+		                  screen[x+6] == '/' &&
+		                  screen[x+7] == '/' ) {
+
+		               hs = true;
+
+		               screenGUI[x] = BUTTON_LEFT_EB;
+
+		               while (screen[++x] > ' ') {
+		                  screenGUI[x] = BUTTON_MIDDLE_EB;
+
+		               }
+
+		               screenGUI[--x] = BUTTON_RIGHT_EB;
+		            }
+
 	         }
             else {
                // now lets check for MAILTO: .

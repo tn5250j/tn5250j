@@ -102,7 +102,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private FileOutputStream fw;
 	private BufferedOutputStream dw;
 	private boolean firstScreen;
-	//private String sslType;
+	private String sslType;
 	WTDSFParser sfParser;
 
 	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -149,15 +149,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return session;
 	}
 
-	/*
-	 * Set the ssl type to use for connect.
-	 * @param type
-	 * No longer used.  Use session properties instead
+
 	public void setSSLType(String type) {
-		//not needed.  obtained from session properties
-		//sslType = type;
+		sslType = type;
 	}
-	*/
+
 	public void setDeviceName(String name) {
 
 		devName = name;
@@ -239,9 +235,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			//         sock = new Socket(s, port);
 			//smk - For SSL compability
 			SocketConnector sc = new SocketConnector();
-			if(props.containsKey(TN5250jConstants.SSL_TYPE)) 
-				sc.setSSLType(props.getProperty(TN5250jConstants.SSL_TYPE));
-				
+			if (sslType != null)
+				sc.setSSLType(sslType);
 			sock = sc.createSocket(s, port);
 
 			if (sock == null) {
@@ -657,7 +652,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					sro.requestFocus();
 				}
 			});
-			dialog.setVisible(true);
+			dialog.show();
 
 			// now we can process the value selected
 			Object o = pane.getValue();
@@ -1314,6 +1309,71 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		}
 	}
 
+	private final void fillRegenerationBuffer(ByteArrayOutputStream sc, int rows, int cols)
+			throws IOException {
+
+		int la = 32;
+		int sac = 0;
+		int len = rows * cols;
+
+		ScreenPlanes planes = screen52.planes;
+     	byte[] sa = new byte[len];
+
+		try {
+         boolean guiExists = sfParser != null && sfParser.isGuisExists();
+
+
+         for (int y = 0; y < len; y++) { // save the screen data
+
+            if (guiExists) {
+
+               byte[] guiSeg = sfParser.getSegmentAtPos(y);
+               if (guiSeg != null) {
+                  //log.info(" gui saved at " + y + " - " + screen52.getRow(y) + "," +
+                    //    screen52.getCol(y));
+
+                  byte[] gsa = new byte[sa.length + guiSeg.length + 2];
+                  System.arraycopy(sa,0,gsa,0,sa.length);
+                  System.arraycopy(guiSeg,0,gsa,sac+2,guiSeg.length);
+                  sa = new byte[gsa.length];
+                  System.arraycopy(gsa,0,sa,0,gsa.length);
+                  sa[sac++] = (byte)0x04;
+                  sa[sac++] = (byte)0x11;
+                  sac += guiSeg.length;
+                  //y--;
+   //		         continue;
+               }
+            }
+            if (planes.isAttributePlace(y)) {
+               la = planes.getCharAttr(y);
+               sa[sac++] = (byte) la;
+            } else {
+               if (planes.getCharAttr(y) != la) {
+                  la = planes.getCharAttr(y);
+                  sac--;
+                  sa[sac++] = (byte) la;
+               }
+               //LDC: Check to see if it is an displayable character. If not,
+               //  do not convert the character.
+               //  The characters on screen are in unicode
+               //sa[sac++] =
+               // (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
+               char ch = planes.getChar(y);
+               byte byteCh = (byte) ch;
+               if (isDataUnicode(ch))
+                  byteCh = this.uni2ebcdic(ch);
+               sa[sac++] = byteCh;
+            }
+         }
+		}
+		catch(Exception exc) {
+
+		   log.info(exc.getMessage());
+		   exc.printStackTrace();
+		}
+		sc.write(sa);
+	}
+
 	public final void saveScreen() throws IOException {
 
 		ByteArrayOutputStream sc = new ByteArrayOutputStream();
@@ -1334,11 +1394,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 		int rows = screen52.getRows(); // store the current size
 		int cols = screen52.getColumns(); //    ""
-		byte[] sa = new byte[rows * cols];
-		fillScreenArray(sa, rows, cols);
 
-		sc.write(sa);
-		sa = null;
+//		byte[] sa = new byte[rows * cols];
+		fillRegenerationBuffer(sc,rows,cols);
+//		fillScreenArray(sa, rows, cols);
+//
+//		sc.write(sa);
+//		sa = null;
 		int sizeFields = screen52.getScreenFields().getSize();
 		sc.write((byte) (sizeFields >> 8 & 0xff)); //    ""
 		sc.write((byte) (sizeFields & 0xff)); //    ""
@@ -1412,29 +1474,49 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			if (rows != screen52.getRows())
 				screen52.setRowsCols(rows, cols);
 			screen52.clearAll(); // initialize what we currenty have
+			if (sfParser != null && sfParser.isGuisExists())
+			   sfParser.clearGuiStructs();
+
 			int b = 32;
 			int la = 32;
 			int len = rows * cols;
 			for (int y = 0; y < len; y++) {
 
 				b = bk.getNextByte();
-				if (isAttribute(b)) {
-					planes.setScreenCharAndAttr(y, planes.getChar(y), b, true);
-					la = b;
+				if (b == 0x04) {
 
-				} else {
-					//LDC - 12/02/2003 - Check to see if it is an displayable
-					// character. If not,
-					//  do not convert the character.
-					//  The characters on screen are in unicode
-					char ch = (char) b;
-					if (isDataEBCDIC(b))
-						ch = ebcdic2uni(b);
+		         log.info(" gui restored at " + y + " - " + screen52.getRow(y) + "," +
+		               screen52.getCol(y));
+				   int command = bk.getNextByte();
+				   byte[] seg = bk.getSegment();
 
-//					screen52.screen[y].setCharAndAttr(
-//					//getASCIIChar(b),
-//							ch, la, false);
-					planes.setScreenCharAndAttr(y, ch, la, false);
+				   if (seg.length > 0) {
+				      screen52.goto_XY(y);
+				      sfParser.parseWriteToDisplayStructuredField(seg);
+				   }
+				   y--;
+//				      screen52.goto_XY(y);
+				}
+				else {
+//				b = bk.getNextByte();
+				   if (planes.isUseGui(y))
+				      continue;
+				   if (isAttribute(b)) {
+				      planes.setScreenCharAndAttr(y, planes.getChar(y), b, true);
+				      la = b;
+
+				   }
+				   else {
+						//LDC - 12/02/2003 - Check to see if it is an displayable
+						// character. If not,
+						//  do not convert the character.
+						//  The characters on screen are in unicode
+						char ch = (char) b;
+						if (isDataEBCDIC(b))
+							ch = ebcdic2uni(b);
+
+						planes.setScreenCharAndAttr(y, ch, la, false);
+					}
 				}
 			}
 
@@ -1569,6 +1651,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 							screen52.setRowsCols(27, 132);
 
 						screen52.clearAll();
+						if (sfParser != null && sfParser.isGuisExists())
+						   sfParser.clearGuiStructs();
+
 
 					}
 					break;
@@ -1592,6 +1677,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					if (screen52.getRows() != 24)
 						screen52.setRowsCols(24, 80);
 					screen52.clearAll();
+					if (sfParser != null && sfParser.isGuisExists())
+					   sfParser.clearGuiStructs();
+
 					break;
 
 				case CMD_CLEAR_FORMAT_TABLE: // 80 0x50 Clear format table
@@ -2377,7 +2465,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		abyte0[47] = 0;
 		abyte0[48] = 0;
 		abyte0[49] = 1; // 49 - 53 Controller Display Capability
-		abyte0[50] = 16; //      see rfc - tired of typing :-)
+		abyte0[50] = 17; //      see rfc - tired of typing :-)
 		abyte0[51] = 0; //          ""
 		abyte0[52] = 0; //          ""
 

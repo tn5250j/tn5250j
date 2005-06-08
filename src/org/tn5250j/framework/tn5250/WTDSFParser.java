@@ -25,8 +25,12 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import java.util.Vector;
+
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 import org.tn5250j.TN5250jConstants;
 
 /**
@@ -47,6 +51,13 @@ public class WTDSFParser implements TN5250jConstants {
    byte[] segment;
    int length;
    boolean error;
+   boolean guiStructsExist;
+
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+
+   private Vector guiStructs = new Vector(3);
+	private Vector choices = new Vector(3);
+
 
    WTDSFParser (tnvt vt) {
 
@@ -55,6 +66,76 @@ public class WTDSFParser implements TN5250jConstants {
       bk = vt.bk;
       codePage = vt.codePage;
 
+   }
+
+	protected class ChoiceField {
+
+		int x;
+		int y;
+      int row;
+      int col;
+		int width;
+		int height;
+		char mnemonic;
+		int fieldId;
+      int selectIndex;
+
+      ChoiceField(int row, int col, int fldRow, int fldCol) {
+         x = row;
+         y = col;
+         row = fldRow;
+         col = fldCol;
+      }
+	}
+
+   protected class Window {
+
+      byte[] window;
+      int pos;
+
+      Window(byte[] seg, int pos) {
+
+         //log.info("window created at " + pos);
+         window = seg;
+         this.pos = pos;
+         guiStructsExist = true;
+      }
+
+   }
+
+	protected void addChoiceField(int row,int col,int fldRow, int fldCol, String text) {
+
+		if (choices == null) {
+			choices = new Vector(3);
+		}
+
+		ChoiceField cf = new ChoiceField(row,col, fldRow, fldCol);
+		cf.fieldId = screen52.getScreenFields().getCurrentField().getFieldId();
+		choices.add(cf);
+
+	}
+
+   protected boolean isGuisExists () {
+
+      return guiStructsExist;
+
+   }
+
+   protected byte[] getSegmentAtPos(int pos) {
+      int len = guiStructs.size();
+      for (int x = 0; x < len; x++) {
+         Window w = (Window)guiStructs.get(x);
+         if (w.pos == pos)
+            return w.window;
+      }
+
+      return null;
+
+   }
+
+   protected void clearGuiStructs() {
+
+      guiStructs.clear();
    }
 
    protected boolean parseWriteToDisplayStructuredField(byte[] seg) {
@@ -85,6 +166,8 @@ public class WTDSFParser implements TN5250jConstants {
                         break;
                      case 0x51:      // Create Window
 
+                        guiStructs.add(new Window(segment, screen52.getLastPos()));
+
                         boolean cr = false;
                         int rows = 0;
                         int cols = 0;
@@ -101,7 +184,8 @@ public class WTDSFParser implements TN5250jConstants {
 //                           System.out.println("Create Window");
 //                           System.out.println("   restrict cursor " + cr);
 //                           System.out.println(" Depth = " + rows + " Width = " + cols);
-                           screen52.createWindow(rows,cols,1,true,32,58,
+//                           screen52.createWindow(rows,cols,1,true,32,58,
+                           createWindow(rows,cols,1,true,32,58,
                                              '.',
                                              '.',
                                              '.',
@@ -209,7 +293,8 @@ public class WTDSFParser implements TN5250jConstants {
 //                                                         " bottom = " + bottom +
 //                                                         " lr = " + lr
 //                                                         );
-                                 screen52.createWindow(rows,cols,type,gui,mAttr,cAttr,
+//                                 screen52.createWindow(rows,cols,type,gui,mAttr,cAttr,
+                                       createWindow(rows,cols,type,gui,mAttr,cAttr,
                                                       ul,
                                                       upper,
                                                       ur,
@@ -242,7 +327,9 @@ public class WTDSFParser implements TN5250jConstants {
 
                               case 0x10 : // Window title/footer
                                  if (!windowDefined) {
-                                    screen52.createWindow(rows,cols,1,true,32,58,
+//                                    screen52.createWindow(rows,cols,1,true,32,58,
+                                    guiStructs.add(new Window(segment, screen52.getLastPos()));
+                                          createWindow(rows,cols,1,true,32,58,
                                                          '.',
                                                          '.',
                                                          '.',
@@ -340,7 +427,9 @@ public class WTDSFParser implements TN5250jConstants {
                         break;
 
                      case 0x5F:      // Remove All GUI Constructs
-//                        System.out.println("remove all gui contructs");
+                        log.info("remove all gui contructs");
+                        clearGuiStructs();
+                        guiStructsExist = false;
                         int len = 4;
                         int d = 0;
                         length -= s;
@@ -357,6 +446,10 @@ public class WTDSFParser implements TN5250jConstants {
                         // per 14.6.13.4 documentation we should clear the
                         //    format table after this command
                         screen52.clearTable();
+                        done = true;
+                        break;
+                     case 0x59:	// remove gui window
+                        log.info(" remove window at " + screen52.getCurrentPos());
                         done = true;
                         break;
 
@@ -409,6 +502,219 @@ public class WTDSFParser implements TN5250jConstants {
 
    }
 
+	/**
+	 * Creates a window on the screen
+	 *
+	 * @param depth
+	 * @param width
+	 * @param type
+	 * @param gui
+	 * @param monoAttr
+	 * @param colorAttr
+	 * @param ul
+	 * @param upper
+	 * @param ur
+	 * @param left
+	 * @param right
+	 * @param ll
+	 * @param bottom
+	 * @param lr
+	 */
+	protected void createWindow(int depth, int width, int type, boolean gui,
+			int monoAttr, int colorAttr, int ul, int upper, int ur, int left,
+			int right, int ll, int bottom, int lr) {
+
+	   int lastPos = screen52.getLastPos();
+	   int numCols = screen52.getColumns();
+
+		int c = screen52.getCol(lastPos);
+		int w = 0;
+		width++;
+
+		ScreenPlanes planes = screen52.planes;
+
+		w = width;
+		char initChar = screen52.initChar;
+		int initAttr = screen52.initAttr;
+
+		// set leading attribute byte
+		screen52.setScreenCharAndAttr(initChar, initAttr, true);
+
+		// set upper left
+		if (gui) {
+			screen52.setScreenCharAndAttr((char) ul, colorAttr, UPPER_LEFT, false);
+		}
+		else {
+			screen52.setScreenCharAndAttr((char) ul, colorAttr, false);
+		}
+
+		// draw top row
+		while (w-- >= 0) {
+			if (gui) {
+				screen52.setScreenCharAndAttr((char) upper, colorAttr, UPPER,false);
+			}
+			else {
+				screen52.setScreenCharAndAttr((char) upper, colorAttr, false);
+			}
+		}
+
+		// set upper right
+		if (gui) {
+			screen52.setScreenCharAndAttr((char) ur, colorAttr, UPPER_RIGHT, false);
+		}
+		else {
+			screen52.setScreenCharAndAttr((char) ur, colorAttr, false);
+
+		}
+
+		// set ending attribute byte
+		screen52.setScreenCharAndAttr(initChar, initAttr, true);
+
+		lastPos = ((screen52.getRow(lastPos) + 1) * numCols) + c;
+		screen52.goto_XY(lastPos);
+
+		// now handle body of window
+		while (depth-- > 0) {
+
+			// set leading attribute byte
+			screen52.setScreenCharAndAttr(initChar, initAttr, true);
+			// set left
+			if (gui) {
+				screen52.setScreenCharAndAttr((char) left, colorAttr, GUI_LEFT, false);
+			}
+			else {
+				screen52.setScreenCharAndAttr((char) left, colorAttr, false);
+
+			}
+
+			w = width - 2;
+		   screen52.setScreenCharAndAttr(initChar, initAttr, NO_GUI, true);
+			// fill it in
+			while (w-- >= 0) {
+//			   if (!planes.isUseGui(screen52.getLastPos()))
+			   screen52.setScreenCharAndAttr(initChar, initAttr, NO_GUI, false);
+			}
+			screen52.setScreenCharAndAttr(initChar, initAttr, NO_GUI, true);
+
+			// set right
+			if (gui) {
+				screen52.setScreenCharAndAttr((char) right, colorAttr, GUI_RIGHT, false);
+
+			}
+			else {
+				screen52.setScreenCharAndAttr((char) right, colorAttr, false);
+
+			}
+
+			screen52.setScreenCharAndAttr(initChar, initAttr, true);
+
+			lastPos = ((screen52.getRow(lastPos) + 1) * numCols) + c;
+			screen52.goto_XY(lastPos);
+		}
+
+		// set leading attribute byte
+		screen52.setScreenCharAndAttr(initChar, initAttr, true);
+		if (gui) {
+			screen52.setScreenCharAndAttr((char) ll, colorAttr, LOWER_LEFT, false);
+
+		}
+		else {
+			screen52.setScreenCharAndAttr((char) ll, colorAttr, false);
+
+		}
+		w = width;
+
+		// draw bottom row
+		while (w-- >= 0) {
+			if (gui) {
+				screen52.setScreenCharAndAttr((char) bottom, colorAttr, BOTTOM, false);
+			}
+			else {
+				screen52.setScreenCharAndAttr((char) bottom, colorAttr, false);
+
+			}
+		}
+
+		// set lower right
+		if (gui) {
+			screen52.setScreenCharAndAttr((char) lr, colorAttr, LOWER_RIGHT, false);
+		}
+		else {
+			screen52.setScreenCharAndAttr((char) lr, colorAttr, false);
+		}
+
+		// set ending attribute byte
+		screen52.setScreenCharAndAttr(initChar, initAttr, true);
+
+	}
+
+	private void clearWindowBody(ScreenPlanes planes, int startPos, int depth, int width) {
+
+	   int lastPos = startPos;
+		char initChar = screen52.initChar;
+		int initAttr = screen52.initAttr;
+
+		// now handle body of window
+		while (depth-- > 0) {
+
+			// set leading attribute byte
+//				planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
+//				setDirty(lastPos);
+//				advancePos();
+//
+//				// set left
+//				planes.setScreenCharAndAttr(lastPos, (char) left, colorAttr, false);
+//
+//				if (gui) {
+//					planes.setUseGUI(lastPos,GUI_LEFT);
+//				}
+//				setDirty(lastPos);
+//				advancePos();
+
+			int w = width;
+			// fill it in
+			while (w-- >= 0) {
+//				screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+				planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
+//				screen[lastPos].setUseGUI(NO_GUI);
+				planes.setUseGUI(lastPos,NO_GUI);
+//				setDirty(lastPos);
+				lastPos++;
+				advancePos();
+			}
+
+//				// set right
+//	//			screen[lastPos].setCharAndAttr((char) right, colorAttr, false);
+//				planes.setScreenCharAndAttr(lastPos,(char) right, colorAttr, false);
+//				if (gui) {
+//	//				screen[lastPos].setUseGUI(RIGHT);
+//					planes.setUseGUI(lastPos,GUI_RIGHT);
+//				}
+//
+//				setDirty(lastPos);
+//				advancePos();
+//
+//				// set ending attribute byte
+//	//			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+//				planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
+//				setDirty(lastPos);
+
+			lastPos = startPos;
+		}
+
+	}
+
+	private void setDirty(int pos) {
+
+	   screen52.setDirty(pos);
+
+	}
+
+	private void advancePos() {
+
+	   screen52.advancePos();
+	}
+
    private void defineSelectionField(int majLen) {
 
       //   0030:  20 00 2C 3E 00 00 00 69 12 A0 00 00 04 00 00 03  .,>...i........
@@ -451,30 +757,33 @@ public class WTDSFParser implements TN5250jConstants {
                               + " col: " + screen52.getCurrentCol()
                               + " type " + typeSelection
                               + " gui " + guiDevice
-                              + " withMnemonic " + withMnemonic
-                              + " noMnemonic " + Integer.toHexString(noMnemonic)
+                              + " withMnemonic " + Integer.toHexString(withMnemonic & 0xf0)
+                              + " noMnemonic " + Integer.toHexString(noMnemonic & 0xf0)
                               + " noMnemonic " + Integer.toBinaryString(noMnemonic)
                               + " noMnemonicType " + Integer.toBinaryString((noMnemonic & 0xf0))
                               + " noMnemonicSel " + Integer.toBinaryString((noMnemonic & 0x0f))
+                              + " maxcols " + maxColChoice
                               + " cols " + cols
                               + " rows " + rows);
          int rowCtr = 0;
+         int colCtr = 0;
          int chcRowStart = screen52.getCurrentRow();
          int chcColStart = screen52.getCurrentCol();
+         int chcRow = chcRowStart;
+         int chcCol = chcColStart;
+         int chcPos = screen52.getPos(chcRow-1,chcCol);
 
-         screen52.addField(0x20,1,0,0,0,0);
-         screen52.getScreenFields().getCurrentField().setFieldChar((char)0x20);
-
-         screen52.getScreenFields().getCurrentField().setMDT();
-//0000:  00 04 AC 9E B9 35 00 01 02 32 BB 4E 08 00 45 00 .....5...2.N..E.
-//0010:  00 3C 82 C1 40 00 80 06 00 00 C1 A8 33 58 C1 A8 .<..@.......3X..
-//0020:  33 01 04 F6 00 17 92 68 71 34 00 02 31 F9 50 18 3......hq4..1.P.
-//0030:  FD F0 E9 D8 00 00 00 12 12 A0 00 00 04 00 80 03 ................
-//0040:  10 05 F1 11 0C 05 00 24 FF EF                   .......$..
+// client access
+//0000   00 04 ac 9e b9 35 00 01 02 32 bb 4e 08 00 45 00  .....5...2.N..E.
+//0010   00 3c 4f 8e 40 00 80 06 00 00 c1 a8 33 58 c1 a8  .<O.@.......3X..
+//0020   33 01 09 e4 00 17 5b bf b7 a4 c3 41 43 d1 50 18  3.....[....AC.P.
+//0030   fc de e9 d8 00 00 00 12 12 a0 00 00 04 00 80 03  ................
+//0040   16 18 f1 11 14 1a 00 22 ff ef                    ......."..
 
          int colAvail = 0x20;
          int colSelAvail = 0x20;
          int fld = 0;
+
          do {
             minLen = segment[pos++];    // Minor Length byte 21
 
@@ -515,7 +824,6 @@ public class WTDSFParser implements TN5250jConstants {
 
                case 0x10:  // Choice Text minor structure
 
-                  screen52.setCursor(chcRowStart++,chcColStart);
                   cnt = 5;
                   int flagCT1 = segment[pos++];
                   int flagCT2 = segment[pos++];
@@ -524,12 +832,13 @@ public class WTDSFParser implements TN5250jConstants {
                   boolean aid = false;
                   boolean selected = false;
 
-                  // is mnemonic offset specified
+                  // is in selected state
                   if ((flagCT1 & 0x40) == 0x40) {
                      System.out.println(" selected ");
                      selected = true;
                   }
 
+                  //System.out.println(Integer.toBinaryString((flagCT1 & 0xf0)));
                   // is mnemonic offset specified
                   if ((flagCT1 & 0x08) == 8) {
                      System.out.println(" mnemOffset " + mnemOffset);
@@ -562,19 +871,54 @@ public class WTDSFParser implements TN5250jConstants {
 
                   String s = "";
                   byte byte0 = 0;
-//                  if (fld++ == 2)
-//                  screen52.addField(colAvail,cols,0x0,0,0,0);
-//                  else
-//                  screen52.addField(colAvail,cols,0x20,0,0,0);
-                  for (;cnt < minLen; cnt++) {
+                  fld++;
 
-                     byte0 = segment[pos++];
-                     s += vt.ebcdic2uni(byte0);
-                     screen52.setChar(vt.ebcdic2uni(byte0));
+                  screen52.setCursor(chcRowStart,chcColStart);
 
+                  // we do not add a selection if it is marked as unavailable
+                  if ((flagCT1 & 0x80) != 0x80) {
+                     screen52.addField(0x26,1,0,0,0,0);
+                     screen52.getScreenFields().getCurrentField().setFieldChar('.');
+                     screen52.getScreenFields().getCurrentField().setSelectionFieldInfo(17,
+                                 fld,
+                                 chcPos);
+                     screen52.setCursor(chcRowStart,chcColStart + 3);
+
+                     for (;cnt < minLen; cnt++) {
+
+                        byte0 = segment[pos++];
+                        s += vt.ebcdic2uni(byte0);
+                        screen52.setChar(vt.ebcdic2uni(byte0));
+
+                     }
+
+                     addChoiceField(chcRowStart,chcColStart,chcRow,chcCol,s);
                   }
-                  screen52.addChoiceField(s);
+
+//         screen52.getScreenFields().getCurrentField().setMDT();
+
                   System.out.println(s + " selected " + selected);
+//                  chcRowStart;
+                  //maxColChoice
+                  colCtr++;
+//                  rowCtr++;
+                  if (colCtr >= maxColChoice) {
+
+                     rowCtr++;
+                     colCtr=0;
+                     chcColStart = chcCol;
+                     chcRowStart = chcRow + rowCtr;
+                     if (rowCtr > rows) {
+                        chcRowStart = chcRow;
+                        rowCtr = 0;
+                        chcColStart = chcColStart + 3 + cols + padding;
+                     }
+                  }
+                  else {
+                     chcColStart = chcColStart + padding + cols + 3;
+//
+                  }
+
                   break;
                default:
                   for (cnt = 2;cnt < minLen; cnt++) {

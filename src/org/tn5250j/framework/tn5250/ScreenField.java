@@ -445,6 +445,21 @@ public class ScreenField {
       return true;
    }
 
+   public boolean isSelectionField() {
+
+      return isSelectionField;
+
+   }
+
+   public void setSelectionFieldInfo(int type, int index, int position) {
+
+      selectionFieldType = type;
+      selectionIndex = index;
+      selectionPos = position;
+      isSelectionField = true;
+
+   }
+
    protected int getKeyPos(int row1, int col1) {
 
       int x = ((row1 * s.getColumns()) + col1);
@@ -582,5 +597,8 @@ public class ScreenField {
    int fieldId = 0;
    ScreenField next = null;
    ScreenField prev = null;
-
+   boolean isSelectionField;
+   int selectionFieldType;
+   int selectionIndex;
+   int selectionPos;
 }
