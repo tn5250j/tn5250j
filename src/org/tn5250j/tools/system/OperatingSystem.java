@@ -197,10 +197,13 @@ public class OperatingSystem
             ConfigureFactory.SESSIONS).trim().length() > 0) {
          String commandTemplate = props.getProperty(
                "emul.protocol." + protocol, ConfigureFactory.SESSIONS).trim();
-         java.text.MessageFormat format = new java.text.MessageFormat(
-               commandTemplate);
+         Object[] urlParm = new Object[1];
+         urlParm[0] = url;
+         if (commandTemplate.lastIndexOf("{0}") == -1)
+            commandTemplate += " {0}";
+         java.text.MessageFormat format = new java.text.MessageFormat(commandTemplate);
          try {
-            command = format.format(url);
+            command = format.format(urlParm);
          }
          catch (Exception exx) {
             log.warn("Unable to parse the url " + url + " using command " + 
@@ -210,23 +213,8 @@ public class OperatingSystem
 
       if (command != null && command.length() > 0) {
 
-         try {
-            Process p = Runtime.getRuntime().exec(command);
-            // wait for exit code -- if it's 0, command worked,
-            // otherwise we need to start the browser up.
-            int exitCode = p.waitFor();
-            if (exitCode != 0) {
-               log.warn("Error processing protocol, command='" + command + "'");
-            }
-         }
-         catch (InterruptedException exc) {
-            log.warn("Error processing protocol, command='" + command + "'");
-            log.warn("Caught: " + exc.getMessage());
-         }
-         catch (IOException ioe) {
-            log.warn("Error processing protocol, command='" + command + "'");
-            log.warn("Caught: " + ioe.getMessage());
-         }
+         execute(command);
+         
       }
       else {
          boolean windows = isWindows();
@@ -270,6 +258,28 @@ public class OperatingSystem
       }
    }
 
+   public static int execute(String command) {
+      
+      int exitCode = -1;
+      
+      try {
+         Process p = Runtime.getRuntime().exec(command);
+         // wait for exit code -- if it's 0, command worked,
+         exitCode = p.waitFor();
+         if (exitCode != 0) {
+            log.warn("Error processing command, command='" + command + "'");
+         }
+      }
+      catch (InterruptedException exc) {
+         log.warn("Error processing command, command='" + command + "'");
+         log.warn("Caught: " + exc.getMessage());
+      }
+      catch (IOException ioe) {
+         log.warn("Error processing command, command='" + command + "'");
+         log.warn("Caught: " + ioe.getMessage());
+      }
+      return exitCode;
+   }
  //}}}
 
    //{{{ Private members
