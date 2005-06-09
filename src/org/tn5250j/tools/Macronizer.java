@@ -189,15 +189,20 @@ public class Macronizer {
             rst.requestFocus();
          }
       });
-      dialog.setVisible(true);
+      dialog.show();
 
       // now we can process the value selected
-      String value = (String)pane.getValue();
+      // now we can process the value selected
+      // if its Integer, the user most likely hit escape
+      Object myValue = pane.getValue();
+      if (!(myValue instanceof Integer)) {
+         String value = (String) myValue;
 
-      if (value.equals(options[0])) {
-         // send option along with system request
-         if (rst.getText().length() > 0) {
-            invoke(rst.getText(),session);
+         if (value.equals(options[0])) {
+             // send option along with system request
+             if (rst.getText().length() > 0) {
+                 invoke(rst.getText(), session);
+             }
          }
       }
 
