@@ -258,101 +258,88 @@ public class Screen5250 implements TN5250jConstants{
 	public final void pasteMe(boolean special) {
 
 		setCursorActive(false);
+
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 		Transferable content = cb.getContents(this);
 		try {
+
 			StringBuffer sb = new StringBuffer((String) content
 					.getTransferData(DataFlavor.stringFlavor));
+
 			StringBuffer pd = new StringBuffer();
-			int r = getRow(lastPos);
+
+         // character counters within the string to be pasted.
 			int nextChar = 0;
 			int nChars = sb.length();
-			boolean omitLF = false;
-			boolean done = false;
-			screenFields.saveCurrentField();
+
 			int lr = getRow(lastPos);
 			int lc = getCol(lastPos);
 			resetDirty(lastPos);
 
-			while (!done) {
+         int cpos = lastPos;
+         int length = getScreenLength();
 
-				if (nextChar >= nChars) { /* EOF */
+         char c = 0;
+         boolean setIt;
 
-					done = true;
-					break;
-				}
+         // save our current place within the FFT.
+			screenFields.saveCurrentField();
 
-				pd.setLength(0);
+         for (int x = nextChar; x < nChars; x++) {
 
-				boolean eol = false;
-				char c = 0;
-				int i;
+            c = sb.charAt(x);
 
-				/* Skip a leftover '\n', if necessary */
-				if (omitLF && (sb.charAt(nextChar) == '\n'))
-					nextChar++;
+            if ((c == '\n') || (c == '\r')) {
 
-				boolean skipLF = false;
-				omitLF = false;
+               log.info("pasted cr-lf>" + pd + "<");
+               pd.setLength(0);
+               // if we read in a cr lf in the data stream we need to go
+               // to the starting column of the next row and start from there
+               cpos = getPos(getRow(cpos)+1,lc);
 
-				charLoop:
+               // If we go paste the end of the screen then let's start over from
+               //   the beginning of the screen space.
+               if (cpos > length)
+                  cpos = 0;
+            }
+            else {
 
-				for (i = nextChar; i < nChars; i++) {
-					c = sb.charAt(i);
-					if ((c == '\n') || (c == '\r')) {
-						eol = true;
-						break charLoop;
-					}
-				}
+               // we will default to set the character always.
+               setIt = true;
 
-				int startChar = nextChar;
-				nextChar = i;
+               // If we are in a special paste scenario then we check for valid
+               //   characters to paste.
+               if (special && (!Character.isLetter(c) && !Character.isDigit(c)))
+                  setIt = false;
 
-				pd.append(sb.substring(startChar, startChar + (i - startChar)));
+               // we will only push a character to the screen space if we are in
+               //  a field
+               if (isInField(cpos) && setIt) {
+                  planes.setChar(cpos, c);
+                  setDirty(cpos);
+                  screenFields.setCurrentFieldMDT();
+               }
+               //  If we placed a character then we go to the next position.
+               if (setIt)
+                  cpos++;
+               // we will append the information to our debug buffer.
+               pd.append(c);
+            }
+         }
 
-				if (eol) {
-					nextChar++;
-					if (c == '\r') {
-						skipLF = true;
-					}
-				}
-				log.debug("pasted >" + pd + "<");
+         // if we have anything else not logged then log it out.
+         if (pd.length() > 0)
+            log.info("pasted >" + pd + "<");
 
-				int col = getCol(lastPos);
-				int t = numCols - col;
-				if (t > pd.length())
-					t = pd.length();
-				int p = 0;
-				char pc;
-				boolean setIt;
-				while (t-- > 0) {
-
-					pc = pd.charAt(p);
-					setIt = true;
-					if (special
-							&& (!Character.isLetter(pc) && !Character
-									.isDigit(pc)))
-						setIt = false;
-
-					if (isInField(r, col) && setIt) {
-						//screen[getPos(r, col)].setChar(pc);
-						planes.setChar(getPos(r, col), pc);
-						setDirty(r, col);
-						screenFields.setCurrentFieldMDT();
-					}
-					p++;
-					if (setIt)
-						col++;
-				}
-				r++;
-
-			}
+         // restore out position within the FFT.
 			screenFields.restoreCurrentField();
 			updateDirty();
 
+         // restore our cursor position.
 			setCursor(lr + 1, lc + 1);
 
 			setCursorActive(true);
+
 		} catch (Throwable exc) {
 			log.warn("" + exc.getMessage());
 		}
@@ -1300,7 +1287,6 @@ public class Screen5250 implements TN5250jConstants{
 			break;
 		case LEFT:
 		case MARK_LEFT:
-
 			process_XY(lastPos - 1);
 			simulated = true;
 			break;
