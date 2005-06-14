@@ -189,7 +189,7 @@ public class Macronizer {
             rst.requestFocus();
          }
       });
-      dialog.show();
+      dialog.setVisible(true);
 
       // now we can process the value selected
       // now we can process the value selected
