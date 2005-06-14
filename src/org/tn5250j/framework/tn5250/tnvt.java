@@ -652,7 +652,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					sro.requestFocus();
 				}
 			});
-			dialog.show();
+			dialog.setVisible(true);
 
 			// now we can process the value selected
 			Object o = pane.getValue();
