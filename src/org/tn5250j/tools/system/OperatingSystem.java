@@ -162,7 +162,7 @@ public class OperatingSystem
    {
       return java14;
    }
-   
+
    public static final boolean hasJava15()
    {
         return java15;
@@ -173,9 +173,9 @@ public class OperatingSystem
     * http://www.javaworld.com/javaworld/javatips/jw-javatip66.html Display a
     * file in the system browser. If you want to display a file, you must
     * include the absolute path name.
-    * 
+    *
     * @param url the file's url (the url must start with either "http://",
-    *           "mailto:" or "file://").
+    *           "https://","mailto:" or "file://").
     */
    public static void displayURL(String url) {
 
@@ -186,17 +186,20 @@ public class OperatingSystem
       try {
          urlUrl = new java.net.URL(url);
          protocol = urlUrl.getProtocol();
+         if (protocol.startsWith("http"))
+            protocol = "http";
       }
       catch (MalformedURLException e) {
          log.warn(e.getMessage());
       }
-      
+
       Properties props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
 
-      if (props.getProperty("emul.protocol." + protocol,
-            ConfigureFactory.SESSIONS).trim().length() > 0) {
-         String commandTemplate = props.getProperty(
-               "emul.protocol." + protocol, ConfigureFactory.SESSIONS).trim();
+      // We now check if we have a property defined for the external program to
+      //   handle this protocol.
+      if (props.getProperty("emul.protocol." + protocol,"").trim().length() > 0) {
+         String commandTemplate = props.getProperty("emul.protocol." + protocol).trim();
+
          Object[] urlParm = new Object[1];
          urlParm[0] = url;
          if (commandTemplate.lastIndexOf("{0}") == -1)
@@ -206,15 +209,17 @@ public class OperatingSystem
             command = format.format(urlParm);
          }
          catch (Exception exx) {
-            log.warn("Unable to parse the url " + url + " using command " + 
+            log.warn("Unable to parse the url " + url + " using command " +
                   commandTemplate);
          }
       }
 
-      if (command != null && command.length() > 0) {
+      // execute the command if there was one if not then fall through to generic
+      //   processing.
+      if (command != null && command.trim().length() > 0) {
 
          execute(command);
-         
+
       }
       else {
          boolean windows = isWindows();
@@ -259,9 +264,9 @@ public class OperatingSystem
    }
 
    public static int execute(String command) {
-      
+
       int exitCode = -1;
-      
+
       try {
          Process p = Runtime.getRuntime().exec(command);
          // wait for exit code -- if it's 0, command worked,
@@ -345,7 +350,7 @@ public class OperatingSystem
 
       if(System.getProperty("java.version").compareTo("1.4") >= 0)
          java14 = true;
-      
+
       if(System.getProperty("java.version").compareTo("1.5") >= 0)
          java15 = true;
    } //}}}
