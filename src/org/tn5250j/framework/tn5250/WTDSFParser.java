@@ -534,8 +534,8 @@ public class WTDSFParser implements TN5250jConstants {
 		ScreenPlanes planes = screen52.planes;
 
 		w = width;
-		char initChar = screen52.initChar;
-		int initAttr = screen52.initAttr;
+		char initChar = Screen5250.initChar;
+		int initAttr = Screen5250.initAttr;
 
 		// set leading attribute byte
 		screen52.setScreenCharAndAttr(initChar, initAttr, true);
@@ -651,8 +651,8 @@ public class WTDSFParser implements TN5250jConstants {
 	private void clearWindowBody(ScreenPlanes planes, int startPos, int depth, int width) {
 
 	   int lastPos = startPos;
-		char initChar = screen52.initChar;
-		int initAttr = screen52.initAttr;
+		char initChar = Screen5250.initChar;
+		int initAttr = Screen5250.initAttr;
 
 		// now handle body of window
 		while (depth-- > 0) {
