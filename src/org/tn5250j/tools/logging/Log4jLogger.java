@@ -80,27 +80,28 @@ public class Log4jLogger extends TN5250jLogger {
 
       switch (newLevel) {
       	case OFF:
-      		Level.toLevel(Level.OFF_INT);
+            log.setLevel((Level)Level.OFF);
+
       		break;
-      		
+
          case DEBUG:
-            Level.toLevel(org.apache.log4j.Level.DEBUG_INT);
+            log.setLevel((Level)Level.DEBUG);
             break;
 
          case INFO:
-            Level.toLevel(org.apache.log4j.Level.INFO_INT);
+            log.setLevel((Level)Level.INFO);
             break;
 
          case WARN:
-            Level.toLevel(org.apache.log4j.Level.WARN_INT);
+            log.setLevel((Level)Level.WARN);
             break;
 
          case ERROR:
-            Level.toLevel(org.apache.log4j.Level.ERROR_INT);
+            log.setLevel((Level)Level.ERROR);
             break;
 
          case FATAL:
-            Level.toLevel(org.apache.log4j.Level.FATAL_INT);
+            log.setLevel((Level)Level.FATAL);
             break;
 
       }
