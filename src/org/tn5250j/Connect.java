@@ -88,7 +88,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.DESSHA1;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.AlignLayout;
 
 public class Connect
@@ -113,7 +113,7 @@ public class Connect
 
 	JTable sessions = null;
 	GridBagConstraints gbc;
-	
+
 	// LoggingPanel Components
 	JRadioButton intOFF = null;
 	JRadioButton intDEBUG = null;
@@ -160,9 +160,11 @@ public class Connect
 	private JRadioButton intConsole;
 	private JRadioButton intFile;
 	private JRadioButton intBoth;
-	
+
 	private JTextField browser;
 	private JTextField mailer;
+
+   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public Connect(Frame frame, String title, Properties prop) {
 
@@ -205,7 +207,7 @@ public class Connect
 		optionTabs.addTab(LangTool.getString("ss.labelLogging"), loggingPanel);
 		createAccessPanel();
 		optionTabs.addTab(LangTool.getString("ss.labelOptions2"), accessPanel);
-		
+
 		// create external programs panel
 		createExternalProgramsPanel();
 		optionTabs.addTab(LangTool.getString("ss.labelExternal"), externalPanel);
@@ -484,7 +486,7 @@ public class Connect
 		contentPane.add(Box.createVerticalStrut(10));
 		contentPane.add(showMePanel);
 	}
-	
+
 	private void createLoggingPanel(){
 		loggingPanel.setLayout(new GridBagLayout());
 		// levelPanel
@@ -497,6 +499,9 @@ public class Connect
 		// The translation section is called ...
 		// #Logging Literals
 		// Search and translate into the message property-files
+      int logLevel = Integer.parseInt(props.getProperty("emul.logLevel",
+                        Integer.toString(TN5250jLogger.INFO)));
+
 		ButtonGroup levelGroup = new ButtonGroup();
 		intOFF = new JRadioButton(LangTool.getString("logscr.Off"));
 		intOFF.setSelected(true);
@@ -505,11 +510,41 @@ public class Connect
 				intOFF_itemStateChanged(e);
 			}
 		});
+
 		intDEBUG = new JRadioButton(LangTool.getString("logscr.Debug"));
+		intDEBUG.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intDEBUG_itemStateChanged(e);
+			}
+		});
 		intINFO = new JRadioButton(LangTool.getString("logscr.Info"));
+		intINFO.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intINFO_itemStateChanged(e);
+			}
+		});
+
 		intWARN = new JRadioButton(LangTool.getString("logscr.Warn"));
+		intWARN.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intWARN_itemStateChanged(e);
+			}
+		});
+
 		intERROR = new JRadioButton(LangTool.getString("logscr.Error"));
+		intERROR.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intERROR_itemStateChanged(e);
+			}
+		});
+
 		intFATAL = new JRadioButton(LangTool.getString("logscr.Fatal"));
+		intFATAL.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				intFATAL_itemStateChanged(e);
+			}
+		});
+
 
 		// add the interface options to the group control
 		levelGroup.add(intOFF);
@@ -518,7 +553,7 @@ public class Connect
 		levelGroup.add(intWARN);
 		levelGroup.add(intERROR);
 		levelGroup.add(intFATAL);
-		
+
 //		 add the levelPanel components
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -551,13 +586,13 @@ public class Connect
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 20, 20, 20);
 		levelPanel.add(intFATAL, gbc);
-		
+
 		appenderPanel = new JPanel(new GridBagLayout());
 		tb = BorderFactory.createTitledBorder(
 				LangTool.getString("logscr.Appender"));
 		tb.setTitleJustification(TitledBorder.CENTER);
 		appenderPanel.setBorder(tb);
-		
+
 		ButtonGroup appenderGroup = new ButtonGroup();
 		intConsole = new JRadioButton(LangTool.getString("logscr.Console"));
 		intConsole.setSelected(true);
@@ -571,11 +606,34 @@ public class Connect
 		intFile.setEnabled(false);
 		intBoth = new JRadioButton(LangTool.getString("logscr.Both"));
 		intBoth.setEnabled(false);
-		
+
 		appenderGroup.add(intConsole);
 		appenderGroup.add(intFile);
 		appenderGroup.add(intBoth);
-		
+
+      switch (logLevel) {
+         case TN5250jLogger.OFF:
+      		intOFF.setSelected(true);
+            break;
+         case TN5250jLogger.DEBUG:
+      		intDEBUG.setSelected(true);
+            break;
+         case TN5250jLogger.INFO:
+      		intINFO.setSelected(true);
+            break;
+         case TN5250jLogger.WARN:
+      		intWARN.setSelected(true);
+            break;
+         case TN5250jLogger.ERROR:
+      		intERROR.setSelected(true);
+            break;
+         case TN5250jLogger.FATAL:
+      		intFATAL.setSelected(true);
+            break;
+         default:
+      		intINFO.setSelected(true);
+      }
+
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -591,7 +649,7 @@ public class Connect
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 20, 20, 20);
 		appenderPanel.add(intBoth, gbc);
-		
+
 		// add the pannels to the mainpanel
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -692,9 +750,9 @@ public class Connect
 	private void createExternalProgramsPanel() {
 
 		// create external options panel
-		
+
 		JPanel externalPrograms = new JPanel();
-		
+
 	      // define layout
 	    externalPanel.setLayout(new BorderLayout());
 		externalPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 5));
@@ -702,7 +760,7 @@ public class Connect
 		externalPrograms.setLayout(new AlignLayout(3,5,5));
 		externalPrograms.setBorder(BorderFactory.createTitledBorder(
 				LangTool.getString("external.title")));
-		
+
 		externalPrograms.add(new JLabel(LangTool.getString("external.http")));
 		browser = new JTextField(30);
 		if (props.containsKey("emul.protocol.http")) {
@@ -721,7 +779,7 @@ public class Connect
 
 		externalPanel.add(externalPrograms, BorderLayout.NORTH);
 
-		
+
 	}
 
 	private void doSomethingEntered() {
@@ -866,8 +924,10 @@ public class Connect
 	private void saveProps() {
 
 		setOptionAccess();
-		
+
 		setExternalPrograms();
+
+      setLogLevel();
 
 		ConfigureFactory.getInstance().saveSettings(
 			ConfigureFactory.SESSIONS,
@@ -879,33 +939,68 @@ public class Connect
 	/**
 	 * Set the external programs that are to be used globally within the
 	 * emulator.
-	 * 
+	 *
 	 * Right now external browser and mail programs are supported
 	 *
 	 */
 	private void setExternalPrograms() {
-		
+
 		// set the external browser program to use
 		if (browser.getText().trim().length() > 0) {
-			
+
 			props.setProperty("emul.protocol.http", browser.getText().trim());
 		}
 		else {
-			
+
 			props.remove("emul.protocol.http");
 		}
-		
+
 		// set the external mailer program to use
 		if (mailer.getText().trim().length() > 0) {
-			
+
 			props.setProperty("emul.protocol.mailto", mailer.getText().trim());
 		}
 		else {
-			
+
 			props.remove("emul.protocol.mailto");
 		}
 
 	}
+
+   private void setLogLevel() {
+
+      if (intOFF.isSelected()) {
+
+   		props.setProperty("emul.logLevel", Integer.toString(TN5250jLogger.OFF) );
+      }
+
+      if (intDEBUG.isSelected()) {
+
+   		props.setProperty("emul.logLevel", Integer.toString(TN5250jLogger.DEBUG) );
+      }
+
+      if (intINFO.isSelected()) {
+
+   		props.setProperty("emul.logLevel", Integer.toString(TN5250jLogger.INFO) );
+      }
+
+      if (intWARN.isSelected()) {
+
+   		props.setProperty("emul.logLevel", Integer.toString(TN5250jLogger.WARN) );
+      }
+
+      if (intERROR.isSelected()) {
+
+   		props.setProperty("emul.logLevel", Integer.toString(TN5250jLogger.ERROR) );
+      }
+
+      if (intFATAL.isSelected()) {
+
+   		props.setProperty("emul.logLevel", Integer.toString(TN5250jLogger.FATAL) );
+      }
+
+   }
+
 	private void setOptionAccess() {
 
 		Vector options = OptionAccessFactory.getInstance().getOptions();
@@ -981,7 +1076,7 @@ public class Connect
 		}
 
 	}
-	
+
 	private void intOFF_itemStateChanged(ItemEvent e) {
 		if (!intOFF.isSelected() && TN5250jLogFactory.isLog4j()) {
 			intConsole.setEnabled(true);
@@ -993,9 +1088,55 @@ public class Connect
 			intConsole.setSelected(true);
 			intFile.setEnabled(false);
 			intBoth.setEnabled(false);
+         TN5250jLogFactory.setLogLevels(TN5250jLogger.OFF);
 		}
 	}
-	
+
+	private void intDEBUG_itemStateChanged(ItemEvent e) {
+		if (intDEBUG.isSelected()) {
+//			intConsole.setEnabled(true);
+//			intFile.setEnabled(true);
+//			intBoth.setEnabled(true);
+         TN5250jLogFactory.setLogLevels(TN5250jLogger.DEBUG);
+		}
+	}
+
+	private void intINFO_itemStateChanged(ItemEvent e) {
+		if (intINFO.isSelected()) {
+//			intConsole.setEnabled(true);
+//			intFile.setEnabled(true);
+//			intBoth.setEnabled(true);
+         TN5250jLogFactory.setLogLevels(TN5250jLogger.INFO);
+		}
+	}
+
+	private void intWARN_itemStateChanged(ItemEvent e) {
+		if (intWARN.isSelected()) {
+//			intConsole.setEnabled(true);
+//			intFile.setEnabled(true);
+//			intBoth.setEnabled(true);
+         TN5250jLogFactory.setLogLevels(TN5250jLogger.WARN);
+		}
+	}
+
+	private void intERROR_itemStateChanged(ItemEvent e) {
+		if (intERROR.isSelected()) {
+//			intConsole.setEnabled(true);
+//			intFile.setEnabled(true);
+//			intBoth.setEnabled(true);
+         TN5250jLogFactory.setLogLevels(TN5250jLogger.ERROR);
+		}
+	}
+
+ 	private void intFATAL_itemStateChanged(ItemEvent e) {
+		if (intFATAL.isSelected()) {
+//			intConsole.setEnabled(true);
+//			intFile.setEnabled(true);
+//			intBoth.setEnabled(true);
+         TN5250jLogFactory.setLogLevels(TN5250jLogger.FATAL);
+		}
+	}
+
 	private void intConsole_itemStateChanged(ItemEvent e) {
 		//TODO: Provide the itemstatechanged for the intConsole checkbox
 	}

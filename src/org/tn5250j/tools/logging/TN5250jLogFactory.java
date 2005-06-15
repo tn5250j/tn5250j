@@ -22,9 +22,10 @@
  */
 package org.tn5250j.tools.logging;
 
+import java.util.*;
+
 import org.tn5250j.tools.logging.TN5250jLogger;
-import java.util.HashMap;
-import java.util.Map;
+import org.tn5250j.interfaces.ConfigureFactory;
 
 /**
  * An interface defining objects that can create Configure
@@ -40,6 +41,7 @@ public abstract class TN5250jLogFactory {
    private static Map _loggers = new HashMap();
    private static boolean log4j;
    private static String customLogger;
+   private static int level = TN5250jLogger.INFO;
 
    /**
     * Here we try to do a little more work up front.
@@ -47,6 +49,14 @@ public abstract class TN5250jLogFactory {
    static {
 
       try {
+         Properties props =
+            ConfigureFactory.getInstance().getProperties(
+               ConfigureFactory.SESSIONS);
+
+
+         level = Integer.parseInt(props.getProperty("emul.logLevel",
+                           Integer.toString(TN5250jLogger.INFO)));
+
          String  customLogger = System.getProperty(TN5250jLogFactory.class.getName());
          if (customLogger == null) {
             try {
@@ -104,18 +114,35 @@ public abstract class TN5250jLogFactory {
                else
                   // take the default logger.
                   logger = new ConsoleLogger();
+
             }
 
             logger.initialize(clazzName);
+            logger.setLevel(level);
             _loggers.put(clazzName, logger);
          }
       }
 
       return logger;
    }
-   
+
    public static boolean isLog4j() {
    		return log4j;
+   }
+
+   public static void setLogLevels(int newLevel) {
+
+      if (level != newLevel) {
+         level = newLevel;
+         TN5250jLogger logger = null;
+         Set loggerSet = _loggers.keySet();
+         Iterator loggerIterator = loggerSet.iterator();
+         while (loggerIterator.hasNext()) {
+            logger = ( TN5250jLogger ) _loggers.get(loggerIterator.next());
+            logger.setLevel(newLevel);
+         }
+      }
+
    }
 
 }
