@@ -268,17 +268,20 @@ public class OperatingSystem
       int exitCode = -1;
 
       try {
+         log.info("Executing command='" + command + "'");
+
          Process p = Runtime.getRuntime().exec(command);
+         exitCode = 0;
          // wait for exit code -- if it's 0, command worked,
-         exitCode = p.waitFor();
-         if (exitCode != 0) {
-            log.warn("Error processing command, command='" + command + "'");
-         }
+//         exitCode = p.waitFor();
+//         if (exitCode != 0) {
+//            log.warn("Error processing command, command='" + command + "'");
+//         }
       }
-      catch (InterruptedException exc) {
-         log.warn("Error processing command, command='" + command + "'");
-         log.warn("Caught: " + exc.getMessage());
-      }
+//      catch (InterruptedException exc) {
+//         log.warn("Error processing command, command='" + command + "'");
+//         log.warn("Caught: " + exc.getMessage());
+//      }
       catch (IOException ioe) {
          log.warn("Error processing command, command='" + command + "'");
          log.warn("Caught: " + ioe.getMessage());
