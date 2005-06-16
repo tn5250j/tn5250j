@@ -5,6 +5,37 @@ because I could not find a 5250 emulator of Linux with the enhanced functions
 like graphical windows, cursor progression, continued edit fields, masked edit
 fields etc.....
 
+Changes to last release since forever and a day
+------------------------------------------------------------------------------
+****  JDK Version WARNING *****
+I am only going to release versions compiled with JDK 1.4 if you need a 1.3
+version please download the sources and compile it or from CVS.
+*******************************
+
+I truthfully can not remember all that has happened since the last release
+so will only list here some of what I remember and the most important.
+
+First and foremost lots of bug fixes
+Second the whole code base has been refactored to run in headless mode:
+   1) You do not need to have the gui to have access to the data stream
+      Can you say screen scraping?  Well hopefully it all works.   
+   2) A ProtocolBean has been added for this.
+   3) A SessionBean has been added for this.
+   4) The code now uses events for all this information so you can write your
+      own listeners to these events. There are some people that have used this for 
+      such work so ask on the mailing list and am sure some samples can be
+      given or at least help with it.  The events are in org.tn5250j.event
+
+Logging modules have been added for log4j or built in console support.  You
+can reference this on the Connection panel under the Logging Panel
+
+New session properties have been added.  Take a look at the options for more
+on this.
+
+Anything else please ask on the mailing lists.  Hope you enjoy.
+
+==============================================================================   
+
 Changes since 0.5.7 pre release 3
 ------------------------------------------------------------------------------
 Fixed problems with Field Exit on certain fields.
