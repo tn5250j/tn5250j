@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.5.8Alpha2"/>
+   <property name="version" value="0.5.8Alpha5"/>
    <property name="year" value="2001-2005"/>
 
    <property name="source.dir" value="${basedir}/src" />
@@ -16,6 +16,7 @@
    <property name="javadoc.dir" value="${build.dir}/javadoc" />
    <property name="lib.dir" value="${basedir}/lib" />
    <property name="conf.dir" value="${basedir}/conf" />
+   <property name="IzPack.dir" value="c:\IzPack\" />
 
    <property name="main.class" value="org.tn5250j.My5250"/>
    <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar kunststoff.jar log4j-1.2.8.jar"/>
@@ -356,10 +357,10 @@
     <delete dir="${dist.dir}/installer"/>
     <mkdir dir="${dist.dir}/installer"/>
     <copy todir="${dist.dir}/installer" includeEmptyDirs="yes">
-      <fileset dir="${basedir}">
+      <!--fileset dir="${basedir}">
         <include name="bin/**"/>
         <include name="lib/*.jar"/>
-      </fileset>
+      </fileset-->
        <fileset dir="${build.dir}">
           <include name="${jarname}" />
        </fileset>
@@ -369,6 +370,8 @@
       <fileset dir="${dist.dir}/${dist.base.name}/src/">
         <include name="readme.txt"/>
         <include name="COPYING"/>
+        <include name="tn5250jSplash.jpg"/>
+        <include name="tnicon.jpg"/>
       </fileset>
       <fileset dir="${lib.dir}">
         <include name="**"/>
@@ -381,17 +384,16 @@
             output="${dist.dir}/tn5250j-install-${version}.jar"
             installerType="standard"
             basedir="${dist.dir}"
-            izPackDir="/home/jimmy/IzPack/"/>
+        	izPackDir="${IzPack.dir}"/>
 
-    <echo message="Makes the web installer using IzPack"/>
-    <izpack input="${dist.dir}/installer/install.xml"
+    <!--echo message="Makes the web installer using IzPack"/-->
+    <!--izpack input="${dist.dir}/installer/install.xml"
             output="${dist.dir}/tn5250j-install-web-${version}.jar"
             installerType="web"
             basedir="${dist.dir}"
-            izPackDir="/home/jimmy/IzPack/"/>
+            izPackDir="${IzPack.dir}"/-->
 
    </target>
-<!--               izPackDir="${dist.dir}/"/-->
 
 <!-- start jar bundler task -->
 	<taskdef name="jarbundler"
