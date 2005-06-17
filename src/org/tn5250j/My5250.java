@@ -344,8 +344,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
             if (!m.frame1.isVisible()) {
                m.splash.updateProgress(++m.step);
-               m.frame1.setVisible(true);
                m.splash.setVisible(false);
+               m.frame1.setVisible(true);
                m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
 
@@ -483,6 +483,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    private String getConnectSession () {
 
+      splash.setVisible(false);
       Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
 
       // load the new session information from the session property file
@@ -582,16 +583,16 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
             newView();
          }
 
-         frame1.setVisible(true);
          splash.setVisible(false);
+         frame1.setVisible(true);
          frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       }
       else {
          if (isSpecified("-noembed",args)) {
             splash.updateProgress(++step);
             newView();
-            frame1.setVisible(true);
             splash.setVisible(false);
+            frame1.setVisible(true);
             frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
          }
