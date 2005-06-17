@@ -116,7 +116,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	public tnvt(Session5250 session, Screen5250 screen52, boolean type, boolean support132) {
 
 		controller = session;
-      System.out.println(" new session -> " + controller.getSessionName());
+      log.info(" new session -> " + controller.getSessionName());
 
 		enhanced = type;
 		this.support132 = support132;
@@ -203,7 +203,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		Properties props = controller.getConnectionProperties();
 		if (user == null && props.containsKey("SESSION_CONNECT_USER")) {
 			user = props.getProperty("SESSION_CONNECT_USER");
-         System.out.println(" user -> " + user + " " + controller.getSessionName());
+         log.info(" user -> " + user + " " + controller.getSessionName());
 			if (props.containsKey("SESSION_CONNECT_PASSWORD"))
 				password = props.getProperty("SESSION_CONNECT_PASSWORD");
 			if (props.containsKey("SESSION_CONNECT_LIBRARY"))
@@ -741,7 +741,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
           }
           catch (IOException ioe)
           {
-            System.out.println(ioe.getMessage());
+            log.info(ioe.getMessage());
           }
           baosp.reset();
         }
@@ -962,7 +962,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			try {
 				parseCommand();
 			} catch (Throwable t) {
-				System.out.println("Exec cmd: " + t.getMessage());
+				log.info("Exec cmd: " + t.getMessage());
 				t.printStackTrace();
 			}
 		}
@@ -1775,7 +1775,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 			int os = bk.getByteOffset(-1) & 0xf0;
 			int cp = (bk.getCurrentPos() - 1);
-			System.out.println("invalid " + from + " command " + os
+			log.info("invalid " + from + " command " + os
 					+ " at pos " + cp);
 		} catch (Exception e) {
 
@@ -2018,12 +2018,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 							attr = bk.getNextByte() & 0xff; // attribute field
 
 							while (!isAttribute(attr)) {
-								System.out
-										.print(Integer.toHexString(fcw1) + " "
+								log.info(Integer.toHexString(fcw1) + " "
 												+ Integer.toHexString(fcw2)
 												+ " ");
-								System.out
-										.println(Integer.toHexString(attr)
+								log.info(Integer.toHexString(attr)
 												+ " "
 												+ Integer.toHexString(bk
 														.getNextByte() & 0xff));
