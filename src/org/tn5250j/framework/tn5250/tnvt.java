@@ -1728,25 +1728,26 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					done = true;
 			}
 			//       BEGIN FRAMEWORK
-			ScreenField[] a = this.screen52.getScreenFields().getFields();
-			if (log.isDebugEnabled()) {
-				for (int x = 0; x < a.length; x++) {
-					log.debug(a[x].toString());
-				}
-			}
-
-			String strokes = this.screen52.getKeys();
-			if (!strokes.equals("")) {
-				Tn5250jKeyEvents e = new Tn5250jKeyEvents(this.screen52,
-						strokes);
-				//from the previous screen.
-				Tn5250jController.getCurrent().handleEvent(e);
-			}
-
-			Tn5250jEvent event = new Tn5250jEvent(screen52);
-			Tn5250jController.getCurrent().handleEvent(event);
-
-			//END FRAMEWORK
+			//  I took this out for debugging a problem
+//			ScreenField[] a = this.screen52.getScreenFields().getFields();
+//			if (log.isDebugEnabled()) {
+//				for (int x = 0; x < a.length; x++) {
+//					log.debug(a[x].toString());
+//				}
+//			}
+//
+//			String strokes = this.screen52.getKeys();
+//			if (!strokes.equals("")) {
+//				Tn5250jKeyEvents e = new Tn5250jKeyEvents(this.screen52,
+//						strokes);
+//				//from the previous screen.
+//				Tn5250jController.getCurrent().handleEvent(e);
+//			}
+//
+//			Tn5250jEvent event = new Tn5250jEvent(screen52);
+//			Tn5250jController.getCurrent().handleEvent(event);
+//
+//			//END FRAMEWORK
 		} catch (Exception exc) {
 			log.warn("incoming " + exc.getMessage());
 		}
