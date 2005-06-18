@@ -9,7 +9,11 @@ Changes to last release since forever and a day
 ------------------------------------------------------------------------------
 ****  JDK Version WARNING *****
 I am only going to release versions compiled with JDK 1.4 if you need a 1.3
-version please download the sources and compile it or from CVS.
+version please download the sources and compile it or from CVS.  This will be
+the last release that fully supports JDK 1.3.  If you have problems with this
+please express them on the tn5250j-general mailing list or e-mail privately.
+We need to get ready for the new JDK's and will only support the latest two
+available jdk releases.
 *******************************
 
 I truthfully can not remember all that has happened since the last release
