@@ -871,6 +871,14 @@ public class Connect
 		if (e.getActionCommand().equals("ADD")) {
 			Configure.doEntry((JFrame) getParent(), null, props);
 			ctm.addSession();
+			// I we have only one row then select the first one so that
+			//   we do not get a selection index out of range problem.
+			if (ctm.getRowCount() == 1) {
+			   sessions.getSelectionModel().setSelectionInterval(
+						0,
+						0);			   
+			}
+			
 		}
 		if (e.getActionCommand().equals("REMOVE")) {
 			removeEntry();
