@@ -19,7 +19,7 @@ available jdk releases.
 I truthfully can not remember all that has happened since the last release
 so will only list here some of what I remember and the most important.
 
-First and foremost lots of bug fixes
+First and foremost lots of bug fixes and enhancments.
 Second the whole code base has been refactored to run in headless mode:
    1) You do not need to have the gui to have access to the data stream
       Can you say screen scraping?  Well hopefully it all works.   
