@@ -65,7 +65,7 @@ public class Configure implements TN5250jConstants {
 
    static Object[] options;
 
-   public static void doEntry(Frame parent, String propKey, Properties props2) {
+   public static String doEntry(Frame parent, String propKey, Properties props2) {
 
       props = props2;
 
@@ -456,6 +456,7 @@ public class Configure implements TN5250jConstants {
 
       dialog.setVisible(true);
 
+      return systemName.getText();
 
   }
 

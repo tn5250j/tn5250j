@@ -871,7 +871,7 @@ public class Connect
 		}
 
 		if (e.getActionCommand().equals("ADD")) {
-			Configure.doEntry((JFrame) getParent(), null, props);
+			String systemName = Configure.doEntry((JFrame) getParent(), null, props);
 			ctm.addSession();
 			// I we have only one row then select the first one so that
 			//   we do not get a selection index out of range problem.
@@ -880,6 +880,18 @@ public class Connect
 						0,
 						0);
 			}
+			else {
+			   // Here we will select the entry that we just added.
+				int selInterval = 0;
+				for (int x = 0; x < sessions.getRowCount(); x++) {
+					if (((String) ctm.getValueAt(x, 0)).equals(systemName))
+						selInterval = x;
+				}
+				sessions.getSelectionModel().setSelectionInterval(
+					selInterval,
+					selInterval);			   
+			}
+			
 			sessions.requestFocus();
 			
 		}
@@ -896,6 +908,7 @@ public class Connect
 				(String) ctm.getValueAt(selectedRow, 0),
 				props);
 			ctm.chgSession(selectedRow);
+			sessions.requestFocus();
 		}
 
 		if (e.getActionCommand().equals("CONNECT")) {
