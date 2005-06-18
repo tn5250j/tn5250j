@@ -8,7 +8,8 @@ Implement the insert (right shift of characters) for continued edit fields.
 Add support for maintaining macros.  Think GUI interface.
 
 Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
-large to implement this - 57 pages worth of specs and the such.  Work has begun.
+large to implement this - 57 pages worth of specs and the such.  Elementary
+support for this is now there.  We no longer have session errors with this.
 
 Implement support for images on the background. Wishlist for the future
 
@@ -24,6 +25,9 @@ default that I set up.  This is for JVM supplied by IBM.
 
 Enhancements/Change Log
 -----------------------
+18/06/2005  New release with a whole lot enhancements.  Do not remember them all
+            read the Readme.txt file for more information
+            
 13/03/2004  Fixed some field exit problems.
 
 15/02/2004  Well we have not kept this up to date at all.  Hopefully
