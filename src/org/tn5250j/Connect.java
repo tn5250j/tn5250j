@@ -241,7 +241,9 @@ public class Connect
 				selInterval,
 				selInterval);
 		}
-
+		else {
+		   connectButton.setEnabled(false);
+		}
 		// Oh man what a pain in the ass.  Had to add a window listener to request
 		// focus of the sessions list.
 		addWindowListener(new WindowAdapter() {
@@ -876,8 +878,9 @@ public class Connect
 			if (ctm.getRowCount() == 1) {
 			   sessions.getSelectionModel().setSelectionInterval(
 						0,
-						0);			   
+						0);
 			}
+			sessions.requestFocus();
 			
 		}
 		if (e.getActionCommand().equals("REMOVE")) {
@@ -906,8 +909,11 @@ public class Connect
 
 	private void doActionConnect() {
 
+		if (!connectButton.isEnabled())
+		   return;
+		
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
+		
 		int selectedRow = rowSM.getMinSelectionIndex();
 		connectKey = (String) ctm.getValueAt(selectedRow, 0);
 		saveProps();
