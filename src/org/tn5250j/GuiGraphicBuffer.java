@@ -37,6 +37,8 @@ import java.awt.event.*;
 import java.beans.*;
 import java.awt.*;
 
+import javax.swing.SwingUtilities;
+
 import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.ScreenListener;
 import org.tn5250j.tools.logging.*;
@@ -1258,11 +1260,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 	protected void updateImage(int x, int y, int width, int height) {
 
+	   
 		// check for selected area and erase it before updating screen
 		if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
 			gui.rubberband.erase();
 		}
-
+		
+		
 		gg2d.setClip(x, y, width, height);
 //		if (!cursorActive && x + width <= bi.getWidth(null)
 //				&& y + height <= (bi.getHeight(null) - fmWidth)) {
@@ -1308,7 +1312,21 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		else
 			y += offTop;
 
-		gui.repaint(x, y, width, height);
+		final int heightf = height;
+		final int widthf = width;
+		final int xf = x;
+		final int yf = y;
+		try {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+		gui.repaint(xf, yf, widthf, heightf);
+				}
+			});
+
+		} catch (Exception exc) {
+			log.warn("setStatus(ON) " + exc.getMessage());
+
+		}
 
 	}
 

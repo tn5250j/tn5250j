@@ -105,7 +105,7 @@ public class SessionPopup implements TN5250jConstants {
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
                public void actionPerformed(ActionEvent e) {
-                  screen.sendKeys(MNEMONIC_PASTE);
+                  screen.pasteMe(false);
                   session.getFocusForMe();
                }
            };

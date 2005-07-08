@@ -26,7 +26,7 @@ public interface TN5250jConstants {
    // Version information
    public static final String tn5250jRelease = "0";
    public static final String tn5250jVersion = ".6";
-   public static final String tn5250jSubVer= ".0";
+   public static final String tn5250jSubVer= ".1 Beta 1";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
