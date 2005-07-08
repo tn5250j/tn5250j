@@ -93,7 +93,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    }
 
-   public Session5250 openSession(Properties sesProps, String configurationResource
+   public synchronized Session5250 openSession(Properties sesProps, String configurationResource
                                                 , String sessionName) {
 //                                             throws TN5250jException {
 
@@ -137,7 +137,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
     *
     * @param newSession
     */
-   public void addSession(Session5250 newSession) {
+   public synchronized void addSession(Session5250 newSession) {
 
       sessions.addSession(newSession);
    }
