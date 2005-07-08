@@ -140,7 +140,8 @@ public class DataStreamProducer implements Runnable {
             abyte1 = new byte[j + 2];
 
             System.arraycopy(abyte0, i, abyte1, 0, j + 2);
-            dsq.put(new Stream5250(abyte1));
+//            dsq.put(new Stream5250(abyte1));
+            dsq.put(abyte1);
             if(abyte0.length > abyte1.length + i)
                 loadStream(abyte0, i + j + 2);
          }
@@ -163,8 +164,9 @@ public class DataStreamProducer implements Runnable {
       baosin.reset();
       int j = -1;
       int i = 0;
-
+      
       while(!done) {
+         
          i = bin.read();
 
          // WVL - LDC : 16/07/2003 : TR.000345

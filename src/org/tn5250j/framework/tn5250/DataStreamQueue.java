@@ -48,8 +48,61 @@ public class DataStreamQueue {
             lock.wait();
          }
 
+         //  Moved to the put routine.
+//         /**
+//          * @todo here is the throttling code to look at
+//          *
+//          * just something here to try.  OK it works but we need to be a little
+//          *     more intelligent with the throttling.
+//          */
+//         if (vector.size() >= 20) {
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            vector.remove(0);
+//            System.out.println(vector.size());
+//         }
+            // we have the lock and state we're seeking
+         return vector.remove(0);
+      }
+   }
+
+   public boolean isEmpty() {
+
+      return vector.isEmpty();
+   }
+
+   public void clear() {
+
+      synchronized (lock) {
+         vector.clear();
+         lock.notifyAll();
+      }
+
+   }
+
+   public void put(Object o) {
+      synchronized (lock) {
+
          /**
           * @todo here is the throttling code to look at
+          * 
+          * I moved this from the get method to see what the difference would be.
+          * So far it works more reliably as a throttle in my opinion.
           *
           * just something here to try.  OK it works but we need to be a little
           *     more intelligent with the throttling.
@@ -75,30 +128,9 @@ public class DataStreamQueue {
             vector.remove(0);
 //            System.out.println(vector.size());
          }
-            // we have the lock and state we're seeking
-         return vector.remove(0);
-      }
-   }
-
-   public boolean isEmpty() {
-
-      return vector.isEmpty();
-   }
-
-   public void clear() {
-
-      synchronized (lock) {
-         vector.clear();
-         lock.notifyAll();
-      }
-
-   }
-
-   public void put(Object o) {
-      synchronized (lock) {
+            
          vector.addElement(o);
-//         if (vector.size() > 5)
-//            System.out.println(vector.size());
+
          // tell waiting threads to wake up
          lock.notifyAll();
       }

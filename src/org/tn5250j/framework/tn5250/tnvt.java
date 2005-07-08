@@ -272,7 +272,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			producer = new DataStreamProducer(this, bin, dsq, abyte0);
 			pthread = new Thread(producer);
 			//         pthread.setPriority(pthread.MIN_PRIORITY);
-			pthread.setPriority(Thread.NORM_PRIORITY / 2);
+			pthread.setPriority(Thread.NORM_PRIORITY);
+//			pthread.setPriority(Thread.NORM_PRIORITY / 2);
 			pthread.start();
 
 			try {
@@ -1016,10 +1017,13 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		if (enhanced)
 			sfParser = new WTDSFParser(this);
 
+		bk = new Stream5250();
+		
 		while (keepTrucking) {
 
 			try {
-				bk = (Stream5250) dsq.get();
+//				bk = (Stream5250) dsq.get();
+				bk.initialize((byte[]) dsq.get());
 			} catch (InterruptedException ie) {
 				log.warn("   vt thread interrupted and stopping ");
 				keepTrucking = false;
@@ -1142,7 +1146,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				//               );
 				screen52.updateDirty();
 //				controller.validate();
-				log.debug("update dirty");
+//				log.debug("update dirty");
 			} catch (Exception exd) {
 				log.warn(" tnvt.run: " + exd.getMessage());
 				exd.printStackTrace();
@@ -1467,9 +1471,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 			int rows = bk.getNextByte() & 0xff;
 			int cols = bk.getNextByte() & 0xff;
-			int pos = bk.getNextByte() << 8 & 0xff00;
+			int pos = bk.getNextByte() << 8 & 0xff00; // current position
 			pos |= bk.getNextByte() & 0xff;
-			int hPos = bk.getNextByte() << 8 & 0xff00;
+			int hPos = bk.getNextByte() << 8 & 0xff00; // home position
 			hPos |= bk.getNextByte() & 0xff;
 			if (rows != screen52.getRows())
 				screen52.setRowsCols(rows, cols);
@@ -1575,13 +1579,25 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				}
 			}
 
-			screen52.restoreScreen(); // display the screen
-			screen52.setPendingInsert(true, screen52.getRow(pos), screen52
-					.getCol(pos));
-			screen52.goto_XY(pos);
-			screen52.isInField();
+			//  Redraw the gui fields if we are in gui mode
 			if (screen52.isUsingGuiInterface())
 				screen52.drawFields();
+
+			screen52.restoreScreen(); // display the screen
+			
+			//  The position was saved with currentPos which 1,1 offset of the
+			//     screen position.
+			//  The setPendingInsert is the where the cursor position will be 
+			//  displayed after the restore.
+			screen52.setPendingInsert(true, screen52.getRow(pos + cols), screen52
+					.getCol(pos + cols));
+			//  We need to offset the pos by -1 since the position is 1,1 based
+			//    and the goto_XY is 0,0 based.
+			screen52.goto_XY(pos - 1);
+			screen52.isInField();
+//			//  Redraw the gui fields if we are in gui mode
+//			if (screen52.isUsingGuiInterface())
+//				screen52.drawFields();
 		} catch (Exception e) {
 			log.warn("error restoring screen " + which + " with "
 					+ e.getMessage());

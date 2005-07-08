@@ -42,13 +42,38 @@ public class Stream5250 {
         pos = dataStart;
     }
 
+    public Stream5250() {
+       buffer = null;
+       streamSize = 0;
+       opCode = 0;
+       dataStart = 0;
+       pos = dataStart;
+   }
+
+    /**
+     * This method takes a byte array and initializes the object information
+     *    to be used.
+     * 
+     * @param abyte0
+     */
+    public void initialize(byte abyte0[]) {
+       
+     buffer = abyte0;
+     // size without end of record 0xFF 0xEF
+     streamSize = (abyte0[0] & 0xff) << 8 | abyte0[1] & 0xff;
+     opCode = abyte0[9];
+     dataStart = 6 + abyte0[6];
+     pos = dataStart;
+       
+    }
+    
     public final int getOpCode() {
         return opCode;
     }
 
     public final byte getNextByte()
         throws Exception  {
-        if(pos > buffer.length)
+        if(buffer == null || pos > buffer.length)
             throw new Exception("Buffer length exceeded: " + pos);
         else
             return buffer[pos++];
@@ -76,7 +101,7 @@ public class Stream5250 {
    public final byte getByteOffset(int off)
         throws Exception  {
 
-        if((pos + off ) > buffer.length)
+        if(buffer == null || (pos + off ) > buffer.length)
             throw new Exception("Buffer length exceeded: " + pos);
         else
             return buffer[pos + off];

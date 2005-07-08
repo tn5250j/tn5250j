@@ -436,7 +436,7 @@ public class ScreenPlanes implements TN5250jConstants {
     */
    protected synchronized char[] getPlaneData(int from, int to, int plane) {
 
-      int len = to - from;
+      int len = (to - from);
 
       char[] planeChars = new char[len + 1];
 

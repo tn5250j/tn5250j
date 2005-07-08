@@ -1961,12 +1961,21 @@ public class Screen5250 implements TN5250jConstants{
          return false;
       }
 
+      // save off the current pos of the field for checking field exit required
+      //   positioning.  the getKeyPos resets this information so it is useless
+      //   for comparing if we are positioned passed the end of field.
+      //   Maybe this should be changed to not update the current cursor position
+      //   of the field.
+      int currentPos = sf.getCurrentPos();
+      
       // get the number of characters to the right
       int count = (end - sf.startPos()) - sf.getKeyPos(pos);
 
       if (count == 0 && sf.isFER()) {
-         mdt = true;
-         return mdt;
+         if (currentPos > sf.endPos()) {
+            mdt = true;
+            return mdt;
+         }
       }
 
       for (; count >= 0; count--) {
@@ -2175,7 +2184,8 @@ public class Screen5250 implements TN5250jConstants{
 	 */
 	public int getCurrentPos() {
 
-		return lastPos + numCols + 1;
+//		return lastPos + numCols + 1;
+		return lastPos + 1;
 
 	}
 
@@ -2188,7 +2198,7 @@ public class Screen5250 implements TN5250jConstants{
     * 0000: 00 50 73 1D 89 81 00 50 DA 44 C8 45 08 00 45 00 .Ps....P.D.E..E.
     * </p>
     * <p>
-    * 0010: 00 36 E9 1C 40 00 80 06 9B F9 C1 A8 33 58 C0 A8 .6..@.......3X..
+    * 0010: 00 36 E9 1C 40 00 80 06 9B F9 C1 A8 33 58 C0 A8 .6..@...k....3X..
     * </p>
     * <p>
     * 0020: C0 02 06 0E 00 17 00 52 6E 88 73 40 DE CB 50 18 .......Rn.s@..P.
@@ -2275,15 +2285,31 @@ public class Screen5250 implements TN5250jConstants{
 		//    last character will not cause an error but replace that character or
 		//    just plain move the cursor if the key was to do that.
 
+		ScreenField sf = screenFields.getCurrentField();
 		if (feError) {
 			feError = false;
-			screenFields.getCurrentField().changePos(-1);
+			sf.changePos(-1);
 
-			if (screenFields.getCurrentField() != null
-					&& screenFields.getCurrentField().isFER()
-					&& screenFields.getCurrentFieldPos() - 1 == pos) {
+			if (sf != null
+					&& sf.isFER()
+					&& sf.getCurrentPos() - 1 == pos) {
+			   
 			}
 		} else {
+			if (sf != null
+					&& sf.isFER()){
+			   if ((sf.getCurrentPos()
+			         > sf.endPos())) {
+			      if (sf.withinField(pos)) {
+			         sf.getKeyPos(pos);
+			         return;
+			      }
+			      else {
+			         sf.getKeyPos(sf.endPos());
+			      }
+			   }
+			}
+		   
 			goto_XY(pos);
 		}
 	}
@@ -3459,7 +3485,8 @@ public class Screen5250 implements TN5250jConstants{
 				}
 			}
 		}
-  		updateDirty();
+		
+  		//updateDirty();
 	}
 
 	/**
@@ -3534,7 +3561,7 @@ public class Screen5250 implements TN5250jConstants{
 
 	protected void setChar(int cByte) {
 
-		if (cByte > 0 && cByte < ' ') {
+		if (cByte > 0 && (char)cByte < ' ') {
 			planes.setScreenCharAndAttr(lastPos, (char) 0x00, 33, false);
 			setDirty(lastPos);
 			advancePos();
