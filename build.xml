@@ -6,7 +6,7 @@
 
    <property name="name" value="tn5250j"/>
    <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.6.0"/>
+   <property name="version" value="0.6.1 Alpha 1"/>
    <property name="year" value="2001-2005"/>
 
    <property name="source.dir" value="${basedir}/src" />
