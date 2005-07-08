@@ -38,7 +38,6 @@ import org.tn5250j.interfaces.ConfigureFactory;
 
 public class Macronizer {
 
-   private static String macroName;
    private static Properties macros;
    private static boolean macrosExist;
 
@@ -136,13 +135,45 @@ public class Macronizer {
       }
    }
 
+   /**
+    * Add the macro keystrokes to the macros list.
+    * 
+    * This method is a destructive where if the macro already exists it will be
+    *   overwritten.
+    *   
+    * @param name
+    * @param keyStrokes
+    */
    public final static void setMacro(String name, String keyStrokes) {
 
       int x = 0;
 
-      while (getMacroByNumber(++x) != null) {}
-      macros.put("macro" + x + "." + name,keyStrokes);
-      macrosExist = true;
+      // first let's go through all the macros and replace the macro entry if it
+      //   already exists.  
+      if (macrosExist && getMacroByName(name) != null) {
+         Set macroSet = macros.keySet();
+         Iterator macroIterator = macroSet.iterator();
+         String byName = null;
+         String prefix = null;
+         while (macroIterator.hasNext()) {
+            byName = (String)macroIterator.next();
+            if (byName.endsWith(name)) {
+               //  we need to obtain the prefix so that we can replace
+               //   the slot with the new keystrokes.  If not the keymapping
+               //   will not work correctly.
+               prefix = byName.substring(0,byName.indexOf(name));
+               macros.put(prefix + name,keyStrokes);
+            }
+         }
+      }
+      else {
+         // If it did not exist and get replaced then we need to find the next
+         //  available slot to place the macro in.
+         while (getMacroByNumber(++x) != null) {}
+         
+         macros.put("macro" + x + "." + name,keyStrokes);
+         macrosExist = true;
+      }
       saveMacros();
 
    }
