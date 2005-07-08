@@ -270,7 +270,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
          }
 
-          /**
+         /**
            * @todo this crap needs to be rewritten it is a mess
            */
          if (args[0].startsWith("-")) {
@@ -311,6 +311,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          m.sessionArgs = null;
       }
 
+      if (m.sessionArgs == null && sessions.containsKey("emul.view") &&
+            sessions.containsKey("emul.startLastView")) {
+         String[] sargs = new String[NUM_PARMS];
+         parseArgs(sessions.getProperty("emul.view"), sargs);
+         m.sessionArgs = sargs;
+      }
+      
       if (m.sessionArgs != null) {
 
          // BEGIN
@@ -318,20 +325,21 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          Vector os400_sessions = new Vector();
          Vector session_params = new Vector();
 
-         for (int x = 0; x < args.length; x++) {
+         for (int x = 0; x < m.sessionArgs.length; x++) {
 
-            if (args[x].equals("-s")) {
-               x++;
-               if (args[x] != null && sessions.containsKey(args[x])) {
-                  os400_sessions.addElement(args[x]);
+            if (m.sessionArgs[x] != null) {
+               if (m.sessionArgs[x].equals("-s")) {
+                  x++;
+                  if (m.sessionArgs[x] != null && sessions.containsKey(m.sessionArgs[x])) {
+                     os400_sessions.addElement(m.sessionArgs[x]);
+                  }else{
+                     x--;
+                     session_params.addElement(m.sessionArgs[x]);
+                  }
                }else{
-                  x--;
-                  session_params.addElement(args[x]);
+                  session_params.addElement(m.sessionArgs[x]);
                }
-            }else{
-               session_params.addElement(args[x]);
             }
-
          }
 
          for (int x = 0; x < session_params.size(); x++)
@@ -344,8 +352,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
             if (!m.frame1.isVisible()) {
                m.splash.updateProgress(++m.step);
-               m.splash.setVisible(false);
                m.frame1.setVisible(true);
+               m.splash.setVisible(false);
                m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
 
@@ -483,7 +491,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    private String getConnectSession () {
 
-      splash.setVisible(false);
       Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
 
       // load the new session information from the session property file
@@ -583,16 +590,16 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
             newView();
          }
 
-         splash.setVisible(false);
          frame1.setVisible(true);
+         splash.setVisible(false);
          frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       }
       else {
          if (isSpecified("-noembed",args)) {
             splash.updateProgress(++step);
             newView();
-            splash.setVisible(false);
             frame1.setVisible(true);
+            splash.setVisible(false);
             frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
          }
@@ -641,8 +648,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          frame1.centerFrame();
       }
 
-//      frame1.setIcons(focused,unfocused);
-
       frames.add(frame1);
 
    }
@@ -672,17 +677,20 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       log.info("number of active sessions we have " + sess.getCount());
       int x = 0;
 
+      String views = "";
       while (view.getSessionViewCount() > 0) {
 
          jf = view.getSessionAt(0);
 
+         views += "-s " + jf.getSessionName() + " ";
+         
          log.info("session found and closing down");
          view.removeSessionView(jf);
          manager.closeSession(jf);
          log.info("disconnecting socket");
          log.info("socket closed");
          jf = null;
-
+         
       }
 
       sessions.setProperty("emul.frame" + view.getFrameSequence(),
@@ -696,10 +704,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
       log.info("number of active sessions we have after shutting down " + sess.getCount());
 
+      log.info("view settings " + views);
       if (sess.getCount() == 0) {
 
          sessions.setProperty("emul.width",Integer.toString(view.getWidth()));
          sessions.setProperty("emul.height",Integer.toString(view.getHeight()));
+
+         sessions.setProperty("emul.view",views);
 
          // save off the session settings before closing down
          ConfigureFactory.getInstance().saveSettings(ConfigureFactory.SESSIONS,
@@ -738,7 +749,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       }
    }
 
-   protected void parseArgs(String theStringList, String[] s) {
+   static protected void parseArgs(String theStringList, String[] s) {
       int x = 0;
       StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
       while (tokenizer.hasMoreTokens()) {
@@ -857,5 +868,84 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       splash.updateProgress(++step);
 
    }
+
+   /**
+    * This routine will read our jar file and extract the image data from
+    *    the jar file.  If the file is found it will then create the image
+    *    data from the data bytes read
+    *
+    * I think I got this example from the JavaWorld site or maybe from another
+    * magazine I can not remember.  I took it from another program I had written
+    * which had the same functionality.
+    *
+    */
+//   protected ImageIcon createImageIcon(String image) {
+//
+//      String jarFileName = "my5250.jar";
+//      int zeSize = 0;
+//      byte[] b= null;
+//      ImageIcon ii = null;
+//
+//      try {
+//
+//         ZipFile zf = new ZipFile("my5250.jar");
+//
+//         Enumeration e = zf.entries();
+//         ZipEntry ze = null;
+//
+//         while (e.hasMoreElements()) {
+//
+//            ze = (ZipEntry)e.nextElement();
+//            if (ze.getName().equals(image)) {
+//               zeSize = (int)ze.getSize();
+//            }
+//         }
+//
+//         // extract the resource if found
+//         FileInputStream fis=new FileInputStream(jarFileName);
+//         BufferedInputStream bis=new BufferedInputStream(fis);
+//         ZipInputStream zis=new ZipInputStream(bis);
+//         ze=null;
+//
+//         while ((ze=zis.getNextEntry())!=null) {
+//            if (ze.isDirectory()) {
+//               continue;
+//            }
+//
+//            // check if the resource entry read is the one we are looking for
+//            if (ze.getName().equals(image)) {
+//               int size=(int)ze.getSize();
+//
+//               // -1 means unknown size so default to one found from above.
+//               if (size==-1) {
+//                  size = zeSize;
+//               }
+//
+//               b=new byte[(int)size];
+//               int rb=0;
+//               int chunk=0;
+//               while (((int)size - rb) > 0) {
+//                  chunk=zis.read(b,rb,(int)size - rb);
+//                  if (chunk==-1) {
+//                     break;
+//                  }
+//                  rb+=chunk;
+//               }
+//               ii = new ImageIcon(b);
+//            }
+//         }
+//         zis.close();
+//         fis.close();
+//
+//      }
+//      catch( ZipException zexc) {
+//         System.out.println("ze " + zexc.getMessage());
+//      }
+//      catch( IOException ioe) {
+//         System.out.println("ioe " + ioe.getMessage());
+//      }
+//
+//      return ii;
+//   }
 
 }
