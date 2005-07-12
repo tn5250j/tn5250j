@@ -352,8 +352,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
             if (!m.frame1.isVisible()) {
                m.splash.updateProgress(++m.step);
-               m.frame1.setVisible(true);
                m.splash.setVisible(false);
+               m.frame1.setVisible(true);
                m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
 
@@ -491,6 +491,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    private String getConnectSession () {
 
+      splash.setVisible(false);
       Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
 
       // load the new session information from the session property file
@@ -589,17 +590,16 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          if (isSpecified("-noembed",args) && sessionCount > 0) {
             newView();
          }
-
-         frame1.setVisible(true);
          splash.setVisible(false);
+         frame1.setVisible(true);
          frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       }
       else {
          if (isSpecified("-noembed",args)) {
             splash.updateProgress(++step);
             newView();
-            frame1.setVisible(true);
             splash.setVisible(false);
+            frame1.setVisible(true);
             frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
          }
@@ -868,84 +868,4 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       splash.updateProgress(++step);
 
    }
-
-   /**
-    * This routine will read our jar file and extract the image data from
-    *    the jar file.  If the file is found it will then create the image
-    *    data from the data bytes read
-    *
-    * I think I got this example from the JavaWorld site or maybe from another
-    * magazine I can not remember.  I took it from another program I had written
-    * which had the same functionality.
-    *
-    */
-//   protected ImageIcon createImageIcon(String image) {
-//
-//      String jarFileName = "my5250.jar";
-//      int zeSize = 0;
-//      byte[] b= null;
-//      ImageIcon ii = null;
-//
-//      try {
-//
-//         ZipFile zf = new ZipFile("my5250.jar");
-//
-//         Enumeration e = zf.entries();
-//         ZipEntry ze = null;
-//
-//         while (e.hasMoreElements()) {
-//
-//            ze = (ZipEntry)e.nextElement();
-//            if (ze.getName().equals(image)) {
-//               zeSize = (int)ze.getSize();
-//            }
-//         }
-//
-//         // extract the resource if found
-//         FileInputStream fis=new FileInputStream(jarFileName);
-//         BufferedInputStream bis=new BufferedInputStream(fis);
-//         ZipInputStream zis=new ZipInputStream(bis);
-//         ze=null;
-//
-//         while ((ze=zis.getNextEntry())!=null) {
-//            if (ze.isDirectory()) {
-//               continue;
-//            }
-//
-//            // check if the resource entry read is the one we are looking for
-//            if (ze.getName().equals(image)) {
-//               int size=(int)ze.getSize();
-//
-//               // -1 means unknown size so default to one found from above.
-//               if (size==-1) {
-//                  size = zeSize;
-//               }
-//
-//               b=new byte[(int)size];
-//               int rb=0;
-//               int chunk=0;
-//               while (((int)size - rb) > 0) {
-//                  chunk=zis.read(b,rb,(int)size - rb);
-//                  if (chunk==-1) {
-//                     break;
-//                  }
-//                  rb+=chunk;
-//               }
-//               ii = new ImageIcon(b);
-//            }
-//         }
-//         zis.close();
-//         fis.close();
-//
-//      }
-//      catch( ZipException zexc) {
-//         System.out.println("ze " + zexc.getMessage());
-//      }
-//      catch( IOException ioe) {
-//         System.out.println("ioe " + ioe.getMessage());
-//      }
-//
-//      return ii;
-//   }
-
 }
