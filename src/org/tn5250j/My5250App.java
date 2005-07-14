@@ -100,6 +100,12 @@ public class My5250App extends JApplet implements TN5250jConstants {
       // check if device name is specified
       if (isSpecified("-dn"))
          sesProps.put(SESSION_DEVICE_NAME ,getParameter("-dn"));
+      // are we to use a ssl and if we are what type
+
+      if (isSpecified("-sslType")) {
+
+         sesProps.put(SSL_TYPE,getParameter("-sslType"));
+      }
 
       loadSystemProperty("SESSION_CONNECT_USER");
       loadSystemProperty("SESSION_CONNECT_PASSWORD");
