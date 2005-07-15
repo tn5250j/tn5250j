@@ -343,11 +343,13 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          }
 
          for (int x = 0; x < session_params.size(); x++)
+         
             m.sessionArgs[x] = session_params.elementAt(x).toString();
 
-         m.startNewSession();
-
-         for (int x = 1; x < os400_sessions.size(); x++ ) {
+         //m.startNewSession();
+         
+         // shouldn't we be starting x at 0?
+         for (int x = 0; x < os400_sessions.size(); x++ ) {
             String sel = os400_sessions.elementAt(x).toString();
 
             if (!m.frame1.isVisible()) {
