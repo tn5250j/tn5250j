@@ -906,6 +906,14 @@ public class XTFRFile
 				txtDesc.setSelected(false);
 		}
 
+		if (props.containsKey("xtfr.intDesc")) {
+			if (props.getProperty("xtfr.intDesc").equals("true")) {
+				intDesc.setSelected(true);
+			} else {
+				intDesc.setSelected(false);
+			}
+		}
+
 		if (props.containsKey("xtfr.fileFormat"))
 			fileFormat.setSelectedItem(props.getProperty("xtfr.fileFormat"));
 
@@ -923,51 +931,7 @@ public class XTFRFile
 		SessionConfig config = session.getSession().getConfiguration();
 		Properties props = config.getProperties();
 
-      saveXTFRFields(props);
-//		if (hostFile.getText().trim().length() > 0)
-//			props.setProperty("xtfr.fileName", hostFile.getText().trim());
-//		else
-//			props.remove("xtfr.fileName");
-//
-//		if (user.getText().trim().length() > 0)
-//			props.setProperty("xtfr.user", user.getText().trim());
-//		else
-//			props.remove("xtfr.user");
-//
-//		if (useQuery.isSelected())
-//			props.setProperty("xtfr.useQuery", "true");
-//		else
-//			props.remove("xtfr.useQuery");
-//
-//		if (queryStatement.getText().trim().length() > 0)
-//			props.setProperty(
-//				"xtfr.queryStatement",
-//				queryStatement.getText().trim());
-//		else
-//			props.remove("xtfr.queryStatement");
-//
-//		if (allFields.isSelected())
-//			props.setProperty("xtfr.allFields", "true");
-//		else
-//			props.remove("xtfr.allFields");
-//
-//		if (txtDesc.isSelected())
-//			props.setProperty("xtfr.txtDesc", "true");
-//		else
-//			props.remove("xtfr.txtDesc");
-//
-//		props.setProperty(
-//			"xtfr.fileFormat",
-//			(String) fileFormat.getSelectedItem());
-//
-//		if (localFile.getText().trim().length() > 0)
-//			props.setProperty("xtfr.localFile", localFile.getText().trim());
-//		else
-//			props.remove("xtfr.localFile");
-//
-//		props.setProperty(
-//			"xtfr.decimalSeparator",
-//			(String) decimalSeparator.getSelectedItem());
+		saveXTFRFields(props);
 
 		config.setModified();
 
@@ -1002,10 +966,15 @@ public class XTFRFile
 		else
 			props.remove("xtfr.allFields");
 
+        // TODO: save Fielddesc state as one propertyvalue (xtfr.fieldDesc=txt|int)  
 		if (txtDesc.isSelected())
 			props.setProperty("xtfr.txtDesc", "true");
 		else
 			props.remove("xtfr.txtDesc");
+		if (intDesc.isSelected())
+			props.setProperty("xtfr.intDesc", "true");
+		else
+			props.remove("xtfr.intDesc");
 
 		props.setProperty(
 			"xtfr.fileFormat",
