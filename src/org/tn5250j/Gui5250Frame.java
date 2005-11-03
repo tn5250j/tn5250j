@@ -372,12 +372,19 @@ public class Gui5250Frame extends GUIViewInterface implements
          log.info("session found and closing down " + index);
          targetSession.removeSessionListener(this);
          targetSession.removeSessionJumpListener(this);
-         int tabs = sessionPane.getTabCount();
          sessionPane.remove(index);
-         tabs--;
+         
+         // get the tab count to be used later
+         int tabs = sessionPane.getTabCount();
 
+         // if the index removed is the same as the number of tabs
+         //   we need to decrement the index offset or we will get
+         //   an error because we went over the tab limit which starts
+         //   at zero offset.
+         if (tabs == index)
+            index--;
 
-         if (tabs > 0 && index <= tabs) {
+         if (tabs > 0 && index < tabs) {
             sessionPane.setSelectedIndex(index);
             sessionPane.setForegroundAt(index,Color.blue);
             sessionPane.setIconAt(focused,index);
