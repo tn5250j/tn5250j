@@ -527,7 +527,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
                         JOptionPane.DEFAULT_OPTION,        // option type
                         null,
                         options,
-                        options[0]);
+                        null);
+                        //options[0]);
 
       dialog = opain.createDialog(this, getTitle());
 
