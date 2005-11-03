@@ -3924,12 +3924,15 @@ public class Screen5250 implements TN5250jConstants{
     */
    private void fireScreenChanged(int which, int startRow, int startCol,
                                  int endRow, int endCol) {
-
       if (listeners != null) {
-         int size = listeners.size();
+          // Patch below contributed by Mitch Blevins
+         //int size = listeners.size();
+         Vector lc = new Vector(listeners);
+         int size = lc.size();
          for (int i = 0; i < size; i++) {
-            ScreenListener target =
-                    (ScreenListener)listeners.elementAt(i);
+            //ScreenListener target =
+              //      (ScreenListener)listeners.elementAt(i);
+              ScreenListener target = (ScreenListener)lc.elementAt(i);
             target.onScreenChanged(1,startRow,startCol,endRow,endCol);
          }
       }
@@ -3960,10 +3963,12 @@ public class Screen5250 implements TN5250jConstants{
       int startCol = getCol(lastPos);
 
       if (listeners != null) {
-         int size = listeners.size();
+         Vector lc = new Vector(listeners);
+          //int size = listeners.size();
+         int size = lc.size();
          for (int i = 0; i < size; i++) {
             ScreenListener target =
-                    (ScreenListener)listeners.elementAt(i);
+                    (ScreenListener)lc.elementAt(i);
             target.onScreenChanged(update,startRow,startCol,startRow,startCol);
          }
       }
@@ -3976,10 +3981,12 @@ public class Screen5250 implements TN5250jConstants{
    private void fireScreenSizeChanged() {
 
       if (listeners != null) {
-         int size = listeners.size();
+         Vector lc = new Vector(listeners);
+          //int size = listeners.size();
+         int size = lc.size();
          for (int i = 0; i < size; i++) {
             ScreenListener target =
-                  (ScreenListener)listeners.elementAt(i);
+                  (ScreenListener)lc.elementAt(i);
             target.onScreenSizeChanged(numRows,numCols);
          }
       }
