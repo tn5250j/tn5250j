@@ -1,0 +1,35 @@
+  TN5250J launch Customized External Program function
+
+requirement:
+ TN5250J user want to launch Customized external program from tn5250j.
+
+scenario:
+ need following steps to finish this requirement.
+ 1 format Launch String to launch Customized external program.
+   for example: PDFViewer:parameter1,parameter2,parameter3
+         acroread Z:\share\pdf\chapter1.pdf
+ 
+ 2 make Launch String to become a hotspot.
+
+ 3 when user click hotspot, system check whether it's a Launch String, if it is a Launch String, System  
+ automatically launch Customized external program with parameters which come from Launch String. 
+
+ 4 Configure Customized External Program, system allow user to configure Customized External Program name, window   
+   command and unix command.
+
+implementation:
+ 1: generate Launch String.
+        
+ 2: modify ScreenPlanes.java's method checkHotSpots
+
+        3: modify OperatingSystem.java's method displayURL
+
+ 4: modify Connect.java methods
+          Connect class's Construction method, 
+          CreateExternalProgramPanel,
+          actionPerformed,  
+             saveProps
+           create ExternalProgramConfig.java
+           modify tn5250jMsgs.properties
+           create tn5250jExternalProgram.properties
+ 

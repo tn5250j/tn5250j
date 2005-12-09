@@ -21,14 +21,18 @@ package org.tn5250j.tools.system;
 
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import javax.swing.UIManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Enumeration;
 import java.util.Properties;
 
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.interfaces.*;
+import javax.swing.UIManager;
+
+import org.tn5250j.ExternalProgramConfig;
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Operating system detection routines.
@@ -178,11 +182,14 @@ public class OperatingSystem
     *           "https://","mailto:" or "file://").
     */
    public static void displayURL(String url) {
-
+      // Check Customized External Program first
+	  if(launchExternalProgram(url)) return;
+	  
       // first let's check if we have an external protocol program defined
       String command = null;
       String protocol = "";
       java.net.URL urlUrl = null;
+	  
       try {
          urlUrl = new java.net.URL(url);
          protocol = urlUrl.getProtocol();
@@ -262,7 +269,41 @@ public class OperatingSystem
          }
       }
    }
-
+   
+	 /** 
+	 * @param url
+	 * @return true when found external program and has been launched; false when not found external program.
+	 */
+   	private static boolean launchExternalProgram(String url){
+      // first let's check if we have an external protocol program defined
+	  try {
+		  	Properties properties = ExternalProgramConfig.getInstance().getEtnPgmProps();
+			String count = properties.getProperty("etn.pgm.support.total.num");
+			if(count != null && count.length() > 0){
+				int total = Integer.parseInt(count);
+				for(int i=1;i<=total;i++){
+					String program = properties.getProperty("etn.pgm."+i+".command.name");	  					
+					if(url.toLowerCase().startsWith(program.toLowerCase())){
+					  String params = url.substring(program.length() + 1);
+					  params = params.replace(',',' ');
+					  String command;
+					  if (isWindows()) {
+						  command=properties.getProperty("etn.pgm."+i+".command.window")+" "+params;
+					  }else{
+						  command=properties.getProperty("etn.pgm."+i+".command.unix")+" "+params;
+					  }
+					  log.info("Execute External Program: "+command);
+					  execute(command);
+					  return true;
+				    }
+				}
+			}
+	  }catch(Exception exx){
+			  log.warn("Unable to run External Program: "+ exx.getMessage());
+	  }
+	  return false;
+   }
+   
    public static int execute(String command) {
 
       int exitCode = -1;
@@ -359,4 +400,6 @@ public class OperatingSystem
    } //}}}
 
    //}}}
+   
+   
 }

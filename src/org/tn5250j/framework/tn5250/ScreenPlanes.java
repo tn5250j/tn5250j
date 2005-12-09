@@ -25,6 +25,9 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import java.util.Properties;
+
+import org.tn5250j.ExternalProgramConfig;
 import org.tn5250j.TN5250jConstants;
 
 public class ScreenPlanes implements TN5250jConstants {
@@ -1047,6 +1050,35 @@ public class ScreenPlanes implements TN5250jConstants {
 		            }
 
 	         }
+			 // now lets check for External Program: .
+			 else if (!hs && x > 0 && x < lenScreen - 7 &&	                     
+	                     screen[x - 1] <= ' ' &&
+	                     screenGUI[x] == NO_GUI &&
+	                     (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+	                  ) {
+						Properties etnProps = ExternalProgramConfig.getInstance().getEtnPgmProps();
+						String count = etnProps.getProperty("etn.pgm.support.total.num");
+						  if(count != null && count.length() > 0){
+							int total = Integer.parseInt(count);
+							for(int i=1;i<=total;i++){
+								String program = etnProps.getProperty("etn.pgm."+i+".command.name");
+								String key="";
+								if(x + program.length() >= screen.length) break;
+								for(int j=0;j<=program.length();j++){
+									key+=screen[x+j];
+								}								
+								if(key.toLowerCase().equals(program.toLowerCase()+":")) {									 	
+									 hs = true;
+				                     screenGUI[x] = BUTTON_LEFT_EB;
+				                     while (screen[++x] > ' ') {
+				                        screenGUI[x] = BUTTON_MIDDLE_EB;
+				                     }
+				                     screenGUI[--x] = BUTTON_RIGHT_EB;
+									 break;
+							}
+						  }
+	                  }	        
+	        }
             else {
                // now lets check for MAILTO: .
                if (!hs && x > 0 && x < lenScreen - 7 &&
@@ -1075,6 +1107,7 @@ public class ScreenPlanes implements TN5250jConstants {
                   }
                }
             }
+			
 	         if (!retHS && hs)
 	            retHS = true;
 

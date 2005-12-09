@@ -44,6 +44,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -62,6 +64,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -109,8 +112,12 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
    JPanel levelPanel = new JPanel();
    JPanel appenderPanel = new JPanel();
    JPanel externalPanel = new JPanel();
-
+   JPanel externalOpts = new JPanel();
+   JPanel externalOptPanel = new JPanel(
+         new FlowLayout(FlowLayout.CENTER, 30, 10));
+   
    JTable sessions = null;
+   JTable externals = null;
    GridBagConstraints gbc;
 
    // LoggingPanel Components
@@ -126,19 +133,28 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
    JButton removeButton = null;
    JButton connectButton = null;
    JButton applyButton = null;
-
+   
+   JButton cAddButton = null;
+   JButton cEditButton = null;
+   JButton cRemoveButton = null;
+   
+   
    // custom table model
    ConfigureTableModel ctm = null;
-
+   
+   CustomizedTableModel etm = null;
+   
    // The scroll pane that holds the table.
    JScrollPane scrollPane;
+   JScrollPane scrollPane2;
 
    // ListSelectionModel of our custom table.
    ListSelectionModel rowSM = null;
-
+   ListSelectionModel rowSM2 = null;
    // Properties
    Properties props = null;
-
+   Properties etnProps = null;
+   
    // property input structures
    JRadioButton intTABS = null;
    JRadioButton intMDI = null;
@@ -172,7 +188,8 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 
       props = ConfigureFactory.getInstance().getProperties(
             ConfigureFactory.SESSIONS);
-
+	  etnProps = ExternalProgramConfig.getInstance().getEtnPgmProps();
+	  
       try {
          jbInit();
       }
@@ -777,7 +794,76 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       externalPrograms.add(new JButton("..."));
 
       externalPanel.add(externalPrograms, BorderLayout.NORTH);
+	  
+	  //For Customized External Program
+      etm = new CustomizedTableModel();
+      // create a table using our custom table model
+      externals = new JSortTable(etm);	  
+	  externals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	  externals.setPreferredScrollableViewportSize(new Dimension(500, 100));
+	  externals.setShowGrid(false);
+      // Create the scroll pane and add the table to it.
+      scrollPane2 = new JScrollPane(externals);
+      scrollPane2
+            .setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+      scrollPane2
+            .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
+      // This will make the connect dialog react to two clicks instead of having
+      // to click on the selection and then clicking twice
+	  externals.addMouseListener(new MouseAdapter() {
+         public void mouseClicked(MouseEvent event) {
+            if (event.getClickCount() == 2) {
+               doActionConnect();
+            }
+         }
+      });
+
+      // Setup our selection model listener
+      rowSM2 = externals.getSelectionModel();
+      rowSM2.addListSelectionListener(new ListSelectionListener() {
+         public void valueChanged(ListSelectionEvent e) {
+            // Ignore extra messages.
+            if (e.getValueIsAdjusting())
+               return;
+            ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+            if (lsm.isSelectionEmpty()) {
+               // no rows are selected
+			   cEditButton.setEnabled(false);
+               cRemoveButton.setEnabled(false);
+               cAddButton.setEnabled(false);
+            }
+            else {
+               int selectedRow = lsm.getMinSelectionIndex();
+               // selectedRow is selected
+			   cEditButton.setEnabled(true);
+			   cRemoveButton.setEnabled(true);
+			   cAddButton.setEnabled(true);
+            }
+         }
+      });
+
+      // Setup panels
+	  JPanel cExternalPrograms = new JPanel();
+	  cExternalPrograms.setLayout(new BorderLayout());
+	  cExternalPrograms.setBorder(BorderFactory.createTitledBorder(LangTool.getString("customized.title")));	  
+	  externalOpts.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+	  externalOpts.add(scrollPane2, BorderLayout.CENTER);
+
+	  cExternalPrograms.add(externalOpts, BorderLayout.NORTH);
+	  cExternalPrograms.add(externalOptPanel, BorderLayout.SOUTH);
+      // sessionPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+
+      // add the option buttons
+	  cAddButton = addOptButton(LangTool.getString("ss.optAdd"), "cADD", externalOptPanel);
+
+	  cRemoveButton = addOptButton(LangTool.getString("ss.optDelete"), "cREMOVE",
+			  externalOptPanel, false);
+
+	  cEditButton = addOptButton(LangTool.getString("ss.optEdit"), "cEDIT",
+			  externalOptPanel, false);
+
+      externalPanel.add(cExternalPrograms, BorderLayout.CENTER);
    }
 
    private void doSomethingEntered() {
@@ -889,6 +975,43 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
          ctm.chgSession(selectedRow);
          sessions.requestFocus();
       }
+	  if (e.getActionCommand().equals("cADD")) {
+	         String name = ExternalProgramConfig.doEntry((JFrame) getParent(), null,
+					 etnProps);
+			 
+	         etm.addSession();
+	         // I we have only one row then select the first one so that
+	         // we do not get a selection index out of range problem.
+	         if (etm.getRowCount() == 1) {
+	            externals.getSelectionModel().setSelectionInterval(0, 0);
+	         }
+	         else {
+	            // Here we will select the entry that we just added.
+	            int selInterval = 0;
+	            for (int x = 0; x < externals.getRowCount(); x++) {
+	               if (((String) etm.getValueAt(x, 0)).equals(name))
+	                  selInterval = x;
+	            }
+				externals.getSelectionModel().setSelectionInterval(selInterval,
+	                  selInterval);
+	         }
+
+			 externals.requestFocus();
+
+	      }
+	  if (e.getActionCommand().equals("cEDIT")) {
+	         int selectedRow = rowSM2.getMinSelectionIndex();
+			 ExternalProgramConfig.doEntry((JFrame) getParent(), (String) etm.getValueAt(
+		               selectedRow, 0), etnProps);
+			 etm.chgSession(selectedRow);
+	         externals.requestFocus();
+	  }
+	  
+	  if (e.getActionCommand().equals("cREMOVE")) {
+		  	removeExternalProgram();
+	        cEditButton.setEnabled(false);
+	        cRemoveButton.setEnabled(false);
+	  }
 
       if (e.getActionCommand().equals("CONNECT")) {
          doActionConnect();
@@ -937,7 +1060,9 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 
       ConfigureFactory.getInstance().saveSettings(ConfigureFactory.SESSIONS,
             "------ Session Information --------");
-
+	  ConfigureFactory.getInstance().saveSettings(ExternalProgramConfig.EXTERNAL_PROGRAM_REGISTRY_KEY,
+			  ExternalProgramConfig.EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME,
+			  ExternalProgramConfig.EXTERNAL_PROGRAM_HEADER);
       OptionAccessFactory.getInstance().reload();
    }
 
@@ -1047,6 +1172,44 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       int selectedRow = rowSM.getMinSelectionIndex();
       props.remove(ctm.getValueAt(selectedRow, 0));
       ctm.removeSession(selectedRow);
+   }
+   
+   private void removeExternalProgram() {
+      int selectedRow = rowSM2.getMinSelectionIndex();
+	  String propKey = (String)etm.getValueAt(selectedRow, 0);
+	  int num=0;
+      
+	  for (Enumeration e = etnProps.keys() ; e.hasMoreElements() ;) {
+		 String key = (String)e.nextElement();
+		 if(etnProps.getProperty(key) == propKey){
+			 String subKey = key.substring(8);
+			 int index = subKey.indexOf(".");
+			 num = Integer.parseInt(subKey.substring(0,index));
+			 break;
+		 }
+      }	
+	  Properties newProps = new Properties();
+	  String count = etnProps.getProperty("etn.pgm.support.total.num");
+	  if(count != null && count.length() > 0){
+		int total = Integer.parseInt(count);
+		for(int i=1;i<=total;i++){
+			int order =i;			
+			if(i > num) order = i -1;
+			if(i != num){
+				String program = etnProps.getProperty("etn.pgm."+i+".command.name");
+				String wCommand = etnProps.getProperty("etn.pgm."+i+".command.window");
+				String uCommand = etnProps.getProperty("etn.pgm."+i+".command.unix");
+				newProps.setProperty("etn.pgm."+order+".command.name",program);
+				newProps.setProperty("etn.pgm."+order+".command.window",wCommand);
+				newProps.setProperty("etn.pgm."+order+".command.unix",uCommand);
+			}
+		}
+		newProps.setProperty("etn.pgm.support.total.num",String.valueOf(total - 1));
+	  }
+	  
+	  etnProps.clear();
+	  etnProps.putAll(newProps);
+      etm.removeSession(selectedRow);
    }
 
    void intTABS_itemStateChanged(ItemEvent e) {
@@ -1331,7 +1494,166 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       }
 
    }
+   
+   class CustomizedExternalProgram {
+	   private String name;
+	   private String wCommand;
+	   private String uCommand;
+	   
+	   CustomizedExternalProgram(String name, String wCommand, String uCommand){
+		   this.name=name;
+		   this.wCommand=wCommand;
+		   this.uCommand=uCommand;
+	   }
 
+		public String toString(){		
+			return this.name;
+		}
+		
+		 /**
+		  * @see java.lang.Object#hashCode()
+		  */
+		public int hashCode() {
+			
+			return getName().hashCode();
+		} 
+	   
+	   	/**
+	   	 * @see java.lang.Object#equals(Object)
+	   	 */
+	    public boolean equals(Object other) {
+	        if ( !(other instanceof CustomizedExternalProgram) ) return false;
+			CustomizedExternalProgram castOther = (CustomizedExternalProgram) other;
+	        if(this.hashCode()!=castOther.hashCode()) return false;
+	        return true;
+	    }
+
+		public String getName() {
+			return name;
+		}
+		
+
+		public String getUCommand() {
+			return uCommand;
+		}
+		
+
+		public String getWCommand() {
+			return wCommand;
+		}
+		
+
+   }
+   class CustomizedTableModel extends AbstractTableModel implements
+   SortTableModel {
+
+	final String[] cols = { LangTool.getString("customized.name"),
+	      LangTool.getString("customized.window"),
+	      LangTool.getString("customized.unix") };
+	
+	Vector mySort = new Vector();
+	int sortedColumn = 0;
+	boolean isAscending = true;
+	
+	public CustomizedTableModel() {
+	   super();
+	   resetSorted();
+	}
+	
+	private void resetSorted() {
+	  mySort.clear();
+	  
+	  String count = etnProps.getProperty("etn.pgm.support.total.num");
+	  if(count != null && count.length() > 0){
+		int total = Integer.parseInt(count);
+		for(int i=1;i<=total;i++){
+			String program = etnProps.getProperty("etn.pgm."+i+".command.name");
+			String wCommand = etnProps.getProperty("etn.pgm."+i+".command.window");
+			String uCommand = etnProps.getProperty("etn.pgm."+i+".command.unix");
+			mySort.add(new CustomizedExternalProgram(program,wCommand,uCommand));
+		}
+	  }
+	   
+	   sortColumn(sortedColumn, isAscending);
+	}
+	
+	public boolean isSortable(int col) {
+	   if (col == 0)
+	      return true;
+	   else
+	      return false;
+	}
+	
+	public void sortColumn(int col, boolean ascending) {
+	   sortedColumn = col;
+	   isAscending = ascending;
+	   Collections.sort(mySort, new SessionComparator(col, ascending));
+	}
+	
+	public int getColumnCount() {
+	
+	   return cols.length;
+	}
+	
+	public String getColumnName(int col) {
+	   return cols[col];
+	}
+	
+	public int getRowCount() {
+	   return mySort.size();
+	}
+	
+	/*
+	 * Implement this so that the default session can be selected.
+	 */
+	public void setValueAt(Object value, int row, int col) {
+	
+	}
+	
+	public Object getValueAt(int row, int col) {
+		CustomizedExternalProgram c = (CustomizedExternalProgram)mySort.get(row);
+	   if (col == 0)
+	      return c.getName();
+	   if (col == 1)
+	      return c.getWCommand();
+	   if (col == 2) {
+	      return c.getUCommand();
+	   }
+	   return null;
+	
+	}
+	
+	public boolean isCellEditable(int row, int col) {
+      return false;
+	}
+	
+	/*
+	 * JTable uses this method to determine the default renderer/
+	 * editor for each cell.  If we didn't implement this method,
+	 * then the default column would contain text ("true"/"false"),
+	 * rather than a check box.
+	 */
+	public Class getColumnClass(int c) {
+	   return getValueAt(0, c).getClass();
+	}
+		
+	public void addSession() {
+	   resetSorted();
+	   fireTableRowsInserted(mySort.size() - 1, mySort.size() - 1);
+	}
+	
+	public void chgSession(int row) {
+	   resetSorted();
+	   fireTableRowsUpdated(row, row);
+	}
+	
+	public void removeSession(int row) {
+	   resetSorted();
+	   fireTableRowsDeleted(row, row);
+	}
+	
+	}
+	
    public class SessionComparator implements Comparator {
       protected int index;
       protected boolean ascending;
