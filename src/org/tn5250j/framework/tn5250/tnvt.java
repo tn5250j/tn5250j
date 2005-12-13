@@ -1389,9 +1389,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		sc.write((byte) screen52.getRows()); // store the current size
 		sc.write((byte) screen52.getColumns()); //    ""
 
-		//int cp = screen52.getCurrentPos(); // save off current position
+		int cp = screen52.getCurrentPos(); // save off current position
         // fix below submitted by Mitch Blevins
-        int cp = screen52.getScreenFields().getCurrentFieldPos(); 
+        //int cp = screen52.getScreenFields().getCurrentFieldPos(); 
         // save off current position
 		sc.write((byte) (cp >> 8 & 0xff)); //    ""
 		sc.write((byte) (cp & 0xff)); //    ""
