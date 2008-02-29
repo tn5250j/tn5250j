@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Properties;
+import java.util.Arrays;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -90,6 +91,8 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	// WVL - LDC : TR.000300 : Callback scenario from 5250
 	private boolean scan; // = false;
 	private static int STRSCAN = 1;
+    // WVL - LDC : 05/08/2005 : TFX.006253 - support STRPCCMD
+    private boolean strpccmd; // = false;    
 	private String user;
 	private String password;
 	private String library;
@@ -918,7 +921,61 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 		invited = true;
 	}
-
+    
+   // WVL - LDC : 05/08/2005 : TFX.006253 - Support STRPCCMD
+   private void strpccmd()
+   {
+      try
+      {
+         int str = 11;
+         char c;
+         ScreenPlanes planes = screen52.getPlanes();
+         c = planes.getChar(str);
+         boolean waitFor = !(c == 'a');
+         
+         StringBuffer command = new StringBuffer();
+         for (int i = str+1; i < 132; i++)
+         {
+            c = planes.getChar(i);
+            if (Character.isISOControl(c))
+               c = ' ';
+            command.append(c);
+         }
+         
+         String cmd = command.toString().trim();
+         
+         run(cmd, waitFor);
+      }
+      finally
+      {
+         strpccmd = false;
+         screen52.sendKeys(screen52.MNEMONIC_ENTER);
+      }
+   }
+   
+   // WVL - LDC : 05/08/2005 : TFX.006253 - Support STRPCCMD
+   private void run(String cmd, boolean waitFor)
+   {
+      try
+      {
+         log.debug("RUN cmd = " + cmd);
+         log.debug("RUN wait = " + waitFor);
+         
+         Runtime r = Runtime.getRuntime();
+         Process p = r.exec(cmd);
+         if (waitFor)
+         {
+            int result = p.waitFor();
+            log.debug("RUN result = " + result);
+         }
+      }
+      catch (Throwable t)
+      {
+         log.error(t);
+      }
+   }
+   
+   
 	// WVL - LDC : TR.000300 : Callback scenario from 5250
 	/**
 	 * Activate or deactivate the command scanning behaviour.
@@ -1137,6 +1194,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 //			}
 
 			try {
+            if (!strpccmd) {            
 				//               SwingUtilities.invokeAndWait(
 				//                  new Runnable () {
 				//                     public void run() {
@@ -1147,6 +1205,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				screen52.updateDirty();
 //				controller.validate();
 //				log.debug("update dirty");
+         } else {
+            strpccmd();
+         }
 			} catch (Exception exd) {
 				log.warn(" tnvt.run: " + exd.getMessage());
 				exd.printStackTrace();
@@ -1856,7 +1917,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				//            int rowc = screen52.getCurrentRow();
 				//            int colc = screen52.getCurrentCol();
 
-				switch (bk.getNextByte()) {
+				byte bytebk = bk.getNextByte();
+                 
+				switch (bytebk) {
 
 				case 1: // SOH - Start of Header Order
 					log.debug("SOH - Start of Header Order");
@@ -2061,7 +2124,37 @@ public final class tnvt implements Runnable, TN5250jConstants {
 					screen52.addField(attr, fLength, ffw0, ffw1, fcw1, fcw2);
 
 					break;
+            // WVL - LDC : 05/08/2005 : TFX.006253 - Support STRPCCMD
+            case -128: //STRPCCMD
+//          if (screen52.getCurrentPos() == 82) {
+               log.debug("STRPCCMD got a -128 command at " + screen52.getCurrentPos());
+               StringBuffer value = new StringBuffer();
+               int b;
+               char c;
+               int[] pco = new int[9];
+               int[] pcoOk = {0xfc, 0xd7, 0xc3, 0xd6, 0x40, 0x83, 0x80, 0xa1, 0x80};
 
+               for (int i = 0; i < 9; i++)
+               {
+                  b = bk.getNextByte();
+                  pco[i] = ((b & 0xff));
+                  c = ebcdic2uni(b);
+                  value.append(c);
+               }
+
+               // Check "PCO-String"
+               if (Arrays.equals(pco, pcoOk)) {
+                   strpccmd = true;
+               }
+               // we return in the stream to have all chars
+               // arrive at the screen for later processing
+               for (int i = 0; i < 9; i++)
+                  bk.setPrevByte();
+            //}
+            // no break: so every chars arrives
+            // on the screen for later parsing
+            //break;
+            
 				default: // all others must be output to screen
 					log.debug("all others must be output to screen");
 					byte byte0 = bk.getByteOffset(-1);
