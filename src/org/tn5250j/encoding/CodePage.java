@@ -3,7 +3,7 @@
  * Copyright:   Copyright (c) 2001, 2002, 2003
  * Company:
  * @author  Kenneth J. Pouncey
- *          rewritten by LDC, WVL, Luc
+ *          rewritten by LDC, WVL, Luc, master_jaf
  * @version 0.4
  *
  * Description:
@@ -27,24 +27,25 @@
 package org.tn5250j.encoding;
 
 /**
- *
+ * 
  * This class controls the translation from EBCDIC to ASCII and ASCII to EBCDIC
- *
+ * 
  */
-public abstract class CodePage
-{
-  protected CodePage(String encoding)
-  {
-    this.encoding = encoding;
-  }
+public abstract class CodePage {
+	
+	protected final String encoding;
 
-  public abstract char ebcdic2uni (int index);
-  public abstract byte uni2ebcdic (char index);
+	protected CodePage(String encoding) {
+		this.encoding = encoding;
+	}
 
-  public String getEncoding ()
-  {
-     return encoding;
-  }
+	public String getEncoding() {
+		return encoding;
+	}
+	
+	public abstract char ebcdic2uni(int index);
 
-  protected String encoding;
+	public abstract byte uni2ebcdic(char index);
+
+
 }

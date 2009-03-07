@@ -2,7 +2,7 @@
  * Title: JavaCodePage
  * Copyright:   Copyright (c) 2001, 2002, 2003
  * Company:
- * @author  LDC, WVL, Luc
+ * @author  LDC, WVL, Luc, master_jaf
  * @version 0.4
  *
  * Description:
@@ -25,65 +25,68 @@
  */
 package org.tn5250j.encoding;
 
-import java.io.UnsupportedEncodingException;
-import java.io.CharConversionException;
-import sun.io.CharToByteConverter;
-import sun.io.ByteToCharConverter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 
-class JavaCodePage extends CodePage {
-  JavaCodePage(String encoding, CharToByteConverter c2b, ByteToCharConverter b2c)
-  {
-    super(encoding);
-    this.c2b = c2b;
-    this.b2c = b2c;
-  }
+final class JavaCodePage extends CodePage {
 
-  public char ebcdic2uni (int index)
-  {
-    try
-    {
-      return b2c.convertAll(new byte[] { (byte) index})[0];
-    }
-    catch (CharConversionException cce)
-    {
-      return ' ';
-    }
-  }
+	private final CharsetEncoder encoder;
+	private final CharsetDecoder decoder;
 
-  public byte uni2ebcdic (char index)
-  {
-    try
-    {
-      return c2b.convertAll(new char[] {index})[0];
-    }
-    catch (CharConversionException cce)
-    {
-      return 0x0;
-    }
-  }
+	public JavaCodePage(String encoding, CharsetEncoder encoder, CharsetDecoder decoder) {
+		super(encoding);
+		this.encoder = encoder;
+		this.decoder = decoder;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tn5250j.encoding.CodePage#ebcdic2uni(int)
+	 */
+	public char ebcdic2uni(int codepoint) {
+		try {
+			final ByteBuffer in = ByteBuffer.wrap(new byte[] { (byte) codepoint });
+			final CharBuffer out = this.decoder.decode(in);
+			return out.get(0);
+		} catch (Exception cce) {
+			return ' ';
+		}
+	}
 
-  public static CodePage getCodePage(String encoding)
-  {
-    CharToByteConverter c2b;
-    ByteToCharConverter b2c;
-    try
-    {
-      c2b = CharToByteConverter.getConverter(encoding);
-      b2c = ByteToCharConverter.getConverter(encoding);
-    }
-    catch (UnsupportedEncodingException uee)
-    {
-      c2b = null;
-      b2c = null;
-    }
+	/* (non-Javadoc)
+	 * @see org.tn5250j.encoding.CodePage#uni2ebcdic(char)
+	 */
+	public byte uni2ebcdic(char character) {
+		try {
+			final CharBuffer in = CharBuffer.wrap(new char[] {character});
+			final ByteBuffer out = this.encoder.encode(in);
+			return out.get(0);
+		} catch (Exception cce) {
+			return 0x0;
+		}
+	}
 
-    if ( (c2b != null) && (b2c != null) )
-      return new JavaCodePage(encoding, c2b, b2c);
+	/**
+	 * @param encoding
+	 * @return A new {@link CodePage} object OR null, if not available.
+	 */
+	public static CodePage getCodePage(final String encoding) {
+		CharsetDecoder dec = null;
+		CharsetEncoder enc = null;
+		try {
+			final Charset cs = java.nio.charset.Charset.forName(encoding);
+			dec = cs.newDecoder();
+			enc = cs.newEncoder();
+		} catch (Exception e) {
+			enc = null;
+			dec = null;
+		}
+		if ((enc != null) && (dec != null)) {
+			return new JavaCodePage(encoding, enc, dec);
+		}
+		return null;
+	}
 
-    return null;
-  }
-
-
-  private CharToByteConverter c2b;
-  private ByteToCharConverter b2c;
 }
