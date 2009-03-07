@@ -89,7 +89,7 @@ public class SpoolExporter extends TN5250jFrame {
 
       this.setTitle(LangTool.getString("spool.title"));
 
-      this.setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
+      this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
       this.getContentPane().add(createFilterPanel(), BorderLayout.NORTH);
 

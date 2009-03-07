@@ -54,7 +54,7 @@ public class Sessions implements SessionsInterface,ActionListener {
             ses = (Session5250)sessions.get(x);
             if (ses.isConnected() && ses.isSendKeepAlive()) {
                ses.getVT().sendHeartBeat();
-               log.info(" sent heartbeat to " +  ses.getSessionName());
+               log.debug(" sent heartbeat to " +  ses.getSessionName());
             }
          }
          catch (Exception ex) {

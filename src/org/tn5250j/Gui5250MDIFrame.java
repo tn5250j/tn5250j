@@ -80,9 +80,9 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
       myFrameList = new Vector(3);
 
       if (sequence > 0)
-         setTitle("tn5250j <" + sequence + ">- " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+         setTitle("tn5250j <" + sequence + ">- " + TN5250jConstants.VERSION_INFO);
       else
-         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+         setTitle("tn5250j - " + TN5250jConstants.VERSION_INFO);
 
       if (packFrame)
          pack();
@@ -591,7 +591,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
        // implementation keeps the frame from leaving the desktop.
        public void setBoundsForFrame(JComponent f, int x, int y, int w, int h) {
 
-         log.info(" we are adjusting ");
+         log.debug(" we are adjusting/moving a frame");
          if (f instanceof MyInternalFrame == false) {
            super.setBoundsForFrame(f, x, y, w, h); // only deal w/internal frames
          }

@@ -456,7 +456,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    public void getFocusForMe() {
-      this.grabFocus();
+      this.requestFocusInWindow();
    }
 
    public boolean isFocusTraversable () {

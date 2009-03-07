@@ -38,6 +38,7 @@ import java.net.Socket;
 import java.util.Properties;
 import java.util.Arrays;
 
+import javax.net.ssl.SSLSocket;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -174,6 +175,18 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	public boolean isConnected() {
 
 		return connected;
+	}
+	
+	/**
+	 * @return true when SSL is used and socket is connected.
+	 * @see {@link #isConnected()}
+	 */
+	public boolean isSslSocket() {
+	   if (this.connected && this.sock != null && this.sock instanceof SSLSocket) {
+	      return true;
+	   } else {
+	      return false;
+	   }
 	}
 
 	public final void setProxy(String proxyHost, String proxyPort) {

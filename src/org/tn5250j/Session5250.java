@@ -20,15 +20,16 @@
  */
 package org.tn5250j;
 
-import java.util.*;
+import java.util.Properties;
+import java.util.Vector;
 
-import org.tn5250j.interfaces.SessionInterface;
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.interfaces.ScanListener;
+import org.tn5250j.event.SessionListener;
+import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.interfaces.ScanListener;
+import org.tn5250j.interfaces.SessionInterface;
 
 /**
  * A host session
@@ -37,11 +38,9 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
 
    private String configurationResource;
    private String sessionName;
-   private boolean connected;
    private int sessionType;
    protected Properties sesProps;
    private Vector listeners;
-   private String sslType;
    private boolean heartBeat;
    String propFileName;
    protected SessionConfig sesConfig;
@@ -95,6 +94,32 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       else
          return vt.isConnected();
 
+   }
+   
+   /**
+    * @return true when SSL is used and socket is connected.
+    * @see {@link tnvt#isSslSocket()}
+    */
+   public boolean isSslSocket() {
+      if (this.vt != null) {
+         return this.vt.isSslSocket();
+      } else {
+         return false;
+      }
+   }
+   
+   /**
+    * @return true when SSL is configured but not necessary in use
+    * @see {@link #isSslSocket()}
+    */
+   public boolean isSslConfigured() {
+      if (sesProps.get(TN5250jConstants.SSL_TYPE) != null) {
+         final String sslType = (String) sesProps.get(TN5250jConstants.SSL_TYPE);
+         if (!TN5250jConstants.SSL_TYPE_NONE.equals(sslType)) {
+            return true;
+         }
+      }
+      return false;
    }
 
    public boolean isSendKeepAlive() {
@@ -163,7 +188,8 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       if (sesProps.containsKey(SESSION_PROXY_HOST))
          vt.setProxy((String)sesProps.getProperty(SESSION_PROXY_HOST),
                      proxyPort);
-
+      
+      String sslType = null;
       if (sesProps.containsKey(TN5250jConstants.SSL_TYPE)) {
          sslType = (String)sesProps.getProperty(TN5250jConstants.SSL_TYPE);
       }
@@ -171,7 +197,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
          // set default to none
          sslType = TN5250jConstants.SSL_TYPE_NONE;
       }
-
       vt.setSSLType(sslType);
 
       if (sesProps.containsKey(SESSION_CODE_PAGE))
@@ -209,10 +234,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
    }
 
    public void disconnect() {
-
-      connected = false;
       vt.disconnect();
-
    }
 
    // WVL - LDC : TR.000300 : Callback scenario from 5250

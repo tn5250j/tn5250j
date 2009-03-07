@@ -31,10 +31,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Insets;
 //import java.awt.Graphics2D;
 import java.awt.font.*;
 import java.awt.geom.AffineTransform;
+
+import javax.swing.Icon;
 import javax.swing.JPopupMenu;
 import java.awt.Point;
 import javax.swing.SwingUtilities;
@@ -42,6 +45,8 @@ import java.awt.Toolkit;
 import java.awt.GraphicsEnvironment;
 import javax.swing.ImageIcon;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tn5250j.tools.system.OperatingSystem;
 
@@ -56,9 +61,11 @@ public class GUIGraphicsUtils {
    private static String defaultFont;
 
    // Application icons
-   private static ImageIcon focused;
-   private static ImageIcon unfocused;
-   private static ImageIcon tnicon;
+//   private static ImageIcon focused;
+//   private static ImageIcon unfocused;
+   private static ImageIcon lockImgOpen;
+   private static ImageIcon lockImgClose;
+   private static List<Image> tnicon;
 
    public static void draw3DLeft(Graphics g,int which,
                                           int x,int y,
@@ -1542,30 +1549,56 @@ public class GUIGraphicsUtils {
       return new ImageIcon( file);
    }
 
-   public static ImageIcon getFocusedIcon () {
+//   public static ImageIcon getFocusedIcon () {
+//
+//      if (focused == null)
+//         focused = createImageIcon("focused.gif");
+//
+//      return focused;
+//
+//   }
+//
+//   public static ImageIcon getUnFocusedIcon () {
+//
+//      if (unfocused == null)
+//         unfocused = createImageIcon("unfocused.gif");
+//
+//      return unfocused;
+//
+//   }
 
-      if (focused == null)
-         focused = createImageIcon("focused.gif");
-
-      return focused;
-
+   /**
+    * @see {@link #getClosedLockIcon()}
+    * @return an image that lock like a opened lock
+    */
+   public static ImageIcon getOpenLockIcon() {
+      if (lockImgOpen == null) {
+         lockImgOpen = createImageIcon("lock-open.png");
+      }
+      return lockImgOpen;
    }
 
-   public static ImageIcon getUnFocusedIcon () {
-
-      if (unfocused == null)
-         unfocused = createImageIcon("unfocused.gif");
-
-      return unfocused;
-
+   /**
+    * @see {@link #getOpenLockIcon()}
+    * @return an image that lock like a closed lock
+    */
+   public static ImageIcon getClosedLockIcon() {
+      if (lockImgClose == null) {
+         lockImgClose = createImageIcon("lock.png");
+      }
+      return lockImgClose;
    }
 
-   public static ImageIcon getApplicationIcon () {
+   
+   public final static List<Image> getApplicationIcons () {
 
-      if (tnicon == null)
-         tnicon = createImageIcon("tnicon.jpg");
-
-      return tnicon;
+	   if (tnicon == null) {
+		   tnicon = new ArrayList<Image>();
+		   tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-16x16.png")).getImage());
+		   tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-32x32.png")).getImage());
+		   tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png")).getImage());
+	   }
+	   return tnicon;
    }
 
 }

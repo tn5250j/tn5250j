@@ -34,7 +34,6 @@ import java.net.*;
 
 import org.tn5250j.tools.logging.*;
 import org.tn5250j.tools.*;
-import org.tn5250j.tools.system.OperatingSystem;
 import org.tn5250j.event.*;
 import org.tn5250j.framework.Tn5250jController;
 import org.tn5250j.gui.TN5250jSplashScreen;
@@ -89,31 +88,21 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
    }
 
 
+   /**
+    * we only want to try and load the Nimbus look and feel if it is not
+	* for the MAC operating system.
+    */
    private void loadLookAndFeel() {
-
-      // we only want to try and load the Kunststoff look and feel if it is not
-      //  for the MAC operating system.
-      if (!OperatingSystem.isMacOS()) {
-
-         try  {
-            UIManager.setLookAndFeel("com.incors.plaf.kunststoff.KunststoffLookAndFeel");
-         }
-         catch(Exception e) {
-            try {
-               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException e1) {
-               e1.printStackTrace();
-            } catch (InstantiationException e1) {
-               e1.printStackTrace();
-            } catch (IllegalAccessException e1) {
-               e1.printStackTrace();
-            } catch (UnsupportedLookAndFeelException e1) {
-               e1.printStackTrace();
-            }
-         }
-
-      }
+	   try  {
+		   UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+	   }
+	   catch(Exception e) {
+		   try {
+			   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		   } catch (Exception ex) {
+			   // we don't care. Cause this should always work.
+		   }
+	   }
    }
 
    /**

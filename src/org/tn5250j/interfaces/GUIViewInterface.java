@@ -20,28 +20,29 @@
  */
 package org.tn5250j.interfaces;
 
-import javax.swing.*;
-
-import org.tn5250j.gui.TN5250jFrame;
-import org.tn5250j.SessionGUI;
 import org.tn5250j.My5250;
-import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.gui.TN5250jFrame;
 
 public abstract class GUIViewInterface extends TN5250jFrame {
 
+   private static final long serialVersionUID = 1L;
+   
    protected static My5250 me;
    protected static int sequence;
    protected int frameSeq;
-   protected ImageIcon focused = null;
-   protected ImageIcon unfocused = null;
+//   protected ImageIcon focused = null;
+//   protected ImageIcon unfocused = null;
+//   protected ImageIcon lockImg = null;
 
    public GUIViewInterface(My5250 m) {
       super();
       me = m;
-      focused = GUIGraphicsUtils.getFocusedIcon();
-      unfocused = GUIGraphicsUtils.getUnFocusedIcon();
+//      focused = GUIGraphicsUtils.getFocusedIcon();
+//      unfocused = GUIGraphicsUtils.getUnFocusedIcon();
+//      this.lockImg = GUIGraphicsUtils.getClosedLockIcon();
    }
 
    public int getFrameSequence() {
@@ -49,23 +50,11 @@ public abstract class GUIViewInterface extends TN5250jFrame {
       return frameSeq;
    }
 
-   /**
-    * Set the icons to be used for focused and unfocused
-    *
-    * @param focused
-    * @param unfocused
-    */
-   public void setIcons(ImageIcon focused, ImageIcon unfocused) {
-
-      this.focused = focused;
-      this.unfocused = unfocused;
-   }
-
-   public abstract void addSessionView(String descText,SessionGUI session);
+   public abstract void addSessionView(String descText, SessionGUI session);
    public abstract void removeSessionView(SessionGUI targetSession);
    public abstract boolean containsSession(SessionGUI session);
    public abstract int getSessionViewCount();
-   public abstract SessionGUI getSessionAt( int index);
+   public abstract SessionGUI getSessionAt(int index);
    public abstract void onSessionJump(SessionJumpEvent jumpEvent);
    public abstract void onSessionChanged(SessionChangeEvent changeEvent);
 

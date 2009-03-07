@@ -725,14 +725,11 @@ public class SessionPopup implements TN5250jConstants {
       new SendScreenImageToFile((Frame)SwingUtilities.getRoot(session),session);
    }
 
-   public void changeConnection() {
+   private final void changeConnection() {
 
       if (vt.isConnected()) {
-
          vt.disconnect();
-
-      }
-      else {
+      } else {
          // lets set this puppy up to connect within its own thread
          Runnable connectIt = new Runnable() {
             public void run() {
@@ -747,9 +744,7 @@ public class SessionPopup implements TN5250jConstants {
          Thread ct = new Thread(connectIt);
          ct.setDaemon(true);
          ct.start();
-
       }
-
    }
 
 }

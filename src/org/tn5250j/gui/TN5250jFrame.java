@@ -21,19 +21,22 @@
 
 package org.tn5250j.gui;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 
 import org.tn5250j.tools.GUIGraphicsUtils;
 
 public class TN5250jFrame extends JFrame {
 
+   private static final long serialVersionUID = 1L;
+   
    protected boolean packFrame = false;
 
    public TN5250jFrame() {
       super();
-      setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
-
+      setIconImages(GUIGraphicsUtils.getApplicationIcons());
    }
 
    public void centerFrame() {

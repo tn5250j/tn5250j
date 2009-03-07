@@ -72,7 +72,7 @@ public class SqlWizard extends JFrame {
 
       try {
 
-         setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
+         setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
          // set title
          setTitle(LangTool.getString("xtfr.wizardTitle"));

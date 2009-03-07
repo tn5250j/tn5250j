@@ -44,13 +44,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
 import java.util.*;
 
 import javax.swing.AbstractAction;
@@ -64,7 +57,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -87,6 +79,7 @@ import javax.swing.text.*;
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.gui.SortTableModel;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.OptionAccessFactory;
@@ -97,6 +90,10 @@ import org.tn5250j.tools.AlignLayout;
 public class Connect extends JDialog implements ActionListener, ChangeListener,
       TN5250jConstants {
 
+   private static final long serialVersionUID = 1L;
+   
+   volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(Connect.class);
+   
    // panels to be displayed
    JPanel configOptions = new JPanel();
    JPanel sessionPanel = new JPanel();
@@ -180,8 +177,6 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
    private JTextField browser;
    private JTextField mailer;
 
-   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
-
    public Connect(Frame frame, String title, Properties prop) {
 
       super(frame, title, true);
@@ -194,7 +189,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
          jbInit();
       }
       catch (Exception ex) {
-         ex.printStackTrace();
+         LOG.warn("Error while initializing!", ex);
       }
    }
 
@@ -273,6 +268,8 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
          }
       });
 
+      this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
+      
       // now show the world what we and they can do
       this.setVisible(true);
 

@@ -100,7 +100,7 @@ public class SocketConnector {
       	logger.error(ex);
       }
       if (socket == null) {
-      	logger.info("No socket was created");
+      	logger.warn("No socket was created");
       }
       return socket;
   }

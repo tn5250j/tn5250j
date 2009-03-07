@@ -483,8 +483,6 @@ public class ColorAttributesPanel extends AttributesPanel {
          s.setColorHexAttr(getSchemaProp(prefix + ".colorHexAttr"));
          schemas.addItem(s);
       }
-
-      System.out.println(" loaded schemas " + numSchemas);
    }
 
    private int getSchemaProp(String key) {

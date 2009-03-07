@@ -178,7 +178,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 					+ cert.getPublicKey().getFormat() + "\n");
 
 			int accept = JOptionPane
-					.showConfirmDialog(null, certInfo, "Unknown Certificate",
+					.showConfirmDialog(null, certInfo, "Unknown Certificate - Do you accept it?",
 							javax.swing.JOptionPane.YES_NO_OPTION);
 			if (accept != JOptionPane.YES_OPTION) {
 				throw new java.security.cert.CertificateException(

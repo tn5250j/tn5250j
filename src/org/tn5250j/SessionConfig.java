@@ -20,28 +20,32 @@
  */
 package org.tn5250j;
 
-import java.util.*;
-import javax.swing.*;
-import java.io.*;
-import java.text.MessageFormat;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import org.tn5250j.tools.LangTool;
-import org.tn5250j.event.SessionConfigListener;
+import javax.swing.JOptionPane;
+
 import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.tools.LangTool;
 
 /**
  * A host session configuration object
  */
-public class SessionConfig implements TN5250jConstants {
+public class SessionConfig {
 
    private String configurationResource;
    private String sessionName;
-   private boolean connected;
-   private int sessionType;
    private Properties sesProps;
    private Vector listeners;
    private String sslType;
@@ -95,10 +99,10 @@ public class SessionConfig implements TN5250jConstants {
          return;
       }
 
-      java.util.Vector targets = null;
+      Vector targets = null;
       synchronized (this) {
          if (listeners != null) {
-            targets = (java.util.Vector) listeners.clone();
+            targets = (Vector) listeners.clone();
          }
       }
 
@@ -358,7 +362,7 @@ public class SessionConfig implements TN5250jConstants {
    public synchronized void addSessionConfigListener(SessionConfigListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new Vector(3);
       }
       listeners.addElement(listener);
 

@@ -25,38 +25,46 @@
  */
 package org.tn5250j;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.util.Properties;
 
-import java.util.*;
-
-import javax.swing.event.ChangeListener;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.event.SessionJumpListener;
-import org.tn5250j.event.SessionJumpEvent;
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.event.SessionJumpListener;
+import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.TabClosedListener;
-import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.gui.ButtonTabComponent;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.gui.TN5250jTabbedPane;
+import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class Gui5250Frame extends GUIViewInterface implements
+public final class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
-                                                    TN5250jConstants,
-                                                    SessionListener,
                                                     TabClosedListener,
+                                                    SessionListener,
                                                     SessionJumpListener {
 
+   private static final long serialVersionUID = 1L;
+   
    BorderLayout borderLayout1 = new BorderLayout();
-   TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
-   private int selectedIndex = 0;
+   JTabbedPane sessionPane = new JTabbedPane();
    private boolean embedded = false;
    private boolean hideTabBar = false;
-   public static int count = 0;
    private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
 
@@ -66,9 +74,8 @@ public class Gui5250Frame extends GUIViewInterface implements
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       try  {
          jbInit();
-      }
-      catch(Exception e) {
-         e.printStackTrace();
+      } catch(Exception e) {
+         log.warn("Error during initializing!", e);
       }
    }
 
@@ -87,7 +94,6 @@ public class Gui5250Frame extends GUIViewInterface implements
       sessionPane.setDoubleBuffered(false);
 
       sessionPane.addChangeListener(this);
-      sessionPane.addtabCloseListener(this);
 
       Properties props = ConfigureFactory.getInstance().
                            getProperties(ConfigureFactory.SESSIONS);
@@ -98,9 +104,6 @@ public class Gui5250Frame extends GUIViewInterface implements
       if (!hideTabBar) {
          this.getContentPane().add(sessionPane, BorderLayout.CENTER);
       }
-
-      if (count == 0) 
-         setSessionTitle();
 
       if (packFrame)
          pack();
@@ -153,10 +156,10 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       switch (jumpEvent.getJumpDirection()) {
 
-         case JUMP_PREVIOUS:
+         case TN5250jConstants.JUMP_PREVIOUS:
             prevSession();
             break;
-         case JUMP_NEXT:
+         case TN5250jConstants.JUMP_NEXT:
             nextSession();
             break;
       }
@@ -165,29 +168,17 @@ public class Gui5250Frame extends GUIViewInterface implements
    private void nextSession() {
 
       final int index = sessionPane.getSelectedIndex();
-      sessionPane.setForegroundAt(index,Color.black);
-      sessionPane.setIconAt(unfocused,index);
-
 
       SwingUtilities.invokeLater(new Runnable() {
          public void run() {
             int index1 = index;
             if (index1 < sessionPane.getTabCount() - 1) {
                sessionPane.setSelectedIndex(++index1);
-               sessionPane.setForegroundAt(index1,Color.blue);
-               sessionPane.setIconAt(focused,index1);
-
             }
             else {
                sessionPane.setSelectedIndex(0);
-               sessionPane.setForegroundAt(0,Color.blue);
-               sessionPane.setIconAt(focused,0);
-
             }
-
-            ((SessionGUI)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
-
-            setSessionTitle();
+            updateSessionTitle();
        }
       });
 
@@ -196,213 +187,183 @@ public class Gui5250Frame extends GUIViewInterface implements
    private void prevSession() {
 
       final int index = sessionPane.getSelectedIndex();
-      sessionPane.setForegroundAt(index,Color.black);
-      sessionPane.setIconAt(unfocused,index);
 
       SwingUtilities.invokeLater(new Runnable() {
          public void run() {
             int index1 = index;
             if (index1 == 0) {
                sessionPane.setSelectedIndex(sessionPane.getTabCount() - 1);
-               sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-               sessionPane.setIconAt(focused,sessionPane.getSelectedIndex());
-
             }
             else {
                sessionPane.setSelectedIndex(--index1);
-               sessionPane.setForegroundAt(index1,Color.blue);
-               sessionPane.setIconAt(focused,index1);
-
             }
-
-            ((SessionGUI)sessionPane.getComponent(sessionPane.getSelectedIndex())).grabFocus();
-            setSessionTitle();
+            updateSessionTitle();
        }
       });
    }
-
+   
+   /* (non-Javadoc)
+    * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+    */
    public void stateChanged(ChangeEvent e) {
-
-      TN5250jTabbedPane p = (TN5250jTabbedPane)e.getSource();
-
-      p.setForegroundAt(selectedIndex,Color.black);
-      p.setIconAt(unfocused,selectedIndex);
-
-      SessionGUI sg = (SessionGUI)p.getComponentAt(selectedIndex);
-      sg.setVisible(false);
-
-      sg = (SessionGUI)p.getSelectedComponent();
-
-      if (sg == null)
-         return;
-
-      sg.setVisible(true);
-      sg.grabFocus();
-
-      selectedIndex = p.getSelectedIndex();
-      p.setForegroundAt(selectedIndex,Color.blue);
-      p.setIconAt(focused,selectedIndex);
-
-      setSessionTitle();
-
+      JTabbedPane p = (JTabbedPane)e.getSource();
+      setSessionTitle((SessionGUI)p.getSelectedComponent());
    }
 
-   private void setSessionTitle() {
-
-      SessionGUI ses = getSessionAt(selectedIndex);
-
-      if (ses != null && ses.getAllocDeviceName() != null && ses.isConnected()) {
-         if (sequence - 1 > 0)
-            setTitle(ses.getAllocDeviceName() + " - tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-         else
-            setTitle(ses.getAllocDeviceName() + " - tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+   /**
+    * Sets the frame title to the same as the newly selected tab's title.
+    * 
+    * @param session can be null, but then nothing happens ;-)
+    */
+   private void setSessionTitle(final SessionGUI session) {
+      if (session != null) {
+         if (session != null && session.getAllocDeviceName() != null && session.isConnected()) {
+            if (sequence - 1 > 0)
+               setTitle(session.getAllocDeviceName() + " - tn5250j <" + sequence + ">");
+            else
+               setTitle(session.getAllocDeviceName() + " - tn5250j");
+         }
+         else {
+            if (sequence - 1 > 0)
+               setTitle("tn5250j <" + sequence + ">");
+            else
+               setTitle("tn5250j");
+         }
+      } else {
+         setTitle("tn5250j");
       }
-      else {
-
-         if (sequence - 1 > 0)
-            setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-         else
-            setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
-      }
-
-		count +=1;
-
+   }
+   
+   /**
+    * Sets the main frame title to the same as the current selected tab's title.
+    * @see {@link #setSessionTitle(SessionGUI)}
+    */
+   private void updateSessionTitle() {
+      SessionGUI selectedComponent = (SessionGUI)this.sessionPane.getSelectedComponent();
+      setSessionTitle(selectedComponent);
    }
 
-   public void addSessionView(String tabText,SessionGUI sessionView) {
-
-      final SessionGUI session = sessionView;
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.GUIViewInterface#addSessionView(java.lang.String, org.tn5250j.SessionGUI)
+    */
+   public void addSessionView(final String tabText, final SessionGUI newsesui) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
+         // put Session just in the main content window and don't create any tabs
 
-         this.getContentPane().add(session, BorderLayout.CENTER);
-         session.addSessionListener(this);
+         this.getContentPane().add(newsesui, BorderLayout.CENTER);
+         newsesui.addSessionListener(this);
 
-         session.resizeMe();
+         newsesui.resizeMe();
          repaint();
          if (packFrame)
             pack();
          else
             validate();
          embedded = true;
-         session.grabFocus();
-         setSessionTitle();
+         newsesui.requestFocusInWindow();
+         setSessionTitle(newsesui);
       }
       else {
 
          if (hideTabBar && sessionPane.getTabCount() == 0 ) {
-            SessionGUI ses = null;
+            // remove first component in the main window,
+            // create first tab and put first session into first tab 
+
+            SessionGUI firstsesgui = null;
             for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
                if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
-                  ses = (SessionGUI)(this.getContentPane().getComponent(x));
+                  firstsesgui = (SessionGUI)(this.getContentPane().getComponent(x));
                   this.getContentPane().remove(x);
                   break;
                }
             }
 
-            sessionPane.addTab(tabText,ses,focused);
-            final SessionGUI finalSession = ses;
+            createTabWithSessionContent(tabText, firstsesgui, false);
 
-            SwingUtilities.invokeLater(new Runnable() {
-               public void run() {
-                  finalSession.resizeMe();
-                  finalSession.repaint();
-               }
-            });
-
-
-            if (ses.getAllocDeviceName() != null)
-               sessionPane.setTitleAt(0,ses.getAllocDeviceName());
+            if (firstsesgui.getAllocDeviceName() != null)
+               sessionPane.setTitleAt(0,firstsesgui.getAllocDeviceName());
             else
-               sessionPane.setTitleAt(0,ses.getSessionName());
-
-            ses.addSessionListener(this);
-            ses.addSessionJumpListener(this);
+               sessionPane.setTitleAt(0,firstsesgui.getSessionName());
 
             this.getContentPane().add(sessionPane, BorderLayout.CENTER);
             SwingUtilities.invokeLater(new Runnable() {
                public void run() {
                   repaint();
-                  finalSession.grabFocus();
                }
             });
          }
 
-         sessionPane.addTab(tabText,session,focused);
-
-         sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.black);
-         sessionPane.setIconAt(unfocused,sessionPane.getSelectedIndex());
-
-         sessionPane.setSelectedIndex(sessionPane.getTabCount()-1);
-         sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-         sessionPane.setIconAt(focused,sessionPane.getSelectedIndex());
-
-         session.addSessionListener(this);
-         session.addSessionJumpListener(this);
-
-         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-               session.resizeMe();
-               session.repaint();
-               session.grabFocus();
-            }
-         });
+         createTabWithSessionContent(tabText, newsesui, true);
       }
    }
 
-   public void tabClosed(int tabToBeClosed){
+   /**
+    * @param tabText
+    * @param sesgui
+    * @param focus TRUE is the new tab should be focused, otherwise FALSE
+    */
+   private final void createTabWithSessionContent(final String tabText, final SessionGUI sesgui, final boolean focus) {
+      
+      sessionPane.addTab(tabText, determineIconForSession(sesgui.session), sesgui);
+      final int idx = sessionPane.indexOfComponent(sesgui);
+      // add the [x] to the tab
+      final ButtonTabComponent bttab = new ButtonTabComponent(this.sessionPane);
+      bttab.addTabCloseListener(this);
+      sessionPane.setTabComponentAt(idx, bttab);
 
-      me.closeSession(this.getSessionAt(tabToBeClosed));
+      // add listeners
+      sesgui.addSessionListener(this);
+      sesgui.addSessionJumpListener(this);
+      sesgui.addSessionListener(bttab);
+
+      // visual cleanups
+      SwingUtilities.invokeLater(new Runnable() {
+         public void run() {
+            sesgui.resizeMe();
+            sesgui.repaint();
+            if (focus) {
+               sessionPane.setSelectedIndex(idx);
+               sesgui.requestFocusInWindow();
+            }
+         }
+      });
    }
 
-   public void removeSessionView(SessionGUI targetSession) {
+   /**
+    * Event to be executed, when a tab is closed
+    * 
+    * @param tabToBeClosed
+    */
+   public void onTabClosed(int tabToBeClosed){
+      final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
+      me.closeSession(sessionAt);
+   }
 
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.GUIViewInterface#removeSessionView(org.tn5250j.SessionGUI)
+    */
+   public void removeSessionView(SessionGUI targetSession) {
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < getContentPane().getComponentCount(); x++) {
-
             if (getContentPane().getComponent(x) instanceof SessionGUI) {
                getContentPane().remove(x);
             }
          }
       }
       else {
-
          int index = sessionPane.indexOfComponent(targetSession);
          log.info("session found and closing down " + index);
          targetSession.removeSessionListener(this);
          targetSession.removeSessionJumpListener(this);
          sessionPane.remove(index);
-         
-         // get the tab count to be used later
-         int tabs = sessionPane.getTabCount();
-
-         // if the index removed is the same as the number of tabs
-         //   we need to decrement the index offset or we will get
-         //   an error because we went over the tab limit which starts
-         //   at zero offset.
-         if (tabs == index)
-            index--;
-
-         if (tabs > 0 && index < tabs) {
-            sessionPane.setSelectedIndex(index);
-            sessionPane.setForegroundAt(index,Color.blue);
-            sessionPane.setIconAt(focused,index);
-            ((SessionGUI)sessionPane.getComponentAt(index)).requestFocus();
-         }
-         else {
-
-            if (tabs > 0) {
-               sessionPane.setSelectedIndex(0);
-               sessionPane.setForegroundAt(0,Color.blue);
-               sessionPane.setIconAt(focused,0);
-               ((SessionGUI)sessionPane.getComponentAt(0)).requestFocus();
-            }
-
-         }
       }
    }
 
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.GUIViewInterface#getSessionViewCount()
+    */
    public int getSessionViewCount() {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
@@ -418,6 +379,9 @@ public class Gui5250Frame extends GUIViewInterface implements
          return sessionPane.getTabCount();
    }
 
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.GUIViewInterface#getSessionAt(int)
+    */
    public SessionGUI getSessionAt( int index) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
@@ -436,33 +400,56 @@ public class Gui5250Frame extends GUIViewInterface implements
       }
    }
 
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.GUIViewInterface#onSessionChanged(org.tn5250j.event.SessionChangeEvent)
+    */
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
       Session5250 ses5250 = (Session5250)changeEvent.getSource();
       SessionGUI ses = ses5250.getGUI();
-
+      final int tabidx = sessionPane.indexOfComponent(ses);
+      // be aware, when the first tab is not shown 
+      if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
+         this.sessionPane.setIconAt(tabidx, determineIconForSession(ses5250));
+      }
       switch (changeEvent.getState()) {
-         case STATE_CONNECTED:
+         case TN5250jConstants.STATE_CONNECTED:
 
-            final String d = ses.getAllocDeviceName();
-            if (d != null) {
-               System.out.println(changeEvent.getState() + " " + d);
-               final int index = sessionPane.indexOfComponent(ses);
-               if (index >= 0) {
+            final String devname = ses.getAllocDeviceName();
+            if (devname != null) {
+               if (log.isDebugEnabled()) { this.log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname); }
+               if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
                   Runnable tc = new Runnable () {
                      public void run() {
-                        sessionPane.setTitleAt(index,d);
+                        sessionPane.setTitleAt(tabidx,devname);
                      }
                   };
                   SwingUtilities.invokeLater(tc);
                }
-               setSessionTitle();
-
+               updateSessionTitle();
             }
             break;
       }
    }
 
+   /**
+    * @param ses5250
+    * @return Icon or NULL depending on session State
+    */
+   private static final Icon determineIconForSession(Session5250 ses5250) {
+      if (ses5250 != null && ses5250.isSslConfigured()) {
+         if (ses5250.isSslSocket()) {
+            return GUIGraphicsUtils.getClosedLockIcon();
+         } else {
+            return GUIGraphicsUtils.getOpenLockIcon();
+         }
+      }
+      return null;
+   }
+   
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.GUIViewInterface#containsSession(org.tn5250j.SessionGUI)
+    */
    public boolean containsSession(SessionGUI session) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
