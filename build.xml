@@ -2,32 +2,26 @@
 
 <project name="tn5250j" default="info" basedir=".">
 
+	<!-- import user preferences first -->
+	<property file="${basedir}/build.${user.name}.properties" />
+	<!-- import project preferences last -->
+	<property file="${basedir}/build.properties" />
+	
     <!-- global properties -->
-
-   <property name="name" value="tn5250j"/>
-   <property name="Name" value="Tn5250j"/>
-   <property name="version" value="0.6.1 Alpha 1"/>
-   <property name="year" value="2001-2005"/>
-
-   <property name="source.dir" value="${basedir}/src" />
-   <property name="build.dir" value="${basedir}/build" />
-   <property name="build.classes.dir" value="${build.dir}"/>
-   <property name="dist.dir" value="${basedir}/dist" />
-   <property name="javadoc.dir" value="${build.dir}/javadoc" />
-   <property name="lib.dir" value="${basedir}/lib" />
-   <property name="conf.dir" value="${basedir}/conf" />
-   <property name="IzPack.dir" value="c:\IzPack\" />
-
-   <property name="main.class" value="org.tn5250j.My5250"/>
-   <property name="runtime.classpath" value="activation.jar mailapi.jar smtp.jar jython.jar jt400.jar itext.jar kunststoff.jar log4j-1.2.8.jar"/>
-
-	<!-- compile options -->
-    <property name="debug" value="off"/>
-    <property name="optimize" value="off"/>
-
-    <!-- <property name="jarname" value="my5250.jar" />-->
+	<property name="source.dir" value="${basedir}/src" />
+	<property name="resource.dir" value="${basedir}/resources" />
+	<property name="tests.dir" value="${basedir}/tests" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="build.classes.dir" value="${build.dir}"/>
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="javadoc.dir" value="${build.dir}/javadoc" />
+	<property name="rtm.lib.dir" value="${basedir}/lib/runtime" /> <!-- runtime libs -->
+	<property name="dev.lib.dir" value="${basedir}/lib/development" /> <!-- development libs -->
+	
+	<property name="compile.source" value="1.5" />
+	<property name="compile.target" value="1.5" />
+	
     <property name="jarname" value="${name}.jar" />
-    <!--<property name="zipsrcname" value="tn5250j_src.zip" />-->
     <property name="dist.base.name" value="${name}-${version}" />
     <property name="dist.src.name" value="${dist.base.name}-src" />
     <property name="dist.bin.name" value="${dist.base.name}-bin" />
@@ -37,8 +31,7 @@
     <!-- classpath -->
     <path id="classpath">
        <pathelement path="${build.classes.dir}" />
-       <pathelement path="${conf.dir}" />
-       <fileset dir="${lib.dir}" >
+       <fileset dir="${rtm.lib.dir}" >
           <include name="*.jar" />
           <include name="*.zip" />
        </fileset>
@@ -55,14 +48,16 @@
        <exclude name="build.xml"/>
        <exclude name="org/**"/>
        <exclude name="*.gif"/>
-
     </fileset>
 
     <!-- files for source distribution -->
     <!--<fileset dir="${source.dir}" id="dist.src">-->
     <fileset dir="${basedir}" id="dist.src">
        <include name="build.xml"/>
+       <include name="build.properties"/>
        <include name="src/**"/>
+       <include name="resources/**"/>
+       <include name="installer/**"/>
     </fileset>
 
   <!-- ===================================================================== -->
@@ -154,7 +149,7 @@
     <!-- To use debugging add the debug="true" parameter to javac            -->
     <!-- =================================================================== -->
     <target name="compile" depends="prepare,testjava" description="Compile your source-files">
-        <javac srcdir="${source.dir}"
+        <javac srcdir="${source.dir}" target="${compile.target}" source="${compile.source}"
                 destdir="${build.classes.dir}"
                 excludes="**/Cvs/**,**/*.ini" >
             <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
@@ -213,8 +208,10 @@
         <jar jarfile="${build.dir}/${jarname}">
             <fileset dir="${build.classes.dir}"
                     includes="*org/**"/>
-            <fileset dir="${source.dir}"
-                    includes="*.properties,*.props,*.gif,*.jpg"/>
+            <fileset dir="${source.dir}" 
+            	includes="*.properties,*.props,*.gif,*.jpg"/>
+            <fileset dir="${resource.dir}" 
+            	includes="*.properties,*.props,*.gif,*.jpg"/>
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
                 <attribute name="Class-Path" value="${runtime.classpath}"/>
@@ -243,7 +240,7 @@
           <fileset dir="${build.dir}">
             <include name="${jarname}"/>
           </fileset>
-          <fileset dir="${lib.dir}">
+          <fileset dir="${rtm.lib.dir}">
             <include name="**.jar"/>
             <include name="**.JAR"/>
             <include name="**.zip"/>
@@ -271,19 +268,19 @@
                 file="${build.dir}/${jarname}">
         </copy>
         <copy todir="${dist.dir}/${dist.base.name}"
-                file="${lib.dir}/jython.jar">
+                file="${rtm.lib.dir}/jython.jar">
         </copy>
         <copy todir="${dist.dir}/${dist.base.name}"
-                file="${lib.dir}/jythonlib.jar">
+                file="${rtm.lib.dir}/jythonlib.jar">
         </copy>
         <!--copy todir="${dist.dir}/${dist.base.name}"
-                file="${lib.dir}/jt400.jar">
+                file="${rtm.lib.dir}/jt400.jar">
         </copy -->
         <copy todir="${dist.dir}/${dist.base.name}"
-                file="${lib.dir}/itext.jar">
+                file="${rtm.lib.dir}/itext.jar">
         </copy>
         <copy todir="${dist.dir}/${dist.base.name}"
-        		file="${lib.dir}/log4j-1.2.8.jar">
+        		file="${rtm.lib.dir}/log4j-1.2.8.jar">
         </copy>
     </target>
 
@@ -337,9 +334,10 @@
     </target>
 
     <target name= "dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
-        <tar tarfile="${dist.dir}/${dist.src.name}.tar"
-            basedir="${dist.dir}/"
-            includes="${dist.base.name}/**">
+        <tar destfile="${dist.dir}/${dist.src.name}.tar"
+        	casesensitive="true"
+            basedir="${dist.dir}"
+            includes="**">
         </tar>
         <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
         <delete file="${dist.dir}/${dist.src.name}.tar"/>
@@ -349,7 +347,7 @@
   <target name="generate-installer" depends="dist" description="Creates installer using IzPack">
 
     <!-- Allows us to use the IzPack Ant task -->
-    <taskdef name="izpack" classpath="${basedir}/lib/compiler.jar"
+    <taskdef name="izpack" classpath="${IzPack.dir}/lib/compiler.jar"
              classname="com.izforge.izpack.ant.IzPackTask"/>
 
     <!-- Copies the files to the dist directory -->
@@ -364,16 +362,16 @@
        <fileset dir="${build.dir}">
           <include name="${jarname}" />
        </fileset>
-      <fileset dir="${dist.dir}/${dist.base.name}/src/installer/">
+      <fileset dir="${dist.dir}/${dist.base.name}/installer">
         <include name="**"/>
       </fileset>
-      <fileset dir="${dist.dir}/${dist.base.name}/src/">
+      <fileset dir="${dist.dir}/${dist.base.name}/resources">
         <include name="readme.txt"/>
         <include name="COPYING"/>
         <include name="tn5250jSplash.jpg"/>
         <include name="tnicon.jpg"/>
       </fileset>
-      <fileset dir="${lib.dir}">
+      <fileset dir="${rtm.lib.dir}">
         <include name="**"/>
       </fileset>
     </copy>
@@ -397,14 +395,14 @@
 
 <!-- start jar bundler task -->
 	<taskdef name="jarbundler"
-	                  classpath="${lib.dir}/jarbundler-1.4.jar"
+	                  classpath="${dev.lib.dir}/jarbundler-1.4.jar"
 	                  classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
 	
     <target name= "dist-bin-jarbundle" depends="dist-bin-prepare"  description="Prepares jar bundle binary distribution">
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
                    mainclass="org.tn5250j.My5250"
-                   icon="${source.dir}/tnicon.icns"
+                   icon="${resource.dir}/tnicon.icns"
                    version="${version}"
                    infostring="${Name} ${version}, (c) ${year}"
                    aboutmenuname="${Name}"
@@ -412,7 +410,7 @@
                    developmentregion="English"
                    signature="????"
                    type="APPL"
-                   jvmversion="1.4+"
+                   jvmversion="1.5+"
                    vmoptions="-Xmx256m"
                    smalltabs="true"
                    antialiasedgraphics="true"

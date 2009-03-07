@@ -4,14 +4,15 @@
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="lib/jt400.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="lib/itext.jar"/>
-	<classpathentry kind="lib" path="lib/jythonlib.jar"/>
-	<classpathentry kind="lib" path="lib/jython.jar"/>
-	<classpathentry kind="lib" path="lib/mail.jar"/>
-	<classpathentry kind="lib" path="lib/mailapi.jar"/>
-	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="lib/development/junit-4.5.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/activation.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/itext.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jt400.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jython.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jythonlib.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/kunststoff.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/mailapi.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/smtp.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
