@@ -41,7 +41,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
    private int sessionType;
    protected Properties sesProps;
    private Vector listeners;
-   private SessionChangeEvent sce;
    private String sslType;
    private boolean heartBeat;
    String propFileName;
@@ -64,7 +63,6 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       this.configurationResource = configurationResource;
       this.sessionName = sessionName;
       sesProps = props;
-      sce = new SessionChangeEvent(this);
 
       if (sesProps.containsKey(SESSION_HEART_BEAT))
          heartBeat = true;
@@ -315,6 +313,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
          for (int i = 0; i < size; i++) {
             SessionListener target =
                     (SessionListener)listeners.elementAt(i);
+            SessionChangeEvent sce = new SessionChangeEvent(this);
             sce.setState(state);
             target.onSessionChanged(sce);
          }

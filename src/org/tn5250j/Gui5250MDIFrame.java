@@ -325,7 +325,8 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-      SessionGUI ses = (SessionGUI)changeEvent.getSource();
+      Session5250 ses5250 = (Session5250)changeEvent.getSource();
+      SessionGUI ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
          case STATE_CONNECTED:

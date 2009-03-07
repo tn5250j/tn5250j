@@ -27,7 +27,6 @@ package org.tn5250j;
 
 import java.util.*;
 import java.io.*;
-import javax.swing.UIManager;
 import javax.swing.*;
 
 import java.awt.*;
@@ -777,7 +776,8 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
-      SessionGUI ses = (SessionGUI)changeEvent.getSource();
+      Session5250 ses5250 = (Session5250)changeEvent.getSource();
+      SessionGUI ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
          case STATE_REMOVE:
