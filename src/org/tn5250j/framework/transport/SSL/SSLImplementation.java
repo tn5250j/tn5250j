@@ -27,23 +27,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.Socket;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.swing.JOptionPane;
-
 import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.swing.JOptionPane;
 
 import org.tn5250j.framework.transport.SSLInterface;
-
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -57,8 +53,6 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  *  
  */
 public class SSLImplementation implements SSLInterface, X509TrustManager {
-
-	SecureRandom prng = null;
 
 	SSLContext sslContext = null;
 
@@ -99,21 +93,9 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 					.getDefaultAlgorithm());
 			usertmf.init(userks);
 			userTrustManagers = usertmf.getTrustManagers();
-			ArrayList issuersList = new ArrayList();
-			for (int i = 0; i < userTrustManagers.length; i++) {
-				if (userTrustManagers[i] instanceof X509TrustManager)
-					issuersList.addAll(Arrays
-							.asList(((X509TrustManager) userTrustManagers[i])
-									.getAcceptedIssuers()));
-			}
-			X509Certificate[] acceptedIssuers = new X509Certificate[issuersList
-					.size()];
-			acceptedIssuers = (X509Certificate[]) issuersList
-					.toArray(acceptedIssuers);
-
 			logger.debug("Initializing SSL Context");
 			sslContext = SSLContext.getInstance(sslType);
-			sslContext.init(userkmf.getKeyManagers(), new TrustManager[] {this}, prng);
+			sslContext.init(userkmf.getKeyManagers(), new TrustManager[] {this}, null);
 		} catch (Exception ex) {
 			logger.error("Error initializing SSL [" + ex.getMessage() + "]");
 		}
@@ -165,12 +147,18 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 	public void checkServerTrusted(X509Certificate[] chain, String type)
 			throws CertificateException {
 		try {
-			for (int i = 0; i < userTrustManagers.length; i++) {
-				if (userTrustManagers[i] instanceof X509TrustManager)
-					((X509TrustManager) userTrustManagers[i])
-							.checkServerTrusted(chain, type);
-			}
-			return;
+		   for (int i = 0; i < userTrustManagers.length; i++) {
+		      if (userTrustManagers[i] instanceof X509TrustManager) {
+		         X509TrustManager trustManager = (X509TrustManager) userTrustManagers[i];
+		         X509Certificate[] calist = trustManager.getAcceptedIssuers();
+		         if (calist.length > 0) {
+		            trustManager.checkServerTrusted(chain, type);
+		         } else {
+		            throw new CertificateException("Empty list of accepted issuers (a.k.a. root CA list).");
+		         }
+		      }
+		   }
+		   return;
 		} catch (CertificateException ce) {
 			X509Certificate cert = chain[0];
 			String certInfo = "Version: " + cert.getVersion() + "\n";
