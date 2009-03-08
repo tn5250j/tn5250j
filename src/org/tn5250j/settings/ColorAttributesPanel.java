@@ -66,7 +66,6 @@ public class ColorAttributesPanel extends AttributesPanel {
                 Object obj = cb.getSelectedItem();
                 if (obj instanceof Schema) {
 
-                  System.out.println(" we got a schema ");
                   colorSchema = (Schema)obj;
                 }
                 else {
@@ -484,7 +483,6 @@ public class ColorAttributesPanel extends AttributesPanel {
          schemas.addItem(s);
       }
 
-      System.out.println(" loaded schemas " + numSchemas);
    }
 
    private int getSchemaProp(String key) {

@@ -46,19 +46,20 @@ import org.tn5250j.gui.TN5250jTabbedPane;
 
 public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
-                                                    TN5250jConstants,
                                                     SessionListener,
                                                     TabClosedListener,
                                                     SessionJumpListener {
 
-   BorderLayout borderLayout1 = new BorderLayout();
-   TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
-   private int selectedIndex = 0;
-   private boolean embedded = false;
-   private boolean hideTabBar = false;
-   public static int count = 0;
-   private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
+	private static final long serialVersionUID = 1L;
 
+	BorderLayout borderLayout1 = new BorderLayout();
+	TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
+	private int selectedIndex = 0;
+	private boolean embedded = false;
+	private boolean hideTabBar = false;
+	public static int count = 0;
+	
+	private transient final TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
    //Construct the frame
    public Gui5250Frame(My5250 m) {
@@ -153,10 +154,10 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       switch (jumpEvent.getJumpDirection()) {
 
-         case JUMP_PREVIOUS:
+         case TN5250jConstants.JUMP_PREVIOUS:
             prevSession();
             break;
-         case JUMP_NEXT:
+         case TN5250jConstants.JUMP_NEXT:
             nextSession();
             break;
       }
@@ -253,16 +254,16 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       if (ses != null && ses.getAllocDeviceName() != null && ses.isConnected()) {
          if (sequence - 1 > 0)
-            setTitle(ses.getAllocDeviceName() + " - tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+            setTitle(ses.getAllocDeviceName() + " - tn5250j <" + sequence + "> - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
          else
-            setTitle(ses.getAllocDeviceName() + " - tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+            setTitle(ses.getAllocDeviceName() + " - tn5250j - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
       }
       else {
 
          if (sequence - 1 > 0)
-            setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+            setTitle("tn5250j <" + sequence + "> - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
          else
-            setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+            setTitle("tn5250j - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
       }
 
 		count +=1;
@@ -442,7 +443,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       SessionGUI ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
-         case STATE_CONNECTED:
+         case TN5250jConstants.STATE_CONNECTED:
 
             final String d = ses.getAllocDeviceName();
             if (d != null) {

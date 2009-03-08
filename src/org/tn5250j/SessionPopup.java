@@ -521,7 +521,6 @@ public class SessionPopup implements TN5250jConstants {
          catch (Exception e) {
             System.out.println(e.getMessage());
          }
-         System.out.println(inter);
 
          sum += inter;
 
