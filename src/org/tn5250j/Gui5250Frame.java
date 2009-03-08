@@ -446,7 +446,9 @@ public class Gui5250Frame extends GUIViewInterface implements
 
             final String d = ses.getAllocDeviceName();
             if (d != null) {
-               System.out.println(changeEvent.getState() + " " + d);
+            	if (this.log.isDebugEnabled()) {
+            		this.log.debug(changeEvent.getState() + " " + d);
+            	}
                final int index = sessionPane.indexOfComponent(ses);
                if (index >= 0) {
                   Runnable tc = new Runnable () {
