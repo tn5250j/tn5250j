@@ -150,6 +150,7 @@
     <!-- =================================================================== -->
     <target name="compile" depends="prepare,testjava" description="Compile your source-files">
         <javac srcdir="${source.dir}" target="${compile.target}" source="${compile.source}"
+        		debug="${debug}"
                 destdir="${build.classes.dir}"
                 excludes="**/Cvs/**,**/*.ini" >
             <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
