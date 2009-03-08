@@ -66,7 +66,7 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 		extensionDir = new File(maindir + File.separatorChar + "ext");
 		log.info("plugin directory is: " + extensionDir.getAbsolutePath());
 		if (!extensionDir.exists()) {
-			log.warn("Plugin path '"+extensionDir.getAbsolutePath()+"' does not exist.");
+			log.warn("Plugin path '"+extensionDir.getAbsolutePath()+"' does not exist. No plugins will be loaded.");
 		}
 		this.setDaemon(true);
 		eventList = new ArrayList();
