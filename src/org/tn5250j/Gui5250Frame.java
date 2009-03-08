@@ -225,26 +225,27 @@ public class Gui5250Frame extends GUIViewInterface implements
    public void stateChanged(ChangeEvent e) {
 
       TN5250jTabbedPane p = (TN5250jTabbedPane)e.getSource();
+      if (selectedIndex < p.getTabCount()) {
+    	  p.setForegroundAt(selectedIndex,Color.black);
+    	  p.setIconAt(unfocused,selectedIndex);
 
-      p.setForegroundAt(selectedIndex,Color.black);
-      p.setIconAt(unfocused,selectedIndex);
+    	  SessionGUI sg = (SessionGUI)p.getComponentAt(selectedIndex);
+    	  sg.setVisible(false);
 
-      SessionGUI sg = (SessionGUI)p.getComponentAt(selectedIndex);
-      sg.setVisible(false);
+    	  sg = (SessionGUI)p.getSelectedComponent();
 
-      sg = (SessionGUI)p.getSelectedComponent();
+    	  if (sg == null)
+    		  return;
 
-      if (sg == null)
-         return;
+    	  sg.setVisible(true);
+    	  sg.grabFocus();
 
-      sg.setVisible(true);
-      sg.grabFocus();
+    	  selectedIndex = p.getSelectedIndex();
+    	  p.setForegroundAt(selectedIndex,Color.blue);
+    	  p.setIconAt(focused,selectedIndex);
 
-      selectedIndex = p.getSelectedIndex();
-      p.setForegroundAt(selectedIndex,Color.blue);
-      p.setIconAt(focused,selectedIndex);
-
-      setSessionTitle();
+    	  setSessionTitle();
+      }
 
    }
 
