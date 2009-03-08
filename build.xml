@@ -209,9 +209,9 @@
             <fileset dir="${build.classes.dir}"
                     includes="*org/**"/>
             <fileset dir="${source.dir}" 
-            	includes="*.properties,*.props,*.gif,*.jpg"/>
+            	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <fileset dir="${resource.dir}" 
-            	includes="*.properties,*.props,*.gif,*.jpg"/>
+            	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
                 <attribute name="Class-Path" value="${runtime.classpath}"/>
@@ -370,6 +370,7 @@
         <include name="COPYING"/>
         <include name="tn5250jSplash.jpg"/>
         <include name="tnicon.jpg"/>
+      	<include name="tn5250j-icon*.*"/>
       </fileset>
       <fileset dir="${rtm.lib.dir}">
         <include name="**"/>
