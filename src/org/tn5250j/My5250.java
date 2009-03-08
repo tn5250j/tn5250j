@@ -101,15 +101,9 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
          catch(Exception e) {
             try {
                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-               UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException e1) {
-               e1.printStackTrace();
-            } catch (InstantiationException e1) {
-               e1.printStackTrace();
-            } catch (IllegalAccessException e1) {
-               e1.printStackTrace();
-            } catch (UnsupportedLookAndFeelException e1) {
-               e1.printStackTrace();
+            } catch (Exception ex) {
+            	log.debug(ex.getMessage());
+            	// ignore, cause is not important for 
             }
          }
 
@@ -426,7 +420,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
    void startNewSession() {
 
-      int result = 2;
       String sel = "";
 
       if (sessionArgs != null && !sessionArgs[0].startsWith("-"))
@@ -676,7 +669,6 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       Sessions sess = manager.getSessions();
 
       log.info("number of active sessions we have " + sess.getCount());
-      int x = 0;
 
       String views = "";
       while (view.getSessionViewCount() > 0) {
