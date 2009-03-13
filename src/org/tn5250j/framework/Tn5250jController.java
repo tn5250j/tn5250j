@@ -66,7 +66,7 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 		extensionDir = new File(maindir + File.separatorChar + "ext");
 		log.info("plugin directory is: " + extensionDir.getAbsolutePath());
 		if (!extensionDir.exists()) {
-			extensionDir.mkdir();
+			log.warn("Plugin path '"+extensionDir.getAbsolutePath()+"' does not exist. No plugins will be loaded.");
 		}
 		this.setDaemon(true);
 		eventList = new ArrayList();
@@ -84,22 +84,24 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 	}
 
 	private void loadExt() {
-		File[] exts = extensionDir.listFiles();
-		for (int x = 0; x < exts.length; x++) {
-			if (exts[x].isDirectory()) {
-				String jarName =
-					exts[x].getAbsolutePath()
+		if (this.extensionDir.exists()) {
+			File[] exts = extensionDir.listFiles();
+			for (int x = 0; x < exts.length; x++) {
+				if (exts[x].isDirectory()) {
+					String jarName =
+						exts[x].getAbsolutePath()
 						+ File.separatorChar
 						+ exts[x].getName()
 						+ ".jar";
-				File jarFile = new File(jarName);
-				if (jarFile.exists()) {
-					Properties config = loadConfig(jarFile);
-					load(jarFile, config.getProperty("mainentry"), config);
-				} else {
-					log.warn(
-						"extension could not be loaded as the jar was not found: "
-							+ jarName);
+					File jarFile = new File(jarName);
+					if (jarFile.exists()) {
+						Properties config = loadConfig(jarFile);
+						load(jarFile, config.getProperty("mainentry"), config);
+					} else {
+						log.warn(
+								"extension could not be loaded as the jar was not found: "
+								+ jarName);
+					}
 				}
 			}
 		}
