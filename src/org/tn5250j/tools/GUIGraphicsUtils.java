@@ -1329,8 +1329,6 @@ public class GUIGraphicsUtils {
 
       int sw = 0;
       int sh = 0;
-      float scw = 1.0f;
-      float sch = 1.0f;
 
       Font k = null;
       LineMetrics l;
@@ -1563,7 +1561,7 @@ public class GUIGraphicsUtils {
    public static ImageIcon getApplicationIcon () {
 
       if (tnicon == null)
-         tnicon = createImageIcon("tnicon.jpg");
+         tnicon = createImageIcon("tnicon.png");
 
       return tnicon;
    }

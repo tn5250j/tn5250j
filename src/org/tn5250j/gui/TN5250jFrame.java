@@ -33,7 +33,6 @@ public class TN5250jFrame extends JFrame {
    public TN5250jFrame() {
       super();
       setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
-
    }
 
    public void centerFrame() {

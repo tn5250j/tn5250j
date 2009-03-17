@@ -47,7 +47,6 @@
        <exclude name="antbuild.txt"/>
        <exclude name="build.xml"/>
        <exclude name="org/**"/>
-       <exclude name="*.gif"/>
     </fileset>
 
     <!-- files for source distribution -->
@@ -214,7 +213,7 @@
             <fileset dir="${source.dir}" 
             	includes="*.properties,*.props,*.gif,*.jpg"/>
             <fileset dir="${resource.dir}" 
-            	includes="*.properties,*.props,*.gif,*.jpg"/>
+            	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
                 <attribute name="Class-Path" value="${runtime.classpath}"/>
@@ -372,7 +371,8 @@
         <include name="readme.txt"/>
         <include name="COPYING"/>
         <include name="tn5250jSplash.jpg"/>
-        <include name="tnicon.jpg"/>
+        <include name="tnicon.png"/>
+      	<include name="tnicon.ico"/>
       </fileset>
       <fileset dir="${rtm.lib.dir}">
         <include name="**"/>
@@ -405,7 +405,7 @@
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
                    mainclass="org.tn5250j.My5250"
-                   icon="${resource.dir}/tnicon.icns"
+                   icon="${resource.dir}/tnicon.ico"
                    version="${version}"
                    infostring="${Name} ${version}, (c) ${year}"
                    aboutmenuname="${Name}"
