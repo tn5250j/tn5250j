@@ -28,7 +28,9 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 
 public class TN5250jFrame extends JFrame {
 
-   protected boolean packFrame = false;
+	private static final long serialVersionUID = 7349671770294342782L;
+	
+	protected boolean packFrame = false;
 
    public TN5250jFrame() {
       super();
