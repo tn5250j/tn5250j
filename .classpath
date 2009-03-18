@@ -11,8 +11,8 @@
 	<classpathentry kind="lib" path="lib/runtime/jython.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jythonlib.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/kunststoff.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/mailapi.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/smtp.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/log4j-1.2.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

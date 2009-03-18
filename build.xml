@@ -281,7 +281,7 @@
                 file="${rtm.lib.dir}/itext.jar">
         </copy>
         <copy todir="${dist.dir}/${dist.base.name}"
-        		file="${rtm.lib.dir}/log4j-1.2.8.jar">
+        		file="${rtm.lib.dir}/log4j-1.2.15.jar">
         </copy>
     </target>
 
@@ -296,7 +296,7 @@
         <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
             basedir="${dist.dir}/${dist.base.name}"
             includes="**"
-            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar,log4j-1.2.8.jar">
+            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar,log4j-1.2.15.jar">
         </zip>
     </target>
 
