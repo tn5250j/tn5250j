@@ -41,7 +41,7 @@ public class Wizard extends JPanel implements Serializable {
    /** layout used */
    protected CardLayout cardLayout;
    /** list of wizard listeners registered with the bean */
-   transient protected Vector listeners;
+   transient protected Vector<WizardListener> listeners;
 
    /**
     * Create a <code>Wizard</code> component.
@@ -119,7 +119,7 @@ public class Wizard extends JPanel implements Serializable {
       // post nextBegin event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -145,7 +145,7 @@ public class Wizard extends JPanel implements Serializable {
       // Post nextComplete event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -198,7 +198,7 @@ public class Wizard extends JPanel implements Serializable {
       // post previousBegin event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -224,7 +224,7 @@ public class Wizard extends JPanel implements Serializable {
       // Post previousComplete event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -254,7 +254,7 @@ public class Wizard extends JPanel implements Serializable {
       // Post finished event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -285,7 +285,7 @@ public class Wizard extends JPanel implements Serializable {
       // Post Canceled event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -316,7 +316,7 @@ public class Wizard extends JPanel implements Serializable {
       // Post Help event
       //
       if (event != null) {
-         Enumeration e = listeners.elements();
+         Enumeration<WizardListener> e = listeners.elements();
          for (; e.hasMoreElements(); ) {
             WizardListener listener =
                (WizardListener) e.nextElement();
@@ -345,7 +345,7 @@ public class Wizard extends JPanel implements Serializable {
     */
    public void addWizardListener(WizardListener l) {
       if (listeners == null)
-         listeners = new Vector(3);
+         listeners = new Vector<WizardListener>(3);
 
       listeners.add(l);
    }

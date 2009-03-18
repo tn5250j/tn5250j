@@ -10,7 +10,7 @@ public class BootStrapper extends Thread {
    private Socket socket = null;
    private ServerSocket serverSocket = null;
    boolean listening = true;
-   private Vector listeners;
+   private Vector<BootListener> listeners;
    private BootEvent bootEvent;
 
    public BootStrapper() {
@@ -43,7 +43,7 @@ public class BootStrapper extends Thread {
    public synchronized void addBootListener(BootListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<BootListener>(3);
       }
       listeners.addElement(listener);
 

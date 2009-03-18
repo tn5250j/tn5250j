@@ -43,7 +43,7 @@ public class SessionConfig implements TN5250jConstants {
    private boolean connected;
    private int sessionType;
    private Properties sesProps;
-   private Vector listeners;
+   private Vector<SessionConfigListener> listeners;
    private String sslType;
    private boolean usingDefaults;
 
@@ -95,10 +95,10 @@ public class SessionConfig implements TN5250jConstants {
          return;
       }
 
-      java.util.Vector targets = null;
+      java.util.Vector<?> targets = null;
       synchronized (this) {
          if (listeners != null) {
-            targets = (java.util.Vector) listeners.clone();
+            targets = (java.util.Vector<?>) listeners.clone();
          }
       }
 
@@ -358,7 +358,7 @@ public class SessionConfig implements TN5250jConstants {
    public synchronized void addSessionConfigListener(SessionConfigListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<SessionConfigListener>(3);
       }
       listeners.addElement(listener);
 

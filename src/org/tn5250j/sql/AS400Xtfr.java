@@ -42,7 +42,7 @@ public class AS400Xtfr {
    private boolean connected;
    private ArrayList ffd;
    private tnvt vt;
-   private Vector listeners;
+   private Vector<FTPStatusListener> listeners;
    private FTPStatusEvent status;
    private boolean aborted;
    private char decChar;
@@ -159,7 +159,7 @@ public class AS400Xtfr {
    public synchronized void addFTPStatusListener(FTPStatusListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<FTPStatusListener>(3);
       }
       listeners.addElement(listener);
 
