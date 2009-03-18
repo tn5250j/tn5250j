@@ -13,10 +13,15 @@ package org.tn5250j.scripting;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import org.tn5250j.SessionGUI;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class ExecuteScriptAction extends AbstractAction {
-   String _scriptFile;
-   SessionGUI ses;
+	
+	private static final long serialVersionUID = 181938308216785668L;
+	private static final transient TN5250jLogger LOG = TN5250jLogger.getLogger(ExecuteScriptAction.class);
+	
+	private String _scriptFile;
+	private SessionGUI ses;
 
    public ExecuteScriptAction(String name, String scriptFile, SessionGUI session) {
       super(name);
@@ -25,7 +30,9 @@ public class ExecuteScriptAction extends AbstractAction {
    }
 
    public void actionPerformed(ActionEvent e) {
-      System.out.println("Invoking " + _scriptFile);
+	   if (LOG.isDebugEnabled()) {
+		   LOG.debug("Invoking " + _scriptFile);
+	   }
 
       try {
          InterpreterDriverManager.executeScriptFile(ses,_scriptFile);

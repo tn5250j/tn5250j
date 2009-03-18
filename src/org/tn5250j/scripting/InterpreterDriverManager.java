@@ -1,9 +1,11 @@
 // InterpreterDriverManager.java
 package org.tn5250j.scripting;
 
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.*;
 import org.tn5250j.SessionGUI;
+import org.tn5250j.tools.logging.TN5250jLogger;
 /**
  * Class for managing interpreter drivers.
  * This manager is responsible for keeping track of loaded
@@ -11,8 +13,11 @@ import org.tn5250j.SessionGUI;
  * of themselves with this manager when they are loaded.
  */
 public class InterpreterDriverManager {
-   private static Map _extensionDriverMap = new HashMap();
-   private static Map _languageDriverMap = new HashMap();
+	
+	private static final transient TN5250jLogger LOG = TN5250jLogger.getLogger(InterpreterDriverManager.class);
+	
+   private static Map<String, InterpreterDriver> _extensionDriverMap = new HashMap<String, InterpreterDriver>();
+   private static Map<String, InterpreterDriver> _languageDriverMap = new HashMap<String, InterpreterDriver>();
 
    private static final char EXTENSION_SEPARATOR = '.';
 
@@ -52,7 +57,7 @@ public class InterpreterDriverManager {
       InterpreterDriver driver
                   = (InterpreterDriver)_languageDriverMap.get(language);
       if (driver == null) {
-            System.out.println("No driver installed to handle language "
+    	  LOG.warn("No driver installed to handle language "
                       + language);
             return;
       }
@@ -74,7 +79,7 @@ public class InterpreterDriverManager {
       InterpreterDriver driver
          = (InterpreterDriver)_extensionDriverMap.get(extension);
       if (driver == null) {
-         System.out.println("No driver installed to handle extension "
+    	  LOG.warn("No driver installed to handle extension "
                                + extension);
          return;
       }
@@ -95,7 +100,7 @@ public class InterpreterDriverManager {
       InterpreterDriver driver
          = (InterpreterDriver)_extensionDriverMap.get(extension);
       if (driver == null) {
-         System.out.println("No driver installed to handle extension "
+    	  LOG.warn("No driver installed to handle extension "
                                + extension);
          return;
       }
