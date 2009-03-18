@@ -54,7 +54,7 @@
         </pack>
         <pack name="Logging with Log4j" required="no">
             <description>Enables the use of Log4j for logging instead of terminal - http://logging.apache.org/log4j/docs/</description>
-            <file targetdir="$INSTALL_PATH/lib" src="installer/log4j-1.2.8.jar"/>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/log4j-1.2.15.jar"/>
         </pack>
     </packs>
     <native name="ShellLink.dll" type="izpack"/>
