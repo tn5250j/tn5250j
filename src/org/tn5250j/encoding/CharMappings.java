@@ -40,14 +40,13 @@ public class CharMappings {
    public static final int NATIVE_CP = 0;
    public static final int TOOLBOX_CP = 1;
 
+   private static final HashMap<String,CodePage> map = new HashMap<String, CodePage>();
 
-   public static String[] getAvailableCodePages()
-   {
+   public static String[] getAvailableCodePages() {
       return  NativeCodePage.acp;
    }
 
-   public static String[] getAvailableCodePages(int which)
-   {
+   public static String[] getAvailableCodePages(int which) {
       switch (which) {
          case TOOLBOX_CP:
             return ToolboxCodePage.acp;
@@ -56,30 +55,25 @@ public class CharMappings {
       }
    }
 
-   public static CodePage getCodePage(String encoding)
-   {
-     if (map.containsKey(encoding))
-     {
+   public static CodePage getCodePage(String encoding) {
+     if (map.containsKey(encoding)) {
        return (CodePage) map.get(encoding);
      }
 
      CodePage cp = NativeCodePage.getCodePage(encoding);
-     if (cp != null)
-     {
+     if (cp != null) {
        map.put(encoding, cp);
        return cp;
      }
 
      cp = ToolboxCodePage.getCodePage(encoding);
-     if (cp != null)
-     {
+     if (cp != null) {
        map.put(encoding, cp);
        return cp;
      }
 
      cp = JavaCodePage.getCodePage(encoding);
-     if (cp != null)
-     {
+     if (cp != null) {
        map.put(encoding, cp);
        return cp;
      }
@@ -89,5 +83,4 @@ public class CharMappings {
      return NativeCodePage.getCodePage(DFT_ENC);
    }
 
-   private static final HashMap map = new HashMap();
 }

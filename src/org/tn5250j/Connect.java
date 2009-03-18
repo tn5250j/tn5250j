@@ -878,7 +878,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
             }
          }
          catch (Exception ex) {
-            System.out.println(ex.getMessage());
+        	 LOG.warn(ex.getMessage(), ex);
          }
       }
    }

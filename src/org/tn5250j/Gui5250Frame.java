@@ -417,7 +417,9 @@ public final class Gui5250Frame extends GUIViewInterface implements
 
             final String devname = ses.getAllocDeviceName();
             if (devname != null) {
-               if (log.isDebugEnabled()) { this.log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname); }
+               if (log.isDebugEnabled()) {
+               		this.log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname);
+               }
                if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
                   Runnable tc = new Runnable () {
                      public void run() {

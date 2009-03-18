@@ -64,7 +64,9 @@ import org.tn5250j.tools.LangTool;
  */
 public class TN5250jMultiSelectList extends JComponent implements Serializable {
 
-   // Button types
+	private static final long serialVersionUID = 1L;
+	
+// Button types
    protected static final String SELECT_ITEM 	= ">";
    protected static final String SELECT_ALL 	= ">>|";
    protected static final String DESELECT_ITEM = "<";
@@ -782,7 +784,6 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
            Object value = mainModel.getElementAt(indices[i]);
            boolean found = false;
            for (int j=0; j<values.length; j++) {
-               Object v = values[j];
                if (value == values[j]) {
                    found = true;
                    break;
@@ -805,25 +806,27 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
     * @param newIndices the indeces of the selected items
     */
    protected void doUpdate(JList list, Object values[], int newIndices[]) {
-      // Order is important. This must come before the updateView since
-      // it recreates the selection/source lists.
-       int nextIndex = getIndexFromItem(list, values[values.length - 1]);
+	   if (values!=null && values.length > 0 ) {
+		   // Order is important. This must come before the updateView since
+		   // it recreates the selection/source lists.
+		   int nextIndex = getIndexFromItem(list, values[values.length - 1]);
 
-       // account for the number of items being removed
-      nextIndex -= (values.length - 1);
+		   // account for the number of items being removed
+		   nextIndex -= (values.length - 1);
 
-      // recreate the lists based on the selected items
-       mainList.setSelectedIndices(newIndices);
-       updateView();
+		   // recreate the lists based on the selected items
+		   mainList.setSelectedIndices(newIndices);
+		   updateView();
 
-       // ready the next item in the list for selection
-       if (nextIndex < list.getModel().getSize()) {
-         list.setSelectedIndex(nextIndex);
-       }
-       else {
-         // select last item
-         list.setSelectedIndex(list.getModel().getSize() -1);
-       }
+		   // ready the next item in the list for selection
+		   if (nextIndex < list.getModel().getSize()) {
+			   list.setSelectedIndex(nextIndex);
+		   }
+		   else {
+			   // select last item
+			   list.setSelectedIndex(list.getModel().getSize() -1);
+		   }
+	   }
    }
 
    /**
@@ -864,7 +867,9 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
 
        //================== ActionListener interface methods ==================
 
-       /**
+	private static final long serialVersionUID = 1L;
+
+	/**
         * Invoked when an action occurs.
         */
        public void actionPerformed(ActionEvent event) {
@@ -903,7 +908,9 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
     */
    class SelectionButton extends JButton implements Serializable {
 
-      /**
+	private static final long serialVersionUID = 1L;
+
+	/**
       * Creates a new SelectionButton component.
       */
       SelectionButton(String text) {

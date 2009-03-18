@@ -292,13 +292,11 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
   {
     if (f == null)
     {
-      System.out.println("nullify font map");
       this.widthMap = null;
       this.heightMap = null;
       return;
     }
 
-    System.out.println("init font map");
     this.widthMap  = new int[MAX_POINT*2];
     this.heightMap = new int[MAX_POINT*2];
 

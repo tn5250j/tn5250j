@@ -42,7 +42,7 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
 
-public class My5250 implements BootListener,TN5250jConstants,SessionListener,
+public class My5250 implements BootListener,SessionListener,
                                  EmulatorActionListener {
 
    protected GUIViewInterface frame1;
@@ -149,7 +149,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       //    boot options
       if (!bootEvent.getNewSessionOptions().equals("null")) {
          // check if a session parameter is specified on the command line
-         String[] args = new String[NUM_PARMS];
+         String[] args = new String[TN5250jConstants.NUM_PARMS];
          parseArgs(bootEvent.getNewSessionOptions(), args);
 
 
@@ -301,7 +301,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
       if (m.sessionArgs == null && sessions.containsKey("emul.view") &&
             sessions.containsKey("emul.startLastView")) {
-         String[] sargs = new String[NUM_PARMS];
+         String[] sargs = new String[TN5250jConstants.NUM_PARMS];
          parseArgs(sessions.getProperty("emul.view"), sargs);
          m.sessionArgs = sargs;
       }
@@ -347,7 +347,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
                m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
 
-            m.sessionArgs = new String[NUM_PARMS];
+            m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
             m.parseArgs(sessions.getProperty(sel),m.sessionArgs);
             m.newSession(sel,m.sessionArgs);
          }
@@ -428,7 +428,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
       if (sel != null && sess.getCount() == 0
                   && sessions.containsKey(sel)){
-         sessionArgs = new String[NUM_PARMS];
+         sessionArgs = new String[TN5250jConstants.NUM_PARMS];
          parseArgs((String)sessions.getProperty(sel), sessionArgs);
       }
 
@@ -439,7 +439,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
 
          if (sel != null) {
             String selArgs = sessions.getProperty(sel);
-            sessionArgs = new String[NUM_PARMS];
+            sessionArgs = new String[TN5250jConstants.NUM_PARMS];
             parseArgs(selArgs, sessionArgs);
 
             newSession(sel,sessionArgs);
@@ -473,7 +473,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       }
 
       String selArgs = sessions.getProperty(ses.getSessionName());
-      sessionArgs = new String[NUM_PARMS];
+      sessionArgs = new String[TN5250jConstants.NUM_PARMS];
       parseArgs(selArgs, sessionArgs);
 
       newSession(ses.getSessionName(),sessionArgs);
@@ -497,46 +497,46 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       String session = args[0];
 
       // Start loading properties
-      sesProps.put(SESSION_HOST,session);
+      sesProps.put(TN5250jConstants.SESSION_HOST,session);
 
       if (isSpecified("-e",args))
-         sesProps.put(SESSION_TN_ENHANCED,"1");
+         sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED,"1");
 
       if (isSpecified("-p",args)) {
-         sesProps.put(SESSION_HOST_PORT,getParm("-p",args));
+         sesProps.put(TN5250jConstants.SESSION_HOST_PORT,getParm("-p",args));
       }
 
       if (isSpecified("-f",args))
          propFileName = getParm("-f",args);
 
       if (isSpecified("-cp",args))
-         sesProps.put(SESSION_CODE_PAGE ,getParm("-cp",args));
+         sesProps.put(TN5250jConstants.SESSION_CODE_PAGE ,getParm("-cp",args));
 
       if (isSpecified("-gui",args))
-         sesProps.put(SESSION_USE_GUI,"1");
+         sesProps.put(TN5250jConstants.SESSION_USE_GUI,"1");
 
       if (isSpecified("-132",args))
-         sesProps.put(SESSION_SCREEN_SIZE,SCREEN_SIZE_27X132_STR);
+         sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE,TN5250jConstants.SCREEN_SIZE_27X132_STR);
       else
-         sesProps.put(SESSION_SCREEN_SIZE,SCREEN_SIZE_24X80_STR);
+         sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE,TN5250jConstants.SCREEN_SIZE_24X80_STR);
 
       // are we to use a socks proxy
       if (isSpecified("-usp",args)) {
 
          // socks proxy host argument
          if (isSpecified("-sph",args)) {
-            sesProps.put(SESSION_PROXY_HOST ,getParm("-sph",args));
+            sesProps.put(TN5250jConstants.SESSION_PROXY_HOST ,getParm("-sph",args));
          }
 
          // socks proxy port argument
          if (isSpecified("-spp",args))
-            sesProps.put(SESSION_PROXY_PORT ,getParm("-spp",args));
+            sesProps.put(TN5250jConstants.SESSION_PROXY_PORT ,getParm("-spp",args));
       }
 
       // are we to use a ssl and if we are what type
       if (isSpecified("-sslType",args)) {
 
-         sesProps.put(SSL_TYPE,getParm("-sslType",args));
+         sesProps.put(TN5250jConstants.SSL_TYPE,getParm("-sslType",args));
       }
 
 
@@ -552,15 +552,15 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
             dnParam = "UNKNOWN_HOST";
           }
 
-        sesProps.put(SESSION_DEVICE_NAME ,dnParam);
+        sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME ,dnParam);
       }
       else if (isSpecified("-dn",args)){
 
-         sesProps.put(SESSION_DEVICE_NAME ,getParm("-dn",args));
+         sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME ,getParm("-dn",args));
       }
 
       if (isSpecified("-hb",args))
-         sesProps.put(SESSION_HEART_BEAT,"1");
+         sesProps.put(TN5250jConstants.SESSION_HEART_BEAT,"1");
 
       int sessionCount = manager.getSessions().getCount();
 
@@ -769,7 +769,7 @@ public class My5250 implements BootListener,TN5250jConstants,SessionListener,
       SessionGUI ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
-         case STATE_REMOVE:
+         case TN5250jConstants.STATE_REMOVE:
             closeSession(ses);
             break;
       }

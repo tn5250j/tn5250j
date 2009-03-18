@@ -184,7 +184,6 @@ public class WizardPage extends JPanel {
       if (new_pane == null) {
          throw new NullPointerException("content pane must be non-null");
       }
-      System.out.println("rip all");
       // rip out all components and rebuild
       removeAll();
       contentPane = new_pane;

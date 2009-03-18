@@ -34,13 +34,13 @@ import org.tn5250j.interfaces.SessionInterface;
 /**
  * A host session
  */
-public class Session5250 implements SessionInterface,TN5250jConstants {
+public class Session5250 implements SessionInterface {
 
    private String configurationResource;
    private String sessionName;
    private int sessionType;
    protected Properties sesProps;
-   private Vector listeners;
+   private Vector<SessionListener> listeners;
    private boolean heartBeat;
    String propFileName;
    protected SessionConfig sesConfig;
@@ -63,7 +63,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       this.sessionName = sessionName;
       sesProps = props;
 
-      if (sesProps.containsKey(SESSION_HEART_BEAT))
+      if (sesProps.containsKey(TN5250jConstants.SESSION_HEART_BEAT))
          heartBeat = true;
 
       screen = new Screen5250();
@@ -171,10 +171,10 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       boolean support132 = false;
       int port = 23; // default telnet port
 
-      enhanced = sesProps.containsKey(SESSION_TN_ENHANCED);
+      enhanced = sesProps.containsKey(TN5250jConstants.SESSION_TN_ENHANCED);
 
-      if (sesProps.containsKey(SESSION_SCREEN_SIZE))
-         if (((String)sesProps.getProperty(SESSION_SCREEN_SIZE)).equals(SCREEN_SIZE_27X132_STR))
+      if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE))
+         if (((String)sesProps.getProperty(TN5250jConstants.SESSION_SCREEN_SIZE)).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR))
             support132 = true;
 
       final tnvt vt = new tnvt(this,screen,enhanced,support132);
@@ -182,11 +182,11 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
 
 //      vt.setController(this);
 
-      if (sesProps.containsKey(SESSION_PROXY_PORT))
-         proxyPort = (String)sesProps.getProperty(SESSION_PROXY_PORT);
+      if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_PORT))
+         proxyPort = (String)sesProps.getProperty(TN5250jConstants.SESSION_PROXY_PORT);
 
-      if (sesProps.containsKey(SESSION_PROXY_HOST))
-         vt.setProxy((String)sesProps.getProperty(SESSION_PROXY_HOST),
+      if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_HOST))
+         vt.setProxy((String)sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST),
                      proxyPort);
       
       String sslType = null;
@@ -199,21 +199,21 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
       }
       vt.setSSLType(sslType);
 
-      if (sesProps.containsKey(SESSION_CODE_PAGE))
-         vt.setCodePage((String)sesProps.getProperty(SESSION_CODE_PAGE));
+      if (sesProps.containsKey(TN5250jConstants.SESSION_CODE_PAGE))
+         vt.setCodePage((String)sesProps.getProperty(TN5250jConstants.SESSION_CODE_PAGE));
 
-      if (sesProps.containsKey(SESSION_DEVICE_NAME))
-         vt.setDeviceName((String)sesProps.getProperty(SESSION_DEVICE_NAME));
+      if (sesProps.containsKey(TN5250jConstants.SESSION_DEVICE_NAME))
+         vt.setDeviceName((String)sesProps.getProperty(TN5250jConstants.SESSION_DEVICE_NAME));
 
-      if (sesProps.containsKey(SESSION_HOST_PORT)) {
-         port = Integer.parseInt((String)sesProps.getProperty(SESSION_HOST_PORT));
+      if (sesProps.containsKey(TN5250jConstants.SESSION_HOST_PORT)) {
+         port = Integer.parseInt((String)sesProps.getProperty(TN5250jConstants.SESSION_HOST_PORT));
       }
       else {
          // set to default 23 of telnet
          port = 23;
       }
 
-      final String ses = (String)sesProps.getProperty(SESSION_HOST);
+      final String ses = (String)sesProps.getProperty(TN5250jConstants.SESSION_HOST);
       final int portp = port;
 
       // lets set this puppy up to connect within its own thread
@@ -350,7 +350,7 @@ public class Session5250 implements SessionInterface,TN5250jConstants {
    public synchronized void addSessionListener(SessionListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<SessionListener>(3);
       }
       listeners.addElement(listener);
 
