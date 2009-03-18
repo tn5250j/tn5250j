@@ -106,7 +106,7 @@ public class Screen5250 implements TN5250jConstants{
 	//Added by Barry
 	private StringBuffer keybuf;
 
-	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+	private transient final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public Screen5250() {
 
@@ -290,8 +290,9 @@ public class Screen5250 implements TN5250jConstants{
             c = sb.charAt(x);
 
             if ((c == '\n') || (c == '\r')) {
-
-               log.info("pasted cr-lf>" + pd + "<");
+            	if (log.isDebugEnabled()) {
+            		log.debug("pasted cr-lf>" + pd + "<");
+            	}
                pd.setLength(0);
                // if we read in a cr lf in the data stream we need to go
                // to the starting column of the next row and start from there
@@ -329,7 +330,9 @@ public class Screen5250 implements TN5250jConstants{
 
          // if we have anything else not logged then log it out.
          if (pd.length() > 0)
-            log.info("pasted >" + pd + "<");
+        	 if (log.isDebugEnabled()) {
+        		 log.debug("pasted >" + pd + "<");
+        	 }
 
          // restore out position within the FFT.
 			screenFields.restoreCurrentField();

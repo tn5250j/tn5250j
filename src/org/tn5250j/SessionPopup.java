@@ -525,7 +525,6 @@ public class SessionPopup implements TN5250jConstants {
          sum += inter;
 
       }
-      System.out.println("Vector sum " + sum);
       sumVector = null;
       l = null;
 
