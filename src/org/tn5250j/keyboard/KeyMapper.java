@@ -625,7 +625,6 @@ public class KeyMapper {
    public static void fireKeyChangeEvent() {
 
       if (listeners != null) {
-         System.out.println(" changed key ");
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             KeyChangeListener target =
