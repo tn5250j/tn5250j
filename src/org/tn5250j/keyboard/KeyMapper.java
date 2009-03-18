@@ -38,11 +38,10 @@ import org.tn5250j.interfaces.OptionAccessFactory;
 
 public class KeyMapper {
 
-   private static HashMap mappedKeys;
+   private static HashMap<KeyStroker, String> mappedKeys;
    private static KeyStroker workStroke;
-   private static String keyMapName;
    private static String lastKeyMnemonic;
-   private static Vector listeners;
+   private static Vector<KeyChangeListener> listeners;
    private static boolean useJava14;
 
    /**
@@ -110,7 +109,7 @@ public class KeyMapper {
       if (mappedKeys != null)
          return;
 
-      mappedKeys = new HashMap(60);
+      mappedKeys = new HashMap<KeyStroker, String>(60);
       workStroke = newKeyStroker(0, false, false, false,false,KeyStroker.KEY_LOCATION_STANDARD);
 
       Properties keys = ConfigureFactory.getInstance().getProperties(
@@ -309,7 +308,7 @@ public class KeyMapper {
 
       String theStringList = "";
       String theKey = "";
-      Enumeration ke = keystrokes.propertyNames();
+      Enumeration<?> ke = keystrokes.propertyNames();
       while (ke.hasMoreElements()) {
          theKey = (String)ke.nextElement();
 
@@ -318,7 +317,6 @@ public class KeyMapper {
          }
 
          theStringList = keystrokes.getProperty(theKey);
-         int x = 0;
          int kc = 0;
          boolean is = false;
          boolean ic = false;
@@ -381,13 +379,12 @@ public class KeyMapper {
       map.clear();
 
       // save off the keystrokes in the keymap
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = ks.toString();
          map.put((String)i.next(),ks.toString());
       }
 
@@ -442,10 +439,10 @@ public class KeyMapper {
 
    public final static String getKeyStrokeDesc(String which) {
 
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
          String keyVal = (String)i.next();
@@ -458,10 +455,10 @@ public class KeyMapper {
 
    public final static KeyStroker getKeyStroker(String which) {
 
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
          String keyVal = (String)i.next();
@@ -474,12 +471,12 @@ public class KeyMapper {
 
    public final static boolean isKeyStrokeDefined(String which) {
 
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
+         k.next();
          String keyVal = (String)i.next();
          if (keyVal.equals(which))
             return true;
@@ -501,10 +498,10 @@ public class KeyMapper {
 
    public final static KeyStroke getKeyStroke(String which) {
 
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
          String keyVal = (String)i.next();
@@ -529,10 +526,10 @@ public class KeyMapper {
 
    public final static void removeKeyStroke(String which) {
 
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
          String keyVal = (String)i.next();
@@ -548,10 +545,10 @@ public class KeyMapper {
 
       if (ke == null)
          return;
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
          String keyVal = (String)i.next();
@@ -571,10 +568,10 @@ public class KeyMapper {
 
       if (ke == null)
          return;
-      Collection v = mappedKeys.values();
-      Set o = mappedKeys.keySet();
-      Iterator k = o.iterator();
-      Iterator i = v.iterator();
+      Collection<String> v = mappedKeys.values();
+      Set<KeyStroker> o = mappedKeys.keySet();
+      Iterator<KeyStroker> k = o.iterator();
+      Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          KeyStroker ks = (KeyStroker)k.next();
          String keyVal = (String)i.next();
@@ -590,8 +587,7 @@ public class KeyMapper {
 
    }
 
-   public final static HashMap getKeyMap() {
-
+   public final static HashMap<KeyStroker, String> getKeyMap() {
       return mappedKeys;
    }
 
@@ -603,7 +599,7 @@ public class KeyMapper {
    public static synchronized void addKeyChangeListener(KeyChangeListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<KeyChangeListener>(3);
       }
       listeners.addElement(listener);
 
