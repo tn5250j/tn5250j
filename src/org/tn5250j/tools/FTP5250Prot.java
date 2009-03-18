@@ -58,7 +58,7 @@ public class FTP5250Prot {
    private int recordLength;
    private int recordOutLength;
    private int fileSize;
-   private Vector listeners;
+   private Vector<FTPStatusListener> listeners;
    private FTPStatusEvent status;
    private boolean aborted;
    private char decChar;
@@ -148,7 +148,7 @@ public class FTP5250Prot {
    public synchronized void addFTPStatusListener(FTPStatusListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<FTPStatusListener>(3);
       }
       listeners.addElement(listener);
 

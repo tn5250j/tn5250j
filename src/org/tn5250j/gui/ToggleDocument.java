@@ -29,7 +29,7 @@ import org.tn5250j.event.ToggleDocumentListener;
 
 public class ToggleDocument extends PlainDocument {
 
-   Vector listeners;
+   Vector<ToggleDocumentListener> listeners;
 
    public void insertString(int offs, String str, AttributeSet a)
                                                 throws BadLocationException {
@@ -53,7 +53,7 @@ public class ToggleDocument extends PlainDocument {
    public synchronized void addToggleDocumentListener(ToggleDocumentListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<ToggleDocumentListener>(3);
       }
       listeners.addElement(listener);
 

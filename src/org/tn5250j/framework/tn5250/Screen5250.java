@@ -95,7 +95,7 @@ public class Screen5250 implements TN5250jConstants{
 	private boolean feError;
 
    // vector of listeners for changes to the screen.
-   Vector listeners = null;
+   Vector<ScreenListener> listeners = null;
 
    // Operator Information Area
    private ScreenOIA oia;
@@ -3927,7 +3927,7 @@ public class Screen5250 implements TN5250jConstants{
       if (listeners != null) {
           // Patch below contributed by Mitch Blevins
          //int size = listeners.size();
-         Vector lc = new Vector(listeners);
+         Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
          int size = lc.size();
          for (int i = 0; i < size; i++) {
             //ScreenListener target =
@@ -3963,7 +3963,7 @@ public class Screen5250 implements TN5250jConstants{
       int startCol = getCol(lastPos);
 
       if (listeners != null) {
-         Vector lc = new Vector(listeners);
+         Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
           //int size = listeners.size();
          int size = lc.size();
          for (int i = 0; i < size; i++) {
@@ -3981,7 +3981,7 @@ public class Screen5250 implements TN5250jConstants{
    private void fireScreenSizeChanged() {
 
       if (listeners != null) {
-         Vector lc = new Vector(listeners);
+         Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
           //int size = listeners.size();
          int size = lc.size();
          for (int i = 0; i < size; i++) {
@@ -4009,7 +4009,7 @@ public class Screen5250 implements TN5250jConstants{
    public void addScreenListener(ScreenListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<ScreenListener>(3);
       }
       listeners.addElement(listener);
 

@@ -27,16 +27,21 @@ package org.tn5250j.keyboard.configure;
 
 import java.awt.event.KeyEvent;
 
+import org.tn5250j.tools.logging.TN5250jLogger;
+
 /**
  * This class extends label so that we can display text as well as capture
  * the key stroke(s) to assign to keys.
  */
 public class KeyGetter extends KeyGetterInterface {
 
-   public KeyGetter() {
-      super();
+	private static final long serialVersionUID = 1691732474472874354L;
 
-   }
+	private static final transient TN5250jLogger LOG = TN5250jLogger.getLogger(KeyGetter.class); 
+	
+	public KeyGetter() {
+		super();
+	}
 
    /*
    * We have to jump through some hoops to avoid
@@ -137,14 +142,14 @@ public class KeyGetter extends KeyGetterInterface {
                       " isShiftDown (" + e.isShiftDown() + ")";
 
 
-      String newline = "\n";
-
-      System.out.println(typeStr + newline
-                        + "    " + charString + newline
-                        + "    " + keyCodeString + newline
-                        + "    " + modString + newline
-                        + "    " + locString + newline
-                        + "    " + isString + newline);
+      if (LOG.isDebugEnabled()) {
+    	  LOG.debug(typeStr + "\n"
+                        + "    " + charString + "\n"
+                        + "    " + keyCodeString + "\n"
+                        + "    " + modString + "\n"
+                        + "    " + locString + "\n"
+                        + "    " + isString + "\n");
+      }
 
    }
 

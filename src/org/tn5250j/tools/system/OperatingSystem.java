@@ -24,10 +24,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Enumeration;
 import java.util.Properties;
-
-import javax.swing.UIManager;
 
 import org.tn5250j.ExternalProgramConfig;
 import org.tn5250j.interfaces.ConfigureFactory;
@@ -43,7 +40,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public class OperatingSystem
 {
 
-   private static TN5250jLogger log =
+   private static final TN5250jLogger LOG =
          TN5250jLogFactory.getLogger("org.tn5250j.tools.system.OperatingSystem");
 
    public static final Rectangle getScreenBounds()
@@ -77,15 +74,6 @@ public class OperatingSystem
       return new Rectangle(x,y,w,h);
    }
 
-   //{{{ isDOSDerived() method
-   /**
-    * Returns if we're running Windows 95/98/ME/NT/2000/XP, or OS/2.
-    */
-   public static final boolean isDOSDerived()
-   {
-      return isWindows() || isOS2();
-   } //}}}
-
    //{{{ isWindows() method
    /**
     * Returns if we're running Windows 95/98/ME/NT/2000/XP.
@@ -93,33 +81,6 @@ public class OperatingSystem
    public static final boolean isWindows()
    {
       return os == WINDOWS_9x || os == WINDOWS_NT;
-   } //}}}
-
-   //{{{ isWindows9x() method
-   /**
-    * Returns if we're running Windows 95/98/ME.
-    */
-   public static final boolean isWindows9x()
-   {
-      return os == WINDOWS_9x;
-   } //}}}
-
-   //{{{ isWindowsNT() method
-   /**
-    * Returns if we're running Windows NT/2000/XP.
-    */
-   public static final boolean isWindowsNT()
-   {
-      return os == WINDOWS_NT;
-   } //}}}
-
-   //{{{ isOS2() method
-   /**
-    * Returns if we're running OS/2.
-    */
-   public static final boolean isOS2()
-   {
-      return os == OS2;
    } //}}}
 
    //{{{ isUnix() method
@@ -131,15 +92,6 @@ public class OperatingSystem
       return os == UNIX || os == MAC_OS_X || os == LINUX;
    } //}}}
 
-   //{{{ isLinux() method
-   /**
-    * Returns if we're running Linux (this does not includ Unixes).
-    */
-   public static final boolean isLinux()
-   {
-      return os == LINUX;
-   } //}}}
-
    //{{{ isMacOS() method
    /**
     * Returns if we're running MacOS X.
@@ -149,15 +101,6 @@ public class OperatingSystem
       return os == MAC_OS_X;
    } //}}}
 
-   //{{{ isMacOSLF() method
-        /**
-         * Returns if we're running MacOS X and using the native look and feel.
-         */
-        public static final boolean isMacOSLF()
-        {
-                return (isMacOS() && UIManager.getLookAndFeel().isNativeLookAndFeel());
-        } //}}}
-
    //{{{ isJava14() method
    /**
     * Returns if Java 2 version 1.4 is in use.
@@ -165,11 +108,6 @@ public class OperatingSystem
    public static final boolean hasJava14()
    {
       return java14;
-   }
-
-   public static final boolean hasJava15()
-   {
-        return java15;
    }
 
    /**
@@ -197,7 +135,7 @@ public class OperatingSystem
             protocol = "http";
       }
       catch (MalformedURLException e) {
-         log.warn(e.getMessage());
+         LOG.warn(e.getMessage());
       }
 
       Properties props = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
@@ -216,7 +154,7 @@ public class OperatingSystem
             command = format.format(urlParm);
          }
          catch (Exception exx) {
-            log.warn("Unable to parse the url " + url + " using command " +
+            LOG.warn("Unable to parse the url " + url + " using command " +
                   commandTemplate);
          }
       }
@@ -257,15 +195,15 @@ public class OperatingSystem
                   }
                }
                catch (InterruptedException x) {
-                  log.warn("Error bringing up browser, cmd='" + cmd + "'");
-                  log.warn("Caught: " + x);
+                  LOG.warn("Error bringing up browser, cmd='" + cmd + "'");
+                  LOG.warn("Caught: " + x);
                }
             }
          }
          catch (java.io.IOException x) {
             // couldn't exec browser
-            log.warn("Could not invoke browser, command=" + cmd);
-            log.warn("Caught: " + x);
+            LOG.warn("Could not invoke browser, command=" + cmd);
+            LOG.warn("Caught: " + x);
          }
       }
    }
@@ -292,14 +230,14 @@ public class OperatingSystem
 					  }else{
 						  command=properties.getProperty("etn.pgm."+i+".command.unix")+" "+params;
 					  }
-					  log.info("Execute External Program: "+command);
+					  LOG.info("Execute External Program: "+command);
 					  execute(command);
 					  return true;
 				    }
 				}
 			}
 	  }catch(Exception exx){
-			  log.warn("Unable to run External Program: "+ exx.getMessage());
+			  LOG.warn("Unable to run External Program: "+ exx.getMessage());
 	  }
 	  return false;
    }
@@ -309,7 +247,7 @@ public class OperatingSystem
       int exitCode = -1;
 
       try {
-         log.info("Executing command='" + command + "'");
+         LOG.info("Executing command='" + command + "'");
 
          Process p = Runtime.getRuntime().exec(command);
          exitCode = 0;
@@ -324,16 +262,14 @@ public class OperatingSystem
 //         log.warn("Caught: " + exc.getMessage());
 //      }
       catch (IOException ioe) {
-         log.warn("Error processing command, command='" + command + "'");
-         log.warn("Caught: " + ioe.getMessage());
+         LOG.warn("Error processing command, command='" + command + "'");
+         LOG.warn("Caught: " + ioe.getMessage());
       }
       return exitCode;
    }
  //}}}
 
    //{{{ Private members
-    // Used to identify the windows platform.
-    private static final String WIN_ID = "Windows";
     // The default system browser under windows.
     private static final String WIN_PATH = "rundll32";
     // The flag to display a url.
@@ -352,7 +288,6 @@ public class OperatingSystem
 
    private static int os;
    private static boolean java14;
-   private static boolean java15;
 
    //{{{ Class initializer
    static
@@ -388,15 +323,13 @@ public class OperatingSystem
          else
          {
             os = UNKNOWN;
-            log.warn("Unknown operating system: " + osName);
+            LOG.warn("Unknown operating system: " + osName);
          }
       }
 
       if(System.getProperty("java.version").compareTo("1.4") >= 0)
          java14 = true;
 
-      if(System.getProperty("java.version").compareTo("1.5") >= 0)
-         java15 = true;
    } //}}}
 
    //}}}

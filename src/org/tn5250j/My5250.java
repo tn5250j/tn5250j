@@ -132,10 +132,12 @@ public class My5250 implements BootListener,SessionListener,
 
       }
       catch (UnknownHostException e) {
-         System.err.println("localhost not known.");
+    	  // TODO: Should be logged @ DEBUG level
+//         System.err.println("localhost not known.");
       }
       catch (IOException e) {
-         System.err.println("No other instances of tn5250j running.");
+    	  // TODO: Should be logged @ DEBUG level
+//         System.err.println("No other instances of tn5250j running.");
       }
 
       return false;

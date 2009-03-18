@@ -25,41 +25,72 @@
  */
 package org.tn5250j.keyboard.configure;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.event.*;
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import java.lang.reflect.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.text.CollationKey;
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+import java.util.Vector;
 
-import org.tn5250j.encoding.CodePage;
-import org.tn5250j.scripting.InterpreterDriverManager;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.tn5250j.TN5250jConstants;
+import org.tn5250j.encoding.CodePage;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyStroker;
-import org.tn5250j.tools.LangTool;
+import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.AlignLayout;
+import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
 
-public class KeyConfigure extends JDialog implements ActionListener,
-                                                         TN5250jConstants {
+public class KeyConfigure extends JDialog implements ActionListener {
 
-   Properties props;
-   JPanel keyPanel = new JPanel();
-   JPanel options = new JPanel();
-   JTextArea strokeDesc = new JTextArea();
-   JTextArea strokeDescAlt = new JTextArea();
-   JLabel strokeLocation = new JLabel();
-   JLabel strokeLocationAlt = new JLabel();
-   JList functions;
-   KeyMapper mapper;
-   JFrame jf = null;
-   JDialog dialog;
-   boolean mods;
+   private static final long serialVersionUID = -421661235666776519L;
+	
+   private JPanel keyPanel = new JPanel();
+   private JPanel options = new JPanel();
+   private JTextArea strokeDesc = new JTextArea();
+   private JTextArea strokeDescAlt = new JTextArea();
+   private JLabel strokeLocation = new JLabel();
+   private JLabel strokeLocationAlt = new JLabel();
+   private JList functions;
+   private KeyMapper mapper;
+   private JDialog dialog;
+   private boolean mods;
    private String[] macrosList;
-   DefaultListModel lm = new DefaultListModel();
+   private DefaultListModel lm = new DefaultListModel();
    private boolean macros;
    private boolean special;
    private CodePage codePage;
@@ -262,7 +293,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
             KeyDescription kd = (KeyDescription)lm.getElementAt(index);
 
-            setKeyInformation(mnemonicData[kd.getIndex()]);
+            setKeyInformation(TN5250jConstants.mnemonicData[kd.getIndex()]);
          }
          else {
             if (macros) {
@@ -356,14 +387,14 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
 
       if (which.equals(LangTool.getString("key.labelKeys"))) {
-         Vector lk = new Vector(mnemonicData.length);
-         for (int x = 0; x < mnemonicData.length; x++) {
-            lk.addElement(new KeyDescription(LangTool.getString("key."+mnemonicData[x]),x));
+         Vector<KeyDescription> lk = new Vector<KeyDescription>(TN5250jConstants.mnemonicData.length);
+         for (int x = 0; x < TN5250jConstants.mnemonicData.length; x++) {
+            lk.addElement(new KeyDescription(LangTool.getString("key."+TN5250jConstants.mnemonicData[x]),x));
          }
 
-         Collections.sort(lk,new KeyDescriptionCompare());
+         Collections.sort(lk, new KeyDescriptionCompare());
 
-         for (int x = 0; x < mnemonicData.length; x++) {
+         for (int x = 0; x < TN5250jConstants.mnemonicData.length; x++) {
             lm.addElement(lk.get(x));
          }
          macros = false;
@@ -371,7 +402,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
       }
       else {
          if (which.equals(LangTool.getString("key.labelMacros"))) {
-            Vector macrosVector = new Vector();
+            Vector<String> macrosVector = new Vector<String>();
             if (macrosList != null)
                for (int x = 0; x < macrosList.length; x++) {
                   macrosVector.add(macrosList[x]);
@@ -388,7 +419,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             CollationKey key = null;
             StringBuffer sb = new StringBuffer();
 
-            Set set = new TreeSet();
+            Set<CollationKey> set = new TreeSet<CollationKey>();
             for (int x =0;x < 256; x++) {
                char c = codePage.ebcdic2uni(x);
                char ac = codePage.ebcdic2uni(x);
@@ -408,7 +439,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
                }
             }
 
-            Iterator iterator = set.iterator();
+            Iterator<CollationKey> iterator = set.iterator();
             while (iterator.hasNext()) {
                CollationKey keyc = (CollationKey)iterator.next();
                lm.addElement(keyc.getSourceString());
@@ -602,36 +633,14 @@ public class KeyConfigure extends JDialog implements ActionListener,
       return desc;
    }
    private KeyGetterInterface getMeAKeyProcessor() {
-
-      ClassLoader loader = KeyConfigure.class.getClassLoader();
-      if (loader == null)
-         loader = ClassLoader.getSystemClassLoader();
-
-      Class       keyProcessorClass;
-      Constructor keyProcessorConstructor;
-
-      try {
-         String className = "org.tn5250j.keyboard.configure.KeyGetter";
-         if (!OperatingSystem.hasJava14())
-            className += "13";
-
-         keyProcessorClass = loader.loadClass(className);
-         keyProcessorConstructor = keyProcessorClass.getConstructor(null);
-         Object obj = keyProcessorConstructor.newInstance(null);
-         return (KeyGetterInterface)obj;
-      }
-      catch (Throwable t) {
-
-      }
-
-      return new KeyGetter13();
+	   return new KeyGetter();
    }
 
    private void removeIt() {
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
 
-         String function = mnemonicData[index];
+         String function = TN5250jConstants.mnemonicData[index];
 
          if (altKey)
             function += KeyStroker.altSuffix;
@@ -677,7 +686,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
 
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
-         String stroke = mnemonicData[index];
+         String stroke = TN5250jConstants.mnemonicData[index];
 
          if (altKey)
             stroke += KeyStroker.altSuffix;
@@ -739,12 +748,13 @@ public class KeyConfigure extends JDialog implements ActionListener,
       mods = true;
    }
 
-   private static class KeyDescriptionCompare implements Comparator {
-      public int compare(Object one, Object two) {
-         String s1 = one.toString();
-         String s2 = two.toString();
-         return s1.compareToIgnoreCase(s2);
-      }
+   private static class KeyDescriptionCompare implements Comparator<KeyDescription> {
+
+	   public int compare(KeyDescription one, KeyDescription two) {
+		   String s1 = one.toString();
+		   String s2 = two.toString();
+		   return s1.compareToIgnoreCase(s2);
+	   }
 
    }
 
@@ -806,7 +816,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
       if(macroFiles == null || macroFiles.length == 0)
          return;
 
-      Arrays.sort(macroFiles,new MacroCompare());
+      Arrays.sort(macroFiles, new MacroCompare());
 
       for(int i = 0; i < macroFiles.length; i++) {
          File file = macroFiles[i];
@@ -816,7 +826,7 @@ public class KeyConfigure extends JDialog implements ActionListener,
             continue;
          }
          else if(file.isDirectory()) {
-            Vector subvector = new Vector();
+            Vector<String> subvector = new Vector<String>();
             subvector.addElement(fileName.replace('_',' '));
             loadScripts(subvector,path + fileName + '/',file);
             // if we do not want empty directories to show up uncomment this
@@ -928,8 +938,8 @@ public class KeyConfigure extends JDialog implements ActionListener,
       }
    }
 
-   public static class MacroCompare implements Comparator {
-      public int compare(Object one, Object two) {
+   public static class MacroCompare implements Comparator<File> {
+      public int compare(File one, File two) {
          String s1 = one.toString();
          String s2 = two.toString();
          return s1.compareToIgnoreCase(s2);

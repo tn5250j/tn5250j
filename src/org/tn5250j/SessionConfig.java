@@ -99,10 +99,10 @@ public class SessionConfig {
          return;
       }
 
-      Vector targets = null;
+      java.util.Vector<?> targets = null;
       synchronized (this) {
          if (listeners != null) {
-            targets = (Vector) listeners.clone();
+            targets = (java.util.Vector<?>) listeners.clone();
          }
       }
 

@@ -50,13 +50,12 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 import org.tn5250j.framework.common.Sessions;
 
 
-public class Tn5250jController extends Thread implements TN5250jConstants {
+public class Tn5250jController extends Thread {
 	private File extensionDir;
 	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 	//private URLClassLoader loader = new URLClassLoader(null, this.getClass().getClassLoader());
-	private List eventList;
-	private List listeners;
-	private List sessions;
+	private List<Tn5250jEvent> eventList;
+	private List<Tn5250jListener> listeners;
 	private SessionManager manager;
 	Properties sesprops;
 	private static Tn5250jController current;
@@ -69,8 +68,8 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 			log.warn("Plugin path '"+extensionDir.getAbsolutePath()+"' does not exist. No plugins will be loaded.");
 		}
 		this.setDaemon(true);
-		eventList = new ArrayList();
-		listeners = new ArrayList();
+		eventList = new ArrayList<Tn5250jEvent>();
+		listeners = new ArrayList<Tn5250jListener>();
 		Tn5250jController.current = this;
 		log.info("Tn5250j plugin manager created");
 		manager = SessionManager.instance();
@@ -183,7 +182,7 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 	}
 
 	private void broadcastEvent(final Tn5250jEvent event) {
-		Iterator listenerIt = listeners.iterator();
+		Iterator<Tn5250jListener> listenerIt = listeners.iterator();
 		while (listenerIt.hasNext()) {
 			Tn5250jListener listener = (Tn5250jListener) listenerIt.next();
 			listener.actionPerformed(event);
@@ -210,7 +209,7 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 
 	public void createSession(Screen5250 screen, tnvt vt, SessionGUI ses) {
 		final Tn5250jSession session = new Tn5250jSession(screen, vt, ses);
-		Iterator listenerIt = listeners.iterator();
+		Iterator<Tn5250jListener> listenerIt = listeners.iterator();
 		log.info("New session created and received");
 		while (listenerIt.hasNext()) {
 			Tn5250jListener listener = (Tn5250jListener) listenerIt.next();
@@ -263,9 +262,9 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 		return newses.getScreen();
 	}
 
-	public List getSessions() {
-		Enumeration e = sesprops.keys();
-		ArrayList list = new ArrayList();
+	public List<String> getSessions() {
+		Enumeration<Object> e = sesprops.keys();
+		ArrayList<String> list = new ArrayList<String>();
 		String ses = null;
 		//This has the nasty tendency to grab data it isn't suposed to grab.
 		//please fix
@@ -294,46 +293,46 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 		String session = args[0];
 
 		// Start loading properties
-		sesProps.put(SESSION_HOST, session);
+		sesProps.put(TN5250jConstants.SESSION_HOST, session);
 
 		if (isSpecified("-e", args))
-			sesProps.put(SESSION_TN_ENHANCED, "1");
+			sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED, "1");
 
 		if (isSpecified("-p", args)) {
-			sesProps.put(SESSION_HOST_PORT, getParm("-p", args));
+			sesProps.put(TN5250jConstants.SESSION_HOST_PORT, getParm("-p", args));
 		}
 
 		if (isSpecified("-f", args))
 			propFileName = getParm("-f", args);
 
 		if (isSpecified("-cp", args))
-			sesProps.put(SESSION_CODE_PAGE, getParm("-cp", args));
+			sesProps.put(TN5250jConstants.SESSION_CODE_PAGE, getParm("-cp", args));
 
 		if (isSpecified("-gui", args))
-			sesProps.put(SESSION_USE_GUI, "1");
+			sesProps.put(TN5250jConstants.SESSION_USE_GUI, "1");
 
 		if (isSpecified("-132", args))
-			sesProps.put(SESSION_SCREEN_SIZE, SCREEN_SIZE_27X132_STR);
+			sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_27X132_STR);
 		else
-			sesProps.put(SESSION_SCREEN_SIZE, SCREEN_SIZE_24X80_STR);
+			sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_24X80_STR);
 
 		// are we to use a socks proxy
 		if (isSpecified("-usp", args)) {
 
 			// socks proxy host argument
 			if (isSpecified("-sph", args)) {
-				sesProps.put(SESSION_PROXY_HOST, getParm("-sph", args));
+				sesProps.put(TN5250jConstants.SESSION_PROXY_HOST, getParm("-sph", args));
 			}
 
 			// socks proxy port argument
 			if (isSpecified("-spp", args))
-				sesProps.put(SESSION_PROXY_PORT, getParm("-spp", args));
+				sesProps.put(TN5250jConstants.SESSION_PROXY_PORT, getParm("-spp", args));
 		}
 
 		// are we to use a ssl and if we are what type
 		if (isSpecified("-sslType", args)) {
 
-			sesProps.put(SSL_TYPE, getParm("-sslType", args));
+			sesProps.put(TN5250jConstants.SSL_TYPE, getParm("-sslType", args));
 		}
 
 		// check if device name is specified
@@ -347,14 +346,14 @@ public class Tn5250jController extends Thread implements TN5250jConstants {
 				dnParam = "UNKNOWN_HOST";
 			}
 
-			sesProps.put(SESSION_DEVICE_NAME, dnParam);
+			sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME, dnParam);
 		} else if (isSpecified("-dn", args)) {
 
-			sesProps.put(SESSION_DEVICE_NAME, getParm("-dn", args));
+			sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME, getParm("-dn", args));
 		}
 
 		if (isSpecified("-hb", args))
-			sesProps.put(SESSION_HEART_BEAT, "1");
+			sesProps.put(TN5250jConstants.SESSION_HEART_BEAT, "1");
 
 		return sesProps;
 	}

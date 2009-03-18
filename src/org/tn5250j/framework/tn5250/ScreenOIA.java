@@ -180,7 +180,7 @@ public class ScreenOIA
    public void addOIAListener(ScreenOIAListener listener) {
 
       if (listeners == null) {
-          listeners = new java.util.Vector(3);
+          listeners = new java.util.Vector<ScreenOIAListener>(3);
       }
       listeners.addElement(listener);
 
@@ -279,7 +279,7 @@ public class ScreenOIA
       }
    }
 
-   Vector listeners = null;
+   Vector<ScreenOIAListener> listeners = null;
    private boolean insertMode;
    private boolean locked;
    private boolean keysBuffered;
