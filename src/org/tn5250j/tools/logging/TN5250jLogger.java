@@ -23,49 +23,111 @@
 package org.tn5250j.tools.logging;
 
 /**
- * An implementation of the TN5250jLogFactory to provide logger instances.
+ * An interface defining generic loggers.
  */
-public abstract class TN5250jLogger extends TN5250jLogFactory {
+public interface TN5250jLogger {
 
-   // debug levels - The levels work from lower to higher.  The lower levels
-   //   will be activated by turning on a higher level
-   public static final int OFF = 0;
-   public static final int DEBUG = 1;
-   public static final int INFO  = 2;
-   public static final int WARN  = 4;
-   public static final int ERROR = 8;
-   public static final int FATAL = 16;
+	// debug levels - The levels work from lower to higher. The lower levels
+	// will be activated by turning on a higher level
+	public static final int OFF = 0;
+	public static final int DEBUG = 1;
+	public static final int INFO = 2;
+	public static final int WARN = 4;
+	public static final int ERROR = 8;
+	public static final int FATAL = 16;
 
-   // The log level at which we are now
-   protected int logLevel;
+	/**
+	 * @param clazz
+	 */
+	abstract public void initialize(final String clazz);
 
-   TN5250jLogger () {
+	/**
+	 * @param message
+	 */
+	abstract public void debug(Object message);
 
-   }
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	abstract public void debug(Object message, Throwable throwable);
 
-   // Initialize the logger
-   abstract public void initialize(final String clazz);
+	abstract public void info(Object message);
 
-   // printing methods:
-   abstract public void debug(Object message);
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	abstract public void info(Object message, Throwable throwable);
 
-   abstract public void info(Object message);
+	/**
+	 * @param message
+	 */
+	abstract public void warn(Object message);
 
-   abstract public void warn(Object message);
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	abstract public void warn(Object message, Throwable throwable);
 
-   abstract public void warn(Object message, Throwable obj1);
+	/**
+	 * @param message
+	 */
+	abstract public void error(Object message);
 
-   abstract public void error(Object message);
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	abstract public void error(Object message, Throwable throwable);
 
-   abstract public void fatal(Object message);
+	/**
+	 * @param message
+	 */
+	abstract public void fatal(Object message);
 
-   // are we enabled for X?
-   abstract public boolean isDebugEnabled();
+	/**
+	 * @param message
+	 * @param throwable
+	 */
+	abstract public void fatal(Object message, Throwable throwable);
 
-   abstract public boolean isInfoEnabled();
+	/**
+	 * @return
+	 */
+	abstract public boolean isDebugEnabled();
 
-   // level accessors
-   abstract public void setLevel(int newLevel);
-   abstract public int getLevel();
+	/**
+	 * @return
+	 */
+	abstract public boolean isInfoEnabled();
+
+	/**
+	 * @return
+	 */
+	abstract public boolean isWarnEnabled();
+
+	/**
+	 * @return
+	 */
+	abstract public boolean isErrorEnabled();
+
+	/**
+	 * @return
+	 */
+	abstract public boolean isFatalEnabled();
+
+	/**
+	 * Sets a new log level.
+	 * @param newLevel
+	 * @throws IllegalArgumentException If the new level is not allowed
+	 */
+	abstract public void setLevel(int newLevel);
+
+	/**
+	 * @return The current log level.
+	 */
+	abstract public int getLevel();
 
 }
