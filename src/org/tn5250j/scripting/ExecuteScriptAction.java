@@ -13,12 +13,13 @@ package org.tn5250j.scripting;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import org.tn5250j.SessionGUI;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class ExecuteScriptAction extends AbstractAction {
 	
 	private static final long serialVersionUID = 181938308216785668L;
-	private static final transient TN5250jLogger LOG = TN5250jLogger.getLogger(ExecuteScriptAction.class);
+	private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(ExecuteScriptAction.class);
 	
 	private String _scriptFile;
 	private SessionGUI ses;

@@ -26,6 +26,7 @@ package org.tn5250j.framework.transport;
 import java.net.Socket;
 
 import org.tn5250j.TN5250jConstants;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class SocketConnector {
@@ -38,7 +39,7 @@ public class SocketConnector {
    * Creates a new instance that creates a plain socket by default.
    */
   public SocketConnector() {
-  	logger = TN5250jLogger.getLogger(getClass());
+  	logger = TN5250jLogFactory.getLogger(getClass());
   }
 
   /**

@@ -27,6 +27,7 @@ package org.tn5250j.keyboard.configure;
 
 import java.awt.event.KeyEvent;
 
+import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
@@ -37,7 +38,7 @@ public class KeyGetter extends KeyGetterInterface {
 
 	private static final long serialVersionUID = 1691732474472874354L;
 
-	private static final transient TN5250jLogger LOG = TN5250jLogger.getLogger(KeyGetter.class); 
+	private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(KeyGetter.class); 
 	
 	public KeyGetter() {
 		super();

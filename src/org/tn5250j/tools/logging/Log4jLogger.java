@@ -28,108 +28,132 @@ import org.apache.log4j.Logger;
 /**
  * An implementation of the TN5250jLogger to provide log4j logger instances.
  */
-public class Log4jLogger extends TN5250jLogger {
+public final class Log4jLogger implements TN5250jLogger {
 
-   private Logger log;
+	private Logger log = null;
 
-   Log4jLogger () {
+	/*
+	 * Package level access only
+	 */
+	Log4jLogger() {
 
-   }
+	}
 
-   public void initialize(final String clazz) {
-      log = Logger.getLogger(clazz);
-   }
+	public void initialize(final String clazz) {
+		log = Logger.getLogger(clazz);
+	}
 
-   // printing methods:
-   public void debug(Object message) {
-      log.debug(message);
-   }
+	public void debug(Object message) {
+		log.debug(message);
+	}
 
-   public void info(Object message) {
-      log.info(message);
-   }
+	public void debug(Object message, Throwable throwable) {
+		log.debug(message, throwable);
+	}
 
-   public void warn(Object message) {
-      log.warn(message);
+	public void info(Object message) {
+		log.info(message);
+	}
+	
+	public void info(Object message, Throwable throwable) {
+		log.info(message, throwable);
+	}
 
-   }
+	public void warn(Object message) {
+		log.warn(message);
+	}
 
-   public void warn(Object message, Throwable throw1) {
-      log.warn(message, throw1);
-   }
+	public void warn(Object message, Throwable throwable) {
+		log.warn(message, throwable);
+	}
 
-   public void error(Object message) {
-      log.error(message);
+	public void error(Object message) {
+		log.error(message);
+	}
+	
+	public void error(Object message, Throwable throwable) {
+		log.error(message, throwable);
+	}
 
-   }
+	public void fatal(Object message) {
+		log.fatal(message);
+	}
+	
+	public void fatal(Object message, Throwable throwable) {
+		log.fatal(message, throwable);
+	}
 
-   public void fatal(Object message) {
-      log.fatal(message);
+	public boolean isDebugEnabled() {
+		return log.isDebugEnabled();
+	}
 
-   }
+	public boolean isInfoEnabled() {
+		return log.isInfoEnabled();
+	}
+	
+	public boolean isWarnEnabled() {
+		return (Level.WARN.equals(log.getLevel()));
+	}
 
-   public boolean isDebugEnabled() {
-      return log.isDebugEnabled();
-   }
+	public boolean isFatalEnabled() {
+		return (Level.FATAL.equals(log.getLevel()));
+	}
+	
+	public boolean isErrorEnabled() {
+		return (Level.ERROR.equals(log.getLevel()));
+	}
+	
+	public void setLevel(int newLevel) {
 
-   public boolean isInfoEnabled() {
-      return log.isInfoEnabled();
-   }
+		switch (newLevel) {
+		case OFF:
+			log.setLevel(Level.OFF);
+			break;
 
-   public void setLevel(int newLevel) {
+		case DEBUG:
+			log.setLevel(Level.DEBUG);
+			break;
 
-      switch (newLevel) {
-      	case OFF:
-            log.setLevel((Level)Level.OFF);
+		case INFO:
+			log.setLevel(Level.INFO);
+			break;
 
-      		break;
+		case WARN:
+			log.setLevel(Level.WARN);
+			break;
 
-         case DEBUG:
-            log.setLevel((Level)Level.DEBUG);
-            break;
+		case ERROR:
+			log.setLevel(Level.ERROR);
+			break;
 
-         case INFO:
-            log.setLevel((Level)Level.INFO);
-            break;
+		case FATAL:
+			log.setLevel(Level.FATAL);
+			break;
+		}
 
-         case WARN:
-            log.setLevel((Level)Level.WARN);
-            break;
+	}
 
-         case ERROR:
-            log.setLevel((Level)Level.ERROR);
-            break;
+	public int getLevel() {
 
-         case FATAL:
-            log.setLevel((Level)Level.FATAL);
-            break;
+		switch (log.getLevel().toInt()) {
 
-      }
+		case (org.apache.log4j.Level.DEBUG_INT):
+			return DEBUG;
 
-   }
+		case (org.apache.log4j.Level.INFO_INT):
+			return INFO;
 
-   public int getLevel() {
+		case (org.apache.log4j.Level.WARN_INT):
+			return WARN;
 
-      switch (log.getLevel().toInt()) {
+		case (org.apache.log4j.Level.ERROR_INT):
+			return ERROR;
 
-         case (org.apache.log4j.Level.DEBUG_INT):
-            return DEBUG;
+		case (org.apache.log4j.Level.FATAL_INT):
+			return FATAL;
+		default:
+			return WARN;
+		}
 
-         case (org.apache.log4j.Level.INFO_INT):
-            return INFO;
-
-         case (org.apache.log4j.Level.WARN_INT):
-            return WARN;
-
-         case (org.apache.log4j.Level.ERROR_INT):
-            return ERROR;
-
-         case (org.apache.log4j.Level.FATAL_INT):
-            return FATAL;
-         default:
-            return WARN;
-
-      }
-
-   }
+	}
 }
