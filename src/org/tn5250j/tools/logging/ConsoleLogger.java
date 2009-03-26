@@ -45,96 +45,82 @@ public final class ConsoleLogger implements TN5250jLogger {
 
 	public void debug(Object message) {
 		if (isDebugEnabled())
-			System.out.println("DEBUG [" + clazz + "] " + message);
+			System.out.println("DEBUG [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
 	}
 
 	public void debug(Object message, Throwable throwable) {
 		if (isDebugEnabled())
-			System.out.println("DEBUG ["
-					+ clazz
-					+ "] "
-					+ new StringBuffer(32).append(message).append(
-							throwable.getMessage()));
+			System.out.println("DEBUG [" + clazz + "] "
+					+ ((message!=null) ? message.toString() : "")
+					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
 	
 	public void info(Object message) {
 		if (isInfoEnabled())
-			System.out.println("INFO [" + clazz + "] " + message);
-
+			System.out.println("INFO [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
 	}
 
 	public void info(Object message, Throwable throwable) {
 		if (isInfoEnabled())
-			System.out.println("INFO ["
-					+ clazz
-					+ "] "
-					+ new StringBuffer(32).append(message).append(
-							throwable.getMessage()));
+			System.out.println("INFO [" + clazz + "] "
+					+ ((message!=null) ? message.toString() : "")
+					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
 	
 	public void warn(Object message) {
 		if (isWarnEnabled())
-			System.out.println("WARN [" + clazz + "] " + message);
-
+			System.err.println("WARN [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
 	}
 
 	public void warn(Object message, Throwable throwable) {
 		if (isWarnEnabled())
-			System.out.println("WARN ["
-					+ clazz
-					+ "] "
-					+ new StringBuffer(32).append(message).append(
-							throwable.getMessage()));
+			System.err.println("WARN [" + clazz + "] "
+					+ ((message!=null) ? message.toString() : "")
+					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
 
 	public void error(Object message) {
 		if (isErrorEnabled())
-			System.err.println("ERROR [" + clazz + "] " + message);
-
+			System.err.println("ERROR [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
 	}
 
 	public void error(Object message, Throwable throwable) {
 		if (isErrorEnabled())
-			System.out.println("ERROR ["
-					+ clazz
-					+ "] "
-					+ new StringBuffer(32).append(message).append(
-							throwable.getMessage()));
+			System.err.println("ERROR [" + clazz + "] "
+					+ ((message!=null) ? message.toString() : "")
+					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
 
 	public void fatal(Object message) {
 		if (isFatalEnabled())
-			System.err.println("FATAL [" + clazz + "] " + message);
-
+			System.err.println("FATAL [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
 	}
 
 	public void fatal(Object message, Throwable throwable) {
 		if (isFatalEnabled())
-			System.out.println("FATAL ["
-					+ clazz
-					+ "] "
-					+ new StringBuffer(32).append(message).append(
-							throwable.getMessage()));
-	}
-
-	public boolean isErrorEnabled() {
-		return (logLevel >= ERROR);
-	}
-
-	public boolean isFatalEnabled() {
-		return (logLevel >= FATAL);
-	}
-
-	public boolean isWarnEnabled() {
-		return (logLevel >= WARN);
+			System.err.println("FATAL [" + clazz + "] "
+					+ ((message!=null) ? message.toString() : "")
+					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
 
 	public boolean isDebugEnabled() {
-		return (logLevel >= DEBUG);
+		return (logLevel <= DEBUG); // 1
 	}
 
 	public boolean isInfoEnabled() {
-		return (logLevel >= INFO);
+		return (logLevel <= INFO);  // 2
+	}
+
+	public boolean isWarnEnabled() {
+		return (logLevel <= WARN);  // 4
+	}
+
+	public boolean isErrorEnabled() {
+		return (logLevel <= ERROR); // 8
+	}
+	
+	public boolean isFatalEnabled() {
+		return (logLevel <= FATAL); // 16
 	}
 
 	public int getLevel() {
