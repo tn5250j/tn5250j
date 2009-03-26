@@ -2260,18 +2260,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				dataIncluded[1] = (byte1 & 0x2) == 0x2;
 				dataIncluded[0] = (byte1 & 0x1) == 0x1;
 			}
-			if (log.isDebugEnabled()) {
-				if (l >= 5)
-					log.debug(" byte 5 "
-							+ Integer.toBinaryString(bk.getNextByte()));
-				if (l >= 6)
-					log.debug(" byte 6 "
-							+ Integer.toBinaryString(bk.getNextByte()));
-				if (l == 7)
-					log.debug(" byte 7 "
-							+ Integer.toBinaryString(bk.getNextByte()));
-			}
-
 			return false;
 		} else {
 			sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x2B,
