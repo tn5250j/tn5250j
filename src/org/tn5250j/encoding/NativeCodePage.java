@@ -136,7 +136,7 @@ class NativeCodePage extends CodePage
         if (encoding.equals("1141")) {
             byte b = 0x0;
             try {
-               b = characterToString(index).getBytes("Cp1141")[0];
+               b = Character.toString(index).getBytes("Cp1141")[0];
 
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
@@ -147,7 +147,7 @@ class NativeCodePage extends CodePage
          if (encoding.equals("1140")) {
             byte b = 0x0;
             try {
-               b = characterToString(index).getBytes("Cp1140")[0];
+               b = Character.toString(index).getBytes("Cp1140")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
@@ -157,7 +157,7 @@ class NativeCodePage extends CodePage
          if (encoding.equals("1147")) {
             byte b = 0x0;
             try {
-               b = characterToString(index).getBytes("Cp1147")[0];
+               b = Character.toString(index).getBytes("Cp1147")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
@@ -167,7 +167,7 @@ class NativeCodePage extends CodePage
          if (encoding.equals("1148")) {
           byte b = 0x0;
           try {
-             b = characterToString(index).getBytes("Cp1148")[0];
+             b = Character.toString(index).getBytes("Cp1148")[0];
           } catch (java.io.UnsupportedEncodingException uee) {
              uee.printStackTrace();
           }
@@ -177,7 +177,7 @@ class NativeCodePage extends CodePage
          if (encoding.equals("1112")) {
             byte b = 0x0;
             try {
-               b = characterToString(index).getBytes("Cp1112")[0];
+               b = Character.toString(index).getBytes("Cp1112")[0];
             } catch (java.io.UnsupportedEncodingException uee) {
                uee.printStackTrace();
             }
@@ -1314,22 +1314,6 @@ class NativeCodePage extends CodePage
 //      return codePage37;
       return null;
 
-   }
-
-   /**
-    * Returns a <code>String</code> object representing the
-    * specified <code>char</code>.  The result is a string of length
-    * 1 consisting solely of the specified <code>char</code>.
-    *
-    * @param c the <code>char</code> to be converted
-    * @return the string representation of the specified <code>char</code>
-    *
-    * This code was taken from the Character.toString implementation of the
-    * JDK 1.4 so that we can compile on version 1.3
-    *
-    */
-   public static String characterToString(char c) {
-     return String.valueOf(new char[] {c});
    }
 
 }
