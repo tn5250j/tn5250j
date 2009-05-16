@@ -7,7 +7,7 @@
  * @author: master_jaf
  *
  * Description:
- * Alternative (extended) implementation of a codepage converter CCSID 37<->Unicode. 
+ * Alternative (extended) implementation of a codepage converter CCSID 297<->Unicode. 
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,15 +28,14 @@
  */
 package org.tn5250j.cp;
 
-
 /**
  * @author master_jaf
- * @see http://www-01.ibm.com/software/globalization/ccsid/ccsid37.jsp
+ * @see http://www-01.ibm.com/software/globalization/ccsid/ccsid297.jsp
  */
-final /*default*/ class CCSID37 extends CodepageConverterAdapter {
+final/* default */class CCSID297 extends CodepageConverterAdapter {
 
-	public final static String NAME = "37";
-	public final static String DESCR = "CECP: USA, Canada (ESA*), Netherlands, Portugal, Brazil, Australia, New Zealand";
+	public final static String NAME = "297";
+	public final static String DESCR = "CECP: France";
 
 	/*
 	 * Char maps manually extracted from JTOpen v6.4. Because char maps can't be
@@ -53,35 +52,34 @@ final /*default*/ class CCSID37 extends CodepageConverterAdapter {
 			'\u0090', '\u0091', '\u0016', '\u0093', '\u0094', '\u0095',
 			'\u0096', '\u0004', '\u0098', '\u0099', '\u009A', '\u009B',
 			'\u0014', '\u0015', '\u009E', '\u001A', ' ', '\u00A0', '\u00E2',
-			'\u00E4', '\u00E0', '\u00E1', '\u00E3', '\u00E5', '\u00E7',
-			'\u00F1', '\u00A2', '.', '<', '(', '+', '|', '&', '\u00E9',
-			'\u00EA', '\u00EB', '\u00E8', '\u00ED', '\u00EE', '\u00EF',
-			'\u00EC', '\u00DF', '!', '$', '*', ')', ';', '\u00AC', '-', '/',
-			'\u00C2', '\u00C4', '\u00C0', '\u00C1', '\u00C3', '\u00C5',
-			'\u00C7', '\u00D1', '\u00A6', ',', '%', '_', '>', '?', '\u00F8',
-			'\u00C9', '\u00CA', '\u00CB', '\u00C8', '\u00CD', '\u00CE',
-			'\u00CF', '\u00CC', '`', ':', '#', '@', '\'', '=', '"', '\u00D8',
-			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', '\u00AB', '\u00BB',
-			'\u00F0', '\u00FD', '\u00FE', '\u00B1', '\u00B0', 'j', 'k', 'l',
-			'm', 'n', 'o', 'p', 'q', 'r', '\u00AA', '\u00BA', '\u00E6',
-			'\u00B8', '\u00C6', '\u00A4', '\u00B5', '~', 's', 't', 'u', 'v',
-			'w', 'x', 'y', 'z', '\u00A1', '\u00BF', '\u00D0', '\u00DD',
-			'\u00DE', '\u00AE', '^', '\u00A3', '\u00A5', '\u00B7', '\u00A9',
-			'\u00A7', '\u00B6', '\u00BC', '\u00BD', '\u00BE', '[', ']',
-			'\u00AF', '\u00A8', '\u00B4', '\u00D7', '{', 'A', 'B', 'C', 'D',
-			'E', 'F', 'G', 'H', 'I', '\u00AD', '\u00F4', '\u00F6', '\u00F2',
-			'\u00F3', '\u00F5', '}', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-			'R', '\u00B9', '\u00FB', '\u00FC', '\u00F9', '\u00FA', '\u00FF',
-			'\\', '\u00F7', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '\u00B2',
-			'\u00D4', '\u00D6', '\u00D2', '\u00D3', '\u00D5', '0', '1', '2',
-			'3', '4', '5', '6', '7', '8', '9', '\u00B3', '\u00DB', '\u00DC',
-			'\u00D9', '\u00DA', '\u009F', };
+			'\u00E4', '@', '\u00E1', '\u00E3', '\u00E5', '\\', '\u00F1',
+			'\u00B0', '.', '<', '(', '+', '!', '&', '{', '\u00EA', '\u00EB',
+			'}', '\u00ED', '\u00EE', '\u00EF', '\u00EC', '\u00DF', '\u00A7',
+			'$', '*', ')', ';', '^', '-', '/', '\u00C2', '\u00C4', '\u00C0',
+			'\u00C1', '\u00C3', '\u00C5', '\u00C7', '\u00D1', '\u00F9', ',',
+			'%', '_', '>', '?', '\u00F8', '\u00C9', '\u00CA', '\u00CB',
+			'\u00C8', '\u00CD', '\u00CE', '\u00CF', '\u00CC', '\u00B5', ':',
+			'\u00A3', '\u00E0', '\'', '=', '"', '\u00D8', 'a', 'b', 'c', 'd',
+			'e', 'f', 'g', 'h', 'i', '\u00AB', '\u00BB', '\u00F0', '\u00FD',
+			'\u00FE', '\u00B1', '[', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+			'r', '\u00AA', '\u00BA', '\u00E6', '\u00B8', '\u00C6', '\u00A4',
+			'`', '\u00A8', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '\u00A1',
+			'\u00BF', '\u00D0', '\u00DD', '\u00DE', '\u00AE', '\u00A2', '#',
+			'\u00A5', '\u00B7', '\u00A9', ']', '\u00B6', '\u00BC', '\u00BD',
+			'\u00BE', '\u00AC', '|', '\u00AF', '~', '\u00B4', '\u00D7',
+			'\u00E9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', '\u00AD',
+			'\u00F4', '\u00F6', '\u00F2', '\u00F3', '\u00F5', '\u00E8', 'J',
+			'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', '\u00B9', '\u00FB',
+			'\u00FC', '\u00A6', '\u00FA', '\u00FF', '\u00E7', '\u00F7', 'S',
+			'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '\u00B2', '\u00D4', '\u00D6',
+			'\u00D2', '\u00D3', '\u00D5', '0', '1', '2', '3', '4', '5', '6',
+			'7', '8', '9', '\u00B3', '\u00DB', '\u00DC', '\u00D9', '\u00DA',
+			'\u009F', };
 
-	
 	public String getName() {
 		return NAME;
 	}
-	
+
 	public String getDescription() {
 		return DESCR;
 	}
@@ -94,5 +92,4 @@ final /*default*/ class CCSID37 extends CodepageConverterAdapter {
 	protected char[] getCodePage() {
 		return codepage;
 	}
-
 }
