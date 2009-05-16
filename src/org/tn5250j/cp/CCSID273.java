@@ -26,22 +26,22 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.encoding;
+package org.tn5250j.cp;
 
-import java.util.Arrays;
 
 /**
  * @author master_jaf
  */
-final/* default */class CCSID273Ex {
+final /*default*/ class CCSID273 extends CodepageConverterAdapter {
 
 	public final static String NAME = "273";
+	public final static String DESCR = "CECP: Austria, Germany";
 
 	/*
 	 * Char maps manually extracted from JTOpen v6.4. Because char maps can't be
 	 * covered by any license, this should legal.
 	 */
-	private static final char[] codepage_ = { '\u0000', '\u0001', '\u0002',
+	private static final char[] codepage = { '\u0000', '\u0001', '\u0002',
 			'\u0003', '\u009C', '\t', '\u0086', '\u007F', '\u0097', '\u008D',
 			'\u008E', '\u000B', '\f', '\r', '\u000E', '\u000F', '\u0010',
 			'\u0011', '\u0012', '\u0013', '\u009D', '\u0085', '\u0008',
@@ -74,40 +74,23 @@ final/* default */class CCSID273Ex {
 			'\u00F7', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '\u00B2',
 			'\u00D4', '\\', '\u00D2', '\u00D3', '\u00D5', '0', '1', '2', '3',
 			'4', '5', '6', '7', '8', '9', '\u00B3', '\u00DB', ']', '\u00D9',
-			'\u00DA', '\u009F' };
+			'\u00DA', '\u009F', };
 
-	private static int[] reverse_codepage = null;
 
 	public String getName() {
 		return NAME;
+	}
+	
+	public String getDescription() {
+		return DESCR;
 	}
 
 	public String getEncoding() {
 		return NAME;
 	}
 
-	public void init() {
-		int size = 0;
-		for (int i = 0; i < codepage_.length; i++) {
-			size = Math.max(size, codepage_[i]);
-		}
-		assert (size + 1) < 1024 * 1024; // some kind of maximum size limiter.
-		reverse_codepage = new int[size + 1];
-		Arrays.fill(reverse_codepage, '?');
-		for (int i = 0; i < codepage_.length; i++) {
-			reverse_codepage[codepage_[i]] = i;
-		}
+	@Override
+	protected char[] getCodePage() {
+		return codepage;
 	}
-
-	public byte uni2ebcdic(char index) {
-		assert index < reverse_codepage.length;
-		return (byte) reverse_codepage[index];
-	}
-
-	public char ebcdic2uni(int index) {
-		index = index & 0xFF;
-		assert index < 256;
-		return codepage_[index];
-	}
-
 }
