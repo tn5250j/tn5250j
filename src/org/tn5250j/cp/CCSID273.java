@@ -31,6 +31,7 @@ package org.tn5250j.cp;
 
 /**
  * @author master_jaf
+ * @see http://www-01.ibm.com/software/globalization/ccsid/ccsid273.jsp
  */
 final /*default*/ class CCSID273 extends CodepageConverterAdapter {
 
