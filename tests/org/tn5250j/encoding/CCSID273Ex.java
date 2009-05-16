@@ -4,7 +4,7 @@
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
- * @author: maki
+ * @author: master_jaf
  *
  * Description:
  * Alternative (extended) implementation of a codepage converter CCSID 273<->Unicode. 
@@ -31,7 +31,7 @@ package org.tn5250j.encoding;
 import java.util.Arrays;
 
 /**
- * @author maki
+ * @author master_jaf
  */
 final/* default */class CCSID273Ex {
 
