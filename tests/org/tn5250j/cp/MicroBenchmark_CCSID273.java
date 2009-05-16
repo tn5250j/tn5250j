@@ -24,12 +24,14 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.encoding;
+package org.tn5250j.cp;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tn5250j.encoding.CharMappings;
+import org.tn5250j.encoding.CodePage;
 
 /**
  * Microbenchmark to test encoding+decoding speed
@@ -39,18 +41,18 @@ import org.junit.Test;
  * 
  * @author master_jaf
  */
-public class MicroBenchmark_CCSID273Ex {
+public class MicroBenchmark_CCSID273 {
 
 	private static final int RUNS = 50000;
 	
 	private final char[] TESTSTRING = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321".toCharArray();
 	private CodePage cp;
-	private CCSID273Ex cpex;	
+	private CCSID273 cpex;	
 
 	@Before
 	public void setup() {
 		cp = CharMappings.getCodePage("273");
-		cpex = new CCSID273Ex();
+		cpex = new CCSID273();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);

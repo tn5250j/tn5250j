@@ -24,19 +24,21 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.encoding;
+package org.tn5250j.cp;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tn5250j.encoding.CharMappings;
+import org.tn5250j.encoding.CodePage;
 
 /**
  * Testing the correctness of {@link CCSID273Ex} and comparing with existing implementation.
  * 
  * @author master_jaf
  */
-public class CCSID273ExTest {
+public class CCSID273Test {
 
 	private char[] TESTSTRING = new char[255];	
 	
@@ -70,7 +72,7 @@ public class CCSID273ExTest {
 	 */
 	@Test
 	public void testNewConverter273() {
-		CCSID273Ex cp = new CCSID273Ex();
+		CCSID273 cp = new CCSID273();
 		cp.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
 		
@@ -88,7 +90,7 @@ public class CCSID273ExTest {
 	@Test
 	public void testBoth() {
 		final CodePage cp = CharMappings.getCodePage("273");
-		final CCSID273Ex cpex = new CCSID273Ex();
+		final CCSID273 cpex = new CCSID273();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);
 		
