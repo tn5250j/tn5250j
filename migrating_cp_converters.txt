@@ -34,6 +34,8 @@ To make the char mapping easier, there is not so much to do:
    So in future versions we can just drop the backport.
  - Maybe extract the codepages from the JTOpen project.
 
+As a small side benefit we may lower the memory usage and may speed up
+the converter itself.
 
 Testing
 ------------------------------------------------------------------
