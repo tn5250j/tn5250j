@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -28,64 +28,57 @@ package org.tn5250j.cp;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.CodePage;
 
 /**
- * Testing the correctness of {@link CCSID500Ex} and comparing with existing implementation.
- * 
+ * Testing the correctness of {@link CCSID500} and comparing with existing implementation.
+ *
  * @author master_jaf
  */
 public class CCSID500Test {
 
-	private char[] TESTSTRING = new char[255];	
-	
-	@Before
-	public void setUp() {
-		for (int i=1; i<=255; i++) {
-			TESTSTRING[i-1] = (char) i;
-		}			
-	}
-	
 	/**
 	 * Correctness test for old implementation ....
+	 * Testing byte -> Unicode -> byte
 	 */
 	@Test
 	public void testOldConverter500() {
-		
+
 		CodePage cp = CharMappings.getCodePage("500-ch");
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
-		
-		for (int i=0; i<TESTSTRING.length; i++) {
-			final char beginvalue = TESTSTRING[i];
-			final byte converted = cp.uni2ebcdic(beginvalue);
-			final char afterall = cp.ebcdic2uni(converted & 0xFF);
+
+		for (int i=0; i<256; i++) {
+			final byte beginvalue = (byte)i;
+			final char converted = cp.ebcdic2uni(beginvalue);
+			final byte afterall = cp.uni2ebcdic(converted);
 			assertEquals("Testing item #" + i, beginvalue, afterall);
 		}
-		
+
 	}
 
 	/**
 	 * Correctness test for new implementation ...
+	 * Testing byte -> Unicode -> byte
 	 */
 	@Test
 	public void testNewConverter500() {
 		CCSID500 cp = new CCSID500();
 		cp.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
-		
-		for (int i=0; i<TESTSTRING.length; i++) {
-			final char beginvalue = TESTSTRING[i];
-			final byte converted = cp.uni2ebcdic(beginvalue);
-			final char afterall = cp.ebcdic2uni(converted & 0xFF);
+
+		for (int i=0; i<256; i++) {
+			final byte beginvalue = (byte)i;
+			final char converted = cp.ebcdic2uni(beginvalue);
+			final byte afterall = cp.uni2ebcdic(converted);
 			assertEquals("Testing item #" + i, beginvalue, afterall);
 		}
 	}
 
 	/**
 	 * Testing for Correctness both implementations ...
+	 * Testing byte -> Unicode -> byte
 	 */
 	@Test
 	public void testBoth() {
@@ -93,16 +86,15 @@ public class CCSID500Test {
 		final CCSID500 cpex = new CCSID500();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);
-		
-		for (int i=0; i<TESTSTRING.length; i++) {
-			
-			final char beginvalue = TESTSTRING[i];
-			assertEquals("Testing to EBCDIC item #" + i, cp.uni2ebcdic(beginvalue), cpex.uni2ebcdic(beginvalue));
-			final byte converted = cp.uni2ebcdic(beginvalue);
-			assertEquals("Testing to UNICODE item #" + i, cp.ebcdic2uni(converted & 0xFF), cpex.ebcdic2uni(converted & 0xFF));
-			final char afterall = cp.ebcdic2uni(converted & 0xFF);
+
+		for (int i=0; i<256; i++) {
+			final byte beginvalue = (byte)i;
+			assertEquals("Testing to EBCDIC item #" + i, cp.ebcdic2uni(beginvalue), cpex.ebcdic2uni(beginvalue));
+			final char converted = cp.ebcdic2uni(beginvalue);
+			assertEquals("Testing to UNICODE item #" + i, cp.uni2ebcdic(converted), cpex.uni2ebcdic(converted));
+			final byte afterall = cp.uni2ebcdic(converted);
 			assertEquals("Testing before and after item #" + i, beginvalue, afterall);
 		}
 	}
-	
+
 }

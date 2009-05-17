@@ -33,20 +33,20 @@ import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.CodePage;
 
 /**
- * Testing the correctness of {@link CCSID277} and comparing with existing implementation.
+ * Testing the correctness of {@link CCSID1148} and comparing with existing implementation.
  *
  * @author master_jaf
  */
-public class CCSID277Test {
+public class CCSID1148Test {
 
 	/**
 	 * Correctness test for old implementation ....
 	 * Testing byte -> Unicode -> byte
 	 */
 	@Test
-	public void testOldConverter277() {
+	public void testOldConverter1148() {
 
-		CodePage cp = CharMappings.getCodePage("277");
+		CodePage cp = CharMappings.getCodePage("1148");
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
 
 		for (int i=0; i<256; i++) {
@@ -63,8 +63,8 @@ public class CCSID277Test {
 	 * Testing byte -> Unicode -> byte
 	 */
 	@Test
-	public void testNewConverter277() {
-		CCSID277 cp = new CCSID277();
+	public void testNewConverter1148() {
+		CCSID1148 cp = new CCSID1148();
 		cp.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
 
@@ -82,8 +82,8 @@ public class CCSID277Test {
 	 */
 	@Test
 	public void testBoth() {
-		final CodePage cp = CharMappings.getCodePage("277");
-		final CCSID277 cpex = new CCSID277();
+		final CodePage cp = CharMappings.getCodePage("1148");
+		final CCSID1148 cpex = new CCSID1148();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);
 

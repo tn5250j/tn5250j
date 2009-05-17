@@ -1,0 +1,43 @@
+
+All codepage converters where migrated using a much faster implementation
+and using codepages manually extracted from JTOpen v6.4.
+Furthermore all codepage converters where put under test,
+comparing old and new implementation.
+
+The test simply takes one byte, transforms to unicode and then back to byte.
+In other words: EBCDIC byte -> Unicode char -> EBCDIC byte.
+Each converter gets tested for 
+ a) existing implementation on itself
+ b) new implementation on itself
+ c) existing impl. compared to new impl. (should be the same result)
+
+Result of testing codepage converters:
+-------------------------------------------------------------------------------
+
+
+"37",       OK
+"37PT",     Skipped, What is it?
+"273",      OK
+"280",      OK
+"284",      OK
+"285",      OK
+"277-dk",   OK
+"277-no",   OK
+"278",      Error! java.lang.AssertionError: Testing to EBCDIC item #91 expected:<-32> but was:<113>
+"297",      OK
+"424",      Error! multiple erros
+"500-ch",   OK
+"870-pl",   Error, even in original module
+"870-sk",   Error! multiple errors
+"871",      Error! java.lang.AssertionError: Testing to EBCDIC item #63 expected:<-113> but was:<-84>
+"875",      Error, even in original module
+"1025-r",   Error, even in original module
+"1026",     Error, even in original module
+"1112",     Error, even in original module
+"1141",     Error, even in original module
+"1140",     Error, even in original module
+"1147",     Error, even in original module
+"1148"      Error, even in original module
+
+-------------------------------------------------------------------------------
+$Id$

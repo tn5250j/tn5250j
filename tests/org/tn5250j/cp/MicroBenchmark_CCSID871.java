@@ -61,7 +61,7 @@ public class MicroBenchmark_CCSID871 {
 	/**
 	 * Speed test for new implementation ...
 	 */
-	@Test
+	@Test(timeout=10000)
 	public void testNewConverter871() {
 		for (int i=0; i<RUNS; i++) {
 			realRunNew();
@@ -71,7 +71,7 @@ public class MicroBenchmark_CCSID871 {
 	/**
 	 * Speed test for old implementation ....
 	 */
-	@Test
+	@Test(timeout=10000)
 	public void testOldConverter871() {
 		for (int i=0; i<RUNS; i++) {
 			realRunOld();
@@ -86,7 +86,7 @@ public class MicroBenchmark_CCSID871 {
 		for (int i=0; i<TESTSTRING.length; i++) {
 			final char beginvalue = TESTSTRING[i];
 			final byte converted = cp.uni2ebcdic(beginvalue);
-			final char afterall = cp.ebcdic2uni(converted & 0xFF);
+			final char afterall = cp.ebcdic2uni(converted);
 		}
 	}
 
