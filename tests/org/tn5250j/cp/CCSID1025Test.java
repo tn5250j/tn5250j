@@ -46,7 +46,7 @@ public class CCSID1025Test {
 	@Test
 	public void testOldConverter1025() {
 
-		CodePage cp = CharMappings.getCodePage("1025");
+		CodePage cp = CharMappings.getCodePage("1025-r");
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
 
 		for (int i=0; i<256; i++) {
@@ -82,7 +82,7 @@ public class CCSID1025Test {
 	 */
 	@Test
 	public void testBoth() {
-		final CodePage cp = CharMappings.getCodePage("1025");
+		final CodePage cp = CharMappings.getCodePage("1025-r");
 		final CCSID1025 cpex = new CCSID1025();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);
