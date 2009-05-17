@@ -38,8 +38,9 @@ final/* default */class CCSID875 extends CodepageConverterAdapter {
 	public final static String DESCR = "Greek";
 
 	/*
-	 * Char maps manually extracted from JTOpen v6.4. Because char maps can't be
-	 * covered by any license, this should legal.
+	 * Char maps manually extracted from JTOpen v6.4.
+	 * And manually adjusted using 
+	 * http://www-01.ibm.com/software/globalization/cp/cp00875.jsp
 	 */
 	private static final char[] codepage = { '\u0000', '\u0001', '\u0002',
 			'\u0003', '\u009C', '\t', '\u0086', '\u007F', '\u0097', '\u008D',
@@ -71,10 +72,10 @@ final/* default */class CCSID875 extends CodepageConverterAdapter {
 			'C', 'D', 'E', 'F', 'G', 'H', 'I', '\u00AD', '\u03C9', '\u0390',
 			'\u03B0', '\u2018', '\u2015', '}', 'J', 'K', 'L', 'M', 'N', 'O',
 			'P', 'Q', 'R', '\u00B1', '\u00BD', '\u001A', '\u0387', '\u2019',
-			'\u00A6', '\\', '\u001A', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-			'\u00B2', '\u00A7', '\u001A', '\u001A', '\u00AB', '\u00AC', '0',
+			'\u00A6', '\\', '\u20AF', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+			'\u00B2', '\u00A7', '\u037A', '\u001A', '\u00AB', '\u00AC', '0',
 			'1', '2', '3', '4', '5', '6', '7', '8', '9', '\u00B3', '\u00A9',
-			'\u001A', '\u001A', '\u00BB', '\u009F', };
+			'\u20AC', '\u001A', '\u00BB', '\u009F', };
 
 	public String getName() {
 		return NAME;
