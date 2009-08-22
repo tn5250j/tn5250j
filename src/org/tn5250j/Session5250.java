@@ -284,7 +284,7 @@ public class Session5250 implements SessionInterface {
     * @see tnvt#parseCommand();
     * @see scanned(String,String)
     */
-   public void scanned(String command, String remainder) {
+   public final void fireScanned(String command, String remainder) {
 	   scanListenerLock.readLock().lock();
 	   try {
 		   if (this.scanListeners != null) {
@@ -300,7 +300,7 @@ public class Session5250 implements SessionInterface {
    /**
     * @param listener
     */
-   public void addScanListener(ScanListener listener) {
+   public final void addScanListener(ScanListener listener) {
 	   scanListenerLock.writeLock().lock();
 	   try {
 		   if (scanListeners == null) {
@@ -315,7 +315,7 @@ public class Session5250 implements SessionInterface {
    /**
     * @param listener
     */
-   public void removeScanListener(ScanListener listener) {
+   public final void removeScanListener(ScanListener listener) {
 	   scanListenerLock.writeLock().lock();
 	   try {
 		   if (scanListeners != null) {
