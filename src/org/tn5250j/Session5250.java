@@ -92,11 +92,10 @@ public class Session5250 implements SessionInterface {
    }
 
    public boolean isConnected() {
-
-      if (vt == null)
-         return false;
-      else
-         return vt.isConnected();
+      if (vt == null) {
+    	  return false;
+      }
+      return vt.isConnected();
 
    }
 
@@ -120,10 +119,10 @@ public class Session5250 implements SessionInterface {
    }
 
    public String getAllocDeviceName() {
-      if (vt != null)
-         return vt.getAllocatedDeviceName();
-      else
-         return null;
+      if (vt != null) {
+    	  return vt.getAllocatedDeviceName();
+      }
+      return null;
    }
 
    public int getSessionType() {
@@ -152,7 +151,7 @@ public class Session5250 implements SessionInterface {
       enhanced = sesProps.containsKey(TN5250jConstants.SESSION_TN_ENHANCED);
 
       if (sesProps.containsKey(TN5250jConstants.SESSION_SCREEN_SIZE))
-         if (((String)sesProps.getProperty(TN5250jConstants.SESSION_SCREEN_SIZE)).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR))
+         if ((sesProps.getProperty(TN5250jConstants.SESSION_SCREEN_SIZE)).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR))
             support132 = true;
 
       final tnvt vt = new tnvt(this,screen,enhanced,support132);
@@ -161,14 +160,14 @@ public class Session5250 implements SessionInterface {
 //      vt.setController(this);
 
       if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_PORT))
-         proxyPort = (String)sesProps.getProperty(TN5250jConstants.SESSION_PROXY_PORT);
+         proxyPort = sesProps.getProperty(TN5250jConstants.SESSION_PROXY_PORT);
 
       if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_HOST))
-         vt.setProxy((String)sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST),
+         vt.setProxy(sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST),
                      proxyPort);
 
       if (sesProps.containsKey(TN5250jConstants.SSL_TYPE)) {
-         sslType = (String)sesProps.getProperty(TN5250jConstants.SSL_TYPE);
+         sslType = sesProps.getProperty(TN5250jConstants.SSL_TYPE);
       }
       else {
          // set default to none
@@ -178,13 +177,13 @@ public class Session5250 implements SessionInterface {
       vt.setSSLType(sslType);
 
       if (sesProps.containsKey(TN5250jConstants.SESSION_CODE_PAGE))
-         vt.setCodePage((String)sesProps.getProperty(TN5250jConstants.SESSION_CODE_PAGE));
+         vt.setCodePage(sesProps.getProperty(TN5250jConstants.SESSION_CODE_PAGE));
 
       if (sesProps.containsKey(TN5250jConstants.SESSION_DEVICE_NAME))
-         vt.setDeviceName((String)sesProps.getProperty(TN5250jConstants.SESSION_DEVICE_NAME));
+         vt.setDeviceName(sesProps.getProperty(TN5250jConstants.SESSION_DEVICE_NAME));
 
       if (sesProps.containsKey(TN5250jConstants.SESSION_HOST_PORT)) {
-         port = Integer.parseInt((String)sesProps.getProperty(TN5250jConstants.SESSION_HOST_PORT));
+         port = Integer.parseInt(sesProps.getProperty(TN5250jConstants.SESSION_HOST_PORT));
       }
       else {
          // set to default 23 of telnet
