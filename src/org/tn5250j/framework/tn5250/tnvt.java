@@ -1062,7 +1062,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 						- (i + 1));
 				//        System.out.println("Sensing action command in the input! = "
 				// + command);
-				controller.scanned(command, remainder);
+				controller.fireScanned(command, remainder);
 				break;
 			}
 		}
