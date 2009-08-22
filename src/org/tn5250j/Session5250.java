@@ -21,6 +21,8 @@
 package org.tn5250j;
 
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.tn5250j.interfaces.SessionInterface;
 import org.tn5250j.event.SessionListener;
@@ -39,7 +41,6 @@ public class Session5250 implements SessionInterface {
    private String sessionName;
    private int sessionType;
    protected Properties sesProps;
-   private Vector<SessionListener> listeners;
    private String sslType;
    private boolean heartBeat;
    String propFileName;
@@ -47,6 +48,9 @@ public class Session5250 implements SessionInterface {
    tnvt vt;
    Screen5250 screen;
    SessionGUI guiComponent;
+   
+   private List<SessionListener> listeners = null;
+   private final ReadWriteLock listenerLock = new ReentrantReadWriteLock(); 
 
    // WVL - LDC : TR.000300 : Callback scenario from 5250
    private boolean scan; // = false;
@@ -187,7 +191,7 @@ public class Session5250 implements SessionInterface {
          port = 23;
       }
 
-      final String ses = (String)sesProps.getProperty(TN5250jConstants.SESSION_HOST);
+      final String ses = sesProps.getProperty(TN5250jConstants.SESSION_HOST);
       final int portp = port;
 
       // lets set this puppy up to connect within its own thread
@@ -302,18 +306,19 @@ public class Session5250 implements SessionInterface {
     *
     * @param state  The state change property object.
     */
-   public void fireSessionChanged(int state) {
-
-      if (listeners != null) {
-         int size = listeners.size();
-         for (int i = 0; i < size; i++) {
-            SessionListener target =
-                    (SessionListener)listeners.elementAt(i);
-            SessionChangeEvent sce = new SessionChangeEvent(this);
-            sce.setState(state);
-            target.onSessionChanged(sce);
-         }
-      }
+   public final void fireSessionChanged(int state) {
+	   listenerLock.readLock().lock();
+	   try {
+		   if (this.listeners != null) {
+			   for (SessionListener listener : this.listeners) {
+				   SessionChangeEvent sce = new SessionChangeEvent(this);
+				   sce.setState(state);
+				   listener.onSessionChanged(sce);
+			   }
+		   }
+	   } finally {
+		   listenerLock.readLock().unlock();
+	   }
    }
 
    /**
@@ -321,13 +326,16 @@ public class Session5250 implements SessionInterface {
     *
     * @param listener  The SessionListener to be added
     */
-   public synchronized void addSessionListener(SessionListener listener) {
-
-      if (listeners == null) {
-          listeners = new java.util.Vector<SessionListener>(3);
-      }
-      listeners.addElement(listener);
-
+   public final void addSessionListener(SessionListener listener) {
+	   listenerLock.writeLock().lock();
+	   try {
+		   if (listeners == null) {
+			   listeners = new ArrayList<SessionListener>(3);
+		   }
+		   listeners.add(listener);
+	   } finally {
+		   listenerLock.writeLock().unlock();
+	   }
    }
 
    /**
@@ -335,12 +343,15 @@ public class Session5250 implements SessionInterface {
     *
     * @param listener  The SessionListener to be removed
     */
-   public synchronized void removeSessionListener(SessionListener listener) {
-      if (listeners == null) {
-          return;
-      }
-      listeners.removeElement(listener);
-
+   public final void removeSessionListener(SessionListener listener) {
+	   listenerLock.writeLock().lock();
+	   try {
+		   if (listeners != null) {
+			   listeners.remove(listener);
+		   }
+	   } finally {
+		   listenerLock.writeLock().unlock();
+	   }
    }
 
 }
