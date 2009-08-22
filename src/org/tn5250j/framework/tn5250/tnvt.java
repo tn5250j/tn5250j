@@ -37,7 +37,6 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.mail.Session;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -104,6 +103,12 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
+	/**
+	 * @param session
+	 * @param screen52
+	 * @deprecated Nobody used this constructor
+	 */
+	@Deprecated
 	public tnvt(Session5250 session,Screen5250 screen52) {
 
 		this(session,screen52, false, false);
