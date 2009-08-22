@@ -21,30 +21,27 @@
  */
 package org.tn5250j;
 
-import java.util.*;
 import java.awt.Rectangle;
 
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.framework.tn5250.*;
+import org.tn5250j.event.SessionListener;
+import org.tn5250j.framework.tn5250.Screen5250;
 
 /**
  * A host GUI session
  */
 public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConstants {
 
-   private String configurationResource;
-   private String sessionName;
-   private boolean connected;
-   private Vector listeners;
-   private boolean firstScreen;
-   private char[] signonSave;
+	private static final long serialVersionUID = 1L;
+
+	private String sessionName;
+	private boolean firstScreen;
+	private char[] signonSave;
 
 
    public SessionGUI (Session5250 session) {
       super(session);
 
-      this.configurationResource = session.getConfigurationResource();
       this.sessionName = session.getSessionName();
 
       session.getConfiguration().addSessionConfigListener(this);
@@ -72,7 +69,6 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
       if (firstScreen) {
 
          char[] so = screen.getScreenAsChars();
-         int size = signonSave.length;
 
          Rectangle region = super.sesConfig.getRectangleProperty("signOnRegion");
 
@@ -110,10 +106,10 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
    }
 
    public String getAllocDeviceName() {
-      if (session.getVT() != null)
-         return session.getVT().getAllocatedDeviceName();
-      else
-         return null;
+      if (session.getVT() != null) {
+    	  return session.getVT().getAllocatedDeviceName();
+      }
+      return null;
    }
 
    public String getHostName() {
