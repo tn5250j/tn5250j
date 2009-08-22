@@ -49,12 +49,12 @@ public class Session5250 implements SessionInterface {
    Screen5250 screen;
    SessionGUI guiComponent;
    
-   private List<SessionListener> listeners = null;
-   private final ReadWriteLock listenerLock = new ReentrantReadWriteLock(); 
+   private List<SessionListener> sessionListeners = null;
+   private final ReadWriteLock sessionListenerLock = new ReentrantReadWriteLock(); 
 
-   // WVL - LDC : TR.000300 : Callback scenario from 5250
    private boolean scan; // = false;
-   private ScanListener scanListener; // = null;
+   private List<ScanListener> scanListeners = null;
+   private final ReadWriteLock scanListenerLock = new ReentrantReadWriteLock();
 
    public Session5250 (Properties props, String configurationResource,
                      String sessionName,
@@ -272,7 +272,7 @@ public class Session5250 implements SessionInterface {
     * This is the callback method for the TNVT when sensing the action cmd
     * screen pattern (!# at position 0,0).
     *
-    * This is <strong>NOT a threadsafe method</strong> and will be called
+    * This is a thread safe method and will be called
     * from the TNVT read thread!
     *
     * @param command discovered in the 5250 stream.
@@ -284,20 +284,46 @@ public class Session5250 implements SessionInterface {
     * @see tnvt#parseCommand();
     * @see scanned(String,String)
     */
-  public void scanned(String command, String remainder)
-  {
-    if (scanListener != null)
-      scanListener.scanned(command, remainder);
+   public void scanned(String command, String remainder) {
+	   scanListenerLock.readLock().lock();
+	   try {
+		   if (this.scanListeners != null) {
+			   for (ScanListener listener : this.scanListeners) {
+				   listener.scanned(command, remainder);
+			   }
+		   }
+	   } finally {
+		   scanListenerLock.readLock().unlock();
+	   }
    }
 
-   public void addScanListener(ScanListener listener)
-   {
-     scanListener = ScanMulticaster.add(scanListener, listener);
+   /**
+    * @param listener
+    */
+   public void addScanListener(ScanListener listener) {
+	   scanListenerLock.writeLock().lock();
+	   try {
+		   if (scanListeners == null) {
+			   scanListeners = new ArrayList<ScanListener>(3);
+		   }
+		   scanListeners.add(listener);
+	   } finally {
+		   scanListenerLock.writeLock().unlock();
+	   }
    }
 
-   public void removeScanListener(ScanListener listener)
-   {
-     scanListener = ScanMulticaster.remove(scanListener, listener);
+   /**
+    * @param listener
+    */
+   public void removeScanListener(ScanListener listener) {
+	   scanListenerLock.writeLock().lock();
+	   try {
+		   if (scanListeners != null) {
+			   scanListeners.remove(listener);
+		   }
+	   } finally {
+		   scanListenerLock.writeLock().unlock();
+	   }
    }
 
    /**
@@ -306,17 +332,17 @@ public class Session5250 implements SessionInterface {
     * @param state  The state change property object.
     */
    public final void fireSessionChanged(int state) {
-	   listenerLock.readLock().lock();
+	   sessionListenerLock.readLock().lock();
 	   try {
-		   if (this.listeners != null) {
-			   for (SessionListener listener : this.listeners) {
+		   if (this.sessionListeners != null) {
+			   for (SessionListener listener : this.sessionListeners) {
 				   SessionChangeEvent sce = new SessionChangeEvent(this);
 				   sce.setState(state);
 				   listener.onSessionChanged(sce);
 			   }
 		   }
 	   } finally {
-		   listenerLock.readLock().unlock();
+		   sessionListenerLock.readLock().unlock();
 	   }
    }
 
@@ -326,14 +352,14 @@ public class Session5250 implements SessionInterface {
     * @param listener  The SessionListener to be added
     */
    public final void addSessionListener(SessionListener listener) {
-	   listenerLock.writeLock().lock();
+	   sessionListenerLock.writeLock().lock();
 	   try {
-		   if (listeners == null) {
-			   listeners = new ArrayList<SessionListener>(3);
+		   if (sessionListeners == null) {
+			   sessionListeners = new ArrayList<SessionListener>(3);
 		   }
-		   listeners.add(listener);
+		   sessionListeners.add(listener);
 	   } finally {
-		   listenerLock.writeLock().unlock();
+		   sessionListenerLock.writeLock().unlock();
 	   }
    }
 
@@ -343,13 +369,13 @@ public class Session5250 implements SessionInterface {
     * @param listener  The SessionListener to be removed
     */
    public final void removeSessionListener(SessionListener listener) {
-	   listenerLock.writeLock().lock();
+	   sessionListenerLock.writeLock().lock();
 	   try {
-		   if (listeners != null) {
-			   listeners.remove(listener);
+		   if (sessionListeners != null) {
+			   sessionListeners.remove(listener);
 		   }
 	   } finally {
-		   listenerLock.writeLock().unlock();
+		   sessionListenerLock.writeLock().unlock();
 	   }
    }
 
