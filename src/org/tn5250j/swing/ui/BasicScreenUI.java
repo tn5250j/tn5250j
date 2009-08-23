@@ -375,7 +375,7 @@ public final class iOhioPosition {
    }
 
 //      Graphics2D gg2d = (Graphics2D)g;
-      Graphics gg2d = (Graphics)g;
+      Graphics gg2d = g;
       int sr = start.getRow();
       int sc = start.getColumn();
       int er = end.getRow();
@@ -493,8 +493,8 @@ public final class iOhioPosition {
          g.setFont(k);
          g.setColor(colorHexAttr);
          char[] a = Integer.toHexString(attr).toCharArray();
-         g.drawChars(a, 0, 1, x, y + (int)(rowHeight /2));
-         g.drawChars(a, 1, 1, x+(int)(columnWidth/2),
+         g.drawChars(a, 0, 1, x, y + (rowHeight /2));
+         g.drawChars(a, 1, 1, x+(columnWidth/2),
             (int)(y + rowHeight - (lm.getDescent() + lm.getLeading())-2));
          g.setFont(f);
       }
@@ -733,7 +733,7 @@ public final class iOhioPosition {
                   g.setColor(fg);
 //                  g.drawLine(x, cy -2, (int)(x + columnWidth), cy -2);
 //                  g.drawLine(x, (int)(y + (rowHeight - s.lm.getLeading()-5)), (int)(x + columnWidth), (int)(y + (rowHeight - s.lm.getLeading())-5));
-                  g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (int)(x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
+                  g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
                }
             }
 

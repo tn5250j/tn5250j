@@ -164,7 +164,7 @@ public class FTP5250Prot {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             FTPStatusListener target =
-                    (FTPStatusListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.statusReceived(status);
          }
       }
@@ -180,7 +180,7 @@ public class FTP5250Prot {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             FTPStatusListener target =
-                    (FTPStatusListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.commandStatusReceived(status);
          }
       }
@@ -196,7 +196,7 @@ public class FTP5250Prot {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             FTPStatusListener target =
-                    (FTPStatusListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.fileInfoReceived(status);
          }
       }

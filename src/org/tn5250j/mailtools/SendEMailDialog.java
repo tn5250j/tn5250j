@@ -711,7 +711,7 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
 		int c = boxen.getItemCount();
 
 		for (int x = 0; x < c; x++) {
-			if (!selected.equals((String) boxen.getItemAt(x)))
+			if (!selected.equals(boxen.getItemAt(x)))
 				sb.append((String) boxen.getItemAt(x) + '|');
 		}
 		return sb.toString();

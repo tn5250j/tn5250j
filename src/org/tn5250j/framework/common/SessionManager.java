@@ -80,7 +80,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    public void closeSession(String sessionName) {
 
-      SessionGUI session = ((Session5250)sessions.item(sessionName)).getGUI();
+      SessionGUI session = (sessions.item(sessionName)).getGUI();
       if (session != null)
          closeSession(session);
 
@@ -89,7 +89,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
    public void closeSession(SessionGUI sessionObject) {
 
       sessionObject.closeDown();
-      sessions.removeSession(((SessionGUI)sessionObject).getSession());
+      sessions.removeSession((sessionObject).getSession());
 
    }
 

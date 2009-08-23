@@ -136,7 +136,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
    private MyInternalFrame getNextInternalFrame() {
 
 
-      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame[] frames = desktop.getAllFrames();
       JInternalFrame miv = desktop.getSelectedFrame();
 
       if (miv == null)
@@ -199,7 +199,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    private void prevSession() {
 
-      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame[] frames = desktop.getAllFrames();
       JInternalFrame miv = desktop.getSelectedFrame();
 
       if (miv == null)
@@ -286,7 +286,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
       log.info("session found and closing down " + index);
       targetSession.removeSessionListener(this);
       targetSession.removeSessionJumpListener(this);
-      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame[] frames = desktop.getAllFrames();
       MyInternalFrame mif = (MyInternalFrame)frames[index];
       int count = getSessionViewCount();
 	  log.debug(" num of frames before removal " + myFrameList.size());
@@ -317,7 +317,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    public SessionGUI getSessionAt( int index) {
 
-      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame[] frames = desktop.getAllFrames();
       SessionGUI s = (SessionGUI)frames[index].getContentPane();
 
       return s;
@@ -362,7 +362,7 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    public int getIndexOfSession(SessionGUI session) {
 
-      JInternalFrame[] frames = (JInternalFrame[])desktop.getAllFrames();
+      JInternalFrame[] frames = desktop.getAllFrames();
       int index = -1;
 
       for (int idx = 0; idx < frames.length; idx++) {

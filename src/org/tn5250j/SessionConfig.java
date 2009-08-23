@@ -82,7 +82,7 @@ public class SessionConfig implements TN5250jConstants {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             SessionConfigListener target =
-                    (SessionConfigListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.onConfigChanged(sce);
          }
       }

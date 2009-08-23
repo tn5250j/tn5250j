@@ -91,7 +91,7 @@ public abstract class AbstractImageEncoder implements Encoder {
    }
 
    public static byte byteFromChar(char ochar) {
-      int temp = (int) ochar;
+      int temp = ochar;
       byte bits = 0;
 
       int curpos = 0;

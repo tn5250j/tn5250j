@@ -384,8 +384,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         map.put((String)i.next(),ks.toString());
+         KeyStroker ks = k.next();
+         map.put(i.next(),ks.toString());
       }
 
       ConfigureFactory.getInstance().saveSettings(ConfigureFactory.KEYMAP,
@@ -399,7 +399,7 @@ public class KeyMapper {
    public final static String getKeyStrokeText(KeyEvent ke,boolean isAltGr) {
       if (!workStroke.equals(ke,isAltGr)) {
          workStroke.setAttributes(ke,isAltGr);
-         lastKeyMnemonic = (String)mappedKeys.get(workStroke);
+         lastKeyMnemonic = mappedKeys.get(workStroke);
       }
 
       if (lastKeyMnemonic != null &&
@@ -420,7 +420,7 @@ public class KeyMapper {
    public final static String getKeyStrokeMnemonic(KeyEvent ke,boolean isAltGr) {
 
       workStroke.setAttributes(ke,isAltGr);
-      String keyMnemonic = (String)mappedKeys.get(workStroke);
+      String keyMnemonic = mappedKeys.get(workStroke);
 
       if (keyMnemonic != null &&
             keyMnemonic.endsWith(KeyStroker.altSuffix)) {
@@ -444,8 +444,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = (String)i.next();
+         KeyStroker ks = k.next();
+         String keyVal = i.next();
          if (keyVal.equals(which))
             return ks.getKeyStrokeDesc();
       }
@@ -460,8 +460,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = (String)i.next();
+         KeyStroker ks = k.next();
+         String keyVal = i.next();
          if (keyVal.equals(which))
             return ks;
       }
@@ -477,7 +477,7 @@ public class KeyMapper {
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
          k.next();
-         String keyVal = (String)i.next();
+         String keyVal = i.next();
          if (keyVal.equals(which))
             return true;
       }
@@ -492,7 +492,7 @@ public class KeyMapper {
    public final static boolean isKeyStrokeDefined(KeyEvent ke,boolean isAltGr) {
 
       workStroke.setAttributes(ke,isAltGr);
-      return (null != (String)mappedKeys.get(workStroke));
+      return (null != mappedKeys.get(workStroke));
 
    }
 
@@ -503,8 +503,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = (String)i.next();
+         KeyStroker ks = k.next();
+         String keyVal = i.next();
          if (keyVal.equals(which)) {
             int mask = 0;
 
@@ -531,8 +531,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = (String)i.next();
+         KeyStroker ks = k.next();
+         String keyVal = i.next();
          if (keyVal.equals(which)) {
             mappedKeys.remove(ks);
             return;
@@ -550,8 +550,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = (String)i.next();
+         KeyStroker ks = k.next();
+         String keyVal = i.next();
          if (keyVal.equals(which)) {
             mappedKeys.remove(ks);
             mappedKeys.put(newKeyStroker(ke),keyVal);
@@ -573,8 +573,8 @@ public class KeyMapper {
       Iterator<KeyStroker> k = o.iterator();
       Iterator<String> i = v.iterator();
       while (k.hasNext()) {
-         KeyStroker ks = (KeyStroker)k.next();
-         String keyVal = (String)i.next();
+         KeyStroker ks = k.next();
+         String keyVal = i.next();
          if (keyVal.equals(which)) {
             mappedKeys.remove(ks);
             mappedKeys.put(newKeyStroker(ke, isAltGr), keyVal);
@@ -628,7 +628,7 @@ public class KeyMapper {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             KeyChangeListener target =
-                    (KeyChangeListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.onKeyChanged();
          }
       }

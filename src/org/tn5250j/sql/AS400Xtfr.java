@@ -175,7 +175,7 @@ public class AS400Xtfr {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             FTPStatusListener target =
-                    (FTPStatusListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.statusReceived(status);
          }
       }
@@ -191,7 +191,7 @@ public class AS400Xtfr {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             FTPStatusListener target =
-                    (FTPStatusListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.commandStatusReceived(status);
          }
       }
@@ -207,7 +207,7 @@ public class AS400Xtfr {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             FTPStatusListener target =
-                    (FTPStatusListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.fileInfoReceived(status);
          }
       }

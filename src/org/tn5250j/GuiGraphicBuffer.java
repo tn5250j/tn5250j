@@ -1477,8 +1477,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          g.setFont(k);
          g.setColor(colorHexAttr);
          char[] a = Integer.toHexString(attr).toCharArray();
-         g.drawChars(a, 0, 1, x, y + (int)(rowHeight /2));
-         g.drawChars(a, 1, 1, x+(int)(columnWidth/2),
+         g.drawChars(a, 0, 1, x, y + (rowHeight /2));
+         g.drawChars(a, 1, 1, x+(columnWidth/2),
             (int)(y + rowHeight - (lm.getDescent() + lm.getLeading())-2));
          g.setFont(f);
       }
@@ -1709,7 +1709,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
                if (!useGui || guiShowUnderline) {
                   g.setColor(fg);
-                  g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (int)(x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
+                  g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
 
                }
             }

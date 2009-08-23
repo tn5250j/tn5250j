@@ -57,7 +57,7 @@ public class CharMappings {
 
    public static CodePage getCodePage(String encoding) {
      if (map.containsKey(encoding)) {
-       return (CodePage) map.get(encoding);
+       return map.get(encoding);
      }
 
      CodePage cp = NativeCodePage.getCodePage(encoding);

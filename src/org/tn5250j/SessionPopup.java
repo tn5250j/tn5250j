@@ -497,7 +497,7 @@ public class SessionPopup implements TN5250jConstants {
       for (int x = 0; x < allKeys.length; x++) {
 
          mi =new JMenuItem();
-         Action a = aMap.get((String)map.get(allKeys[x]));
+         Action a = aMap.get(map.get(allKeys[x]));
          mi.setAction(a);
          mi.setText(LangTool.getString("key." + (String)map.get(allKeys[x])));
          mi.setAccelerator(allKeys[x]);
