@@ -28,6 +28,7 @@ package org.tn5250j;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import java.awt.*;
 import java.net.*;
@@ -94,7 +95,12 @@ public class My5250 implements BootListener,SessionListener,
     */
    private void loadLookAndFeel() {
 	   try  {
-		   UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		   for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
 	   }
 	   catch(Exception e) {
 		   try {
