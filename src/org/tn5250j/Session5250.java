@@ -20,6 +20,7 @@
  */
 package org.tn5250j;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -31,9 +32,9 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.SystemRequestDialog;
 import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.interfaces.SessionInterface;
-import org.tn5250j.gui.SystemRequestDialog;
 
 /**
  * A host session
@@ -168,6 +169,10 @@ public class Session5250 implements SessionInterface {
       return screen;
 
    }
+   
+   public void signalBell() {
+	   Toolkit.getDefaultToolkit().beep();		
+   }   
 
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.SessionInterface#displaySystemRequest()
