@@ -31,6 +31,7 @@ import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.gui.SystemRequestDialog;
 
 /**
  * A host session
@@ -139,6 +140,14 @@ public class Session5250 implements SessionInterface {
 
       return screen;
 
+   }
+
+   /* (non-Javadoc)
+    * @see org.tn5250j.interfaces.SessionInterface#displaySystemRequest()
+    */
+   public String showSystemRequest() {
+	   final SystemRequestDialog sysreqdlg = new SystemRequestDialog(this.guiComponent);
+	   return sysreqdlg.show();
    }
 
    public void connect() {

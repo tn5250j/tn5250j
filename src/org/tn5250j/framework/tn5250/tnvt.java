@@ -23,10 +23,7 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,11 +34,6 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.Session5250;
@@ -597,157 +589,50 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		}
 	}
 
+	/**
+	 * Opens a dialog and asks the user before sending a request
+	 * 
+	 * @see {@link #systemRequest(String)}
+	 */
 	public final void systemRequest() {
-		systemRequest(' ');
+		final String sysreq = this.controller.showSystemRequest();
+		systemRequest(sysreq);
 	}
 
 	/**
-	 * System request - taken from the rfc1205 - 5250 Telnet interface section
-	 * 4.3
-	 *
-	 * See notes inside method
-	 *
-	 * @param sr -
-	 *            system request option
+	 * @param sr - system request option
+	 * @see {@link #systemRequest(String)}
 	 */
 	public final void systemRequest(char sr) {
-
-		if (sr == ' ') {
-			JPanel srp = new JPanel();
-			srp.setLayout(new BorderLayout());
-			JLabel jl = new JLabel("Enter alternate job");
-			final JTextField sro = new JTextField();
-			srp.add(jl, BorderLayout.NORTH);
-			srp.add(sro, BorderLayout.CENTER);
-			Object[] message = new Object[1];
-			message[0] = srp;
-			String[] options = { "SysReq", "Cancel" };
-
-			final JOptionPane pane = new JOptionPane(
-
-			message, // the dialog message array
-					JOptionPane.QUESTION_MESSAGE, // message type
-					JOptionPane.DEFAULT_OPTION, // option type
-					null, // optional icon, use null to use the default icon
-					options, // options string array, will be made into
-							 // buttons//
-					options[0]); // option that should be made into a default
-								 // button
-
-			// create a dialog wrapping the pane
-			final JDialog dialog = pane.createDialog(null, // parent frame
-					"System Request" // dialog title
-			);
-
-			// add the listener that will set the focus to
-			// the desired option
-			dialog.addWindowListener(new WindowAdapter() {
-				public void windowOpened(WindowEvent e) {
-					super.windowOpened(e);
-
-					// now we're setting the focus to the desired component
-					// it's not the best solution as it depends on internals
-					// of the OptionPane class, but you can use it temporarily
-					// until the bug gets fixed
-					// also you might want to iterate here thru the set of
-					// the buttons and pick one to call requestFocus() for it
-
-					sro.requestFocus();
-				}
-			});
-			dialog.setVisible(true);
-
-			// now we can process the value selected
-			Object o = pane.getValue();
-
-			// but only if it is a String
-			if (o instanceof String) {
-
-				String value = (String) o;
-
-				if (value.equals(options[0])) {
-					// from rfc1205 section 4.3
-					// Client sends header with the 000A12A0000004040000FFEF
-					// System Request bit set.
-					//
-					// if we wanted to send an option with it we would need to
-					// send
-					//    it at the end such as the following
-					//
-					// byte abyte0[] = new byte[1]; or number of bytes in option
-					// abyte0[0] = codePage.uni2ebcdic(option);
-
-					//                  System.out.println("SYSRQS sent");
-
-					// send option along with system request
-					if (sro.getText().length() > 0) {
-						for (int x = 0; x < sro.getText().length(); x++) {
-							//                     System.out.println(sro.getText().charAt(x));
-							if (sro.getText().charAt(0) == '2') {
-								//                           System.out.println("dataq cleared");
-								dsq.clear();
-							}
-							baosp.write(codePage.uni2ebcdic(sro.getText()
-									.charAt(x)));
-						}
-
-						try {
-							writeGDS(4, 0, baosp.toByteArray());
-						} catch (IOException ioe) {
-
-							log.warn(ioe.getMessage());
-						}
-						baosp.reset();
-					} else { // no option sent with system request
-
-						try {
-							writeGDS(4, 0, null);
-						} catch (IOException ioe) {
-
-							log.warn(ioe.getMessage());
-						}
-					}
-				}
-			}
-//			controller.requestFocus();
-		} else {
-
-			baosp.write(codePage.uni2ebcdic(sr));
-
-			try {
-				writeGDS(4, 0, baosp.toByteArray());
-			} catch (IOException ioe) {
-				baosp.reset();
-				log.warn(ioe.getMessage());
-			}
-			baosp.reset();
-		}
+		systemRequest(Character.toString(sr));
 	}
 
-        public final void systemRequest(String sr)
-        {
-          byte[] bytes = null;
+	/**
+	 * System request, taken from the rfc1205, 5250 Telnet interface section 4.3
+	 * 
+	 * @param sr system request option (allowed to be null, but than nothing happens)
+	 */
+	public final void systemRequest(String sr) {
+		byte[] bytes = null;
 
-          if ( (sr != null) && (sr.length() != 0))
-          {
-            for (int i = 0, l = sr.length(); i < l; i++)
-            {
-              baosp.write(codePage.uni2ebcdic(sr.charAt(i)));
-            }
-            bytes = baosp.toByteArray();
-//       baosp.reset();
-          }
+		if ( (sr != null) && (sr.length() > 0)) {
+			// XXX: Not sure, if this is a sufficient check for 'clear dataq' 
+			if (sr.charAt(0) == '2') {
+				dsq.clear();
+			}
+			for (int i = 0, l = sr.length(); i < l; i++) {
+				baosp.write(codePage.uni2ebcdic(sr.charAt(i)));
+			}
+			bytes = baosp.toByteArray();
+		}
 
-          try
-          {
-            writeGDS(4, 0, bytes);
-          }
-          catch (IOException ioe)
-          {
-            log.info(ioe.getMessage());
-          }
-          baosp.reset();
-        }
+		try	{
+			writeGDS(4, 0, bytes);
+		} catch (IOException ioe) {
+			log.info(ioe.getMessage());
+		}
+		baosp.reset();
+	}
 
 	/**
 	 * Cancel Invite - taken from the rfc1205 - 5250 Telnet interface section
@@ -1028,7 +913,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	// WVL - LDC : TR.000300 : Callback scenario from 5250
 	/**
 	 * The screen is parsed starting from second position until a white space is
-	 * encountered. When found the {@link Session#execCommand(String, int)}is
+	 * encountered. When found the Session#execCommand(String, int) is
 	 * called with the parsed string. The position immediately following the
 	 * encountered white space, separating the command from the rest of the
 	 * screen, is passed as starting index.
