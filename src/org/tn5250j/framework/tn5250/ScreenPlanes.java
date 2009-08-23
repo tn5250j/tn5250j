@@ -38,7 +38,6 @@ public class ScreenPlanes implements TN5250jConstants {
    int numCols;
    int errorLineNum;
 
-   private char char0 = 0;
    private static final int initAttr = 32;
    private static final char initChar = 0;
 
@@ -67,7 +66,6 @@ public class ScreenPlanes implements TN5250jConstants {
 
    protected void setSize(int newSize) {
 
-      int oldRows = numRows;
       screenSize = newSize;
 
       numCols = 80;

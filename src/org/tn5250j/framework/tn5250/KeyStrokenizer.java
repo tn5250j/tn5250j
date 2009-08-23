@@ -21,12 +21,18 @@
 
 package org.tn5250j.framework.tn5250;
 
-import org.tn5250j.tools.logging.*;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 
 public class KeyStrokenizer {
-   
-   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+
+   private StringBuffer keyStrokes;
+   private StringBuffer sb;
+   private int index;
+   private int length;
+	
+   private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
    
    public KeyStrokenizer() {
 
@@ -60,7 +66,6 @@ public class KeyStrokenizer {
 
       String s = "";
       boolean gotOne = false;
-      int start = index;
       if(length > index) {
          sb.setLength(0);
 
@@ -144,19 +149,10 @@ public class KeyStrokenizer {
    }
 
    public String getUnprocessedKeyStroked() {
-
-
-      if(index >= length)
-         return null;
-      else {
-         return keyStrokes.substring(index);
+      if(index >= length) {
+    	  return null;
       }
-
+      return keyStrokes.substring(index);
    }
-
-   private StringBuffer keyStrokes;
-   private StringBuffer sb;
-   private int index;
-   private int length;
 
 }

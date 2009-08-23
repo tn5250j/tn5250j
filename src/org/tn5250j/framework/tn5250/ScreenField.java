@@ -175,7 +175,6 @@ public class ScreenField {
       getKeyPos(endPos);
       int x = length;
       text.setLength(x);
-      int nc = s.getColumns();
       while (x-- > 0) {
 
          // here we manipulate the unicode characters a little for attributes
@@ -222,7 +221,6 @@ public class ScreenField {
       getKeyPos(endPos);
       int x = length;
       text.setLength(x);
-      int nc = s.getColumns();
       while (x-- > 0) {
 
          // here we manipulate the unicode characters a little for attributes
