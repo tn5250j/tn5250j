@@ -30,13 +30,12 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Properties;
 import java.util.Arrays;
+import java.util.Properties;
 
 import javax.net.ssl.SSLSocket;
 import javax.swing.JDialog;
@@ -46,16 +45,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import org.tn5250j.Session5250;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.CodePage;
-import org.tn5250j.framework.Tn5250jController;
-import org.tn5250j.framework.Tn5250jEvent;
-import org.tn5250j.framework.Tn5250jKeyEvents;
+import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
-import org.tn5250j.framework.transport.SocketConnector;
-import org.tn5250j.TN5250jConstants;
-import org.tn5250j.Session5250;
 
 public final class tnvt implements Runnable, TN5250jConstants {
 
@@ -68,7 +64,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	protected Screen5250 screen52;
 	private boolean waitingForInput;
 	boolean invited;
-	private boolean dumpBytes = false;
 	private boolean negotiated = false;
 	private Thread me;
 	private Thread pthread;
@@ -103,14 +98,18 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private boolean pendingUnlock = false;
 	private boolean[] dataIncluded;
 	protected CodePage codePage;
-	private FileOutputStream fw;
-	private BufferedOutputStream dw;
 	private boolean firstScreen;
 	private String sslType;
 	WTDSFParser sfParser;
 
-	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
+	/**
+	 * @param session
+	 * @param screen52
+	 * @deprecated Nobody used this constructor
+	 */
+	@Deprecated
 	public tnvt(Session5250 session,Screen5250 screen52) {
 
 		this(session,screen52, false, false);
@@ -406,11 +405,11 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		bout.flush();
 	}
 
-	private final void writeByte(byte byte0) throws IOException {
-
-		bout.write(byte0);
-		bout.flush();
-	}
+//	private final void writeByte(byte byte0) throws IOException {
+//
+//		bout.write(byte0);
+//		bout.flush();
+//	}
 
 	public final void sendHeartBeat() throws IOException {
 
@@ -914,10 +913,10 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return bk.getOpCode();
 	}
 
-	private final void sendNotify() throws IOException {
-
-		writeGDS(0, 0, null);
-	}
+//	private final void sendNotify() throws IOException {
+//
+//		writeGDS(0, 0, null);
+//	}
 
    protected boolean[] getActiveAidKeys() {
       boolean aids[] = new boolean[dataIncluded.length];
@@ -962,7 +961,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
       finally
       {
          strpccmd = false;
-         screen52.sendKeys(screen52.MNEMONIC_ENTER);
+         screen52.sendKeys(TN5250jConstants.MNEMONIC_ENTER);
       }
    }
    
@@ -1076,7 +1075,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 						- (i + 1));
 				//        System.out.println("Sensing action command in the input! = "
 				// + command);
-				controller.scanned(command, remainder);
+				controller.fireScanned(command, remainder);
 				break;
 			}
 		}
@@ -1346,8 +1345,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 		int rows = screen52.getRows();
 		int cols = screen52.getColumns();
-		boolean att = false;
-		int off = 0;
 		byte abyte0[] = new byte[rows * cols];
 		fillScreenArray(abyte0, rows, cols);
 		writeGDS(0, 0, abyte0);
@@ -1688,9 +1685,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	private void parseIncoming() {
 
-		boolean controlChars = false;
-		byte control0;
-		byte control1;
 		boolean done = false;
 		boolean error = false;
 
@@ -1908,11 +1902,9 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	private boolean writeToDisplay(boolean controlsExist) {
 
-		int pos = 0;
 		boolean error = false;
 		boolean done = false;
 		int attr;
-		byte nextOne;
 		byte control0 = 0;
 		byte control1 = 0;
 		int saRows = screen52.getRows();
@@ -2443,7 +2435,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	private void writeStructuredField() {
 
 		boolean done = false;
-		int nextone;
 		try {
 			int length = ((bk.getNextByte() & 0xff) << 8 | (bk.getNextByte() & 0xff));
 			while (bk.hasNext() && !done) {
@@ -2885,41 +2876,6 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		return codePage;
 	}
 
-//	public final Dimension getPreferredSize() {
-//		return screen52.getPreferredSize();
-//	}
-
-	/**
-	 * KJP - 20/02/2003 taken out
-	 */
-	//   public byte getEBCDIC(int index) {
-	//      return codePage.getEBCDIC(index);
-	//
-	//   }
-	//
-	/**
-	 * KJP - 20/02/2003 taken out
-	 */
-	//   public char getEBCDICChar(int index) {
-	//      return codePage.getEBCDICChar(index);
-	//
-	//   }
-	//      /**
-	//       * LDC - 13/02/2003 -
-	//   // * @deprecated
-	//       */
-	//      public byte getASCII(int index) {
-	//         return codePage.getASCII(index);
-	//
-	//      }
-	//
-	//      /**
-	//       * LDC - 13/02/2003 -
-	//   // * @deprecated
-	//       */
-	//      public char getASCIIChar(int index) {
-	//         return codePage.getASCIIChar(index);
-	//      }
 	public char ebcdic2uni(int index) {
 		return codePage.ebcdic2uni(index);
 
