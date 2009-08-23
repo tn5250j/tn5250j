@@ -43,7 +43,6 @@ public class Session5250 implements SessionInterface {
    private String sessionName;
    private int sessionType;
    protected Properties sesProps;
-   private String sslType;
    private boolean heartBeat;
    String propFileName;
    protected SessionConfig sesConfig;
@@ -180,10 +179,10 @@ public class Session5250 implements SessionInterface {
          vt.setProxy(sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST),
                      proxyPort);
 
+      final String sslType;
       if (sesProps.containsKey(TN5250jConstants.SSL_TYPE)) {
          sslType = sesProps.getProperty(TN5250jConstants.SSL_TYPE);
-      }
-      else {
+      } else {
          // set default to none
          sslType = TN5250jConstants.SSL_TYPE_NONE;
       }
