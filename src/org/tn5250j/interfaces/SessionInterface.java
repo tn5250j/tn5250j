@@ -47,5 +47,10 @@ public interface SessionInterface {
 	 * @return null if nothing to do, else a String containing the users input.
 	 */
 	public abstract String showSystemRequest();
+	
+	/**
+	 * Signals the user a sound (or maybe a light flash). 
+	 */
+	public abstract void signalBell();
 
 }

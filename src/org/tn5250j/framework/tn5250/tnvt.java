@@ -23,7 +23,6 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.awt.Toolkit;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -1577,7 +1576,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				case ESC: // ESCAPE
 					break;
 				case 7: // audible bell
-					Toolkit.getDefaultToolkit().beep();
+					controller.signalBell();
 					bk.getNextByte();
 					bk.getNextByte();
 					break;
@@ -2227,7 +2226,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		log.debug(" Control byte1 " + Integer.toBinaryString(byte1 & 0xff));
 
 		if ((byte1 & 0x04) == 0x04) {
-			Toolkit.getDefaultToolkit().beep();
+			controller.signalBell();
 		}
 		if ((byte1 & 0x02) == 0x02) {
 			screen52.getOIA().setMessageLightOff();

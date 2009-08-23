@@ -20,6 +20,7 @@
  */
 package org.tn5250j;
 
+import java.awt.Toolkit;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -141,6 +142,10 @@ public class Session5250 implements SessionInterface {
       return screen;
 
    }
+   
+   public void signalBell() {
+	   Toolkit.getDefaultToolkit().beep();		
+   }   
 
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.SessionInterface#displaySystemRequest()
