@@ -670,7 +670,9 @@ public class My5250 implements BootListener,SessionListener,
       SessionGUI jf = null;
       Sessions sess = manager.getSessions();
 
-      log.info("number of active sessions we have " + sess.getCount());
+      if (log.isDebugEnabled()) {
+    	  log.debug("number of active sessions we have " + sess.getCount());
+      }
 
       String views = "";
       while (view.getSessionViewCount() > 0) {
@@ -697,7 +699,9 @@ public class My5250 implements BootListener,SessionListener,
       frames.remove(view);
       view.dispose();
 
-      log.info("number of active sessions we have after shutting down " + sess.getCount());
+      if (log.isDebugEnabled()) {
+    	  log.debug("number of active sessions we have after shutting down " + sess.getCount());
+      }
 
       log.info("view settings " + views);
       if (sess.getCount() == 0) {
