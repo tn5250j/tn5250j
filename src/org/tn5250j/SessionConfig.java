@@ -85,8 +85,7 @@ public class SessionConfig {
       if (listeners != null) {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
-            SessionConfigListener target =
-                    (SessionConfigListener)listeners.elementAt(i);
+            SessionConfigListener target = (SessionConfigListener) listeners.elementAt(i);
             target.onConfigChanged(sce);
          }
       }

@@ -111,11 +111,11 @@ public class FontAttributesPanel extends AttributesPanel {
    public void applyAttributes() {
 
       if (!getStringProperty("font").equals(
-               (String)fontsList.getSelectedItem())
+               fontsList.getSelectedItem())
          ) {
          changes.firePropertyChange(this,"font",
                            getStringProperty("font"),
-                           (String)fontsList.getSelectedItem());
+                           fontsList.getSelectedItem());
 
          setProperty("font",(String)fontsList.getSelectedItem());
       }

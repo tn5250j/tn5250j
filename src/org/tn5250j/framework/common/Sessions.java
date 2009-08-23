@@ -88,7 +88,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    protected void removeSession(String sessionName) {
       log.debug("Remove session by name: "+sessionName);
-      removeSession((Session5250)item(sessionName));
+      removeSession(item(sessionName));
 
    }
 

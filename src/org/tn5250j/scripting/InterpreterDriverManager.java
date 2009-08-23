@@ -56,7 +56,7 @@ public class InterpreterDriverManager {
    public static void executeScript(SessionGUI session, String script, String language)
                         throws InterpreterDriver.InterpreterException {
       InterpreterDriver driver
-                  = (InterpreterDriver)_languageDriverMap.get(language);
+                  = _languageDriverMap.get(language);
       if (driver == null) {
     	  LOG.warn("No driver installed to handle language "
                       + language);
@@ -78,7 +78,7 @@ public class InterpreterDriverManager {
              = scriptFile.substring(scriptFile
                   .lastIndexOf(EXTENSION_SEPARATOR)+1);
       InterpreterDriver driver
-         = (InterpreterDriver)_extensionDriverMap.get(extension);
+         = _extensionDriverMap.get(extension);
       if (driver == null) {
     	  LOG.warn("No driver installed to handle extension "
                                + extension);
@@ -99,7 +99,7 @@ public class InterpreterDriverManager {
              = scriptFile.substring(scriptFile
                   .lastIndexOf(EXTENSION_SEPARATOR)+1);
       InterpreterDriver driver
-         = (InterpreterDriver)_extensionDriverMap.get(extension);
+         = _extensionDriverMap.get(extension);
       if (driver == null) {
     	  LOG.warn("No driver installed to handle extension "
                                + extension);

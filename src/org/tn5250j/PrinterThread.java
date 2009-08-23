@@ -263,7 +263,7 @@ public class PrinterThread extends Thread implements Printable, TN5250jConstants
 //               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
                if ((screenExtendedAttr[getPos(m,i)] & EXTENDED_5250_UNDERLINE) != 0 &&
                         screenAttrPlace[getPos(m,i)] != 1)
-                  g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (int)(x + w1), (int)(y + (h1 - l.getLeading())-3));
+                  g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (x + w1), (int)(y + (h1 - l.getLeading())-3));
 
             }
 

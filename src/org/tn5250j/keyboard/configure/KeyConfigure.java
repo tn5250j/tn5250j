@@ -441,7 +441,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
             Iterator<CollationKey> iterator = set.iterator();
             while (iterator.hasNext()) {
-               CollationKey keyc = (CollationKey)iterator.next();
+               CollationKey keyc = iterator.next();
                lm.addElement(keyc.getSourceString());
             }
 
@@ -881,7 +881,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
             else {
                if (obj instanceof String) {
 
-                  lm.addElement((String)obj);
+                  lm.addElement(obj);
 
                }
             }

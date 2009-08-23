@@ -620,7 +620,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             SessionJumpListener target =
-                    (SessionJumpListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             jumpEvent.setJumpDirection(dir);
             target.onSessionJump(jumpEvent);
          }
@@ -638,7 +638,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
          int size = actionListeners.size();
          for (int i = 0; i < size; i++) {
             EmulatorActionListener target =
-                    (EmulatorActionListener)actionListeners.elementAt(i);
+                    actionListeners.elementAt(i);
             EmulatorActionEvent sae = new EmulatorActionEvent(this);
             sae.setAction(action);
             target.onEmulatorAction(sae);
@@ -765,7 +765,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    protected void startRecordingMe() {
 
-      String macName = (String)JOptionPane.showInputDialog(null,
+      String macName = JOptionPane.showInputDialog(null,
                                         LangTool.getString("macro.message"),
                                         LangTool.getString("macro.title"),
                                         JOptionPane.PLAIN_MESSAGE);
@@ -797,7 +797,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       Rectangle r = this.getBounds();
       if (keyPad != null && keyPad.isVisible())
 //         r.height -= (int)(keyPad.getHeight() * 1.25);
-         r.height -= (int)(keyPad.getHeight());
+         r.height -= (keyPad.getHeight());
 
       r.setSize(r.width,r.height);
 

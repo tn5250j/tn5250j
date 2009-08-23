@@ -371,7 +371,7 @@ public class My5250 implements BootListener,SessionListener,
    private void setDefaultLocale () {
 
       if (sessions.containsKey("emul.locale")) {
-         Locale.setDefault(parseLocal((String)sessions.getProperty("emul.locale")));
+         Locale.setDefault(parseLocal(sessions.getProperty("emul.locale")));
       }
 
    }
@@ -404,7 +404,7 @@ public class My5250 implements BootListener,SessionListener,
    static String getDefaultSession() {
 
       if (sessions.containsKey("emul.default")) {
-         return (String)sessions.getProperty("emul.default");
+         return sessions.getProperty("emul.default");
       }
       else {
          return null;
@@ -414,7 +414,7 @@ public class My5250 implements BootListener,SessionListener,
    static void startFrameType() {
 
       if (sessions.containsKey("emul.interface")) {
-         String s = (String)sessions.getProperty("emul.interface");
+         String s = sessions.getProperty("emul.interface");
          if (s.equalsIgnoreCase("MDI"))
             useMDIFrames = true;
 
@@ -437,7 +437,7 @@ public class My5250 implements BootListener,SessionListener,
       if (sel != null && sess.getCount() == 0
                   && sessions.containsKey(sel)){
          sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-         parseArgs((String)sessions.getProperty(sel), sessionArgs);
+         parseArgs(sessions.getProperty(sel), sessionArgs);
       }
 
       if (sessionArgs == null  || sess.getCount() > 0
@@ -472,9 +472,9 @@ public class My5250 implements BootListener,SessionListener,
          Sessions sess = manager.getSessions();
          for (int x = 0; x < sess.getCount(); x++) {
 
-            if (((SessionGUI)sess.item(x).getGUI()).isVisible()) {
+            if ((sess.item(x).getGUI()).isVisible()) {
 
-               ses = (SessionGUI)sess.item(x).getGUI();
+               ses = sess.item(x).getGUI();
                break;
             }
          }
@@ -672,7 +672,9 @@ public class My5250 implements BootListener,SessionListener,
       SessionGUI jf = null;
       Sessions sess = manager.getSessions();
 
-      log.info("number of active sessions we have " + sess.getCount());
+      if (log.isDebugEnabled()) {
+    	  log.debug("number of active sessions we have " + sess.getCount());
+      }
       int x = 0;
 
       String views = "";
@@ -700,7 +702,9 @@ public class My5250 implements BootListener,SessionListener,
       frames.remove(view);
       view.dispose();
 
-      log.info("number of active sessions we have after shutting down " + sess.getCount());
+      if (log.isDebugEnabled()) {
+    	  log.debug("number of active sessions we have after shutting down " + sess.getCount());
+      }
 
       log.info("view settings " + views);
       if (sess.getCount() == 0) {
@@ -767,7 +771,7 @@ public class My5250 implements BootListener,SessionListener,
 
    protected static void loadSessions() {
 
-      sessions = ((ConfigureFactory)ConfigureFactory.getInstance()).getProperties(
+      sessions = (ConfigureFactory.getInstance()).getProperties(
                      ConfigureFactory.SESSIONS);
    }
 

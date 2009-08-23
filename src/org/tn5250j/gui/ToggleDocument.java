@@ -82,7 +82,7 @@ public class ToggleDocument extends PlainDocument {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             ToggleDocumentListener target =
-                    (ToggleDocumentListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.toggleNotEmpty();
          }
       }
@@ -98,7 +98,7 @@ public class ToggleDocument extends PlainDocument {
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             ToggleDocumentListener target =
-                    (ToggleDocumentListener)listeners.elementAt(i);
+                    listeners.elementAt(i);
             target.toggleEmpty();
          }
       }

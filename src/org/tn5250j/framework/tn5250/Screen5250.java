@@ -3124,7 +3124,7 @@ public class Screen5250 implements TN5250jConstants{
 		int sp = lastPos;
 		int size = sbSize - 2;
 
-		int thumbPos = (int) (size * (float) ((float) sliderColPos / (float) totalColScrollable));
+		int thumbPos = (int) (size * ((float) sliderColPos / (float) totalColScrollable));
 		//      System.out.println(thumbPos);
 		planes.setScreenCharAndAttr(sp,' ', 32, false);
 		planes.setUseGUI(sp,BUTTON_SB_UP);
@@ -3932,7 +3932,7 @@ public class Screen5250 implements TN5250jConstants{
          for (int i = 0; i < size; i++) {
             //ScreenListener target =
               //      (ScreenListener)listeners.elementAt(i);
-              ScreenListener target = (ScreenListener)lc.elementAt(i);
+              ScreenListener target = lc.elementAt(i);
             target.onScreenChanged(1,startRow,startCol,endRow,endCol);
          }
       }
@@ -3968,7 +3968,7 @@ public class Screen5250 implements TN5250jConstants{
          int size = lc.size();
          for (int i = 0; i < size; i++) {
             ScreenListener target =
-                    (ScreenListener)lc.elementAt(i);
+                    lc.elementAt(i);
             target.onScreenChanged(update,startRow,startCol,startRow,startCol);
          }
       }
@@ -3986,7 +3986,7 @@ public class Screen5250 implements TN5250jConstants{
          int size = lc.size();
          for (int i = 0; i < size; i++) {
             ScreenListener target =
-                  (ScreenListener)lc.elementAt(i);
+                  lc.elementAt(i);
             target.onScreenSizeChanged(numRows,numCols);
          }
       }

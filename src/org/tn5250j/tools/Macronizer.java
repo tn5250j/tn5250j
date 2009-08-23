@@ -249,7 +249,7 @@ public class Macronizer {
          try {
             if (!macro.endsWith(".py"))
                macro = macro + ".py";
-            InterpreterDriverManager.executeScriptFile((SessionGUI)session,"scripts" +
+            InterpreterDriverManager.executeScriptFile(session,"scripts" +
                   File.separatorChar + macro);
          }
          catch (Exception ex) {

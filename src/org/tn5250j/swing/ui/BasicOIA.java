@@ -108,7 +108,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
       Screen5250 s = oia.getSource();
       int col = s.getCurrentCol();
       int row = s.getCurrentRow();
-      int cy = (int)(locationRectangle.y + rowHeight - (metrics.getDescent() + metrics.getLeading()));
+      int cy = (locationRectangle.y + rowHeight - (metrics.getDescent() + metrics.getLeading()));
 
       g.drawString(col + "/" + row, locationRectangle.x, cy);
     }
@@ -127,7 +127,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
         g.setColor(BasicTerminalUI.DFT_FOREGROUND);
 
        Screen5250 s = oia.getSource();
-       int cy = (int)(inhibitedRectangle.y + rowHeight - (metrics.getDescent() + metrics.getLeading()));
+       int cy = (inhibitedRectangle.y + rowHeight - (metrics.getDescent() + metrics.getLeading()));
        int attr = oia.getLevel();
        int value = oia.getInputInhibited();
        String stext = oia.getInhibitedText();

@@ -273,8 +273,8 @@ public class ScreenOIA
          int size = listeners.size();
          for (int i = 0; i < size; i++) {
             ScreenOIAListener target =
-                    (ScreenOIAListener)listeners.elementAt(i);
-            target.onOIAChanged((ScreenOIA)this, change);
+                    listeners.elementAt(i);
+            target.onOIAChanged(this, change);
          }
       }
    }

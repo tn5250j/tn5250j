@@ -274,7 +274,7 @@ public class PrinterAttributesPanel extends AttributesPanel {
       if (fs.getSelectedItem() != null) {
          changes.firePropertyChange(this,"print.font",
                            getStringProperty("print.font"),
-                           (String)fs.getSelectedItem());
+                           fs.getSelectedItem());
          setProperty("print.font",(String)fs.getSelectedItem());
       }
    }

@@ -92,7 +92,7 @@ public final class TN5250jLogFactory {
       TN5250jLogger logger = null;
 
       if (_loggers.containsKey(clazzName)) {
-         logger = ( TN5250jLogger ) _loggers.get(clazzName);
+         logger = _loggers.get(clazzName);
       }
       else {
 

@@ -168,7 +168,7 @@ public class Tn5250jController extends Thread {
 			synchronized (eventList) {
 				while (!eventList.isEmpty()) {
 					final Tn5250jEvent event =
-						(Tn5250jEvent) eventList.remove(0);
+						eventList.remove(0);
 					broadcastEvent(event);
 				}
 				try {
@@ -184,7 +184,7 @@ public class Tn5250jController extends Thread {
 	private void broadcastEvent(final Tn5250jEvent event) {
 		Iterator<Tn5250jListener> listenerIt = listeners.iterator();
 		while (listenerIt.hasNext()) {
-			Tn5250jListener listener = (Tn5250jListener) listenerIt.next();
+			Tn5250jListener listener = listenerIt.next();
 			listener.actionPerformed(event);
 		}
 	}
@@ -212,7 +212,7 @@ public class Tn5250jController extends Thread {
 		Iterator<Tn5250jListener> listenerIt = listeners.iterator();
 		log.info("New session created and received");
 		while (listenerIt.hasNext()) {
-			Tn5250jListener listener = (Tn5250jListener) listenerIt.next();
+			Tn5250jListener listener = listenerIt.next();
 			listener.sessionCreated(session);
 		}
 	}
