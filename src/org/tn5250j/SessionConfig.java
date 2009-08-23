@@ -48,7 +48,6 @@ public class SessionConfig {
    private String sessionName;
    private Properties sesProps;
    private Vector listeners;
-   private String sslType;
    private boolean usingDefaults;
 
    public SessionConfig (String configurationResource,
