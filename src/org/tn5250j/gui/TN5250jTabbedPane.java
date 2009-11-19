@@ -17,10 +17,23 @@
  *
  */package org.tn5250j.gui;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.swing.Icon;
+import javax.swing.JTabbedPane;
 
 import org.tn5250j.event.TabClosedListener;
 
@@ -37,11 +50,12 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
       MouseWheelListener, MouseMotionListener {
 
    // the currectly drawn tab that an X is drawn on
-   int tabNumber;
+   private int tabNumber;
    // the region that the X is drawn in the tab
-   Rectangle closeRect;
-   // closable tab listener.
-   private Vector closeListeners;
+   private Rectangle closeRect;
+
+   private List<TabClosedListener> closeListeners = null;
+   private final ReadWriteLock closeListenersLock = new ReentrantReadWriteLock(); 
 
    // variable to identify the drop position to reorder the tabs
    private int dropIndex = -1;
@@ -327,12 +341,15 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
     * @param listener The TabClosedListener to be added
     */
    public synchronized void addtabCloseListener(TabClosedListener listener) {
-
-      if (closeListeners == null) {
-         closeListeners = new java.util.Vector(3);
-      }
-      closeListeners.addElement(listener);
-
+	   closeListenersLock.writeLock().lock();
+	   try {
+		   if (closeListeners == null) {
+			   closeListeners = new ArrayList<TabClosedListener>(3);
+		   }
+		   closeListeners.add(listener);
+	   } finally {
+		   closeListenersLock.writeLock().unlock();
+	   }
    }
 
    /**
@@ -341,11 +358,14 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
     * @param listener The TabClosedListener to be removed
     */
    public synchronized void removeTabCloseListener(TabClosedListener listener) {
-      if (closeListeners == null) {
-         return;
-      }
-      closeListeners.removeElement(listener);
-
+	   closeListenersLock.writeLock().lock();
+	   try {
+		   if (closeListeners != null) {
+			   closeListeners.remove(listener);
+		   }
+	   } finally {
+		   closeListenersLock.writeLock().unlock();
+	   }
    }
 
    /**
@@ -354,15 +374,16 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
     * @param tabToClose
     */
    public void fireTabClosed(int tabToClose) {
-      if (closeListeners != null) {
-         int size = closeListeners.size();
-         for (int i = 0; i < size; i++) {
-            TabClosedListener target = (TabClosedListener) closeListeners
-                  .elementAt(i);
-            target.tabClosed(tabToClose);
-         }
-      }
-
+	   closeListenersLock.readLock().lock();
+	   try {
+		   if (this.closeListeners != null) {
+			   for (TabClosedListener listener : this.closeListeners) {
+				   listener.tabClosed(tabToClose);
+			   }
+		   }
+	   } finally {
+		   closeListenersLock.readLock().unlock();
+	   }
    }
 
    /**
