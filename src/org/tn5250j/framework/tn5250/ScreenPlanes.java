@@ -25,12 +25,13 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import static org.tn5250j.TN5250jConstants.*;
+
 import java.util.Properties;
 
 import org.tn5250j.ExternalProgramConfig;
-import org.tn5250j.TN5250jConstants;
 
-public class ScreenPlanes implements TN5250jConstants {
+public class ScreenPlanes {
 
    Screen5250 scr;
    int screenSize;

@@ -25,11 +25,15 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.io.ByteArrayOutputStream;
-import org.tn5250j.encoding.CodePage;
-import org.tn5250j.TN5250jConstants;
+import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
+import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
+import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
 
-public class ScreenFields implements TN5250jConstants {
+import java.io.ByteArrayOutputStream;
+
+import org.tn5250j.encoding.CodePage;
+
+public class ScreenFields {
 
    private ScreenField[] screenFields;
    private ScreenField currentField;
