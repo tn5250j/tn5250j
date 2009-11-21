@@ -25,18 +25,30 @@
  */
 package org.tn5250j.mailtools;
 
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
-import javax.swing.*;
+import java.util.Date;
 
-import org.tn5250j.tools.LangTool;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.SendFailedException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.LangTool;
 
 public class SendEMail {
 
-   private String id;
    private String to;
    private String from;
    private String pers;
@@ -139,7 +151,6 @@ public class SendEMail {
    public void release() {
 
       // clean up variables to be used the next time
-      id=null;
       to=null;
       from=null;
       cc=null;

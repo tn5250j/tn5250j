@@ -84,7 +84,7 @@ public class SocketConnector {
       	String sslImplClassName = 
       		"org.tn5250j.framework.transport.SSL.SSLImplementation";  
 		try {
-			Class c = Class.forName(sslImplClassName);
+			Class<?> c = Class.forName(sslImplClassName);
 			sslIf = (SSLInterface)c.newInstance();
 		} catch (Exception e) {
 			ex = new Exception("Failed to create SSLInterface Instance. " +

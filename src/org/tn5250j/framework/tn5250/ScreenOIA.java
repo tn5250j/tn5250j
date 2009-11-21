@@ -23,7 +23,7 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.util.*;
+import java.util.Vector;
 
 import org.tn5250j.event.ScreenOIAListener;
 
@@ -244,7 +244,7 @@ public class ScreenOIA
                commCheck = whatCode;
                break;
             case INPUTINHIBITED_PROGCHECK :
-               progCheck = whatCode;
+//               progCheck = whatCode; // never used
                break;
             case INPUTINHIBITED_MACHINECHECK :
                machineCheck = whatCode;
@@ -257,8 +257,6 @@ public class ScreenOIA
                break;
          }
 
-         saveInhibit = inhibit;
-         saveInhibitLevel = level;
          fireOIAChanged(ScreenOIAListener.OIA_CHANGED_INPUTINHIBITED);
 //      }
    }
@@ -279,22 +277,18 @@ public class ScreenOIA
       }
    }
 
-   Vector<ScreenOIAListener> listeners = null;
+   private Vector<ScreenOIAListener> listeners = null;
    private boolean insertMode;
    private boolean locked;
    private boolean keysBuffered;
-   private int size = 0;
    private int owner = 0;
    private int level = 0;
    private Screen5250 source = null;
    private int commCheck = 0;
-   private int progCheck = 0;
    private int machineCheck = 0;
    private boolean messageWait;
    private boolean scriptRunning;
    private int inputInhibited = INPUTINHIBITED_NOTINHIBITED;
-   private int saveInhibit = -1;
-   private int saveInhibitLevel = -1;
    private String inhibitedText;
 
 }

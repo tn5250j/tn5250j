@@ -25,35 +25,36 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import java.text.*;
-import java.util.*;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Vector;
 
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.event.*;
-import org.tn5250j.event.*;
-import org.tn5250j.tools.logging.*;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.framework.tn5250.KeyStrokenizer;
+import org.tn5250j.event.ScreenListener;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class Screen5250 implements TN5250jConstants{
 
 	private ScreenFields screenFields;
 	private int lastAttr;
-	private int lastRow;
-	private int lastCol;
 	private int lastPos;
 	private int lenScreen;
 	private KeyStrokenizer strokenizer;
 	private tnvt sessionVT;
 	private int numRows = 0;
 	private int numCols = 0;
-	private boolean updateCursorLoc;
-	private char char0 = 0;
 	protected static final int initAttr = 32;
 	protected static final char initChar = 0;
-	private boolean statusErrorCode;
-	private boolean statusXSystem;
 	private Rectangle workR = new Rectangle();
 	public boolean cursorActive = false;
 	public boolean cursorShown = false;
@@ -87,11 +88,8 @@ public class Screen5250 implements TN5250jConstants{
 	private final static int ERR_MANDITORY_ENTER = 0x21;
 
 	private boolean guiInterface = false;
-	private boolean restrictCursor = false;
-	private Rectangle restriction;
 	private boolean resetRequired = true;
-	private boolean defaultPrinter;
-   private boolean backspaceError = true;
+    private boolean backspaceError = true;
 	private boolean feError;
 
    // vector of listeners for changes to the screen.
@@ -130,21 +128,15 @@ public class Screen5250 implements TN5250jConstants{
 
 		setCursor(1, 1); // set initial cursor position
 
-		restriction = new Rectangle(0, 0);
-
-		updateCursorLoc = false;
-
-      oia = new ScreenOIA(this);
-      oia.setKeyBoardLocked(true);
+		oia = new ScreenOIA(this);
+		oia.setKeyBoardLocked(true);
 
 		lenScreen = numRows * numCols;
 
-      planes = new ScreenPlanes(this,numRows);
+		planes = new ScreenPlanes(this,numRows);
 
 		screenFields = new ScreenFields(this);
 		strokenizer = new KeyStrokenizer();
-
-
 	}
 
    protected ScreenPlanes getPlanes() {
@@ -351,7 +343,6 @@ public class Screen5250 implements TN5250jConstants{
 	public final void copyField(int pos) {
 
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-		StringBuffer s = new StringBuffer();
 		screenFields.saveCurrentField();
 		isInField(pos);
 		log.debug("Copying");
@@ -374,7 +365,7 @@ public class Screen5250 implements TN5250jConstants{
 	 *            formatting option to use
 	 * @return vector string of numberic values
 	 */
-	public final Vector sumThem(boolean which, Rectangle area) {
+	public final Vector<Double> sumThem(boolean which, Rectangle area) {
 
 		StringBuffer s = new StringBuffer();
 
@@ -400,7 +391,7 @@ public class Screen5250 implements TN5250jConstants{
 
 		df.setDecimalFormatSymbols(dfs);
 
-		Vector sumVector = new Vector();
+		Vector<Double> sumVector = new Vector<Double>();
 
 		// loop through all the screen characters to send them to the clip board
 		int m = workR.x;
@@ -613,7 +604,6 @@ public class Screen5250 implements TN5250jConstants{
 
 	protected void setPrehelpState(boolean setErrorCode, boolean lockKeyboard,
 			boolean unlockIfLocked) {
-		statusErrorCode = setErrorCode;
 		if (oia.isKeyBoardLocked() && unlockIfLocked)
 			oia.setKeyBoardLocked(false);
 		else
@@ -1673,7 +1663,6 @@ public class Screen5250 implements TN5250jConstants{
 			if (screenFields.getSize() > 0) {
 				int startRow = getRow(lastPos) + 1;
 				int startPos = lastPos;
-				boolean isthere = false;
 
 				if (startRow == getRows())
 					startRow = 0;
@@ -2917,22 +2906,23 @@ public class Screen5250 implements TN5250jConstants{
 
 	}
 
-	/**
-	 * Used to restrict the cursor to a particular position on the screen. Used
-	 * in combination with windows to restrict the cursor to the active window
-	 * show on the screen.
-	 *
-	 * Not supported yet. Please implement me :-(
-	 *
-	 * @param depth
-	 * @param width
-	 */
-	protected void setRestrictCursor(int depth, int width) {
-
-		restrictCursor = true;
-		//      restriction
-
-	}
+/* *** NEVER USED LOCALLY ************************************************** */
+//	/**
+//	 * Used to restrict the cursor to a particular position on the screen. Used
+//	 * in combination with windows to restrict the cursor to the active window
+//	 * show on the screen.
+//	 *
+//	 * Not supported yet. Please implement me :-(
+//	 *
+//	 * @param depth
+//	 * @param width
+//	 */
+//	protected void setRestrictCursor(int depth, int width) {
+//
+//		restrictCursor = true;
+//		//      restriction
+//
+//	}
 
 	/**
 	 * Creates a window on the screen
@@ -3163,7 +3153,6 @@ public class Screen5250 implements TN5250jConstants{
 	protected void writeWindowTitle(int pos, int depth, int width,
 			byte orientation, int monoAttr, int colorAttr, StringBuffer title) {
 
-		int sp = lastPos;
 		int len = title.length();
 
 		// get bit 0 and 1 for interrogation
@@ -3215,7 +3204,7 @@ public class Screen5250 implements TN5250jConstants{
 	protected void rollScreen(int direction, int topLine, int bottomLine) {
 
 		// get the number of lines which are the last 5 bits
-		int lines = direction & 0x7F;
+		/* int lines = direction & 0x7F; */
 		// get the direction of the roll which is the first bit
 		//    0 - up
 		//    1 - down
@@ -3690,12 +3679,13 @@ public class Screen5250 implements TN5250jConstants{
       dirtyScreen.setBounds(x1,x2,0,0);
 
 	}
-
-	private void setDirty(int row, int col) {
-
-		setDirty(getPos(row, col));
-
-	}
+	
+/* *** NEVER USED LOCALLY ************************************************** */
+//	private void setDirty(int row, int col) {
+//
+//		setDirty(getPos(row, col));
+//
+//	}
 
 	private void resetDirty(int pos) {
 
@@ -3826,10 +3816,8 @@ public class Screen5250 implements TN5250jConstants{
 		case STATUS_SYSTEM:
 			if (value == STATUS_VALUE_ON) {
             oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, s);
-				statusXSystem = true;
 			}
          else {
-				statusXSystem = false;
             oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,ScreenOIA.OIA_LEVEL_NOT_INHIBITED,s);
          }
 			break;

@@ -94,17 +94,17 @@ public final class tnvt implements Runnable, TN5250jConstants {
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-	/**
-	 * @param session
-	 * @param screen52
-	 * @deprecated Nobody used this constructor
-	 */
-	@Deprecated
-	public tnvt(Session5250 session,Screen5250 screen52) {
-
-		this(session,screen52, false, false);
-
-	}
+//	/**
+//	 * @param session
+//	 * @param screen52
+//	 * @deprecated Nobody used this constructor
+//	 */
+//	@Deprecated
+//	public tnvt(Session5250 session,Screen5250 screen52) {
+//
+//		this(session,screen52, false, false);
+//
+//	}
 
 	public tnvt(Session5250 session, Screen5250 screen52, boolean type, boolean support132) {
 
@@ -2800,7 +2800,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	// miscellaneous
 	private static final byte ESC = 0x04; // 04
 
-	private static final char char0 = 0;
+//	private static final char char0 = 0;
 
 	//   private static final byte CMD_READ_IMMEDIATE_ALT = (byte)0x83; // 131
 

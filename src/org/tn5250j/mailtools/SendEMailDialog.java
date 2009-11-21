@@ -26,28 +26,44 @@
  */
 package org.tn5250j.mailtools;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.StringTokenizer;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.SessionGUI;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.SessionGUI;
+import org.tn5250j.TN5250jConstants;
+import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.gui.TN5250jFrame;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
-import org.tn5250j.gui.TN5250jFrame;
-import org.tn5250j.TN5250jConstants;
 
 /**
  * Send E-Mail dialog
  */
 public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Runnable  {
 
+	private static final long serialVersionUID = 1L;
+	
 	JComboBox toAddress;
 	JTextField subject;
 	JTextArea bodyText;
@@ -65,16 +81,6 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
    SendEMail sendEMail;
    Thread myThread = new Thread(this);
 
-    private static class FrameShower
-         implements Runnable {
-       final Frame frame;
-       public FrameShower(Frame frame) {
-         this.frame = frame;
-       }
-       public void run() {
-         frame.setVisible(true);
-       }
-         }
 	/**
 	 * Constructor to send the screen information
 	 *
@@ -158,9 +164,9 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
                      screenTxt = new char[len];
                      screenExtendedAttr = new char[len];
                      screenAttrPlace = new char[len];
-                     int ret = screen.GetScreen(screenTxt, len, PLANE_TEXT);
-                     ret = screen.GetScreen(screenExtendedAttr, len, PLANE_EXTENDED);
-                     ret = screen.GetScreen(screenAttrPlace, len, PLANE_IS_ATTR_PLACE);
+                     screen.GetScreen(screenTxt, len, PLANE_TEXT);
+                     screen.GetScreen(screenExtendedAttr, len, PLANE_EXTENDED);
+                     screen.GetScreen(screenAttrPlace, len, PLANE_IS_ATTR_PLACE);
 
 							StringBuffer sb = new StringBuffer();
 //							char[] s = screen.getScreenAsChars();
@@ -279,7 +285,6 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
 		else {
 
 			this.session = session;
-			Screen5250 screen = session.getScreen();
 
 			Object[] message = new Object[1];
 			message[0] = setupMailPanel(fileName);
@@ -492,7 +497,7 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
 		bodyScrollPane.setVerticalScrollBarPolicy(
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		attachmentName = new JTextField(fileName, 30);
-      if (fileName != null || fileName.length() > 0)
+      if (fileName != null && fileName.length() > 0)
          attachmentName.setText(fileName);
       else
    		attachmentName.setText("");
@@ -734,101 +739,102 @@ public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Ru
 
 	}
 
-	/**
-	 * Create a option pane to show status of the transfer
-	 */
-	private class ProgressOptionPane extends JOptionPane {
-
-		ProgressOptionPane(Object messageList) {
-
-			super(
-				messageList,
-				JOptionPane.INFORMATION_MESSAGE,
-				JOptionPane.DEFAULT_OPTION,
-				null,
-				new Object[] {
-					 UIManager.getString("OptionPane.cancelButtonText")},
-				null);
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-		}
-
-		public void setDone() {
-			Object[] option = this.getOptions();
-			option[0] = LangTool.getString("xtfr.tableDone");
-			this.setOptions(option);
-			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		}
-
-		public void reset() {
-
-			Object[] option = this.getOptions();
-			option[0] = UIManager.getString("OptionPane.cancelButtonText");
-			this.setOptions(option);
-//			monitor.setValue(null);
-
-		}
-
-		public int getMaxCharactersPerLineCount() {
-			return 60;
-		}
-
-		/**
-		 * Returns true if the user hits the Cancel button in the progress dialog.
-		 *
-		 * @return whether or not dialog was cancelled
-		 */
-		public boolean isCanceled() {
-			if (this == null)
-				return false;
-			Object v = this.getValue();
-			return (v != null);
-		}
-
-		// Equivalent to JOptionPane.createDialog,
-		// but create a modeless dialog.
-		// This is necessary because the Solaris implementation doesn't
-		// support Dialog.setModal yet.
-		public JDialog createDialog(Component parentComponent, String title) {
-
-			Frame frame = JOptionPane.getFrameForComponent(parentComponent);
-			final JDialog dialog = new JDialog(frame, title, false);
-			Container contentPane = dialog.getContentPane();
-
-			contentPane.setLayout(new BorderLayout());
-			contentPane.add(this, BorderLayout.CENTER);
-			dialog.pack();
-			dialog.setLocationRelativeTo(parentComponent);
-			dialog.addWindowListener(new WindowAdapter() {
-				boolean gotFocus = false;
-
-				public void windowClosing(WindowEvent we) {
-					setValue(null);
-				}
-
-				public void windowActivated(WindowEvent we) {
-					// Once window gets focus, set initial focus
-					if (!gotFocus) {
-						selectInitialValue();
-						gotFocus = true;
-					}
-				}
-			});
-
-			addPropertyChangeListener(new PropertyChangeListener() {
-				public void propertyChange(PropertyChangeEvent event) {
-					if (dialog.isVisible()
-						&& event.getSource() == ProgressOptionPane.this
-						&& (event.getPropertyName().equals(VALUE_PROPERTY)
-							|| event.getPropertyName().equals(
-								INPUT_VALUE_PROPERTY))) {
-						dialog.setVisible(false);
-						dialog.dispose();
-					}
-				}
-			});
-			return dialog;
-		}
-	}
+/* ***** NEVER USED LOCALLY ******************************************** */
+//	/**
+//	 * Create a option pane to show status of the transfer
+//	 */
+//	private class ProgressOptionPane extends JOptionPane {
+//
+//		ProgressOptionPane(Object messageList) {
+//
+//			super(
+//				messageList,
+//				JOptionPane.INFORMATION_MESSAGE,
+//				JOptionPane.DEFAULT_OPTION,
+//				null,
+//				new Object[] {
+//					 UIManager.getString("OptionPane.cancelButtonText")},
+//				null);
+//			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//
+//		}
+//
+//		public void setDone() {
+//			Object[] option = this.getOptions();
+//			option[0] = LangTool.getString("xtfr.tableDone");
+//			this.setOptions(option);
+//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//		}
+//
+//		public void reset() {
+//
+//			Object[] option = this.getOptions();
+//			option[0] = UIManager.getString("OptionPane.cancelButtonText");
+//			this.setOptions(option);
+////			monitor.setValue(null);
+//
+//		}
+//
+//		public int getMaxCharactersPerLineCount() {
+//			return 60;
+//		}
+//
+//		/**
+//		 * Returns true if the user hits the Cancel button in the progress dialog.
+//		 *
+//		 * @return whether or not dialog was cancelled
+//		 */
+//		public boolean isCanceled() {
+//			if (this == null)
+//				return false;
+//			Object v = this.getValue();
+//			return (v != null);
+//		}
+//
+//		// Equivalent to JOptionPane.createDialog,
+//		// but create a modeless dialog.
+//		// This is necessary because the Solaris implementation doesn't
+//		// support Dialog.setModal yet.
+//		public JDialog createDialog(Component parentComponent, String title) {
+//
+//			Frame frame = JOptionPane.getFrameForComponent(parentComponent);
+//			final JDialog dialog = new JDialog(frame, title, false);
+//			Container contentPane = dialog.getContentPane();
+//
+//			contentPane.setLayout(new BorderLayout());
+//			contentPane.add(this, BorderLayout.CENTER);
+//			dialog.pack();
+//			dialog.setLocationRelativeTo(parentComponent);
+//			dialog.addWindowListener(new WindowAdapter() {
+//				boolean gotFocus = false;
+//
+//				public void windowClosing(WindowEvent we) {
+//					setValue(null);
+//				}
+//
+//				public void windowActivated(WindowEvent we) {
+//					// Once window gets focus, set initial focus
+//					if (!gotFocus) {
+//						selectInitialValue();
+//						gotFocus = true;
+//					}
+//				}
+//			});
+//
+//			addPropertyChangeListener(new PropertyChangeListener() {
+//				public void propertyChange(PropertyChangeEvent event) {
+//					if (dialog.isVisible()
+//						&& event.getSource() == ProgressOptionPane.this
+//						&& (event.getPropertyName().equals(VALUE_PROPERTY)
+//							|| event.getPropertyName().equals(
+//								INPUT_VALUE_PROPERTY))) {
+//						dialog.setVisible(false);
+//						dialog.dispose();
+//					}
+//				}
+//			});
+//			return dialog;
+//		}
+//	}
 
 }
