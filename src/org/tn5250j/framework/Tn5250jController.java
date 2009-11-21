@@ -110,8 +110,8 @@ public class Tn5250jController extends Thread {
 		URL[] urls = new URL[1];
 
 		try {
-			urls[0] = jar.toURL();
-			log.info("Loading jar: " + jar.toURL());
+			urls[0] = jar.toURI().toURL();
+			log.info("Loading jar: " + jar.toURI().toURL());
 		} catch (MalformedURLException e) {
 			log.warn("The URL was malformed");
 		}

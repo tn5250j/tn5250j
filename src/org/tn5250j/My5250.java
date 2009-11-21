@@ -356,7 +356,7 @@ public class My5250 implements BootListener,SessionListener,
             }
 
             m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-            m.parseArgs(sessions.getProperty(sel),m.sessionArgs);
+            My5250.parseArgs(sessions.getProperty(sel),m.sessionArgs);
             m.newSession(sel,m.sessionArgs);
          }
          // 2001/09/19 natural computing MR
