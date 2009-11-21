@@ -25,14 +25,28 @@ package org.tn5250j;
  *
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import org.tn5250j.tools.*;
-import org.tn5250j.framework.tn5250.Screen5250;
+import static org.tn5250j.TN5250jConstants.*;
 
-public class KeyPad extends JPanel implements SwingConstants {
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import org.tn5250j.tools.LangTool;
+
+public class KeyPad extends JPanel {
+
+	private static final long serialVersionUID = -7460283401326716314L;
+	
    BorderLayout borderLayout1 = new BorderLayout();
    JButton[] buttons = new JButton[30];
    int bSize = 0;
@@ -179,128 +193,128 @@ public class KeyPad extends JPanel implements SwingConstants {
 
          case 1:
             buttons[0].setText(LangTool.getString("KP_F1",  "PF1"));
-            buttons[0].setActionCommand(Screen5250.MNEMONIC_PF1);
+            buttons[0].setActionCommand(MNEMONIC_PF1);
             buttons[1].setText(LangTool.getString("KP_F2","PF2"));
-            buttons[1].setActionCommand(Screen5250.MNEMONIC_PF2);
+            buttons[1].setActionCommand(MNEMONIC_PF2);
             buttons[2].setText(LangTool.getString("KP_F3","PF3"));
-            buttons[2].setActionCommand(Screen5250.MNEMONIC_PF3);
+            buttons[2].setActionCommand(MNEMONIC_PF3);
             buttons[3].setText(LangTool.getString("KP_F4","PF4"));
-            buttons[3].setActionCommand(Screen5250.MNEMONIC_PF4);
+            buttons[3].setActionCommand(MNEMONIC_PF4);
             buttons[4].setText(LangTool.getString("KP_F5","PF5"));
-            buttons[4].setActionCommand(Screen5250.MNEMONIC_PF5);
+            buttons[4].setActionCommand(MNEMONIC_PF5);
             buttons[5].setText(LangTool.getString("KP_F6","PF6"));
-            buttons[5].setActionCommand(Screen5250.MNEMONIC_PF6);
+            buttons[5].setActionCommand(MNEMONIC_PF6);
             buttons[6].setText(LangTool.getString("KP_F7","PF7"));
-            buttons[6].setActionCommand(Screen5250.MNEMONIC_PF7);
+            buttons[6].setActionCommand(MNEMONIC_PF7);
             buttons[7].setText(LangTool.getString("KP_F8","PF8"));
-            buttons[7].setActionCommand(Screen5250.MNEMONIC_PF8);
+            buttons[7].setActionCommand(MNEMONIC_PF8);
             buttons[8].setText(LangTool.getString("KP_F9","PF9"));
-            buttons[8].setActionCommand(Screen5250.MNEMONIC_PF9);
+            buttons[8].setActionCommand(MNEMONIC_PF9);
             buttons[9].setText(LangTool.getString("KP_F10","PF10"));
-            buttons[9].setActionCommand(Screen5250.MNEMONIC_PF10);
+            buttons[9].setActionCommand(MNEMONIC_PF10);
             buttons[10].setText(LangTool.getString("KP_F11","PF11"));
-            buttons[10].setActionCommand(Screen5250.MNEMONIC_PF11);
+            buttons[10].setActionCommand(MNEMONIC_PF11);
             buttons[11].setText(LangTool.getString("KP_F12","PF12"));
-            buttons[11].setActionCommand(Screen5250.MNEMONIC_PF12);
+            buttons[11].setActionCommand(MNEMONIC_PF12);
             buttons[12].setText(LangTool.getString("KP_ENTER","Enter"));
-            buttons[12].setActionCommand(Screen5250.MNEMONIC_ENTER);
+            buttons[12].setActionCommand(MNEMONIC_ENTER);
             buttons[13].setText(LangTool.getString("KP_PGUP","PgUp"));
-            buttons[13].setActionCommand(Screen5250.MNEMONIC_PAGE_UP);
+            buttons[13].setActionCommand(MNEMONIC_PAGE_UP);
             buttons[14].setText(LangTool.getString("KP_CLEAR","Clear"));
-            buttons[14].setActionCommand(Screen5250.MNEMONIC_CLEAR);
+            buttons[14].setActionCommand(MNEMONIC_CLEAR);
 
             buttons[15].setText(LangTool.getString("KP_F13","PF13"));
-            buttons[15].setActionCommand(Screen5250.MNEMONIC_PF13);
+            buttons[15].setActionCommand(MNEMONIC_PF13);
             buttons[16].setText(LangTool.getString("KP_F14","PF14"));
-            buttons[16].setActionCommand(Screen5250.MNEMONIC_PF14);
+            buttons[16].setActionCommand(MNEMONIC_PF14);
             buttons[17].setText(LangTool.getString("KP_F15","PF15"));
-            buttons[17].setActionCommand(Screen5250.MNEMONIC_PF15);
+            buttons[17].setActionCommand(MNEMONIC_PF15);
             buttons[18].setText(LangTool.getString("KP_F16","PF16"));
-            buttons[18].setActionCommand(Screen5250.MNEMONIC_PF16);
+            buttons[18].setActionCommand(MNEMONIC_PF16);
             buttons[19].setText(LangTool.getString("KP_F17","PF17"));
-            buttons[19].setActionCommand(Screen5250.MNEMONIC_PF17);
+            buttons[19].setActionCommand(MNEMONIC_PF17);
             buttons[20].setText(LangTool.getString("KP_F18","PF18"));
-            buttons[20].setActionCommand(Screen5250.MNEMONIC_PF18);
+            buttons[20].setActionCommand(MNEMONIC_PF18);
             buttons[21].setText(LangTool.getString("KP_F19","PF19"));
-            buttons[21].setActionCommand(Screen5250.MNEMONIC_PF19);
+            buttons[21].setActionCommand(MNEMONIC_PF19);
             buttons[22].setText(LangTool.getString("KP_F20","PF20"));
-            buttons[22].setActionCommand(Screen5250.MNEMONIC_PF20);
+            buttons[22].setActionCommand(MNEMONIC_PF20);
             buttons[23].setText(LangTool.getString("KP_F21","PF21"));
-            buttons[23].setActionCommand(Screen5250.MNEMONIC_PF21);
+            buttons[23].setActionCommand(MNEMONIC_PF21);
             buttons[24].setText(LangTool.getString("KP_F22","PF22"));
-            buttons[24].setActionCommand(Screen5250.MNEMONIC_PF22);
+            buttons[24].setActionCommand(MNEMONIC_PF22);
             buttons[25].setText(LangTool.getString("KP_F23","PF23"));
-            buttons[25].setActionCommand(Screen5250.MNEMONIC_PF23);
+            buttons[25].setActionCommand(MNEMONIC_PF23);
             buttons[26].setText(LangTool.getString("KP_F24","PF24"));
-            buttons[26].setActionCommand(Screen5250.MNEMONIC_PF24);
+            buttons[26].setActionCommand(MNEMONIC_PF24);
             buttons[27].setText(LangTool.getString("KP_SR","SysReq"));
-            buttons[27].setActionCommand(Screen5250.MNEMONIC_SYSREQ);
+            buttons[27].setActionCommand(MNEMONIC_SYSREQ);
             buttons[28].setText(LangTool.getString("KP_PGDN","PgDn"));
-            buttons[28].setActionCommand(Screen5250.MNEMONIC_PAGE_DOWN);
+            buttons[28].setActionCommand(MNEMONIC_PAGE_DOWN);
 
             break;
 
          case 2:
 
             buttons[0].setText(LangTool.getString("KP_F1",  "PF1"));
-            buttons[0].setActionCommand(Screen5250.MNEMONIC_PF1);
+            buttons[0].setActionCommand(MNEMONIC_PF1);
             buttons[1].setText(LangTool.getString("KP_F2","PF2"));
-            buttons[1].setActionCommand(Screen5250.MNEMONIC_PF2);
+            buttons[1].setActionCommand(MNEMONIC_PF2);
             buttons[2].setText(LangTool.getString("KP_F3","PF3"));
-            buttons[2].setActionCommand(Screen5250.MNEMONIC_PF3);
+            buttons[2].setActionCommand(MNEMONIC_PF3);
             buttons[3].setText(LangTool.getString("KP_F4","PF4"));
-            buttons[3].setActionCommand(Screen5250.MNEMONIC_PF4);
+            buttons[3].setActionCommand(MNEMONIC_PF4);
             buttons[4].setText(LangTool.getString("KP_F5","PF5"));
-            buttons[4].setActionCommand(Screen5250.MNEMONIC_PF5);
+            buttons[4].setActionCommand(MNEMONIC_PF5);
             buttons[5].setText(LangTool.getString("KP_F6","PF6"));
-            buttons[5].setActionCommand(Screen5250.MNEMONIC_PF6);
+            buttons[5].setActionCommand(MNEMONIC_PF6);
             buttons[6].setText(LangTool.getString("KP_F7","PF7"));
-            buttons[6].setActionCommand(Screen5250.MNEMONIC_PF7);
+            buttons[6].setActionCommand(MNEMONIC_PF7);
             buttons[7].setText(LangTool.getString("KP_F8","PF8"));
-            buttons[7].setActionCommand(Screen5250.MNEMONIC_PF8);
+            buttons[7].setActionCommand(MNEMONIC_PF8);
             buttons[8].setText(LangTool.getString("KP_F9","PF9"));
-            buttons[8].setActionCommand(Screen5250.MNEMONIC_PF9);
+            buttons[8].setActionCommand(MNEMONIC_PF9);
             buttons[9].setText(LangTool.getString("KP_F10","PF10"));
-            buttons[9].setActionCommand(Screen5250.MNEMONIC_PF10);
+            buttons[9].setActionCommand(MNEMONIC_PF10);
             buttons[10].setText(LangTool.getString("KP_F11","PF11"));
-            buttons[10].setActionCommand(Screen5250.MNEMONIC_PF11);
+            buttons[10].setActionCommand(MNEMONIC_PF11);
             buttons[11].setText(LangTool.getString("KP_F12","PF12"));
-            buttons[11].setActionCommand(Screen5250.MNEMONIC_PF12);
+            buttons[11].setActionCommand(MNEMONIC_PF12);
             buttons[12].setText(LangTool.getString("KP_ENTER","Enter"));
-            buttons[12].setActionCommand(Screen5250.MNEMONIC_ENTER);
+            buttons[12].setActionCommand(MNEMONIC_ENTER);
             buttons[13].setText(LangTool.getString("KP_PGUP","PgUp"));
-            buttons[13].setActionCommand(Screen5250.MNEMONIC_PAGE_UP);
+            buttons[13].setActionCommand(MNEMONIC_PAGE_UP);
             buttons[14].setText(LangTool.getString("KP_HELP","Help"));
-            buttons[14].setActionCommand(Screen5250.MNEMONIC_HELP);
+            buttons[14].setActionCommand(MNEMONIC_HELP);
 
             buttons[15].setText(LangTool.getString("KP_F13","PF13"));
-            buttons[15].setActionCommand(Screen5250.MNEMONIC_PF13);
+            buttons[15].setActionCommand(MNEMONIC_PF13);
             buttons[16].setText(LangTool.getString("KP_F14","PF14"));
-            buttons[16].setActionCommand(Screen5250.MNEMONIC_PF14);
+            buttons[16].setActionCommand(MNEMONIC_PF14);
             buttons[17].setText(LangTool.getString("KP_F15","PF15"));
-            buttons[17].setActionCommand(Screen5250.MNEMONIC_PF15);
+            buttons[17].setActionCommand(MNEMONIC_PF15);
             buttons[18].setText(LangTool.getString("KP_F16","PF16"));
-            buttons[18].setActionCommand(Screen5250.MNEMONIC_PF16);
+            buttons[18].setActionCommand(MNEMONIC_PF16);
             buttons[19].setText(LangTool.getString("KP_F17","PF17"));
-            buttons[19].setActionCommand(Screen5250.MNEMONIC_PF17);
+            buttons[19].setActionCommand(MNEMONIC_PF17);
             buttons[20].setText(LangTool.getString("KP_F18","PF18"));
-            buttons[20].setActionCommand(Screen5250.MNEMONIC_PF18);
+            buttons[20].setActionCommand(MNEMONIC_PF18);
             buttons[21].setText(LangTool.getString("KP_F19","PF19"));
-            buttons[21].setActionCommand(Screen5250.MNEMONIC_PF19);
+            buttons[21].setActionCommand(MNEMONIC_PF19);
             buttons[22].setText(LangTool.getString("KP_F20","PF20"));
-            buttons[22].setActionCommand(Screen5250.MNEMONIC_PF20);
+            buttons[22].setActionCommand(MNEMONIC_PF20);
             buttons[23].setText(LangTool.getString("KP_F21","PF21"));
-            buttons[23].setActionCommand(Screen5250.MNEMONIC_PF21);
+            buttons[23].setActionCommand(MNEMONIC_PF21);
             buttons[24].setText(LangTool.getString("KP_F22","PF22"));
-            buttons[24].setActionCommand(Screen5250.MNEMONIC_PF22);
+            buttons[24].setActionCommand(MNEMONIC_PF22);
             buttons[25].setText(LangTool.getString("KP_F23","PF23"));
-            buttons[25].setActionCommand(Screen5250.MNEMONIC_PF23);
+            buttons[25].setActionCommand(MNEMONIC_PF23);
             buttons[26].setText(LangTool.getString("KP_F24","PF24"));
-            buttons[26].setActionCommand(Screen5250.MNEMONIC_PF24);
+            buttons[26].setActionCommand(MNEMONIC_PF24);
             buttons[27].setText(LangTool.getString("KP_SR","SysReq"));
-            buttons[27].setActionCommand(Screen5250.MNEMONIC_SYSREQ);
+            buttons[27].setActionCommand(MNEMONIC_SYSREQ);
             buttons[28].setText(LangTool.getString("KP_PGDN","PgDn"));
-            buttons[28].setActionCommand(Screen5250.MNEMONIC_PAGE_DOWN);
+            buttons[28].setActionCommand(TN5250jConstants.MNEMONIC_PAGE_DOWN);
 
             break;
       }

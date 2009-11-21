@@ -113,32 +113,6 @@ public final class Gui5250Frame extends GUIViewInterface implements
 
    }
 
-   public void centerFrame() {
-
-      if (packFrame)
-         pack();
-      else
-         validate();
-
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-
-      setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
-
-
-   }
-
-   public int getFrameSequence() {
-
-      return frameSeq;
-   }
-
    //Overridden so we can exit on System Close
    protected void processWindowEvent(WindowEvent e) {
       super.processWindowEvent(e);
@@ -463,8 +437,7 @@ public final class Gui5250Frame extends GUIViewInterface implements
          }
          return false;
       }
-      else
-         return (sessionPane.indexOfComponent(session) >= 0);
+      return (sessionPane.indexOfComponent(session) >= 0);
 
    }
 

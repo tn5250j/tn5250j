@@ -1,16 +1,20 @@
 package org.tn5250j.swing;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
 
-import org.tn5250j.*;
-import org.tn5250j.interfaces.*;
+import javax.swing.JFrame;
 
-public class TestFrame
-    extends JFrame
-{
-  static
-  {
+import org.tn5250j.SessionBean;
+import org.tn5250j.interfaces.ConfigureFactory;
+
+/**
+ * For testing purpose
+ */
+public class TestFrame extends JFrame {
+	
+	private static final long serialVersionUID = 1L;
+	
+  static {
     ConfigureFactory.getInstance();
     // WVL - LDC : 11/07/2003
     //

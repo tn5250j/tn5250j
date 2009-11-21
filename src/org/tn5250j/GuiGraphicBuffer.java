@@ -25,32 +25,40 @@
  */
 package org.tn5250j;
 
-import java.awt.image.*;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.*;
 import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.font.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.ScreenListener;
-import org.tn5250j.tools.logging.*;
+import org.tn5250j.event.ScreenOIAListener;
+import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.event.SessionConfigListener;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.tools.GUIGraphicsUtils;
-import org.tn5250j.event.*;
-import org.tn5250j.framework.tn5250.*;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                                           PropertyChangeListener,
                                           SessionConfigListener,
-                                          ActionListener,
-                                          TN5250jConstants {
+                                          ActionListener {
 
    private BufferedImage bi;
    private final Object lock = new Object();
@@ -64,17 +72,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    private Rectangle2D iArea; // insert indicator
    private Rectangle2D kbArea; // keybuffer indicator
    private Rectangle2D scriptArea; // script indicator
-   private int width;
-   private int height;
    private Rectangle2D cursor = new Rectangle2D.Float();
    private final static String xSystem = "X - System";
    private final static String xError = "X - II";
    private int crossRow;
-   private int crossCol;
    private Rectangle crossRect = new Rectangle();
    protected int offTop = 0;   // offset from top
    protected int offLeft = 0;  // offset from left
-   private boolean resized = false;
    private boolean antialiased = true;
    private Graphics2D gg2d;
    private Screen5250 screen;
@@ -83,22 +87,22 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    protected int rowHeight;
    private Gui5250 gui;
 
-	LineMetrics lm;
-	Font font;
-	int lenScreen;
-	boolean showHex;
-	Color colorBlue;
-	Color colorWhite;
-	Color colorRed;
-	Color colorGreen;
-	Color colorPink;
-	Color colorYellow;
-	Color colorBg;
-	Color colorTurq;
-	Color colorGUIField;
-	Color colorCursor;
-	Color colorSep;
-	Color colorHexAttr;
+    private LineMetrics lm;
+	/*default*/ Font font;
+	private int lenScreen;
+	private boolean showHex;
+	private Color colorBlue;
+	private Color colorWhite;
+	private Color colorRed;
+	private Color colorGreen;
+	private Color colorPink;
+	private Color colorYellow;
+	/*default*/ Color colorBg;
+	private Color colorTurq;
+	private Color colorGUIField;
+	private Color colorCursor;
+	private Color colorSep;
+	private Color colorHexAttr;
 	protected int crossHair = 0;
 	private boolean updateFont;
 	protected int cursorSize = 0;
@@ -109,9 +113,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	protected boolean guiInterface = false;
 	public boolean guiShowUnderline = true;
 	protected int cursorBottOffset;
-	private boolean defaultPrinter;
 	protected boolean rulerFixed;
-	private boolean feError;
 	private javax.swing.Timer blinker;
    private int colSepLine = 0;
 	private StringBuffer hsMore = new StringBuffer("More...");
@@ -210,9 +212,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 //         synchronized (lock) {
             bi = null;
             bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-            this.width = width;
-            this.height = height;
-            resized = true;
             getSettings();
             // tell waiting threads to wake up
 //            lock.notifyAll();
@@ -431,13 +430,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			cursorBottOffset = getIntProperty("cursorBottOffset");
 		}
 
-		if (config.isPropertyExists("defaultPrinter")) {
-			if (getStringProperty("defaultPrinter").equals("Yes"))
-				defaultPrinter = true;
-			else
-				defaultPrinter = false;
-		}
-
 		if (config.isPropertyExists("resetRequired")) {
 			if (getStringProperty("resetRequired").equals("Yes"))
             screen.setResetRequired(true);
@@ -640,13 +632,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 				hotSpots = true;
 			else
 				hotSpots = false;
-		}
-
-		if (pn.equals("defaultPrinter")) {
-			if (pce.getNewValue().equals("Yes"))
-				defaultPrinter = true;
-			else
-				defaultPrinter = false;
 		}
 
 		if (pn.equals("resetRequired")) {
@@ -938,13 +923,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	protected final void resizeScreenArea(int width, int height) {
 
 		Font k = null;
-		LineMetrics l;
-		FontRenderContext f = null;
 		k = GUIGraphicsUtils.getDerivedFont(font, width, height, screen.getRows(),
 				screen.getColumns(), sfh, sfw, ps132);
-		f = new FontRenderContext(k.getTransform(), true, true);
-
-		l = k.getLineMetrics("Wy", f);
 
 		if (font.getSize() != k.getSize() || updateFont
 				|| (offLeft != (width - bi.getWidth()) / 2)
@@ -992,9 +972,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          if (bi == null || bi.getWidth() != width2 || bi.getHeight() != height2) {
             // allocate a buffer Image with appropriate size
             bi = new BufferedImage(width2,height2,BufferedImage.TYPE_INT_RGB);
-            this.width = width2;
-            this.height = height2;
-            resized = true;
          }
 //         // tell waiting threads to wake up
 //         lock.notifyAll();
@@ -1009,7 +986,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       public Graphics2D drawOIA () {
 
       	int numRows = screen.getRows();
-      	int numCols = screen.getColumns();
 
          Graphics2D g2d;
 
@@ -1117,13 +1093,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
          if (!rulerFixed) {
             crossRow = row;
-            crossCol = col;
             crossRect.setBounds(r);
          }
          else {
             if (crossHair == 0) {
                crossRow = row;
-               crossCol = col;
                crossRect.setBounds(r);
             }
          }
@@ -1491,7 +1465,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          }
          else {
 
-            if (bg == colorBg && whichGui >= FIELD_LEFT && whichGui <= FIELD_ONE)
+            if (bg == colorBg && whichGui >= TN5250jConstants.FIELD_LEFT && whichGui <= TN5250jConstants.FIELD_ONE)
                g.setColor(colorGUIField);
             else
                g.setColor(bg);
@@ -1500,14 +1474,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
          }
 
-         if (useGui && (whichGui < FIELD_LEFT)) {
-            int w = 0;
+         if (useGui && (whichGui < TN5250jConstants.FIELD_LEFT)) {
 
             g.setColor(fg);
 
             switch (whichGui) {
 
-               case UPPER_LEFT:
+               case TN5250jConstants.UPPER_LEFT:
                   if (sChar[0] == '.') {
                      if (screen.isUsingGuiInterface()) {
                         GUIGraphicsUtils.drawWinUpperLeft(g,
@@ -1526,7 +1499,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                      }
                   }
                break;
-               case UPPER:
+               case TN5250jConstants.UPPER:
                   if (sChar[0] == '.') {
 
                      if (screen.isUsingGuiInterface()) {
@@ -1546,7 +1519,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                      }
                   }
                break;
-               case UPPER_RIGHT:
+               case TN5250jConstants.UPPER_RIGHT:
                   if (sChar[0] == '.') {
                      if (screen.isUsingGuiInterface()) {
 
@@ -1567,7 +1540,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                      }
                   }
                break;
-               case GUI_LEFT:
+               case TN5250jConstants.GUI_LEFT:
                   if (sChar[0] == ':') {
                      if (screen.isUsingGuiInterface()) {
                         GUIGraphicsUtils.drawWinLeft(g,
@@ -1591,7 +1564,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                      }
                   }
                break;
-               case GUI_RIGHT:
+               case TN5250jConstants.GUI_RIGHT:
                   if (sChar[0] == ':') {
                      if (screen.isUsingGuiInterface()) {
                         GUIGraphicsUtils.drawWinRight(g,
@@ -1610,7 +1583,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                      }
                   }
                break;
-               case LOWER_LEFT:
+               case TN5250jConstants.LOWER_LEFT:
                   if (sChar[0] == ':') {
 
                      if (screen.isUsingGuiInterface()) {
@@ -1631,7 +1604,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                      }
                   }
                break;
-               case BOTTOM:
+               case TN5250jConstants.BOTTOM:
                   if (sChar[0] == '.') {
 
                      if (screen.isUsingGuiInterface()) {
@@ -1654,7 +1627,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                   }
                break;
 
-               case LOWER_RIGHT:
+               case TN5250jConstants.LOWER_RIGHT:
                   if (sChar[0] == ':') {
                      if (screen.isUsingGuiInterface()) {
 
@@ -1681,7 +1654,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          else {
             if (sChar[0] != 0x0) {
             // use this until we define colors for gui stuff
-               if ((useGui && whichGui < BUTTON_LEFT) && (fg == colorGUIField))
+               if ((useGui && whichGui < TN5250jConstants.BUTTON_LEFT) && (fg == colorGUIField))
 
                   g.setColor(Color.black);
                else
@@ -1736,54 +1709,53 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          }
       }
 
-      if (useGui & (whichGui >= FIELD_LEFT)) {
-            int w = 0;
+      if (useGui & (whichGui >= TN5250jConstants.FIELD_LEFT)) {
 
             switch (whichGui) {
 
-               case FIELD_LEFT:
+               case TN5250jConstants.FIELD_LEFT:
                   GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.INSET, x,y,
                                              columnWidth,rowHeight);
 
                break;
-               case FIELD_MIDDLE:
+               case TN5250jConstants.FIELD_MIDDLE:
                   GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.INSET, x,y,
                                              columnWidth,rowHeight);
                break;
-               case FIELD_RIGHT:
+               case TN5250jConstants.FIELD_RIGHT:
                   GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.INSET, x,y,
                                              columnWidth,rowHeight);
                break;
 
-               case FIELD_ONE:
+               case TN5250jConstants.FIELD_ONE:
                   GUIGraphicsUtils.draw3DOne(g, GUIGraphicsUtils.INSET, x,y,
                                              columnWidth,rowHeight);
 
                break;
 
-               case BUTTON_LEFT:
-               case BUTTON_LEFT_UP:
-               case BUTTON_LEFT_DN:
-               case BUTTON_LEFT_EB:
+               case TN5250jConstants.BUTTON_LEFT:
+               case TN5250jConstants.BUTTON_LEFT_UP:
+               case TN5250jConstants.BUTTON_LEFT_DN:
+               case TN5250jConstants.BUTTON_LEFT_EB:
 
                   GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.RAISED, x,y,
                                              columnWidth,rowHeight);
 
                   break;
 
-               case BUTTON_MIDDLE:
-               case BUTTON_MIDDLE_UP:
-               case BUTTON_MIDDLE_DN:
-               case BUTTON_MIDDLE_EB:
+               case TN5250jConstants.BUTTON_MIDDLE:
+               case TN5250jConstants.BUTTON_MIDDLE_UP:
+               case TN5250jConstants.BUTTON_MIDDLE_DN:
+               case TN5250jConstants.BUTTON_MIDDLE_EB:
 
                   GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.RAISED, x,y,
                                              columnWidth,rowHeight);
                   break;
 
-               case BUTTON_RIGHT:
-               case BUTTON_RIGHT_UP:
-               case BUTTON_RIGHT_DN:
-               case BUTTON_RIGHT_EB:
+               case TN5250jConstants.BUTTON_RIGHT:
+               case TN5250jConstants.BUTTON_RIGHT_UP:
+               case TN5250jConstants.BUTTON_RIGHT_DN:
+               case TN5250jConstants.BUTTON_RIGHT_EB:
 
                   GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.RAISED, x,y,
                                              columnWidth,rowHeight);
@@ -1791,14 +1763,14 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                break;
 
                // scroll bar
-               case BUTTON_SB_UP:
+               case TN5250jConstants.BUTTON_SB_UP:
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x,y,
                                              columnWidth,rowHeight,
                                              colorWhite,colorBg);
                   break;
 
                // scroll bar
-               case BUTTON_SB_DN:
+               case TN5250jConstants.BUTTON_SB_DN:
 
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x,y,
                                              columnWidth,rowHeight,
@@ -1807,7 +1779,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
                   break;
                // scroll bar
-               case BUTTON_SB_GUIDE:
+               case TN5250jConstants.BUTTON_SB_GUIDE:
 
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0,x,y,
                                              columnWidth,rowHeight,
@@ -1817,7 +1789,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
                   break;
 
                // scroll bar
-               case BUTTON_SB_THUMB:
+               case TN5250jConstants.BUTTON_SB_THUMB:
 
                   GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3,x,y,
                                              columnWidth,rowHeight,
@@ -1851,19 +1823,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 //      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
 
-      int rows = er - sr;
 		int cols = 0;
 		int lc = 0;
-		int lr = screen.getPos(sr,sc);
-      int numCols = screen.getColumns();
 
 
       updateRect = new Data (sr,sc,er,ec);
-
-      int clipX;
-      int clipY;
-      int clipWidth;
-      int clipHeight;
 
       Rectangle clipper = new Rectangle();
 
@@ -2100,22 +2064,22 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          field = new char[size];
 
          if (size == lenScreen) {
-	         screen.GetScreen(text, size, PLANE_TEXT);
-	         screen.GetScreen(attr, size, PLANE_ATTR);
-	         screen.GetScreen(isAttr, size, PLANE_IS_ATTR_PLACE);
-	         screen.GetScreen(color, size, PLANE_COLOR);
-	         screen.GetScreen(extended, size, PLANE_EXTENDED);
-	         screen.GetScreen(graphic, size, PLANE_EXTENDED_GRAPHIC);
-	         screen.GetScreen(field, size, PLANE_FIELD);
+	         screen.GetScreen(text, size, TN5250jConstants.PLANE_TEXT);
+	         screen.GetScreen(attr, size, TN5250jConstants.PLANE_ATTR);
+	         screen.GetScreen(isAttr, size, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+	         screen.GetScreen(color, size, TN5250jConstants.PLANE_COLOR);
+	         screen.GetScreen(extended, size, TN5250jConstants.PLANE_EXTENDED);
+	         screen.GetScreen(graphic, size, TN5250jConstants.PLANE_EXTENDED_GRAPHIC);
+	         screen.GetScreen(field, size, TN5250jConstants.PLANE_FIELD);
          }
          else {
-	         screen.GetScreenRect(text, size, startRow, startCol, endRow, endCol, PLANE_TEXT);
-	         screen.GetScreenRect(attr, size, startRow, startCol, endRow, endCol, PLANE_ATTR);
-	         screen.GetScreenRect(isAttr, size, startRow, startCol, endRow, endCol, PLANE_IS_ATTR_PLACE);
-	         screen.GetScreenRect(color, size, startRow, startCol, endRow, endCol, PLANE_COLOR);
-	         screen.GetScreenRect(extended, size, startRow, startCol, endRow, endCol, PLANE_EXTENDED);
-	         screen.GetScreenRect(graphic, size, startRow, startCol, endRow, endCol, PLANE_EXTENDED_GRAPHIC);
-	         screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, PLANE_FIELD);
+	         screen.GetScreenRect(text, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_TEXT);
+	         screen.GetScreenRect(attr, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_ATTR);
+	         screen.GetScreenRect(isAttr, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+	         screen.GetScreenRect(color, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_COLOR);
+	         screen.GetScreenRect(extended, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_EXTENDED);
+	         screen.GetScreenRect(graphic, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_EXTENDED_GRAPHIC);
+	         screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_FIELD);
          }
       }
 
@@ -2157,21 +2121,21 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          c = color & 0x00ff;
 
       switch (c) {
-         case COLOR_FG_BLACK:
+         case TN5250jConstants.COLOR_FG_BLACK:
             return colorBg;
-         case COLOR_FG_GREEN:
+         case TN5250jConstants.COLOR_FG_GREEN:
             return colorGreen;
-         case COLOR_FG_BLUE:
+         case TN5250jConstants.COLOR_FG_BLUE:
             return colorBlue;
-         case COLOR_FG_RED:
+         case TN5250jConstants.COLOR_FG_RED:
             return colorRed;
-         case COLOR_FG_YELLOW:
+         case TN5250jConstants.COLOR_FG_YELLOW:
             return colorYellow;
-         case COLOR_FG_CYAN:
+         case TN5250jConstants.COLOR_FG_CYAN:
             return colorTurq;
-         case COLOR_FG_WHITE:
+         case TN5250jConstants.COLOR_FG_WHITE:
             return colorWhite;
-         case COLOR_FG_MAGENTA:
+         case TN5250jConstants.COLOR_FG_MAGENTA:
             return colorPink;
          default:
            return Color.orange;
@@ -2186,16 +2150,15 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
    private void setDrawAttr(int pos) {
 
-      Screen5250 s = screen;
       colSep = false;
       underLine = false;
       nonDisplay = false;
 
       fg = getColor(updateRect.color[pos],false);
       bg = getColor(updateRect.color[pos],true);
-      underLine = (updateRect.extended[pos] & EXTENDED_5250_UNDERLINE) != 0;
-      colSep = (updateRect.extended[pos] & EXTENDED_5250_COL_SEP) != 0;
-      nonDisplay = (updateRect.extended[pos] & EXTENDED_5250_NON_DSP) != 0;
+      underLine = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0;
+      colSep = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_COL_SEP) != 0;
+      nonDisplay = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_NON_DSP) != 0;
 
    }
 

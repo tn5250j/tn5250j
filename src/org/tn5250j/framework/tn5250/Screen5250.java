@@ -25,6 +25,8 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import static org.tn5250j.TN5250jConstants.*;
+
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -43,7 +45,7 @@ import org.tn5250j.event.ScreenListener;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class Screen5250 implements TN5250jConstants{
+public class Screen5250 {
 
 	private ScreenFields screenFields;
 	private int lastAttr;
@@ -501,7 +503,7 @@ public class Screen5250 implements TN5250jConstants{
 					case BUTTON_ONE_UP:
 					case BUTTON_SB_UP:
 					case BUTTON_SB_GUIDE:
-						sessionVT.sendAidKey(tnvt.AID_ROLL_UP);
+						sessionVT.sendAidKey(AID_ROLL_UP);
 						break;
 
 					case BUTTON_LEFT_DN:
@@ -511,7 +513,7 @@ public class Screen5250 implements TN5250jConstants{
 					case BUTTON_SB_DN:
 					case BUTTON_SB_THUMB:
 
-						sessionVT.sendAidKey(tnvt.AID_ROLL_DOWN);
+						sessionVT.sendAidKey(AID_ROLL_DOWN);
 						break;
 					case BUTTON_LEFT_EB:
 					case BUTTON_MIDDLE_EB:
@@ -546,7 +548,7 @@ public class Screen5250 implements TN5250jConstants{
 						}
 						//                  System.out.println(aid);
 						screenFields.setCurrentFieldMDT();
-						sessionVT.sendAidKey(tnvt.AID_ENTER);
+						sessionVT.sendAidKey(AID_ENTER);
 					}
 
 				}

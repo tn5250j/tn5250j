@@ -1,7 +1,15 @@
 package org.tn5250j.swing.ui;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 
+/**
+ * For testing purpose
+ */
 public abstract class BasicSubUI
 {
   public abstract void install();

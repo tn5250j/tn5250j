@@ -25,10 +25,11 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import static org.tn5250j.TN5250jConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -41,7 +42,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * emulation mode.
  *
  */
-public class WTDSFParser implements TN5250jConstants {
+public class WTDSFParser {
 
    private Screen5250 screen52;
    private tnvt vt;
