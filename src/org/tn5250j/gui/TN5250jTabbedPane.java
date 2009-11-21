@@ -113,7 +113,7 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
       if (!e.isPopupTrigger() && e.getButton() == MouseEvent.BUTTON1) {
          if (dragging) {
             int tabIndex = getTabIndex(e.getX(), e.getY());
-            if (tabIndex != -1 && tabIndex != dropIndex) {
+            if (tabIndex != -1 && dropIndex != -1 && tabIndex != dropIndex) {
                reorderTab(dropIndex, tabIndex);
                setSelectedIndex(tabIndex);
             }
