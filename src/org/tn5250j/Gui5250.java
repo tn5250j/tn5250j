@@ -75,12 +75,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
    Screen5250 screen;
    String propFileName;
    protected Session5250 session;
-   GuiGraphicBuffer bi;
-//   tnvt vt;
+   private GuiGraphicBuffer guiGraBuf;
    TNRubberBand rubberband;
    JPanel s = new JPanel();
    KeyPad keyPad = new KeyPad();
-//   private JPopupMenu popup;
    Macronizer macros;
    String newMacName;
    private Vector<SessionJumpListener> listeners = null;
@@ -133,7 +131,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       this.addComponentListener(this);
 
-      if (bi == null) {
+      if (guiGraBuf == null) {
          checkOffScreenImage();
       }
 
@@ -143,7 +141,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       if (!sesConfig.isPropertyExists("width") ||
          !sesConfig.isPropertyExists("height"))
          // set the initialize size
-         this.setSize(bi.getPreferredSize());
+         this.setSize(guiGraBuf.getPreferredSize());
       else {
 
          this.setSize(sesConfig.getIntegerProperty("width"),
@@ -178,11 +176,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
                   screen.sendKeys("[enter]");
                }
                else {
-         			int pos = bi.getPosFromView(e.getX(), e.getY());
+         			int pos = guiGraBuf.getPosFromView(e.getX(), e.getY());
                   if (log.isDebugEnabled()) {
                      log.debug((screen.getRow(pos)) + "," + (screen.getCol(pos)));
-                     log.debug(e.getX() + "," + e.getY() + "," + bi.columnWidth + ","
-                           + bi.rowHeight);
+                     log.debug(e.getX() + "," + e.getY() + "," + guiGraBuf.columnWidth + ","
+                           + guiGraBuf.rowHeight);
                   }
 
                   boolean moved = screen.moveCursor(e, pos);
@@ -278,12 +276,12 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
    public void setRunningHeadless(boolean headless) {
       if (headless) {
-         screen.getOIA().removeOIAListener(bi);
-         screen.removeScreenListener(bi);
+         screen.getOIA().removeOIAListener(guiGraBuf);
+         screen.removeScreenListener(guiGraBuf);
       }
       else {
-         screen.getOIA().addOIAListener(bi);
-         screen.addScreenListener(bi);
+         screen.getOIA().addOIAListener(guiGraBuf);
+         screen.addScreenListener(guiGraBuf);
 
       }
 
@@ -359,25 +357,25 @@ public class Gui5250 extends JPanel implements ComponentListener,
          // mark left we will mark the column to the right of where the cursor
          // is now.
          if (last.equals("[markleft]"))
-            bi.getPointFromRowCol(screen.getCurrentRow() - 1,
+            guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 1,
                                     screen.getCurrentCol() + 1,
                                     p);
          // mark right will mark the current position to the left of the
          // current cursor position
          if (last.equals("[markright]"))
-            bi.getPointFromRowCol(screen.getCurrentRow() - 1,
+            guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 1,
                                     screen.getCurrentCol()-2,
                                     p);
 
 
          if (last.equals("[markup]"))
-            bi.getPointFromRowCol(screen.getCurrentRow() + 1,
+            guiGraBuf.getPointFromRowCol(screen.getCurrentRow() + 1,
                                     screen.getCurrentCol() - 1,
                                     p);
          // mark down will mark the current position minus the current
          // row.
          if (last.equals("[markdown]"))
-            bi.getPointFromRowCol(screen.getCurrentRow() - 2,
+            guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 2,
                                     screen.getCurrentCol() - 1,
                                     p);
          MouseEvent me = new MouseEvent(this,
@@ -390,7 +388,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
       }
 
-      bi.getPointFromRowCol(screen.getCurrentRow() - 1,
+      guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 1,
                                  screen.getCurrentCol() - 1,
                                  p);
 //      rubberband.getCanvas().translateEnd(p);
@@ -468,9 +466,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          return false;
       }
-      else {
-         return true;
-      }
+      return true;
    }
 
    public void getFocusForMe() {
@@ -780,15 +776,16 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
 
-   public void resizeMe() {
-
+   /* default */ void resizeMe() {
       Rectangle r = getDrawingBounds();
-      if (bi != null)
-         bi.resizeScreenArea(r.width, r.height);
+      if (guiGraBuf != null) {
+    	  guiGraBuf.resizeScreenArea(r.width, r.height);
+      }
       screen.repaintScreen();
       Graphics g = getGraphics();
-      if (g != null)
+      if (g != null) {
          g.setClip(0,0,this.getWidth(),this.getHeight());
+      }
       repaint(0,0,getWidth(),getHeight());
    }
 
@@ -824,7 +821,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
    protected void paintComponent(Graphics g) {
 	  log.debug("paint from screen");
 
-     if (bi == null) {
+     if (guiGraBuf == null) {
       checkOffScreenImage();
      }
 //      screen.paintComponent3(g);
@@ -837,10 +834,10 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
 		//Rectangle r = g.getClipBounds();
 
-		g2.setColor(bi.colorBg);
+		g2.setColor(guiGraBuf.colorBg);
 		g2.fillRect(0, 0, getWidth(), getHeight());
 
-		bi.drawImageBuffer(g2);
+		guiGraBuf.drawImageBuffer(g2);
 
       if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
 //         rubberband.erase();
@@ -858,11 +855,11 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
 	public boolean isHotSpots() {
-		return bi.hotSpots;
+		return guiGraBuf.hotSpots;
 	}
 
 	public void toggleHotSpots() {
-		bi.hotSpots = !bi.hotSpots;
+		guiGraBuf.hotSpots = !guiGraBuf.hotSpots;
 	}
 
 	/**
@@ -874,9 +871,9 @@ public class Gui5250 extends JPanel implements ComponentListener,
 	 */
 	public void crossHair() {
 		screen.setCursorActive(false);
-		bi.crossHair++;
-		if (bi.crossHair > 3)
-			bi.crossHair = 0;
+		guiGraBuf.crossHair++;
+		if (guiGraBuf.crossHair > 3)
+			guiGraBuf.crossHair = 0;
 		screen.setCursorActive(true);
 	}
 
@@ -888,16 +885,16 @@ public class Gui5250 extends JPanel implements ComponentListener,
 	private void checkOffScreenImage() {
 
 		// do we have something already?
-		if (bi == null) {
+		if (guiGraBuf == null) {
 
-			bi = new GuiGraphicBuffer(screen,this,sesConfig);
+			guiGraBuf = new GuiGraphicBuffer(screen,this,sesConfig);
 
 //			if (antialiased) {
 //				bi.setUseAntialias(true);
 //			}
 
 			// allocate a buffer Image with appropriate size
-			bi.getImageBuffer(0, 0);
+			guiGraBuf.getImageBuffer(0, 0);
 
 			// fill in the areas
 //            tArea = new Rectangle2D.Float(0, 0, 0, 0);
@@ -935,23 +932,15 @@ public class Gui5250 extends JPanel implements ComponentListener,
 	/**
 	 * Sum them
 	 *
-	 * @param which
-	 *            formatting option to use
-	 * @return vector string of numberic values
+	 * @param which formatting option to use
+	 * @return vector string of numeric values
 	 */
-	protected final Vector sumThem(boolean which) {
-
-		StringBuffer s = new StringBuffer();
-
-      Rectangle workR = new Rectangle();
-		getBoundingArea(workR);
-
-		//      gui.rubberband.reset();
-		//      gui.repaint();
-
-		log.debug("Summing");
-      return screen.sumThem(which,workR);
-	}
+      protected final Vector<Double> sumThem(boolean which) {
+    	  Rectangle workR = new Rectangle();
+    	  getBoundingArea(workR);
+    	  log.debug("Summing");
+    	  return screen.sumThem(which,workR);
+      }
 
 	/**
 	 *
@@ -961,7 +950,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 	 */
 	public final void printMe() {
 
-		Thread printerThread = new PrinterThread(screen, bi.font, screen.getColumns(),
+		Thread printerThread = new PrinterThread(screen, guiGraBuf.font, screen.getColumns(),
 				screen.getRows(), Color.black, true, (SessionGUI) this);
 
 		printerThread.start();
@@ -1034,7 +1023,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
     */
    public Graphics getDrawingGraphics(){
 
-      return bi.getDrawingArea();
+      return guiGraBuf.getDrawingArea();
    }
 
    protected final void setRubberBand(TNRubberBand newValue) {
@@ -1044,18 +1033,18 @@ public class Gui5250 extends JPanel implements ComponentListener,
    }
 
    public Point translateStart(Point start) {
-      return bi.translateStart(start);
+      return guiGraBuf.translateStart(start);
    }
 
    public Point translateEnd(Point end) {
-      return bi.translateEnd(end);
+      return guiGraBuf.translateEnd(end);
    }
 	public int getPosFromView(int x, int y) {
-      return bi.getPosFromView(x,y);
+      return guiGraBuf.getPosFromView(x,y);
 	}
 
 	public void getBoundingArea(Rectangle bounds) {
-      bi.getBoundingArea(bounds);
+      guiGraBuf.getBoundingArea(bounds);
 	}
 
    public void areaBounded(RubberBand band, int x1, int y1, int x2, int y2) {
@@ -1072,7 +1061,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
       //   back to screen coordinates because we are translating the starting
       //   point to the 5250 screen coordinates
 //      return !screen.isKeyboardLocked() && (screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y));
-      return bi.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y);
+      return guiGraBuf.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y);
 
    }
 
@@ -1124,7 +1113,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          if(this.endPoint == null) {
             Point p = new Point(0,0);
-            bi.getPointFromRowCol(0,0,p);
+            guiGraBuf.getPointFromRowCol(0,0,p);
             setEndPoint(p);
          }
          return this.endPoint;
@@ -1134,7 +1123,7 @@ public class Gui5250 extends JPanel implements ComponentListener,
 
          if(this.startPoint == null) {
             Point p = new Point(0,0);
-            bi.getPointFromRowCol(0,0,p);
+            guiGraBuf.getPointFromRowCol(0,0,p);
             setStartPoint(p);
          }
          return this.startPoint;
