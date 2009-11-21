@@ -1,17 +1,21 @@
 package org.tn5250j.swing;
 
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-//import org.ohio.*;
-//import org.osohio.common.*;
-import org.tn5250j.*;
-import org.tn5250j.keyboard.*;
+import java.awt.AWTEvent;
+import java.awt.event.KeyEvent;
 
-public class JTerminal extends JComponent implements TN5250jConstants
-{
+import javax.swing.JComponent;
 
-     KeyboardHandler keyHandler;
+import org.tn5250j.Session5250;
+import org.tn5250j.keyboard.KeyboardHandler;
+
+/**
+ * For testing purpose
+ */
+public class JTerminal extends JComponent {
+
+	private static final long serialVersionUID = 1L;
+	
+	private KeyboardHandler keyHandler;
 
   public JTerminal(Session5250 session)
   {

@@ -1,17 +1,23 @@
 package org.tn5250j.swing.ui;
 
-import java.awt.*;
-import java.awt.font.*;
+import static org.tn5250j.TN5250jConstants.*;
 
-//import org.ohio.*;
-//import org.osohio.common.OhioConstants;
-import org.tn5250j.*;
-import org.tn5250j.framework.tn5250.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+
 import org.tn5250j.event.ScreenListener;
-import org.tn5250j.tools.*;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.tools.GUIGraphicsUtils;
 
-class BasicScreen extends BasicSubUI implements ScreenListener, TN5250jConstants
-{
+/**
+ * For testing purpose
+ */
+class BasicScreen extends BasicSubUI implements ScreenListener {
 
   private Data updateRect;
   LineMetrics lm;
@@ -381,20 +387,11 @@ public final class iOhioPosition {
       int er = end.getRow();
       int ec = end.getColumn();
 
-		int rows = er - sr;
 		int cols = 0;
 		int lc = 0;
-//      int lenScreen = screen.getScreenLength();
-//		int lr = screen.getPos(sr,sc);
-      int numCols = screen.getColumns();
 
 
       updateRect = new Data (sr,sc,er,ec);
-
-      int clipX;
-      int clipY;
-      int clipWidth;
-      int clipHeight;
 
       Rectangle clipper = new Rectangle();
 
@@ -522,7 +519,6 @@ public final class iOhioPosition {
          }
 
          if (useGui && (whichGui < FIELD_LEFT)) {
-            int w = 0;
 
             g.setColor(fg);
 
@@ -760,7 +756,6 @@ public final class iOhioPosition {
       }
 
       if (useGui & (whichGui >= FIELD_LEFT)) {
-            int w = 0;
 
             switch (whichGui) {
 
@@ -905,7 +900,6 @@ public final class iOhioPosition {
 
    private void setDrawAttr(int pos) {
 
-      Screen5250 s = screen;
       colSep = false;
       underLine = false;
       nonDisplay = false;

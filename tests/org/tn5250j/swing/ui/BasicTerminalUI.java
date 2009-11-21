@@ -1,21 +1,42 @@
 package org.tn5250j.swing.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import javax.swing.*;
-import javax.swing.plaf.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-//import org.ohio.*;
-//import org.osohio.swing.*;
-import org.tn5250j.swing.*;
-import org.tn5250j.event.SessionListener;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.RepaintManager;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.ActionMapUIResource;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.InputMapUIResource;
+import javax.swing.plaf.UIResource;
+
+import org.tn5250j.Session5250;
 import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.*;
-import org.tn5250j.framework.tn5250.*;
+import org.tn5250j.event.SessionListener;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.swing.JTerminal;
 
-public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jConstants
-{
+/**
+ * For testing purpose
+ */
+public class BasicTerminalUI {
    boolean graphicsDebugMode = false;
 
   public static void paintSubComponent(Graphics g, BasicSubUI component)
@@ -38,7 +59,7 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
 
   public static ComponentUI createUI(JComponent c)
   {
-    return new BasicTerminalUI();
+    return new ComponentUI() {};
   }
 
   public BasicTerminalUI()
@@ -327,12 +348,13 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
     }
   }
 
-  private int deriveFontSize(int width, int height)
-  {
-    int index = this.deriveScaleIndex(width, height);
-
-    return this.widthMap[index + 1];
-  }
+/* *** NEVER USED LOCALLY ************************************************ */
+//  private int deriveFontSize(int width, int height)
+//  {
+//    int index = this.deriveScaleIndex(width, height);
+//
+//    return this.widthMap[index + 1];
+//  }
 
   private int deriveScaleIndex(int width, int height)
   {
@@ -387,7 +409,7 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
       int       left   = insets.left;
       int       right  = bounds.width - insets.right;
 
-      boolean   ltr    = target.getComponentOrientation().isLeftToRight();
+//      boolean   ltr    = target.getComponentOrientation().isLeftToRight();
       Dimension d      = null;
 
       if (oia != null)
@@ -605,8 +627,8 @@ public class BasicTerminalUI extends TerminalUI implements org.tn5250j.TN5250jCo
   private static final String          SIZE_POL_FIXED   = "fixed";
   private static final String          SIZE_POL_DYNAMIC = "dynamic";
 
-  private static final String          KEY_POL_STRING   = "string";
-  private static final String          KEY_POL_AID      = "aid";
+//  private static final String          KEY_POL_STRING   = "string";
+//  private static final String          KEY_POL_AID      = "aid";
 
   public  static final ColorUIResource DFT_BACKGROUND   = new ColorUIResource(Color.black);
   public  static final ColorUIResource DFT_FOREGROUND   = new ColorUIResource(Color.green);

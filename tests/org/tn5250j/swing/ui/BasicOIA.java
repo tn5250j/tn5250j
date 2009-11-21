@@ -1,11 +1,20 @@
 package org.tn5250j.swing.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 
-//import org.ohio.*;
-import org.tn5250j.event.*;
-import org.tn5250j.framework.tn5250.*;
+import org.tn5250j.event.ScreenListener;
+import org.tn5250j.event.ScreenOIAListener;
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.ScreenOIA;
 
+/**
+ * For testing purpose
+ */
 public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIAListener
 {
   public BasicOIA(ScreenOIA oia)
@@ -126,9 +135,7 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
 
         g.setColor(BasicTerminalUI.DFT_FOREGROUND);
 
-       Screen5250 s = oia.getSource();
        int cy = (inhibitedRectangle.y + rowHeight - (metrics.getDescent() + metrics.getLeading()));
-       int attr = oia.getLevel();
        int value = oia.getInputInhibited();
        String stext = oia.getInhibitedText();
 
@@ -176,10 +183,9 @@ public class BasicOIA extends BasicSubUI implements ScreenListener, ScreenOIALis
     if (locationRectangle == null)
     {
       Rectangle bounds = this.getBounds();
-      int x,y,w,h;
 
       // Location rectangle
-      w = 6 * this.columnWidth;
+      int w = 6 * this.columnWidth;
       locationRectangle = new Rectangle(bounds.width - w, 0, w, this.rowHeight);
       inhibitedRectangle = new Rectangle(10, 0, 25* this.columnWidth, this.rowHeight);
     }
