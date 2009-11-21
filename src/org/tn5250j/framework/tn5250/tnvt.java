@@ -32,6 +32,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import javax.swing.SwingUtilities;
 
@@ -48,7 +50,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 	Socket sock;
 	BufferedInputStream bin;
 	BufferedOutputStream bout;
-	DataStreamQueue dsq;
+	private final BlockingQueue<Object> dsq = new ArrayBlockingQueue<Object>(25);
 	Stream5250 bk;
 	DataStreamProducer producer;
 	protected Screen5250 screen52;
@@ -250,8 +252,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 			bout = new BufferedOutputStream(out);
 
 			byte abyte0[];
-			while (negotiate(abyte0 = readNegotiations()))
-				;
+			while (negotiate(abyte0 = readNegotiations()));
 			negotiated = true;
 			try {
 				screen52.setCursorActive(false);
@@ -259,9 +260,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 				log.warn("setCursorOff " + excc.getMessage());
 
 			}
-			;
 
-			dsq = new DataStreamQueue();
 			producer = new DataStreamProducer(this, bin, dsq, abyte0);
 			pthread = new Thread(producer);
 			//         pthread.setPriority(pthread.MIN_PRIORITY);
@@ -962,8 +961,7 @@ public final class tnvt implements Runnable, TN5250jConstants {
 		while (keepTrucking) {
 
 			try {
-//				bk = (Stream5250) dsq.get();
-				bk.initialize((byte[]) dsq.get());
+				bk.initialize((byte[]) dsq.take());
 			} catch (InterruptedException ie) {
 				log.warn("   vt thread interrupted and stopping ");
 				keepTrucking = false;

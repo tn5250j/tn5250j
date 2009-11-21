@@ -1,10 +1,18 @@
 package org.tn5250j.framework.tn5250;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.concurrent.BlockingQueue;
 
-import org.tn5250j.tools.logging.*;
 import org.tn5250j.encoding.CodePage;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class DataStreamProducer implements Runnable {
 
@@ -12,7 +20,7 @@ public class DataStreamProducer implements Runnable {
    private ByteArrayOutputStream baosin;
    private Thread me;
    private byte[] saveStream;
-   private DataStreamQueue dsq;
+   private final BlockingQueue<Object> dsq;
    private tnvt vt;
    private byte[] abyte2;
    private FileOutputStream fw;
@@ -22,7 +30,7 @@ public class DataStreamProducer implements Runnable {
 
    private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
 
-   public DataStreamProducer(tnvt vt, BufferedInputStream in, DataStreamQueue queue, byte[] init) {
+   public DataStreamProducer(tnvt vt, BufferedInputStream in, BlockingQueue<Object> queue, byte[] init) {
       bin = in;
       this.vt = vt;
       baosin = new ByteArrayOutputStream();
@@ -33,12 +41,6 @@ public class DataStreamProducer implements Runnable {
    public void setInputStream(ByteArrayOutputStream is) {
 
       baosin = is;
-
-   }
-
-   public void setQueue( DataStreamQueue queue) {
-
-      dsq = queue;
 
    }
 
@@ -140,7 +142,6 @@ public class DataStreamProducer implements Runnable {
             abyte1 = new byte[j + 2];
 
             System.arraycopy(abyte0, i, abyte1, 0, j + 2);
-//            dsq.put(new Stream5250(abyte1));
             dsq.put(abyte1);
             if(abyte0.length > abyte1.length + i)
                 loadStream(abyte0, i + j + 2);
