@@ -72,17 +72,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    private Rectangle2D iArea; // insert indicator
    private Rectangle2D kbArea; // keybuffer indicator
    private Rectangle2D scriptArea; // script indicator
-   private int width;
-   private int height;
    private Rectangle2D cursor = new Rectangle2D.Float();
    private final static String xSystem = "X - System";
    private final static String xError = "X - II";
    private int crossRow;
-   private int crossCol;
    private Rectangle crossRect = new Rectangle();
    protected int offTop = 0;   // offset from top
    protected int offLeft = 0;  // offset from left
-   private boolean resized = false;
    private boolean antialiased = true;
    private Graphics2D gg2d;
    private Screen5250 screen;
@@ -91,22 +87,22 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
    protected int rowHeight;
    private Gui5250 gui;
 
-	LineMetrics lm;
-	Font font;
-	int lenScreen;
-	boolean showHex;
-	Color colorBlue;
-	Color colorWhite;
-	Color colorRed;
-	Color colorGreen;
-	Color colorPink;
-	Color colorYellow;
-	Color colorBg;
-	Color colorTurq;
-	Color colorGUIField;
-	Color colorCursor;
-	Color colorSep;
-	Color colorHexAttr;
+    private LineMetrics lm;
+	/*default*/ Font font;
+	private int lenScreen;
+	private boolean showHex;
+	private Color colorBlue;
+	private Color colorWhite;
+	private Color colorRed;
+	private Color colorGreen;
+	private Color colorPink;
+	private Color colorYellow;
+	/*default*/ Color colorBg;
+	private Color colorTurq;
+	private Color colorGUIField;
+	private Color colorCursor;
+	private Color colorSep;
+	private Color colorHexAttr;
 	protected int crossHair = 0;
 	private boolean updateFont;
 	protected int cursorSize = 0;
@@ -117,9 +113,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	protected boolean guiInterface = false;
 	public boolean guiShowUnderline = true;
 	protected int cursorBottOffset;
-	private boolean defaultPrinter;
 	protected boolean rulerFixed;
-	private boolean feError;
 	private javax.swing.Timer blinker;
    private int colSepLine = 0;
 	private StringBuffer hsMore = new StringBuffer("More...");
@@ -218,9 +212,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 //         synchronized (lock) {
             bi = null;
             bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-            this.width = width;
-            this.height = height;
-            resized = true;
             getSettings();
             // tell waiting threads to wake up
 //            lock.notifyAll();
@@ -439,13 +430,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			cursorBottOffset = getIntProperty("cursorBottOffset");
 		}
 
-		if (config.isPropertyExists("defaultPrinter")) {
-			if (getStringProperty("defaultPrinter").equals("Yes"))
-				defaultPrinter = true;
-			else
-				defaultPrinter = false;
-		}
-
 		if (config.isPropertyExists("resetRequired")) {
 			if (getStringProperty("resetRequired").equals("Yes"))
             screen.setResetRequired(true);
@@ -648,13 +632,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 				hotSpots = true;
 			else
 				hotSpots = false;
-		}
-
-		if (pn.equals("defaultPrinter")) {
-			if (pce.getNewValue().equals("Yes"))
-				defaultPrinter = true;
-			else
-				defaultPrinter = false;
 		}
 
 		if (pn.equals("resetRequired")) {
@@ -946,13 +923,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	protected final void resizeScreenArea(int width, int height) {
 
 		Font k = null;
-		LineMetrics l;
-		FontRenderContext f = null;
 		k = GUIGraphicsUtils.getDerivedFont(font, width, height, screen.getRows(),
 				screen.getColumns(), sfh, sfw, ps132);
-		f = new FontRenderContext(k.getTransform(), true, true);
-
-		l = k.getLineMetrics("Wy", f);
 
 		if (font.getSize() != k.getSize() || updateFont
 				|| (offLeft != (width - bi.getWidth()) / 2)
@@ -1000,9 +972,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          if (bi == null || bi.getWidth() != width2 || bi.getHeight() != height2) {
             // allocate a buffer Image with appropriate size
             bi = new BufferedImage(width2,height2,BufferedImage.TYPE_INT_RGB);
-            this.width = width2;
-            this.height = height2;
-            resized = true;
          }
 //         // tell waiting threads to wake up
 //         lock.notifyAll();
@@ -1017,7 +986,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       public Graphics2D drawOIA () {
 
       	int numRows = screen.getRows();
-      	int numCols = screen.getColumns();
 
          Graphics2D g2d;
 
@@ -1125,13 +1093,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
          if (!rulerFixed) {
             crossRow = row;
-            crossCol = col;
             crossRect.setBounds(r);
          }
          else {
             if (crossHair == 0) {
                crossRow = row;
-               crossCol = col;
                crossRect.setBounds(r);
             }
          }
@@ -1509,7 +1475,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
          }
 
          if (useGui && (whichGui < TN5250jConstants.FIELD_LEFT)) {
-            int w = 0;
 
             g.setColor(fg);
 
@@ -1745,7 +1710,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
       }
 
       if (useGui & (whichGui >= TN5250jConstants.FIELD_LEFT)) {
-            int w = 0;
 
             switch (whichGui) {
 
@@ -1859,19 +1823,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 //      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
 
-      int rows = er - sr;
 		int cols = 0;
 		int lc = 0;
-		int lr = screen.getPos(sr,sc);
-      int numCols = screen.getColumns();
 
 
       updateRect = new Data (sr,sc,er,ec);
-
-      int clipX;
-      int clipY;
-      int clipWidth;
-      int clipHeight;
 
       Rectangle clipper = new Rectangle();
 
@@ -2194,7 +2150,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
    private void setDrawAttr(int pos) {
 
-      Screen5250 s = screen;
       colSep = false;
       underLine = false;
       nonDisplay = false;
