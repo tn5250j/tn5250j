@@ -25,17 +25,31 @@
  */
 package org.tn5250j.mailtools;
 
-import java.awt.*;
-import javax.swing.*;
-import java.util.Properties;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.util.Enumeration;
+import java.util.Properties;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
 
 public class SMTPConfig extends JDialog {
 
+	private static final long serialVersionUID = 1L;
+	
 	JPanel mainPanel = new JPanel();
 	BorderLayout borderLayout1 = new BorderLayout();
 	JPanel configPanel = new JPanel(new GridBagLayout());
@@ -249,7 +263,7 @@ public class SMTPConfig extends JDialog {
 			return false;
 	}
 
-	void optDone_actionPerformed(ActionEvent e) {
+	private void optDone_actionPerformed(ActionEvent e) {
 
 		SMTPProperties.setProperty("mail.smtp.host", fieldHost.getText());
 		SMTPProperties.setProperty("mail.smtp.port", fieldPort.getText());
@@ -259,7 +273,7 @@ public class SMTPConfig extends JDialog {
 		// file name
 		SMTPProperties.setProperty("fileName", fieldFileName.getText());
 
-		for (Enumeration x = SMTPProperties.propertyNames();
+		for (Enumeration<?> x = SMTPProperties.propertyNames();
 			x.hasMoreElements();
 			)
 			System.out.println(SMTPProperties.get(x.nextElement()));
