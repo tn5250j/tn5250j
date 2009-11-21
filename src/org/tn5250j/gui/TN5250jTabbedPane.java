@@ -340,7 +340,7 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
     * 
     * @param listener The TabClosedListener to be added
     */
-   public synchronized void addtabCloseListener(TabClosedListener listener) {
+   public final void addtabCloseListener(TabClosedListener listener) {
 	   closeListenersLock.writeLock().lock();
 	   try {
 		   if (closeListeners == null) {
@@ -357,7 +357,7 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
     * 
     * @param listener The TabClosedListener to be removed
     */
-   public synchronized void removeTabCloseListener(TabClosedListener listener) {
+   public final void removeTabCloseListener(TabClosedListener listener) {
 	   closeListenersLock.writeLock().lock();
 	   try {
 		   if (closeListeners != null) {
@@ -373,7 +373,7 @@ public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
     * 
     * @param tabToClose
     */
-   public void fireTabClosed(int tabToClose) {
+   public final void fireTabClosed(int tabToClose) {
 	   closeListenersLock.readLock().lock();
 	   try {
 		   if (this.closeListeners != null) {
