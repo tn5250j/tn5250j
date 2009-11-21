@@ -35,7 +35,7 @@ import org.tn5250j.interfaces.SessionsInterface;
  */
 public class Sessions implements SessionsInterface,ActionListener {
 
-   private Vector sessions = null;
+   private List<Session5250> sessions = null;
    private int count = 0;
    private Timer heartBeater;
 
@@ -43,7 +43,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    public Sessions() {
 
-      sessions = new Vector();
+      sessions = new ArrayList<Session5250>();
    }
 
    public void actionPerformed(ActionEvent e) {
@@ -51,7 +51,7 @@ public class Sessions implements SessionsInterface,ActionListener {
       Session5250 ses;
       for (int x = 0; x < sessions.size(); x++) {
          try {
-            ses = (Session5250)sessions.get(x);
+            ses = sessions.get(x);
             if (ses.isConnected() && ses.isSendKeepAlive()) {
                ses.getVT().sendHeartBeat();
                log.info(" sent heartbeat to " +  ses.getSessionName());
@@ -76,15 +76,15 @@ public class Sessions implements SessionsInterface,ActionListener {
       ++count;
    }
 
-   protected void removeSession(Session5250 session) {
-      log.debug("Removing session: "+session.getSessionName());
-      if (session != null) {
-         if (session.isConnected())
-            session.disconnect();
-         sessions.remove(session);
-         --count;
-      }
-   }
+	protected void removeSession(Session5250 session) {
+		if (session != null) {
+			log.debug("Removing session: " + session.getSessionName());
+			if (session.isConnected())
+				session.disconnect();
+			sessions.remove(session);
+			--count;
+		}
+	}
 
    protected void removeSession(String sessionName) {
       log.debug("Remove session by name: "+sessionName);
@@ -105,7 +105,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    public Session5250 item (int index) {
 
-      return (Session5250)sessions.get(index);
+      return sessions.get(index);
 
    }
 
@@ -116,7 +116,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
       while (x < sessions.size()) {
 
-         s = (Session5250)sessions.get(x);
+         s = sessions.get(x);
 
          if (s.getSessionName().equals(sessionName))
             return s;
@@ -135,7 +135,7 @@ public class Sessions implements SessionsInterface,ActionListener {
 
       while (x < sessions.size()) {
 
-         s = (Session5250)sessions.get(x);
+         s = sessions.get(x);
 
          if (s.equals(sessionObject))
             return s;
@@ -147,8 +147,8 @@ public class Sessions implements SessionsInterface,ActionListener {
 
    }
 
-   public Vector getSessionsList() {
-      Vector newS = new Vector(sessions.size());
+   public ArrayList<Session5250> getSessionsList() {
+      ArrayList<Session5250> newS = new ArrayList<Session5250>(sessions.size());
       for (int x = 0; x < sessions.size(); x++)
          newS.add(sessions.get(x));
       return newS;

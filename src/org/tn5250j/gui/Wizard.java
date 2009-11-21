@@ -21,14 +21,18 @@
 
 package org.tn5250j.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.util.Enumeration;
-import java.io.*;
 import java.util.Vector;
 
-import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JPanel;
+
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
 
@@ -36,7 +40,7 @@ import org.tn5250j.event.WizardListener;
  * Class to create and manage a <i>Wizard</i> style framework.  Create and add
  * <code>WizardPages</code> and add <code>WizardListener</code>'s for all your Wizard fun.
  */
-public class Wizard extends JPanel implements Serializable {
+public class Wizard extends JPanel {
 
    private static final long serialVersionUID = 1L;
 /** layout used */
@@ -119,13 +123,11 @@ public class Wizard extends JPanel implements Serializable {
       //
       // post nextBegin event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.nextBegin(event);
-         }
+      Enumeration<WizardListener> e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.nextBegin(event);
       }
 
       if (event.getAllowChange() == false) {
@@ -137,21 +139,18 @@ public class Wizard extends JPanel implements Serializable {
       //
       if (next_page != event.getNewPage()) {
          cardLayout.show(this, event.getNewPage().getName());
-      }
-      else {
+      } else {
          cardLayout.next(this);
       }
 
       //
       // Post nextComplete event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.nextComplete(event);
-         }
+      e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.nextComplete(event);
       }
 
       return true;
@@ -195,16 +194,15 @@ public class Wizard extends JPanel implements Serializable {
       // first card so we set "allow_change" to be the
       // opposite of "is_first_page"
 
+      Enumeration<WizardListener> e;
       //
       // post previousBegin event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.previousBegin(event);
-         }
+      e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.previousBegin(event);
       }
 
       if (event.getAllowChange() == false) {
@@ -216,21 +214,18 @@ public class Wizard extends JPanel implements Serializable {
       //
       if (previous_page != event.getNewPage()) {
          cardLayout.show(this, event.getNewPage().getName());
-      }
-      else {
+      } else {
          cardLayout.previous(this);
       }
 
       //
       // Post previousComplete event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.previousComplete(event);
-         }
+      e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.previousComplete(event);
       }
       return true;
    }
@@ -254,13 +249,11 @@ public class Wizard extends JPanel implements Serializable {
       //
       // Post finished event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.finished(event);
-         }
+      Enumeration<WizardListener> e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.finished(event);
       }
 
       return event.getAllowChange();
@@ -285,13 +278,11 @@ public class Wizard extends JPanel implements Serializable {
       //
       // Post Canceled event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.canceled(event);
-         }
+      Enumeration<WizardListener> e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.canceled(event);
       }
 
       return event.getAllowChange();
@@ -316,14 +307,12 @@ public class Wizard extends JPanel implements Serializable {
       //
       // Post Help event
       //
-      if (event != null) {
-         Enumeration<WizardListener> e = listeners.elements();
-         for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-               e.nextElement();
-            listener.help(event);
+      Enumeration<WizardListener> e = listeners.elements();
+      for (; e.hasMoreElements(); ) {
+    	  WizardListener listener =
+    		  e.nextElement();
+    	  listener.help(event);
          }
-      }
    }
 
    /**

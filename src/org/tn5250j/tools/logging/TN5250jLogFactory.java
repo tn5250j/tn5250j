@@ -93,8 +93,7 @@ public final class TN5250jLogFactory {
 
       if (_loggers.containsKey(clazzName)) {
          logger = _loggers.get(clazzName);
-      }
-      else {
+      } else {
 
          if (customLogger != null) {
             try {
@@ -106,20 +105,16 @@ public final class TN5250jLogFactory {
                }
             }
             catch (Exception  ex) { ; }
-         }
-         else {
-            if (logger == null) {
-               if (log4j)
-                  logger = new Log4jLogger();
-               else
-                  // take the default logger.
-                  logger = new ConsoleLogger();
-
-            }
-
-            logger.initialize(clazzName);
-            logger.setLevel(level);
-            _loggers.put(clazzName, logger);
+         } else {
+        	 if (log4j) {
+        		 logger = new Log4jLogger();
+        	 } else {
+        		 // take the default logger.
+        		 logger = new ConsoleLogger();
+        	 }
+        	 logger.initialize(clazzName);
+        	 logger.setLevel(level);
+        	 _loggers.put(clazzName, logger);
          }
       }
 
