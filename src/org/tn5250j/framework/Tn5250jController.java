@@ -117,7 +117,7 @@ public class Tn5250jController extends Thread {
 		}
 		URLClassLoader loader = new URLClassLoader(urls);
 		try {
-			Class ext = loader.loadClass(name);
+			Class<?> ext = loader.loadClass(name);
 			try {
 				Tn5250jListener module = (Tn5250jListener) ext.newInstance();
 				listeners.add(module);
@@ -289,7 +289,6 @@ public class Tn5250jController extends Thread {
 	protected Properties convertToProps(String args[]) {
 		Properties sesProps = new Properties();
 
-		String propFileName = null;
 		String session = args[0];
 
 		// Start loading properties
@@ -302,8 +301,9 @@ public class Tn5250jController extends Thread {
 			sesProps.put(TN5250jConstants.SESSION_HOST_PORT, getParm("-p", args));
 		}
 
-		if (isSpecified("-f", args))
-			propFileName = getParm("-f", args);
+//		if (isSpecified("-f", args)) {
+//			String propFileName = getParm("-f", args);
+//		}
 
 		if (isSpecified("-cp", args))
 			sesProps.put(TN5250jConstants.SESSION_CODE_PAGE, getParm("-cp", args));

@@ -27,6 +27,16 @@
 
 package org.tn5250j.beans;
 
+import static org.tn5250j.TN5250jConstants.MNEMONIC_ENTER;
+import static org.tn5250j.TN5250jConstants.MNEMONIC_TAB;
+import static org.tn5250j.TN5250jConstants.SCREEN_SIZE_24X80_STR;
+import static org.tn5250j.TN5250jConstants.SCREEN_SIZE_27X132_STR;
+import static org.tn5250j.TN5250jConstants.SESSION_CODE_PAGE;
+import static org.tn5250j.TN5250jConstants.SESSION_DEVICE_NAME;
+import static org.tn5250j.TN5250jConstants.SESSION_HOST;
+import static org.tn5250j.TN5250jConstants.SESSION_HOST_PORT;
+import static org.tn5250j.TN5250jConstants.SESSION_SCREEN_SIZE;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -34,12 +44,11 @@ import java.util.Properties;
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.TN5250jConstants;
 import org.tn5250j.SessionConfig;
-import org.tn5250j.framework.common.*;
+import org.tn5250j.framework.common.SessionManager;
 
 
-public class ProtocolBean implements TN5250jConstants {
+public class ProtocolBean {
 
 //      // ===========================================================================
 //      //                      C o n s t r u c t o r s
@@ -384,7 +393,6 @@ public class ProtocolBean implements TN5250jConstants {
   private String program;
   private String initialCommand;
   private String afterSignon;
-  private int visibilityInterval;
 
   //============================================================================
   //                    U t i l i t y   M e t h o d s

@@ -25,20 +25,18 @@
  */
 package org.tn5250j;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
 
 import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.tools.system.OperatingSystem;
-import org.tn5250j.framework.tn5250.Screen5250;
 
 /**
  * Session Scroller to allow the use of the mouse wheel to move the list on the
  * screen up and down.
  */
-public class SessionScroller implements SessionScrollerInterface, TN5250jConstants {
+public class SessionScroller implements SessionScrollerInterface {
 
-   Screen5250 screen;
-   SessionGUI session;
+   private SessionGUI session;
    static boolean useJava14;
 
    SessionScrollerInterface _instance;
@@ -69,12 +67,11 @@ public class SessionScroller implements SessionScrollerInterface, TN5250jConstan
          return _instance;
       }
 
-      screen = ses.getScreen();
       session = ses;
 
-      Class       scroller_class;
+      Class<?>       scroller_class;
 
-      Constructor constructor1;
+      Constructor<?> constructor1;
 
       try {
 

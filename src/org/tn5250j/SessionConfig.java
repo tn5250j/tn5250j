@@ -20,35 +20,42 @@
  */
 package org.tn5250j;
 
-import java.util.*;
-import javax.swing.*;
-import java.io.*;
-import java.text.MessageFormat;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.tn5250j.tools.LangTool;
-import org.tn5250j.event.SessionConfigListener;
+import javax.swing.JOptionPane;
+
 import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.tools.LangTool;
 
 /**
  * A host session configuration object
  */
-public class SessionConfig implements TN5250jConstants {
+public class SessionConfig {
 
    private String configurationResource;
    private String sessionName;
-   private boolean connected;
-   private int sessionType;
    private Properties sesProps;
-   private Vector<SessionConfigListener> listeners;
-   private String sslType;
    private boolean usingDefaults;
+   
+   private List<SessionConfigListener> sessionCfglisteners = null;
+   private final ReadWriteLock sessionCfglistenersLock = new ReentrantReadWriteLock(); 
 
-   public SessionConfig (String configurationResource,
-                           String sessionName) {
+   public SessionConfig (String configurationResource, String sessionName) {
 
       this.configurationResource = configurationResource;
       this.sessionName = sessionName;
@@ -71,48 +78,24 @@ public class SessionConfig implements TN5250jConstants {
       return sessionName;
    }
 
-   /**
-    * Notify all registered listeners of the onSessionChanged event.
-    *
-    * @param state  The state change property object.
-    */
-   protected void fireConfigChanged(SessionConfigEvent sce) {
-
-      if (listeners != null) {
-         int size = listeners.size();
-         for (int i = 0; i < size; i++) {
-            SessionConfigListener target =
-                    listeners.elementAt(i);
-            target.onConfigChanged(sce);
-         }
-      }
-   }
-
-   public void firePropertyChange(Object source, String propertyName,
-            Object oldValue, Object newValue) {
+   public final void firePropertyChange(Object source, String propertyName, Object oldValue, Object newValue) {
 
       if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
          return;
       }
-
-      java.util.Vector<?> targets = null;
-      synchronized (this) {
-         if (listeners != null) {
-            targets = (java.util.Vector<?>) listeners.clone();
-         }
-      }
-
-      SessionConfigEvent sce = new SessionConfigEvent(source,
-             propertyName, oldValue, newValue);
-
-      if (targets != null) {
-         int size = targets.size();
-         for (int i = 0; i < size; i++) {
-            SessionConfigListener target =
-                    (SessionConfigListener)targets.elementAt(i);
-            target.onConfigChanged(sce);
-         }
-      }
+      
+      sessionCfglistenersLock.readLock().lock();
+	   try {
+		   if (this.sessionCfglisteners != null) {
+			   final SessionConfigEvent sce = new SessionConfigEvent(source, propertyName, oldValue, newValue);
+			   for (SessionConfigListener target : this.sessionCfglisteners) {
+				   target.onConfigChanged(sce);
+			   }
+		   }
+	   } finally {
+		   sessionCfglistenersLock.readLock().unlock();
+	   }
+	   
    }
 
    public Properties getProperties() {
@@ -261,10 +244,10 @@ public class SessionConfig implements TN5250jConstants {
 
    public String getStringProperty(String prop) {
 
-      if (sesProps.containsKey(prop))
-         return (String)sesProps.get(prop);
-      else
-         return "";
+      if (sesProps.containsKey(prop)){
+    	  return (String)sesProps.get(prop);
+      }
+      return "";
 
    }
 
@@ -279,8 +262,7 @@ public class SessionConfig implements TN5250jConstants {
             return 0;
          }
       }
-      else
-         return 0;
+      return 0;
 
    }
 
@@ -290,8 +272,7 @@ public class SessionConfig implements TN5250jConstants {
          Color c = new Color(getIntegerProperty(prop));
          return c;
       }
-      else
-         return null;
+      return null;
 
    }
 
@@ -332,8 +313,7 @@ public class SessionConfig implements TN5250jConstants {
          float f = Float.parseFloat((String)sesProps.get(prop));
          return f;
       }
-      else
-         return 0.0f;
+      return 0.0f;
 
    }
 
@@ -345,23 +325,26 @@ public class SessionConfig implements TN5250jConstants {
       return sesProps.remove(key);
    }
 
-   public synchronized Vector getSessionConfigListeners () {
-
-      return listeners;
-   }
+//   public synchronized Vector getSessionConfigListeners () {
+//
+//      return sessionCfglisteners;
+//   }
 
    /**
     * Add a SessionConfigListener to the listener list.
     *
     * @param listener  The SessionListener to be added
     */
-   public synchronized void addSessionConfigListener(SessionConfigListener listener) {
-
-      if (listeners == null) {
-          listeners = new java.util.Vector<SessionConfigListener>(3);
-      }
-      listeners.addElement(listener);
-
+   public final void addSessionConfigListener(SessionConfigListener listener) {
+	   sessionCfglistenersLock.writeLock().lock();
+	   try {
+		   if (sessionCfglisteners == null) {
+			   sessionCfglisteners = new ArrayList<SessionConfigListener>(3);
+		   }
+		   sessionCfglisteners.add(listener);
+	   } finally {
+		   sessionCfglistenersLock.writeLock().unlock();
+	   }
    }
 
    /**
@@ -369,12 +352,15 @@ public class SessionConfig implements TN5250jConstants {
     *
     * @param listener  The SessionListener to be removed
     */
-   public synchronized void removeSessionConfigListener(SessionConfigListener listener) {
-      if (listeners == null) {
-          return;
-      }
-      listeners.removeElement(listener);
-
+   public final void removeSessionConfigListener(SessionConfigListener listener) {
+	   sessionCfglistenersLock.writeLock().lock();
+	   try {
+		   if (sessionCfglisteners != null) {
+			   sessionCfglisteners.remove(listener);
+		   }
+	   } finally {
+		   sessionCfglistenersLock.writeLock().unlock();
+	   }
    }
 
 }

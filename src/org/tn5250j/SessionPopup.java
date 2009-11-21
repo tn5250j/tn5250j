@@ -25,24 +25,56 @@
  */
 package org.tn5250j;
 
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.*;
-import java.text.*;
+import static org.tn5250j.TN5250jConstants.*;
 
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.text.CollationKey;
+import java.text.Collator;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 
-import org.tn5250j.tools.*;
-import org.tn5250j.keyboard.configure.KeyConfigure;
-import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.interfaces.OptionAccessFactory;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.keyboard.configure.KeyConfigure;
+import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.LoadMacroMenu;
+import org.tn5250j.tools.Macronizer;
+import org.tn5250j.tools.SendScreenImageToFile;
+import org.tn5250j.tools.SendScreenToFile;
+import org.tn5250j.tools.XTFRFile;
 
 /**
  * Custom
  */
-public class SessionPopup implements TN5250jConstants {
+public class SessionPopup {
 
    Screen5250 screen;
    SessionGUI session;
