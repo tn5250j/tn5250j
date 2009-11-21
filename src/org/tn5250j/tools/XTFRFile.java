@@ -55,31 +55,30 @@ public class XTFRFile
 	implements ActionListener, FTPStatusListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
-	FTP5250Prot ftpProtocol;
-	AS400Xtfr axtfr;
+	private FTP5250Prot ftpProtocol;
+	private AS400Xtfr axtfr;
 
-	GridBagConstraints gbc;
-	JTextField user;
-	JPasswordField password;
-	JTextField systemName;
-	JTextField hostFile;
-	JTextField localFile;
-	JRadioButton allFields;
-	JRadioButton selectedFields;
-	JComboBox decimalSeparator;
-	JComboBox fileFormat;
-	JCheckBox useQuery;
-	JButton queryWizard;
-	JTextArea queryStatement;
-	JButton customize;
-        JButton xtfrButton;
+	private GridBagConstraints gbc;
+	private JTextField user;
+	private JPasswordField password;
+	private JTextField systemName;
+	private JTextField hostFile;
+	private JTextField localFile;
+	private JRadioButton allFields;
+	private JRadioButton selectedFields;
+	private JComboBox decimalSeparator;
+	private JComboBox fileFormat;
+	private JCheckBox useQuery;
+	private JButton queryWizard;
+	private JTextArea queryStatement;
+	private JButton customize;
+	private JButton xtfrButton;
 
-	JRadioButton intDesc;
-	JRadioButton txtDesc;
+	private JRadioButton intDesc;
+	private JRadioButton txtDesc;
 
-	JPanel as400QueryP;
-	JPanel as400FieldP;
-	JPanel as400p;
+	private JPanel as400QueryP;
+	private JPanel as400p;
 
 	boolean fieldsSelected;
 	boolean emailIt;
@@ -153,7 +152,7 @@ public class XTFRFile
 		addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent we) {
-				if (ftpProtocol.isConnected())
+				if (ftpProtocol != null && ftpProtocol.isConnected())
 					ftpProtocol.disconnect();
 			}
 
@@ -319,7 +318,7 @@ public class XTFRFile
 				axtfr.connect(systemName.getText());
 
 			} else {
-				if (ftpProtocol.connect(systemName.getText(), 21)) {
+				if (ftpProtocol!=null && ftpProtocol.connect(systemName.getText(), 21)) {
 
 					if (ftpProtocol
 						.login(
@@ -372,9 +371,10 @@ public class XTFRFile
 	}
 
 	private void disconnect() {
-
-		ftpProtocol.disconnect();
-		ftpProtocol = null;
+		if (ftpProtocol != null) {
+			ftpProtocol.disconnect();
+			ftpProtocol = null;
+		}
 
 	}
 
@@ -403,26 +403,27 @@ public class XTFRFile
 		}
 	}
 
-	private XTFRFileFilter getFilterByExtension() {
-
-		if (filter != null && filter.isExtensionInList(localFile.getText()))
-			return filter;
-
-		if (KSpreadFilter.isExtensionInList(localFile.getText()))
-			return KSpreadFilter;
-		if (OOFilter.isExtensionInList(localFile.getText()))
-			return OOFilter;
-		if (ExcelFilter.isExtensionInList(localFile.getText()))
-			return ExcelFilter;
-		if (DelimitedFilter.isExtensionInList(localFile.getText()))
-			return DelimitedFilter;
-		if (FixedWidthFilter.isExtensionInList(localFile.getText()))
-			return FixedWidthFilter;
-		//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
-		//         return ExcelWorkbookFilter;
-
-		return htmlFilter;
-	}
+/* *** NEVER USED LOCALLY ************************************************** */
+//	private XTFRFileFilter getFilterByExtension() {
+//
+//		if (filter != null && filter.isExtensionInList(localFile.getText()))
+//			return filter;
+//
+//		if (KSpreadFilter.isExtensionInList(localFile.getText()))
+//			return KSpreadFilter;
+//		if (OOFilter.isExtensionInList(localFile.getText()))
+//			return OOFilter;
+//		if (ExcelFilter.isExtensionInList(localFile.getText()))
+//			return ExcelFilter;
+//		if (DelimitedFilter.isExtensionInList(localFile.getText()))
+//			return DelimitedFilter;
+//		if (FixedWidthFilter.isExtensionInList(localFile.getText()))
+//			return FixedWidthFilter;
+//		//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
+//		//         return ExcelWorkbookFilter;
+//
+//		return htmlFilter;
+//	}
 
 	private XTFRFileFilter getFilterByDescription() {
 
@@ -719,7 +720,6 @@ public class XTFRFile
 		fileFormat.addItem(FixedWidthFilter.getDescription());
 		fileFormat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JComboBox cb = (JComboBox) e.getSource();
 				filter = getFilterByDescription();
 				if (filter.getOutputFilterInstance().isCustomizable())
 					customize.setEnabled(true);
@@ -1235,7 +1235,7 @@ public class XTFRFile
 
 		}
 
-		public Class getColumnClass(int col) {
+		public Class<?> getColumnClass(int col) {
 			return getValueAt(0, col).getClass();
 
 		}
@@ -1341,12 +1341,14 @@ public class XTFRFile
 
 			addPropertyChangeListener(new PropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent event) {
-					if (dialog.isVisible()
+					if (dialog.isVisible() 
 						&& event.getSource() == ProgressOptionPane.this
 						&& (event.getPropertyName().equals(VALUE_PROPERTY)
 							|| event.getPropertyName().equals(
 								INPUT_VALUE_PROPERTY))) {
-						ftpProtocol.setAborted();
+						if (ftpProtocol != null) {
+							ftpProtocol.setAborted();
+						}
 						dialog.setVisible(false);
 						dialog.dispose();
 					}
