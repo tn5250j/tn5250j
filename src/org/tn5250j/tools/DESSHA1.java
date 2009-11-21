@@ -32,6 +32,8 @@ import java.security.MessageDigest;
 
 public class DESSHA1 implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	/** Message digest object. */
 	private final MessageDigest md;
 

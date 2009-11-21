@@ -31,7 +31,8 @@ import org.tn5250j.tools.*;
 
 public class JobTabPanel extends JPanel implements QueueFilterInterface {
 
-   JRadioButton all;
+   private static final long serialVersionUID = 1L;
+JRadioButton all;
    JRadioButton select;
    JTextField jobName;
    JTextField jobUser;

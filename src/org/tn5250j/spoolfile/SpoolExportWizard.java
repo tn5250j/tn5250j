@@ -51,7 +51,8 @@ import com.lowagie.text.*;
  */
 public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
 
-   JPanel contentPane;
+   private static final long serialVersionUID = 1L;
+JPanel contentPane;
    JLabel statusBar = new JLabel();
 
    JPanel spoolPanel = new JPanel();

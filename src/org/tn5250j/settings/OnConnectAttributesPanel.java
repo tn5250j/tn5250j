@@ -33,7 +33,8 @@ import org.tn5250j.SessionConfig;
 
 public class OnConnectAttributesPanel extends AttributesPanel {
 
-   JTextField connectMacro;
+   private static final long serialVersionUID = 1L;
+JTextField connectMacro;
 
    public OnConnectAttributesPanel(SessionConfig config ) {
       super(config,"OnConnect");

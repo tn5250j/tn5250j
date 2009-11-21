@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class HotspotsAction extends EmulatorAction implements TN5250jConstants {
 
-   public HotspotsAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public HotspotsAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_HOTSPOTS,
             KeyStroke.getKeyStroke(KeyEvent.VK_S,KeyEvent.ALT_MASK),

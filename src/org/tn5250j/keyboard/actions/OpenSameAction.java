@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class OpenSameAction extends EmulatorAction implements TN5250jConstants {
 
-   public OpenSameAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public OpenSameAction(SessionGUI session, KeyMapper keyMap) {
       super(session,MNEMONIC_OPEN_SAME,
             KeyStroke.getKeyStroke(KeyEvent.VK_U,KeyEvent.ALT_MASK),
             keyMap);

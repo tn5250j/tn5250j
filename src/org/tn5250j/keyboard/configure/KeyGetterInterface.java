@@ -45,7 +45,8 @@ import org.tn5250j.tools.system.OperatingSystem;
  */
 public abstract class KeyGetterInterface extends JLabel {
 
-   KeyEvent keyevent;
+   private static final long serialVersionUID = 1L;
+KeyEvent keyevent;
    boolean isAltGr;
    boolean isLinux;
    JDialog dialog;

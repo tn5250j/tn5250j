@@ -38,7 +38,8 @@ import org.tn5250j.interfaces.OptionAccessFactory;
  */
 public abstract class EmulatorAction extends AbstractAction {
 
-   // content pane to be used if needed by subclasses
+   private static final long serialVersionUID = 1L;
+// content pane to be used if needed by subclasses
    protected SessionGUI session;
 
    public EmulatorAction(SessionGUI session, String name) {

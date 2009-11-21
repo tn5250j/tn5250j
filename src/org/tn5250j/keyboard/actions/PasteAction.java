@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class PasteAction extends EmulatorAction implements TN5250jConstants {
 
-   public PasteAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public PasteAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_PASTE,
             KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.ALT_MASK),

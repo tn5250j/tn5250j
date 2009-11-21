@@ -32,8 +32,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -44,7 +44,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -58,6 +64,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -73,19 +80,21 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.JPasswordField;
-import javax.swing.text.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.gui.SortTableModel;
+import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.tools.AlignLayout;
+import org.tn5250j.tools.DESSHA1;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.gui.TN5250jMultiSelectList;
-import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.tools.DESSHA1;
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.tools.AlignLayout;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class Connect extends JDialog implements ActionListener, ChangeListener,
       TN5250jConstants {
@@ -302,6 +311,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 
       // Add enter as default key for connect with this session
       Action connect = new AbstractAction("connect") {
+    	  private static final long serialVersionUID = 1L;
          public void actionPerformed(ActionEvent e) {
             doActionConnect();
          }
@@ -353,7 +363,6 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
             }
             else {
 
-               int selectedRow = lsm.getMinSelectionIndex();
                // selectedRow is selected
                editButton.setEnabled(true);
                removeButton.setEnabled(true);
@@ -688,20 +697,20 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       if (props.getProperty("emul.accessDigest") != null)
          accessOptions.setEnabled(false);
 
-      Vector options = OptionAccessFactory.getInstance().getOptions();
+      List<String> options = OptionAccessFactory.getInstance().getOptions();
 
       // set up a hashtable of option descriptions to options
-      Hashtable ht = new Hashtable(options.size());
+      Hashtable<String, String> ht = new Hashtable<String, String> (options.size());
       for (int x = 0; x < options.size(); x++) {
          ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
       }
 
       // get the sorted descriptions of the options
-      Vector descriptions = OptionAccessFactory.getInstance()
+      List<String> descriptions = OptionAccessFactory.getInstance()
             .getOptionDescriptions();
 
       // set the option descriptions
-      accessOptions.setListData(descriptions);
+      accessOptions.setListData(descriptions.toArray());
 
       // we now mark the invalid options
       int num = OptionAccessFactory.getInstance()
@@ -710,7 +719,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       int i = 0;
       for (int x = 0; x < descriptions.size(); x++) {
          if (!OptionAccessFactory.getInstance().isValidOption(
-               (String) ht.get(descriptions.get(x))))
+               ht.get(descriptions.get(x))))
             si[i++] = x;
       }
 
@@ -732,6 +741,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       passPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
 
       Action action = new AbstractAction(LangTool.getString("ss.labelSetPass")) {
+    	  private static final long serialVersionUID = 1L;
          public void actionPerformed(ActionEvent e) {
             if (password.getPassword().length > 0) {
                try {
@@ -831,7 +841,6 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
                cAddButton.setEnabled(false);
             }
             else {
-               int selectedRow = lsm.getMinSelectionIndex();
                // selectedRow is selected
 			   cEditButton.setEnabled(true);
 			   cRemoveButton.setEnabled(true);
@@ -1134,17 +1143,13 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 
    private void setOptionAccess() {
 
-      Vector options = OptionAccessFactory.getInstance().getOptions();
+      List<String> options = OptionAccessFactory.getInstance().getOptions();
 
       // set up a hashtable of option descriptions to options
-      Hashtable ht = new Hashtable(options.size());
+      Hashtable<String, String> ht = new Hashtable<String,String>(options.size());
       for (int x = 0; x < options.size(); x++) {
          ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
       }
-
-      // get the sorted descriptions of the options
-      Vector descriptions = OptionAccessFactory.getInstance()
-            .getOptionDescriptions();
 
       Object[] restrict = accessOptions.getSelectedValues();
       String s = "";
@@ -1154,16 +1159,15 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       props.setProperty("emul.restricted", s);
    }
 
-   private void addLabelComponent(String text, Component comp,
-         Container container) {
-
-      JLabel label = new JLabel(text);
-      label.setAlignmentX(Component.LEFT_ALIGNMENT);
-      label.setHorizontalTextPosition(JLabel.LEFT);
-      container.add(label);
-      container.add(comp);
-
-   }
+//   private void addLabelComponent(String text, Component comp,
+//         Container container) {
+//
+//      JLabel label = new JLabel(text);
+//      label.setAlignmentX(Component.LEFT_ALIGNMENT);
+//      label.setHorizontalTextPosition(JLabel.LEFT);
+//      container.add(label);
+//      container.add(comp);
+//   }
 
    private void removeEntry() {
       int selectedRow = rowSM.getMinSelectionIndex();
@@ -1176,7 +1180,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 	  String propKey = (String)etm.getValueAt(selectedRow, 0);
 	  int num=0;
       
-	  for (Enumeration e = etnProps.keys() ; e.hasMoreElements() ;) {
+	  for (Enumeration<Object> e = etnProps.keys() ; e.hasMoreElements() ;) {
 		 String key = (String)e.nextElement();
 		 if(etnProps.getProperty(key) == propKey){
 			 String subKey = key.substring(8);
@@ -1322,8 +1326,10 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
    // TODO: Provide the itemstatechanged for the intConsole checkbox
    }
 
-   public class CheckPasswordDocument extends PlainDocument {
-
+   private class CheckPasswordDocument extends PlainDocument {
+	
+	   private static final long serialVersionUID = 1L;
+	   
       public void insertString(int offs, String str, AttributeSet a)
             throws BadLocationException {
 
@@ -1339,14 +1345,16 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       }
    }
 
-   class ConfigureTableModel extends AbstractTableModel implements
+   private class ConfigureTableModel extends AbstractTableModel implements
          SortTableModel {
+	   
+	   private static final long serialVersionUID = 1L;
 
       final String[] cols = { LangTool.getString("conf.tableColA"),
             LangTool.getString("conf.tableColB"),
             LangTool.getString("conf.tableColC") };
 
-      Vector mySort = new Vector();
+      List<String> mySort = new ArrayList<String>();
       int sortedColumn = 0;
       boolean isAscending = true;
 
@@ -1357,9 +1365,8 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 
       private void resetSorted() {
 
-         Enumeration e = props.keys();
+         Enumeration<Object> e = props.keys();
          mySort.clear();
-         int x = 0;
          String ses = null;
          while (e.hasMoreElements()) {
             ses = (String) e.nextElement();
@@ -1373,10 +1380,8 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
       }
 
       public boolean isSortable(int col) {
-         if (col == 0)
-            return true;
-         else
-            return false;
+         if (col == 0) return true;
+         return false;
       }
 
       public void sortColumn(int col, boolean ascending) {
@@ -1422,11 +1427,10 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
          //    selection option of the main table to pass in the correct
          //    column number.
          if (col == 2) {
-            if (getPropValue(row, null).equals(
-                  props.getProperty("emul.default", "")))
-               return new Boolean(true);
-            else
-               return new Boolean(false);
+            if (getPropValue(row, null).equals(props.getProperty("emul.default", ""))) {
+            	return new Boolean(true);
+            }
+            return new Boolean(false);
          }
          return null;
 
@@ -1442,9 +1446,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
          if (col == 2) {
             return true;
          }
-         else {
-            return false;
-         }
+         return false;
       }
 
       /*
@@ -1453,25 +1455,20 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
        * then the default column would contain text ("true"/"false"),
        * rather than a check box.
        */
-      public Class getColumnClass(int c) {
+      public Class<?> getColumnClass(int c) {
          return getValueAt(0, c).getClass();
       }
 
       private String getPropValue(int row, String param) {
 
          String prop = "";
-         String[] args = new String[NUM_PARMS];
-         String ses = null;
+         String[] args = new String[TN5250jConstants.NUM_PARMS];
 
-         prop = (String) mySort.get(row);
+         prop = mySort.get(row);
 
-         if (param == null)
-            return prop;
-         else {
-            Configure.parseArgs(props.getProperty(prop), args);
-            if (param.equals("0"))
-               return args[0];
-         }
+         if (param == null) return prop;
+         Configure.parseArgs(props.getProperty(prop), args);
+         if (param.equals("0")) return args[0];
          return null;
       }
 
@@ -1541,14 +1538,15 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 		
 
    }
-   class CustomizedTableModel extends AbstractTableModel implements
+   private class CustomizedTableModel extends AbstractTableModel implements
    SortTableModel {
+	   private static final long serialVersionUID = 1L;
 
 	final String[] cols = { LangTool.getString("customized.name"),
 	      LangTool.getString("customized.window"),
 	      LangTool.getString("customized.unix") };
 	
-	Vector mySort = new Vector();
+	List<CustomizedExternalProgram> mySort = new ArrayList<CustomizedExternalProgram>();
 	int sortedColumn = 0;
 	boolean isAscending = true;
 	
@@ -1575,10 +1573,8 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 	}
 	
 	public boolean isSortable(int col) {
-	   if (col == 0)
-	      return true;
-	   else
-	      return false;
+	   if (col == 0) return true;
+	   return false;
 	}
 	
 	public void sortColumn(int col, boolean ascending) {
@@ -1608,7 +1604,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 	}
 	
 	public Object getValueAt(int row, int col) {
-		CustomizedExternalProgram c = (CustomizedExternalProgram)mySort.get(row);
+		CustomizedExternalProgram c = mySort.get(row);
 	   if (col == 0)
 	      return c.getName();
 	   if (col == 1)
@@ -1630,7 +1626,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 	 * then the default column would contain text ("true"/"false"),
 	 * rather than a check box.
 	 */
-	public Class getColumnClass(int c) {
+	public Class<?> getColumnClass(int c) {
 	   return getValueAt(0, c).getClass();
 	}
 		
@@ -1651,80 +1647,73 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
 	
 	}
 	
-   public class SessionComparator implements Comparator {
-      protected int index;
-      protected boolean ascending;
+	public class SessionComparator implements Comparator<Object> {
+		protected int index;
+		protected boolean ascending;
 
-      public SessionComparator(int index, boolean ascending) {
-         this.index = index;
-         this.ascending = ascending;
-      }
+		public SessionComparator(int index, boolean ascending) {
+			this.index = index;
+			this.ascending = ascending;
+		}
 
-      public int compare(Object one, Object two) {
+		public int compare(Object one, Object two) {
 
-         if (one instanceof String && two instanceof String) {
+			// Compare, if used for Strings
+			if (one instanceof String && two instanceof String) {
 
-            String s1 = one.toString();
-            String s2 = two.toString();
-            int result = 0;
+				String s1 = one.toString();
+				String s2 = two.toString();
+				int result = 0;
 
-            if (ascending)
-               result = s1.compareTo(s2);
-            else
-               result = s2.compareTo(s1);
+				if (ascending)
+					result = s1.compareTo(s2);
+				else
+					result = s2.compareTo(s1);
 
-            if (result < 0) {
-               return -1;
-            }
-            else if (result > 0) {
-               return 1;
-            }
-            else
-               return 0;
-         }
-         else {
+				if (result < 0) {
+					return -1;
+				} else if (result > 0) {
+					return 1;
+				} else
+					return 0;
+			} 
 
-            if (one instanceof Boolean && two instanceof Boolean) {
-               boolean bOne = ((Boolean) one).booleanValue();
-               boolean bTwo = ((Boolean) two).booleanValue();
+			// Compare, if used for Booleans
+			if (one instanceof Boolean && two instanceof Boolean) {
+				boolean bOne = ((Boolean) one).booleanValue();
+				boolean bTwo = ((Boolean) two).booleanValue();
 
-               if (ascending) {
-                  if (bOne == bTwo) {
-                     return 0;
-                  }
-                  else if (bOne) { // Define false < true
-                     return 1;
-                  }
-                  else {
-                     return -1;
-                  }
-               }
-               else {
-                  if (bOne == bTwo) {
-                     return 0;
-                  }
-                  else if (bTwo) { // Define false < true
-                     return 1;
-                  }
-                  else {
-                     return -1;
-                  }
-               }
-            }
-            else {
-               if (one instanceof Comparable && two instanceof Comparable) {
-                  Comparable cOne = (Comparable) one;
-                  Comparable cTwo = (Comparable) two;
-                  if (ascending) {
-                     return cOne.compareTo(cTwo);
-                  }
-                  else {
-                     return cTwo.compareTo(cOne);
-                  }
-               }
-            }
-            return 1;
-         }
-      }
-   }
+				if (ascending) {
+					if (bOne == bTwo) {
+						return 0;
+					} else if (bOne) { // Define false < true
+						return 1;
+					} else {
+						return -1;
+					}
+				}
+				
+				if (bOne == bTwo) {
+					return 0;
+				} else if (bTwo) { // Define false < true
+					return 1;
+				} else {
+					return -1;
+				}
+				
+			} 
+			
+			// Compare, if used for Compareables
+			if (one instanceof Comparable<?> && two instanceof Comparable<?>) {
+				Comparable<Object> cOne = (Comparable<Object>) one;
+				Comparable<Object> cTwo = (Comparable<Object>) two;
+				if (ascending) {
+					return cOne.compareTo(two);
+				} 
+				return cTwo.compareTo(cOne);
+			}
+			return 1;
+			
+		}
+	}
 }

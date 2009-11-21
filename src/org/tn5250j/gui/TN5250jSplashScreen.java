@@ -46,7 +46,8 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  */
 public class TN5250jSplashScreen extends Canvas {
 
-   protected Window dialog = null;
+   private static final long serialVersionUID = 1L;
+protected Window dialog = null;
    protected Frame f = null;
    protected Image image;
    private Image offScreenBuffer;

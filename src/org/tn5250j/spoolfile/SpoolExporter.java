@@ -43,7 +43,8 @@ import org.tn5250j.SessionGUI;
 
 public class SpoolExporter extends TN5250jFrame {
 
-   SpoolFilterPane filter;
+   private static final long serialVersionUID = 1L;
+SpoolFilterPane filter;
    // custom table model
    SpoolTableModel stm;
 
@@ -537,7 +538,9 @@ public class SpoolExporter extends TN5250jFrame {
 //      System.out.println(" column clicked to model " + spools.convertColumnIndexToModel(col));
 
       action = new AbstractAction(LangTool.getString("spool.optionView")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                System.out.println(row + " is selected ");
                spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                SwingUtilities.invokeLater(
@@ -553,7 +556,9 @@ public class SpoolExporter extends TN5250jFrame {
       jpm.add(action);
 
       action = new AbstractAction(LangTool.getString("spool.optionProps")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
 
                JOptionPane.showMessageDialog(null,"Not Available yet","Not yet",
                                     JOptionPane.WARNING_MESSAGE);
@@ -563,7 +568,9 @@ public class SpoolExporter extends TN5250jFrame {
 
       jpm.addSeparator();
       action = new AbstractAction(LangTool.getString("spool.optionExport")) {
-         public void actionPerformed(ActionEvent e) {
+         private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
             SpoolExportWizard sew = new SpoolExportWizard(getSpooledFile(row),
                                                             session);
             sew.setVisible(true);
@@ -578,7 +585,9 @@ public class SpoolExporter extends TN5250jFrame {
          case 3:
          case 6:
             action = new AbstractAction(LangTool.getString("spool.labelFilter")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   setFilter(row,col);
                }
             };
@@ -589,7 +598,9 @@ public class SpoolExporter extends TN5250jFrame {
       }
 
       action = new AbstractAction(LangTool.getString("spool.optionHold")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
 
                doSpoolStuff(getSpooledFile(row),e.getActionCommand());
 
@@ -598,7 +609,9 @@ public class SpoolExporter extends TN5250jFrame {
       jpm.add(action);
 
       action = new AbstractAction(LangTool.getString("spool.optionRelease")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
 
                doSpoolStuff(getSpooledFile(row),e.getActionCommand());
             }
@@ -607,7 +620,9 @@ public class SpoolExporter extends TN5250jFrame {
       jpm.add(action);
 
       action = new AbstractAction(LangTool.getString("spool.optionDelete")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
 
                doSpoolStuff(getSpooledFile(row),e.getActionCommand());
             }
@@ -771,7 +786,8 @@ public class SpoolExporter extends TN5250jFrame {
     */
    class SpoolTableModel extends DefaultSortTableModel implements PrintObjectListListener {
 
-      String[] cols;
+      private static final long serialVersionUID = 1L;
+	String[] cols;
       int[] colsSizes;
 
       final String colLayout = "Spool Name|100|Spool Number|90|Job Name|100|Job User|100|Job Number|90|Queue|200|User Data|100|Status|100|Total Pages|90|Current Page|90|Copies|90|Form Type|100|Priority|40|Creation Date/Time|175|Size|120";

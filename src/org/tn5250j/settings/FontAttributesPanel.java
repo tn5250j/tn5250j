@@ -34,7 +34,8 @@ import org.tn5250j.SessionConfig;
 
 public class FontAttributesPanel extends AttributesPanel {
 
-   JComboBox fontsList;
+   private static final long serialVersionUID = 1L;
+JComboBox fontsList;
    JCheckBox useAntialias;
    JTextField verticalScale;
    JTextField horizontalScale;

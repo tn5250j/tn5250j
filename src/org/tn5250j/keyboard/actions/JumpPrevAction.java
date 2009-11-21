@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class JumpPrevAction extends EmulatorAction implements TN5250jConstants {
 
-   public JumpPrevAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public JumpPrevAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_JUMP_PREV,
             KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN,KeyEvent.ALT_MASK),

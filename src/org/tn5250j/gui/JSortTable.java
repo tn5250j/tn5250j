@@ -20,7 +20,8 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 public class JSortTable extends JTable implements MouseListener {
-   protected int sortedColumnIndex = -1;
+   private static final long serialVersionUID = 1L;
+protected int sortedColumnIndex = -1;
    protected boolean sortedColumnAscending = true;
 
    public JSortTable() {

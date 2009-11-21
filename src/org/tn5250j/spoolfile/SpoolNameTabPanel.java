@@ -35,7 +35,8 @@ import org.tn5250j.gui.ToggleDocument;
 public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface,
                                                          ToggleDocumentListener {
 
-   JRadioButton all;
+   private static final long serialVersionUID = 1L;
+JRadioButton all;
    JRadioButton select;
    JTextField spoolName;
 

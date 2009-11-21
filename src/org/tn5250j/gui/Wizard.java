@@ -38,7 +38,8 @@ import org.tn5250j.event.WizardListener;
  */
 public class Wizard extends JPanel implements Serializable {
 
-   /** layout used */
+   private static final long serialVersionUID = 1L;
+/** layout used */
    protected CardLayout cardLayout;
    /** list of wizard listeners registered with the bean */
    transient protected Vector<WizardListener> listeners;

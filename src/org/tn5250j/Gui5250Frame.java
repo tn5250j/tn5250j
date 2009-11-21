@@ -349,8 +349,7 @@ public final class Gui5250Frame extends GUIViewInterface implements
          }
          return 0;
       }
-      else
-         return sessionPane.getTabCount();
+      return sessionPane.getTabCount();
    }
 
    /* (non-Javadoc)
@@ -367,11 +366,8 @@ public final class Gui5250Frame extends GUIViewInterface implements
          }
          return null;
       }
-      else {
-         if (sessionPane.getTabCount() <= 0)
-            return null;
-         return (SessionGUI)sessionPane.getComponentAt(index);
-      }
+      if (sessionPane.getTabCount() <= 0) return null;
+      return (SessionGUI)sessionPane.getComponentAt(index);
    }
 
    /* (non-Javadoc)

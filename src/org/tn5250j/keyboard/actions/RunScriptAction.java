@@ -39,7 +39,9 @@ import org.tn5250j.tools.Macronizer;
  */
 public class RunScriptAction extends EmulatorAction implements TN5250jConstants {
 
-   public RunScriptAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public RunScriptAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_RUN_SCRIPT,
             KeyStroke.getKeyStroke(KeyEvent.VK_R,KeyEvent.ALT_MASK),

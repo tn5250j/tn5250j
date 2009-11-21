@@ -31,7 +31,8 @@ import java.util.Hashtable;
 
 public class AlignLayout extends ENHGridLayout {
 
-   protected Hashtable alignment;
+   private static final long serialVersionUID = 1L;
+protected Hashtable alignment;
    protected Hashtable resize_width, resize_height;
    public static final int TOP = 1;
    public static final int MIDDLE = 4;

@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class CloseAction extends EmulatorAction implements TN5250jConstants {
 
-   public CloseAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public CloseAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_CLOSE,
             KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK),

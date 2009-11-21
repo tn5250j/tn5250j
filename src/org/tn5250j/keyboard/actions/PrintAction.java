@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class PrintAction extends EmulatorAction implements TN5250jConstants {
 
-   public PrintAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public PrintAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_PRINT_SCREEN,
             KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK),

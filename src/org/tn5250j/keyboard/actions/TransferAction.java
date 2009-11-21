@@ -41,7 +41,9 @@ import org.tn5250j.tools.XTFRFile;
  */
 public class TransferAction extends EmulatorAction implements TN5250jConstants {
 
-   public TransferAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public TransferAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_FILE_TRANSFER,
             KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK),

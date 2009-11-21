@@ -20,7 +20,9 @@ import javax.swing.table.*;
 public class DefaultSortTableModel  extends DefaultTableModel
                                     implements SortTableModel {
 
-   public DefaultSortTableModel() {}
+   private static final long serialVersionUID = 1L;
+
+public DefaultSortTableModel() {}
 
    public DefaultSortTableModel(int rows, int cols) {
       super(rows, cols);

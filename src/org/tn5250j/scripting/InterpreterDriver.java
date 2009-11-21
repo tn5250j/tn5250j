@@ -60,7 +60,8 @@ public interface InterpreterDriver  {
    * interpreter while executing scripts
    */
    public static class InterpreterException extends Exception {
-      private Exception _underlyingException;
+      private static final long serialVersionUID = 1L;
+	private Exception _underlyingException;
 
    /**
     * Construct a wrapper exception for given undelying exception.

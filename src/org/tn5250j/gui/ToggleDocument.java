@@ -29,7 +29,8 @@ import org.tn5250j.event.ToggleDocumentListener;
 
 public class ToggleDocument extends PlainDocument {
 
-   Vector<ToggleDocumentListener> listeners;
+   private static final long serialVersionUID = 1L;
+Vector<ToggleDocumentListener> listeners;
 
    public void insertString(int offs, String str, AttributeSet a)
                                                 throws BadLocationException {

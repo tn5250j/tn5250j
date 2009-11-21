@@ -37,7 +37,8 @@ import org.tn5250j.SessionConfig;
 
 public class ColorAttributesPanel extends AttributesPanel {
 
-   JComboBox colorSchemaList;
+   private static final long serialVersionUID = 1L;
+JComboBox colorSchemaList;
    JComboBox colorList;
    JColorChooser jcc;
    Schema colorSchema;

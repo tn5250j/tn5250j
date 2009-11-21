@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class ToggleConnectionAction extends EmulatorAction implements TN5250jConstants {
 
-   public ToggleConnectionAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public ToggleConnectionAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_TOGGLE_CONNECTION,
             KeyStroke.getKeyStroke(KeyEvent.VK_X,KeyEvent.ALT_MASK),

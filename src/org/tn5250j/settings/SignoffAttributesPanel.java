@@ -35,7 +35,8 @@ import org.tn5250j.SessionConfig;
 
 public class SignoffAttributesPanel extends AttributesPanel {
 
-   JCheckBox signoffCheck;
+   private static final long serialVersionUID = 1L;
+JCheckBox signoffCheck;
    JTextField fromRow;
    JTextField fromCol;
    JTextField toRow;

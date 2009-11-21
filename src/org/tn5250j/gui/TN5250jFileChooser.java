@@ -38,7 +38,9 @@ import java.awt.Dimension;
  */
 public class TN5250jFileChooser extends JFileChooser {
 
-   static {
+   private static final long serialVersionUID = 1L;
+
+static {
       doTranslation();
    }
 

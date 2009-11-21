@@ -48,7 +48,7 @@ public abstract class OptionAccessFactory {
         String  className = System.getProperty(OptionAccessFactory.class.getName());
         if (className != null)
         {
-          Class classObject = Class.forName(className);
+          Class<?> classObject = Class.forName(className);
           Object  object = classObject.newInstance();
           if (object instanceof OptionAccessFactory)
           {
@@ -67,8 +67,8 @@ public abstract class OptionAccessFactory {
     }
   }
 
-   abstract public Vector getOptions();
-   abstract public Vector getOptionDescriptions();
+   abstract public Vector<String> getOptions();
+   abstract public Vector<String> getOptionDescriptions();
    abstract public boolean isValidOption(String option);
    abstract public boolean isRestrictedOption(String option);
    abstract public int getNumberOfRestrictedOptions();

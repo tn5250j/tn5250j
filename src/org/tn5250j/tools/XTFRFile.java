@@ -54,6 +54,7 @@ public class XTFRFile
 	extends TN5250jFrame
 	implements ActionListener, FTPStatusListener, ItemListener {
 
+	private static final long serialVersionUID = 1L;
 	FTP5250Prot ftpProtocol;
 	AS400Xtfr axtfr;
 
@@ -1195,6 +1196,7 @@ public class XTFRFile
 	 */
 	class FFDTableModel extends AbstractTableModel {
 
+		private static final long serialVersionUID = 1L;
 		final String[] cols =
 			{
 				LangTool.getString("xtfr.tableColA"),
@@ -1258,6 +1260,8 @@ public class XTFRFile
 	 * Create a option pane to show status of the transfer
 	 */
 	private class ProgressOptionPane extends JOptionPane {
+
+		private static final long serialVersionUID = 1L;
 
 		ProgressOptionPane(Object messageList) {
 

@@ -20,7 +20,8 @@ import javax.swing.table.*;
 
 public class SortHeaderRenderer extends DefaultTableCellRenderer {
 
-   public static Icon NONSORTED =  new SortArrowIcon(SortArrowIcon.NONE);
+   private static final long serialVersionUID = 1L;
+public static Icon NONSORTED =  new SortArrowIcon(SortArrowIcon.NONE);
    public static Icon ASCENDING =  new SortArrowIcon(SortArrowIcon.ASCENDING);
    public static Icon DECENDING =  new SortArrowIcon(SortArrowIcon.DECENDING);
 

@@ -38,7 +38,8 @@ import org.tn5250j.tools.LangTool;
  */
 public class WizardPage extends JPanel {
 
-   static public final int NO_BUTTONS = 0x00;
+   private static final long serialVersionUID = 1L;
+static public final int NO_BUTTONS = 0x00;
    static public final int PREVIOUS   = 0x01;
    static public final int NEXT       = 0x02;
    static public final int FINISH     = 0x04;
@@ -109,7 +110,9 @@ public class WizardPage extends JPanel {
 
       if ((button_flags & PREVIOUS) != 0) {
          previousAction = new AbstractAction(LangTool.getString("wiz.previous")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                }
            };
 
@@ -120,7 +123,9 @@ public class WizardPage extends JPanel {
 
       if ((button_flags & NEXT) != 0) {
          nextAction = new AbstractAction(LangTool.getString("wiz.next")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                }
            };
 
@@ -131,7 +136,9 @@ public class WizardPage extends JPanel {
 
       if ((button_flags & FINISH) != 0) {
          finishAction = new AbstractAction(LangTool.getString("wiz.finish")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                }
            };
          finishButton = new JButton(finishAction);
@@ -141,7 +148,9 @@ public class WizardPage extends JPanel {
 
       if ((button_flags & CANCEL) != 0) {
          cancelAction = new AbstractAction(LangTool.getString("wiz.cancel")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                }
            };
 
@@ -152,7 +161,9 @@ public class WizardPage extends JPanel {
       }
       if ((button_flags & HELP) != 0) {
          helpAction = new AbstractAction(LangTool.getString("wiz.help")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                }
            };
 

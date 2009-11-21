@@ -39,7 +39,8 @@ import java.awt.Insets;
  */
 public class FixedCenterLayout implements LayoutManager2, Serializable {
 
-    protected int hgap;
+    private static final long serialVersionUID = 1L;
+	protected int hgap;
     protected Component west;
     protected Component east;
     protected Component center;

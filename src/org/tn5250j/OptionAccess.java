@@ -25,7 +25,9 @@
  */
 package org.tn5250j;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -49,7 +51,7 @@ public class OptionAccess extends OptionAccessFactory implements TN5250jConstant
    /**
     * A handle to non valid options.
     */
-   static private Vector restricted = new Vector();
+   static private List<String> restricted = new ArrayList<String>();
 
    /**
     * The constructor is made protected to allow overriding.
@@ -96,7 +98,6 @@ public class OptionAccess extends OptionAccessFactory implements TN5250jConstant
 				ConfigureFactory.SESSIONS).getProperty("emul.restricted");
 
       if (restrictedProp != null) {
-         int x = 0;
          StringTokenizer tokenizer = new StringTokenizer(restrictedProp, ";");
          while (tokenizer.hasMoreTokens()) {
             restricted.add(tokenizer.nextToken());
@@ -105,9 +106,9 @@ public class OptionAccess extends OptionAccessFactory implements TN5250jConstant
 
    }
 
-   public Vector getOptions() {
+   public Vector<String> getOptions() {
 
-      Vector v = new Vector(mnemonicData.length);
+      Vector<String> v = new Vector<String>(mnemonicData.length);
       for (int x = 0; x < mnemonicData.length; x++) {
          v.add(mnemonicData[x]);
       }
@@ -117,9 +118,9 @@ public class OptionAccess extends OptionAccessFactory implements TN5250jConstant
       return v;
    }
 
-   public Vector getOptionDescriptions() {
+   public Vector<String> getOptionDescriptions() {
 
-      Vector v = new Vector(mnemonicData.length);
+      Vector<String> v = new Vector<String>(mnemonicData.length);
       for (int x = 0; x < mnemonicData.length; x++) {
          v.add(LangTool.getString("key."+mnemonicData[x]));
       }

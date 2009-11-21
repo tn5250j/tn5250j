@@ -33,7 +33,8 @@ import org.tn5250j.SessionConfig;
 
 public class MouseAttributesPanel extends AttributesPanel {
 
-   JCheckBox dceCheck;
+   private static final long serialVersionUID = 1L;
+JCheckBox dceCheck;
    JCheckBox mwCheck;
 
    public MouseAttributesPanel(SessionConfig config ) {
