@@ -27,11 +27,9 @@
 
 package org.tn5250j;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Locale;
-import java.util.Properties;
+import static org.tn5250j.TN5250jConstants.*;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -40,12 +38,16 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Locale;
+import java.util.Properties;
+
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.Border;
-
-import org.tn5250j.Session5250;
+import javax.swing.plaf.ComponentUI;
 
 
 public class SessionBean extends SessionGUI {
