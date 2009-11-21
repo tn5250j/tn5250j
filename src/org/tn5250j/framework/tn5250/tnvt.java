@@ -23,6 +23,8 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import static org.tn5250j.TN5250jConstants.*;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +47,7 @@ import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public final class tnvt implements Runnable, TN5250jConstants {
+public final class tnvt implements Runnable {
 
 	Socket sock;
 	BufferedInputStream bin;
