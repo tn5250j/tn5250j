@@ -30,7 +30,7 @@ import org.tn5250j.framework.tn5250.Screen5250;
 /**
  * A host GUI session
  */
-public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConstants {
+public class SessionGUI extends Gui5250 implements SessionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -136,7 +136,7 @@ public class SessionGUI extends Gui5250 implements SessionListener,TN5250jConsta
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
       switch (changeEvent.getState()) {
-         case STATE_CONNECTED:
+         case TN5250jConstants.STATE_CONNECTED:
             // first we check for the signon save or now
             if (!firstScreen) {
                firstScreen = true;

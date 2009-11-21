@@ -90,13 +90,13 @@ public class X509CertificateTrustManager implements X509TrustManager {
   }
 
   public X509Certificate[] getAcceptedIssuers() {
-  	ArrayList list = new ArrayList(10);
+  	ArrayList<X509Certificate> list = new ArrayList<X509Certificate>(10);
 	for (int i=0; i<trustManagers.length; i++) {
 		if (trustManagers[i] instanceof X509TrustManager)
 			list.addAll(Arrays.asList(((X509TrustManager)trustManagers[i]).getAcceptedIssuers()));
 	}
 	X509Certificate[] acceptedIssuers = new X509Certificate[list.size()];
-	acceptedIssuers = (X509Certificate[])list.toArray(acceptedIssuers);
+	acceptedIssuers = list.toArray(acceptedIssuers);
     return acceptedIssuers;
   }
 }

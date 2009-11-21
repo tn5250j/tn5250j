@@ -34,10 +34,9 @@ import org.tn5250j.framework.tn5250.Screen5250;
  * Session Scroller to allow the use of the mouse wheel to move the list on the
  * screen up and down.
  */
-public class SessionScroller14 implements SessionScrollerInterface,
-                                             MouseWheelListener,TN5250jConstants {
+public class SessionScroller14 implements SessionScrollerInterface, MouseWheelListener {
 
-   Screen5250 screen;
+   private Screen5250 screen;
 
 	public SessionScroller14(SessionGUI ses) {
 
@@ -63,11 +62,11 @@ public class SessionScroller14 implements SessionScrollerInterface,
        if (notches < 0) {
 //           message = "Mouse wheel moved UP "
 //                        + -notches + " notch(es)" + newline;
-            screen.sendKeys(MNEMONIC_PAGE_UP);
+            screen.sendKeys(TN5250jConstants.MNEMONIC_PAGE_UP);
        } else {
 //           message = "Mouse wheel moved DOWN "
 //                        + notches + " notch(es)" + newline;
-            screen.sendKeys(MNEMONIC_PAGE_DOWN);
+            screen.sendKeys(TN5250jConstants.MNEMONIC_PAGE_DOWN);
        }
 //          if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
 //              message += "    Scroll type: WHEEL_UNIT_SCROLL" + newline;
