@@ -31,7 +31,9 @@ import java.beans.PropertyChangeEvent;
 public class SessionConfigEvent extends PropertyChangeEvent {
 
 
-   /**
+   private static final long serialVersionUID = 1L;
+
+/**
    * Constructs a new <code>SessionConfigChangeEvent</code>.
    *
    * @param source  The bean that fired the event.

@@ -33,7 +33,8 @@ import org.tn5250j.SessionConfig;
 
 public class CursorAttributesPanel extends AttributesPanel {
 
-   JRadioButton cFull;
+   private static final long serialVersionUID = 1L;
+JRadioButton cFull;
    JRadioButton cHalf;
    JRadioButton cLine;
    JRadioButton chNone;

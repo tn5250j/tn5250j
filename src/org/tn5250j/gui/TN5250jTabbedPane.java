@@ -49,7 +49,8 @@ import org.tn5250j.event.TabClosedListener;
 public class TN5250jTabbedPane extends JTabbedPane implements MouseListener,
       MouseWheelListener, MouseMotionListener {
 
-   // the currectly drawn tab that an X is drawn on
+   private static final long serialVersionUID = 1L;
+// the currectly drawn tab that an X is drawn on
    private int tabNumber;
    // the region that the X is drawn in the tab
    private Rectangle closeRect;

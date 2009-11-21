@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class DebugAction extends EmulatorAction implements TN5250jConstants {
 
-   public DebugAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public DebugAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_DEBUG,
             KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK),

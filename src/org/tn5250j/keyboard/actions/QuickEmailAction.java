@@ -41,7 +41,9 @@ import org.tn5250j.mailtools.SendEMailDialog;
  */
 public class QuickEmailAction extends EmulatorAction implements TN5250jConstants {
 
-   public QuickEmailAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public QuickEmailAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_QUICK_MAIL,
             KeyStroke.getKeyStroke(KeyEvent.VK_F,KeyEvent.ALT_MASK),

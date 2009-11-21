@@ -42,7 +42,8 @@ import org.tn5250j.tools.system.OperatingSystem;
 
 public class SqlWizard extends JFrame {
 
-   private SQLConnection connection;
+   private static final long serialVersionUID = 1L;
+private SQLConnection connection;
    private AS400 system;
    private SQLQueryBuilderPane queryBuilder;
    private SQLResultSetTablePane tablePane;

@@ -5,7 +5,8 @@ import java.awt.Toolkit;
 import java.text.*;
 
 public class FormattedDocument extends PlainDocument {
-    private Format format;
+    private static final long serialVersionUID = 1L;
+	private Format format;
 
     public FormattedDocument(Format f) {
         format = f;

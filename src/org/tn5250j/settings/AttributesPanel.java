@@ -37,7 +37,8 @@ import org.tn5250j.SessionConfig;
  */
 public abstract class AttributesPanel extends JPanel {
 
-   Properties props;
+   private static final long serialVersionUID = 1L;
+Properties props;
    Properties schemaProps;
    static final String nodePrefix = "sa.node";
    String name;

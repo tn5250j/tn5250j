@@ -45,7 +45,8 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
                                                     SessionListener,
                                                     SessionJumpListener {
 
-   BorderLayout borderLayout1 = new BorderLayout();
+   private static final long serialVersionUID = 1L;
+BorderLayout borderLayout1 = new BorderLayout();
    JSplitPane sessionPane;
    private SessionManager manager;
    private int selectedIndex = 0;
@@ -350,7 +351,9 @@ public class Gui5250SplitFrame extends GUIViewInterface implements
    class SessionRenderer extends JLabel
                        implements ListCellRenderer {
 
-      public SessionRenderer() {
+      private static final long serialVersionUID = 1L;
+
+	public SessionRenderer() {
          setOpaque(true);
          setHorizontalAlignment(LEFT);
          setVerticalAlignment(CENTER);

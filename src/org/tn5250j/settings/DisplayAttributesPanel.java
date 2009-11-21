@@ -34,6 +34,7 @@ import org.tn5250j.SessionConfig;
 
 public class DisplayAttributesPanel extends AttributesPanel {
 
+	private static final long serialVersionUID = 1L;
 	JRadioButton csHide;
 	JRadioButton csLine;
 	JRadioButton csDot;

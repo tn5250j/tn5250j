@@ -30,7 +30,9 @@ import javax.swing.*;
 
 public class TN5250jFontsSelection extends JComboBox {
 
-   public TN5250jFontsSelection() {
+   private static final long serialVersionUID = 1L;
+
+public TN5250jFontsSelection() {
       super();
       // fonts
       Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();

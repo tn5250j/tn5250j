@@ -420,7 +420,9 @@ public class Configure implements TN5250jConstants {
 
       if (propKey2 == null) {
          Action add = new AbstractAction(LangTool.getString("conf.optAdd")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                doConfigureAction(propKey2);
             }
          };
@@ -430,7 +432,9 @@ public class Configure implements TN5250jConstants {
       }
       else {
          Action edit = new AbstractAction(LangTool.getString("conf.optEdit")) {
-            public void actionPerformed(ActionEvent e) {
+            private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                doConfigureAction(propKey2);
             }
          };
@@ -439,7 +443,9 @@ public class Configure implements TN5250jConstants {
       }
 
       Action cancel = new AbstractAction(LangTool.getString("conf.optCancel")) {
-         public void actionPerformed(ActionEvent e) {
+         private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
             dialog.dispose();
          }
       };
@@ -656,7 +662,9 @@ public class Configure implements TN5250jConstants {
 
    public static class SomethingEnteredDocument extends PlainDocument {
 
-      public void insertString(int offs, String str, AttributeSet a)
+      private static final long serialVersionUID = 1L;
+
+	public void insertString(int offs, String str, AttributeSet a)
                                                    throws BadLocationException {
 
          super.insertString(offs, str, a);

@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class NewSessionAction extends EmulatorAction implements TN5250jConstants {
 
-   public NewSessionAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public NewSessionAction(SessionGUI session, KeyMapper keyMap) {
       super(session,MNEMONIC_OPEN_NEW,
             KeyStroke.getKeyStroke(KeyEvent.VK_N,KeyEvent.ALT_MASK),
             keyMap);

@@ -33,7 +33,8 @@ import org.tn5250j.SessionConfig;
 
 public class ErrorResetAttributesPanel extends AttributesPanel {
 
-   JCheckBox resetRequired;
+   private static final long serialVersionUID = 1L;
+JCheckBox resetRequired;
    JCheckBox backspaceError;
 
    public ErrorResetAttributesPanel(SessionConfig config ) {

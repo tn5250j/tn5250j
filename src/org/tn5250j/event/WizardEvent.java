@@ -27,7 +27,8 @@ import java.awt.Component;
  */
 public class WizardEvent extends java.util.EventObject {
 
-   protected Component currentPage;
+   private static final long serialVersionUID = 1L;
+protected Component currentPage;
    protected Component newPage;
    protected boolean isLastPage;
    protected boolean allowChange;

@@ -33,7 +33,8 @@ import org.tn5250j.SessionConfig;
 
 public class KeypadAttributesPanel extends AttributesPanel {
 
-   JCheckBox kpCheck;
+   private static final long serialVersionUID = 1L;
+JCheckBox kpCheck;
 
    public KeypadAttributesPanel(SessionConfig config ) {
       super(config,"KP");

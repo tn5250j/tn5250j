@@ -36,7 +36,8 @@ import org.tn5250j.gui.*;
 
 public class PrinterAttributesPanel extends AttributesPanel {
 
-   JCheckBox defaultPrinter;
+   private static final long serialVersionUID = 1L;
+JCheckBox defaultPrinter;
    JButton setPortAttributes;
    JButton setLandAttributes;
    Paper pappyPort;

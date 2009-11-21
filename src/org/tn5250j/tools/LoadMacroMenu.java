@@ -68,7 +68,9 @@ public final class LoadMacroMenu {
 
       for (int x = 0; x < mv.size(); x++) {
          action = new AbstractAction((String)mv.get(x)) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   ses.executeMacro(e);
                }
            };
@@ -127,7 +129,9 @@ public final class LoadMacroMenu {
       JPopupMenu j = new JPopupMenu("Macro Options");
       action = new AbstractAction(LangTool.getString("popup.delete")
                      + " " + ((JMenuItem)e.getSource()).getText()) {
-         public void actionPerformed(ActionEvent e) {
+         private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
             StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
             macro.delete(0,LangTool.getString("popup.delete").length()+1);
             Macronizer.removeMacroByName(macro.toString());
@@ -139,7 +143,9 @@ public final class LoadMacroMenu {
       final SessionGUI ses = session;
       action = new AbstractAction(LangTool.getString("popup.execute")
                      + " " + ((JMenuItem)e.getSource()).getText()) {
-         public void actionPerformed(ActionEvent e) {
+         private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
             StringBuffer macro = new StringBuffer(((JMenuItem)e.getSource()).getText());
             macro.delete(0,LangTool.getString("popup.execute").length()+1);
             Macronizer.invoke(macro.toString(),ses);
@@ -217,6 +223,8 @@ public final class LoadMacroMenu {
 						}
 						action = new ExecuteScriptAction(fn, file
 								.getAbsolutePath(), session) {
+
+									private static final long serialVersionUID = 1L;
 						};
 						vector.addElement(action);
 					}

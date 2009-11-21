@@ -32,7 +32,9 @@ package org.tn5250j.tools.encoder;
  * The message is used to state the type of error.
 */
 public class EncoderException extends Exception {
-   /**
+   private static final long serialVersionUID = 1L;
+
+/**
     * Creates an exception with the given message.
     */
    public EncoderException(String msg) {

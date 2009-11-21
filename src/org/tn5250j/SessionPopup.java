@@ -97,7 +97,9 @@ public class SessionPopup {
 
       if (!session.rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
          action = new AbstractAction(LangTool.getString("popup.copy")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   screen.copyField(pos);
                   session.getFocusForMe();
                }
@@ -107,7 +109,9 @@ public class SessionPopup {
 
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   screen.pasteMe(false);
                   session.getFocusForMe();
                }
@@ -115,7 +119,9 @@ public class SessionPopup {
          popup.add(createMenuItem(action,MNEMONIC_PASTE));
 
          action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   screen.pasteMe(true);
                   session.getFocusForMe();
                }
@@ -127,7 +133,9 @@ public class SessionPopup {
       else {
 
          action = new AbstractAction(LangTool.getString("popup.copy")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   session.actionCopy();
                   session.getFocusForMe();
                }
@@ -136,7 +144,9 @@ public class SessionPopup {
          popup.add(createMenuItem(action,MNEMONIC_COPY));
 
          action = new AbstractAction(LangTool.getString("popup.paste")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   screen.pasteMe(false);
                   session.getFocusForMe();
                }
@@ -144,7 +154,9 @@ public class SessionPopup {
          popup.add(createMenuItem(action,MNEMONIC_PASTE));
 
          action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   screen.pasteMe(true);
                   session.getFocusForMe();
                }
@@ -173,14 +185,18 @@ public class SessionPopup {
             popup.add(sumMenu);
 
             action = new AbstractAction(LangTool.getString("popup.calcGroupCD")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   sumArea(true);
                }
             };
             sumMenu.add(action);
 
             action = new AbstractAction(LangTool.getString("popup.calcGroupDC")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   sumArea(false);
                }
             };
@@ -191,7 +207,9 @@ public class SessionPopup {
          popup.addSeparator();
 
          action = new AbstractAction(LangTool.getString("popup.printScreen")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   session.printMe();
                   session.getFocusForMe();
                }
@@ -205,7 +223,9 @@ public class SessionPopup {
          popup.add(kbMenu);
 
          action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
 
                   mapMeKeys();
                }
@@ -225,7 +245,9 @@ public class SessionPopup {
                OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
 
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      vt.systemRequest('4');
                   }
               };
@@ -249,7 +271,9 @@ public class SessionPopup {
 
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_PRINT)) {
             action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      vt.hostPrint(1);
                   }
               };
@@ -262,7 +286,9 @@ public class SessionPopup {
             OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
 
             action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      vt.systemRequest('4');
                   }
               };
@@ -272,7 +298,9 @@ public class SessionPopup {
          popup.addSeparator();
 
          action = new AbstractAction(LangTool.getString("popup.hexMap")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   showHexMap();
                   session.getFocusForMe();
                }
@@ -280,7 +308,9 @@ public class SessionPopup {
          popup.add(createMenuItem(action,""));
 
          action = new AbstractAction(LangTool.getString("popup.mapKeys")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
 
                   mapMeKeys();
                   session.getFocusForMe();
@@ -291,7 +321,9 @@ public class SessionPopup {
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_ATTRIBUTES)) {
 
             action = new AbstractAction(LangTool.getString("popup.settings")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      session.actionAttributes();
                     session.getFocusForMe();
                   }
@@ -304,7 +336,9 @@ public class SessionPopup {
 
          if (session.isMacroRunning()) {
             action = new AbstractAction(LangTool.getString("popup.stopScript")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      session.setStopMacroRequested();
                   }
               };
@@ -316,7 +350,9 @@ public class SessionPopup {
 
             if (session.isSessionRecording()) {
                action = new AbstractAction(LangTool.getString("popup.stop")) {
-                     public void actionPerformed(ActionEvent e) {
+                     private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
                         session.stopRecordingMe();
                         session.getFocusForMe();
                      }
@@ -325,7 +361,9 @@ public class SessionPopup {
             }
             else {
                action = new AbstractAction(LangTool.getString("popup.record")) {
-                     public void actionPerformed(ActionEvent e) {
+                     private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
                         session.startRecordingMe();
                         session.getFocusForMe();
 
@@ -347,7 +385,9 @@ public class SessionPopup {
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_FILE_TRANSFER)) {
 
             action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      doMeTransfer();
                      session.getFocusForMe();
                   }
@@ -359,7 +399,9 @@ public class SessionPopup {
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_SPOOL_FILE)) {
 
             action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      doMeSpool();
                      session.getFocusForMe();
                   }
@@ -376,7 +418,9 @@ public class SessionPopup {
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_QUICK_MAIL)) {
 
             action = new AbstractAction(LangTool.getString("popup.quickmail")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                     sendQuickEMail();
                     session.getFocusForMe();
                   }
@@ -387,7 +431,9 @@ public class SessionPopup {
          if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_E_MAIL)) {
 
             action = new AbstractAction(LangTool.getString("popup.email")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      sendScreenEMail();
                      session.getFocusForMe();
                   }
@@ -397,7 +443,9 @@ public class SessionPopup {
          }
 
          action = new AbstractAction(LangTool.getString("popup.file")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   sendMeToFile();
                }
            };
@@ -405,7 +453,9 @@ public class SessionPopup {
          sendMenu.add(action);
 
          action = new AbstractAction(LangTool.getString("popup.toImage")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   sendMeToImageFile();
                }
            };
@@ -419,7 +469,9 @@ public class SessionPopup {
       if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_OPEN_NEW)) {
 
          action = new AbstractAction(LangTool.getString("popup.connections")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   session.startNewSession();
                }
            };
@@ -433,7 +485,9 @@ public class SessionPopup {
 
          if (vt.isConnected()) {
             action = new AbstractAction(LangTool.getString("popup.disconnect")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      changeConnection();
                      session.getFocusForMe();
                   }
@@ -442,7 +496,9 @@ public class SessionPopup {
          else {
 
             action = new AbstractAction(LangTool.getString("popup.connect")) {
-                  public void actionPerformed(ActionEvent e) {
+                  private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
                      changeConnection();
                     session.getFocusForMe();
                   }
@@ -457,7 +513,9 @@ public class SessionPopup {
       if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_CLOSE)) {
 
          action = new AbstractAction(LangTool.getString("popup.close")) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   session.closeSession();
                }
            };
@@ -476,7 +534,9 @@ public class SessionPopup {
       if (OptionAccessFactory.getInstance().isValidOption(key)) {
          final String key2 = key;
          Action action = new AbstractAction(LangTool.getString("key." + key)) {
-               public void actionPerformed(ActionEvent e) {
+               private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
                   screen.sendKeys(key2);
                }
            };

@@ -40,7 +40,9 @@ import java.awt.Insets;
  */
 public class ENHGridLayout extends GridLayout {
 
-   /** The horiztonal gap between items. */
+   private static final long serialVersionUID = 1L;
+
+/** The horiztonal gap between items. */
    protected int hgap;
 
    /** The vertical gap between items. */

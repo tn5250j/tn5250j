@@ -40,7 +40,8 @@ import org.tn5250j.settings.*;
 
 public class SessionAttributes extends JDialog {
 
-   String fileName;
+   private static final long serialVersionUID = 1L;
+String fileName;
    Properties props = null;
    JPanel jpm = new JPanel(new BorderLayout());
 

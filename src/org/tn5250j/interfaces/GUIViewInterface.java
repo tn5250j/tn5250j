@@ -31,7 +31,8 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 
 public abstract class GUIViewInterface extends TN5250jFrame {
 
-   protected static My5250 me;
+   private static final long serialVersionUID = 1L;
+protected static My5250 me;
    protected static int sequence;
    protected int frameSeq;
    protected ImageIcon focused = null;

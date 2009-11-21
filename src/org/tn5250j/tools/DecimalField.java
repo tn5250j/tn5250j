@@ -6,7 +6,8 @@ import java.awt.Toolkit;
 import java.text.*;
 
 public class DecimalField extends JTextField {
-    private NumberFormat format;
+    private static final long serialVersionUID = 1L;
+	private NumberFormat format;
 
     public DecimalField(double value, int columns, NumberFormat f) {
         super(columns);

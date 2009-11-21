@@ -4,7 +4,8 @@ import java.util.EventObject;
 
 public class FTPStatusEvent extends EventObject {
 
-   public FTPStatusEvent(Object obj){
+   private static final long serialVersionUID = 1L;
+public FTPStatusEvent(Object obj){
       super(obj);
    }
 

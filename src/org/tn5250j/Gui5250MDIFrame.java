@@ -47,7 +47,8 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
                                                     SessionListener,
                                                     SessionJumpListener {
 
-   BorderLayout borderLayout1 = new BorderLayout();
+   private static final long serialVersionUID = 1L;
+BorderLayout borderLayout1 = new BorderLayout();
 //   My5250 me;
 //   private SessionManager manager;
    private ImageIcon focused = null;
@@ -432,7 +433,8 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
 
    public class MyInternalFrame extends JInternalFrame {
 
-      static final int xOffset = 30, yOffset = 30;
+      private static final long serialVersionUID = 1L;
+	static final int xOffset = 30, yOffset = 30;
       private int internalId = 0;
       private boolean activated;
 
@@ -562,7 +564,8 @@ public class Gui5250MDIFrame extends GUIViewInterface implements
    // A DesktopManager that keeps its frames inside the desktop.
      public class MyDesktopMgr extends DefaultDesktopManager {
 
-       // We'll tag internal frames that are being resized using a client
+       private static final long serialVersionUID = 1L;
+	// We'll tag internal frames that are being resized using a client
        // property with the name RESIZING.  Used in setBoundsForFrame().
        protected static final String RESIZING = "RESIZING";
 

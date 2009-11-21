@@ -29,7 +29,8 @@ import javax.swing.JTabbedPane;
 
 public class SpoolFilterPane extends JTabbedPane {
 
-   private UserTabPanel user;
+   private static final long serialVersionUID = 1L;
+private UserTabPanel user;
    private OutputQueueTabPanel queue;
 //   private JobTabPanel job;
    private SpoolNameTabPanel spoolName;

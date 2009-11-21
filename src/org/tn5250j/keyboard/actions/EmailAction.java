@@ -38,7 +38,9 @@ import org.tn5250j.keyboard.KeyMapper;
  */
 public class EmailAction extends EmulatorAction implements TN5250jConstants {
 
-   public EmailAction(SessionGUI session, KeyMapper keyMap) {
+   private static final long serialVersionUID = 1L;
+
+public EmailAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
             MNEMONIC_E_MAIL,
             KeyStroke.getKeyStroke(KeyEvent.VK_E,KeyEvent.ALT_MASK),
