@@ -25,16 +25,38 @@
  */
 package org.tn5250j;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
-import org.tn5250j.tools.*;
-import org.tn5250j.encoding.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
-public class Configure implements TN5250jConstants {
+import org.tn5250j.encoding.CharMappings;
+import org.tn5250j.tools.AlignLayout;
+import org.tn5250j.tools.LangTool;
+
+public class Configure {
 
    static Properties props = null;
 
@@ -101,8 +123,8 @@ public class Configure implements TN5250jConstants {
 
       sslType = new JComboBox();
 
-      for (int x = 0; x < SSL_TYPES.length; x++) {
-         sslType.addItem(SSL_TYPES[x]);
+      for (int x = 0; x < TN5250jConstants.SSL_TYPES.length; x++) {
+         sslType.addItem(TN5250jConstants.SSL_TYPES[x]);
       }
 
       if (propKey == null) {
@@ -602,7 +624,7 @@ public class Configure implements TN5250jConstants {
                cpb.getSelectedItem()))
          sb.append(" -cp " + (String)cpb.getSelectedItem());
 
-      if (!SSL_TYPE_NONE.equals(sslType.getSelectedItem()))
+      if (!TN5250jConstants.SSL_TYPE_NONE.equals(sslType.getSelectedItem()))
          sb.append(" -sslType " + (String)sslType.getSelectedItem());
 
       if (ec.isSelected())

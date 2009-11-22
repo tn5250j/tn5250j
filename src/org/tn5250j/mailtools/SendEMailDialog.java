@@ -52,15 +52,15 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGUI;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog extends GenericTn5250JFrame implements TN5250jConstants,Runnable  {
+public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -164,9 +164,9 @@ public class SendEMailDialog extends GenericTn5250JFrame implements TN5250jConst
                      screenTxt = new char[len];
                      screenExtendedAttr = new char[len];
                      screenAttrPlace = new char[len];
-                     screen.GetScreen(screenTxt, len, PLANE_TEXT);
-                     screen.GetScreen(screenExtendedAttr, len, PLANE_EXTENDED);
-                     screen.GetScreen(screenAttrPlace, len, PLANE_IS_ATTR_PLACE);
+                     screen.GetScreen(screenTxt, len, TN5250jConstants.PLANE_TEXT);
+                     screen.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+                     screen.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
 
 							StringBuffer sb = new StringBuffer();
 //							char[] s = screen.getScreenAsChars();
@@ -177,10 +177,10 @@ public class SendEMailDialog extends GenericTn5250JFrame implements TN5250jConst
 							for (int x = 0; x < l; x++, col++) {
 
                         // only draw printable characters (in this case >= ' ')
-                        if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & EXTENDED_5250_NON_DSP) == 0)) {
+                        if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
 
                            if (
-                                    (screenExtendedAttr[x] & EXTENDED_5250_UNDERLINE) != 0 &&
+                                    (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
                                     screenAttrPlace[x] != 1) {
                                  sb.append('_');
                            }
@@ -193,7 +193,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements TN5250jConst
                         else {
 
                            if (
-                                    (screenExtendedAttr[x] & EXTENDED_5250_UNDERLINE) != 0 &&
+                                    (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
                                     screenAttrPlace[x] != 1) {
                                  sb.append('_');
                            }

@@ -26,22 +26,25 @@
 
 package org.tn5250j.keyboard;
 
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-import org.tn5250j.SessionGUI;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
+
 import org.tn5250j.Session5250;
-//import org.tn5250j.Screen5250;
-import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.event.KeyChangeListener;
+import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.tools.system.OperatingSystem;
 
 /**
  *
  */
-public abstract class KeyboardHandler extends KeyAdapter implements
-                                             org.tn5250j.TN5250jConstants,
-                                             KeyChangeListener {
+public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeListener {
+	
    protected Session5250 session;
    protected SessionGUI sessionGui;
    protected Screen5250 screen;

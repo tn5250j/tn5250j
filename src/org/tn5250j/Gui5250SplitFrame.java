@@ -25,23 +25,35 @@ package org.tn5250j;
  *
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.event.WindowEvent;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.interfaces.GUIViewInterface;
-import org.tn5250j.event.SessionJumpListener;
-import org.tn5250j.event.SessionJumpEvent;
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.event.SessionJumpListener;
+import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class Gui5250SplitFrame extends GUIViewInterface implements
-                                                    TN5250jConstants,
                                                     SessionListener,
                                                     SessionJumpListener {
 
@@ -80,9 +92,9 @@ BorderLayout borderLayout1 = new BorderLayout();
       this.getContentPane().setLayout(borderLayout1);
 
       if (sequence > 0)
-         setTitle("tn5250j <" + sequence + "> - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+         setTitle("tn5250j <" + sequence + "> - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
       else
-         setTitle("tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer);
+         setTitle("tn5250j - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
 
       // update the frame sequences
       frameSeq = sequence++;
@@ -186,10 +198,10 @@ BorderLayout borderLayout1 = new BorderLayout();
 
       switch (jumpEvent.getJumpDirection()) {
 
-         case JUMP_PREVIOUS:
+         case TN5250jConstants.JUMP_PREVIOUS:
             prevSession();
             break;
-         case JUMP_NEXT:
+         case TN5250jConstants.JUMP_NEXT:
             nextSession();
             break;
       }
