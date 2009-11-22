@@ -38,9 +38,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -76,11 +76,9 @@ import org.tn5250j.tools.XTFRFile;
  */
 public class SessionPopup {
 
-   Screen5250 screen;
-   SessionGUI session;
-   tnvt vt;
-   Macronizer macros;
-   String newMacName;
+   private Screen5250 screen;
+   private SessionGUI session;
+   private tnvt vt;
 
 	public SessionPopup(SessionGUI ses, MouseEvent me) {
 
@@ -89,9 +87,7 @@ public class SessionPopup {
       JPopupMenu popup = new JPopupMenu();
       session = ses;
       vt = session.getSession().getVT();
-//      final Gui5250 g = session;
       screen = session.getScreen();
-      JMenuItem mi;
 
       final int pos = session.getPosFromView(me.getX(),me.getY());
 
@@ -548,7 +544,7 @@ public class SessionPopup {
 
    private void addMacros(JMenu menu) {
 
-      LoadMacroMenu.loadMacros(session,macros,menu);
+      LoadMacroMenu.loadMacros(session, menu);
    }
 
    private JMenuItem createMenuItem(Action action, String accelKey) {
@@ -600,15 +596,15 @@ public class SessionPopup {
    private void sumArea(boolean which) {
 
 
-      Vector sumVector = session.sumThem(which);
-      Iterator l = sumVector.iterator();
+      List<Double> sumVector = session.sumThem(which);
+      Iterator<Double> l = sumVector.iterator();
       double sum = 0.0;
       double inter = 0.0;
       while (l.hasNext()) {
 
          inter = 0.0;
          try {
-            inter = ((Double)l.next()).doubleValue();
+            inter = l.next().doubleValue();
          }
          catch (Exception e) {
             System.out.println(e.getMessage());
@@ -656,7 +652,7 @@ public class SessionPopup {
       Collator collator = Collator.getInstance();
       CollationKey key = null;
 
-      Set set = new TreeSet();
+      Set<CollationKey> set = new TreeSet<CollationKey>();
       for (int x =0;x < 256; x++) {
          char c = vt.ebcdic2uni(x);
 //         char ac = vt.getASCIIChar(x);
@@ -677,7 +673,7 @@ public class SessionPopup {
          }
       }
 
-      Iterator iterator = set.iterator();
+      Iterator<?> iterator = set.iterator();
       while (iterator.hasNext()) {
          CollationKey keyc = (CollationKey)iterator.next();
          listModel.addElement(keyc.getSourceString());
@@ -730,56 +726,56 @@ public class SessionPopup {
 
 
    }
+   
+/* *** NEVER USED LOCALLY ************************************************** */
+//   private void printMe() {
+//
+//      session.printMe();
+//      session.getFocusForMe();
+//   }
 
-   private void printMe() {
+/* *** NEVER USED LOCALLY ************************************************** */
+//   private void executeMeMacro(ActionEvent ae) {
+//
+//      executeMeMacro(ae.getActionCommand());
+//
+//   }
 
-      session.printMe();
-      session.getFocusForMe();
-   }
-
-   public void executeMeMacro(ActionEvent ae) {
-
-      executeMeMacro(ae.getActionCommand());
-
-   }
-
-   public void executeMeMacro(String macro) {
-
-      Macronizer.invoke(macro,session);
-
-   }
+/* *** NEVER USED LOCALLY ************************************************** */
+//   private void executeMeMacro(String macro) {
+//
+//      Macronizer.invoke(macro,session);
+//
+//   }
 
    private void mapMeKeys() {
-      KeyConfigure kc;
 
       Frame parent = (Frame)SwingUtilities.getRoot(session);
-//      System.out.println("we are fucking here damn it");
-//      Frame parent = null;
 
       if (Macronizer.isMacrosExist()) {
          String[] macrosList = Macronizer.getMacroList();
-         kc = new KeyConfigure(parent,macrosList,vt.getCodePage());
+         new KeyConfigure(parent,macrosList,vt.getCodePage());
+      } else {
+         new KeyConfigure(parent,null,vt.getCodePage());
       }
-      else
-         kc = new KeyConfigure(parent,null,vt.getCodePage());
+
+   }
+   
+/* *** NEVER USED LOCALLY ************************************************** */
+//   private void runScript () {
+//
+//      Macronizer.showRunScriptDialog(session);
+//     session.getFocusForMe();
+//
+//   }
+
+   private void doMeTransfer() {
+
+      new XTFRFile((Frame)SwingUtilities.getRoot(session), vt, session);
 
    }
 
-   public void runScript () {
-
-      Macronizer.showRunScriptDialog(session);
-     session.getFocusForMe();
-
-   }
-
-   public void doMeTransfer() {
-
-      XTFRFile xtrf = new XTFRFile((Frame)SwingUtilities.getRoot(session),
-                                    vt,session);
-
-   }
-
-   public void doMeSpool() {
+   private void doMeSpool() {
 
       try {
          org.tn5250j.spoolfile.SpoolExporter spooler =
@@ -815,7 +811,7 @@ public class SessionPopup {
       new SendScreenImageToFile((Frame)SwingUtilities.getRoot(session),session);
    }
 
-   public void changeConnection() {
+   private void changeConnection() {
 
       if (vt.isConnected()) {
 
