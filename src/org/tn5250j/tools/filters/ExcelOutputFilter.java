@@ -105,12 +105,13 @@ public class ExcelOutputFilter implements OutputFilterInterface {
 
    }
 
-   private void writeDouble(String string, int col) {
-
-
-      writeDouble(string, col,0);
-
-   }
+/* *** NEVER USED ********************************************************** */
+//   private void writeDouble(String string, int col) {
+//
+//
+//      writeDouble(string, col,0);
+//
+//   }
 
    private void writeDouble(String string, int col, int fmtCode) {
 

@@ -26,13 +26,26 @@ package org.tn5250j.sql;
  *
  */
 
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import org.tn5250j.event.*;
-import org.tn5250j.tools.filters.*;
-import java.sql.*;
+import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Vector;
+
+import org.tn5250j.event.FTPStatusEvent;
+import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.tools.filters.FileFieldDef;
+import org.tn5250j.tools.filters.OutputFilterInterface;
 
 public class AS400Xtfr {
 
@@ -337,7 +350,6 @@ public class AS400Xtfr {
       }
 
       final String localFileF = localFile;
-      final String remoteFileF = remoteFile;
       final String query = statement;
       final boolean internal = useInternal;
 
@@ -496,6 +508,7 @@ public class AS400Xtfr {
 
    }
 
+/* *** NEVER USED ********************************************************** */
 //   private void loadFields() {
 //
 //
@@ -635,22 +648,23 @@ public class AS400Xtfr {
 //
 //
 //   }
-   /**
-    * Parse the field field definition of the data and return a string buffer of
-    * the output to be written
-    */
-   private void parseFFD(byte[] cByte,StringBuffer rb) {
+//   /**
+//    * Parse the field field definition of the data and return a string buffer of
+//    * the output to be written
+//    */
+//   private void parseFFD(byte[] cByte,StringBuffer rb) {
+//
+//      ofi.parseFields(cByte,ffd,rb);
+//   }
 
-      ofi.parseFields(cByte,ffd,rb);
-   }
-
-   /**
-    * Abort the current file transfer
-    */
-
-   public void setAborted() {
-      aborted = true;
-   }
+/* *** NEVER USED ********************************************************** */
+//   /**
+//    * Abort the current file transfer
+//    */
+//
+//   public void setAborted() {
+//      aborted = true;
+//   }
 
    /**
     * Print ftp command events and responses
@@ -680,64 +694,6 @@ public class AS400Xtfr {
    private void writeFooter() {
 
       ofi.writeFooter(ffd);
-
-   }
-
-   /**
-    * Convert an as400 packed field to an integer
-    */
-   private int packed2int(byte[] cByte,int startOffset, int length) {
-
-      StringBuffer sb = new StringBuffer();
-
-      int end = startOffset + length - 1;
-
-      // example field of buffer length 4 with decimal precision 0
-      //    output length is (4 * 2) -1 = 7
-      //
-      //    each byte of the buffer contains 2 digits, one in the zone
-      //    portion and one in the zone portion of the byte, the last
-      //    byte of the field contains the last digit in the ZONE
-      //    portion and the sign is contained in the DIGIT portion.
-      //
-      //    The number 1234567 would be represented as follows:
-      //    byte 1 of 4 -> 12
-      //    byte 2 of 4 -> 34
-      //    byte 3 of 4 -> 56
-      //    byte 4 of 4 -> 7F    The F siginifies a positive number
-      //
-      //    The number -1234567 would be represented as follows:
-      //    byte 1 of 4 -> 12
-      //    byte 2 of 4 -> 34
-      //    byte 3 of 4 -> 56
-      //    byte 4 of 4 -> 7D    The D siginifies a negative number
-      //
-      for (int f = startOffset-1;f < end -1; f++) {
-         byte bzd = cByte[f];
-         int byteZ = (bzd >> 4) & 0x0f ;  // get the zone portion
-         int byteD = (bzd & 0x0f);        // get the digit portion
-
-         sb.append(byteZ); // assign the zone portion as the first digit
-         sb.append(byteD); // assign the digit portion as the second digit
-      }
-
-      // here we obtain the last byte to determine the sign of the field
-      byte bzd = cByte[end-1];
-
-      int byteZ = (bzd >> 4) & 0x0f ;  // get the zone portion
-      int byteD = (bzd & 0x0f);        // get the digit portion
-      sb.append(byteZ);                // append the zone portion as the
-                                       // the last digit of the number
-      // convert to integer
-      int p2i = Integer.parseInt(sb.toString());
-
-      // Here we interrogate the the DIGIT portion for the sign
-      //    0x0f = positive   -> 0x0f | 0x0d = 0x0f
-      //    0x0d = negative   -> 0x0d | 0x0d = 0x0d
-      if ((byteD | 0x0d) == 0x0d)
-         p2i *= -1;
-
-      return p2i;
 
    }
 
