@@ -476,10 +476,8 @@ public class Configure implements TN5250jConstants {
    */
    private static String[] getAvailableCodePages() {
 
-      if (jtb.isSelected())
-         return CharMappings.getAvailableCodePages(CharMappings.TOOLBOX_CP);
-      else
-         return CharMappings.getAvailableCodePages();
+      if (jtb.isSelected()) return CharMappings.getAvailableCodePages(CharMappings.TOOLBOX_CP);
+      return CharMappings.getAvailableCodePages();
    }
 
   /**
@@ -601,10 +599,10 @@ public class Configure implements TN5250jConstants {
          if (fpn.getText().length() > 0)
             sb.append(" -f " + fpn.getText());
       if (!LangTool.getString("conf.labelDefault").equals(
-               (String)cpb.getSelectedItem()))
+               cpb.getSelectedItem()))
          sb.append(" -cp " + (String)cpb.getSelectedItem());
 
-      if (!SSL_TYPE_NONE.equals((String)sslType.getSelectedItem()))
+      if (!SSL_TYPE_NONE.equals(sslType.getSelectedItem()))
          sb.append(" -sslType " + (String)sslType.getSelectedItem());
 
       if (ec.isSelected())
