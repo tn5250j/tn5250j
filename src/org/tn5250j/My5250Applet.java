@@ -11,7 +11,7 @@ import org.tn5250j.framework.common.*;
 
 //import org.tn5250j.swing.JTerminal;
 
-public class My5250App extends JApplet implements TN5250jConstants {
+public class My5250Applet extends JApplet implements TN5250jConstants {
    private static final long serialVersionUID = 1L;
 boolean isStandalone = true;
    private SessionManager manager;
@@ -26,7 +26,7 @@ boolean isStandalone = true;
    }
 
    /**Construct the applet*/
-   public My5250App() {
+   public My5250Applet() {
 
    }
    /**Initialize the applet*/
@@ -140,7 +140,7 @@ boolean isStandalone = true;
 
    /**Get Applet information*/
    public String getAppletInfo() {
-      return "tn5250j - " + TN5250jConstants.VERSION_INFO + " - Jave tn5250 Client";
+      return "tn5250j - " + tn5250jRelease + tn5250jVersion + tn5250jSubVer + " - Jave tn5250 Client";
    }
 
    /**Get parameter info*/

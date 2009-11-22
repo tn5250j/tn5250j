@@ -123,11 +123,7 @@ public class EncodeComponent {
           * failure (i.e. getEncoder() returns null)
           */
          public String getFailureMessage() {
-            String locale_message = "There was a failure loading encoder." ;
-            if (locale_message == null) {
-               locale_message = failureMessage;
-            }
-            return locale_message;
+            return failureMessage != null ? failureMessage : "There was a failure loading encoder.";
          }
 
          /**
@@ -137,7 +133,7 @@ public class EncodeComponent {
          public Encoder getEncoder() {
             if (encoder == null) {
                // encoder null so attempt to load it
-               Class encoder_class = null;
+               Class<?> encoder_class = null;
                try {
                   encoder_class = Class.forName(encoderClass);
                }

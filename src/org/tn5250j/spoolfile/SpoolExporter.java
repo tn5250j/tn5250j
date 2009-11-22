@@ -41,7 +41,7 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.SessionGUI;
 
-public class SpoolExporter extends TN5250jFrame {
+public class SpoolExporter extends GenericTn5250JFrame {
 
    private static final long serialVersionUID = 1L;
 SpoolFilterPane filter;

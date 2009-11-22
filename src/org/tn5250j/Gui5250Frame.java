@@ -27,10 +27,8 @@ package org.tn5250j;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.util.Properties;
 
@@ -53,7 +51,12 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public final class Gui5250Frame extends GUIViewInterface implements
+/**
+ * This is the main {@link javax.swing.JFrame}, which contains multiple tabs.
+ * 
+ * @see GUIViewInterface
+ */
+public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
                                                     TabClosedListener,
                                                     SessionListener,
@@ -61,8 +64,7 @@ public final class Gui5250Frame extends GUIViewInterface implements
 
    private static final long serialVersionUID = 1L;
    
-   BorderLayout borderLayout1 = new BorderLayout();
-   JTabbedPane sessionPane = new JTabbedPane();
+   private JTabbedPane sessionPane = new JTabbedPane();
    private boolean embedded = false;
    private boolean hideTabBar = false;
    private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
@@ -82,7 +84,7 @@ public final class Gui5250Frame extends GUIViewInterface implements
    //Component initialization
    private void jbInit() throws Exception  {
 
-      this.getContentPane().setLayout(borderLayout1);
+      this.getContentPane().setLayout(new BorderLayout());
 
       // update the frame sequences
       frameSeq = sequence++;

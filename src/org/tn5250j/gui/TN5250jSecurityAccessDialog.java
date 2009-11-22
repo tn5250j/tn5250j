@@ -24,7 +24,7 @@ package org.tn5250j.gui;
 import javax.swing.JOptionPane;
 
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.gui.TN5250jFrame;
+import org.tn5250j.gui.GenericTn5250JFrame;
 
 public class TN5250jSecurityAccessDialog {
 
@@ -35,7 +35,7 @@ public class TN5250jSecurityAccessDialog {
 
    static public void showErrorMessage(SecurityException se) {
 
-      TN5250jFrame parent = new TN5250jFrame();
+      GenericTn5250JFrame parent = new GenericTn5250JFrame();
       JOptionPane.showMessageDialog(parent,LangTool.getString("messages.SADMessage")
                                     + se.getMessage()
                                     ,LangTool.getString("messages.SADTitle"),

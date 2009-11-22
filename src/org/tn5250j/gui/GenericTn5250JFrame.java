@@ -28,13 +28,26 @@ import javax.swing.JFrame;
 
 import org.tn5250j.tools.GUIGraphicsUtils;
 
-public class TN5250jFrame extends JFrame {
+/**
+ * Convenient base class for all TN5250j windows/frames.
+ * Supports the standard application icon and a {@link #centerFrame()} method.
+ * <br><br>
+ * Direct known subclasses:
+ * <ul>
+ * <li>{@link org.tn5250j.interfaces.GUIViewInterface}</li>
+ * <li>{@link org.tn5250j.mailtools.SendEMailDialog}</li>
+ * <li>{@link org.tn5250j.spoolfile.SpoolExporter}</li>
+ * <li>{@link org.tn5250j.spoolfile.SpoolExportWizard}</li>
+ * <li>{@link org.tn5250j.tools.XTFRFile}</li>
+ * </ul> 
+ */
+public class GenericTn5250JFrame extends JFrame {
 
-   private static final long serialVersionUID = 1L;
-   
-   protected boolean packFrame = false;
+	private static final long serialVersionUID = 7349671770294342782L;
+	
+	protected boolean packFrame = false;
 
-   public TN5250jFrame() {
+   public GenericTn5250JFrame() {
       super();
       setIconImages(GUIGraphicsUtils.getApplicationIcons());
    }

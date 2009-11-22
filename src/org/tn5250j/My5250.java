@@ -25,40 +25,57 @@
  */
 package org.tn5250j;
 
-import java.util.*;
-import java.io.*;
-import javax.swing.*;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import java.awt.*;
-import java.net.*;
-
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.tools.*;
-import org.tn5250j.event.*;
+import org.tn5250j.event.BootEvent;
+import org.tn5250j.event.BootListener;
+import org.tn5250j.event.EmulatorActionEvent;
+import org.tn5250j.event.EmulatorActionListener;
+import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.Tn5250jController;
-import org.tn5250j.gui.TN5250jSplashScreen;
-import org.tn5250j.interfaces.GUIViewInterface;
-import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
+import org.tn5250j.gui.TN5250jSplashScreen;
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class My5250 implements BootListener,SessionListener,
                                  EmulatorActionListener {
 
-   protected GUIViewInterface frame1;
+   private GUIViewInterface frame1;
    private String[] sessionArgs = null;
    private static Properties sessions = new Properties();
    private static BootStrapper strapper = null;
-   protected SessionManager manager;
-   private static Vector frames;
+   private SessionManager manager;
+   private static List<GUIViewInterface> frames;
    private static boolean useMDIFrames;
    private TN5250jSplashScreen splash;
    private int step;
-   private static String jarClassPaths;
+
    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-   My5250 () {
+   private My5250 () {
 
       splash = new TN5250jSplashScreen("tn5250jSplash.jpg");
       splash.setSteps(5);
@@ -78,7 +95,7 @@ public class My5250 implements BootListener,SessionListener,
       //    default and Multiple Document Interface.
       startFrameType();
 
-      frames = new Vector();
+      frames = new ArrayList<GUIViewInterface>();
 
       newView();
 
@@ -318,35 +335,36 @@ public class My5250 implements BootListener,SessionListener,
 
          // BEGIN
          // 2001/09/19 natural computing MR
-         Vector os400_sessions = new Vector();
-         Vector session_params = new Vector();
+         List<String> os400_sessions = new ArrayList<String>();
+         List<String> session_params = new ArrayList<String>();
 
          for (int x = 0; x < m.sessionArgs.length; x++) {
 
-            if (m.sessionArgs[x] != null) {
-               if (m.sessionArgs[x].equals("-s")) {
+            final String sessarg = m.sessionArgs[x];
+			if (sessarg != null) {
+               if (sessarg.equals("-s")) {
                   x++;
-                  if (m.sessionArgs[x] != null && sessions.containsKey(m.sessionArgs[x])) {
-                     os400_sessions.addElement(m.sessionArgs[x]);
+                  if (sessions.containsKey(sessarg)) {
+                     os400_sessions.add(sessarg);
                   }else{
                      x--;
-                     session_params.addElement(m.sessionArgs[x]);
+                     session_params.add(sessarg);
                   }
                }else{
-                  session_params.addElement(m.sessionArgs[x]);
+                  session_params.add(sessarg);
                }
             }
          }
 
          for (int x = 0; x < session_params.size(); x++)
          
-            m.sessionArgs[x] = session_params.elementAt(x).toString();
+            m.sessionArgs[x] = session_params.get(x).toString();
 
          //m.startNewSession();
          
          // shouldn't we be starting x at 0?
          for (int x = 0; x < os400_sessions.size(); x++ ) {
-            String sel = os400_sessions.elementAt(x).toString();
+            String sel = os400_sessions.get(x).toString();
 
             if (!m.frame1.isVisible()) {
                m.splash.updateProgress(++m.step);
@@ -387,7 +405,7 @@ public class My5250 implements BootListener,SessionListener,
       return null;
    }
 
-   static boolean isSpecified(String parm, String[] args) {
+   private static boolean isSpecified(String parm, String[] args) {
 
       if (args == null)
          return false;
@@ -401,17 +419,15 @@ public class My5250 implements BootListener,SessionListener,
       return false;
    }
 
-   static String getDefaultSession() {
+   private static String getDefaultSession() {
 
       if (sessions.containsKey("emul.default")) {
          return sessions.getProperty("emul.default");
       }
-      else {
-         return null;
-      }
+      return null;
    }
 
-   static void startFrameType() {
+   private static void startFrameType() {
 
       if (sessions.containsKey("emul.interface")) {
          String s = sessions.getProperty("emul.interface");
@@ -421,9 +437,8 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   void startNewSession() {
+   private void startNewSession() {
 
-      int result = 2;
       String sel = "";
 
       if (sessionArgs != null && !sessionArgs[0].startsWith("-"))
@@ -465,7 +480,7 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   void startDuplicateSession(SessionGUI ses) {
+   private void startDuplicateSession(SessionGUI ses) {
 
       loadSessions();
       if (ses == null) {
@@ -497,7 +512,7 @@ public class My5250 implements BootListener,SessionListener,
       return sc.getConnectKey();
    }
 
-   synchronized void newSession(String sel,String[] args) {
+   private synchronized void newSession(String sel,String[] args) {
 
       Properties sesProps = new Properties();
 
@@ -613,7 +628,7 @@ public class My5250 implements BootListener,SessionListener,
       s.addEmulatorActionListener(this);
    }
 
-   void newView() {
+   private void newView() {
 
       // we will now to default the frame size to take over the whole screen
       //    this is per unanimous vote of the user base
@@ -662,12 +677,12 @@ public class My5250 implements BootListener,SessionListener,
       frame.setSize(width,height);
    }
 
-   void closingDown(SessionGUI targetSession) {
+   private void closingDown(SessionGUI targetSession) {
 
       closingDown(getParentView(targetSession));
    }
 
-   void closingDown(GUIViewInterface view) {
+   protected void closingDown(GUIViewInterface view) {
 
       SessionGUI jf = null;
       Sessions sess = manager.getSessions();
@@ -675,7 +690,6 @@ public class My5250 implements BootListener,SessionListener,
       if (log.isDebugEnabled()) {
     	  log.debug("number of active sessions we have " + sess.getCount());
       }
-      int x = 0;
 
       String views = "";
       while (view.getSessionViewCount() > 0) {
@@ -734,7 +748,6 @@ public class My5250 implements BootListener,SessionListener,
          return;
       int tabs = f.getSessionViewCount();
       Sessions sessions = manager.getSessions();
-      SessionGUI session = null;
 
       if (tabs > 1) {
 
@@ -751,7 +764,7 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   static protected void parseArgs(String theStringList, String[] s) {
+   private static void parseArgs(String theStringList, String[] s) {
       int x = 0;
       StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
       while (tokenizer.hasMoreTokens()) {
@@ -759,7 +772,7 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   protected static Locale parseLocal(String localString) {
+   private static Locale parseLocal(String localString) {
       int x = 0;
       String[] s = {"","",""};
       StringTokenizer tokenizer = new StringTokenizer(localString, "_");
@@ -769,7 +782,7 @@ public class My5250 implements BootListener,SessionListener,
       return new Locale(s[0],s[1],s[2]);
    }
 
-   protected static void loadSessions() {
+   private static void loadSessions() {
 
       sessions = (ConfigureFactory.getInstance()).getProperties(
                      ConfigureFactory.SESSIONS);
@@ -807,12 +820,12 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   public GUIViewInterface getParentView(SessionGUI session) {
+   private GUIViewInterface getParentView(SessionGUI session) {
 
       GUIViewInterface f = null;
 
       for (int x = 0; x < frames.size(); x++) {
-         f = (GUIViewInterface)frames.get(x);
+         f = frames.get(x);
          if (f.containsSession(session))
             return f;
       }
@@ -855,7 +868,7 @@ public class My5250 implements BootListener,SessionListener,
     */
    private void initJarPaths() {
 
-      jarClassPaths = System.getProperty("python.path")
+      String jarClassPaths = System.getProperty("python.path")
                         + File.pathSeparator + "jython.jar"
                         + File.pathSeparator + "jythonlib.jar"
                         + File.pathSeparator + "jt400.jar"
@@ -865,8 +878,7 @@ public class My5250 implements BootListener,SessionListener,
          jarClassPaths += File.pathSeparator + sessions.getProperty("emul.scriptClassPath");
       }
 
-      if (jarClassPaths != null)
-         System.setProperty("python.path",jarClassPaths);
+      System.setProperty("python.path",jarClassPaths);
 
       splash.updateProgress(++step);
 

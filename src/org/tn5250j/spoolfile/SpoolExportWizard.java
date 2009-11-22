@@ -26,30 +26,58 @@ package org.tn5250j.spoolfile;
  *
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.io.*;
-import com.ibm.as400.access.*;
-import com.ibm.as400.vaccess.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-import org.tn5250j.tools.*;
-import org.tn5250j.event.WizardListener;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import org.tn5250j.SessionGUI;
 import org.tn5250j.event.WizardEvent;
+import org.tn5250j.event.WizardListener;
+import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
-import org.tn5250j.gui.TN5250jFrame;
-import org.tn5250j.gui.TN5250jFileChooser;
-import org.tn5250j.SessionGUI;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.tools.AlignLayout;
+import org.tn5250j.tools.LangTool;
 
-import com.lowagie.text.pdf.*;
-import com.lowagie.text.*;
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.IFSFileOutputStream;
+import com.ibm.as400.access.PrintObject;
+import com.ibm.as400.access.PrintObjectTransformedInputStream;
+import com.ibm.as400.access.PrintParameterList;
+import com.ibm.as400.access.SpooledFile;
+import com.ibm.as400.vaccess.IFSFileDialog;
+import com.lowagie.text.Document;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfWriter;
 
 /**
  *
  */
-public class SpoolExportWizard extends TN5250jFrame implements WizardListener {
+public class SpoolExportWizard extends GenericTn5250JFrame implements WizardListener {
 
    private static final long serialVersionUID = 1L;
 JPanel contentPane;

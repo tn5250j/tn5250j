@@ -25,6 +25,10 @@ default that I set up.  This is for JVM supplied by IBM.
 
 Enhancements/Change Log
 -----------------------
+20/11/2009  Renamed: the applet to "org.tn5250j.My5250Applet" to avoid confusing with 'Application'
+            Fixed: IndexOutOfBoundsException, when trying to reorder a single tab
+            Fixed: NullPointerExceptions when trying to transmit no file to/from AS400
+
 18/06/2005  New release with a whole lot enhancements.  Do not remember them all
             read the Readme.txt file for more information
             

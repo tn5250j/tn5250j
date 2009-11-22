@@ -5,10 +5,10 @@
 </head>
 
 <body>
-	<APPLET  CODE = org.tn5250j.My5250App.class CODEBASE = <?php echo $HTTP_POST_VARS["CODEBASE"]; ?> ARCHIVE = my5250.jar 
+	<APPLET  CODE = org.tn5250j.My5250Applet.class CODEBASE = <?php echo $HTTP_POST_VARS["CODEBASE"]; ?> ARCHIVE = my5250.jar 
 		WIDTH = <?php echo $HTTP_POST_VARS["WIDTH"] ; ?> 
 		HEIGHT = <?php ECHO $HTTP_POST_VARS["HEIGHT"]; ?> name = "tn5250 - Java tn5250 Client " ALIGN = top>
-        <PARAM NAME = CODE VALUE = org.tn5250j.My5250App.class >
+        <PARAM NAME = CODE VALUE = org.tn5250j.My5250Applet.class >
         <PARAM NAME = CODEBASE VALUE = "<?php echo $HTTP_POST_VARS["CODEBASE"]; ?>" >
     	<PARAM NAME = ARCHIVE VALUE = my5250.jar >
     	<PARAM NAME = name VALUE = "tn5250 - Java tn5250 Client " >

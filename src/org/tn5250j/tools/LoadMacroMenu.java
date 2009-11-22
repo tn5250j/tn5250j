@@ -77,7 +77,7 @@ public final class LoadMacroMenu {
 
          JMenuItem mi = menu.add(action);
 
-         final Gui5250 ji = session;
+         final SessionGUI ji = session;
          mi.addMouseListener(new MouseAdapter() {
 
             public void mouseReleased(MouseEvent e) {

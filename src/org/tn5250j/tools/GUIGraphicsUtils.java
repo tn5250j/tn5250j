@@ -25,28 +25,27 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.Component;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
-//import java.awt.Graphics2D;
-import java.awt.font.*;
-import java.awt.geom.AffineTransform;
-
-import javax.swing.Icon;
-import javax.swing.JPopupMenu;
 import java.awt.Point;
-import javax.swing.SwingUtilities;
 import java.awt.Toolkit;
-import java.awt.GraphicsEnvironment;
-import javax.swing.ImageIcon;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.AffineTransform;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import org.tn5250j.tools.system.OperatingSystem;
 
@@ -1336,8 +1335,6 @@ public class GUIGraphicsUtils {
 
       int sw = 0;
       int sh = 0;
-      float scw = 1.0f;
-      float sch = 1.0f;
 
       Font k = null;
       LineMetrics l;

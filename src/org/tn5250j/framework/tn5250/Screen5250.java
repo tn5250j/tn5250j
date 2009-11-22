@@ -556,22 +556,20 @@ public class Screen5250 {
             // but something else here was done like aid keys or the such
             return false;
 			}
-         else {
-				// this is a note to not execute this code here when we
-				// implement
-				//   the remain after edit function option.
-//				if (gui.rubberband.isAreaSelected()) {
-//					gui.rubberband.reset();
-//					gui.repaint();
-//				} else {
-					goto_XY(pos);
-					isInField(lastPos);
+			// this is a note to not execute this code here when we
+			// implement
+			//   the remain after edit function option.
+			//				if (gui.rubberband.isAreaSelected()) {
+			//					gui.rubberband.reset();
+			//					gui.repaint();
+			//				} else {
+			goto_XY(pos);
+			isInField(lastPos);
 
-               // return back to the calling object that the cursor was indeed
-               //  moved with in the screen object
-               return true;
-//				}
-			}
+			// return back to the calling object that the cursor was indeed
+			//  moved with in the screen object
+			return true;
+			//				}
 		}
       return false;
 	}
@@ -1006,10 +1004,9 @@ public class Screen5250 {
 				if (bufferedKeys == null) {
 					bufferedKeys = text;
 					return;
-				} else {
-					bufferedKeys += text;
-					return;
 				}
+				bufferedKeys += text;
+				return;
 			}
 
 		} else {
@@ -1071,15 +1068,11 @@ public class Screen5250 {
 							//                     setCursorOn();
 							//                  }
 						} else {
-
-							if (s != null) {
-								simulateMnemonic(getMnemonicValue(s));
-								//                  if (!cursorActive && !keysBuffered) {
-								//                     System.out.println(" m one");
-								//                     setCursorOn();
-								//                  }
-							} else
-								log.info(" send keys mnemonic " + s);
+							simulateMnemonic(getMnemonicValue(s));
+							//                  if (!cursorActive && !keysBuffered) {
+							//                     System.out.println(" m one");
+							//                     setCursorOn();
+							//                  }
 						}
 
 						if (oia.isKeyBoardLocked()) {
@@ -1740,10 +1733,8 @@ public class Screen5250 {
 	protected boolean simulateKeyStroke(char c) {
 
       if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
-         if (resetRequired)
-            return false;
-         else
-            resetError();
+         if (resetRequired) return false;
+         resetError();
       }
 
 		boolean updateField = false;
@@ -1928,14 +1919,11 @@ public class Screen5250 {
 
 			return endPos;
 
-		} else {
-			screenFields.getCurrentField().getKeyPos(endPos);
-			if (posSpace)
-				screenFields.getCurrentField().changePos(+1);
+		} 
+		screenFields.getCurrentField().getKeyPos(endPos);
+		if (posSpace) screenFields.getCurrentField().changePos(+1);
+		return screenFields.getCurrentFieldPos();
 
-			return screenFields.getCurrentFieldPos();
-
-		}
 	}
 
    private boolean fieldExit() {
@@ -2144,15 +2132,9 @@ public class Screen5250 {
 	}
 
 	public int getCol(int pos) {
-
-		//      if (pos == 0)
-		//         return 1;
-
 		int col = pos % (getColumns());
-		if (col > 0)
-			return col;
-		else
-			return 0;
+		if (col > 0) return col;
+		return 0;
 	}
 
 	/**
@@ -2280,24 +2262,15 @@ public class Screen5250 {
 		if (feError) {
 			feError = false;
 			sf.changePos(-1);
-
-			if (sf != null
-					&& sf.isFER()
-					&& sf.getCurrentPos() - 1 == pos) {
-			   
-			}
 		} else {
-			if (sf != null
-					&& sf.isFER()){
+			if (sf != null&& sf.isFER()){
 			   if ((sf.getCurrentPos()
 			         > sf.endPos())) {
 			      if (sf.withinField(pos)) {
 			         sf.getKeyPos(pos);
 			         return;
 			      }
-			      else {
-			         sf.getKeyPos(sf.endPos());
-			      }
+			      sf.getKeyPos(sf.endPos());
 			   }
 			}
 		   
@@ -2812,10 +2785,8 @@ public class Screen5250 {
 		if (f != null) {
 			goto_XY(f.startPos());
 			return true;
-		} else {
-			return false;
 		}
-
+		return false;
 	}
 
 	/**
