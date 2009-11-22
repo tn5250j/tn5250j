@@ -51,12 +51,8 @@ public class DataStreamProducer implements Runnable {
       me = Thread.currentThread();
 
       // load the first response screen
-      try {
-         loadStream(abyte2, 0);
-      }
-      catch (IOException ioef) {
-         log.warn(" run() " + ioef.getMessage());
-      }
+      loadStream(abyte2, 0);
+      
       while (!done) {
 		  try {
 
@@ -109,8 +105,7 @@ public class DataStreamProducer implements Runnable {
       }
     }
 
-   private final void loadStream(byte abyte0[], int i)
-     throws IOException {
+   private final void loadStream(byte abyte0[], int i) {
 
       int j = 0;
       int size = 0;
@@ -202,24 +197,22 @@ public class DataStreamProducer implements Runnable {
             j = -1;
             continue;
          }
-         else {
-            baosin.write(i);
-            // check for end of record EOR and IAC  - FFEF
-            if(j == 255 && i == 239)
-               done = true;
+        baosin.write(i);
+        // check for end of record EOR and IAC  - FFEF
+        if(j == 255 && i == 239)
+           done = true;
 
-            // This is to check for the TELNET TIMING MARK OPTION
-            // rfc860 explains this in more detail.  When we receive it
-            // we will negotiate with the server by sending a WONT'T TIMING-MARK
-            // This will let the server know that we processed the information
-            // and are just waiting for the user to enter some data so keep the
-            // socket alive.   This is more or less a AYT (ARE YOU THERE) or not.
-            if(i == 253 && j == 255) {
-               done = true;
-               negotiate = true;
-            }
-            j = i;
-         }
+        // This is to check for the TELNET TIMING MARK OPTION
+        // rfc860 explains this in more detail.  When we receive it
+        // we will negotiate with the server by sending a WONT'T TIMING-MARK
+        // This will let the server know that we processed the information
+        // and are just waiting for the user to enter some data so keep the
+        // socket alive.   This is more or less a AYT (ARE YOU THERE) or not.
+        if(i == 253 && j == 255) {
+           done = true;
+           negotiate = true;
+        }
+        j = i;
      }
 
      // after the initial negotiation we might get other options such as
@@ -246,10 +239,7 @@ public class DataStreamProducer implements Runnable {
 
             return null;
          }
-         else
-         {
-			 return rBytes;
-		 }
+         return rBytes;
 	}
 
    protected final void toggleDebug (CodePage cp) {
