@@ -162,7 +162,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
       if (closeListeners != null) {
          int size = closeListeners.size();
          for (int i = 0; i < size; i++) {
-            TabClosedListener target = (TabClosedListener) closeListeners.elementAt(i);
+            TabClosedListener target = closeListeners.elementAt(i);
             target.onTabClosed(tabToClose);
          }
       }
