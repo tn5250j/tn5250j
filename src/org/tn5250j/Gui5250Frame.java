@@ -25,25 +25,35 @@
  */
 package org.tn5250j;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
+import java.util.Properties;
 
-import java.util.*;
-
-import javax.swing.event.ChangeListener;
+import javax.swing.BorderFactory;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.event.SessionJumpListener;
-import org.tn5250j.event.SessionJumpEvent;
-import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.event.SessionJumpListener;
+import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.TabClosedListener;
-import org.tn5250j.interfaces.GUIViewInterface;
-import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.gui.TN5250jTabbedPane;
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
+/**
+ * This is the main {@link javax.swing.JFrame}, which contains multiple tabs.
+ * 
+ * @see GUIViewInterface
+ */
 public class Gui5250Frame extends GUIViewInterface implements
                                                     ChangeListener,
                                                     SessionListener,
@@ -52,12 +62,12 @@ public class Gui5250Frame extends GUIViewInterface implements
 
 	private static final long serialVersionUID = 1L;
 
-	BorderLayout borderLayout1 = new BorderLayout();
-	TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
+	private TN5250jTabbedPane sessionPane = new TN5250jTabbedPane();
 	private int selectedIndex = 0;
 	private boolean embedded = false;
 	private boolean hideTabBar = false;
-	public static int count = 0;
+	
+	public static volatile int count = 0;
 	
 	private transient final TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
@@ -76,7 +86,7 @@ public class Gui5250Frame extends GUIViewInterface implements
    //Component initialization
    private void jbInit() throws Exception  {
 
-      this.getContentPane().setLayout(borderLayout1);
+      this.getContentPane().setLayout(new BorderLayout());
 
       // update the frame sequences
       frameSeq = sequence++;

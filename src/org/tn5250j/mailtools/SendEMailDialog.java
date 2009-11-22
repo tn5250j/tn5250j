@@ -53,14 +53,14 @@ import org.tn5250j.SessionGUI;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.TN5250jFileChooser;
-import org.tn5250j.gui.TN5250jFrame;
+import org.tn5250j.gui.GenericTn5250JFrame;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
 /**
  * Send E-Mail dialog
  */
-public class SendEMailDialog extends TN5250jFrame implements TN5250jConstants,Runnable  {
+public class SendEMailDialog extends GenericTn5250JFrame implements TN5250jConstants,Runnable  {
 
 	private static final long serialVersionUID = 1L;
 	

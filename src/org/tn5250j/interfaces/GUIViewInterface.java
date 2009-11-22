@@ -20,46 +20,41 @@
  */
 package org.tn5250j.interfaces;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
 
-import org.tn5250j.gui.TN5250jFrame;
-import org.tn5250j.SessionGUI;
 import org.tn5250j.My5250;
-import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.SessionGUI;
 import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.gui.GenericTn5250JFrame;
 import org.tn5250j.tools.GUIGraphicsUtils;
 
-public abstract class GUIViewInterface extends TN5250jFrame {
+/**
+ * Abstract class for all main GUI interfaces.<br>
+ * Direct known subclasses:
+ * <ul>
+ * <li>{@link org.tn5250j.Gui5250Frame} which shows a window with multiple tabs</li>
+ * <li>{@link org.tn5250j.Gui5250MDIFrame}</li>
+ * <li>{@link org.tn5250j.Gui5250SplitFrame}</li>
+ * </ul>
+ */
+public abstract class GUIViewInterface extends GenericTn5250JFrame {
 
    private static final long serialVersionUID = 1L;
-protected static My5250 me;
+   protected static My5250 me;
    protected static int sequence;
    protected int frameSeq;
-   protected ImageIcon focused = null;
-   protected ImageIcon unfocused = null;
+   
+   protected static final ImageIcon focused = GUIGraphicsUtils.getFocusedIcon();
+   protected static final ImageIcon unfocused = GUIGraphicsUtils.getUnFocusedIcon();
 
    public GUIViewInterface(My5250 m) {
       super();
       me = m;
-      focused = GUIGraphicsUtils.getFocusedIcon();
-      unfocused = GUIGraphicsUtils.getUnFocusedIcon();
    }
 
    public int getFrameSequence() {
-
       return frameSeq;
-   }
-
-   /**
-    * Set the icons to be used for focused and unfocused
-    *
-    * @param focused
-    * @param unfocused
-    */
-   public void setIcons(ImageIcon focused, ImageIcon unfocused) {
-
-      this.focused = focused;
-      this.unfocused = unfocused;
    }
 
    public abstract void addSessionView(String descText,SessionGUI session);
