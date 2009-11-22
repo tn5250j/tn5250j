@@ -20,21 +20,27 @@
  */
 package org.tn5250j.framework.common;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
-import org.tn5250j.tools.logging.*;
+import org.tn5250j.Session5250;
+import org.tn5250j.SessionConfig;
+import org.tn5250j.SessionGUI;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.interfaces.SessionManagerInterface;
-import org.tn5250j.*;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 
 /**
  * The SessionManager is the central repository for access to all sessions.
  * The SessionManager contains a list of all Session objects available.
  */
-public class SessionManager implements SessionManagerInterface, TN5250jConstants {
+public class SessionManager implements SessionManagerInterface {
 
    static private Sessions sessions;
-   static private Vector configs;
+   static private List<SessionConfig> configs;
 
    private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
    /**
@@ -70,7 +76,7 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
    private void initialize() {
       log.info("New session Manager initialized");
       sessions = new Sessions();
-      configs = new Vector(3);
+      configs = new ArrayList<SessionConfig>();
 
    }
 
@@ -95,29 +101,23 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    public synchronized Session5250 openSession(Properties sesProps, String configurationResource
                                                 , String sessionName) {
-//                                             throws TN5250jException {
 
       if(sessionName == null)
-         sesProps.put(SESSION_TERM_NAME,sesProps.getProperty(SESSION_HOST));
+         sesProps.put(TN5250jConstants.SESSION_TERM_NAME,sesProps.getProperty(TN5250jConstants.SESSION_HOST));
       else
-         sesProps.put(SESSION_TERM_NAME,sessionName);
+         sesProps.put(TN5250jConstants.SESSION_TERM_NAME,sessionName);
 
-      if (configurationResource == null)
-         configurationResource = "";
+      if (configurationResource == null) configurationResource = "";
 
-      sesProps.put(SESSION_CONFIG_RESOURCE
-                        ,configurationResource);
+      sesProps.put(TN5250jConstants.SESSION_CONFIG_RESOURCE, configurationResource);
 
-      Enumeration e = configs.elements();
       SessionConfig useConfig = null;
-
-      while(e.hasMoreElements()) {
-         SessionConfig conf = (SessionConfig)e.nextElement();
-         if (conf.getSessionName().equals(sessionName)) {
+      for (SessionConfig conf : configs) {
+    	  if (conf.getSessionName().equals(sessionName)) {
             useConfig = conf;
          }
       }
-
+      
       if (useConfig == null) {
 
          useConfig = new SessionConfig(configurationResource,sessionName);
@@ -131,14 +131,15 @@ public class SessionManager implements SessionManagerInterface, TN5250jConstants
 
    }
 
-   /**
-    * Convenience method to add a session that is instatiated outside of
-    * SessionManager.  An example would be the ProtocolBean.
-    *
-    * @param newSession
-    */
-   public synchronized void addSession(Session5250 newSession) {
-
-      sessions.addSession(newSession);
-   }
+/* *** NEVER USED ********************************************************** */
+//   /**
+//    * Convenience method to add a session that is instatiated outside of
+//    * SessionManager.  An example would be the ProtocolBean.
+//    *
+//    * @param newSession
+//    */
+//   public synchronized void addSession(Session5250 newSession) {
+//
+//      sessions.addSession(newSession);
+//   }
 }
