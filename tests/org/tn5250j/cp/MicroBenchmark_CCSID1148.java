@@ -86,7 +86,7 @@ public class MicroBenchmark_CCSID1148 {
 		for (int i=0; i<TESTSTRING.length; i++) {
 			final char beginvalue = TESTSTRING[i];
 			final byte converted = cp.uni2ebcdic(beginvalue);
-			final char afterall = cp.ebcdic2uni(converted);
+			cp.ebcdic2uni(converted);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class MicroBenchmark_CCSID1148 {
 		for (int i=0; i<TESTSTRING.length; i++) {
 			final char beginvalue = TESTSTRING[i];
 			final byte converted = cpex.uni2ebcdic(beginvalue);
-			final char afterall = cpex.ebcdic2uni(converted & 0xFF);
+			cpex.ebcdic2uni(converted & 0xFF);
 		}
 	}
 }
