@@ -36,13 +36,13 @@ import org.tn5250j.keyboard.KeyMapper;
 /**
  * Paste from the clipboard
  */
-public class PasteAction extends EmulatorAction implements TN5250jConstants {
+public class PasteAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
 public PasteAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
-            MNEMONIC_PASTE,
+    		  TN5250jConstants.MNEMONIC_PASTE,
             KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.ALT_MASK),
             keyMap);
 

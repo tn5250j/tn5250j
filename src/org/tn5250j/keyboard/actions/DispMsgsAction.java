@@ -25,24 +25,25 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
-import org.tn5250j.TN5250jConstants;
+import javax.swing.KeyStroke;
+
 import org.tn5250j.SessionGUI;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Display system messages
  */
-public class DispMsgsAction extends EmulatorAction implements TN5250jConstants {
+public class DispMsgsAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
 public DispMsgsAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
-            MNEMONIC_DISP_MESSAGES,
+    		  TN5250jConstants.MNEMONIC_DISP_MESSAGES,
             KeyStroke.getKeyStroke(KeyEvent.VK_M,KeyEvent.ALT_MASK),
             keyMap);
 

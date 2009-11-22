@@ -25,24 +25,25 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
-import org.tn5250j.TN5250jConstants;
+import javax.swing.KeyStroke;
+
 import org.tn5250j.SessionGUI;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Copy action
  */
-public class CopyAction extends EmulatorAction implements TN5250jConstants {
+public class CopyAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
 public CopyAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
-            MNEMONIC_COPY,
+    		  TN5250jConstants.MNEMONIC_COPY,
             KeyStroke.getKeyStroke(KeyEvent.VK_C,KeyEvent.ALT_MASK),
             keyMap);
 
