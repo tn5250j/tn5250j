@@ -25,6 +25,10 @@ default that I set up.  This is for JVM supplied by IBM.
 
 Enhancements/Change Log
 -----------------------
+
+21/11/2009  Added: screen export: concat a '.txt' to the exported file name, if no extension was given
+            Added: screen export: set the file filter '*.txt' as default
+
 20/11/2009  Renamed: the applet to "org.tn5250j.My5250Applet" to avoid confusing with 'Application'
             Fixed: IndexOutOfBoundsException, when trying to reorder a single tab
             Fixed: NullPointerExceptions when trying to transmit no file to/from AS400
