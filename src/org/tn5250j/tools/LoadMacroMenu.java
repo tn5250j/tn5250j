@@ -25,29 +25,37 @@
  */
 package org.tn5250j.tools;
 
-import javax.swing.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
 
-import org.tn5250j.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+
+import org.tn5250j.SessionGUI;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
-import org.tn5250j.tools.LangTool;
-import org.tn5250j.tools.logging.*;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public final class LoadMacroMenu {
 
-   private static Vector macroVector;
-   private static TN5250jLogger log =
-    TN5250jLogFactory.getLogger("org.tn5250j.tools.LoadMacroMenu");
+   private static Vector macroVector = new Vector();
+   
+   private static final TN5250jLogger log = TN5250jLogFactory.getLogger(LoadMacroMenu.class);
 
-   static {
-      macroVector = new Vector();
-   }
-
-   public static void loadMacros(SessionGUI session, Macronizer macros, JMenu menu) {
+   public static void loadMacros(SessionGUI session, JMenu menu) {
 
       final SessionGUI ses = session;
       Vector mv = new Vector();
@@ -77,7 +85,6 @@ public final class LoadMacroMenu {
 
          JMenuItem mi = menu.add(action);
 
-         final SessionGUI ji = session;
          mi.addMouseListener(new MouseAdapter() {
 
             public void mouseReleased(MouseEvent e) {
@@ -250,7 +257,7 @@ public final class LoadMacroMenu {
       for (int i = start; i < vector.size(); i++) {
          Object obj = vector.elementAt(i);
          if (obj instanceof ExecuteScriptAction) {
-            JMenuItem mi = menu.add((ExecuteScriptAction)obj);
+            menu.add((ExecuteScriptAction)obj);
          }
          else
             if (obj instanceof Vector) {

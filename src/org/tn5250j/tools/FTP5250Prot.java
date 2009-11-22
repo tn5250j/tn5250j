@@ -26,31 +26,47 @@ package org.tn5250j.tools;
  *
  */
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import java.text.*;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.io.PrintStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Vector;
 
-import org.tn5250j.event.*;
-import org.tn5250j.tools.filters.*;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.tn5250j.event.FTPStatusEvent;
+import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.tools.filters.FileFieldDef;
+import org.tn5250j.tools.filters.OutputFilterInterface;
 
 public class FTP5250Prot {
 
    private Socket ftpConnectionSocket;
    private BufferedReader ftpInputStream;
    private PrintStream ftpOutputStream;
-   private String serverOS;
    private InetAddress localHost;
    private boolean loggedIn;
    private String lastResponse;
    private int lastIntResponse;
    private String hostName;
    private int timeout = 50000;
-   private String type;
-   private String connectedOS;
    private boolean connected;
    private String remoteDir;
    private ArrayList ffd;
@@ -68,8 +84,6 @@ public class FTP5250Prot {
 
    public FTP5250Prot (tnvt v) {
       vt = v;
-      type = "ASCII";
-      connectedOS = "OS/400";
       status = new FTPStatusEvent(this);
       // obtain the decimal separator for the machine locale
       DecimalFormat formatter =
@@ -293,10 +307,8 @@ public class FTP5250Prot {
       executeCommand("SYST");
 
       // check whether this is an OS/400 system or not
-      if (lastResponse.toUpperCase().indexOf("OS/400") >= 0)
-         return true;
-      else
-         return false;
+      if (lastResponse.toUpperCase().indexOf("OS/400") >= 0) return true;
+      return false;
    }
 
    /**
@@ -688,7 +700,6 @@ public class FTP5250Prot {
       executeCommand("TYPE","I");
       String remoteFile = "QTEMP/FML";
       members = new Vector(10);
-      boolean foundMbr = false;
 
       try {
          socket = createPassiveSocket("RETR " + remoteFile);
@@ -698,7 +709,6 @@ public class FTP5250Prot {
             byte abyte0[] = new byte[858];
 
             int c = 0;
-            int kj = 0;
             int len = 0;
             StringBuffer sb = new StringBuffer(10);
 
@@ -785,8 +795,7 @@ public class FTP5250Prot {
          }
          else {
 
-            Iterator i = members.iterator();
-            boolean found = false;
+            Iterator<?> i = members.iterator();
             MemberInfo mi = null;
 
             while (i.hasNext()) {
@@ -802,10 +811,8 @@ public class FTP5250Prot {
          }
       }
 
-      if (member2 != null)
-         return file2.trim() + "." + member2.trim();
-      else
-         return file2.trim();
+      if (member2 != null) return file2.trim() + "." + member2.trim();
+      return file2.trim();
    }
 
    /**
@@ -868,7 +875,6 @@ public class FTP5250Prot {
                   StringBuffer rb = new StringBuffer(recordOutLength);
 
                   int c = 0;
-                  int kj = 0;
                   int len = 0;
 
                   for(int j = 0; j != -1 && !aborted;) {
@@ -1082,9 +1088,9 @@ public class FTP5250Prot {
    /**
     * Convert an as400 packed field to an integer
     */
-   private int packed2int(byte[] cByte,int startOffset, int length) {
+   private static final int packed2int(final byte[] cByte, final int startOffset, final int length) {
 
-      StringBuffer sb = new StringBuffer();
+      StringBuffer sb = new StringBuffer(length*2);
 
       int end = startOffset + length - 1;
 
