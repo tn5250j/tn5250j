@@ -40,7 +40,7 @@ public class TN5250jFileChooser extends JFileChooser {
 
    private static final long serialVersionUID = 1L;
 
-static {
+   static {
       doTranslation();
    }
 
