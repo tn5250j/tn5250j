@@ -33,7 +33,6 @@ import java.util.Properties;
 public abstract class ConfigureFactory {
 
    static final public String SESSIONS = "sessions";
-//   static final public File ses = new File(SESSIONS);
    static final public String MACROS = "macros";
    static final public String KEYMAP = "keymap";  
    private static ConfigureFactory  factory;
@@ -56,7 +55,7 @@ public abstract class ConfigureFactory {
         String  className = System.getProperty(ConfigureFactory.class.getName());
         if (className != null)
         {
-          Class classObject = Class.forName(className);
+          Class<?> classObject = Class.forName(className);
           Object  object = classObject.newInstance();
           if (object instanceof ConfigureFactory)
           {
