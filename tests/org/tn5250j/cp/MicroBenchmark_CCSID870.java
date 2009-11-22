@@ -35,24 +35,24 @@ import org.tn5250j.encoding.CodePage;
 
 /**
  * Microbenchmark to test encoding+decoding speed
- * of the 'old' CCSID273<->Unicode converte versus the new leaner one.
+ * of the 'old' CCSID870<->Unicode converte versus the new leaner one.
  * 
  * Result: The new implementation is much faster!
  * 
  * @author master_jaf
  */
-public class MicroBenchmark_CCSID273 {
+public class MicroBenchmark_CCSID870 {
 
 	private static final int RUNS = 50000;
 	
 	private final char[] TESTSTRING = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321".toCharArray();
 	private CodePage cp;
-	private CCSID273 cpex;	
+	private CCSID870 cpex;	
 
 	@Before
 	public void setup() {
-		cp = CharMappings.getCodePage("273");
-		cpex = new CCSID273();
+		cp = CharMappings.getCodePage("870");
+		cpex = new CCSID870();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);
@@ -61,8 +61,8 @@ public class MicroBenchmark_CCSID273 {
 	/**
 	 * Speed test for new implementation ...
 	 */
-	@Test
-	public void testNewConverter273() {
+	@Test(timeout=10000)
+	public void testNewConverter870() {
 		for (int i=0; i<RUNS; i++) {
 			realRunNew();
 		}
@@ -71,8 +71,8 @@ public class MicroBenchmark_CCSID273 {
 	/**
 	 * Speed test for old implementation ....
 	 */
-	@Test
-	public void testOldConverter273() {
+	@Test(timeout=10000)
+	public void testOldConverter870() {
 		for (int i=0; i<RUNS; i++) {
 			realRunOld();
 		}
@@ -86,7 +86,7 @@ public class MicroBenchmark_CCSID273 {
 		for (int i=0; i<TESTSTRING.length; i++) {
 			final char beginvalue = TESTSTRING[i];
 			final byte converted = cp.uni2ebcdic(beginvalue);
-			cp.ebcdic2uni(converted & 0xFF);
+			cp.ebcdic2uni(converted);
 		}
 	}
 
