@@ -25,14 +25,21 @@
  */
 package org.tn5250j;
 
-import java.awt.print.*;
-import java.awt.*;
-import java.awt.font.*;
-import org.tn5250j.SessionGUI;
-import org.tn5250j.SessionConfig;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import java.awt.print.PrinterJob;
+
 import org.tn5250j.framework.tn5250.Screen5250;
 
-public class PrinterThread extends Thread implements Printable, TN5250jConstants {
+public class PrinterThread extends Thread implements Printable {
 
    char[] screen;
    char[] screenExtendedAttr;
@@ -59,9 +66,9 @@ public class PrinterThread extends Thread implements Printable, TN5250jConstants
       screen = new char[len];
       screenExtendedAttr = new char[len];
       screenAttrPlace = new char[len];
-      int ret = scr.GetScreen(screen, len, PLANE_TEXT);
-      ret = scr.GetScreen(screenExtendedAttr, len, PLANE_EXTENDED);
-      ret = scr.GetScreen(screenAttrPlace, len, PLANE_IS_ATTR_PLACE);
+      int ret = scr.GetScreen(screen, len, TN5250jConstants.PLANE_TEXT);
+      ret = scr.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+      ret = scr.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
       toDefault = toDefaultPrinter;
 
       numCols = cols;
@@ -253,7 +260,7 @@ public class PrinterThread extends Thread implements Printable, TN5250jConstants
                y = h1 * (m + 1);
 
                // only draw printable characters (in this case >= ' ')
-               if (screen[getPos(m,i)] >= ' ' && ((screenExtendedAttr[getPos(m,i)] & EXTENDED_5250_NON_DSP) == 0)) {
+               if (screen[getPos(m,i)] >= ' ' && ((screenExtendedAttr[getPos(m,i)] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
 
                   g2.drawChars(screen, getPos(m,i), 1,x , (int)(y + h1 - (l.getDescent() + l.getLeading())-2));
 
@@ -261,7 +268,7 @@ public class PrinterThread extends Thread implements Printable, TN5250jConstants
 
                // if it is underlined then underline the character
 //               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
-               if ((screenExtendedAttr[getPos(m,i)] & EXTENDED_5250_UNDERLINE) != 0 &&
+               if ((screenExtendedAttr[getPos(m,i)] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
                         screenAttrPlace[getPos(m,i)] != 1)
                   g.drawLine(x, (int)(y + (h1 - l.getLeading()-3)), (x + w1), (int)(y + (h1 - l.getLeading())-3));
 

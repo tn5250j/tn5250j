@@ -25,6 +25,8 @@
  */
 package org.tn5250j;
 
+import static org.tn5250j.TN5250jConstants.mnemonicData;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +43,7 @@ import org.tn5250j.tools.LangTool;
  *
  * Use OptionAccessFactory.instance() to access this instance.
  */
-public class OptionAccess extends OptionAccessFactory implements TN5250jConstants {
+public class OptionAccess extends OptionAccessFactory {
 
    /**
     * A handle to the unique OptionAccess class

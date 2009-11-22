@@ -25,25 +25,38 @@ package org.tn5250j;
  *
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.util.Vector;
 
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.event.SessionJumpListener;
-import org.tn5250j.event.SessionJumpEvent;
-import org.tn5250j.event.SessionListener;
-import org.tn5250j.event.SessionChangeEvent;
-import org.tn5250j.interfaces.GUIViewInterface;
-import javax.swing.event.ChangeListener;
+import javax.swing.DefaultDesktopManager;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
+import org.tn5250j.event.SessionChangeEvent;
+import org.tn5250j.event.SessionJumpEvent;
+import org.tn5250j.event.SessionJumpListener;
+import org.tn5250j.event.SessionListener;
+import org.tn5250j.interfaces.GUIViewInterface;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
+
 public class Gui5250MDIFrame extends GUIViewInterface implements
                                                     ChangeListener,
-                                                    TN5250jConstants,
                                                     SessionListener,
                                                     SessionJumpListener {
 
@@ -125,10 +138,10 @@ BorderLayout borderLayout1 = new BorderLayout();
 
       switch (jumpEvent.getJumpDirection()) {
 
-         case JUMP_PREVIOUS:
+         case TN5250jConstants.JUMP_PREVIOUS:
             prevSession();
             break;
-         case JUMP_NEXT:
+         case TN5250jConstants.JUMP_NEXT:
             nextSession();
             break;
       }
@@ -330,7 +343,7 @@ BorderLayout borderLayout1 = new BorderLayout();
       SessionGUI ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
-         case STATE_CONNECTED:
+         case TN5250jConstants.STATE_CONNECTED:
 
             final String d = ses.getAllocDeviceName();
             if (d != null) {

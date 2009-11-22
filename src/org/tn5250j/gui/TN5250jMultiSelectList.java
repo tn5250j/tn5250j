@@ -62,7 +62,7 @@ import org.tn5250j.tools.LangTool;
  *  component that controls two internal JLists for the selection of what is
  *  to be included and not included on the two sides of a list.
  */
-public class TN5250jMultiSelectList extends JComponent implements Serializable {
+public class TN5250jMultiSelectList extends JComponent {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -906,7 +906,7 @@ public class TN5250jMultiSelectList extends JComponent implements Serializable {
    /**
     * Internal selection button class.
     */
-   class SelectionButton extends JButton implements Serializable {
+   class SelectionButton extends JButton {
 
 	private static final long serialVersionUID = 1L;
 

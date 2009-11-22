@@ -36,13 +36,13 @@ import org.tn5250j.keyboard.KeyMapper;
 /**
  * Display session attributes
  */
-public class CloseAction extends EmulatorAction implements TN5250jConstants {
+public class CloseAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
 public CloseAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
-            MNEMONIC_CLOSE,
+            TN5250jConstants.MNEMONIC_CLOSE,
             KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK),
             keyMap);
 

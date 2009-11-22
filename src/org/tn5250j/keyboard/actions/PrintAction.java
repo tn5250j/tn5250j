@@ -36,13 +36,13 @@ import org.tn5250j.keyboard.KeyMapper;
 /**
  * Display session attributes
  */
-public class PrintAction extends EmulatorAction implements TN5250jConstants {
+public class PrintAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
 public PrintAction(SessionGUI session, KeyMapper keyMap) {
       super(session,
-            MNEMONIC_PRINT_SCREEN,
+    		  TN5250jConstants.MNEMONIC_PRINT_SCREEN,
             KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK),
             keyMap);
 
