@@ -732,9 +732,9 @@ public class FTP5250Prot {
                      sb.append(vt.ebcdic2uni(abyte0[163 + f] & 0xff));
                   }
 
-                  printFTPInfo(sb + " " + packed2int(abyte0,345,5));
+                  printFTPInfo(sb + " " + As400Util.packed2int(abyte0,345,5));
 
-                  members.add(new MemberInfo(sb.toString(),packed2int(abyte0,345,5)));
+                  members.add(new MemberInfo(sb.toString(), As400Util.packed2int(abyte0,345,5)));
 
                   len =0;
 
@@ -1082,64 +1082,6 @@ public class FTP5250Prot {
    private void writeFooter() {
 
       ofi.writeFooter(ffd);
-
-   }
-
-   /**
-    * Convert an as400 packed field to an integer
-    */
-   private static final int packed2int(final byte[] cByte, final int startOffset, final int length) {
-
-      StringBuffer sb = new StringBuffer(length*2);
-
-      int end = startOffset + length - 1;
-
-      // example field of buffer length 4 with decimal precision 0
-      //    output length is (4 * 2) -1 = 7
-      //
-      //    each byte of the buffer contains 2 digits, one in the zone
-      //    portion and one in the zone portion of the byte, the last
-      //    byte of the field contains the last digit in the ZONE
-      //    portion and the sign is contained in the DIGIT portion.
-      //
-      //    The number 1234567 would be represented as follows:
-      //    byte 1 of 4 -> 12
-      //    byte 2 of 4 -> 34
-      //    byte 3 of 4 -> 56
-      //    byte 4 of 4 -> 7F    The F siginifies a positive number
-      //
-      //    The number -1234567 would be represented as follows:
-      //    byte 1 of 4 -> 12
-      //    byte 2 of 4 -> 34
-      //    byte 3 of 4 -> 56
-      //    byte 4 of 4 -> 7D    The D siginifies a negative number
-      //
-      for (int f = startOffset-1;f < end -1; f++) {
-         byte bzd = cByte[f];
-         int byteZ = (bzd >> 4) & 0x0f ;  // get the zone portion
-         int byteD = (bzd & 0x0f);        // get the digit portion
-
-         sb.append(byteZ); // assign the zone portion as the first digit
-         sb.append(byteD); // assign the digit portion as the second digit
-      }
-
-      // here we obtain the last byte to determine the sign of the field
-      byte bzd = cByte[end-1];
-
-      int byteZ = (bzd >> 4) & 0x0f ;  // get the zone portion
-      int byteD = (bzd & 0x0f);        // get the digit portion
-      sb.append(byteZ);                // append the zone portion as the
-                                       // the last digit of the number
-      // convert to integer
-      int p2i = Integer.parseInt(sb.toString());
-
-      // Here we interrogate the the DIGIT portion for the sign
-      //    0x0f = positive   -> 0x0f | 0x0d = 0x0f
-      //    0x0d = negative   -> 0x0d | 0x0d = 0x0d
-      if ((byteD | 0x0d) == 0x0d)
-         p2i *= -1;
-
-      return p2i;
 
    }
 

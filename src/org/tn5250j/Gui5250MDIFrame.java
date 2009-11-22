@@ -391,58 +391,60 @@ BorderLayout borderLayout1 = new BorderLayout();
 
    }
 
-   private void calculateVisibility() {
-      JInternalFrame[] frames = desktop.getAllFrames();
-      for (int i = 0; i < frames.length; i++) {
-          JInternalFrame frame = frames[i];
-          if (!frame.isIcon()) {
-              Component[] c = frame.getContentPane().getComponents();
-              for (int j = 0; j < c.length; j++) {
-                  Component component = c[j];
-                  if (desktop.getBounds().intersects(calculateBoundsInFrame(component))) {
-                      component.setVisible(true);
-                  }
-                  else {
-                      //off desktop
-                      component.setVisible(false);
-                  }
-              }
-          }
-      }
+/* *** NEVER USED ********************************************************** */
+//   private void calculateVisibility() {
+//      JInternalFrame[] frames = desktop.getAllFrames();
+//      for (int i = 0; i < frames.length; i++) {
+//          JInternalFrame frame = frames[i];
+//          if (!frame.isIcon()) {
+//              Component[] c = frame.getContentPane().getComponents();
+//              for (int j = 0; j < c.length; j++) {
+//                  Component component = c[j];
+//                  if (desktop.getBounds().intersects(calculateBoundsInFrame(component))) {
+//                      component.setVisible(true);
+//                  }
+//                  else {
+//                      //off desktop
+//                      component.setVisible(false);
+//                  }
+//              }
+//          }
+//      }
+//
+//      for (int i = 0; i < frames.length; i++) {
+//          JInternalFrame frame1 = frames[i];
+//          if (!frame1.isIcon()) {
+//              for (int j = 0; j < frames.length; j++) {
+//                  JInternalFrame frame2 = frames[j];
+//                  if (!frame2.isIcon()) {
+//                      //Is frame 1 in front of frame 2?
+//                      if (desktop.getIndexOf(frame1) < desktop.getIndexOf(frame2)) {
+//                          Component[] c = frame2.getContentPane().getComponents();
+//                          for (int k = 0; k < c.length; k++) {
+//                              Component component = c[k];
+//                              if (frame1.getBounds().contains(calculateBoundsInFrame(component))) {
+//                                  component.setVisible(false);
+//                                  }
+//                              }
+//                          }
+//                      }
+//                  }
+//              }
+//          }
+//      }
 
-      for (int i = 0; i < frames.length; i++) {
-          JInternalFrame frame1 = frames[i];
-          if (!frame1.isIcon()) {
-              for (int j = 0; j < frames.length; j++) {
-                  JInternalFrame frame2 = frames[j];
-                  if (!frame2.isIcon()) {
-                      //Is frame 1 in front of frame 2?
-                      if (desktop.getIndexOf(frame1) < desktop.getIndexOf(frame2)) {
-                          Component[] c = frame2.getContentPane().getComponents();
-                          for (int k = 0; k < c.length; k++) {
-                              Component component = c[k];
-                              if (frame1.getBounds().contains(calculateBoundsInFrame(component))) {
-                                  component.setVisible(false);
-                                  }
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      }
-
-   private Rectangle calculateBoundsInFrame(Component component) {
-     Rectangle componentBoundsInFrame = component.getBounds();
-     //This only works in the simplest case, need to recurse to JInternalFrame
-     Point p1 = component.getParent().getLocation();
-     Point p2 = component.getParent().getParent().getLocation();
-     Point p3 = component.getParent().getParent().getParent().getLocation();
-     Point p4 = component.getParent().getParent().getParent().getParent().getLocation();
-     componentBoundsInFrame = new Rectangle(p1.x + p2.x + p3.x + p4.x, p1.y + p2.y + p3.y + p4.y, componentBoundsInFrame.width, componentBoundsInFrame.height);
-     componentBoundsInFrame = componentBoundsInFrame.intersection(desktop.getBounds());
-     return componentBoundsInFrame;
-   }
+/* *** NEVER USED ********************************************************** */
+//   private Rectangle calculateBoundsInFrame(Component component) {
+//     Rectangle componentBoundsInFrame = component.getBounds();
+//     //This only works in the simplest case, need to recurse to JInternalFrame
+//     Point p1 = component.getParent().getLocation();
+//     Point p2 = component.getParent().getParent().getLocation();
+//     Point p3 = component.getParent().getParent().getParent().getLocation();
+//     Point p4 = component.getParent().getParent().getParent().getParent().getLocation();
+//     componentBoundsInFrame = new Rectangle(p1.x + p2.x + p3.x + p4.x, p1.y + p2.y + p3.y + p4.y, componentBoundsInFrame.width, componentBoundsInFrame.height);
+//     componentBoundsInFrame = componentBoundsInFrame.intersection(desktop.getBounds());
+//     return componentBoundsInFrame;
+//   }
 
    public class MyInternalFrame extends JInternalFrame {
 
