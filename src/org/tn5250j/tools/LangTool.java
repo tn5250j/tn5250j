@@ -25,8 +25,11 @@
  */
 package org.tn5250j.tools;
 
-import java.util.*;
 import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 public final class LangTool {
 
@@ -102,10 +105,10 @@ public final class LangTool {
       try {
          ResourceBundle labels = ResourceBundle.getBundle("tn5250jMsgs",locale);
 
-         Enumeration bundleKeys = labels.getKeys();
+         Enumeration<String> bundleKeys = labels.getKeys();
 
          while (bundleKeys.hasMoreElements()) {
-            String key = (String)bundleKeys.nextElement();
+            String key = bundleKeys.nextElement();
             String value  = labels.getString(key);
             System.out.println("key = " + key + ", " +
               "value = " + value);

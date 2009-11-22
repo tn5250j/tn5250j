@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is a simplified backport of <tt>java.util.ServiceLoader</tt>.

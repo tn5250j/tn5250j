@@ -28,13 +28,20 @@ package org.tn5250j.tools;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
-import java.io.*;
-import javax.swing.*;
+import java.io.File;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.tn5250j.SessionGUI;
-import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.scripting.InterpreterDriverManager;
 
 public class Macronizer {
 
@@ -78,8 +85,8 @@ public class Macronizer {
    public final static String[] getMacroList() {
 
       String[] macroList = new String[macros.size()];
-      Set macroSet = macros.keySet();
-      Iterator macroIterator = macroSet.iterator();
+      Set<Object> macroSet = macros.keySet();
+      Iterator<Object> macroIterator = macroSet.iterator();
       String byName = null;
       int x = 0;
       while (macroIterator.hasNext()) {
@@ -94,8 +101,8 @@ public class Macronizer {
    public final static String getMacroByNumber(int num) {
       String mac = "macro" + num + ".";
 
-      Set macroSet = macros.keySet();
-      Iterator macroIterator = macroSet.iterator();
+      Set<Object> macroSet = macros.keySet();
+      Iterator<Object> macroIterator = macroSet.iterator();
       String byNum = null;
       while (macroIterator.hasNext()) {
          byNum = (String)macroIterator.next();
@@ -108,8 +115,8 @@ public class Macronizer {
 
    public final static String getMacroByName(String name) {
 
-      Set macroSet = macros.keySet();
-      Iterator macroIterator = macroSet.iterator();
+      Set<Object> macroSet = macros.keySet();
+      Iterator<Object> macroIterator = macroSet.iterator();
       String byName = null;
       while (macroIterator.hasNext()) {
          byName = (String)macroIterator.next();
@@ -122,8 +129,8 @@ public class Macronizer {
 
    public final static void removeMacroByName(String name) {
 
-      Set macroSet = macros.keySet();
-      Iterator macroIterator = macroSet.iterator();
+      Set<Object> macroSet = macros.keySet();
+      Iterator<Object> macroIterator = macroSet.iterator();
       String byName = null;
       while (macroIterator.hasNext()) {
          byName = (String)macroIterator.next();
@@ -151,8 +158,8 @@ public class Macronizer {
       // first let's go through all the macros and replace the macro entry if it
       //   already exists.  
       if (macrosExist && getMacroByName(name) != null) {
-         Set macroSet = macros.keySet();
-         Iterator macroIterator = macroSet.iterator();
+         Set<Object> macroSet = macros.keySet();
+         Iterator<Object> macroIterator = macroSet.iterator();
          String byName = null;
          String prefix = null;
          while (macroIterator.hasNext()) {
