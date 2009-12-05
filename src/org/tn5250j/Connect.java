@@ -142,7 +142,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
    
    
    // custom table model
-   ConfigureTableModel ctm = null;
+   SessionsTableModel ctm = null;
    
    CustomizedTableModel etm = null;
    
@@ -300,7 +300,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
    private void createSessionsPanel() {
 
       // get an instance of our table model
-      ctm = new ConfigureTableModel();
+      ctm = new SessionsTableModel();
 
       // create a table using our custom table model
       sessions = new JSortTable(ctm);
@@ -1341,62 +1341,98 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
       }
    }
 
-   private class ConfigureTableModel extends AbstractTableModel implements
-         SortTableModel {
+   /*
+    * ========================================================================
+    */
+   
+   /**
+    * Simple data model representing rows within the {@link SessionsTableModel}. 
+    */
+   private static final class SessionsDataModel {
+	   private final String name;
+	   private final String host;
+	   private final Boolean deflt;
 	   
-	   private static final long serialVersionUID = 1L;
+	   public SessionsDataModel(String name, String host, Boolean deflt) {
+		   super();
+		   this.name = name;
+		   this.host = host;
+		   this.deflt = deflt;
+	   }
+   }
+   
+   /*
+    * ========================================================================
+    */
+   
+   /**
+    * Table model to show all available sessions,
+    * with 'name', 'host' and 'default' column 
+    */
+    private class SessionsTableModel extends AbstractTableModel implements SortTableModel {
+	   
+	  private static final long serialVersionUID = 1L;
 
-      final String[] cols = { LangTool.getString("conf.tableColA"),
+      private final String[] COLS = { LangTool.getString("conf.tableColA"),
             LangTool.getString("conf.tableColB"),
             LangTool.getString("conf.tableColC") };
 
-      List<String> mySort = new ArrayList<String>();
-      int sortedColumn = 0;
-      boolean isAscending = true;
-
-      public ConfigureTableModel() {
+      private List<SessionsDataModel> sortedItems = new ArrayList<SessionsDataModel>();
+      
+      public SessionsTableModel() {
          super();
          resetSorted();
       }
 
       private void resetSorted() {
-
          Enumeration<Object> e = props.keys();
-         mySort.clear();
+         sortedItems.clear();
          String ses = null;
          while (e.hasMoreElements()) {
             ses = (String) e.nextElement();
 
             if (!ses.startsWith("emul.")) {
-               mySort.add(ses);
+                String[] args = new String[TN5250jConstants.NUM_PARMS];
+                Configure.parseArgs(props.getProperty(ses), args);
+                final Boolean deflt =new Boolean(ses.equals(props.getProperty("emul.default", "")));
+                sortedItems.add(new SessionsDataModel(ses, args[0], deflt));
             }
          }
 
-         sortColumn(sortedColumn, isAscending);
+         sortColumn(0, true);
       }
 
       public boolean isSortable(int col) {
          if (col == 0) return true;
+         if (col == 1) return true;
          return false;
       }
 
-      public void sortColumn(int col, boolean ascending) {
-         sortedColumn = col;
-         isAscending = ascending;
-         Collections.sort(mySort, new SessionComparator(col, ascending));
+      public void sortColumn(final int col, final boolean ascending) {
+         if (col == 0) Collections.sort(sortedItems, new Comparator<SessionsDataModel>() {
+			public int compare(SessionsDataModel sdm1, SessionsDataModel sdm2) {
+				if (ascending) return sdm1.name.compareToIgnoreCase(sdm2.name);
+				return sdm2.name.compareToIgnoreCase(sdm1.name);
+			}
+         });
+         if (col == 1) Collections.sort(sortedItems,new Comparator<SessionsDataModel>() {
+			public int compare(SessionsDataModel sdm1, SessionsDataModel sdm2) {
+				if (ascending) return sdm1.host.compareToIgnoreCase(sdm2.host);
+				return sdm2.host.compareToIgnoreCase(sdm1.host);
+			}
+         });
       }
 
       public int getColumnCount() {
-
-         return cols.length;
+         return COLS.length;
       }
 
       public String getColumnName(int col) {
-         return cols[col];
+         return COLS[col];
       }
 
       public int getRowCount() {
-         return mySort.size();
+         return sortedItems.size();
       }
 
       /*
@@ -1404,32 +1440,33 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
        */
       public void setValueAt(Object value, int row, int col) {
 
-         boolean which = ((Boolean) value).booleanValue();
-         if (which)
-            props.setProperty("emul.default", getPropValue(row, null));
-         else
-            props.setProperty("emul.default", "");
-
+    	  boolean which = ((Boolean) value).booleanValue();
+    	  final String newDefaultSession = sortedItems.get(row).name;
+    	  if (which) {
+    		  props.setProperty("emul.default", newDefaultSession);
+    	  } else {
+    		  props.setProperty("emul.default", "");
+    	  }
+    	  // update internal list of data models
+    	  for (int i=0, len=sortedItems.size(); i<len; i++) {
+    		  final SessionsDataModel oldsdm = sortedItems.get(i);
+    		  if (newDefaultSession.equals(oldsdm.name)) {
+    			  sortedItems.set(i, new SessionsDataModel(oldsdm.name, oldsdm.host, (Boolean)value));
+    		  } else if (oldsdm.deflt.booleanValue()) {
+    			  // clear the old default flag
+    			  sortedItems.set(i, new SessionsDataModel(oldsdm.name, oldsdm.host, Boolean.FALSE));
+    		  }
+    	  }
+    	  this.fireTableDataChanged();
       }
 
       public Object getValueAt(int row, int col) {
-
-         if (col == 0)
-            return getPropValue(row, null);
-         if (col == 1)
-            return getPropValue(row, "0");
-
-         // remember if you change this here you need to change the default
-         //    selection option of the main table to pass in the correct
-         //    column number.
-         if (col == 2) {
-            if (getPropValue(row, null).equals(props.getProperty("emul.default", ""))) {
-            	return new Boolean(true);
-            }
-            return new Boolean(false);
-         }
-         return null;
-
+    	  switch (col) {
+    	  case 0:  return this.sortedItems.get(row).name;
+    	  case 1:  return this.sortedItems.get(row).host;
+    	  case 2:  return this.sortedItems.get(row).deflt;
+    	  default: return null;
+    	  }
       }
 
       /*
@@ -1455,19 +1492,6 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
          return getValueAt(0, c).getClass();
       }
 
-      private String getPropValue(int row, String param) {
-
-         String prop = "";
-         String[] args = new String[TN5250jConstants.NUM_PARMS];
-
-         prop = mySort.get(row);
-
-         if (param == null) return prop;
-         Configure.parseArgs(props.getProperty(prop), args);
-         if (param.equals("0")) return args[0];
-         return null;
-      }
-
       public void addSession() {
          resetSorted();
          fireTableRowsInserted(props.size() - 1, props.size() - 1);
@@ -1484,6 +1508,10 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
       }
 
    }
+   
+   /*
+    * ========================================================================
+    */
    
    class CustomizedExternalProgram {
 	   private String name;
@@ -1576,7 +1604,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
 	public void sortColumn(int col, boolean ascending) {
 	   sortedColumn = col;
 	   isAscending = ascending;
-	   Collections.sort(mySort, new SessionComparator(col, ascending));
+	   Collections.sort(mySort, new SessionComparator(ascending));
 	}
 	
 	public int getColumnCount() {
@@ -1644,11 +1672,9 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
 	}
 	
 	public class SessionComparator implements Comparator<Object> {
-		protected int index;
-		protected boolean ascending;
+		private boolean ascending;
 
-		public SessionComparator(int index, boolean ascending) {
-			this.index = index;
+		public SessionComparator(boolean ascending) {
 			this.ascending = ascending;
 		}
 
