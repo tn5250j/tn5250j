@@ -1057,7 +1057,9 @@ public class SessionGUI extends JPanel implements ComponentListener,
 
 //	      repaint(x1,y1,x2-1,y2-1);
 	      repaint();
-		  log.debug(" bound " + band.getEndPoint());
+	      if (log.isDebugEnabled()) {
+	    	  log.debug(" bound " + band.getEndPoint());
+	      }
 	   }
 
 	   public boolean canDrawRubberBand(RubberBand b) {
