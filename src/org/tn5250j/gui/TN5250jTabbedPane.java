@@ -74,13 +74,20 @@ MouseWheelListener, MouseMotionListener {
 		addMouseWheelListener(this);
 	}
 
-	public void addTab(String title, Component component, Icon extraIcon) {
-		super.addTab(title, new CloseTabIcon(extraIcon), component);
+	@Override
+	public void addTab(String title, Icon icon, Component component, String tip) {
+		super.addTab(title, new CloseTabIcon(icon), component, tip);
 	}
 
-	public void setIconAt(Icon extraIcon, int index) {
-		super.setIconAt(index, new CloseTabIcon(extraIcon));
+	@Override
+	public void addTab(String title, Icon icon, Component component) {
+		super.addTab(title, new CloseTabIcon(icon), component);
 	}
+
+	@Override
+	public void setIconAt(int index, Icon icon) {
+		super.setIconAt(index, new CloseTabIcon(icon));
+	}	
 
 	public void mouseClicked(MouseEvent e) {
 		int tabIndex = getTabIndex(e.getX(), e.getY());

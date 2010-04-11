@@ -151,7 +151,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       final int index = sessionPane.getSelectedIndex();
       sessionPane.setForegroundAt(index,Color.black);
-      sessionPane.setIconAt(unfocused,index);
+      sessionPane.setIconAt(index,unfocused);
 
 
       SwingUtilities.invokeLater(new Runnable() {
@@ -160,13 +160,13 @@ public class Gui5250Frame extends GUIViewInterface implements
             if (index1 < sessionPane.getTabCount() - 1) {
                sessionPane.setSelectedIndex(++index1);
                sessionPane.setForegroundAt(index1,Color.blue);
-               sessionPane.setIconAt(focused,index1);
+               sessionPane.setIconAt(index1,focused);
 
             }
             else {
                sessionPane.setSelectedIndex(0);
                sessionPane.setForegroundAt(0,Color.blue);
-               sessionPane.setIconAt(focused,0);
+               sessionPane.setIconAt(0,focused);
 
             }
 
@@ -182,7 +182,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       final int index = sessionPane.getSelectedIndex();
       sessionPane.setForegroundAt(index,Color.black);
-      sessionPane.setIconAt(unfocused,index);
+      sessionPane.setIconAt(index,unfocused);
 
       SwingUtilities.invokeLater(new Runnable() {
          public void run() {
@@ -190,13 +190,13 @@ public class Gui5250Frame extends GUIViewInterface implements
             if (index1 == 0) {
                sessionPane.setSelectedIndex(sessionPane.getTabCount() - 1);
                sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-               sessionPane.setIconAt(focused,sessionPane.getSelectedIndex());
+               sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
 
             }
             else {
                sessionPane.setSelectedIndex(--index1);
                sessionPane.setForegroundAt(index1,Color.blue);
-               sessionPane.setIconAt(focused,index1);
+               sessionPane.setIconAt(index1,focused);
 
             }
 
@@ -211,7 +211,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       TN5250jTabbedPane p = (TN5250jTabbedPane)e.getSource();
       if (selectedIndex < p.getTabCount()) {
     	  p.setForegroundAt(selectedIndex,Color.black);
-    	  p.setIconAt(unfocused,selectedIndex);
+    	  p.setIconAt(selectedIndex,unfocused);
 
     	  SessionGUI sg = (SessionGUI)p.getComponentAt(selectedIndex);
     	  sg.setVisible(false);
@@ -226,7 +226,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
     	  selectedIndex = p.getSelectedIndex();
     	  p.setForegroundAt(selectedIndex,Color.blue);
-    	  p.setIconAt(focused,selectedIndex);
+    	  p.setIconAt(selectedIndex,focused);
 
     	  setSessionTitle();
       }
@@ -287,7 +287,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                }
             }
 
-            sessionPane.addTab(tabText,ses,focused);
+            sessionPane.addTab(tabText,focused,ses);
             final SessionGUI finalSession = ses;
 
             SwingUtilities.invokeLater(new Runnable() {
@@ -315,14 +315,14 @@ public class Gui5250Frame extends GUIViewInterface implements
             });
          }
 
-         sessionPane.addTab(tabText,session,focused);
+         sessionPane.addTab(tabText,focused,session);
 
          sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.black);
-         sessionPane.setIconAt(unfocused,sessionPane.getSelectedIndex());
+         sessionPane.setIconAt(sessionPane.getSelectedIndex(),unfocused);
 
          sessionPane.setSelectedIndex(sessionPane.getTabCount()-1);
          sessionPane.setForegroundAt(sessionPane.getSelectedIndex(),Color.blue);
-         sessionPane.setIconAt(focused,sessionPane.getSelectedIndex());
+         sessionPane.setIconAt(sessionPane.getSelectedIndex(),focused);
 
          session.addSessionListener(this);
          session.addSessionJumpListener(this);
@@ -373,7 +373,7 @@ public class Gui5250Frame extends GUIViewInterface implements
          if (tabs > 0 && index < tabs) {
             sessionPane.setSelectedIndex(index);
             sessionPane.setForegroundAt(index,Color.blue);
-            sessionPane.setIconAt(focused,index);
+            sessionPane.setIconAt(index,focused);
             ((SessionGUI)sessionPane.getComponentAt(index)).requestFocus();
          }
          else {
@@ -381,7 +381,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             if (tabs > 0) {
                sessionPane.setSelectedIndex(0);
                sessionPane.setForegroundAt(0,Color.blue);
-               sessionPane.setIconAt(focused,0);
+               sessionPane.setIconAt(0,focused);
                ((SessionGUI)sessionPane.getComponentAt(0)).requestFocus();
             }
 
