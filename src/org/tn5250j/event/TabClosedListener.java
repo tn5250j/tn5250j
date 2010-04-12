@@ -21,6 +21,11 @@ package org.tn5250j.event;
 
 public interface TabClosedListener {
 
-   public void tabClosed(int tabToBeClosed);
+	/**
+	 * Will be called, when a tab should be closed.
+	 *
+	 * @param tabToBeClosed
+	 */
+	public void onTabClosed(int tabToBeClosed);
 
 }

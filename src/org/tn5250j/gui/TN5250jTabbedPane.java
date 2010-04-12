@@ -388,7 +388,7 @@ MouseWheelListener, MouseMotionListener {
 		try {
 			if (this.closeListeners != null) {
 				for (TabClosedListener listener : this.closeListeners) {
-					listener.tabClosed(tabToClose);
+					listener.onTabClosed(tabToClose);
 				}
 			}
 		} finally {
