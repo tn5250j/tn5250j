@@ -307,14 +307,12 @@ public class Gui5250Frame extends GUIViewInterface implements
       });
    }
 
-   /**
-    * Event to be executed, when a tab is closed
-    * 
-    * @param tabToBeClosed
+   /* (non-Javadoc)
+    * @see org.tn5250j.event.TabClosedListener#onTabClosed(int)
     */
    public void onTabClosed(int tabToBeClosed){
-      final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
-      me.closeSession(sessionAt);
+	   final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
+	   me.closeSession(sessionAt);
    }
 
    /* (non-Javadoc)
