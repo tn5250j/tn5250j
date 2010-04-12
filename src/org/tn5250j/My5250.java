@@ -504,7 +504,7 @@ public class My5250 implements BootListener,SessionListener,
    private String getConnectSession () {
 
       splash.setVisible(false);
-      Connect sc = new Connect(frame1,LangTool.getString("ss.title"),sessions);
+      ConnectDialog sc = new ConnectDialog(frame1,LangTool.getString("ss.title"),sessions);
 
       // load the new session information from the session property file
       loadSessions();

@@ -95,7 +95,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class Connect extends JDialog implements ActionListener, ChangeListener {
+public class ConnectDialog extends JDialog implements ActionListener, ChangeListener {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -103,7 +103,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
    JPanel configOptions = new JPanel();
    JPanel sessionPanel = new JPanel();
    JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
-   JPanel interfacePanel = new JPanel();
+   JPanel interfacePanel = null;
    JPanel sessionOpts = new JPanel();
    JPanel sessionOptPanel = new JPanel(
          new FlowLayout(FlowLayout.CENTER, 30, 10));
@@ -117,6 +117,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
    JPanel externalOpts = new JPanel();
    JPanel externalOptPanel = new JPanel(
          new FlowLayout(FlowLayout.CENTER, 30, 10));
+   JPanel aboutPanel = null;
    
    JTable sessions = null;
    JTable externals = null;
@@ -184,7 +185,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
 
    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-   public Connect(Frame frame, String title, Properties prop) {
+   public ConnectDialog(Frame frame, String title, Properties prop) {
 
       super(frame, title, true);
 
@@ -220,8 +221,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
 
       optionTabs.addChangeListener(this);
 
-      optionTabs
-            .addTab(LangTool.getString("ss.labelConnections"), sessionPanel);
+      optionTabs.addTab(LangTool.getString("ss.labelConnections"), sessionPanel);
       optionTabs.addTab(LangTool.getString("ss.labelOptions1"), emulOptPanel);
       createLoggingPanel();
       optionTabs.addTab(LangTool.getString("ss.labelLogging"), loggingPanel);
@@ -232,6 +232,9 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
       createExternalProgramsPanel();
       optionTabs.addTab(LangTool.getString("ss.labelExternal"), externalPanel);
 
+      createAboutPanel();
+      optionTabs.addTab("About", aboutPanel);
+      
       // add the panels to our dialog
       getContentPane().add(optionTabs, BorderLayout.CENTER);
       getContentPane().add(options, BorderLayout.SOUTH);
@@ -275,6 +278,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
          }
       });
 
+      
       // now show the world what we and they can do
       this.setVisible(true);
 
@@ -902,6 +906,28 @@ public class Connect extends JDialog implements ActionListener, ChangeListener {
 
       addOptButton(LangTool.getString("ss.optCancel"), "DONE", options);
 
+   }
+   
+   /**
+    * Simple about the program ... 
+    */
+   private void createAboutPanel() {
+
+	   aboutPanel = new JPanel();
+	   
+	   JPanel contenpane = new JPanel();
+	   
+	   TitledBorder tb = BorderFactory.createTitledBorder("About");
+	   tb.setTitleJustification(TitledBorder.CENTER);
+	   
+	   contenpane.add(new JLabel("TN5250j"));
+	   contenpane.add(new JLabel("Version: " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer));
+	   
+	   contenpane.setLayout(new BoxLayout(contenpane, BoxLayout.Y_AXIS));
+	   
+	   aboutPanel.add(contenpane);
+	   aboutPanel.setBorder(tb);
+	   
    }
 
    private JButton addOptButton(String text, String ac, Container container) {
