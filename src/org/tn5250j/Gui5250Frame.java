@@ -193,7 +193,7 @@ public class Gui5250Frame extends GUIViewInterface implements
     */
    private void setSessionTitle(final SessionGUI session) {
       if (session != null) {
-         if (session != null && session.getAllocDeviceName() != null && session.isConnected()) {
+         if (session.getAllocDeviceName() != null && session.isConnected()) {
             if (sequence - 1 > 0)
                setTitle(session.getAllocDeviceName() + " - tn5250j <" + sequence + ">");
             else
