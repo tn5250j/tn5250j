@@ -51,6 +51,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -97,6 +98,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class ConnectDialog extends JDialog implements ActionListener, ChangeListener {
 	
+	private static final String USER_PREF_LAST_SESSION = "last_session";
+
 	private static final long serialVersionUID = 1L;
 	
 // panels to be displayed
@@ -252,17 +255,29 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       setLocation((screenSize.width - frameSize.width) / 2,
             (screenSize.height - frameSize.height) / 2);
 
-      // set default selection value as the first row or default session
       if (sessions.getRowCount() > 0) {
-         int selInterval = 0;
+         int selInterval = -1;
+         // set default selection value as the first row or default session
          for (int x = 0; x < sessions.getRowCount(); x++) {
-            if (((Boolean) ctm.getValueAt(x, 2)).booleanValue())
-               selInterval = x;
+            if (((Boolean) ctm.getValueAt(x, 2)).booleanValue()){
+            	selInterval = x; break;
+            }
          }
-         sessions.getSelectionModel().setSelectionInterval(selInterval,
-               selInterval);
-      }
-      else {
+         // if no default selected, use last selection
+         if (selInterval < 0) {
+        	 final String lastConKey = loadSelectedSessionPreference();
+        	 if (lastConKey == null) {
+        		 selInterval = 0;
+        	 } else {
+        		 for (int x = 0; x < sessions.getRowCount(); x++) {
+        			 if (lastConKey.equals(ctm.getValueAt(x, 0))) {
+        				 selInterval = x; break;
+        			 }
+        		 }
+        	 }
+         } 
+         sessions.getSelectionModel().setSelectionInterval(selInterval, selInterval);
+      } else {
          connectButton.setEnabled(false);
       }
       // Oh man what a pain in the ass. Had to add a window listener to request
@@ -1080,6 +1095,10 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
    private void saveProps() {
 
+	  if (connectKey != null) {
+		  saveSelectedSessionPreference(connectKey);
+	  }
+	   
       setOptionAccess();
 
       setExternalPrograms();
@@ -1092,6 +1111,28 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 			  ExternalProgramConfig.EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME,
 			  ExternalProgramConfig.EXTERNAL_PROGRAM_HEADER);
       OptionAccessFactory.getInstance().reload();
+   }
+
+   /**
+    * Saves the last selected session in a system provided user space.
+    * 
+    * @param connectKey
+    * @see {@link java.util.prefs.Preferences}
+    */
+   private void saveSelectedSessionPreference(String connectKey) {
+	   final Preferences userpref = Preferences.userNodeForPackage(SessionsDataModel.class);
+	   userpref.put(USER_PREF_LAST_SESSION, connectKey);
+   }
+   
+   /**
+    * Saves the last selected session in a system provided user space.
+    * 
+    * @param connectKey
+    * @see {@link java.util.prefs.Preferences}
+    */
+   private String loadSelectedSessionPreference() {
+	   final Preferences userpref = Preferences.userNodeForPackage(SessionsDataModel.class);
+	   return userpref.get(USER_PREF_LAST_SESSION, null);
    }
 
    /**

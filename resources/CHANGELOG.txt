@@ -26,6 +26,8 @@ default that I set up.  This is for JVM supplied by IBM.
 Enhancements/Change Log
 -----------------------
 
+31/05/2010  Added: Saving last connected session at user's preference store, preselecting last selected session on startup
+
 05/12/2009  Added: Sessions table, sorting by session name ignoring case
             Added: Sessions table, sorting by host/ip is possible
 
