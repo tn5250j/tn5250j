@@ -266,16 +266,15 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
          // if no default selected, use last selection
          if (selInterval < 0) {
         	 final String lastConKey = loadSelectedSessionPreference();
-        	 if (lastConKey == null) {
-        		 selInterval = 0;
-        	 } else {
+        	 if (lastConKey != null) {
         		 for (int x = 0; x < sessions.getRowCount(); x++) {
         			 if (lastConKey.equals(ctm.getValueAt(x, 0))) {
         				 selInterval = x; break;
         			 }
         		 }
         	 }
-         } 
+         }
+         if (selInterval<0) selInterval = 0;  
          sessions.getSelectionModel().setSelectionInterval(selInterval, selInterval);
       } else {
          connectButton.setEnabled(false);
