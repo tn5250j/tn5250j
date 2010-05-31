@@ -96,12 +96,12 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class Connect extends JDialog implements ActionListener, ChangeListener,
+public class ConnectDialog extends JDialog implements ActionListener, ChangeListener,
       TN5250jConstants {
 
    private static final long serialVersionUID = 1L;
    
-   volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(Connect.class);
+   volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(ConnectDialog.class);
    
    // panels to be displayed
    JPanel configOptions = new JPanel();
@@ -186,7 +186,7 @@ public class Connect extends JDialog implements ActionListener, ChangeListener,
    private JTextField browser;
    private JTextField mailer;
 
-   public Connect(Frame frame, String title, Properties prop) {
+   public ConnectDialog(Frame frame, String title, Properties prop) {
 
       super(frame, title, true);
 
