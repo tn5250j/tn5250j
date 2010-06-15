@@ -48,7 +48,7 @@ class ToolboxCodePage
     Object result;
     try
     {
-      result = TOSTRING_METHOD.invoke(this.converter, new Object[] {new byte[] { (byte) index}});
+      result = TOSTRING_METHOD.invoke(this.converter, new Object[] {new byte[] { (byte) (index & 0xFF) }});
     }
     catch (Throwable t)
     {
