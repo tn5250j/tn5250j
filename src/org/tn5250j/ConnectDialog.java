@@ -35,6 +35,7 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -274,6 +275,9 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
          }
          if (selInterval<0) selInterval = 0;  
          sessions.getSelectionModel().setSelectionInterval(selInterval, selInterval);
+         int targetrow = Math.min(sessions.getRowCount()-1, selInterval+3); // show additional 3 more lines
+         Rectangle cellRect = sessions.getCellRect(targetrow, 0, true);
+         sessions.scrollRectToVisible(cellRect);
       } else {
          connectButton.setEnabled(false);
       }
