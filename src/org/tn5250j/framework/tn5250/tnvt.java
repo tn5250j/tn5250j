@@ -79,6 +79,7 @@ public final class tnvt implements Runnable {
 	private int devSeq = -1;
 	private String devName;
 	private String devNameUsed;
+	private KbdTypesCodePages kbdTypesCodePage;
 	// WVL - LDC : TR.000300 : Callback scenario from 5250
 	private boolean scan; // = false;
 	private static int STRSCAN = 1;
@@ -2554,23 +2555,13 @@ public final class tnvt implements Runnable {
 
                            break;
 
-                       case NEW_ENVIRONMENT: // 39 rfc1572
-                           if (devName == null && user == null) {
-                              baosp.write(IAC);
-                              baosp.write(WONT);
-                              baosp.write(NEW_ENVIRONMENT);
-                              writeByte(baosp.toByteArray());
-                              baosp.reset();
-
-                           }
-                           else {
+                       case NEW_ENVIRONMENT: // 39 rfc1572, rfc4777
+                    	   // allways send new environment vars ...
                               baosp.write(IAC);
                               baosp.write(WILL);
                               baosp.write(NEW_ENVIRONMENT);
                               writeByte(baosp.toByteArray());
                               baosp.reset();
-
-                           }
                            break;
 
                        default:  // every thing else we will not do at this time
@@ -2656,6 +2647,25 @@ public final class tnvt implements Runnable {
 		baosp.write(SB);
 		baosp.write(NEW_ENVIRONMENT);
 		baosp.write(IS);
+
+		// http://tools.ietf.org/html/rfc4777
+
+		if (kbdTypesCodePage != null) {
+			baosp.write(USERVAR);
+			baosp.write("KBDTYPE".getBytes());
+			baosp.write(VALUE);
+			baosp.write(kbdTypesCodePage.kbdType.getBytes());
+			
+			baosp.write(USERVAR);
+			baosp.write("CODEPAGE".getBytes());
+			baosp.write(VALUE);
+			baosp.write(kbdTypesCodePage.codepage.getBytes());
+			
+			baosp.write(USERVAR);
+			baosp.write("CHARSET".getBytes());
+			baosp.write(VALUE);
+			baosp.write(kbdTypesCodePage.charset.getBytes());
+		}
 
 		if (devName != null) {
 			baosp.write(USERVAR);
@@ -2751,8 +2761,14 @@ public final class tnvt implements Runnable {
 	}
 
 	public final void setCodePage(String cp) {
-
 		codePage = CharMappings.getCodePage(cp);
+		cp = cp.toLowerCase();
+		for (KbdTypesCodePages kbdtyp : KbdTypesCodePages.values()) {
+			if (("cp"+kbdtyp.codepage).equals(cp) || kbdtyp.ccsid.equals(cp)) {
+				kbdTypesCodePage = kbdtyp;
+				break;
+			}
+		}
 	}
 
 	public final CodePage getCodePage() {
