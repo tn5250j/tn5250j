@@ -37,9 +37,6 @@ import java.util.zip.Deflater;
  */
 public class PNGEncoder extends AbstractImageEncoder {
 
-public PNGEncoder() {
-}
-
    public void saveImage() throws IOException, EncoderException {
       if (img == null)
       error("PNG encoding error: Image is NULL.");
@@ -212,10 +209,16 @@ public PNGEncoder() {
 
    }
 
+   /**
+	* @param outarray
+	* @param pixelarray
+	* @param cmodel
+	* @param width
+	* @param height
+	* @return
+	* @throws EncoderException
+	*/
    public int compress(byte[] outarray, int[] pixelarray, ColorModel cmodel, int width, int height) throws EncoderException {
-
-       Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
-
        byte[] inarray = new byte[(pixelarray.length * 3) + height];
        for (int i = 0; i < height; i++) {
            inarray[i * ((width * 3) + 1)] = byteFromInt(0);
@@ -225,23 +228,18 @@ public PNGEncoder() {
                inarray[(i * ((width * 3) + 1)) + j + 3] = (byte) cmodel.getBlue(pixelarray[(i * width) + (int)Math.floor(j / 3)]);
            }
        }
-
-       deflater.setInput(inarray, 0,inarray.length);
-       deflater.finish();
-       deflater.deflate(outarray);
-
-       if (!deflater.finished()) {
-           error("PNG encoding error: Deflater could not compress image data.");
-       }
-       byte[] temp = bytesFromLong(deflater.getAdler());
-
-       return (deflater.getTotalOut());
-
+       return compressInternal(outarray, inarray);
    }
 
-   public int compress(byte[] outarray, byte[] pixelarray, int width, int height) throws EncoderException {
-       Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
-
+   /**
+    * @param outarray
+	* @param pixelarray
+	* @param width
+	* @param height
+	* @return
+	* @throws EncoderException
+	*/
+	public int compress(byte[] outarray, byte[] pixelarray, int width, int height) throws EncoderException {
        byte[] inarray = new byte[pixelarray.length + height];
        for (int i = 0; i < height; i++) {
            inarray[i * (width + 1)] = byteFromInt(0);
@@ -249,22 +247,33 @@ public PNGEncoder() {
                inarray[(i * (width + 1)) + j + 1] = pixelarray[(i * width) + j];
            }
        }
-
-       deflater.setInput(inarray, 0,inarray.length);
-       deflater.finish();
-       deflater.deflate(outarray);
-
-       if (!deflater.finished()) {
-           error("PNG encoding error: Deflater could not compress image data.");
-       }
-
-       return (deflater.getTotalOut());
-
+       return compressInternal(outarray, inarray);
    }
 
-   long crc_table[] = null;
+   /**
+    * @param outarray
+    * @param inarray
+    * @return
+ 	* @throws EncoderException
+ 	*/
+	private int compressInternal(byte[] outarray, byte[] inarray) throws EncoderException {
+		Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
+		try {
+			deflater.setInput(inarray, 0,inarray.length);
+			deflater.finish();
+			deflater.deflate(outarray);
+			if (!deflater.finished()) {
+				error("PNG encoding error: Deflater could not compress image data.");
+			}
+			return (deflater.getTotalOut());
+		} finally {
+			deflater.end();
+		}
+	}
 
-   void make_crc_table() {
+   private long crc_table[] = null;
+
+   private void make_crc_table() {
       crc_table = new long[256];
       long c;
       int n;
@@ -283,14 +292,14 @@ public PNGEncoder() {
       }
    }
 
-   long start_crc() {
+   private final static long start_crc() {
       return 0xffffffffL;
    }
-   long end_crc(long crc) {
+   private final static long end_crc(final long crc) {
       return crc ^ 0xffffffffL;
    }
 
-   long update_crc(long crc, byte[] buf) {
+   private long update_crc(long crc, byte[] buf) {
 
       long c = crc;
       for (int i = 0; i < buf.length; i++) {
@@ -300,9 +309,10 @@ public PNGEncoder() {
       return c;
    }
 
-   long update_crc(long crc, byte buf) {
-      if (crc_table == null)
+   private long update_crc(long crc, byte buf) {
+      if (crc_table == null) {
          make_crc_table();
+      }
       return crc_table[(int) ((crc ^ buf) & 0xff)] ^ (crc >> 8);
    }
 
