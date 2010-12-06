@@ -139,6 +139,7 @@ String fileName;
       createNode(top,new DisplayAttributesPanel(changes));
       createNode(top,new CursorAttributesPanel(changes));
       createNode(top,new FontAttributesPanel(changes));
+      createNode(top,new TabAttributesPanel(changes));
       createNode(top,new SignoffAttributesPanel(changes));
       createNode(top,new OnConnectAttributesPanel(changes));
       createNode(top,new MouseAttributesPanel(changes));
