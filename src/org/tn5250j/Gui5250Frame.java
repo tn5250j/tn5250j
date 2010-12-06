@@ -45,6 +45,7 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.TabClosedListener;
 import org.tn5250j.gui.ButtonTabComponent;
+import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -307,13 +308,32 @@ public class Gui5250Frame extends GUIViewInterface implements
       });
    }
 
-   /* (non-Javadoc)
-    * @see org.tn5250j.event.TabClosedListener#onTabClosed(int)
-    */
-   public void onTabClosed(int tabToBeClosed){
-	   final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
-	   me.closeSession(sessionAt);
-   }
+	/* (non-Javadoc)
+	 * @see org.tn5250j.event.TabClosedListener#onTabClosed(int)
+	 */
+	public void onTabClosed(int tabToBeClosed) {
+		final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
+
+		final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(sessionAt);
+
+		SessionConfig sesConfig = sessionAt.session.getConfiguration();
+
+		boolean close = true;
+
+		if (sesConfig.isPropertyExists("confirmTabClose")) {
+			if(sesConfig.getStringProperty("confirmTabClose").equals("Yes")) {
+				if(!tabclsdlg.show()) {
+					close = false;
+				}
+			}
+		}
+
+		if (close) {
+			me.closeSession(sessionAt);
+		}
+
+	}
+
 
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#removeSessionView(org.tn5250j.SessionGUI)
