@@ -21,33 +21,25 @@ package org.tn5250j.framework;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.swing.JFrame;
-
 import org.tn5250j.GlobalConfigure;
-import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.SessionGUI;
-import org.tn5250j.Session5250;
 import org.tn5250j.framework.common.SessionManager;
-import org.tn5250j.TN5250jConstants;
+import org.tn5250j.framework.common.Sessions;
+import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
-import org.tn5250j.framework.common.Sessions;
 
 
 public class Tn5250jController extends Thread {
@@ -244,143 +236,155 @@ public class Tn5250jController extends Thread {
 
 	}
 
-	protected Properties getPropertiesForSession(String session) {
-		return null;
-	}
+//	protected Properties getPropertiesForSession(String session) {
+//		return null;
+//	}
 
+	/**
+	 * @param name
+	 * @return
+	 * @deprecated Never used ...
+	 */
+	@Deprecated
 	public Screen5250 startSession(String name) {
-		JFrame frame = new JFrame();
-		String args[] = new String[15];
-		parseArgs((String) sesprops.get(name), args);
-		Properties fin = convertToProps(args);
-		Session5250 newses = manager.openSession(fin, null, name);
-      SessionGUI newGui = new SessionGUI(newses);
-		frame.getContentPane().add(newGui);
-		frame.setBounds(50, 50, 960, 700);
-		frame.setVisible(true);
-		newses.connect();
-		return newses.getScreen();
+		throw new UnsupportedOperationException("not working any more!");
+//		JFrame frame = new JFrame();
+//		String args[] = new String[15];
+//		parseArgs((String) sesprops.get(name), args);
+//		Properties fin = convertToProps(args);
+//		Session5250 newses = manager.openSession(fin, null, name);
+//      SessionGUI newGui = new SessionGUI(newses);
+//		frame.getContentPane().add(newGui);
+//		frame.setBounds(50, 50, 960, 700);
+//		frame.setVisible(true);
+//		newses.connect();
+//		return newses.getScreen();
 	}
 
-	public List<String> getSessions() {
-		Enumeration<Object> e = sesprops.keys();
-		ArrayList<String> list = new ArrayList<String>();
-		String ses = null;
-		//This has the nasty tendency to grab data it isn't suposed to grab.
-		//please fix
-		while (e.hasMoreElements()) {
-			ses = (String) e.nextElement();
-			if (!ses.startsWith("emul.")) {
-				list.add(ses);
-			}
-		}
-		log.error(list.toString());
-		return list;
-	}
-
-	protected void parseArgs(String theStringList, String[] s) {
-		int x = 0;
-		StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
-		while (tokenizer.hasMoreTokens()) {
-			s[x++] = tokenizer.nextToken();
-		}
-	}
-
-	protected Properties convertToProps(String args[]) {
-		Properties sesProps = new Properties();
-
-		String session = args[0];
-
-		// Start loading properties
-		sesProps.put(TN5250jConstants.SESSION_HOST, session);
-
-		if (isSpecified("-e", args))
-			sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED, "1");
-
-		if (isSpecified("-p", args)) {
-			sesProps.put(TN5250jConstants.SESSION_HOST_PORT, getParm("-p", args));
-		}
-
-//		if (isSpecified("-f", args)) {
-//			String propFileName = getParm("-f", args);
+//	public List<String> getSessions() {
+//		Enumeration<Object> e = sesprops.keys();
+//		ArrayList<String> list = new ArrayList<String>();
+//		String ses = null;
+//		//This has the nasty tendency to grab data it isn't suposed to grab.
+//		//please fix
+//		while (e.hasMoreElements()) {
+//			ses = (String) e.nextElement();
+//			if (!ses.startsWith("emul.")) {
+//				list.add(ses);
+//			}
 //		}
+//		log.error(list.toString());
+//		return list;
+//	}
 
-		if (isSpecified("-cp", args))
-			sesProps.put(TN5250jConstants.SESSION_CODE_PAGE, getParm("-cp", args));
+//	protected void parseArgs(String theStringList, String[] s) {
+//		int x = 0;
+//		StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
+//		while (tokenizer.hasMoreTokens()) {
+//			s[x++] = tokenizer.nextToken();
+//		}
+//	}
 
-		if (isSpecified("-gui", args))
-			sesProps.put(TN5250jConstants.SESSION_USE_GUI, "1");
+//	/**
+//	 * @param args
+//	 * @return
+//	 * @deprecated not used any more ...
+//	 */
+//	protected Properties convertToProps(String args[]) {
+//		Properties sesProps = new Properties();
+//
+//		String session = args[0];
+//
+//		// Start loading properties
+//		sesProps.put(TN5250jConstants.SESSION_HOST, session);
+//
+//		if (isSpecified("-e", args))
+//			sesProps.put(TN5250jConstants.SESSION_TN_ENHANCED, "1");
+//
+//		if (isSpecified("-p", args)) {
+//			sesProps.put(TN5250jConstants.SESSION_HOST_PORT, getParm("-p", args));
+//		}
+//
+////		if (isSpecified("-f", args)) {
+////			String propFileName = getParm("-f", args);
+////		}
+//
+//		if (isSpecified("-cp", args))
+//			sesProps.put(TN5250jConstants.SESSION_CODE_PAGE, getParm("-cp", args));
+//
+////		if (isSpecified("-gui", args))
+////			sesProps.put(TN5250jConstants.SESSION_USE_GUI, "1");
+//
+//		if (isSpecified("-132", args))
+//			sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_27X132_STR);
+//		else
+//			sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_24X80_STR);
+//
+//		// are we to use a socks proxy
+//		if (isSpecified("-usp", args)) {
+//
+//			// socks proxy host argument
+//			if (isSpecified("-sph", args)) {
+//				sesProps.put(TN5250jConstants.SESSION_PROXY_HOST, getParm("-sph", args));
+//			}
+//
+//			// socks proxy port argument
+//			if (isSpecified("-spp", args))
+//				sesProps.put(TN5250jConstants.SESSION_PROXY_PORT, getParm("-spp", args));
+//		}
+//
+//		// are we to use a ssl and if we are what type
+//		if (isSpecified("-sslType", args)) {
+//
+//			sesProps.put(TN5250jConstants.SSL_TYPE, getParm("-sslType", args));
+//		}
+//
+//		// check if device name is specified
+//		if (isSpecified("-dn=hostname", args)) {
+//			String dnParam;
+//
+//			// use IP address as device name
+//			try {
+//				dnParam = InetAddress.getLocalHost().getHostName();
+//			} catch (UnknownHostException uhe) {
+//				dnParam = "UNKNOWN_HOST";
+//			}
+//
+//			sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME, dnParam);
+//		} else if (isSpecified("-dn", args)) {
+//
+//			sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME, getParm("-dn", args));
+//		}
+//
+//		if (isSpecified("-hb", args))
+//			sesProps.put(TN5250jConstants.SESSION_HEART_BEAT, "1");
+//
+//		return sesProps;
+//	}
 
-		if (isSpecified("-132", args))
-			sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_27X132_STR);
-		else
-			sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE, TN5250jConstants.SCREEN_SIZE_24X80_STR);
+//	boolean isSpecified(String parm, String[] args) {
+//
+//		if (args == null)
+//			return false;
+//
+//		for (int x = 0; x < args.length; x++) {
+//
+//			if (args[x] != null && args[x].equals(parm))
+//				return true;
+//
+//		}
+//		return false;
+//	}
 
-		// are we to use a socks proxy
-		if (isSpecified("-usp", args)) {
-
-			// socks proxy host argument
-			if (isSpecified("-sph", args)) {
-				sesProps.put(TN5250jConstants.SESSION_PROXY_HOST, getParm("-sph", args));
-			}
-
-			// socks proxy port argument
-			if (isSpecified("-spp", args))
-				sesProps.put(TN5250jConstants.SESSION_PROXY_PORT, getParm("-spp", args));
-		}
-
-		// are we to use a ssl and if we are what type
-		if (isSpecified("-sslType", args)) {
-
-			sesProps.put(TN5250jConstants.SSL_TYPE, getParm("-sslType", args));
-		}
-
-		// check if device name is specified
-		if (isSpecified("-dn=hostname", args)) {
-			String dnParam;
-
-			// use IP address as device name
-			try {
-				dnParam = InetAddress.getLocalHost().getHostName();
-			} catch (UnknownHostException uhe) {
-				dnParam = "UNKNOWN_HOST";
-			}
-
-			sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME, dnParam);
-		} else if (isSpecified("-dn", args)) {
-
-			sesProps.put(TN5250jConstants.SESSION_DEVICE_NAME, getParm("-dn", args));
-		}
-
-		if (isSpecified("-hb", args))
-			sesProps.put(TN5250jConstants.SESSION_HEART_BEAT, "1");
-
-		return sesProps;
-	}
-
-	boolean isSpecified(String parm, String[] args) {
-
-		if (args == null)
-			return false;
-
-		for (int x = 0; x < args.length; x++) {
-
-			if (args[x] != null && args[x].equals(parm))
-				return true;
-
-		}
-		return false;
-	}
-
-	private String getParm(String parm, String[] args) {
-
-		for (int x = 0; x < args.length; x++) {
-
-			if (args[x].equals(parm))
-				return args[x + 1];
-
-		}
-		return null;
-	}
+//	private String getParm(String parm, String[] args) {
+//
+//		for (int x = 0; x < args.length; x++) {
+//
+//			if (args[x].equals(parm))
+//				return args[x + 1];
+//
+//		}
+//		return null;
+//	}
 
 }

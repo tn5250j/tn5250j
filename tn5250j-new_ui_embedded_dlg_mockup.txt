@@ -1,0 +1,10 @@
+
+ Ideas for redesign
+-----------------------
+
+ * only focusing on tabbed UI
+   * just like the tendency of all major browsers
+   * reducing maintenance effort
+   * reducing code complexity
+   * simplifying UI and options, focusing on more detailed features in navigation
+    
