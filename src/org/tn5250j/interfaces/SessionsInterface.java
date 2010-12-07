@@ -21,12 +21,12 @@ package org.tn5250j.interfaces;
  *
  */
 
-import org.tn5250j.*;
+import org.tn5250j.Session5250;
+
 public interface SessionsInterface {
 
    public abstract int getCount();
    public abstract Session5250 item (int index);
    public abstract Session5250 item (String sessionName);
-   public abstract void refresh();
 
 }

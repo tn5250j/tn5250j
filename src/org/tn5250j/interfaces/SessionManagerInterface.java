@@ -20,10 +20,10 @@
  */
 package org.tn5250j.interfaces;
 
-import java.util.*;
-
-import org.tn5250j.*;
-import org.tn5250j.framework.common.*;;
+import org.tn5250j.Session5250;
+import org.tn5250j.SessionGUI;
+import org.tn5250j.framework.common.Sessions;
+import org.tn5250j.gui.model.EmulSession;
 
 
 public interface SessionManagerInterface {
@@ -37,7 +37,11 @@ public interface SessionManagerInterface {
 
 //   public abstract Session openSession(String configurationResource
 //                                                , String sessionName);
-   public abstract Session5250 openSession(Properties props, String configurationResource
-                                                , String sessionName);
+   
+//   @Deprecated
+//   public abstract Session5250 openSession(Properties props, String configurationResource
+//                                                , String sessionName);
+   
+   public abstract Session5250 openSession(EmulSession props, String configurationResource, String sessionName);
 
 }

@@ -20,13 +20,17 @@
  */
 package org.tn5250j.framework.common;
 
-import java.util.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.Timer;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.tools.logging.*;
 import org.tn5250j.interfaces.SessionsInterface;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 
 /**
@@ -35,16 +39,10 @@ import org.tn5250j.interfaces.SessionsInterface;
  */
 public class Sessions implements SessionsInterface,ActionListener {
 
-   private List<Session5250> sessions = null;
-   private int count = 0;
+   private final List<Session5250> sessions = new ArrayList<Session5250>();
    private Timer heartBeater;
 
    private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
-
-   public Sessions() {
-
-      sessions = new ArrayList<Session5250>();
-   }
 
    public void actionPerformed(ActionEvent e) {
 
@@ -73,7 +71,6 @@ public class Sessions implements SessionsInterface,ActionListener {
          heartBeater.start();
 
       }
-      ++count;
    }
 
 	protected void removeSession(Session5250 session) {
@@ -82,7 +79,6 @@ public class Sessions implements SessionsInterface,ActionListener {
 			if (session.isConnected())
 				session.disconnect();
 			sessions.remove(session);
-			--count;
 		}
 	}
 
@@ -99,8 +95,7 @@ public class Sessions implements SessionsInterface,ActionListener {
    }
 
    public int getCount() {
-
-      return count;
+      return sessions.size();
    }
 
    public Session5250 item (int index) {
@@ -153,12 +148,5 @@ public class Sessions implements SessionsInterface,ActionListener {
          newS.add(sessions.get(x));
       return newS;
    }
-
-   public void refresh() {
-
-
-
-   }
-
 
 }
