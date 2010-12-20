@@ -74,15 +74,13 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	private char[] signonSave;
 
 	private BorderLayout borderLayout1 = new BorderLayout();
-	Screen5250 screen;
-	String propFileName;
+	private Screen5250 screen;
 	protected Session5250 session;
 	private GuiGraphicBuffer guiGraBuf;
-	TNRubberBand rubberband;
-	JPanel s = new JPanel();
-	KeyPad keyPad = new KeyPad();
-	Macronizer macros;
-	String newMacName;
+	protected TNRubberBand rubberband;
+	private JPanel s = new JPanel();
+	private KeyPad keyPad = new KeyPad();
+	private String newMacName;
 	private Vector<SessionJumpListener> listeners = null;
 	private Vector<EmulatorActionListener> actionListeners = null;
 	private SessionJumpEvent jumpEvent;
@@ -99,7 +97,6 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		//, SessionConfig config) {
 
 		this.session = session;
-		propFileName = session.getConfigurationResource();
 
 		sesConfig = session.getConfiguration();
 
@@ -205,8 +202,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 			removeMouseWheelListener(this);
 		}
 
-		log.debug("Initializing macros");
-		macros = new Macronizer();
+		if (log.isDebugEnabled()) log.debug("Initializing macros");
 		Macronizer.init();
 
 		keyPad.addActionListener(this);
