@@ -55,6 +55,7 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
@@ -402,44 +403,69 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	}
 
 	public void closeSession() {
-
-		Object[]      message = new Object[1];
-		message[0] = LangTool.getString("cs.message");
-
-		String[] options = {LangTool.getString("cs.optThis"),
-				LangTool.getString("cs.optAll"),
-				LangTool.getString("cs.optCancel")};
-
-		int result = JOptionPane.showOptionDialog(
-				this.getParent(),            // the parent that the dialog blocks
-				message,                           // the dialog message array
-				LangTool.getString("cs.title"),    // the title of the dialog window
-				JOptionPane.DEFAULT_OPTION,        // option type
-				JOptionPane.QUESTION_MESSAGE,      // message type
-				null,                              // optional icon, use null to use the default icon
-				options,                           // options string array, will be made into buttons//
-				options[0]                         // option that should be made into a default button
-		);
-
-		if (result == 0) {
-			if (!this.isOnSignOnScreen()) {
-
-				if (confirmClose()) {
-					closeMe();
-
-				}
-			}
-			else {
-				closeMe();
-			}
-
+		// only ask if not connected
+		boolean close = !isConnected() || doConfirmTabClose(sesConfig);
+		if (close) {
+			fireEmulatorAction(EmulatorActionEvent.CLOSE_SESSION);
 		}
-		if (result == 1) {
-			fireEmulatorAction(EmulatorActionEvent.CLOSE_EMULATOR);
-		}
+
+//		Object[]      message = new Object[1];
+//		message[0] = LangTool.getString("cs.message");
+//
+//		String[] options = {LangTool.getString("cs.optThis"),
+//				LangTool.getString("cs.optAll"),
+//				LangTool.getString("cs.optCancel")};
+//
+//		int result = JOptionPane.showOptionDialog(
+//				this.getParent(),            // the parent that the dialog blocks
+//				message,                           // the dialog message array
+//				LangTool.getString("cs.title"),    // the title of the dialog window
+//				JOptionPane.DEFAULT_OPTION,        // option type
+//				JOptionPane.QUESTION_MESSAGE,      // message type
+//				null,                              // optional icon, use null to use the default icon
+//				options,                           // options string array, will be made into buttons//
+//				options[0]                         // option that should be made into a default button
+//		);
+//
+//		if (result == 0) {
+//			if (!this.isOnSignOnScreen()) {
+//
+//				if (confirmSignOff()) {
+//					closeMe();
+//
+//				}
+//			}
+//			else {
+//				closeMe();
+//			}
+//
+//		}
+//		if (result == 1) {
+//			fireEmulatorAction(EmulatorActionEvent.CLOSE_EMULATOR);
+//		}
 
 	}
 
+	/**
+	 * Asks the user to confirm tab close,
+	 * only if configured (option 'confirm tab close')
+	 * 
+	 * @param sesConfig
+	 * @return true if tab should be closed, false if not
+	 */
+	protected boolean doConfirmTabClose(SessionConfig sesConfig) {
+		boolean result = true;
+		if (sesConfig.isPropertyExists("confirmTabClose")) {
+			final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(this);
+			if(sesConfig.getStringProperty("confirmTabClose").equals("Yes")) {
+				if(!tabclsdlg.show()) {
+					result = false;
+				}
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Check is the parameter to confirm that the Sign On screen is the current
 	 * screen.  If it is then we check against the saved Signon Screen in memory
@@ -447,7 +473,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 *
 	 * @return whether or not the signon on screen is the current screen
 	 */
-	private boolean confirmClose() {
+	private boolean confirmSignOff() {
 
 		if (sesConfig.isPropertyExists("confirmSignoff") &&
 				sesConfig.getStringProperty("confirmSignoff").equals("Yes")) {
@@ -632,8 +658,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		if (actionListeners != null) {
 			int size = actionListeners.size();
 			for (int i = 0; i < size; i++) {
-				EmulatorActionListener target =
-					actionListeners.elementAt(i);
+				EmulatorActionListener target = actionListeners.elementAt(i);
 				EmulatorActionEvent sae = new EmulatorActionEvent(this);
 				sae.setAction(action);
 				target.onEmulatorAction(sae);
