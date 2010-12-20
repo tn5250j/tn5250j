@@ -54,11 +54,11 @@ public class Session5250 implements SessionInterface {
 	//   protected Properties sesProps;
 	private final EmulSession sesProps;
 	private final boolean heartBeat;
-	String propFileName;
-	protected SessionConfig sesConfig;
-	tnvt vt;
-	Screen5250 screen;
-	SessionGUI guiComponent;
+	private final String propFileName;
+	private final SessionConfig sesConfig;
+	private tnvt vt;
+	private final Screen5250 screen;
+	private SessionGUI guiComponent;
 
 	private List<SessionListener> sessionListeners = null;
 	private final ReadWriteLock sessionListenerLock = new ReentrantReadWriteLock(); 

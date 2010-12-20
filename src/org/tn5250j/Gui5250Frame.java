@@ -45,7 +45,6 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.event.TabClosedListener;
 import org.tn5250j.gui.ButtonTabComponent;
-import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -223,23 +222,23 @@ public class Gui5250Frame extends GUIViewInterface implements
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#addSessionView(java.lang.String, org.tn5250j.SessionGUI)
     */
-   public void addSessionView(final String tabText, final SessionGUI newsesui) {
+   public void addSessionView(final String tabText, final SessionGUI sessiongui) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
          // put Session just in the main content window and don't create any tabs
 
-         this.getContentPane().add(newsesui, BorderLayout.CENTER);
-         newsesui.addSessionListener(this);
+         this.getContentPane().add(sessiongui, BorderLayout.CENTER);
+         sessiongui.addSessionListener(this);
 
-         newsesui.resizeMe();
+         sessiongui.resizeMe();
          repaint();
          if (packFrame)
             pack();
          else
             validate();
          embedded = true;
-         newsesui.requestFocusInWindow();
-         setSessionTitle(newsesui);
+         sessiongui.requestFocusInWindow();
+         setSessionTitle(sessiongui);
       }
       else {
 
@@ -272,7 +271,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             });
          }
 
-         createTabWithSessionContent(tabText, newsesui, true);
+         createTabWithSessionContent(tabText, sessiongui, true);
       }
    }
 
@@ -312,28 +311,13 @@ public class Gui5250Frame extends GUIViewInterface implements
 	 * @see org.tn5250j.event.TabClosedListener#onTabClosed(int)
 	 */
 	public void onTabClosed(int tabToBeClosed) {
-		final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
-
-		final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(sessionAt);
-
-		SessionConfig sesConfig = sessionAt.session.getConfiguration();
-
-		boolean close = true;
-
-		if (sesConfig.isPropertyExists("confirmTabClose")) {
-			if(sesConfig.getStringProperty("confirmTabClose").equals("Yes")) {
-				if(!tabclsdlg.show()) {
-					close = false;
-				}
-			}
-		}
-
-		if (close) {
-			me.closeSession(sessionAt);
+		final SessionGUI sessiongui = this.getSessionAt(tabToBeClosed);
+		SessionConfig sesConfig = sessiongui.session.getConfiguration();
+		if (sessiongui.doConfirmTabClose(sesConfig)) {
+			me.closeSession(sessiongui);
 		}
 
 	}
-
 
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#removeSessionView(org.tn5250j.SessionGUI)
