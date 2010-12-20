@@ -35,6 +35,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -53,7 +55,6 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
@@ -64,11 +65,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 /**
  * A host GUI session
  */
-public class SessionGUI extends JPanel implements ComponentListener,
-ActionListener,
-RubberBandCanvasIF,
-SessionConfigListener,
-SessionListener {
+public class SessionGUI extends JPanel implements ComponentListener, ActionListener, RubberBandCanvasIF, SessionConfigListener, SessionListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -94,7 +91,6 @@ SessionListener {
 	private boolean doubleClick;
 	protected SessionConfig sesConfig;
 	protected KeyboardHandler keyHandler;
-	protected SessionScrollerInterface scroller;
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
@@ -203,11 +199,10 @@ SessionListener {
 
 		});
 
-		scroller = new SessionScroller(this);
 		if (sesConfig.getStringProperty("mouseWheel").equals("Yes")) {
-			scroller.addMouseWheelListener(this);
+			addMouseWheelListener(this);
 		} else {
-			scroller.removeMouseWheelListener(this);
+			removeMouseWheelListener(this);
 		}
 
 		log.debug("Initializing macros");
@@ -539,10 +534,10 @@ SessionListener {
 
 		if (pn.equals("mouseWheel")) {
 			if (((String)pce.getNewValue()).equals("Yes")) {
-				scroller.addMouseWheelListener(this);
+				addMouseWheelListener(this);
 			}
 			else {
-				scroller.removeMouseWheelListener(this);
+				removeMouseWheelListener(this);
 			}
 		}
 
@@ -1268,6 +1263,19 @@ SessionListener {
 	public synchronized void removeSessionListener(SessionListener listener) {
 		session.removeSessionListener(listener);
 
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		final int notches = e.getWheelRotation();
+		if (notches < 0) {
+			screen.sendKeys(TN5250jConstants.MNEMONIC_PAGE_UP);
+		}
+		if (notches > 0) {
+			screen.sendKeys(TN5250jConstants.MNEMONIC_PAGE_DOWN);
+		}
 	}
 
 }
