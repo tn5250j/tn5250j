@@ -33,6 +33,7 @@ import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
@@ -61,6 +62,8 @@ import org.tn5250j.tools.LangTool;
 
 public class SessionsDialog extends JDialog implements ActionListener {
 	
+	private static final String OK_ACTION = "OK";
+
 	private final JPanel contentPanel = new JPanel();
 	
 	private final EmulConfig emulConfig = new EmulConfig();
@@ -76,7 +79,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	
 	private volatile EmulSession selectedSession = null;
 	private volatile boolean dialogResult;
-	private static final String ACTION_OK = "OK";
+	private static final String ACTION_OK = OK_ACTION;
 	private static final String ACTION_CANCEL = "CANCEL";
 
 	/**
@@ -212,7 +215,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		dialogResult = "OK".equals(e.getActionCommand());
+		dialogResult = OK_ACTION.equals(e.getActionCommand());
 		setVisible(false);
 	}
 
@@ -278,6 +281,15 @@ public class SessionsDialog extends JDialog implements ActionListener {
 			conTable.getColumnModel().getColumn(1).setPreferredWidth(250);
 			conTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 			conTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+			conTable.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						final ActionEvent doubleclickAction = new ActionEvent(conTable, e.getID()*37, OK_ACTION);
+						actionPerformed(doubleclickAction);
+					}
+				}
+			});
 		}
 		{
 			btnEdit.addActionListener(new ActionListener() {
