@@ -203,9 +203,12 @@ public class SessionGUI extends JPanel implements ComponentListener,
 
 	      });
 
-	      scroller = new SessionScroller().getScrollerInstance(this);
-	      if (!sesConfig.getStringProperty("mouseWheel").equals("Yes"))
-	         scroller.removeMouseWheelListener(this);
+	      scroller = new SessionScroller(this);
+	      if (sesConfig.getStringProperty("mouseWheel").equals("Yes")) {
+	    	  scroller.addMouseWheelListener(this);
+	      } else {
+	    	  scroller.removeMouseWheelListener(this);
+	      }
 
 			log.debug("Initializing macros");
 	      macros = new Macronizer();
