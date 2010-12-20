@@ -43,7 +43,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -71,13 +72,10 @@ import org.tn5250j.tools.LangTool;
  */
 public final class ButtonTabComponent extends JPanel implements SessionListener {
 
-//   private static final String SESSION_DISCONNECTED = "sa.disconnected";
-//   private static final String SESSION_CONNECTED    = "sa.connected";
-
    private static final long serialVersionUID = 1L;
    
    private final JTabbedPane pane;
-   private Vector<TabClosedListener> closeListeners;
+   private List<TabClosedListener> closeListeners;
    private final JLabel label;
    
    public ButtonTabComponent(final JTabbedPane pane) {
@@ -136,9 +134,9 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
     */
    public synchronized void addTabCloseListener(TabClosedListener listener) {
       if (closeListeners == null) {
-         closeListeners = new java.util.Vector<TabClosedListener>(3);
+         closeListeners = new ArrayList<TabClosedListener>(3);
       }
-      closeListeners.addElement(listener);
+      closeListeners.add(listener);
    }
 
    /**
@@ -150,7 +148,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
       if (closeListeners == null) {
          return;
       }
-      closeListeners.removeElement(listener);
+      closeListeners.remove(listener);
    }
 
    /**
@@ -162,7 +160,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
       if (closeListeners != null) {
          int size = closeListeners.size();
          for (int i = 0; i < size; i++) {
-            TabClosedListener target = closeListeners.elementAt(i);
+            TabClosedListener target = closeListeners.get(i);
             target.onTabClosed(tabToClose);
          }
       }
@@ -202,6 +200,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 
       // we don't want to update UI for this button
       public void updateUI() {
+    	  
       }
 
       // paint the cross

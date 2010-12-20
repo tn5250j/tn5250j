@@ -111,7 +111,7 @@ public class TabComponentsDemo extends JFrame {
    }
 
    private void initTabComponent(int i) {
-      ButtonTabComponent tabComp = new ButtonTabComponent(tabbedPane);
+      ButtonTabComponentDemo tabComp = new ButtonTabComponentDemo(tabbedPane);
       tabbedPane.setTabComponentAt(i, tabComp);
 //      tabbedPane.addContainerListener(getListener(tabComp));
    }
