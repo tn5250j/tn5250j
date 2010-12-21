@@ -138,7 +138,20 @@ public class SessionPopup {
 			};
 			popup.add(action);
 
-			popup.addSeparator();
+			popup.addSeparator(); // ------------------
+			
+			action = new AbstractAction(LangTool.getString("popup.hexMap")) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHexMap();
+					sessiongui.getFocusForMe();
+				}
+			};
+			popup.add(createMenuItem(action,""));
+			
+			popup.addSeparator(); // ------------------
 		}
 		else {
 
