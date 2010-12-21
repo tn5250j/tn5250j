@@ -33,6 +33,8 @@ import java.awt.Frame;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -61,7 +63,9 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
 public class SessionsDialog extends JDialog implements ActionListener {
-	
+
+	private static final long serialVersionUID = 2959214173388919093L;
+
 	private static final String OK_ACTION = "OK";
 
 	private final JPanel contentPanel = new JPanel();
@@ -281,12 +285,23 @@ public class SessionsDialog extends JDialog implements ActionListener {
 			conTable.getColumnModel().getColumn(1).setPreferredWidth(250);
 			conTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 			conTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+			// double clicks
 			conTable.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2) {
 						final ActionEvent doubleclickAction = new ActionEvent(conTable, e.getID()*37, OK_ACTION);
 						actionPerformed(doubleclickAction);
+					}
+				}
+			});
+			// enter also means connect
+			conTable.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+						final ActionEvent entAction = new ActionEvent(conTable, e.getID()*37, OK_ACTION);
+						actionPerformed(entAction);
 					}
 				}
 			});
