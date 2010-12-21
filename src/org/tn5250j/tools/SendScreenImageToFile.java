@@ -26,78 +26,79 @@
 
 package org.tn5250j.tools;
 
-import java.io.*;
-import javax.swing.*;
 import java.awt.Frame;
+import java.io.File;
 
-import org.tn5250j.tools.logging.*;
+import javax.swing.JFileChooser;
+
 import org.tn5250j.SessionGUI;
 import org.tn5250j.tools.encoder.EncodeComponent;
 import org.tn5250j.tools.filters.XTFRFileFilter;
-import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class SendScreenImageToFile {
 
-   SessionGUI session;
-   //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
-   Frame  parent;
-   private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
+	SessionGUI session;
+	//  Change sent by Luc - LDC to pass a parent frame like the other dialogs
+	Frame  parent;
+	private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
 
-   public SendScreenImageToFile(Frame parent, SessionGUI ses) {
+	public SendScreenImageToFile(Frame parent, SessionGUI ses) {
 
-      session = ses;
-      this.parent = parent;
-
-
-      try {
-         jbInit();
-      }
-      catch(Exception ex) {
-         log.warn("Error in constructor: "+ ex.getMessage());
-      }
-   }
-
-   void jbInit() throws Exception {
-      getPCFile();
-
-   }
-
-   /**
-    * Get the local file from a file chooser
-    */
-   private void getPCFile() {
-
-      String workingDir = System.getProperty("user.dir");
-      TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
-
-      XTFRFileFilter pngFilter = new XTFRFileFilter("png", "Portable Network Graphics");
-
-      pcFileChooser.setFileFilter(pngFilter);
-
-      int ret = pcFileChooser.showSaveDialog(parent);
-
-      // check to see if something was actually chosen
-      if (ret == JFileChooser.APPROVE_OPTION) {
-
-         File file;
-
-         try {
-            if (!pcFileChooser.getSelectedFile().getCanonicalPath().endsWith(".png"))
-               file = new File(pcFileChooser.getSelectedFile().getCanonicalPath()
-                                 + ".png");
-            else
-               file = pcFileChooser.getSelectedFile();
+		session = ses;
+		this.parent = parent;
 
 
-            EncodeComponent.encode(EncodeComponent.PNG,session, file);
-         }
-         catch (Exception e) {
-            log.warn("Error generating PNG exception caught: " + e.getMessage());
+		try {
+			jbInit();
+		}
+		catch(Exception ex) {
+			log.warn("Error in constructor: "+ ex.getMessage());
+		}
+	}
 
-         }
+	void jbInit() throws Exception {
+		getPCFile();
 
-      }
+	}
 
-   }
+	/**
+	 * Get the local file from a file chooser
+	 */
+	private void getPCFile() {
+
+		String workingDir = System.getProperty("user.dir");
+		JFileChooser pcFileChooser = new JFileChooser(workingDir);
+
+		XTFRFileFilter pngFilter = new XTFRFileFilter("png", "Portable Network Graphics");
+
+		pcFileChooser.setFileFilter(pngFilter);
+
+		int ret = pcFileChooser.showSaveDialog(parent);
+
+		// check to see if something was actually chosen
+		if (ret == JFileChooser.APPROVE_OPTION) {
+
+			File file;
+
+			try {
+				if (!pcFileChooser.getSelectedFile().getCanonicalPath().endsWith(".png"))
+					file = new File(pcFileChooser.getSelectedFile().getCanonicalPath()
+							+ ".png");
+				else
+					file = pcFileChooser.getSelectedFile();
+
+
+				EncodeComponent.encode(EncodeComponent.PNG,session, file);
+			}
+			catch (Exception e) {
+				log.warn("Error generating PNG exception caught: " + e.getMessage());
+
+			}
+
+		}
+
+	}
 
 }
