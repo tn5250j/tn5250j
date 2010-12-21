@@ -46,11 +46,12 @@ public interface TN5250jConstants {
    public static final String SESSION_CODE_PAGE = "SESSION_CODE_PAGE";
    public static final String SESSION_PROXY_HOST = "SESSION_PROXY_HOST";
    public static final String SESSION_PROXY_PORT = "SESSION_PROXY_PORT";
-//   public static final String SESSION_USE_GUI = "SESSION_USE_GUI"; // only written, never read
+   public static final String SESSION_USE_GUI = "SESSION_USE_GUI";
    public static final String SESSION_DEVICE_NAME = "SESSION_DEVICE_NAME";
    public static final String SESSION_NAMES_REFS = "SESSION_NAMES_REFS";
    public static final String SESSION_LOCALE = "SESSION_LOCALE";
    public static final String SESSION_CONFIG_FILE = "SESSION_CONFIG_FILE";
+   public static final String SESSION_TERM_NAME_SYSTEM = "SESSION_TERM_NAME_SYSTEM";
    public static final String SESSION_TERM_NAME = "SESSION_TERM_NAME";
    public static final String SESSION_IS_APPLET = "SESSION_IS_APPLET";
    public static final String SESSION_HEART_BEAT = "SESSION_KEEP_ALIVE_ENABLED";

@@ -1,5 +1,5 @@
 /*
- * @(#)SessionManagerInterface.java
+ * @(#)SessionScrollerInterface.java
  * Copyright:    Copyright (c) 2001
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,12 @@
  */
 package org.tn5250j.interfaces;
 
-import java.util.*;
-
-import org.tn5250j.*;
-import org.tn5250j.framework.common.*;;
+import org.tn5250j.SessionGUI;
 
 
-public interface SessionManagerInterface {
+public interface SessionScrollerInterface {
 
-
-   public abstract Sessions getSessions();
-
-   public abstract void closeSession(String sessionName);
-
-   public abstract void closeSession(SessionGUI sessionObject);
-
-//   public abstract Session openSession(String configurationResource
-//                                                , String sessionName);
-   public abstract Session5250 openSession(Properties props, String configurationResource
-                                                , String sessionName);
+   public abstract void addMouseWheelListener(SessionGUI session);
+   public abstract void removeMouseWheelListener(SessionGUI session);
 
 }

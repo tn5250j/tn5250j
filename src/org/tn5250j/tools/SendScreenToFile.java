@@ -34,6 +34,7 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 
 import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.TN5250jFileFilter;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -41,7 +42,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public class SendScreenToFile {
 
 	private static final TN5250jLogger LOG = TN5250jLogFactory
-	.getLogger(SendScreenToFile.class);
+			.getLogger(SendScreenToFile.class);
 
 	/**
 	 * @param parent
@@ -49,7 +50,7 @@ public class SendScreenToFile {
 	 */
 	public static final void showDialog(Component parent, Screen5250 screen) {
 		String workingDir = System.getProperty("user.dir");
-		JFileChooser fileChooser = new JFileChooser(workingDir);
+		TN5250jFileChooser fileChooser = new TN5250jFileChooser(workingDir);
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setFileFilter(new TN5250jFileFilter("txt", "Text files"));
 

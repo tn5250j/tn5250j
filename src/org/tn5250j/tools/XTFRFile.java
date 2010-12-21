@@ -25,77 +25,34 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DecimalFormat;
+import org.tn5250j.event.*;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import javax.swing.border.*;
+import java.awt.event.*;
+import java.io.*;
+import java.beans.*;
+import java.util.*;
 import java.text.MessageFormat;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.Properties;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.table.AbstractTableModel;
-
-import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionGUI;
-import org.tn5250j.event.FTPStatusEvent;
-import org.tn5250j.event.FTPStatusListener;
-import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.GenericTn5250JFrame;
-import org.tn5250j.gui.TN5250jFileFilter;
-import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
-import org.tn5250j.tools.filters.XTFRFileFilter;
+import org.tn5250j.tools.filters.*;
+import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.gui.TN5250jFileFilter;
+import org.tn5250j.framework.tn5250.tnvt;
 
 public class XTFRFile
-extends GenericTn5250JFrame
-implements ActionListener, FTPStatusListener, ItemListener {
+	extends GenericTn5250JFrame
+	implements ActionListener, FTPStatusListener, ItemListener {
 
 	private static final long serialVersionUID = 1L;
 	private FTP5250Prot ftpProtocol;
@@ -154,29 +111,29 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session) {
 
-		this(parent, pvt, session, null);
-		//		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		//		this.session = session;
-		//		vt = pvt;
-		//		ftpProtocol = new FTP5250Prot(vt);
-		//		ftpProtocol.addFTPStatusListener(this);
-		//		axtfr = new AS400Xtfr(vt);
-		//		axtfr.addFTPStatusListener(this);
-		//		createProgressMonitor();
-		//		initFileFilters();
-		//		initXTFRInfo(null);
-		//
-		//		addWindowListener(new WindowAdapter() {
-		//
-		//			public void windowClosing(WindowEvent we) {
-		//				if (ftpProtocol.isConnected())
-		//					ftpProtocol.disconnect();
-		//			}
-		//
-		//		});
-		//
-		//		messageProgress = LangTool.getString("xtfr.messageProgress");
-		//		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+      this(parent, pvt, session, null);
+//		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//		this.session = session;
+//		vt = pvt;
+//		ftpProtocol = new FTP5250Prot(vt);
+//		ftpProtocol.addFTPStatusListener(this);
+//		axtfr = new AS400Xtfr(vt);
+//		axtfr.addFTPStatusListener(this);
+//		createProgressMonitor();
+//		initFileFilters();
+//		initXTFRInfo(null);
+//
+//		addWindowListener(new WindowAdapter() {
+//
+//			public void windowClosing(WindowEvent we) {
+//				if (ftpProtocol.isConnected())
+//					ftpProtocol.disconnect();
+//			}
+//
+//		});
+//
+//		messageProgress = LangTool.getString("xtfr.messageProgress");
+//		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session, Properties XTFRProps) {
@@ -208,26 +165,26 @@ implements ActionListener, FTPStatusListener, ItemListener {
 	private void initFileFilters() {
 		htmlFilter =
 			new XTFRFileFilter(
-					new String[] { "html", "htm" },
-			"Hyper Text Markup Language");
+				new String[] { "html", "htm" },
+				"Hyper Text Markup Language");
 		htmlFilter.setOutputFilterName(
-		"org.tn5250j.tools.filters.HTMLOutputFilter");
+			"org.tn5250j.tools.filters.HTMLOutputFilter");
 		KSpreadFilter = new XTFRFileFilter("ksp", "KSpread KDE Spreadsheet");
 		KSpreadFilter.setOutputFilterName(
-		"org.tn5250j.tools.filters.KSpreadOutputFilter");
+			"org.tn5250j.tools.filters.KSpreadOutputFilter");
 		OOFilter = new XTFRFileFilter("sxc", "OpenOffice");
 		OOFilter.setOutputFilterName(
-		"org.tn5250j.tools.filters.OpenOfficeOutputFilter");
+			"org.tn5250j.tools.filters.OpenOfficeOutputFilter");
 		ExcelFilter = new XTFRFileFilter("xls", "Excel");
 		ExcelFilter.setOutputFilterName(
-		"org.tn5250j.tools.filters.ExcelOutputFilter");
+			"org.tn5250j.tools.filters.ExcelOutputFilter");
 		DelimitedFilter =
 			new XTFRFileFilter(new String[] { "csv", "tab" }, "Delimited");
 		DelimitedFilter.setOutputFilterName(
-		"org.tn5250j.tools.filters.DelimitedOutputFilter");
+			"org.tn5250j.tools.filters.DelimitedOutputFilter");
 		FixedWidthFilter = new XTFRFileFilter("txt", "Fixed Width");
 		FixedWidthFilter.setOutputFilterName(
-		"org.tn5250j.tools.filters.FixedWidthOutputFilter");
+			"org.tn5250j.tools.filters.FixedWidthOutputFilter");
 		//      ExcelWorkbookFilter = new XTFRFileFilter("xls", "Excel 95 97 XP 2000");
 		//      ExcelWorkbookFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelWorkbookOutputFilter");
 	}
@@ -237,7 +194,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		if (monitor.isCanceled()) {
 			ftpProtocol.setAborted();
 		}
-		else {
+      else {
 			final int prog = statusevent.getCurrentRecord();
 			final int len = statusevent.getFileLength();
 			Runnable udp = new Runnable() {
@@ -253,7 +210,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 							emailMe();
 
 					}
-					else {
+               else {
 						progressBar.setValue(prog);
 						note.setText(getProgressNote(prog, len));
 					}
@@ -270,7 +227,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		try {
 			return MessageFormat.format(messageProgress, args);
 		}
-		catch (Exception exc) {
+      catch (Exception exc) {
 			System.out.println(" getProgressNote: " + exc.getMessage());
 			return "Record " + prog + " of " + len;
 		}
@@ -280,9 +237,9 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 		SendEMailDialog semd =
 			new SendEMailDialog(
-					(Frame) (this.getParent()),
-					session,
-					localFile.getText());
+				(Frame) (this.getParent()),
+				session,
+				localFile.getText());
 
 	}
 
@@ -292,8 +249,8 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 		try {
 			return MessageFormat.format(
-					LangTool.getString("xtfr.messageTransferred"),
-					args);
+				LangTool.getString("xtfr.messageTransferred"),
+				args);
 		} catch (Exception exc) {
 			System.out.println(" getTransferredNote: " + exc.getMessage());
 			return len + " records transferred!";
@@ -324,22 +281,22 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 	public void actionPerformed(ActionEvent e) {
 
-		// process the save transfer information button
-		if (e.getActionCommand().equals("SAVE")) {
+      // process the save transfer information button
+   	if (e.getActionCommand().equals("SAVE")) {
 
-			saveXTFRInfo();
+         saveXTFRInfo();
 
-		}
+   	}
 
-		// process the save transfer information button
-		if (e.getActionCommand().equals("LOAD")) {
+      // process the save transfer information button
+   	if (e.getActionCommand().equals("LOAD")) {
 
-			loadXTFRInfo();
+         loadXTFRInfo();
 
-		}
+   	}
 
 		if (e.getActionCommand().equals("XTFR")
-				|| e.getActionCommand().equals("EMAIL")) {
+			|| e.getActionCommand().equals("EMAIL")) {
 
 			saveXTFRFields();
 
@@ -364,16 +321,16 @@ implements ActionListener, FTPStatusListener, ItemListener {
 				if (ftpProtocol!=null && ftpProtocol.connect(systemName.getText(), 21)) {
 
 					if (ftpProtocol
-							.login(
-									user.getText(),
-									new String(password.getPassword()))) {
+						.login(
+							user.getText(),
+							new String(password.getPassword()))) {
 						// this will execute in it's own thread and will send a
 						//    fileInfoReceived(FTPStatusEvent statusevent) event when
 						//    finished without an error.
 						ftpProtocol.setDecimalChar(getDecimalChar());
 						ftpProtocol.getFileInfo(
-								hostFile.getText(),
-								intDesc.isSelected());
+							hostFile.getText(),
+							intDesc.isSelected());
 					}
 				} else {
 
@@ -432,41 +389,41 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 			axtfr.setOutputFilter(fileFilter.getOutputFilterInstance());
 			axtfr.getFile(
-					hostFile.getText(),
-					fileFilter.setExtension(localFile.getText()),
-					queryStatement.getText().trim(),
-					intDesc.isSelected());
+				hostFile.getText(),
+				fileFilter.setExtension(localFile.getText()),
+				queryStatement.getText().trim(),
+				intDesc.isSelected());
 
 		} else {
 			ftpProtocol.setOutputFilter(fileFilter.getOutputFilterInstance());
 
 			ftpProtocol.getFile(
-					hostFile.getText(),
-					fileFilter.setExtension(localFile.getText()));
+				hostFile.getText(),
+				fileFilter.setExtension(localFile.getText()));
 		}
 	}
 
-	/* *** NEVER USED LOCALLY ************************************************** */
-	//	private XTFRFileFilter getFilterByExtension() {
-	//
-	//		if (filter != null && filter.isExtensionInList(localFile.getText()))
-	//			return filter;
-	//
-	//		if (KSpreadFilter.isExtensionInList(localFile.getText()))
-	//			return KSpreadFilter;
-	//		if (OOFilter.isExtensionInList(localFile.getText()))
-	//			return OOFilter;
-	//		if (ExcelFilter.isExtensionInList(localFile.getText()))
-	//			return ExcelFilter;
-	//		if (DelimitedFilter.isExtensionInList(localFile.getText()))
-	//			return DelimitedFilter;
-	//		if (FixedWidthFilter.isExtensionInList(localFile.getText()))
-	//			return FixedWidthFilter;
-	//		//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
-	//		//         return ExcelWorkbookFilter;
-	//
-	//		return htmlFilter;
-	//	}
+/* *** NEVER USED LOCALLY ************************************************** */
+//	private XTFRFileFilter getFilterByExtension() {
+//
+//		if (filter != null && filter.isExtensionInList(localFile.getText()))
+//			return filter;
+//
+//		if (KSpreadFilter.isExtensionInList(localFile.getText()))
+//			return KSpreadFilter;
+//		if (OOFilter.isExtensionInList(localFile.getText()))
+//			return OOFilter;
+//		if (ExcelFilter.isExtensionInList(localFile.getText()))
+//			return ExcelFilter;
+//		if (DelimitedFilter.isExtensionInList(localFile.getText()))
+//			return DelimitedFilter;
+//		if (FixedWidthFilter.isExtensionInList(localFile.getText()))
+//			return FixedWidthFilter;
+//		//      if (ExcelWorkbookFilter.isExtensionInList(localFile.getText()))
+//		//         return ExcelWorkbookFilter;
+//
+//		return htmlFilter;
+//	}
 
 	private XTFRFileFilter getFilterByDescription() {
 
@@ -521,8 +478,8 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 		dialog =
 			monitor.createDialog(
-					this,
-					LangTool.getString("xtfr.progressTitle"));
+				this,
+				LangTool.getString("xtfr.progressTitle"));
 
 	}
 
@@ -531,18 +488,18 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		try {
 			SqlWizard wizard =
 				new SqlWizard(
-						systemName.getText().trim(),
-						user.getText(),
-						new String(password.getPassword()));
+					systemName.getText().trim(),
+					user.getText(),
+					new String(password.getPassword()));
 
 			wizard.setQueryTextArea(queryStatement);
 		} catch (NoClassDefFoundError ncdfe) {
 			JOptionPane.showMessageDialog(
-					this,
-					LangTool.getString("messages.noAS400Toolbox"),
-					"Error",
-					JOptionPane.ERROR_MESSAGE,
-					null);
+				this,
+				LangTool.getString("messages.noAS400Toolbox"),
+				"Error",
+				JOptionPane.ERROR_MESSAGE,
+				null);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -554,7 +511,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 	private void getPCFile() {
 
 		String workingDir = System.getProperty("user.dir");
-		JFileChooser pcFileChooser = new JFileChooser(workingDir);
+		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
 		// set the file filters for the file chooser
 		filter = getFilterByDescription();
@@ -600,8 +557,8 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		// host panel for as400
 		as400p = new JPanel();
 		as400p.setBorder(
-				BorderFactory.createTitledBorder(
-						LangTool.getString("xtfr.labelAS400")));
+			BorderFactory.createTitledBorder(
+				LangTool.getString("xtfr.labelAS400")));
 
 		as400p.setLayout(new GridBagLayout());
 
@@ -658,11 +615,11 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		as400p.add(pwpLabel, gbc);
 		password = new JPasswordField();
 		password.setColumns(15);
-		password.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyPressed(java.awt.event.KeyEvent evt) {
-				txtONKeyPressed(evt);
-			}
-		});
+                password.addKeyListener(new java.awt.event.KeyAdapter() {
+                    public void keyPressed(java.awt.event.KeyEvent evt) {
+                        txtONKeyPressed(evt);
+                    }
+                });
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
@@ -743,8 +700,8 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		// pc panel for pc information
 		JPanel pcp = new JPanel(new GridBagLayout());
 		pcp.setBorder(
-				BorderFactory.createTitledBorder(
-						LangTool.getString("xtfr.labelpc")));
+			BorderFactory.createTitledBorder(
+				LangTool.getString("xtfr.labelpc")));
 
 		JLabel pffLabel =
 			new JLabel(LangTool.getString("xtfr.labelFileFormat"));
@@ -855,14 +812,14 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		emailButton.setActionCommand("EMAIL");
 		op.add(emailButton);
 
-		// add transfer save information button
+      // add transfer save information button
 		JButton saveButton =
 			new JButton(LangTool.getString("xtfr.labelXTFRSave"));
 		saveButton.addActionListener(this);
 		saveButton.setActionCommand("SAVE");
 		op.add(saveButton);
 
-		// add transfer load information button
+      // add transfer load information button
 		JButton loadButton =
 			new JButton(LangTool.getString("xtfr.labelXTFRLoad"));
 		loadButton.addActionListener(this);
@@ -898,26 +855,26 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		if (frameSize.width > screenSize.width)
 			frameSize.width = screenSize.width;
 		setLocation(
-				(screenSize.width - frameSize.width) / 2,
-				(screenSize.height - frameSize.height) / 2);
+			(screenSize.width - frameSize.width) / 2,
+			(screenSize.height - frameSize.height) / 2);
 
 		// now show the world what we can do
 		setVisible(true);
 
 	}
+        
+        private void txtONKeyPressed(java.awt.event.KeyEvent evt) {
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                xtfrButton.doClick();
+            }
+        }
+	
+        private void initXTFRFields(Properties props) {
 
-	private void txtONKeyPressed(java.awt.event.KeyEvent evt) {
-		if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-			xtfrButton.doClick();
-		}
-	}
-
-	private void initXTFRFields(Properties props) {
-
-		if (props == null) {
-			SessionConfig config = session.getSession().getConfiguration();
-			props = config.getProperties();
-		}
+      if (props == null) {
+         SessionConfig config = session.getSession().getConfiguration();
+         props = config.getProperties();
+      }
 
 		if (props.containsKey("xtfr.fileName"))
 			hostFile.setText(props.getProperty("xtfr.fileName"));
@@ -966,7 +923,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 		if (props.containsKey("xtfr.decimalSeparator"))
 			decimalSeparator.setSelectedItem(
-					props.get("xtfr.decimalSeparator"));
+				props.get("xtfr.decimalSeparator"));
 
 	}
 
@@ -1000,8 +957,8 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 		if (queryStatement.getText().trim().length() > 0)
 			props.setProperty(
-					"xtfr.queryStatement",
-					queryStatement.getText().trim());
+				"xtfr.queryStatement",
+				queryStatement.getText().trim());
 		else
 			props.remove("xtfr.queryStatement");
 
@@ -1010,7 +967,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		else
 			props.remove("xtfr.allFields");
 
-		// TODO: save Fielddesc state as one propertyvalue (xtfr.fieldDesc=txt|int)
+        // TODO: save Fielddesc state as one propertyvalue (xtfr.fieldDesc=txt|int)  
 		if (txtDesc.isSelected())
 			props.setProperty("xtfr.txtDesc", "true");
 		else
@@ -1021,8 +978,8 @@ implements ActionListener, FTPStatusListener, ItemListener {
 			props.remove("xtfr.intDesc");
 
 		props.setProperty(
-				"xtfr.fileFormat",
-				(String) fileFormat.getSelectedItem());
+			"xtfr.fileFormat",
+			(String) fileFormat.getSelectedItem());
 
 		if (localFile.getText().trim().length() > 0)
 			props.setProperty("xtfr.localFile", localFile.getText().trim());
@@ -1030,23 +987,23 @@ implements ActionListener, FTPStatusListener, ItemListener {
 			props.remove("xtfr.localFile");
 
 		props.setProperty(
-				"xtfr.decimalSeparator",
-				(String) decimalSeparator.getSelectedItem());
+			"xtfr.decimalSeparator",
+			(String) decimalSeparator.getSelectedItem());
 
 	}
 
 	private void saveXTFRInfo() {
 
-		Properties xtfrProps = new Properties();
-		xtfrProps.setProperty("xtfr.destination","FROM");
-		this.saveXTFRFields(xtfrProps);
+      Properties xtfrProps = new Properties();
+      xtfrProps.setProperty("xtfr.destination","FROM");
+      this.saveXTFRFields(xtfrProps);
 		String workingDir = System.getProperty("user.dir");
-		JFileChooser pcFileChooser = new JFileChooser(workingDir);
+		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
-		// set the file filters for the file chooser
-		TN5250jFileFilter filter = new TN5250jFileFilter("dtf","Transfer from AS/400");
+      // set the file filters for the file chooser
+      TN5250jFileFilter filter = new TN5250jFileFilter("dtf","Transfer from AS/400");
 
-		pcFileChooser.addChoosableFileFilter(filter );
+      pcFileChooser.addChoosableFileFilter(filter );
 
 		int ret = pcFileChooser.showSaveDialog(this);
 
@@ -1055,18 +1012,18 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 			File file = pcFileChooser.getSelectedFile();
 
-			file = new File(filter.setExtension(file));
+         file = new File(filter.setExtension(file));
 
-			try {
-				FileOutputStream out = new FileOutputStream(file);
-				// save off the width and height to be restored later
-				xtfrProps.store(out,"------ Transfer Details --------");
+         try {
+            FileOutputStream out = new FileOutputStream(file);
+               // save off the width and height to be restored later
+            xtfrProps.store(out,"------ Transfer Details --------");
 
-				out.flush();
-				out.close();
-			}
-			catch (FileNotFoundException fnfe) {}
-			catch (IOException ioe) {}
+            out.flush();
+            out.close();
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
 
 
 		}
@@ -1075,16 +1032,16 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 	private void loadXTFRInfo() {
 
-		Properties xtfrProps = new Properties();
-		//      xtfrProps.setProperty("xtfr.destination","FROM");
-		//      this.saveXTFRFields(xtfrProps);
+      Properties xtfrProps = new Properties();
+//      xtfrProps.setProperty("xtfr.destination","FROM");
+//      this.saveXTFRFields(xtfrProps);
 		String workingDir = System.getProperty("user.dir");
-		JFileChooser pcFileChooser = new JFileChooser(workingDir);
+		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
-		// set the file filters for the file chooser
-		TN5250jFileFilter filter = new TN5250jFileFilter("dtf","Transfer from AS/400");
+      // set the file filters for the file chooser
+      TN5250jFileFilter filter = new TN5250jFileFilter("dtf","Transfer from AS/400");
 
-		pcFileChooser.addChoosableFileFilter(filter );
+      pcFileChooser.addChoosableFileFilter(filter );
 
 		int ret = pcFileChooser.showOpenDialog(this);
 
@@ -1093,24 +1050,24 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 			File file = pcFileChooser.getSelectedFile();
 
-			try {
-				FileInputStream in = new FileInputStream(file);
-				// save off the width and height to be restored later
-				xtfrProps.load(in);
+         try {
+            FileInputStream in = new FileInputStream(file);
+               // save off the width and height to be restored later
+            xtfrProps.load(in);
 
-				in.close();
-			}
-			catch (FileNotFoundException fnfe) {}
-			catch (IOException ioe) {}
+            in.close();
+         }
+         catch (FileNotFoundException fnfe) {}
+         catch (IOException ioe) {}
 
 
 		}
 
-		if (xtfrProps.containsKey("xtfr.destination") &&
-				(xtfrProps.get("xtfr.destination").equals("FROM"))) {
+      if (xtfrProps.containsKey("xtfr.destination") &&
+               (xtfrProps.get("xtfr.destination").equals("FROM"))) {
 
-			this.initXTFRFields(xtfrProps);
-		}
+         this.initXTFRFields(xtfrProps);
+      }
 
 	}
 
@@ -1188,9 +1145,9 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		//Create the scroll pane and add the table to it.
 		JScrollPane scrollPane = new JScrollPane(fields);
 		scrollPane.setVerticalScrollBarPolicy(
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		JPanel jpm = new JPanel();
 		jpm.add(scrollPane);
@@ -1198,38 +1155,38 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		Object[] message = new Object[1];
 		message[0] = jpm;
 		String[] options =
-		{
+			{
 				LangTool.getString("xtfr.tableSelectAll"),
 				LangTool.getString("xtfr.tableSelectNone"),
 				LangTool.getString("xtfr.tableDone")};
 
 		int result = 0;
 		while (result != 2) {
-			result =
-				JOptionPane.showOptionDialog(null,
-						// the parent that the dialog blocks
-						message, // the dialog message array
-						LangTool.getString("xtfr.titleFieldSelection"),
-						// the title of the dialog window
-						JOptionPane.DEFAULT_OPTION, // option type
-						JOptionPane.PLAIN_MESSAGE, // message type
-						null, // optional icon, use null to use the default icon
-						options, // options string array, will be made into buttons//
-						options[1] // option that should be made into a default button
-				);
+				result =
+					JOptionPane.showOptionDialog(null,
+			// the parent that the dialog blocks
+		message, // the dialog message array
+		LangTool.getString("xtfr.titleFieldSelection"),
+			// the title of the dialog window
+		JOptionPane.DEFAULT_OPTION, // option type
+		JOptionPane.PLAIN_MESSAGE, // message type
+		null, // optional icon, use null to use the default icon
+		options, // options string array, will be made into buttons//
+		options[1] // option that should be made into a default button
+	);
 
 			switch (result) {
-			case 0 : // Select all
-				ftpProtocol.selectAll();
-				break;
-			case 1 : // Select none
-				ftpProtocol.selectNone();
-				break;
-			default :
-				fieldsSelected = ftpProtocol.isFieldsSelected();
-				if (ftpProtocol.isFieldsSelected())
-					doTransfer();
-				break;
+				case 0 : // Select all
+					ftpProtocol.selectAll();
+					break;
+				case 1 : // Select none
+					ftpProtocol.selectNone();
+					break;
+				default :
+					fieldsSelected = ftpProtocol.isFieldsSelected();
+					if (ftpProtocol.isFieldsSelected())
+						doTransfer();
+					break;
 			}
 		}
 	}
@@ -1241,7 +1198,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 		private static final long serialVersionUID = 1L;
 		final String[] cols =
-		{
+			{
 				LangTool.getString("xtfr.tableColA"),
 				LangTool.getString("xtfr.tableColB")};
 
@@ -1309,13 +1266,13 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		ProgressOptionPane(Object messageList) {
 
 			super(
-					messageList,
-					JOptionPane.INFORMATION_MESSAGE,
-					JOptionPane.DEFAULT_OPTION,
-					null,
-					new Object[] {
-							UIManager.getString("OptionPane.cancelButtonText")},
-							null);
+				messageList,
+				JOptionPane.INFORMATION_MESSAGE,
+				JOptionPane.DEFAULT_OPTION,
+				null,
+				new Object[] {
+					 UIManager.getString("OptionPane.cancelButtonText")},
+				null);
 			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		}
@@ -1384,11 +1341,11 @@ implements ActionListener, FTPStatusListener, ItemListener {
 
 			addPropertyChangeListener(new PropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent event) {
-					if (dialog.isVisible()
-							&& event.getSource() == ProgressOptionPane.this
-							&& (event.getPropertyName().equals(VALUE_PROPERTY)
-									|| event.getPropertyName().equals(
-											INPUT_VALUE_PROPERTY))) {
+					if (dialog.isVisible() 
+						&& event.getSource() == ProgressOptionPane.this
+						&& (event.getPropertyName().equals(VALUE_PROPERTY)
+							|| event.getPropertyName().equals(
+								INPUT_VALUE_PROPERTY))) {
 						if (ftpProtocol != null) {
 							ftpProtocol.setAborted();
 						}

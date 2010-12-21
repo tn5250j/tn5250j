@@ -1175,89 +1175,88 @@ public class GUIGraphicsUtils {
       return GROOVE_INSETS;
    }
 
-// never used
-//   public static void drawBezel(Graphics g, int x, int y, int w, int h,
-//                                 boolean isPressed, boolean isDefault,
-//                                 Color shadow, Color darkShadow,
-//                                 Color highlight, Color lightHighlight) {
-//
-//     Color oldColor = g.getColor();  // Make no net change to g
-////     g.translate(x, y);
-//
-//     if (isPressed) {
-//         if (isDefault) {
-//             g.setColor(darkShadow);          // outer border
-//             g.drawRect(0, 0, w-1, h-1);
-//         }
-//
-//         g.setColor(shadow);         // inner border
-//         g.drawRect(1, 1, w-3, h-3);
-//
-//      }
-//      else {
-//         if (isDefault) {
-//             g.setColor(darkShadow);
-//             g.drawRect(0, 0, w-1, h-1);
-//
-//             g.setColor(lightHighlight);
-//             g.drawLine(1, 1, 1, h-3);
-//             g.drawLine(2, 1, w-3, 1);
-//
-//             g.setColor(highlight);
-//             g.drawLine(2, 2, 2, h-4);
-//             g.drawLine(3, 2, w-4, 2);
-//
-//             g.setColor(shadow);
-//             g.drawLine(2, h-3, w-3, h-3);
-//             g.drawLine(w-3, 2, w-3, h-4);
-//
-//             g.setColor(darkShadow);
-//             g.drawLine(1, h-2, w-2, h-2);
-//             g.drawLine(w-2, h-2, w-2, 1);
-//         }
-//         else {
-//             g.setColor(lightHighlight);
-//             g.drawLine(0, 0, 0, h-1);
-//             g.drawLine(1, 0, w-2, 0);
-//
-//             g.setColor(highlight);
-//             g.drawLine(1, 1, 1, h-3);
-//             g.drawLine(2, 1, w-3, 1);
-//
-//             g.setColor(shadow);
-//             g.drawLine(1, h-2, w-2, h-2);
-//             g.drawLine(w-2, 1, w-2, h-3);
-//
-//             g.setColor(darkShadow);
-//             g.drawLine(0, h-1, w-1, h-1);
-//             g.drawLine(w-1, h-1, w-1, 0);
-//         }
-//
-////         g.translate(-x, -y);
-//         g.setColor(oldColor);
-//      }
-//   }
 
-// never used
-//   public static void drawLoweredBezel(Graphics g, int x, int y, int w, int h,
-//                                     Color shadow, Color darkShadow,
-//                                     Color highlight, Color lightHighlight)  {
-//      g.setColor(darkShadow);
-//      g.drawLine(0, 0, 0, h-1);
-//      g.drawLine(1, 0, w-2, 0);
-//
-//      g.setColor(shadow);
-//      g.drawLine(1, 1, 1, h-2);
-//      g.drawLine(1, 1, w-3, 1);
-//
-//      g.setColor(lightHighlight);
-//      g.drawLine(0, h-1, w-1, h-1);
-//      g.drawLine(w-1, h-1, w-1, 0);
-//
-//      g.setColor(highlight);
-//      g.drawLine(1, h-2, w-2, h-2);
-//      g.drawLine(w-2, h-2, w-2, 1);
-//   }
+   public static void drawBezel(Graphics g, int x, int y, int w, int h,
+                                 boolean isPressed, boolean isDefault,
+                                 Color shadow, Color darkShadow,
+                                 Color highlight, Color lightHighlight) {
+
+     Color oldColor = g.getColor();  // Make no net change to g
+//     g.translate(x, y);
+
+     if (isPressed) {
+         if (isDefault) {
+             g.setColor(darkShadow);          // outer border
+             g.drawRect(0, 0, w-1, h-1);
+         }
+
+         g.setColor(shadow);         // inner border
+         g.drawRect(1, 1, w-3, h-3);
+
+      }
+      else {
+         if (isDefault) {
+             g.setColor(darkShadow);
+             g.drawRect(0, 0, w-1, h-1);
+
+             g.setColor(lightHighlight);
+             g.drawLine(1, 1, 1, h-3);
+             g.drawLine(2, 1, w-3, 1);
+
+             g.setColor(highlight);
+             g.drawLine(2, 2, 2, h-4);
+             g.drawLine(3, 2, w-4, 2);
+
+             g.setColor(shadow);
+             g.drawLine(2, h-3, w-3, h-3);
+             g.drawLine(w-3, 2, w-3, h-4);
+
+             g.setColor(darkShadow);
+             g.drawLine(1, h-2, w-2, h-2);
+             g.drawLine(w-2, h-2, w-2, 1);
+         }
+         else {
+             g.setColor(lightHighlight);
+             g.drawLine(0, 0, 0, h-1);
+             g.drawLine(1, 0, w-2, 0);
+
+             g.setColor(highlight);
+             g.drawLine(1, 1, 1, h-3);
+             g.drawLine(2, 1, w-3, 1);
+
+             g.setColor(shadow);
+             g.drawLine(1, h-2, w-2, h-2);
+             g.drawLine(w-2, 1, w-2, h-3);
+
+             g.setColor(darkShadow);
+             g.drawLine(0, h-1, w-1, h-1);
+             g.drawLine(w-1, h-1, w-1, 0);
+         }
+
+//         g.translate(-x, -y);
+         g.setColor(oldColor);
+      }
+   }
+
+   public static void drawLoweredBezel(Graphics g, int x, int y, int w, int h,
+                                     Color shadow, Color darkShadow,
+                                     Color highlight, Color lightHighlight)  {
+      g.setColor(darkShadow);
+      g.drawLine(0, 0, 0, h-1);
+      g.drawLine(1, 0, w-2, 0);
+
+      g.setColor(shadow);
+      g.drawLine(1, 1, 1, h-2);
+      g.drawLine(1, 1, w-3, 1);
+
+      g.setColor(lightHighlight);
+      g.drawLine(0, h-1, w-1, h-1);
+      g.drawLine(w-1, h-1, w-1, 0);
+
+      g.setColor(highlight);
+      g.drawLine(1, h-2, w-2, h-2);
+      g.drawLine(w-2, h-2, w-2, 1);
+   }
 
 
    /** Draw a string with the graphics g at location (x,y) just like g.drawString() would.

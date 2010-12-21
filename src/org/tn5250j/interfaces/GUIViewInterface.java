@@ -31,6 +31,7 @@ import org.tn5250j.gui.GenericTn5250JFrame;
  * Direct known subclasses:
  * <ul>
  * <li>{@link org.tn5250j.Gui5250Frame} which shows a window with multiple tabs</li>
+ * <li>{@link org.tn5250j.Gui5250MDIFrame}</li>
  * </ul>
  */
 public abstract class GUIViewInterface extends GenericTn5250JFrame {
