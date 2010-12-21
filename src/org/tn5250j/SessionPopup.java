@@ -565,7 +565,7 @@ public class SessionPopup {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					sessiongui.closeSession();
+					sessiongui.confirmAndCloseSession();
 				}
 			};
 

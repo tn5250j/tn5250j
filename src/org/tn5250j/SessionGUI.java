@@ -407,48 +407,16 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	}
 
-	public void closeSession() {
-		// only ask if not connected
-		boolean close = !isConnected() || doConfirmTabClose(sesConfig);
+	public void confirmAndCloseSession() {
+		// regular, only ask on connected sessions
+		boolean close = !isConnected() || confirmTabClose();
 		if (close) {
-			fireEmulatorAction(EmulatorActionEvent.CLOSE_SESSION);
+			// special case, no SignonScreen than confirm signing off
+			close = isOnSignOnScreen() || confirmSignOffClose();
 		}
-
-//		Object[]      message = new Object[1];
-//		message[0] = LangTool.getString("cs.message");
-//
-//		String[] options = {LangTool.getString("cs.optThis"),
-//				LangTool.getString("cs.optAll"),
-//				LangTool.getString("cs.optCancel")};
-//
-//		int result = JOptionPane.showOptionDialog(
-//				this.getParent(),            // the parent that the dialog blocks
-//				message,                           // the dialog message array
-//				LangTool.getString("cs.title"),    // the title of the dialog window
-//				JOptionPane.DEFAULT_OPTION,        // option type
-//				JOptionPane.QUESTION_MESSAGE,      // message type
-//				null,                              // optional icon, use null to use the default icon
-//				options,                           // options string array, will be made into buttons//
-//				options[0]                         // option that should be made into a default button
-//		);
-//
-//		if (result == 0) {
-//			if (!this.isOnSignOnScreen()) {
-//
-//				if (confirmSignOff()) {
-//					closeMe();
-//
-//				}
-//			}
-//			else {
-//				closeMe();
-//			}
-//
-//		}
-//		if (result == 1) {
-//			fireEmulatorAction(EmulatorActionEvent.CLOSE_EMULATOR);
-//		}
-
+		if (close) {
+			closeMe();
+		}
 	}
 
 	/**
@@ -458,11 +426,11 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 * @param sesConfig
 	 * @return true if tab should be closed, false if not
 	 */
-	protected boolean doConfirmTabClose(SessionConfig sesConfig) {
+	private boolean confirmTabClose() {
 		boolean result = true;
-		if (sesConfig.isPropertyExists("confirmTabClose")) {
+		if (session.getConfiguration().isPropertyExists("confirmTabClose")) {
 			final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(this);
-			if(sesConfig.getStringProperty("confirmTabClose").equals("Yes")) {
+			if(session.getConfiguration().getStringProperty("confirmTabClose").equals("Yes")) {
 				if(!tabclsdlg.show()) {
 					result = false;
 				}
@@ -478,7 +446,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 *
 	 * @return whether or not the signon on screen is the current screen
 	 */
-	private boolean confirmSignOff() {
+	private boolean confirmSignOffClose() {
 
 		if (sesConfig.isPropertyExists("confirmSignoff") &&
 				sesConfig.getStringProperty("confirmSignoff").equals("Yes")) {

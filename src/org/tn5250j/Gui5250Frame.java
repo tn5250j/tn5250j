@@ -312,11 +312,8 @@ public class Gui5250Frame extends GUIViewInterface implements
 	 */
 	public void onTabClosed(int tabToBeClosed) {
 		final SessionGUI sessiongui = this.getSessionAt(tabToBeClosed);
-		SessionConfig sesConfig = sessiongui.session.getConfiguration();
-		if (sessiongui.doConfirmTabClose(sesConfig)) {
-			me.closeSession(sessiongui);
-		}
-
+		sessiongui.confirmAndCloseSession();
+		// me.closeSession(sessiongui); // FIXME: should we still call this?
 	}
 
    /* (non-Javadoc)

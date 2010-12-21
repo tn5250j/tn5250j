@@ -49,6 +49,6 @@ public CloseAction(SessionGUI session, KeyMapper keyMap) {
    }
 
    public void actionPerformed(ActionEvent e) {
-     session.closeSession();
+     session.confirmAndCloseSession();
    }
 }
