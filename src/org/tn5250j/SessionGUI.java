@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -148,6 +149,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		}
 
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				/** @todo check for popup trigger on linux
 				 *
@@ -159,11 +161,13 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 				}
 
 			}
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				//	            System.out.println("Mouse Released");
 
 			}
 
+			@Override
 			public void mouseClicked(MouseEvent e) {
 
 				if (SwingUtilities.isRightMouseButton(e)) {
@@ -287,7 +291,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	}
 
-	/* UNUSED CODE! */ 
+	/* UNUSED CODE! */
 	//   private void actionTransfer(java.io.File file) {
 	//
 	//	      try {
@@ -302,6 +306,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	//
 	//   }
 
+	@Override
 	public void processKeyEvent(KeyEvent evt) {
 
 		keyHandler.processKeyEvent(evt);
@@ -310,7 +315,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 			super.processKeyEvent(evt);
 	}
 
-	/* UNUSED CODE! */ 
+	/* UNUSED CODE! */
 	//   private void dumpStuff(Throwable ex) {
 	//
 	//	      session.getVT().dumpStuff();
@@ -324,13 +329,13 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		new SendEMailDialog((JFrame)SwingUtilities.getRoot(this),this);
 	}
 
-	/* UNUSED CODE! */ 
+	/* UNUSED CODE! */
 	//   private void sendMeToFile() {
 	//	      // Change sent by LUC - LDC to add a parent frame to be passed
 	//	      new SendScreenToFile((JFrame)SwingUtilities.getRoot(this),screen);
 	//   }
 
-	/* UNUSED CODE! */ 
+	/* UNUSED CODE! */
 	//   private void sendMeToImageFile() {
 	//	      // Change sent by LUC - LDC to add a parent frame to be passed
 	//	      new SendScreenImageToFile((JFrame)SwingUtilities.getRoot(this),(SessionGUI)this);
@@ -381,7 +386,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 			MouseEvent me = new MouseEvent(this,
 					MouseEvent.MOUSE_PRESSED,
 					System.currentTimeMillis(),
-					MouseEvent.BUTTON1_MASK,
+					InputEvent.BUTTON1_MASK,
 					p.x,p.y,
 					1,false);
 			dispatchEvent(me);
@@ -395,7 +400,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		MouseEvent me = new MouseEvent(this,
 				MouseEvent.MOUSE_DRAGGED,
 				System.currentTimeMillis(),
-				MouseEvent.BUTTON1_MASK,
+				InputEvent.BUTTON1_MASK,
 				p.x,p.y,
 				1,false);
 		dispatchEvent(me);
@@ -449,7 +454,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	/**
 	 * Asks the user to confirm tab close,
 	 * only if configured (option 'confirm tab close')
-	 * 
+	 *
 	 * @param sesConfig
 	 * @return true if tab should be closed, false if not
 	 */
@@ -465,7 +470,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Check is the parameter to confirm that the Sign On screen is the current
 	 * screen.  If it is then we check against the saved Signon Screen in memory
@@ -498,12 +503,14 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		this.grabFocus();
 	}
 
+	@Override
 	public boolean isFocusTraversable () {
 		return true;
 	}
 
 	// Override to inform focus manager that component is managing focus changes.
 	//    This is to capture the tab and shift+tab keys.
+	@Override
 	public boolean isManagingFocus() { return true; }
 
 	public JPanel getDrawingCanvas() {
@@ -512,6 +519,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent actionevent) {
 
 		Object obj = actionevent.getSource();
@@ -531,6 +539,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 * Update the configuration settings
 	 * @param pce
 	 */
+	@Override
 	public void onConfigChanged(SessionConfigEvent pce) {
 
 		String pn = pce.getPropertyName();
@@ -591,31 +600,27 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		session.getVT().sendAidKey(whichOne);
 	}
 
+	/**
+	 * Toggles connection (connect or disconnect)
+	 */
 	public void changeConnection() {
-
 		if (session.getVT().isConnected()) {
-
 			session.getVT().disconnect();
-
-		}
-		else {
+		} else {
 			// lets set this puppy up to connect within its own thread
 			Runnable connectIt = new Runnable() {
+				@Override
 				public void run() {
 					session.getVT().connect();
 				}
-
 			};
-
 			// now lets set it to connect within its own daemon thread
 			//    this seems to work better and is more responsive than using
-			//    swingutilities's invokelater
+			//    swingutilities's invoke later
 			Thread ct = new Thread(connectIt);
 			ct.setDaemon(true);
 			ct.start();
-
 		}
-
 	}
 
 	public void nextSession() {
@@ -826,22 +831,27 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	}
 
+	@Override
 	public void componentHidden(ComponentEvent e) {
 	}
 
+	@Override
 	public void componentMoved(ComponentEvent e) {
 	}
 
+	@Override
 	public void componentResized(ComponentEvent e) {
 
 		resizeMe();
 	}
 
+	@Override
 	public void componentShown(ComponentEvent e) {
 
 
 	}
 
+	@Override
 	protected void paintComponent(Graphics g) {
 		log.debug("paint from screen");
 
@@ -872,6 +882,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	}
 
+	@Override
 	public void update(Graphics g) {
 		log.info("update paint from gui");
 		paint(g);
@@ -1045,6 +1056,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 * Returns a pointer to the graphics area that we can draw on
 	 *
 	 */
+	@Override
 	public Graphics getDrawingGraphics(){
 
 		return guiGraBuf.getDrawingArea();
@@ -1056,10 +1068,12 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	}
 
+	@Override
 	public Point translateStart(Point start) {
 		return guiGraBuf.translateStart(start);
 	}
 
+	@Override
 	public Point translateEnd(Point end) {
 		return guiGraBuf.translateEnd(end);
 	}
@@ -1071,6 +1085,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		guiGraBuf.getBoundingArea(bounds);
 	}
 
+	@Override
 	public void areaBounded(RubberBand band, int x1, int y1, int x2, int y2) {
 
 
@@ -1081,6 +1096,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		}
 	}
 
+	@Override
 	public boolean canDrawRubberBand(RubberBand b) {
 
 		// before we get the row col we first have to translate the x,y point
@@ -1103,6 +1119,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 			super(c);
 		}
 
+		@Override
 		protected void drawBoundingShape(Graphics g, int startX, int startY, int width, int height) {
 			g.drawRect(startX,startY,width,height);
 		}
@@ -1135,6 +1152,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 			//	         return r;
 		}
 
+		@Override
 		protected Point getEndPoint() {
 
 			if(this.endPoint == null) {
@@ -1145,6 +1163,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 			return this.endPoint;
 		}
 
+		@Override
 		protected Point getStartPoint() {
 
 			if(this.startPoint == null) {
@@ -1243,6 +1262,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		session.disconnect();
 	}
 
+	@Override
 	public void onSessionChanged(SessionChangeEvent changeEvent) {
 
 		switch (changeEvent.getState()) {
@@ -1285,10 +1305,11 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 		session.removeSessionListener(listener);
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
 	 */
+	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		final int notches = e.getWheelRotation();
 		if (notches < 0) {
