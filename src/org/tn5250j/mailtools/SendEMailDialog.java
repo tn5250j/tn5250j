@@ -39,6 +39,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -47,13 +48,13 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionGUI;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.GenericTn5250JFrame;
-import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
 
@@ -63,7 +64,7 @@ import org.tn5250j.tools.encoder.EncodeComponent;
 public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	JComboBox toAddress;
 	JTextField subject;
 	JTextArea bodyText;
@@ -77,19 +78,19 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	JRadioButton normal;
 	JRadioButton screenshot;
 	JButton browse;
-   boolean sendScreen;
-   SendEMail sendEMail;
-   Thread myThread = new Thread(this);
+	boolean sendScreen;
+	SendEMail sendEMail;
+	Thread myThread = new Thread(this);
 
 	/**
 	 * Constructor to send the screen information
 	 *
 	 * @param parent
 	 * @param session
-    * @param sendScreen
+	 * @param sendScreen
 	 */
 	public SendEMailDialog(Frame parent, SessionGUI session) {
-      this(parent,session,true);
+		this(parent,session,true);
 	}
 
 	/**
@@ -99,22 +100,22 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	 * @param session
 	 */
 	public SendEMailDialog(Frame parent, SessionGUI session, boolean sendScreen) {
-      super();
+		super();
 		if (!isEMailAvailable()) {
 
 			JOptionPane.showMessageDialog(
-				parent,
-				LangTool.getString("messages.noEmailAPI"),
-				"Error",
-				JOptionPane.ERROR_MESSAGE,
-				null);
+					parent,
+					LangTool.getString("messages.noEmailAPI"),
+					"Error",
+					JOptionPane.ERROR_MESSAGE,
+					null);
 
 		}
 		else {
 
 			this.session = session;
 			Screen5250 screen = session.getScreen();
-         this.sendScreen = sendScreen;
+			this.sendScreen = sendScreen;
 
 			Object[] message = new Object[1];
 			message[0] = setupMailPanel("tn5250j.txt");
@@ -128,138 +129,138 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 				setOptions(options);
 
 				result = JOptionPane.showOptionDialog(parent,
-					// the parent that the dialog blocks
-					message, // the dialog message array
-					LangTool.getString("em.title"),
-					// the title of the dialog window
-					JOptionPane.DEFAULT_OPTION, // option type
-					JOptionPane.PLAIN_MESSAGE, // message type
-					null, // optional icon, use null to use the default icon
-					options, // options string array, will be made into buttons
-					options[0] // option that should be made into a default btn
+						// the parent that the dialog blocks
+						message, // the dialog message array
+						LangTool.getString("em.title"),
+						// the title of the dialog window
+						JOptionPane.DEFAULT_OPTION, // option type
+						JOptionPane.PLAIN_MESSAGE, // message type
+						null, // optional icon, use null to use the default icon
+						options, // options string array, will be made into buttons
+						options[0] // option that should be made into a default btn
 				);
 
 				switch (result) {
-					case 0 : // Send it
-						sendEMail = new SendEMail();
-						sendEMail.setConfigFile("SMTPProperties.cfg");
-						sendEMail.setTo((String) toAddress.getSelectedItem());
-						sendEMail.setSubject(subject.getText());
-						if (bodyText.getText().length() > 0)
-							sendEMail.setMessage(bodyText.getText());
+				case 0 : // Send it
+					sendEMail = new SendEMail();
+					sendEMail.setConfigFile("SMTPProperties.cfg");
+					sendEMail.setTo((String) toAddress.getSelectedItem());
+					sendEMail.setSubject(subject.getText());
+					if (bodyText.getText().length() > 0)
+						sendEMail.setMessage(bodyText.getText());
 
-						if (attachmentName.getText().length() > 0)
-							if (!normal.isSelected())
-                        sendEMail.setAttachmentName(attachmentName.getText());
-							else
-                        sendEMail.setAttachmentName(fileName);
+					if (attachmentName.getText().length() > 0)
+						if (!normal.isSelected())
+							sendEMail.setAttachmentName(attachmentName.getText());
+						else
+							sendEMail.setAttachmentName(fileName);
 
-						if (text.isSelected()) {
+					if (text.isSelected()) {
 
-                     char[] screenTxt;
-                     char[] screenExtendedAttr;
-                     char[] screenAttrPlace;
+						char[] screenTxt;
+						char[] screenExtendedAttr;
+						char[] screenAttrPlace;
 
-                     int len = screen.getScreenLength();
-                     screenTxt = new char[len];
-                     screenExtendedAttr = new char[len];
-                     screenAttrPlace = new char[len];
-                     screen.GetScreen(screenTxt, len, TN5250jConstants.PLANE_TEXT);
-                     screen.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
-                     screen.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+						int len = screen.getScreenLength();
+						screenTxt = new char[len];
+						screenExtendedAttr = new char[len];
+						screenAttrPlace = new char[len];
+						screen.GetScreen(screenTxt, len, TN5250jConstants.PLANE_TEXT);
+						screen.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+						screen.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
 
-							StringBuffer sb = new StringBuffer();
-//							char[] s = screen.getScreenAsChars();
-							int c = screen.getColumns();
-							int l = screen.getRows() * c;
+						StringBuffer sb = new StringBuffer();
+						//							char[] s = screen.getScreenAsChars();
+						int c = screen.getColumns();
+						int l = screen.getRows() * c;
 
-							int col = 0;
-							for (int x = 0; x < l; x++, col++) {
+						int col = 0;
+						for (int x = 0; x < l; x++, col++) {
 
-                        // only draw printable characters (in this case >= ' ')
-                        if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
+							// only draw printable characters (in this case >= ' ')
+							if (screenTxt[x] >= ' ' && ((screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_NON_DSP) == 0)) {
 
-                           if (
-                                    (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
-                                    screenAttrPlace[x] != 1) {
-                                 sb.append('_');
-                           }
-                           else {
-                              sb.append(screenTxt[x]);
+								if (
+										(screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
+										screenAttrPlace[x] != 1) {
+									sb.append('_');
+								}
+								else {
+									sb.append(screenTxt[x]);
 
-                           }
+								}
 
-                        }
-                        else {
+							}
+							else {
 
-                           if (
-                                    (screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
-                                    screenAttrPlace[x] != 1) {
-                                 sb.append('_');
-                           }
-                           else {
-                              sb.append(' ');
-                           }
-                        }
-
-								if (col == c) {
-									sb.append('\n');
-									col = 0;
+								if (
+										(screenExtendedAttr[x] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
+										screenAttrPlace[x] != 1) {
+									sb.append('_');
+								}
+								else {
+									sb.append(' ');
 								}
 							}
 
-							sendEMail.setAttachment(sb.toString());
+							if (col == c) {
+								sb.append('\n');
+								col = 0;
+							}
 						}
-						else if (graphic.isSelected()){
 
-							File dir = new File(System.getProperty("user.dir"));
+						sendEMail.setAttachment(sb.toString());
+					}
+					else if (graphic.isSelected()){
 
-							//  setup the temp file name
-							String tempFile = "tn5250jTemp";
+						File dir = new File(System.getProperty("user.dir"));
 
-							try {
-								// create the temporary file
-								File f =
-									File.createTempFile(tempFile, ".png", dir);
+						//  setup the temp file name
+						String tempFile = "tn5250jTemp";
 
-								System.out.println(f.getName());
-								System.out.println(f.getCanonicalPath());
+						try {
+							// create the temporary file
+							File f =
+								File.createTempFile(tempFile, ".png", dir);
 
-								// set it to delete on exit
-								f.deleteOnExit();
+							System.out.println(f.getName());
+							System.out.println(f.getCanonicalPath());
 
-								EncodeComponent.encode(
+							// set it to delete on exit
+							f.deleteOnExit();
+
+							EncodeComponent.encode(
 									EncodeComponent.PNG,
 									session,
 									f);
-								sendEMail.setFileName(f.getName());
-							}
-							catch (Exception ex) {
-								System.out.println(ex.getMessage());
-							}
-
+							sendEMail.setFileName(f.getName());
 						}
-						else if (attachmentName.getText().length() > 0) {
-							File f = new File(attachmentName.getText());
-							sendEMail.setFileName(f.toString());
+						catch (Exception ex) {
+							System.out.println(ex.getMessage());
 						}
 
-						// send the information
-						sendIt(parent, sendEMail);
+					}
+					else if (attachmentName.getText().length() > 0) {
+						File f = new File(attachmentName.getText());
+						sendEMail.setFileName(f.toString());
+					}
 
-//						sendEMail.release();
-//						sendEMail = null;
+					// send the information
+					sendIt(parent, sendEMail);
 
-						break;
-					case 1 : // Cancel
-						//		      System.out.println("Cancel");
-						break;
-					case 2 : // Configure SMTP
-						configureSMTP(parent);
-						//		      System.out.println("Cancel");
-						break;
-					default :
-						break;
+					//						sendEMail.release();
+					//						sendEMail = null;
+
+					break;
+				case 1 : // Cancel
+					//		      System.out.println("Cancel");
+					break;
+				case 2 : // Configure SMTP
+					configureSMTP(parent);
+					//		      System.out.println("Cancel");
+					break;
+				default :
+					break;
 				}
 			}
 		}
@@ -276,11 +277,11 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 		if (!isEMailAvailable()) {
 
 			JOptionPane.showMessageDialog(
-				parent,
-				LangTool.getString("messages.noEmailAPI"),
-				"Error",
-				JOptionPane.ERROR_MESSAGE,
-				null);
+					parent,
+					LangTool.getString("messages.noEmailAPI"),
+					"Error",
+					JOptionPane.ERROR_MESSAGE,
+					null);
 		}
 		else {
 
@@ -296,50 +297,50 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 				// setup the dialog options
 				setOptions(options);
 				result = JOptionPane.showOptionDialog(parent,
-				// the parent that the dialog blocks
-				message, // the dialog message array
-				LangTool.getString("em.titleFileTransfer"),
-				// the title of the dialog window
-				JOptionPane.DEFAULT_OPTION, // option type
-				JOptionPane.PLAIN_MESSAGE, // message type
-				null, // optional icon, use null to use the default icon
-				options, // options string array, will be made into buttons//
-				options[0] // option that should be made into a default button
-			);
+						// the parent that the dialog blocks
+						message, // the dialog message array
+						LangTool.getString("em.titleFileTransfer"),
+						// the title of the dialog window
+						JOptionPane.DEFAULT_OPTION, // option type
+						JOptionPane.PLAIN_MESSAGE, // message type
+						null, // optional icon, use null to use the default icon
+						options, // options string array, will be made into buttons//
+						options[0] // option that should be made into a default button
+				);
 
 				switch (result) {
-					case 0 : // Send it
+				case 0 : // Send it
 
-                  sendEMail = new SendEMail();
+					sendEMail = new SendEMail();
 
-						sendEMail.setConfigFile("SMTPProperties.cfg");
-						sendEMail.setTo((String) toAddress.getSelectedItem());
-						sendEMail.setSubject(subject.getText());
-						if (bodyText.getText().length() > 0)
-							sendEMail.setMessage(bodyText.getText());
+					sendEMail.setConfigFile("SMTPProperties.cfg");
+					sendEMail.setTo((String) toAddress.getSelectedItem());
+					sendEMail.setSubject(subject.getText());
+					if (bodyText.getText().length() > 0)
+						sendEMail.setMessage(bodyText.getText());
 
-						if (attachmentName.getText().length() > 0)
-							sendEMail.setAttachmentName(attachmentName.getText());
+					if (attachmentName.getText().length() > 0)
+						sendEMail.setAttachmentName(attachmentName.getText());
 
-						if (fileName != null && fileName.length() > 0)
-							sendEMail.setFileName(fileName);
+					if (fileName != null && fileName.length() > 0)
+						sendEMail.setFileName(fileName);
 
-						// send the information
-						sendIt(parent, sendEMail);
+					// send the information
+					sendIt(parent, sendEMail);
 
-//						sendEMail.release();
-//						sendEMail = null;
+					//						sendEMail.release();
+					//						sendEMail = null;
 
-						break;
-					case 1 : // Cancel
-						//		      System.out.println("Cancel");
-						break;
-					case 2 : // Configure SMTP
-						configureSMTP(parent);
-						//		      System.out.println("Cancel");
-						break;
-					default :
-						break;
+					break;
+				case 1 : // Cancel
+					//		      System.out.println("Cancel");
+					break;
+				case 2 : // Configure SMTP
+					configureSMTP(parent);
+					//		      System.out.println("Cancel");
+					break;
+				default :
+					break;
 				}
 			}
 		}
@@ -351,81 +352,82 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	 */
 	private void sendIt(Frame parent, SendEMail sem) {
 
-//      setSendEMail(sem);
+		//      setSendEMail(sem);
 
-//      new Thread(this).start();
-      myThread.start();
-//		if (parent == null)
-//			parent = new JFrame();
-//
-//		try {
-//			if (sem.send()) {
-//
-//				JOptionPane.showMessageDialog(
-//					parent,
-//					LangTool.getString("em.confirmationMessage")
-//						+ " "
-//						+ (String) toAddress.getSelectedItem(),
-//					LangTool.getString("em.titleConfirmation"),
-//					JOptionPane.INFORMATION_MESSAGE);
-//
-//				if (session != null) {
-//					config.setProperty(
-//						"emailTo",
-//						getToTokens(
-//							config.getStringProperty("emailTo"),
-//							toAddress));
-//					config.saveSessionProps();
-//					setToCombo(config.getStringProperty("emailTo"), toAddress);
-//				}
-//			}
-//		} catch (IOException ioe) {
-//			System.out.println(ioe.getMessage());
-//		} catch (Exception ex) {
-//			System.out.println(ex.getMessage());
-//		}
+		//      new Thread(this).start();
+		myThread.start();
+		//		if (parent == null)
+		//			parent = new JFrame();
+		//
+		//		try {
+		//			if (sem.send()) {
+		//
+		//				JOptionPane.showMessageDialog(
+		//					parent,
+		//					LangTool.getString("em.confirmationMessage")
+		//						+ " "
+		//						+ (String) toAddress.getSelectedItem(),
+		//					LangTool.getString("em.titleConfirmation"),
+		//					JOptionPane.INFORMATION_MESSAGE);
+		//
+		//				if (session != null) {
+		//					config.setProperty(
+		//						"emailTo",
+		//						getToTokens(
+		//							config.getStringProperty("emailTo"),
+		//							toAddress));
+		//					config.saveSessionProps();
+		//					setToCombo(config.getStringProperty("emailTo"), toAddress);
+		//				}
+		//			}
+		//		} catch (IOException ioe) {
+		//			System.out.println(ioe.getMessage());
+		//		} catch (Exception ex) {
+		//			System.out.println(ex.getMessage());
+		//		}
 	}
 
-   public void setSendEMail(SendEMail sem) {
-      sendEMail = sem;
-   }
+	public void setSendEMail(SendEMail sem) {
+		sendEMail = sem;
+	}
 
-   public void run() {
+	@Override
+	public void run() {
 
-//		if (parent == null)
-//			parent = new JFrame();
+		//		if (parent == null)
+		//			parent = new JFrame();
 
 		try {
 			if (sendEMail.send()) {
-            sendEMail.release();
-            sendEMail = null;
+				sendEMail.release();
+				sendEMail = null;
 
 				JOptionPane.showMessageDialog(
-					null,
-					LangTool.getString("em.confirmationMessage")
+						null,
+						LangTool.getString("em.confirmationMessage")
 						+ " "
 						+ (String) toAddress.getSelectedItem(),
-					LangTool.getString("em.titleConfirmation"),
-					JOptionPane.INFORMATION_MESSAGE);
+						LangTool.getString("em.titleConfirmation"),
+						JOptionPane.INFORMATION_MESSAGE);
 
 				if (session != null) {
 					config.setProperty(
-						"emailTo",
-						getToTokens(
-							config.getStringProperty("emailTo"),
-							toAddress));
+							"emailTo",
+							getToTokens(
+									config.getStringProperty("emailTo"),
+									toAddress));
 					config.saveSessionProps();
 					setToCombo(config.getStringProperty("emailTo"), toAddress);
 
 				}
 			}
 
-//		} catch (IOException ioe) {
-//			System.out.println(ioe.getMessage());
+			//		} catch (IOException ioe) {
+			//			System.out.println(ioe.getMessage());
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}
-   }
+	}
 
 	/**
 	 * Configure the SMTP server information
@@ -480,6 +482,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 
 		browse = new JButton(LangTool.getString("em.choosefile"));
 		browse.addActionListener(new java.awt.event.ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				browse_actionPerformed(e);
 			}
@@ -493,32 +496,34 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 		bodyText = new JTextArea(6, 30);
 		JScrollPane bodyScrollPane = new JScrollPane(bodyText);
 		bodyScrollPane.setHorizontalScrollBarPolicy(
-			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		bodyScrollPane.setVerticalScrollBarPolicy(
-			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		attachmentName = new JTextField(fileName, 30);
-      if (fileName != null && fileName.length() > 0)
-         attachmentName.setText(fileName);
-      else
-   		attachmentName.setText("");
+		if (fileName != null && fileName.length() > 0)
+			attachmentName.setText(fileName);
+		else
+			attachmentName.setText("");
 
 		text.addItemListener(new java.awt.event.ItemListener() {
+			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent e) {
 				setAttachmentName();
 			}
 		});
 		normal.addItemListener(new java.awt.event.ItemListener() {
+			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent e) {
 				setTypeOfMail();
 			}
 		});
 
-      if (sendScreen) {
-         screenshot.setSelected(true);
-      }
-      else {
-   		normal.setSelected(true);
-      }
+		if (sendScreen) {
+			screenshot.setSelected(true);
+		}
+		else {
+			normal.setSelected(true);
+		}
 
 		config = null;
 
@@ -581,7 +586,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 3;
 		gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(subject, gbc);
@@ -594,7 +599,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 4;
 		gbc.gridwidth = 2; gbc.gridheight = 3;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(bodyScrollPane, gbc);
@@ -606,7 +611,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1; gbc.gridy = 7;
 		gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(5, 5, 5, 10);
 		semp.add(attachmentName, gbc);
@@ -623,15 +628,15 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 
 	private void browse_actionPerformed(ActionEvent e) {
 		String workingDir = System.getProperty("user.dir");
-		TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+		JFileChooser pcFileChooser = new JFileChooser(workingDir);
 
 		int ret = pcFileChooser.showOpenDialog(new JFrame());
 
 		// check to see if something was actually chosen
-		if (ret == TN5250jFileChooser.APPROVE_OPTION) {
-		   File file = pcFileChooser.getSelectedFile();
-		   fileName = file.getName();
-		   attachmentName.setText(file.toString());
+		if (ret == JFileChooser.APPROVE_OPTION) {
+			File file = pcFileChooser.getSelectedFile();
+			fileName = file.getName();
+			attachmentName.setText(file.toString());
 		}
 	}
 
@@ -739,102 +744,102 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 
 	}
 
-/* ***** NEVER USED LOCALLY ******************************************** */
-//	/**
-//	 * Create a option pane to show status of the transfer
-//	 */
-//	private class ProgressOptionPane extends JOptionPane {
-//
-//		ProgressOptionPane(Object messageList) {
-//
-//			super(
-//				messageList,
-//				JOptionPane.INFORMATION_MESSAGE,
-//				JOptionPane.DEFAULT_OPTION,
-//				null,
-//				new Object[] {
-//					 UIManager.getString("OptionPane.cancelButtonText")},
-//				null);
-//			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//
-//		}
-//
-//		public void setDone() {
-//			Object[] option = this.getOptions();
-//			option[0] = LangTool.getString("xtfr.tableDone");
-//			this.setOptions(option);
-//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//		}
-//
-//		public void reset() {
-//
-//			Object[] option = this.getOptions();
-//			option[0] = UIManager.getString("OptionPane.cancelButtonText");
-//			this.setOptions(option);
-////			monitor.setValue(null);
-//
-//		}
-//
-//		public int getMaxCharactersPerLineCount() {
-//			return 60;
-//		}
-//
-//		/**
-//		 * Returns true if the user hits the Cancel button in the progress dialog.
-//		 *
-//		 * @return whether or not dialog was cancelled
-//		 */
-//		public boolean isCanceled() {
-//			if (this == null)
-//				return false;
-//			Object v = this.getValue();
-//			return (v != null);
-//		}
-//
-//		// Equivalent to JOptionPane.createDialog,
-//		// but create a modeless dialog.
-//		// This is necessary because the Solaris implementation doesn't
-//		// support Dialog.setModal yet.
-//		public JDialog createDialog(Component parentComponent, String title) {
-//
-//			Frame frame = JOptionPane.getFrameForComponent(parentComponent);
-//			final JDialog dialog = new JDialog(frame, title, false);
-//			Container contentPane = dialog.getContentPane();
-//
-//			contentPane.setLayout(new BorderLayout());
-//			contentPane.add(this, BorderLayout.CENTER);
-//			dialog.pack();
-//			dialog.setLocationRelativeTo(parentComponent);
-//			dialog.addWindowListener(new WindowAdapter() {
-//				boolean gotFocus = false;
-//
-//				public void windowClosing(WindowEvent we) {
-//					setValue(null);
-//				}
-//
-//				public void windowActivated(WindowEvent we) {
-//					// Once window gets focus, set initial focus
-//					if (!gotFocus) {
-//						selectInitialValue();
-//						gotFocus = true;
-//					}
-//				}
-//			});
-//
-//			addPropertyChangeListener(new PropertyChangeListener() {
-//				public void propertyChange(PropertyChangeEvent event) {
-//					if (dialog.isVisible()
-//						&& event.getSource() == ProgressOptionPane.this
-//						&& (event.getPropertyName().equals(VALUE_PROPERTY)
-//							|| event.getPropertyName().equals(
-//								INPUT_VALUE_PROPERTY))) {
-//						dialog.setVisible(false);
-//						dialog.dispose();
-//					}
-//				}
-//			});
-//			return dialog;
-//		}
-//	}
+	/* ***** NEVER USED LOCALLY ******************************************** */
+	//	/**
+	//	 * Create a option pane to show status of the transfer
+	//	 */
+	//	private class ProgressOptionPane extends JOptionPane {
+	//
+	//		ProgressOptionPane(Object messageList) {
+	//
+	//			super(
+	//				messageList,
+	//				JOptionPane.INFORMATION_MESSAGE,
+	//				JOptionPane.DEFAULT_OPTION,
+	//				null,
+	//				new Object[] {
+	//					 UIManager.getString("OptionPane.cancelButtonText")},
+	//				null);
+	//			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	//
+	//		}
+	//
+	//		public void setDone() {
+	//			Object[] option = this.getOptions();
+	//			option[0] = LangTool.getString("xtfr.tableDone");
+	//			this.setOptions(option);
+	//			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	//		}
+	//
+	//		public void reset() {
+	//
+	//			Object[] option = this.getOptions();
+	//			option[0] = UIManager.getString("OptionPane.cancelButtonText");
+	//			this.setOptions(option);
+	////			monitor.setValue(null);
+	//
+	//		}
+	//
+	//		public int getMaxCharactersPerLineCount() {
+	//			return 60;
+	//		}
+	//
+	//		/**
+	//		 * Returns true if the user hits the Cancel button in the progress dialog.
+	//		 *
+	//		 * @return whether or not dialog was cancelled
+	//		 */
+	//		public boolean isCanceled() {
+	//			if (this == null)
+	//				return false;
+	//			Object v = this.getValue();
+	//			return (v != null);
+	//		}
+	//
+	//		// Equivalent to JOptionPane.createDialog,
+	//		// but create a modeless dialog.
+	//		// This is necessary because the Solaris implementation doesn't
+	//		// support Dialog.setModal yet.
+	//		public JDialog createDialog(Component parentComponent, String title) {
+	//
+	//			Frame frame = JOptionPane.getFrameForComponent(parentComponent);
+	//			final JDialog dialog = new JDialog(frame, title, false);
+	//			Container contentPane = dialog.getContentPane();
+	//
+	//			contentPane.setLayout(new BorderLayout());
+	//			contentPane.add(this, BorderLayout.CENTER);
+	//			dialog.pack();
+	//			dialog.setLocationRelativeTo(parentComponent);
+	//			dialog.addWindowListener(new WindowAdapter() {
+	//				boolean gotFocus = false;
+	//
+	//				public void windowClosing(WindowEvent we) {
+	//					setValue(null);
+	//				}
+	//
+	//				public void windowActivated(WindowEvent we) {
+	//					// Once window gets focus, set initial focus
+	//					if (!gotFocus) {
+	//						selectInitialValue();
+	//						gotFocus = true;
+	//					}
+	//				}
+	//			});
+	//
+	//			addPropertyChangeListener(new PropertyChangeListener() {
+	//				public void propertyChange(PropertyChangeEvent event) {
+	//					if (dialog.isVisible()
+	//						&& event.getSource() == ProgressOptionPane.this
+	//						&& (event.getPropertyName().equals(VALUE_PROPERTY)
+	//							|| event.getPropertyName().equals(
+	//								INPUT_VALUE_PROPERTY))) {
+	//						dialog.setVisible(false);
+	//						dialog.dispose();
+	//					}
+	//				}
+	//			});
+	//			return dialog;
+	//		}
+	//	}
 
 }
