@@ -84,7 +84,7 @@ public class TabAttributesPanel extends AttributesPanel {
 
 		changes.firePropertyChange(this, "confirmTabClose", getStringProperty("confirmTabClose"), value);
 
-		setProperty("confirmTabClose","Yes");
+		setProperty("confirmTabClose",value);
 
 	}
 
