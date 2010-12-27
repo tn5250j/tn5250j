@@ -49,8 +49,8 @@ import org.tn5250j.tools.LangTool;
  */
 public class HexCharMapDialog {
 
-	private final DefaultListModel<String> hexListModel;
-	private final JList<String> hexList;
+	private final DefaultListModel hexListModel;
+	private final JList hexList;
 	private final Component parent;
 
 	public HexCharMapDialog(Component parent, CodePage codepage) {
@@ -83,13 +83,13 @@ public class HexCharMapDialog {
 		}
 
 		Iterator<?> iterator = set.iterator();
-		hexListModel = new DefaultListModel<String>();
+		hexListModel = new DefaultListModel();
 		while (iterator.hasNext()) {
 			CollationKey keyc = (CollationKey)iterator.next();
 			hexListModel.addElement(keyc.getSourceString());
 		}
 
-		hexList = new JList<String>(hexListModel);
+		hexList = new JList(hexListModel);
 
 		hexList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		hexList.setSelectedIndex(0);
@@ -125,7 +125,7 @@ public class HexCharMapDialog {
 		);
 
 		if (result == 0) {
-			final String selval = hexList.getSelectedValue();
+			final String selval = (String) hexList.getSelectedValue();
 			return selval.substring(selval.length()-1);
 		}
 		return null;
