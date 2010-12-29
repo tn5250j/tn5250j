@@ -85,7 +85,6 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	private JButton okButton;
 	private JButton cancelButton;
 	
-	private volatile EmulSession selectedSession = null;
 	private volatile boolean dialogResult;
 	private static final String ACTION_OK = OK_ACTION;
 	private static final String ACTION_CANCEL = "CANCEL";
@@ -261,7 +260,11 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	}
 	
 	public EmulSession getSelectedSession() {
-		return selectedSession;
+		if (conTable.getSelectedRowCount() > 0) {
+			final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
+			return emulConfig.getSessions().get(idx);
+		}
+		return null;
 	}
 
 	private void initValuesAndListeners() {
@@ -275,10 +278,6 @@ public class SessionsDialog extends JDialog implements ActionListener {
 					btnDelete.setEnabled(conTable.getSelectedRowCount() > 0);
 					okButton.setEnabled(conTable.getSelectedRowCount() > 0);
 					btnEdit.setEnabled(conTable.getSelectedRowCount() > 0);
-					if (conTable.getSelectedRowCount() > 0) {
-						final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
-						selectedSession = emulConfig.getSessions().get(idx);
-					}
 				}
 			});
 			conTable.createDefaultColumnsFromModel();
