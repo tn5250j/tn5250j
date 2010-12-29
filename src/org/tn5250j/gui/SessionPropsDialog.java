@@ -148,7 +148,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					GridBagConstraints gbc_txtSystemName = new GridBagConstraints();
 					gbc_txtSystemName.fill = GridBagConstraints.HORIZONTAL;
 					gbc_txtSystemName.anchor = GridBagConstraints.WEST;
-					gbc_txtSystemName.insets = new Insets(10, 0, 5, 0);
+					gbc_txtSystemName.insets = new Insets(10, 0, 5, 10);
 					gbc_txtSystemName.gridx = 2;
 					gbc_txtSystemName.gridy = 0;
 					panel.add(txtSystemName, gbc_txtSystemName);
@@ -168,7 +168,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					GridBagConstraints gbc_txtHost = new GridBagConstraints();
 					gbc_txtHost.fill = GridBagConstraints.HORIZONTAL;
 					gbc_txtHost.anchor = GridBagConstraints.WEST;
-					gbc_txtHost.insets = new Insets(0, 0, 5, 0);
+					gbc_txtHost.insets = new Insets(0, 0, 5, 10);
 					gbc_txtHost.gridx = 2;
 					gbc_txtHost.gridy = 1;
 					panel.add(txtHost, gbc_txtHost);
@@ -188,7 +188,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					spinnerPort.setModel(new SpinnerNumberModel(23, 1, 65535, 1));
 					GridBagConstraints gbc_spinnerPort = new GridBagConstraints();
 					gbc_spinnerPort.anchor = GridBagConstraints.WEST;
-					gbc_spinnerPort.insets = new Insets(0, 0, 5, 0);
+					gbc_spinnerPort.insets = new Insets(0, 0, 5, 10);
 					gbc_spinnerPort.gridx = 2;
 					gbc_spinnerPort.gridy = 2;
 					panel.add(spinnerPort, gbc_spinnerPort);
@@ -207,7 +207,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					GridBagConstraints gbc_txtDeviceName = new GridBagConstraints();
 					gbc_txtDeviceName.fill = GridBagConstraints.HORIZONTAL;
 					gbc_txtDeviceName.anchor = GridBagConstraints.WEST;
-					gbc_txtDeviceName.insets = new Insets(0, 0, 5, 0);
+					gbc_txtDeviceName.insets = new Insets(0, 0, 5, 10);
 					gbc_txtDeviceName.gridx = 2;
 					gbc_txtDeviceName.gridy = 3;
 					panel.add(txtDeviceName, gbc_txtDeviceName);
@@ -217,7 +217,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					cbUsePcDeviceName = new JCheckBox("Use PC name as device name");
 					cbUsePcDeviceName.setHorizontalAlignment(SwingConstants.LEFT);
 					GridBagConstraints gbc_cbUsePcDeviceName = new GridBagConstraints();
-					gbc_cbUsePcDeviceName.insets = new Insets(0, 0, 5, 0);
+					gbc_cbUsePcDeviceName.insets = new Insets(0, 0, 5, 10);
 					gbc_cbUsePcDeviceName.anchor = GridBagConstraints.WEST;
 					gbc_cbUsePcDeviceName.gridx = 2;
 					gbc_cbUsePcDeviceName.gridy = 4;
@@ -235,7 +235,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					comboSslType = new JComboBox();
 					GridBagConstraints gbc_comboSslType = new GridBagConstraints();
-					gbc_comboSslType.insets = new Insets(0, 0, 5, 0);
+					gbc_comboSslType.insets = new Insets(0, 0, 5, 10);
 					gbc_comboSslType.anchor = GridBagConstraints.WEST;
 					gbc_comboSslType.gridx = 2;
 					gbc_comboSslType.gridy = 5;
@@ -253,7 +253,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					comboCodepage = new JComboBox();
 					GridBagConstraints gbc_comboCodepage = new GridBagConstraints();
-					gbc_comboCodepage.insets = new Insets(0, 0, 5, 0);
+					gbc_comboCodepage.insets = new Insets(0, 0, 5, 10);
 					gbc_comboCodepage.anchor = GridBagConstraints.WEST;
 					gbc_comboCodepage.gridx = 2;
 					gbc_comboCodepage.gridy = 6;
@@ -262,7 +262,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbUseToolbox = new JCheckBox("Use AS400 Toolbox");
 					GridBagConstraints gbc_cbUseToolbox = new GridBagConstraints();
-					gbc_cbUseToolbox.insets = new Insets(0, 0, 5, 0);
+					gbc_cbUseToolbox.insets = new Insets(0, 0, 5, 10);
 					gbc_cbUseToolbox.anchor = GridBagConstraints.WEST;
 					gbc_cbUseToolbox.gridx = 2;
 					gbc_cbUseToolbox.gridy = 7;
@@ -280,7 +280,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbUse132 = new JCheckBox("Use 132x27");
 					GridBagConstraints gbc_cbUse132 = new GridBagConstraints();
-					gbc_cbUse132.insets = new Insets(0, 0, 5, 0);
+					gbc_cbUse132.insets = new Insets(0, 0, 5, 10);
 					gbc_cbUse132.anchor = GridBagConstraints.WEST;
 					gbc_cbUse132.gridx = 2;
 					gbc_cbUse132.gridy = 8;
@@ -298,7 +298,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbPing = new JCheckBox("Every 15 soconds");
 					GridBagConstraints gbc_cbPing = new GridBagConstraints();
-					gbc_cbPing.insets = new Insets(0, 0, 5, 0);
+					gbc_cbPing.insets = new Insets(0, 0, 5, 10);
 					gbc_cbPing.anchor = GridBagConstraints.WEST;
 					gbc_cbPing.gridx = 2;
 					gbc_cbPing.gridy = 9;
@@ -334,7 +334,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					txtConfigFile = new JTextField();
 					GridBagConstraints gbc_txtConfigFile = new GridBagConstraints();
-					gbc_txtConfigFile.insets = new Insets(0, 0, 5, 0);
+					gbc_txtConfigFile.insets = new Insets(0, 0, 5, 10);
 					gbc_txtConfigFile.anchor = GridBagConstraints.WEST;
 					gbc_txtConfigFile.gridx = 2;
 					gbc_txtConfigFile.gridy = 11;
@@ -345,7 +345,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					cbExtendedMode = new JCheckBox("Extended mode");
 					GridBagConstraints gbc_cbExtendedMode = new GridBagConstraints();
 					gbc_cbExtendedMode.anchor = GridBagConstraints.WEST;
-					gbc_cbExtendedMode.insets = new Insets(0, 0, 5, 0);
+					gbc_cbExtendedMode.insets = new Insets(0, 0, 5, 10);
 					gbc_cbExtendedMode.gridx = 2;
 					gbc_cbExtendedMode.gridy = 12;
 					panel.add(cbExtendedMode, gbc_cbExtendedMode);
@@ -353,7 +353,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbUseSystemName = new JCheckBox("Use system name as description");
 					GridBagConstraints gbc_cbUseSystemName = new GridBagConstraints();
-					gbc_cbUseSystemName.insets = new Insets(0, 0, 5, 0);
+					gbc_cbUseSystemName.insets = new Insets(0, 0, 5, 10);
 					gbc_cbUseSystemName.anchor = GridBagConstraints.WEST;
 					gbc_cbUseSystemName.gridx = 2;
 					gbc_cbUseSystemName.gridy = 13;
@@ -362,7 +362,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbOpenNewFrame = new JCheckBox("Open in new frame");
 					GridBagConstraints gbc_cbOpenNewFrame = new GridBagConstraints();
-					gbc_cbOpenNewFrame.insets = new Insets(0, 0, 5, 0);
+					gbc_cbOpenNewFrame.insets = new Insets(0, 0, 5, 10);
 					gbc_cbOpenNewFrame.anchor = GridBagConstraints.WEST;
 					gbc_cbOpenNewFrame.gridx = 2;
 					gbc_cbOpenNewFrame.gridy = 14;
@@ -371,7 +371,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbMonitorSessionStart = new JCheckBox("Monitor session start");
 					GridBagConstraints gbc_cbMonitorSessionStart = new GridBagConstraints();
-					gbc_cbMonitorSessionStart.insets = new Insets(0, 0, 5, 0);
+					gbc_cbMonitorSessionStart.insets = new Insets(0, 0, 5, 10);
 					gbc_cbMonitorSessionStart.anchor = GridBagConstraints.WEST;
 					gbc_cbMonitorSessionStart.gridx = 2;
 					gbc_cbMonitorSessionStart.gridy = 15;
@@ -380,7 +380,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbStartNewVm = new JCheckBox("Start in a new JVM");
 					GridBagConstraints gbc_cbStartNewVm = new GridBagConstraints();
-					gbc_cbStartNewVm.insets = new Insets(0, 0, 5, 0);
+					gbc_cbStartNewVm.insets = new Insets(0, 0, 5, 10);
 					gbc_cbStartNewVm.anchor = GridBagConstraints.WEST;
 					gbc_cbStartNewVm.gridx = 2;
 					gbc_cbStartNewVm.gridy = 16;
@@ -408,7 +408,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				{
 					cbUseProxy = new JCheckBox("Benutzen");
 					GridBagConstraints gbc_cbUseProxy = new GridBagConstraints();
-					gbc_cbUseProxy.insets = new Insets(0, 0, 5, 0);
+					gbc_cbUseProxy.insets = new Insets(0, 0, 5, 10);
 					gbc_cbUseProxy.anchor = GridBagConstraints.WEST;
 					gbc_cbUseProxy.gridx = 2;
 					gbc_cbUseProxy.gridy = 18;
@@ -428,7 +428,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					GridBagConstraints gbc_txtProxyHost = new GridBagConstraints();
 					gbc_txtProxyHost.fill = GridBagConstraints.HORIZONTAL;
 					gbc_txtProxyHost.anchor = GridBagConstraints.WEST;
-					gbc_txtProxyHost.insets = new Insets(0, 0, 5, 0);
+					gbc_txtProxyHost.insets = new Insets(0, 0, 5, 10);
 					gbc_txtProxyHost.gridx = 2;
 					gbc_txtProxyHost.gridy = 19;
 					panel.add(txtProxyHost, gbc_txtProxyHost);
@@ -447,7 +447,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					spinnerProxyPort = new JSpinner();
 					spinnerProxyPort.setModel(new SpinnerNumberModel(23, 1, 65535, 1));
 					GridBagConstraints gbc_spinnerProxyPort = new GridBagConstraints();
-					gbc_spinnerProxyPort.insets = new Insets(0, 0, 10, 0);
+					gbc_spinnerProxyPort.insets = new Insets(0, 0, 10, 10);
 					gbc_spinnerProxyPort.anchor = GridBagConstraints.WEST;
 					gbc_spinnerProxyPort.gridx = 2;
 					gbc_spinnerProxyPort.gridy = 20;
