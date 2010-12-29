@@ -219,7 +219,7 @@ public class Session5250 implements SessionInterface {
 //		if (sesProps.containsKey(TN5250jConstants.SESSION_PROXY_HOST))
 //			vt.setProxy(sesProps.getProperty(TN5250jConstants.SESSION_PROXY_HOST),
 //					proxyPort);
-			vt.setProxy(sesProps.getProxyHost(), Integer.toString(sesProps.getProxyPort()));
+			vt.setProxy(sesProps.getProxyHost(), sesProps.getProxyPort());
 		}
 
 //		final String sslType;

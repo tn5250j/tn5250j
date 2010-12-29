@@ -158,26 +158,26 @@ public class Configure {
 
          systemId = new JTextField(args[0],20);
 
-         if (isSpecified("-p",args)) {
+         if (ParameterUtils.isSpecified("-p",args)) {
             port = new JTextField(getParm("-p",args),5);
          }
          else {
             port = new JTextField("23",5);
          }
 
-         if (isSpecified("-sslType",args))
+         if (ParameterUtils.isSpecified("-sslType",args))
             sslType.setSelectedItem(getParm("-sslType",args));
 
-         if (isSpecified("-sph",args))
+         if (ParameterUtils.isSpecified("-sph",args))
             proxyHost = new JTextField(getParm("-sph",args),20);
          else
             proxyHost = new JTextField(20);
 
-         if (isSpecified("-f",args))
+         if (ParameterUtils.isSpecified("-f",args))
             fpn = new JTextField(getParm("-f",args),20);
          else
             fpn = new JTextField(20);
-         if (isSpecified("-cp",args)) {
+         if (ParameterUtils.isSpecified("-cp",args)) {
             String codepage = getParm("-cp",args);
             String[] acps = CharMappings.getAvailableCodePages();
             jtb.setSelected(true);
@@ -191,26 +191,26 @@ public class Configure {
 
          }
 
-         if (isSpecified("-e",args))
+         if (ParameterUtils.isSpecified("-e",args))
             ec.setSelected(true);
          else
             ec.setSelected(false);
-         if (isSpecified("-t",args))
+         if (ParameterUtils.isSpecified("-t",args))
             tc.setSelected(true);
          else
             tc.setSelected(false);
 
-         if (isSpecified("-132",args))
+         if (ParameterUtils.isSpecified("-132",args))
             sdBig.setSelected(true);
          else
             sdNormal.setSelected(true);
 
-         if (isSpecified("-dn",args))
+         if (ParameterUtils.isSpecified("-dn",args))
             deviceName = new JTextField(getParm("-dn",args),20);
          else
             deviceName = new JTextField(20);
 
-         if (isSpecified("-dn=hostname",args)) {
+         if (ParameterUtils.isSpecified("-dn=hostname",args)) {
             sdn.setSelected(true);
             deviceName.setEnabled(false);
          }
@@ -219,39 +219,39 @@ public class Configure {
             deviceName.setEnabled(true);
          }
 
-         if (isSpecified("-spp",args)) {
+         if (ParameterUtils.isSpecified("-spp",args)) {
             proxyPort = new JTextField(getParm("-spp",args),5);
          }
          else {
             proxyPort = new JTextField("1080",5);
          }
 
-         if (isSpecified("-usp",args))
+         if (ParameterUtils.isSpecified("-usp",args))
             useProxy.setSelected(true);
          else
             useProxy.setSelected(false);
 
-         if (isSpecified("-noembed",args))
+         if (ParameterUtils.isSpecified("-noembed",args))
             noEmbed.setSelected(true);
          else
             noEmbed.setSelected(false);
 
-         if (isSpecified("-d",args))
+         if (ParameterUtils.isSpecified("-d",args))
             deamon.setSelected(true);
          else
             deamon.setSelected(false);
 
-         if (isSpecified("-nc",args))
+         if (ParameterUtils.isSpecified("-nc",args))
             newJVM.setSelected(true);
          else
             newJVM.setSelected(false);
 
-         if (isSpecified("-hb",args))
+         if (ParameterUtils.isSpecified("-hb",args))
             heartBeat.setSelected(true);
          else
             heartBeat.setSelected(false);
 
-         if (isSpecified("-hb",args))
+         if (ParameterUtils.isSpecified("-hb",args))
             heartBeat.setSelected(true);
          else
             heartBeat.setSelected(false);
@@ -573,16 +573,7 @@ public class Configure {
       return null;
    }
 
-   static protected boolean isSpecified(String parm, String[] args) {
 
-      for (int x = 0; x < args.length; x++) {
-
-         if (args[x] != null && args[x].equals(parm))
-            return true;
-
-      }
-      return false;
-   }
 
    private static void doSomethingEntered() {
 

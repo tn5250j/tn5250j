@@ -51,7 +51,7 @@ public class ParameterUtils {
 	public static final String PARAM_USE_SYSNAME_DESCR = "-t";
 	public static final String PARAM_CODEPAGE = "-cp";
 	public static final String PARAM_EXT_MODE = "-e";
-	
+
 	/**
 	 * @param arguments
 	 * @return
@@ -59,19 +59,19 @@ public class ParameterUtils {
 	public static EmulSession loadSessionFromArguments(String[] args) {
 		EmulSession session = new EmulSession();
 		session.setHost(args[0]);
-		if (Configure.isSpecified(PARAM_PORT, args)) {
+		if (isSpecified(PARAM_PORT, args)) {
 			session.setPort(Integer.parseInt(Configure.getParm(PARAM_PORT, args)));
 		}
-		if (Configure.isSpecified(PARAM_CODEPAGE, args)){
+		if (isSpecified(PARAM_CODEPAGE, args)){
 			session.setCodepage(Configure.getParm(PARAM_CODEPAGE, args));
 		}
-		if (Configure.isSpecified(PARAM_DEVNAME, args)){
+		if (isSpecified(PARAM_DEVNAME, args)){
 			session.setDevName(Configure.getParm(PARAM_DEVNAME, args));
 		}
-		if (Configure.isSpecified(PARAM_PROXY_PORT, args)) {
+		if (isSpecified(PARAM_PROXY_PORT, args)) {
 			session.setProxyPort(Integer.parseInt(Configure.getParm(PARAM_PROXY_PORT, args)));
 		}
-		if (Configure.isSpecified(PARAM_SSLTYPE, args)) {
+		if (isSpecified(PARAM_SSLTYPE, args)) {
 			SslType sslt = SslType.valueOf(Configure.getParm(PARAM_SSLTYPE, args).toUpperCase());
 			if (sslt!=null) {
 				session.setSslType(sslt);
@@ -79,22 +79,34 @@ public class ParameterUtils {
 				session.setSslType(SslType.NONE);
 			}
 		}
-		if (Configure.isSpecified(PARAM_CONFIGFILE, args)){
+		if (isSpecified(PARAM_CONFIGFILE, args)){
 			session.setConfigFile(Configure.getParm(PARAM_CONFIGFILE, args));
 		}
-		if (Configure.isSpecified(PARAM_PROXY_HOST, args)){
+		if (isSpecified(PARAM_PROXY_HOST, args)){
 			session.setProxyHost(Configure.getParm(PARAM_PROXY_HOST, args));
 		}
-		session.setEnhancedMode(Configure.isSpecified(PARAM_EXT_MODE, args));
-		session.setUseSysNameAsDescription(Configure.isSpecified(PARAM_USE_SYSNAME_DESCR, args));
-		session.setUseWidth132(Configure.isSpecified(PARAM_USE_WIDTH132, args));
-		session.setMonitorSessionStart(Configure.isSpecified(PARAM_MONITOR_START, args));
-		session.setOpenNewJvm(Configure.isSpecified(PARAM_NEWJVM, args));
-		session.setOpenNewFrame(Configure.isSpecified(PARAM_NEWFRAME, args));
-		session.setUsePcAsDevName(Configure.isSpecified(PARAM_USEPCDEVNAME, args));
-		session.setSendKeepAlive(Configure.isSpecified(PARAM_HEARTBEAT, args));
-		session.setUseProxy(Configure.isSpecified(PARAM_USEPROXY, args));
+		session.setEnhancedMode(isSpecified(PARAM_EXT_MODE, args));
+		session.setUseSysNameAsDescription(isSpecified(PARAM_USE_SYSNAME_DESCR, args));
+		session.setUseWidth132(isSpecified(PARAM_USE_WIDTH132, args));
+		session.setMonitorSessionStart(isSpecified(PARAM_MONITOR_START, args));
+		session.setOpenNewJvm(isSpecified(PARAM_NEWJVM, args));
+		session.setOpenNewFrame(isSpecified(PARAM_NEWFRAME, args));
+		session.setUsePcAsDevName(isSpecified(PARAM_USEPCDEVNAME, args));
+		session.setSendKeepAlive(isSpecified(PARAM_HEARTBEAT, args));
+		session.setUseProxy(isSpecified(PARAM_USEPROXY, args));
 		return session;
 	}
 
+	/**
+	 * @param param
+	 * @param arguments
+	 * @return true if the arguments contain the given param
+	 */
+	public final static boolean isSpecified(String param, String[] arguments) {
+		for (int x = 0; x < arguments.length; x++) {
+			if (arguments[x] != null && arguments[x].equals(param))
+				return true;
+		}
+		return false;
+	}
 }
