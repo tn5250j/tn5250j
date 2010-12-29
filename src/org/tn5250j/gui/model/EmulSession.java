@@ -46,7 +46,7 @@ public class EmulSession implements Cloneable {
 	
 	private String configFile;
 	private boolean useWidth132 = true;
-	private String codepage;
+	private String codepage = "1140";
 	private boolean useAs400Toolbox = false;
 	private boolean enhancedMode = true;
 	private boolean useSysNameAsDescription = true;
