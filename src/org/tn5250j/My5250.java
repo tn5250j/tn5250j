@@ -31,6 +31,8 @@ import static org.tn5250j.ParameterUtils.PARAM_NEWJVM;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -61,7 +63,6 @@ import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.gui.model.EmulConfig;
 import org.tn5250j.gui.model.EmulSession;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -79,13 +80,15 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 	private static final String EMUL_DEFAULT = "emul.default";
 	
 	private static final String PARAM_START_SESSION = "-s";
-	private GUIViewInterface frame1;
+	
+	private final static List<Gui5250Frame> frames = new ArrayList<Gui5250Frame>(5);
+	
+	private Gui5250Frame main5250Frame;
 //	private String[] sessionArgs = null;
 //	private static Properties sessionProperties = new Properties();
 	private static BootStrapper strapper = null;
 	private final EmulConfig emulConfig = new EmulConfig();
 	private SessionManager manager;
-	private static List<GUIViewInterface> frames;
 	private TN5250jSplashScreen splash;
 	private int step;
 
@@ -110,8 +113,6 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		// sets the starting frame type.  At this time there are tabs which is
 		//    default and Multiple Document Interface.
 //		startFrameType();
-
-		frames = new ArrayList<GUIViewInterface>();
 
 		newView();
 
@@ -292,8 +293,8 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 			if (isSpecified("-width",args) ||
 					isSpecified("-height",args)) {
-				int width = frame1.getWidth();
-				int height = frame1.getHeight();
+				int width = main5250Frame.getWidth();
+				int height = main5250Frame.getHeight();
 
 				if (isSpecified("-width",args)) {
 					width = Integer.parseInt(getParm("-width",args));
@@ -301,8 +302,8 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 				if (isSpecified("-height",args)) {
 					height = Integer.parseInt(getParm("-height",args));
 				}
-				frame1.setSize(width,height);
-				frame1.centerFrame();
+				main5250Frame.setSize(width,height);
+				main5250Frame.centerFrame();
 
 			}
 
@@ -422,7 +423,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 				if (newsession != null) {
 					newSession(newsession);
 				} else {
-					closingDown(frame1);
+					closingDown(main5250Frame);
 				}
 			}
 		}
@@ -531,7 +532,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		splash.setVisible(false);
 		//      ConnectDialogOLD sc = new ConnectDialogOLD(frame1,LangTool.getString("ss.title"),sessions);
 
-		SessionsDialog sessdlg = new SessionsDialog(frame1, LangTool.getString("ss.title"), emulConfig);
+		SessionsDialog sessdlg = new SessionsDialog(main5250Frame, LangTool.getString("ss.title"), emulConfig);
 		if (sessdlg.showModal()) {
 			EmulSession sess = sessdlg.getSelectedSession();
 			if (sess != null) {
@@ -568,7 +569,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		Session5250 s2 = manager.openSession(emulSession, propFileName, emulSession.getName());
 		SessionGUI sessiongui = new SessionGUI(s2);
 
-		if (!frame1.isVisible()) {
+		if (!main5250Frame.isVisible()) {
 			splash.updateProgress(++step);
 
 			// Here we check if this is the first session created in the system.
@@ -581,16 +582,16 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 				newView();
 			}
 			splash.setVisible(false);
-			frame1.setVisible(true);
-			frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			main5250Frame.setVisible(true);
+			main5250Frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		else {
 			if (emulSession.isOpenNewFrame()) {
 				splash.updateProgress(++step);
 				newView();
 				splash.setVisible(false);
-				frame1.setVisible(true);
-				frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				main5250Frame.setVisible(true);
+				main5250Frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 			}
 		}
@@ -599,7 +600,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //		if (emulSession.isUseSysNameAsDescription())
 //			frame1.addSessionView(sel, sessiongui);
 //		else
-		frame1.addSessionView(emulSession.getName(), sessiongui);
+		main5250Frame.addSessionView(emulSession.getName(), sessiongui);
 
 		sessiongui.connect();
 
@@ -637,9 +638,15 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		//         frame1 = new Gui5250MDIFrame(this);
 		//         frame1 = new Gui5250SplitFrame(this);
 		//      else
-		frame1 = new Gui5250Frame(this);
+		main5250Frame = new Gui5250Frame();
+		main5250Frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				closingDown(main5250Frame);
+			}
+		});
 
-		frame1.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		main5250Frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 //		if (sessionProperties.containsKey(EMUL_FRAME + frame1.getFrameSequence())) {
 //
@@ -651,13 +658,13 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //			frame1.setSize(width,height);
 //			frame1.centerFrame();
 //		}
-		frame1.setSize(width,height);
-		frame1.centerFrame();
-		frames.add(frame1);
+		main5250Frame.setSize(width,height);
+		main5250Frame.centerFrame();
+		frames.add(main5250Frame);
 
 	}
 
-	private void restoreFrame(GUIViewInterface frame,String location) {
+	private void restoreFrame(Gui5250Frame frame,String location) {
 
 		StringTokenizer tokenizer = new StringTokenizer(location, ",");
 		int x = Integer.parseInt(tokenizer.nextToken());
@@ -674,7 +681,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		closingDown(getParentView(targetSession));
 	}
 
-	protected void closingDown(GUIViewInterface view) {
+	protected void closingDown(Gui5250Frame view) {
 
 		SessionGUI jf = null;
 		Sessions sess = manager.getSessions();
@@ -744,7 +751,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 	protected void closeSession(SessionGUI targetSession) {
 
-		GUIViewInterface f = getParentView(targetSession);
+		Gui5250Frame f = getParentView(targetSession);
 		if (f == null)
 			return;
 		int tabs = f.getSessionViewCount();
@@ -875,9 +882,9 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		}
 	}
 
-	private GUIViewInterface getParentView(SessionGUI session) {
+	private Gui5250Frame getParentView(SessionGUI session) {
 
-		GUIViewInterface f = null;
+		Gui5250Frame f = null;
 
 		for (int x = 0; x < frames.size(); x++) {
 			f = frames.get(x);

@@ -34,7 +34,7 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  * <br><br>
  * Direct known subclasses:
  * <ul>
- * <li>{@link org.tn5250j.interfaces.GUIViewInterface}</li>
+ * <li>{@link org.tn5250j.Gui5250Frame}</li>
  * <li>{@link org.tn5250j.mailtools.SendEMailDialog}</li>
  * <li>{@link org.tn5250j.spoolfile.SpoolExporter}</li>
  * <li>{@link org.tn5250j.spoolfile.SpoolExportWizard}</li>
@@ -44,33 +44,30 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 public class GenericTn5250JFrame extends JFrame {
 
 	private static final long serialVersionUID = 7349671770294342782L;
-	
+
 	protected boolean packFrame = false;
 
-   public GenericTn5250JFrame() {
-      super();
-      setIconImages(GUIGraphicsUtils.getApplicationIcons());
-   }
+	public GenericTn5250JFrame() {
+		super();
+		setIconImages(GUIGraphicsUtils.getApplicationIcons());
+	}
 
-   public void centerFrame() {
-
-      if (packFrame)
-         pack();
-      else
-         validate();
-
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-
-      setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
-
-
-   }
+	public void centerFrame() {
+		if (packFrame) {
+			pack();
+		} else {
+			validate();
+		}
+		//Center the window
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension frameSize = getSize();
+		if (frameSize.height > screenSize.height) {
+			frameSize.height = screenSize.height;
+		}
+		if (frameSize.width > screenSize.width) {
+			frameSize.width = screenSize.width;
+		}
+		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+	}
 
 }
