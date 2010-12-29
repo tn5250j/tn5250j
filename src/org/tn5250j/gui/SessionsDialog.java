@@ -30,6 +30,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +40,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -56,11 +58,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.model.EmulConfig;
 import org.tn5250j.gui.model.EmulSession;
 import org.tn5250j.gui.model.SslType;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
+import java.awt.Font;
 
 public class SessionsDialog extends JDialog implements ActionListener {
 
@@ -85,6 +89,8 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	private volatile boolean dialogResult;
 	private static final String ACTION_OK = OK_ACTION;
 	private static final String ACTION_CANCEL = "CANCEL";
+	private JLabel lblSubTitle;
+	private JPanel panelTitle;
 
 	/**
 	 * Launch the application.
@@ -187,13 +193,35 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		}
 		{
 			JPanel panel = new JPanel();
+			panel.setBorder(new EmptyBorder(3, 5, 3, 5));
 			panel.setBackground(SystemColor.activeCaptionText);
 			panel.setForeground(new Color(0, 0, 0));
 			contentPanel.add(panel, BorderLayout.NORTH);
-			panel.setLayout(new BorderLayout(0, 0));
+			panel.setLayout(new BorderLayout(10, 0));
 			{
-				JLabel lblTitle = new JLabel("Tn5250j");
-				panel.add(lblTitle);
+				panelTitle = new JPanel();
+				panelTitle.setForeground(SystemColor.windowText);
+				panelTitle.setBackground(SystemColor.activeCaptionText);
+				panel.add(panelTitle, BorderLayout.CENTER);
+				panelTitle.setLayout(new BorderLayout(0, 0));
+				{
+					JLabel lblTitle = new JLabel("Tn5250j");
+					lblTitle.setForeground(SystemColor.windowText);
+					panelTitle.add(lblTitle, BorderLayout.NORTH);
+					lblTitle.setFont(new Font("Tahoma", Font.BOLD, 15));
+				}
+				{
+					lblSubTitle = new JLabel("developer edition");
+					lblSubTitle.setForeground(SystemColor.windowText);
+					panelTitle.add(lblSubTitle, BorderLayout.SOUTH);
+				}
+			}
+			{
+				JLabel lblLogoImg = new JLabel("");
+				lblLogoImg.setFont(new Font("Tahoma", Font.PLAIN, 11));
+				final Image img = GUIGraphicsUtils.getApplicationIcons().get(1);
+				lblLogoImg.setIcon(new ImageIcon(img));
+				panel.add(lblLogoImg, BorderLayout.EAST);
 			}
 		}
 		{
@@ -360,6 +388,9 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		}
 		{
 			okButton.setEnabled(conTable.getSelectedRowCount() > 0);
+		}
+		{
+			lblSubTitle.setText(TN5250jConstants.VERSION_INFO);
 		}
 	}
 
