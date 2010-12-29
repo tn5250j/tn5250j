@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -56,6 +56,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.gui.model.EmulSession;
 import org.tn5250j.gui.model.SslType;
 
@@ -81,16 +82,16 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 	private JCheckBox cbMonitorSessionStart;
 	private JCheckBox cbStartNewVm;
 	private JCheckBox cbUseProxy;
-	
+
 	private EmulSession session;
 	private JButton btChooseFile;
 	private JButton okButton;
 	private JButton cancelButton;
-	
+
 	private volatile boolean dialogResult;
 	private static final String ACTION_OK = "OK";
 	private static final String ACTION_CANCEL = "CANCEL";
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -475,29 +476,29 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 
 	/**
 	 * Set the model for this dialog ...
-	 * 
+	 *
 	 * @param session
 	 */
 	public void setSession(EmulSession session) {
 		this.session = session;
 	}
-	
+
 	/**
 	 * @return The model for this dialog ...
 	 */
 	public EmulSession getSession() {
 		return session;
 	}
-	
+
 	/**
-	 * @return true -&gt; OK and false -&gt; CANCEL 
+	 * @return true -&gt; OK and false -&gt; CANCEL
 	 */
 	public boolean showModal() {
 		this.setModal(true);
 		this.setVisible(true);
 		return dialogResult;
 	}
-	
+
 	@Override
 	public void setVisible(boolean b) {
 		if (session == null) {
@@ -509,20 +510,20 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 		initValuesAndListeners();
 		super.setVisible(b);
 	}
-	
+
 	private void initDefaultListener() {
 		cancelButton.addActionListener(this);
 		cancelButton.setActionCommand(ACTION_CANCEL);
 		okButton.addActionListener(this);
 		okButton.setActionCommand(ACTION_OK);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		dialogResult = "OK".equals(e.getActionCommand());
 		setVisible(false);
 	}
-	
+
 	private void initValuesAndListeners() {
 		{
 			txtHost.setText(session.getHost());
@@ -547,7 +548,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 			spinnerPort.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					session.setPort(Integer.parseInt(spinnerPort.getModel().getValue().toString()));					
+					session.setPort(Integer.parseInt(spinnerPort.getModel().getValue().toString()));
 				}
 			});
 		}
@@ -708,10 +709,28 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 			spinnerProxyPort.addChangeListener(new ChangeListener() {
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					session.setProxyPort(Integer.parseInt(spinnerProxyPort.getModel().getValue().toString()));					
+					session.setProxyPort(Integer.parseInt(spinnerProxyPort.getModel().getValue().toString()));
 				}
 			});
 			spinnerProxyPort.setEnabled(session.isUseProxy());
+		}
+		{
+			String selcp = null;
+			for (String s : CharMappings.getAvailableCodePages()) {
+				comboCodepage.addItem(s);
+				if (s.equals(session.getCodepage())) {
+					selcp = s;
+				}
+			}
+			if (selcp != null) {
+				comboCodepage.setSelectedItem(selcp);
+			}
+			comboCodepage.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					session.setCodepage((String)comboCodepage.getSelectedItem());
+				}
+			});
 		}
 	}
 
@@ -747,8 +766,8 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 		public void changedUpdate(DocumentEvent e) {
 			changed(e);
 		}
-		
+
 		abstract void changed(DocumentEvent e);
-		
+
 	}
 }
