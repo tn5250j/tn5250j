@@ -31,6 +31,9 @@ import org.tn5250j.framework.transport.SslType;
 
 public class EmulSession implements Cloneable {
 
+	public static final int DEFAULT_PORT = 23;
+	public static final int DEFAULT_SSL_PORT = 992;
+	
 	private String name = "name";
 	private String host = "127.0.0.1";
 	private boolean defaultCon = false;
@@ -39,7 +42,7 @@ public class EmulSession implements Cloneable {
 	private boolean monitorSessionStart = false;
 	private boolean openNewJvm = false;
 	
-	private int port = 23;
+	private int port = DEFAULT_PORT;
 	private String devName;
 	private boolean usePcAsDevName = false;
 	private SslType sslType = SslType.NONE;

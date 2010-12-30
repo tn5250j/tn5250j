@@ -56,6 +56,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.tn5250j.Session5250;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulSession;
@@ -185,7 +186,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				}
 				{
 					spinnerPort = new JSpinner();
-					spinnerPort.setModel(new SpinnerNumberModel(23, 1, 65535, 1));
+					spinnerPort.setModel(new SpinnerNumberModel(EmulSession.DEFAULT_PORT, 1, 65535, 1));
 					GridBagConstraints gbc_spinnerPort = new GridBagConstraints();
 					gbc_spinnerPort.anchor = GridBagConstraints.WEST;
 					gbc_spinnerPort.insets = new Insets(0, 0, 5, 10);
@@ -445,7 +446,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				}
 				{
 					spinnerProxyPort = new JSpinner();
-					spinnerProxyPort.setModel(new SpinnerNumberModel(23, 1, 65535, 1));
+					spinnerProxyPort.setModel(new SpinnerNumberModel(Session5250.DEFAULT_PROXY_PORT, 1, 65535, 1));
 					GridBagConstraints gbc_spinnerProxyPort = new GridBagConstraints();
 					gbc_spinnerProxyPort.insets = new Insets(0, 0, 10, 10);
 					gbc_spinnerProxyPort.anchor = GridBagConstraints.WEST;
@@ -571,15 +572,24 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 			});
 		}
 		{
-			final SslType[] ssltypes = new SslType[] {SslType.NONE, SslType.SSLv2, SslType.SSLv3, SslType.TLS };
-			for (SslType st : ssltypes) {
+			for (SslType st : SslType.values()) {
 				comboSslType.addItem(st);
 			}
 			comboSslType.setSelectedItem(session.getSslType());
 			comboSslType.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					session.setSslType((SslType)comboSslType.getSelectedItem());
+					final SslType newst = (SslType)comboSslType.getSelectedItem();
+					session.setSslType(newst);
+					// update port numbers
+					if (newst == SslType.NONE && session.getPort() != EmulSession.DEFAULT_PORT) {
+						session.setPort(EmulSession.DEFAULT_PORT);
+						((SpinnerNumberModel)spinnerPort.getModel()).setValue(session.getPort());
+					}
+					if (newst != SslType.NONE) {
+						session.setPort(EmulSession.DEFAULT_SSL_PORT);
+						((SpinnerNumberModel)spinnerPort.getModel()).setValue(session.getPort());
+					}
 				}
 			});
 		}
