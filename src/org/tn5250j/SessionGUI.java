@@ -922,10 +922,10 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 *
 	 */
 	public final void actionCopy() {
-		final Rect area = getBoundingArea();
+		final Rect boundingArea = getBoundingArea();
 		rubberband.reset();
 		screen.repaintScreen();
-		final String textcontent = screen.copyText(area);
+		final String textcontent = screen.copyText(boundingArea);
 		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
 		StringSelection contents = new StringSelection(textcontent);
 		cb.setContents(contents, null);
