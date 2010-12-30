@@ -104,6 +104,7 @@ public class ButtonTabComponentDemo extends JPanel {
       TabLabel label = new TabLabel();
 
 //      label.setToolTipText("i'm a tool tip");
+      // XXX: When using tool tips, button is no more clickable :-/
       this.setToolTipText("i'm a tool tip");
 
       add(label);
