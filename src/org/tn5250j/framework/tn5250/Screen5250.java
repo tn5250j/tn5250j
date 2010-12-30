@@ -27,6 +27,7 @@ package org.tn5250j.framework.tn5250;
 
 import static org.tn5250j.TN5250jConstants.*;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -343,7 +344,7 @@ public class Screen5250 {
 	 *            formatting option to use
 	 * @return vector string of numberic values
 	 */
-	public final Number[] sumThem(boolean which, Rect area) {
+	public final BigDecimal[] sumThem(boolean which, Rect area) {
 
 		StringBuilder sb = new StringBuilder();
 		Rect workR = new Rect();
@@ -369,14 +370,14 @@ public class Screen5250 {
 
 		df.setDecimalFormatSymbols(dfs);
 
-		List<Number> sumlist = new ArrayList<Number>(area.height);
+		List<BigDecimal> sumlist = new ArrayList<BigDecimal>(area.height);
 
 		// loop through all the screen characters to send them to the clip board
 		int m = workR.x;
 		int i = 0;
 		int t = 0;
 
-		double sum = 0.0;
+		BigDecimal sum = new BigDecimal(0);
 
 		while (workR.height-- > 0) {
 			t = workR.width;
@@ -402,11 +403,9 @@ public class Screen5250 {
 					sb.deleteCharAt(sb.length() - 1);
 				}
 				try {
-					Number n = df.parse(sb.toString());
-					//               System.out.println(s + " " + n.doubleValue());
-
+					BigDecimal n = new BigDecimal(df.parse(sb.toString()).doubleValue());
 					sumlist.add(n);
-					sum += n.doubleValue();
+					sum = sum.add(n);
 				} catch (ParseException pe) {
 					log.warn(pe.getMessage() + " at "
 							+ pe.getErrorOffset());
@@ -416,7 +415,7 @@ public class Screen5250 {
 			m++;
 		}
 		log.debug("" + sum);
-		return sumlist.toArray(new Number[sumlist.size()]);
+		return sumlist.toArray(new BigDecimal[sumlist.size()]);
 	}
 
 	/**

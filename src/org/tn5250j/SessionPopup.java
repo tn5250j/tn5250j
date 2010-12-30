@@ -662,7 +662,7 @@ public class SessionPopup {
 	 */
 	private void sumArea(boolean which) {
 		BigDecimal sum = new BigDecimal(0);
-		for (Number nbr : sessiongui.sumThem(which)) {
+		for (BigDecimal nbr : sessiongui.sumThem(which)) {
 			sum = sum.add(new BigDecimal(nbr.doubleValue()));
 		}
 

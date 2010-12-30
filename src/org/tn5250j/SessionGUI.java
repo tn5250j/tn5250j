@@ -41,6 +41,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.math.BigDecimal;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -937,7 +938,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 * @param which formatting option to use
 	 * @return vector string of numeric values
 	 */
-	protected final Number[] sumThem(boolean which) {
+	protected final BigDecimal[] sumThem(boolean which) {
 		log.debug("Summing");
 		return screen.sumThem(which, getBoundingArea());
 	}
