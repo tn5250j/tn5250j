@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -709,7 +710,9 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 				jf = null;
 				
 			}
-			log.info("view settings " + views);
+			if (log.isInfoEnabled()) {
+				log.info("view settings " + Arrays.toString(views));
+			}
 			emulConfig.setViews(views);
 		}
 
