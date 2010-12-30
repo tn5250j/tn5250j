@@ -2835,4 +2835,11 @@ public final class tnvt implements Runnable {
 		return codePage;
 	}
 
+	/**
+	 * @see org.tn5250j.Session5250#signalBell()
+	 */
+	public void signalBell() {
+		controller.signalBell();
+	}
+	
 }

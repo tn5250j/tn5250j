@@ -49,9 +49,17 @@ import static org.tn5250j.TN5250jConstants.MNEMONIC_SYSREQ;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_TOGGLE_CONNECTION;
 
 import java.awt.Frame;
+import java.awt.HeadlessException;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -82,6 +90,8 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.SendScreenImageToFile;
 import org.tn5250j.tools.SendScreenToFile;
 import org.tn5250j.tools.XTFRFile;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Custom
@@ -91,6 +101,8 @@ public class SessionPopup {
 	private final Screen5250 screen;
 	private final SessionGUI sessiongui;
 	private final tnvt vt;
+	
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public SessionPopup(SessionGUI sessgui, MouseEvent me) {
 
@@ -108,7 +120,10 @@ public class SessionPopup {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					screen.copyField(pos);
+					String fcontent = screen.copyTextField(pos);
+					StringSelection contents = new StringSelection(fcontent);
+					Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+					cb.setContents(contents, null);
 					sessiongui.getFocusForMe();
 				}
 			};
@@ -121,8 +136,7 @@ public class SessionPopup {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(false);
-					sessiongui.getFocusForMe();
+					paste(false);
 				}
 			};
 			popup.add(createMenuItem(action,MNEMONIC_PASTE));
@@ -132,14 +146,13 @@ public class SessionPopup {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(true);
-					sessiongui.getFocusForMe();
+					paste(true);
 				}
 			};
 			popup.add(action);
 
 			popup.addSeparator(); // ------------------
-			
+
 			action = new AbstractAction(LangTool.getString("popup.hexMap")) {
 				private static final long serialVersionUID = 1L;
 
@@ -150,7 +163,7 @@ public class SessionPopup {
 				}
 			};
 			popup.add(createMenuItem(action,""));
-			
+
 			popup.addSeparator(); // ------------------
 		}
 		else {
@@ -172,8 +185,7 @@ public class SessionPopup {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(false);
-					sessiongui.getFocusForMe();
+					paste(false);
 				}
 			};
 			popup.add(createMenuItem(action,MNEMONIC_PASTE));
@@ -183,8 +195,7 @@ public class SessionPopup {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(true);
-					sessiongui.getFocusForMe();
+					paste(true);
 				}
 			};
 			popup.add(action);
@@ -757,6 +768,25 @@ public class SessionPopup {
 	private void sendMeToImageFile() {
 		// Change sent by LUC - LDC to add a parent frame to be passed
 		new SendScreenImageToFile((Frame)SwingUtilities.getRoot(sessiongui),sessiongui);
+	}
+	
+	private void paste(boolean special) {
+		try {
+			Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			final Transferable transferable = cb.getContents(this);
+			if (transferable != null) {
+				final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+				screen.pasteText(content, special);
+				sessiongui.getFocusForMe();
+			}
+		} catch (HeadlessException e1) {
+			log.debug("HeadlessException", e1);
+		} catch (UnsupportedFlavorException e1) {
+			log.debug("the requested data flavor is not supported", e1);
+		} catch (IOException e1) {
+			log.debug("data is no longer available in the requested flavor", e1);
+		}
+
 	}
 
 }

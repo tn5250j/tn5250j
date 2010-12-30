@@ -28,6 +28,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -54,6 +57,7 @@ import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
+import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
@@ -186,7 +190,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 								+ guiGraBuf.rowHeight);
 					}
 
-					boolean moved = screen.moveCursor(e, pos);
+					boolean moved = screen.moveCursor(pos);
 					// this is a note to not execute this code here when we
 					// implement the remain after edit function option.
 					if (moved) {
@@ -918,18 +922,13 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 *
 	 */
 	public final void actionCopy() {
-
-		Rectangle workR = new Rectangle();
-		// lets get the bounding area using a rectangle that we have already
-		// allocated
-		getBoundingArea(workR);
-
+		final Rect area = getBoundingArea();
 		rubberband.reset();
-
 		screen.repaintScreen();
-
-		screen.copyMe(workR);
-
+		final String textcontent = screen.copyText(area);
+		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection contents = new StringSelection(textcontent);
+		cb.setContents(contents, null);
 	}
 
 	/**
@@ -939,10 +938,8 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 * @return vector string of numeric values
 	 */
 	protected final Vector<Double> sumThem(boolean which) {
-		Rectangle workR = new Rectangle();
-		getBoundingArea(workR);
 		log.debug("Summing");
-		return screen.sumThem(which,workR);
+		return screen.sumThem(which, getBoundingArea());
 	}
 
 	/**
@@ -1051,6 +1048,14 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	public void getBoundingArea(Rectangle bounds) {
 		guiGraBuf.getBoundingArea(bounds);
+	}
+	
+	public Rect getBoundingArea() {
+		Rectangle awt_rect = new Rectangle();
+		guiGraBuf.getBoundingArea(awt_rect);
+		Rect result = new Rect();
+		result.setBounds(awt_rect.x, awt_rect.y, awt_rect.width, awt_rect.height);
+		return result;
 	}
 
 	@Override

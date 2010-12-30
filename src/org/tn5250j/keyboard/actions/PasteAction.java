@@ -25,31 +25,56 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
 
-import org.tn5250j.TN5250jConstants;
+import javax.swing.KeyStroke;
+
 import org.tn5250j.SessionGUI;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Paste from the clipboard
  */
 public class PasteAction extends EmulatorAction {
 
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+	
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-public PasteAction(SessionGUI session, KeyMapper keyMap) {
-      super(session,
-    		  TN5250jConstants.MNEMONIC_PASTE,
-            KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.ALT_MASK),
-            keyMap);
+	public PasteAction(SessionGUI session, KeyMapper keyMap) {
+		super(session,
+				TN5250jConstants.MNEMONIC_PASTE,
+				KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.ALT_MASK),
+				keyMap);
 
-   }
+	}
 
-   public void actionPerformed(ActionEvent e) {
-
-      session.getScreen().pasteMe(false);
-   }
+	public void actionPerformed(ActionEvent event) {
+		try {
+			Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			final Transferable transferable = cb.getContents(this);
+			if (transferable != null) {
+				final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+				session.getScreen().pasteText(content, false);
+			}
+		} catch (HeadlessException e1) {
+			log.debug("HeadlessException", e1);
+		} catch (UnsupportedFlavorException e1) {
+			log.debug("the requested data flavor is not supported", e1);
+		} catch (IOException e1) {
+			log.debug("data is no longer available in the requested flavor", e1);
+		}
+	}
+	
 }
