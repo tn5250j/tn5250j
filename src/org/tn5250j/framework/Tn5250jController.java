@@ -49,7 +49,7 @@ public class Tn5250jController extends Thread {
 	private List<Tn5250jEvent> eventList;
 	private List<Tn5250jListener> listeners;
 	private SessionManager manager;
-	Properties sesprops;
+	private Properties sesprops;
 	private static Tn5250jController current;
 
 	private Tn5250jController() {
