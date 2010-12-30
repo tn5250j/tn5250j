@@ -53,6 +53,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.tn5250j.encoding.CharMappings;
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
@@ -123,8 +124,8 @@ public class Configure {
 
       sslType = new JComboBox();
 
-      for (int x = 0; x < TN5250jConstants.SSL_TYPES.length; x++) {
-         sslType.addItem(TN5250jConstants.SSL_TYPES[x]);
+      for (SslType st : SslType.values()) {
+         sslType.addItem(st);
       }
 
       if (propKey == null) {
@@ -615,7 +616,7 @@ public class Configure {
                cpb.getSelectedItem()))
          sb.append(" -cp " + (String)cpb.getSelectedItem());
 
-      if (!TN5250jConstants.SSL_TYPE_NONE.equals(sslType.getSelectedItem()))
+      if (!SslType.NONE.name().equals(sslType.getSelectedItem()))
          sb.append(" -sslType " + (String)sslType.getSelectedItem());
 
       if (ec.isSelected())

@@ -24,7 +24,7 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.gui.model;
+package org.tn5250j.framework.transport;
 
 public enum SslType {
 

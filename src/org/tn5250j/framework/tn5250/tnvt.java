@@ -86,6 +86,7 @@ import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.CodePage;
 import org.tn5250j.framework.transport.SocketConnector;
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -162,7 +163,7 @@ public final class tnvt implements Runnable {
 	private boolean[] dataIncluded;
 	private CodePage codePage;
 	private boolean firstScreen;
-	private String sslType;
+	private SslType sslType;
 	WTDSFParser sfParser;
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -216,8 +217,8 @@ public final class tnvt implements Runnable {
 	}
 
 
-	public void setSSLType(String type) {
-		sslType = type;
+	public void setSSLType(SslType sslType) {
+		this.sslType = sslType;
 	}
 
 	public void setDeviceName(String name) {

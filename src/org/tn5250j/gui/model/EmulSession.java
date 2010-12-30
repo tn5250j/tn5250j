@@ -27,6 +27,7 @@
 package org.tn5250j.gui.model;
 
 import org.tn5250j.Session5250;
+import org.tn5250j.framework.transport.SslType;
 
 public class EmulSession implements Cloneable {
 

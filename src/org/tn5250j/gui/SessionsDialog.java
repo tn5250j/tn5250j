@@ -59,9 +59,9 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
 import org.tn5250j.TN5250jConstants;
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulConfig;
 import org.tn5250j.gui.model.EmulSession;
-import org.tn5250j.gui.model.SslType;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import java.awt.Font;

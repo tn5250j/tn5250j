@@ -26,8 +26,8 @@
  */
 package org.tn5250j;
 
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulSession;
-import org.tn5250j.gui.model.SslType;
 
 /**
  * @author maki

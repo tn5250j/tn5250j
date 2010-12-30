@@ -57,8 +57,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.tn5250j.encoding.CharMappings;
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulSession;
-import org.tn5250j.gui.model.SslType;
 
 public class SessionPropsDialog extends JDialog implements ActionListener {
 

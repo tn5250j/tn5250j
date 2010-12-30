@@ -25,21 +25,20 @@ package org.tn5250j.framework.transport;
 
 import java.net.Socket;
 
-import org.tn5250j.TN5250jConstants;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class SocketConnector {
 
-	String sslType = null;
+	private SslType sslType = null;
 
-	TN5250jLogger logger;
+	private final TN5250jLogger logger = TN5250jLogFactory.getLogger(getClass());
 
 	/**
 	 * Creates a new instance that creates a plain socket by default.
 	 */
 	public SocketConnector() {
-		logger = TN5250jLogFactory.getLogger(getClass());
+		super();
 	}
 
 	/**
@@ -48,7 +47,7 @@ public class SocketConnector {
 	 * @param type The SSL connection type
 	 * @see org.tn5250j.framework.transport.SSLConstants
 	 */
-	public void setSSLType(String type) {
+	public void setSSLType(SslType type) {
 		sslType = type;
 	}
 
@@ -66,8 +65,7 @@ public class SocketConnector {
 		Socket socket = null;
 		Exception ex = null;
 
-		if (sslType == null || sslType.trim().length() == 0 || 
-				sslType.toUpperCase().equals(TN5250jConstants.SSL_TYPE_NONE)) {
+		if (sslType == null || sslType == SslType.NONE) {
 			logger.info("Creating Plain Socket");
 			try {
 				// Use Socket Constructor!!! SocketFactory for jdk 1.4

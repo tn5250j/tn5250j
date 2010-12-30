@@ -32,9 +32,9 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.SystemRequestDialog;
 import org.tn5250j.gui.model.EmulSession;
-import org.tn5250j.gui.model.SslType;
 import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.interfaces.SessionInterface;
 
@@ -230,12 +230,16 @@ public class Session5250 implements SessionInterface {
 //			sslType = TN5250jConstants.SSL_TYPE_NONE;
 //		}
 //		vt.setSSLType(sslType);
-		switch (sesProps.getSslType()) {
-			case SSLv2: vt.setSSLType(TN5250jConstants.SSL_TYPE_SSLv2); break;
-			case SSLv3: vt.setSSLType(TN5250jConstants.SSL_TYPE_SSLv3); break;
-			case TLS:   vt.setSSLType(TN5250jConstants.SSL_TYPE_TLS); break;
-			default:    vt.setSSLType(TN5250jConstants.SSL_TYPE_NONE);
-		}
+		
+// ------- workaround
+//		switch (sesProps.getSslType()) {
+//			case SSLv2: vt.setSSLType(TN5250jConstants.SSL_TYPE_SSLv2); break;
+//			case SSLv3: vt.setSSLType(TN5250jConstants.SSL_TYPE_SSLv3); break;
+//			case TLS:   vt.setSSLType(TN5250jConstants.SSL_TYPE_TLS); break;
+//			default:    vt.setSSLType(TN5250jConstants.SSL_TYPE_NONE);
+//		}
+// ------- workaround end
+		vt.setSSLType(sesProps.getSslType());
 
 //		if (sesProps.containsKey(TN5250jConstants.SESSION_CODE_PAGE))
 //			vt.setCodePage(sesProps.getProperty(TN5250jConstants.SESSION_CODE_PAGE));

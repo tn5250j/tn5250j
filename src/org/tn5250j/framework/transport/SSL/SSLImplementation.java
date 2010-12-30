@@ -40,6 +40,7 @@ import javax.net.ssl.X509TrustManager;
 import javax.swing.JOptionPane;
 
 import org.tn5250j.framework.transport.SSLInterface;
+import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -74,7 +75,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 		logger = TN5250jLogFactory.getLogger(getClass());
 	}
 
-	public void init(String sslType) {
+	public void init(SslType sslType) {
 		try {
 			logger.debug("Initializing User KeyStore");
 			userKsPath = System.getProperty("user.home") + File.separator
@@ -93,7 +94,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 			usertmf.init(userks);
 			userTrustManagers = usertmf.getTrustManagers();
 			logger.debug("Initializing SSL Context");
-			sslContext = SSLContext.getInstance(sslType);
+			sslContext = SSLContext.getInstance(sslType.name());
 			sslContext.init(userkmf.getKeyManagers(), new TrustManager[] {this}, null);
 		} catch (Exception ex) {
 			logger.error("Error initializing SSL [" + ex.getMessage() + "]");

@@ -23,15 +23,16 @@ package org.tn5250j.framework.transport;
  */
 import java.net.Socket;
 
+
 public interface SSLInterface {
 
 	/**
 	 * Initialize the components required to create a new client socket
 	 * when createSSLSocket is called.
 	 * @param type The ssl socket type (SSLv2, SSLv3, TLS)
-	 * @see org.tn5250j.framework.transport.SSLConstants
+	 * @see {@link org.tn5250j.framework.transport.SslType}
 	 */
-   public abstract void init(String sslType);
+   public abstract void init(SslType sslType);
 
    /**
     * Create a new socket
