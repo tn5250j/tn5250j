@@ -31,6 +31,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
@@ -228,7 +230,7 @@ public class Screen5250 {
 	 * Copy & Paste support
 	 * 
 	 * @param content
-	 * @see {@link #copyText(Rectangle)}
+	 * @see {@link #copyText(Rect)}
 	 */
 	public final void pasteText(String content, boolean special) {
 		if (log.isDebugEnabled()) {
@@ -341,7 +343,7 @@ public class Screen5250 {
 	 *            formatting option to use
 	 * @return vector string of numberic values
 	 */
-	public final Vector<Double> sumThem(boolean which, Rect area) {
+	public final Number[] sumThem(boolean which, Rect area) {
 
 		StringBuilder sb = new StringBuilder();
 		Rect workR = new Rect();
@@ -367,7 +369,7 @@ public class Screen5250 {
 
 		df.setDecimalFormatSymbols(dfs);
 
-		Vector<Double> sumVector = new Vector<Double>();
+		List<Number> sumlist = new ArrayList<Number>(area.height);
 
 		// loop through all the screen characters to send them to the clip board
 		int m = workR.x;
@@ -403,7 +405,7 @@ public class Screen5250 {
 					Number n = df.parse(sb.toString());
 					//               System.out.println(s + " " + n.doubleValue());
 
-					sumVector.add(new Double(n.doubleValue()));
+					sumlist.add(n);
 					sum += n.doubleValue();
 				} catch (ParseException pe) {
 					log.warn(pe.getMessage() + " at "
@@ -414,7 +416,7 @@ public class Screen5250 {
 			m++;
 		}
 		log.debug("" + sum);
-		return sumVector;
+		return sumlist.toArray(new Number[sumlist.size()]);
 	}
 
 	/**

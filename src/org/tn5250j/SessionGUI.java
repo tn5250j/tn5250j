@@ -937,7 +937,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 	 * @param which formatting option to use
 	 * @return vector string of numeric values
 	 */
-	protected final Vector<Double> sumThem(boolean which) {
+	protected final Number[] sumThem(boolean which) {
 		log.debug("Summing");
 		return screen.sumThem(which, getBoundingArea());
 	}

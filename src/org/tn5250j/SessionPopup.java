@@ -60,11 +60,10 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -658,43 +657,27 @@ public class SessionPopup {
 		}
 	}
 
+	/**
+	 * @param which
+	 */
 	private void sumArea(boolean which) {
-
-
-		List<Double> sumVector = sessiongui.sumThem(which);
-		Iterator<Double> l = sumVector.iterator();
-		double sum = 0.0;
-		double inter = 0.0;
-		while (l.hasNext()) {
-
-			inter = 0.0;
-			try {
-				inter = l.next().doubleValue();
-			}
-			catch (Exception e) {
-				log.warn(e);
-			}
-
-			sum += inter;
-
+		BigDecimal sum = new BigDecimal(0);
+		for (Number nbr : sessiongui.sumThem(which)) {
+			sum = sum.add(new BigDecimal(nbr.doubleValue()));
 		}
+
 		if (log.isDebugEnabled()) {
 			log.debug("Vector sum " + sum);
 		}
-		sumVector = null;
-		l = null;
 
 		// obtain the decimal format for parsing
-		DecimalFormat df =
-			(DecimalFormat)NumberFormat.getInstance() ;
-
+		DecimalFormat df = (DecimalFormat)NumberFormat.getInstance() ;
 		DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
 
 		if (which) {
 			dfs.setDecimalSeparator('.');
 			dfs.setGroupingSeparator(',');
-		}
-		else {
+		} else {
 			dfs.setDecimalSeparator(',');
 			dfs.setGroupingSeparator('.');
 		}
@@ -703,7 +686,7 @@ public class SessionPopup {
 		df.setMinimumFractionDigits(6);
 
 		JOptionPane.showMessageDialog(null,
-				df.format(sum),
+				df.format(sum.doubleValue()),
 				LangTool.getString("popup.calc"),
 				JOptionPane.INFORMATION_MESSAGE);
 
