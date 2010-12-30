@@ -361,7 +361,7 @@ public class WTDSFParser {
 
 							}
 
-							System.out.println(
+							log.debug(
 									" orientation " + Integer.toBinaryString(orientation) +
 									" mAttr " + mAttr +
 									" cAttr " + cAttr +
@@ -375,7 +375,7 @@ public class WTDSFParser {
 									hfBuffer);
 							break;
 						default:
-							System.out.println("Invalid Window minor structure");
+							log.warn("Invalid Window minor structure");
 							length = 0;
 							done = true;
 						}
@@ -758,7 +758,7 @@ public class WTDSFParser {
 			int cnt = 0;
 			int minLen = 0;
 			majLen -= 21;
-			System.out.println(" row: " + screen52.getCurrentRow()
+			log.debug(" row: " + screen52.getCurrentRow()
 					+ " col: " + screen52.getCurrentCol()
 					+ " type " + typeSelection
 					+ " gui " + guiDevice
@@ -839,14 +839,14 @@ public class WTDSFParser {
 
 					// is in selected state
 					if ((flagCT1 & 0x40) == 0x40) {
-						System.out.println(" selected ");
+						log.debug(" selected ");
 						selected = true;
 					}
 
 					//System.out.println(Integer.toBinaryString((flagCT1 & 0xf0)));
 					// is mnemonic offset specified
 					if ((flagCT1 & 0x08) == 8) {
-						System.out.println(" mnemOffset " + mnemOffset);
+						log.debug(" mnemOffset " + mnemOffset);
 						mnemOffset = segment[pos++];
 						cnt++;
 					}
@@ -855,20 +855,20 @@ public class WTDSFParser {
 					if ((flagCT1 & 0x04) == 4) {
 
 						aid = true;
-						System.out.println(" aidKey " + aid);
+						log.debug(" aidKey " + aid);
 						//                     cnt++;
 					}
 
 					// is single digit number specified
 					if ((flagCT1 & 0x01) == 0x01) {
-						System.out.println(" single digit " );
+						log.debug(" single digit " );
 						pos++;
 						cnt++;
 					}
 
 					// is double digint number specified
 					if ((flagCT1 & 0x02) == 0x02) {
-						System.out.println(" double digit " );
+						log.debug(" double digit " );
 
 						pos++;
 						cnt++;
@@ -902,7 +902,7 @@ public class WTDSFParser {
 
 					//         screen52.getScreenFields().getCurrentField().setMDT();
 
-					System.out.println(s + " selected " + selected);
+					log.debug(s + " selected " + selected);
 					//                  chcRowStart;
 					//maxColChoice
 					colCtr++;
@@ -938,8 +938,7 @@ public class WTDSFParser {
 			}  while (majLen > 0);
 		}
 		catch (Exception exc) {
-			System.out.println(" defineSelectionField :" + exc.getMessage());
-			exc.printStackTrace();
+			log.warn(" defineSelectionField :" + exc.getMessage(), exc);
 		}
 	}
 

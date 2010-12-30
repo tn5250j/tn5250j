@@ -406,7 +406,7 @@ public class Screen5250 {
 					sumVector.add(new Double(n.doubleValue()));
 					sum += n.doubleValue();
 				} catch (ParseException pe) {
-					System.out.println(pe.getMessage() + " at "
+					log.warn(pe.getMessage() + " at "
 							+ pe.getErrorOffset());
 				}
 			}
@@ -3198,7 +3198,7 @@ public class Screen5250 {
 				col = 0;
 			}
 		}
-		System.out.println(sb.toString());
+		log.info(sb.toString());
 
 	}
 

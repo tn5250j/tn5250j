@@ -672,13 +672,15 @@ public class SessionPopup {
 				inter = l.next().doubleValue();
 			}
 			catch (Exception e) {
-				System.out.println(e.getMessage());
+				log.warn(e);
 			}
 
 			sum += inter;
 
 		}
-		System.out.println("Vector sum " + sum);
+		if (log.isDebugEnabled()) {
+			log.debug("Vector sum " + sum);
+		}
 		sumVector = null;
 		l = null;
 
