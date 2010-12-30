@@ -51,53 +51,45 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * </p>
  * 
  * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
- * 
+ * @author master_jaf
  */
 public class SSLImplementation implements SSLInterface, X509TrustManager {
 
-	SSLContext sslContext = null;
-
-	KeyStore userks = null;
+	private SSLContext sslContext = null;
+	private KeyStore userks = null;
 	private String userKsPath;
 	private char[] userksPassword = "changeit".toCharArray();
+	private TrustManager[] userTrustManagers = null;
+	private X509Certificate[] acceptedIssuers;
 
-	KeyManagerFactory userkmf = null;
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger(getClass());
 
-	TrustManagerFactory usertmf = null;
-
-	TrustManager[] userTrustManagers = null;
-
-	X509Certificate[] acceptedIssuers;
-
-	TN5250jLogger logger;
-
-	public SSLImplementation() {
-		logger = TN5250jLogFactory.getLogger(getClass());
-	}
-
+	/* (non-Javadoc)
+	 * @see org.tn5250j.framework.transport.SSLInterface#init(org.tn5250j.framework.transport.SslType)
+	 */
 	public void init(SslType sslType) {
 		try {
-			logger.debug("Initializing User KeyStore");
+			log.debug("Initializing User KeyStore");
 			userKsPath = System.getProperty("user.home") + File.separator
 					+ ".tn5250j" + File.separator + "keystore";
 			File userKsFile = new File(userKsPath);
 			userks = KeyStore.getInstance(KeyStore.getDefaultType());
 			userks.load(userKsFile.exists() ? new FileInputStream(userKsFile)
 					: null, userksPassword);
-			logger.debug("Initializing User Key Manager Factory");
-			userkmf = KeyManagerFactory.getInstance(KeyManagerFactory
+			log.debug("Initializing User Key Manager Factory");
+			final KeyManagerFactory userkmf = KeyManagerFactory.getInstance(KeyManagerFactory
 					.getDefaultAlgorithm());
 			userkmf.init(userks, userksPassword);
-			logger.debug("Initializing User Trust Manager Factory");
-			usertmf = TrustManagerFactory.getInstance(TrustManagerFactory
+			log.debug("Initializing User Trust Manager Factory");
+			final TrustManagerFactory usertmf = TrustManagerFactory.getInstance(TrustManagerFactory
 					.getDefaultAlgorithm());
 			usertmf.init(userks);
 			userTrustManagers = usertmf.getTrustManagers();
-			logger.debug("Initializing SSL Context");
+			log.debug("Initializing SSL Context");
 			sslContext = SSLContext.getInstance(sslType.name());
 			sslContext.init(userkmf.getKeyManagers(), new TrustManager[] {this}, null);
 		} catch (Exception ex) {
-			logger.error("Error initializing SSL [" + ex.getMessage() + "]");
+			log.error("Error initializing SSL [" + ex.getMessage() + "]");
 		}
 
 	}
@@ -110,7 +102,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 			socket = (SSLSocket) sslContext.getSocketFactory().createSocket(
 					destination, port);
 		} catch (Exception e) {
-			logger.error("Error creating ssl socket [" + e.getMessage() + "]");
+			log.error("Error creating ssl socket [" + e.getMessage() + "]");
 		}
 		return socket;
 	}
@@ -200,7 +192,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 					userks.store(new FileOutputStream(userKsPath),
 							userksPassword);
 				} catch (Exception e) {
-					logger.error("Error saving certificate [" + e.getMessage()
+					log.error("Error saving certificate [" + e.getMessage()
 							+ "]");
 					e.printStackTrace();
 				}
