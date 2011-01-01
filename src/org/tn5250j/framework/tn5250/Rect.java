@@ -26,6 +26,8 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import java.util.StringTokenizer;
+
 
 /**
  * Simplified rectangle class. Very much similar like java.awt.Rectangle,
@@ -33,10 +35,12 @@ package org.tn5250j.framework.tn5250;
  */
 public class Rect {
 
-	/* default */ int x;
-	/* default */ int y;
-	/* default */ int height;
-	/* default */ int width;
+	private static final String SEPARATOR = ",";
+
+	public int x;
+	public int y;
+	public int height;
+	public int width;
 	
 	/**
 	 * @param rect
@@ -56,6 +60,33 @@ public class Rect {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return Integer.toString(x) + SEPARATOR 
+				+ Integer.toString(y) + SEPARATOR
+				+ Integer.toString(width) + SEPARATOR
+				+ Integer.toString(height);
+	}
+
+	/**
+	 * @param s
+	 * @return
+	 */
+	public static final Rect fromString(String s) {
+		if (s == null) throw new IllegalArgumentException("The string is not allowed to be null");
+		Rect r = new Rect();
+		StringTokenizer tokenizer = new StringTokenizer(s, SEPARATOR);
+		int x = Integer.parseInt(tokenizer.nextToken().trim());
+		int y = Integer.parseInt(tokenizer.nextToken().trim());
+		int width = Integer.parseInt(tokenizer.nextToken().trim());
+		int height = Integer.parseInt(tokenizer.nextToken().trim());
+		r.setBounds(x, y, width, height);
+		return r;
 	}
 
 }

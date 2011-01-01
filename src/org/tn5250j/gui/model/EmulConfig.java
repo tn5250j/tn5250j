@@ -30,13 +30,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.tn5250j.framework.tn5250.Rect;
+
 public class EmulConfig {
 
 	private List<EmulSession> sessions = new ArrayList<EmulSession>();
 	private EmulSession defaultSess;
 	private String jarClassPaths = "";
-	private int width = 700;
-	private int height = 500;
+	private Rect dimension = null;
 	private String[] views = new String[0];
 	private Locale locale = Locale.getDefault();
 	private boolean startLastView = false;
@@ -124,34 +125,6 @@ public class EmulConfig {
 	}
 
 	/**
-	 * @return the width
-	 */
-	public int getWidth() {
-		return width;
-	}
-
-	/**
-	 * @param width the width to set
-	 */
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	/**
-	 * @return the height
-	 */
-	public int getHeight() {
-		return height;
-	}
-
-	/**
-	 * @param height the height to set
-	 */
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	/**
 	 * @return the views
 	 */
 	public String[] getViews() {
@@ -207,4 +180,33 @@ public class EmulConfig {
 		this.showConnectDialog = showConnectDialog;
 	}
 
+	/**
+	 * Sets x, x, width, height
+	 * @param dimenstion
+	 */
+	public void setDimension(Rect dimenstion) {
+		this.dimension = dimenstion;
+	}
+	
+	/**
+	 * @return x, y, width, height OR null, if no dimension was set
+	 */
+	public Rect getDimension() {
+		return dimension;
+	}
+	
+	/**
+	 * Set and return the default dimension
+	 * @return x, y, width, height OR null, if no dimension was set
+	 */
+	public Rect defaultDimension() {
+		Rect r = new Rect();
+		r.width = 700;
+		r.height = 500;
+		r.x = 0;
+		r.y = 0;
+		this.dimension = r;
+		return dimension;
+	}
+	
 }

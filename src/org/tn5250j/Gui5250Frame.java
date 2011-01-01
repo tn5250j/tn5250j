@@ -62,11 +62,6 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 
 	private static final long serialVersionUID = 1L;
 	protected static int sequence;
-	protected int frameSeq;
-
-	public int getFrameSequence() {
-		return frameSeq;
-	}
 
 	private JTabbedPane sessionPane = new JTabbedPane();
 	private boolean embedded = false;
@@ -88,9 +83,6 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 	private void jbInit() throws Exception  {
 
 		this.getContentPane().setLayout(new BorderLayout());
-
-		// update the frame sequences
-		frameSeq = sequence++;
 
 		sessionPane.setBorder(BorderFactory.createEtchedBorder());
 		sessionPane.setBounds(new Rectangle(78, 57, 5, 5));

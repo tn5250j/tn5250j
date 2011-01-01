@@ -102,10 +102,6 @@ public class ParameterUtils {
 		return sb.toString();
 	}
 	
-	private static final boolean isSet(String str) {
-		return str != null && str.trim().length() > 0;
-	}
-
 	/**
 	 * @param arguments
 	 * @return
@@ -165,4 +161,13 @@ public class ParameterUtils {
 		}
 		return false;
 	}
+	
+	/**
+	 * @param str
+	 * @return true IF not null and not empty
+	 */
+	public static final boolean isSet(String str) {
+		return str != null && str.trim().length() > 0;
+	}
+	
 }

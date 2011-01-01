@@ -60,6 +60,7 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.Tn5250jController;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
+import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.gui.SessionsDialog;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.gui.model.EmulConfig;
@@ -73,9 +74,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 	private static final String PARAM_LOCALE = "-L";
 	private static final String EMUL_LOCALE = "emul.locale";
-	private static final String EMUL_FRAME = "emul.frame";
-	private static final String EMUL_HEIGHT = "emul.height";
-	private static final String EMUL_WIDTH = "emul.width";
+	private static final String EMUL_FRAME0 = "emul.frame0";
 	private static final String EMUL_SCRIPT_CLASS_PATH = "emul.scriptClassPath";
 	private static final String EMUL_START_LAST_VIEW = "emul.startLastView";
 	private static final String EMUL_VIEW = "emul.view";
@@ -421,7 +420,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			if (emulConfig.getDefaultSess() != null) {
 				newSession(emulConfig.getDefaultSess());
 			} else {
-				final EmulSession newsession = getConnectSession();
+				final EmulSession newsession = showModalConnectSession();
 				if (newsession != null) {
 					newSession(newsession);
 				} else {
@@ -491,7 +490,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //	}
 
 	private void startNewSession() {
-		final EmulSession newsession = getConnectSession();
+		final EmulSession newsession = showModalConnectSession();
 		if (newsession != null) {
 			newSession(newsession);
 		}
@@ -529,22 +528,30 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 	 * 
 	 * @return null, if nothing was select (or canceled)
 	 */
-	private EmulSession getConnectSession () {
-
+	private EmulSession showModalConnectSession() {
 		splash.setVisible(false);
-		//      ConnectDialogOLD sc = new ConnectDialogOLD(frame1,LangTool.getString("ss.title"),sessions);
-
 		SessionsDialog sessdlg = new SessionsDialog(main5250Frame, LangTool.getString("ss.title"), emulConfig);
+		if (emulConfig.getDimension() != null) {
+			// try to center the connect dialog over the app's main window,
+			// even it's not visible yet
+			final int x1 = main5250Frame.getX();
+			final int y1 = main5250Frame.getY();
+			final int w1 = main5250Frame.getWidth();
+			final int h1 = main5250Frame.getHeight();
+			final int h2 = sessdlg.getHeight();
+			final int w2 = sessdlg.getWidth();
+			final int x2 = x1 + w1/2 - w2/2;
+			final int y2 = y1 + h1/2 - h2/2;
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			// don't display out of the screen
+			sessdlg.setLocation(Math.max(Math.min(x2, screenSize.width), 0), Math.max(Math.min(y2, screenSize.height), 0));
+		}
 		if (sessdlg.showModal()) {
 			EmulSession sess = sessdlg.getSelectedSession();
 			if (sess != null) {
 				return sess;
 			}
 		}
-
-		// load the new session information from the session property file
-//		loadSessions();
-		//      return sc.getConnectKey();
 		return null;
 	}
 
@@ -621,25 +628,6 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 	}
 
 	private void newView() {
-
-		// we will now to default the frame size to take over the whole screen
-		//    this is per unanimous vote of the user base
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-		int width = screenSize.width;
-		int height = screenSize.height;
-
-//		if (sessionProperties.containsKey(EMUL_WIDTH))
-//			width = Integer.parseInt(sessionProperties.getProperty(EMUL_WIDTH));
-//		if (sessionProperties.containsKey(EMUL_HEIGHT))
-//			height = Integer.parseInt(sessionProperties.getProperty(EMUL_HEIGHT));
-		width = emulConfig.getWidth();
-		height = emulConfig.getHeight();
-
-		//      if (useMDIFrames)
-		//         frame1 = new Gui5250MDIFrame(this);
-		//         frame1 = new Gui5250SplitFrame(this);
-		//      else
 		main5250Frame = new Gui5250Frame();
 		main5250Frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -650,32 +638,26 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 		main5250Frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-//		if (sessionProperties.containsKey(EMUL_FRAME + frame1.getFrameSequence())) {
-//
-//			String location = sessionProperties.getProperty(EMUL_FRAME + frame1.getFrameSequence());
-//			//         System.out.println(location + " seq > " + frame1.getFrameSequence() );
-//			restoreFrame(frame1,location);
-//		}
-//		else {
-//			frame1.setSize(width,height);
-//			frame1.centerFrame();
-//		}
-		main5250Frame.setSize(width,height);
-		main5250Frame.centerFrame();
+		// restore size and position, if available, else center on screen
+		Rect r = emulConfig.getDimension();
+		if (r == null) {
+			r = emulConfig.defaultDimension();
+			//Center the window
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			Dimension frameSize = main5250Frame.getSize();
+			if (frameSize.height > screenSize.height) {
+				frameSize.height = screenSize.height;
+			}
+			if (frameSize.width > screenSize.width) {
+				frameSize.width = screenSize.width;
+			}
+			r.x = (screenSize.width - frameSize.width) / 2;
+			r.y = (screenSize.height - frameSize.height) / 2;
+		}
+		main5250Frame.setLocation(r.x, r.y);
+		main5250Frame.setSize(r.width, r.height);
+		
 		frames.add(main5250Frame);
-
-	}
-
-	private void restoreFrame(Gui5250Frame frame,String location) {
-
-		StringTokenizer tokenizer = new StringTokenizer(location, ",");
-		int x = Integer.parseInt(tokenizer.nextToken());
-		int y = Integer.parseInt(tokenizer.nextToken());
-		int width = Integer.parseInt(tokenizer.nextToken());
-		int height = Integer.parseInt(tokenizer.nextToken());
-
-		frame.setLocation(x,y);
-		frame.setSize(width,height);
 	}
 
 	private void closingDown(SessionPanel targetSession) {
@@ -734,9 +716,12 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 			// sessionProperties.setProperty(EMUL_WIDTH,Integer.toString(view.getWidth()));
 			// sessionProperties.setProperty(EMUL_HEIGHT,Integer.toString(view.getHeight()));
-			emulConfig.setWidth(view.getWidth());
-			emulConfig.setHeight(view.getHeight());
-
+//			emulConfig.setWidth(view.getWidth());
+//			emulConfig.setHeight(view.getHeight());
+			Rect r = new Rect();
+			r.setBounds(view.getX(), view.getY(), view.getWidth(), view.getHeight());
+			emulConfig.setDimension(r);
+			
 			// sessionProperties.setProperty(EMUL_VIEW,views);
 
 			// placing the eventually modified session properties.
@@ -751,6 +736,9 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			for (EmulSession es : emulConfig.getSessions()) {
 				sessionProperties.put(es.getName(), ParameterUtils.safeEmulSessionToString(es));
 			}
+			
+			// save position and size ...
+			sessionProperties.put(EMUL_FRAME0, emulConfig.getDimension().toString());
 
 			// save off the session settings before closing down
 			ConfigureFactory.getInstance().saveSettings(ConfigureFactory.SESSIONS,
@@ -848,17 +836,19 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 				}
 				emulConfig.setViews(views.toArray(new String[views.size()]));
 			}
-			if (k.equals(EMUL_WIDTH)) {
-				emulConfig.setWidth(Integer.parseInt(val));
-			}
-			if (k.equals(EMUL_HEIGHT)) {
-				emulConfig.setHeight(Integer.parseInt(val));
-			}
 			if (k.equals(EMUL_SCRIPT_CLASS_PATH)) {
 				emulConfig.setJarClassPaths(val);
 			}
 			if (k.equals(EMUL_LOCALE)) {
 				emulConfig.setLocale(parseLocale(val));
+			}
+			if (k.equals(EMUL_FRAME0)) {
+				try {
+					final Rect r = Rect.fromString(val);
+					emulConfig.setDimension(r);
+				} catch (Exception e) {
+					log.warn("couldn't parse dimension information. Expected 'x,y,w,h'; Actual '"+val+"'");
+				}
 			}
 		}
 	}
