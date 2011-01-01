@@ -1,4 +1,4 @@
-package org.tn5250j;
+package org.tn5250j.gui;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -70,9 +70,13 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.tools.LangTool;
 
-public class KeyPad extends JPanel {
+/**
+ * Shows all attentions keys at the bottom of the screen as buttons.
+ */
+public class KeyPadPanel extends JPanel {
 
 	private static final long serialVersionUID = -7460283401326716314L;
 
@@ -84,7 +88,7 @@ public class KeyPad extends JPanel {
 	private GridLayout gridLayout1 = new GridLayout();
 	private int numPad = 1;
 
-	public KeyPad() {
+	public KeyPadPanel() {
 		try {
 			jbInit();
 		}

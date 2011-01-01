@@ -62,6 +62,7 @@ import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
+import org.tn5250j.gui.KeyPadPanel;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
@@ -86,7 +87,7 @@ public class SessionPanel extends JPanel implements ComponentListener, ActionLis
 	private GuiGraphicBuffer guiGraBuf;
 	protected TNRubberBand rubberband;
 	private JPanel s = new JPanel();
-	private KeyPad keyPad = new KeyPad();
+	private KeyPadPanel keyPad = new KeyPadPanel();
 	private String newMacName;
 	private Vector<SessionJumpListener> listeners = null;
 	private Vector<EmulatorActionListener> actionListeners = null;
