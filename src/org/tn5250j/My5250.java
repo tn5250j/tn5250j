@@ -41,6 +41,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -731,24 +732,35 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 		if (sess.getCount() == 0) {
 
-//			sessionProperties.setProperty(EMUL_WIDTH,Integer.toString(view.getWidth()));
-//			sessionProperties.setProperty(EMUL_HEIGHT,Integer.toString(view.getHeight()));
+			// sessionProperties.setProperty(EMUL_WIDTH,Integer.toString(view.getWidth()));
+			// sessionProperties.setProperty(EMUL_HEIGHT,Integer.toString(view.getHeight()));
 			emulConfig.setWidth(view.getWidth());
 			emulConfig.setHeight(view.getHeight());
 
-//			sessionProperties.setProperty(EMUL_VIEW,views);
+			// sessionProperties.setProperty(EMUL_VIEW,views);
+
+			// placing the eventually modified session properties.
+			Properties sessionProperties = ConfigureFactory.getInstance().getProperties(ConfigureFactory.SESSIONS);
+			final Iterator<Object> keysit = sessionProperties.keySet().iterator();
+			while (keysit.hasNext()) {
+				String key = keysit.next().toString();
+				if (!key.startsWith("emul.")) {
+					keysit.remove(); // first, delete all session properties
+				}
+			}
+			for (EmulSession es : emulConfig.getSessions()) {
+				sessionProperties.put(es.getName(), ParameterUtils.safeEmulSessionToString(es));
+			}
 
 			// save off the session settings before closing down
-			// FIXME: save settings from emulConfig!
 			ConfigureFactory.getInstance().saveSettings(ConfigureFactory.SESSIONS,
 					ConfigureFactory.SESSIONS,
-					"------ Defaults --------");
+			"------ Defaults --------");
 			if (strapper != null) {
 				strapper.interrupt();
 			}
 			System.exit(0);
 		}
-
 
 	}
 
