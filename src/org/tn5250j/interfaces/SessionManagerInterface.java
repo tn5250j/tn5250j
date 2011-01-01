@@ -21,7 +21,7 @@
 package org.tn5250j.interfaces;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.framework.common.Sessions;
 import org.tn5250j.gui.model.EmulSession;
 
@@ -33,7 +33,7 @@ public interface SessionManagerInterface {
 
    public abstract void closeSession(String sessionName);
 
-   public abstract void closeSession(SessionGUI sessionObject);
+   public abstract void closeSession(SessionPanel sessionObject);
 
 //   public abstract Session openSession(String configurationResource
 //                                                , String sessionName);

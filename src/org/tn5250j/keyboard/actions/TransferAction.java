@@ -32,7 +32,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.XTFRFile;
@@ -44,7 +44,7 @@ public class TransferAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
-public TransferAction(SessionGUI session, KeyMapper keyMap) {
+public TransferAction(SessionPanel session, KeyMapper keyMap) {
       super(session,
     		  TN5250jConstants.MNEMONIC_FILE_TRANSFER,
             KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK),

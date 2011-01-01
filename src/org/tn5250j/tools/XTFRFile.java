@@ -82,7 +82,7 @@ import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
@@ -148,11 +148,11 @@ implements ActionListener, FTPStatusListener, ItemListener {
 	ProgressOptionPane monitor;
 	JDialog dialog;
 	XTFRFileFilter filter;
-	SessionGUI session;
+	SessionPanel session;
 
 	static String messageProgress;
 
-	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session) {
+	public XTFRFile(Frame parent, tnvt pvt, SessionPanel session) {
 
 		this(parent, pvt, session, null);
 		//		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -179,7 +179,7 @@ implements ActionListener, FTPStatusListener, ItemListener {
 		//		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session, Properties XTFRProps) {
+	public XTFRFile(Frame parent, tnvt pvt, SessionPanel session, Properties XTFRProps) {
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.session = session;

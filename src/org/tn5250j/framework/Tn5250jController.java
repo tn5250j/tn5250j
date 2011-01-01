@@ -32,7 +32,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.tn5250j.GlobalConfigure;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
 import org.tn5250j.framework.tn5250.Screen5250;
@@ -199,7 +199,7 @@ public class Tn5250jController extends Thread {
 		return current;
 	}
 
-	public void createSession(Screen5250 screen, tnvt vt, SessionGUI ses) {
+	public void createSession(Screen5250 screen, tnvt vt, SessionPanel ses) {
 		final Tn5250jSession session = new Tn5250jSession(screen, vt, ses);
 		Iterator<Tn5250jListener> listenerIt = listeners.iterator();
 		log.info("New session created and received");

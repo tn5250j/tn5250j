@@ -31,7 +31,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.tools.encoder.EncodeComponent;
 import org.tn5250j.tools.filters.XTFRFileFilter;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -39,12 +39,12 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class SendScreenImageToFile {
 
-	SessionGUI session;
+	SessionPanel session;
 	//  Change sent by Luc - LDC to pass a parent frame like the other dialogs
 	Frame  parent;
 	private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
 
-	public SendScreenImageToFile(Frame parent, SessionGUI ses) {
+	public SendScreenImageToFile(Frame parent, SessionPanel ses) {
 
 		session = ses;
 		this.parent = parent;

@@ -39,7 +39,7 @@ import org.tn5250j.gui.*;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 
 public class SpoolExporter extends GenericTn5250JFrame {
 
@@ -65,7 +65,7 @@ SpoolFilterPane filter;
 
    // Connection vt
    tnvt vt;
-   SessionGUI session;
+   SessionPanel session;
 
    Vector data = new Vector();
    Vector row = new Vector();
@@ -73,7 +73,7 @@ SpoolFilterPane filter;
 
    SpooledFileList splfList;
 
-   public SpoolExporter(tnvt vt, SessionGUI session) {
+   public SpoolExporter(tnvt vt, SessionPanel session) {
 
       this.vt = vt;
       this.session = session;

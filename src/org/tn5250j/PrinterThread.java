@@ -49,12 +49,12 @@ public class PrinterThread extends Thread implements Printable {
    int numRows;
    Color colorBg;
    Font font;
-   SessionGUI session;
+   SessionPanel session;
    boolean toDefault;
    SessionConfig config;
 
    public PrinterThread (Screen5250 scr, Font font, int cols, int rows,
-                           Color colorBg, boolean toDefaultPrinter, SessionGUI ses) {
+                           Color colorBg, boolean toDefaultPrinter, SessionPanel ses) {
 
 
       setPriority(1);

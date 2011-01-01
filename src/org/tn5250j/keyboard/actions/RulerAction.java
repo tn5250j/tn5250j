@@ -30,7 +30,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 
@@ -41,7 +41,7 @@ public class RulerAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
-public RulerAction(SessionGUI session, KeyMapper keyMap) {
+public RulerAction(SessionPanel session, KeyMapper keyMap) {
       super(session,
     		  TN5250jConstants.MNEMONIC_CURSOR,
             KeyStroke.getKeyStroke(KeyEvent.VK_L,KeyEvent.ALT_MASK),

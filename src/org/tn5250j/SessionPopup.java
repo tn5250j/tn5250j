@@ -98,12 +98,12 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public class SessionPopup {
 
 	private final Screen5250 screen;
-	private final SessionGUI sessiongui;
+	private final SessionPanel sessiongui;
 	private final tnvt vt;
 	
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-	public SessionPopup(SessionGUI sessgui, MouseEvent me) {
+	public SessionPopup(SessionPanel sessgui, MouseEvent me) {
 
 		Action action;
 		JPopupMenu popup = new JPopupMenu();

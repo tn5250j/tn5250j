@@ -4,7 +4,7 @@ package org.tn5250j.scripting;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 /**
@@ -53,7 +53,7 @@ public class InterpreterDriverManager {
     * @param script script to be executed
     * @param language language for interpreting the script string
     */
-   public static void executeScript(SessionGUI session, String script, String language)
+   public static void executeScript(SessionPanel session, String script, String language)
                         throws InterpreterDriver.InterpreterException {
       InterpreterDriver driver
                   = _languageDriverMap.get(language);
@@ -72,7 +72,7 @@ public class InterpreterDriverManager {
      * is deduced from file name extension
      * @param scriptFile file name containing script
      */
-   public static void executeScriptFile(SessionGUI session,String scriptFile)
+   public static void executeScriptFile(SessionPanel session,String scriptFile)
                      throws InterpreterDriver.InterpreterException {
       String extension
              = scriptFile.substring(scriptFile

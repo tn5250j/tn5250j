@@ -42,7 +42,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
@@ -55,9 +55,9 @@ public final class LoadMacroMenu {
    
    private static final TN5250jLogger log = TN5250jLogFactory.getLogger(LoadMacroMenu.class);
 
-   public static void loadMacros(SessionGUI session, JMenu menu) {
+   public static void loadMacros(SessionPanel session, JMenu menu) {
 
-      final SessionGUI ses = session;
+      final SessionPanel ses = session;
       Vector mv = new Vector();
       Action action;
 
@@ -129,7 +129,7 @@ public final class LoadMacroMenu {
                               "scripts",menu,session);
    }
 
-   private static void doOptionsPopup(MouseEvent e, SessionGUI session) {
+   private static void doOptionsPopup(MouseEvent e, SessionPanel session) {
 
       Action action;
 
@@ -147,7 +147,7 @@ public final class LoadMacroMenu {
 
       j.add(action);
 
-      final SessionGUI ses = session;
+      final SessionPanel ses = session;
       action = new AbstractAction(LangTool.getString("popup.execute")
                      + " " + ((JMenuItem)e.getSource()).getText()) {
          private static final long serialVersionUID = 1L;
@@ -165,7 +165,7 @@ public final class LoadMacroMenu {
 
    }
 
-   public static void scriptDir(String pathName, JMenu menu,SessionGUI session) {
+   public static void scriptDir(String pathName, JMenu menu,SessionPanel session) {
 
       File root = new File(pathName);
 
@@ -194,7 +194,7 @@ public final class LoadMacroMenu {
     * @param session
     */
    private static void loadScripts(Vector vector, String path, File directory,
-			SessionGUI session) {
+			SessionPanel session) {
 
 		ExecuteScriptAction action;
 

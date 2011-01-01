@@ -72,7 +72,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 /**
  * A host GUI session
  */
-public class SessionGUI extends JPanel implements ComponentListener, ActionListener, RubberBandCanvasIF, SessionConfigListener, SessionListener, MouseWheelListener {
+public class SessionPanel extends JPanel implements ComponentListener, ActionListener, RubberBandCanvasIF, SessionConfigListener, SessionListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -99,7 +99,7 @@ public class SessionGUI extends JPanel implements ComponentListener, ActionListe
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-	public SessionGUI (Session5250 session) {
+	public SessionPanel (Session5250 session) {
 		//Construct the frame
 		//, SessionConfig config) {
 
