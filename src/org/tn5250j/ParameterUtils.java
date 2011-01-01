@@ -52,12 +52,68 @@ public class ParameterUtils {
 	public static final String PARAM_CODEPAGE = "-cp";
 	public static final String PARAM_EXT_MODE = "-e";
 
+	private static final String SEPARATOR = " ";
+	
+	public static String safeEmulSessionToString(EmulSession es) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(es.getHost()).append(SEPARATOR);
+		sb.append(PARAM_PORT).append(SEPARATOR).append(Integer.toString(es.getPort())).append(SEPARATOR);
+		sb.append(PARAM_CODEPAGE).append(SEPARATOR).append(es.getCodepage()).append(SEPARATOR);
+		if (isSet(es.getDevName())) {
+			sb.append(PARAM_DEVNAME).append(SEPARATOR).append(es.getDevName()).append(SEPARATOR);
+		}
+		sb.append(PARAM_PROXY_PORT).append(SEPARATOR).append(Integer.toString(es.getProxyPort())).append(SEPARATOR);
+		if (es.getSslType() != SslType.NONE) {
+			sb.append(PARAM_SSLTYPE).append(SEPARATOR).append(es.getSslType().name()).append(SEPARATOR);
+		}
+		if (isSet(es.getConfigFile())) {
+			sb.append(PARAM_CONFIGFILE).append(SEPARATOR).append(es.getConfigFile()).append(SEPARATOR);
+		}
+		if (isSet(es.getProxyHost())) {
+			sb.append(PARAM_PROXY_HOST).append(SEPARATOR).append(es.getProxyHost()).append(SEPARATOR);
+		}
+		if (es.isEnhancedMode()) {
+			sb.append(PARAM_EXT_MODE).append(SEPARATOR);
+		}
+		if (es.isUseSysNameAsDescription()) {
+			sb.append(PARAM_USE_SYSNAME_DESCR).append(SEPARATOR);
+		}
+		if (es.isUseWidth132()) {
+			sb.append(PARAM_USE_WIDTH132).append(SEPARATOR);
+		}
+		if (es.isMonitorSessionStart()) {
+			sb.append(PARAM_MONITOR_START).append(SEPARATOR);
+		}
+		if (es.isOpenNewJvm()) {
+			sb.append(PARAM_NEWJVM).append(SEPARATOR);
+		}
+		if (es.isOpenNewFrame()) {
+			sb.append(PARAM_NEWFRAME).append(SEPARATOR);
+		}
+		if (es.isUsePcAsDevName()) {
+			sb.append(PARAM_USEPCDEVNAME).append(SEPARATOR);
+		}
+		if (es.isSendKeepAlive()) {
+			sb.append(PARAM_HEARTBEAT).append(SEPARATOR);
+		}
+		if (es.isUseProxy()) {
+			sb.append(PARAM_USEPROXY).append(SEPARATOR);
+		}
+		return sb.toString();
+	}
+	
+	private static final boolean isSet(String str) {
+		return str != null && str.trim().length() > 0;
+	}
+
 	/**
 	 * @param arguments
 	 * @return
 	 */
-	public static EmulSession loadSessionFromArguments(String[] args) {
+	public static EmulSession loadSessionFromArguments(String arguments) {
 		EmulSession session = new EmulSession();
+		// FIXME: this is not save and just a hack!
+		String[] args = arguments.split("[\\s]");
 		session.setHost(args[0]);
 		if (isSpecified(PARAM_PORT, args)) {
 			session.setPort(Integer.parseInt(Configure.getParm(PARAM_PORT, args)));

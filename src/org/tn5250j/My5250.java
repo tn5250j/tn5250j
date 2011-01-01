@@ -801,14 +801,12 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		for (Object key : sessionProperties.keySet()) {
 			String k = key.toString();
 			if (!k.startsWith("emul.")) {
-				// FIXME: this is not save and just a hack!
-				String[] args = sessionProperties.getProperty(k).split("[\\s]");
-				EmulSession session = ParameterUtils.loadSessionFromArguments(args);
+				EmulSession session = ParameterUtils.loadSessionFromArguments(sessionProperties.getProperty(k));
 				session.setName(k);
 				emulConfig.addSession(session);
 			}
 		}
-		// than load emul config parameters
+		// then load emul config parameters
 		for (Object key : sessionProperties.keySet()) {
 			String k = key.toString();
 			final String val = sessionProperties.getProperty(k).trim();

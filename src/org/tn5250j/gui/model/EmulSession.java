@@ -239,4 +239,110 @@ public class EmulSession implements Cloneable {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((codepage == null) ? 0 : codepage.hashCode());
+		result = prime * result
+				+ ((configFile == null) ? 0 : configFile.hashCode());
+		result = prime * result + (defaultCon ? 1231 : 1237);
+		result = prime * result + ((devName == null) ? 0 : devName.hashCode());
+		result = prime * result + (enhancedMode ? 1231 : 1237);
+		result = prime * result + ((host == null) ? 0 : host.hashCode());
+		result = prime * result + (monitorSessionStart ? 1231 : 1237);
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (openNewFrame ? 1231 : 1237);
+		result = prime * result + (openNewJvm ? 1231 : 1237);
+		result = prime * result + port;
+		result = prime * result
+				+ ((proxyHost == null) ? 0 : proxyHost.hashCode());
+		result = prime * result + proxyPort;
+		result = prime * result + (sendKeepAlive ? 1231 : 1237);
+		result = prime * result + ((sslType == null) ? 0 : sslType.hashCode());
+		result = prime * result + (useAs400Toolbox ? 1231 : 1237);
+		result = prime * result + (usePcAsDevName ? 1231 : 1237);
+		result = prime * result + (useProxy ? 1231 : 1237);
+		result = prime * result + (useSysNameAsDescription ? 1231 : 1237);
+		result = prime * result + (useWidth132 ? 1231 : 1237);
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EmulSession other = (EmulSession) obj;
+		if (codepage == null) {
+			if (other.codepage != null)
+				return false;
+		} else if (!codepage.equals(other.codepage))
+			return false;
+		if (configFile == null) {
+			if (other.configFile != null)
+				return false;
+		} else if (!configFile.equals(other.configFile))
+			return false;
+		if (defaultCon != other.defaultCon)
+			return false;
+		if (devName == null) {
+			if (other.devName != null)
+				return false;
+		} else if (!devName.equals(other.devName))
+			return false;
+		if (enhancedMode != other.enhancedMode)
+			return false;
+		if (host == null) {
+			if (other.host != null)
+				return false;
+		} else if (!host.equals(other.host))
+			return false;
+		if (monitorSessionStart != other.monitorSessionStart)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (openNewFrame != other.openNewFrame)
+			return false;
+		if (openNewJvm != other.openNewJvm)
+			return false;
+		if (port != other.port)
+			return false;
+		if (proxyHost == null) {
+			if (other.proxyHost != null)
+				return false;
+		} else if (!proxyHost.equals(other.proxyHost))
+			return false;
+		if (proxyPort != other.proxyPort)
+			return false;
+		if (sendKeepAlive != other.sendKeepAlive)
+			return false;
+		if (sslType != other.sslType)
+			return false;
+		if (useAs400Toolbox != other.useAs400Toolbox)
+			return false;
+		if (usePcAsDevName != other.usePcAsDevName)
+			return false;
+		if (useProxy != other.useProxy)
+			return false;
+		if (useSysNameAsDescription != other.useSysNameAsDescription)
+			return false;
+		if (useWidth132 != other.useWidth132)
+			return false;
+		return true;
+	}
+	
 }
