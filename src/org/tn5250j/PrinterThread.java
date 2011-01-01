@@ -41,39 +41,40 @@ import org.tn5250j.framework.tn5250.Screen5250;
 
 public class PrinterThread extends Thread implements Printable {
 
-	private char[] screen;
-	private char[] screenExtendedAttr;
-	private char[] screenAttrPlace;
-	private Screen5250 scr;
-	private int numCols;
-	private int numRows;
-	private Color colorBg;
+	private final char[] screen;
+	private final char[] screenExtendedAttr;
+	private final char[] screenAttrPlace;
+	private final int numCols;
+	private final int numRows;
+	private final SessionPanel session;
+	private final SessionConfig config;
 	private Font font;
-	private SessionPanel session;
-	private boolean toDefault;
-	private SessionConfig config;
 
-	public PrinterThread (Screen5250 scr, Font font, int cols, int rows,
-			Color colorBg, boolean toDefaultPrinter, SessionPanel ses) {
-
-
-		setPriority(1);
-		session = ses;
+	/**
+	 * @param scr
+	 * @param font
+	 * @param cols
+	 * @param rows
+	 * @param colorBg
+	 * @param sessionpanel
+	 */
+	public PrinterThread(Screen5250 scr, Font font, SessionPanel sessionpanel) {
+		setDaemon(true);
+		setPriority(MIN_PRIORITY);
+		session = sessionpanel;
 		session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		config = ses.getSession().getConfiguration();
+		config = sessionpanel.getSession().getConfiguration();
 
 		int len = scr.getScreenLength();
 		screen = new char[len];
 		screenExtendedAttr = new char[len];
 		screenAttrPlace = new char[len];
-		int ret = scr.GetScreen(screen, len, TN5250jConstants.PLANE_TEXT);
-		ret = scr.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
-		ret = scr.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
-		toDefault = toDefaultPrinter;
+		scr.GetScreen(screen, len, TN5250jConstants.PLANE_TEXT);
+		scr.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+		scr.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
 
-		numCols = cols;
-		numRows = rows;
-		this.colorBg = colorBg;
+		numCols = scr.getColumns();
+		numRows = scr.getRows();
 		this.font = font;
 	}
 
@@ -175,11 +176,6 @@ public class PrinterThread extends Thread implements Printable {
 			// we do this because of loosing focus with jdk 1.4.0
 			session.requestFocus();
 		}
-
-		session = null;
-
-		screen = null;
-		screenExtendedAttr = null;
 
 	}
 

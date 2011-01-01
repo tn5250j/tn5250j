@@ -950,12 +950,8 @@ public class SessionPanel extends JPanel implements ComponentListener, ActionLis
 	 *
 	 */
 	public final void printMe() {
-
-		Thread printerThread = new PrinterThread(screen, guiGraBuf.font, screen.getColumns(),
-				screen.getRows(), Color.black, true, this);
-
+		Thread printerThread = new PrinterThread(screen, guiGraBuf.font, this);
 		printerThread.start();
-
 	}
 
 	/**
