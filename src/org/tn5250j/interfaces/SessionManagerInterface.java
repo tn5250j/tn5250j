@@ -23,7 +23,7 @@ package org.tn5250j.interfaces;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionPanel;
 import org.tn5250j.framework.common.Sessions;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 
 
 public interface SessionManagerInterface {
@@ -42,6 +42,6 @@ public interface SessionManagerInterface {
 //   public abstract Session5250 openSession(Properties props, String configurationResource
 //                                                , String sessionName);
    
-   public abstract Session5250 openSession(EmulSession props, String configurationResource, String sessionName);
+   public abstract Session5250 openSession(EmulSessionProfile props, String configurationResource, String sessionName);
 
 }

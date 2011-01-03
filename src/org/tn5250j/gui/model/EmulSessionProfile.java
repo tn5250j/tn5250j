@@ -29,7 +29,7 @@ package org.tn5250j.gui.model;
 import org.tn5250j.Session5250;
 import org.tn5250j.framework.transport.SslType;
 
-public class EmulSession implements Cloneable {
+public class EmulSessionProfile implements Cloneable {
 
 	public static final int DEFAULT_PORT = 23;
 	public static final int DEFAULT_SSL_PORT = 992;
@@ -59,11 +59,11 @@ public class EmulSession implements Cloneable {
 	private String proxyHost;
 	private int proxyPort = Session5250.DEFAULT_PROXY_PORT;
 	
-	public EmulSession() {
+	public EmulSessionProfile() {
 		// allow default constructor
 	}
 	
-	public EmulSession(String name, String host, boolean defaultCon) {
+	public EmulSessionProfile(String name, String host, boolean defaultCon) {
 		super();
 		this.name = name;
 		this.host = host;
@@ -283,7 +283,7 @@ public class EmulSession implements Cloneable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EmulSession other = (EmulSession) obj;
+		EmulSessionProfile other = (EmulSessionProfile) obj;
 		if (codepage == null) {
 			if (other.codepage != null)
 				return false;

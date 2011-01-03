@@ -27,7 +27,7 @@
 package org.tn5250j;
 
 import org.tn5250j.framework.transport.SslType;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 
 /**
  * @author maki
@@ -54,7 +54,7 @@ public class ParameterUtils {
 
 	private static final String SEPARATOR = " ";
 	
-	public static String safeEmulSessionToString(EmulSession es) {
+	public static String safeEmulSessionToString(EmulSessionProfile es) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(es.getHost()).append(SEPARATOR);
 		sb.append(PARAM_PORT).append(SEPARATOR).append(Integer.toString(es.getPort())).append(SEPARATOR);
@@ -106,8 +106,8 @@ public class ParameterUtils {
 	 * @param arguments
 	 * @return
 	 */
-	public static EmulSession loadSessionFromArguments(String arguments) {
-		EmulSession session = new EmulSession();
+	public static EmulSessionProfile loadSessionFromArguments(String arguments) {
+		EmulSessionProfile session = new EmulSessionProfile();
 		// FIXME: this is not save and just a hack!
 		String[] args = arguments.split("[\\s]");
 		session.setHost(args[0]);

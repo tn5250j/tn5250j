@@ -34,7 +34,7 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.SystemRequestDialog;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.interfaces.SessionInterface;
 
@@ -52,7 +52,7 @@ public class Session5250 implements SessionInterface {
 	private String sessionName;
 	private int sessionType;
 	//   protected Properties sesProps;
-	private final EmulSession sesProps;
+	private final EmulSessionProfile sesProps;
 	private final boolean heartBeat;
 	private final String propFileName;
 	private final SessionConfig sesConfig;
@@ -67,7 +67,7 @@ public class Session5250 implements SessionInterface {
 	private List<ScanListener> scanListeners = null;
 	private final ReadWriteLock scanListenerLock = new ReentrantReadWriteLock();
 
-	public Session5250 (EmulSession props, String configurationResource,
+	public Session5250 (EmulSessionProfile props, String configurationResource,
 			String sessionName,
 			SessionConfig config) {
 

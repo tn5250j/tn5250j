@@ -34,7 +34,7 @@ import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 import org.tn5250j.interfaces.ConfigureFactory;
 
 /**
@@ -66,9 +66,9 @@ public class ParameterUtilsTest {
 	@Test
 	public void testLoadAndSaveSessionFromArguments() {
 		for (String s : testStrings) {
-			final EmulSession expected = ParameterUtils.loadSessionFromArguments(s);
+			final EmulSessionProfile expected = ParameterUtils.loadSessionFromArguments(s);
 			final String temp = ParameterUtils.safeEmulSessionToString(expected);
-			final EmulSession actual = ParameterUtils.loadSessionFromArguments(temp);
+			final EmulSessionProfile actual = ParameterUtils.loadSessionFromArguments(temp);
 			assertEquals("TEST: " + temp, expected, actual);
 			System.out.println(temp);
 		}

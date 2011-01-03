@@ -61,7 +61,7 @@ import javax.swing.table.TableRowSorter;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulConfig;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import java.awt.Font;
@@ -113,9 +113,9 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	   }
 		try {
 			SessionsDialog dialog = new SessionsDialog(null, "test", new EmulConfig() );
-			dialog.emulConfig.addSession(new EmulSession("test1", "234234", false));
-			dialog.emulConfig.addSession(new EmulSession("test2", "dgd234234", false));
-			dialog.emulConfig.addSession(new EmulSession("test3", "99234dg234", false));
+			dialog.emulConfig.addSession(new EmulSessionProfile("test1", "234234", false));
+			dialog.emulConfig.addSession(new EmulSessionProfile("test2", "dgd234234", false));
+			dialog.emulConfig.addSession(new EmulSessionProfile("test3", "99234dg234", false));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -134,7 +134,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		super(owner, title, true);
 		this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 		
-		for (EmulSession session : sessions.getSessions()) {
+		for (EmulSessionProfile session : sessions.getSessions()) {
 			emulConfig.addSession(session);
 		}
 		
@@ -259,7 +259,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		return dialogResult;
 	}
 	
-	public EmulSession getSelectedSession() {
+	public EmulSessionProfile getSelectedSession() {
 		if (conTable.getSelectedRowCount() > 0) {
 			final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
 			return emulConfig.getSessions().get(idx);
@@ -338,7 +338,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
-					EmulSession session = null;
+					EmulSessionProfile session = null;
 					if (0 <= idx && idx < emulConfig.getSessions().size()) {
 						session = emulConfig.getSessions().get(idx);
 					}
@@ -452,7 +452,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			final EmulSession rowitem = emulConfig.getSessions().get(row);
+			final EmulSessionProfile rowitem = emulConfig.getSessions().get(row);
 			switch (column) {
 			case 0:
 				return rowitem.getName();

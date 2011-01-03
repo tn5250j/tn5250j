@@ -34,8 +34,8 @@ import org.tn5250j.framework.tn5250.Rect;
 
 public class EmulConfig {
 
-	private List<EmulSession> sessions = new ArrayList<EmulSession>();
-	private EmulSession defaultSess;
+	private List<EmulSessionProfile> sessions = new ArrayList<EmulSessionProfile>();
+	private EmulSessionProfile defaultSess;
 	private String jarClassPaths = "";
 	private Rect dimension = null;
 	private String[] views = new String[0];
@@ -46,7 +46,7 @@ public class EmulConfig {
 	/**
 	 * @param connection
 	 */
-	public void addSession(EmulSession connection) {
+	public void addSession(EmulSessionProfile connection) {
 		if (connection != null) {
 			sessions.add(connection);
 		}
@@ -62,7 +62,7 @@ public class EmulConfig {
 	/**
 	 * @param connection
 	 */
-	public void removeSession(EmulSession connection) {
+	public void removeSession(EmulSessionProfile connection) {
 		if (connection != null) {
 			sessions.remove(connection);
 		}
@@ -71,21 +71,21 @@ public class EmulConfig {
 	/**
 	 * @return
 	 */
-	public List<EmulSession> getSessions() {
+	public List<EmulSessionProfile> getSessions() {
 		return sessions;
 	}
 
 	/**
 	 * @return
 	 */
-	public EmulSession getDefaultSess() {
+	public EmulSessionProfile getDefaultSess() {
 		return defaultSess;
 	}
 
 	/**
 	 * @param defaultSess
 	 */
-	public void setDefaultSess(EmulSession defaultSess) {
+	public void setDefaultSess(EmulSessionProfile defaultSess) {
 		this.defaultSess = defaultSess;
 	}
 	
@@ -101,8 +101,8 @@ public class EmulConfig {
 	 * @param name
 	 * @return
 	 */
-	public EmulSession getSessionByName(String name) {
-		for (EmulSession es : sessions) {
+	public EmulSessionProfile getSessionByName(String name) {
+		for (EmulSessionProfile es : sessions) {
 			if (es.getName().equals(name)) {
 				return es;
 			}

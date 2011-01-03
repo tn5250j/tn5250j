@@ -59,7 +59,7 @@ import javax.swing.event.DocumentListener;
 import org.tn5250j.Session5250;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.framework.transport.SslType;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 
 public class SessionPropsDialog extends JDialog implements ActionListener {
 
@@ -84,7 +84,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 	private JCheckBox cbStartNewVm;
 	private JCheckBox cbUseProxy;
 
-	private EmulSession session;
+	private EmulSessionProfile session;
 	private JButton btChooseFile;
 	private JButton okButton;
 	private JButton cancelButton;
@@ -186,7 +186,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 				}
 				{
 					spinnerPort = new JSpinner();
-					spinnerPort.setModel(new SpinnerNumberModel(EmulSession.DEFAULT_PORT, 1, 65535, 1));
+					spinnerPort.setModel(new SpinnerNumberModel(EmulSessionProfile.DEFAULT_PORT, 1, 65535, 1));
 					GridBagConstraints gbc_spinnerPort = new GridBagConstraints();
 					gbc_spinnerPort.anchor = GridBagConstraints.WEST;
 					gbc_spinnerPort.insets = new Insets(0, 0, 5, 10);
@@ -480,14 +480,14 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 	 *
 	 * @param session
 	 */
-	public void setSession(EmulSession session) {
+	public void setSession(EmulSessionProfile session) {
 		this.session = session;
 	}
 
 	/**
 	 * @return The model for this dialog ...
 	 */
-	public EmulSession getSession() {
+	public EmulSessionProfile getSession() {
 		return session;
 	}
 
@@ -503,10 +503,10 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 	@Override
 	public void setVisible(boolean b) {
 		if (session == null) {
-			session = new EmulSession();
+			session = new EmulSessionProfile();
 		} else {
 			// use a clone to avoid conflicts ...
-			session = (EmulSession) session.clone();
+			session = (EmulSessionProfile) session.clone();
 		}
 		initValuesAndListeners();
 		super.setVisible(b);
@@ -582,12 +582,12 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					final SslType newst = (SslType)comboSslType.getSelectedItem();
 					session.setSslType(newst);
 					// update port numbers
-					if (newst == SslType.NONE && session.getPort() != EmulSession.DEFAULT_PORT) {
-						session.setPort(EmulSession.DEFAULT_PORT);
+					if (newst == SslType.NONE && session.getPort() != EmulSessionProfile.DEFAULT_PORT) {
+						session.setPort(EmulSessionProfile.DEFAULT_PORT);
 						((SpinnerNumberModel)spinnerPort.getModel()).setValue(session.getPort());
 					}
 					if (newst != SslType.NONE) {
-						session.setPort(EmulSession.DEFAULT_SSL_PORT);
+						session.setPort(EmulSessionProfile.DEFAULT_SSL_PORT);
 						((SpinnerNumberModel)spinnerPort.getModel()).setValue(session.getPort());
 					}
 				}

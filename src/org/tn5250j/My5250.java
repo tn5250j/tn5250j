@@ -64,7 +64,7 @@ import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.gui.SessionsDialog;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.gui.model.EmulConfig;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -420,7 +420,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			if (emulConfig.getDefaultSess() != null) {
 				newSession(emulConfig.getDefaultSess());
 			} else {
-				final EmulSession newsession = showModalConnectSession();
+				final EmulSessionProfile newsession = showModalConnectSession();
 				if (newsession != null) {
 					newSession(newsession);
 				} else {
@@ -490,7 +490,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //	}
 
 	private void startNewSession() {
-		final EmulSession newsession = showModalConnectSession();
+		final EmulSessionProfile newsession = showModalConnectSession();
 		if (newsession != null) {
 			newSession(newsession);
 		}
@@ -515,7 +515,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //		parseArgs(selArgs, sessionArgs);
 //
 //		newSession(ses.getSessionName(),sessionArgs);
-		EmulSession emulsess = emulConfig.getSessionByName(ses.getSessionName());
+		EmulSessionProfile emulsess = emulConfig.getSessionByName(ses.getSessionName());
 		if (emulsess != null) {
 			newSession(emulsess);
 		} else {
@@ -524,11 +524,11 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 	}
 	
 	/**
-	 * Displays connection dialog and returns the chosen {@link EmulSession} config.
+	 * Displays connection dialog and returns the chosen {@link EmulSessionProfile} config.
 	 * 
 	 * @return null, if nothing was select (or canceled)
 	 */
-	private EmulSession showModalConnectSession() {
+	private EmulSessionProfile showModalConnectSession() {
 		splash.setVisible(false);
 		SessionsDialog sessdlg = new SessionsDialog(main5250Frame, LangTool.getString("ss.title"), emulConfig);
 		if (emulConfig.getDimension() != null) {
@@ -547,7 +547,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			sessdlg.setLocation(Math.max(Math.min(x2, screenSize.width), 0), Math.max(Math.min(y2, screenSize.height), 0));
 		}
 		if (sessdlg.showModal()) {
-			EmulSession sess = sessdlg.getSelectedSession();
+			EmulSessionProfile sess = sessdlg.getSelectedSession();
 			if (sess != null) {
 				return sess;
 			}
@@ -556,12 +556,12 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 	}
 
 	/**
-	 * @param emulSession
+	 * @param emulSessionProfile
 	 * @see #newSession(String, String[])
 	 */
-	private synchronized void newSession(EmulSession emulSession) {
-		String propFileName = emulSession.getConfigFile();
-		if (emulSession.isUsePcAsDevName()){
+	private synchronized void newSession(EmulSessionProfile emulSessionProfile) {
+		String propFileName = emulSessionProfile.getConfigFile();
+		if (emulSessionProfile.isUsePcAsDevName()){
 			String dnParam;
 
 			// use IP address as device name
@@ -571,11 +571,11 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			catch(UnknownHostException uhe){
 				dnParam = "UNKNOWN_HOST";
 			}
-			emulSession.setDevName(dnParam);
+			emulSessionProfile.setDevName(dnParam);
 		}
 		int sessionCount = manager.getSessions().getCount();
 
-		Session5250 s2 = manager.openSession(emulSession, propFileName, emulSession.getName());
+		Session5250 s2 = manager.openSession(emulSessionProfile, propFileName, emulSessionProfile.getName());
 		SessionPanel sessiongui = new SessionPanel(s2);
 
 		if (!main5250Frame.isVisible()) {
@@ -587,7 +587,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			//  use the frame that is created and skip the part of creating a new
 			//  view which would increment the count and leave us with an unused
 			//  frame.
-			if (emulSession.isOpenNewFrame() && sessionCount > 0) {
+			if (emulSessionProfile.isOpenNewFrame() && sessionCount > 0) {
 				newView();
 			}
 			splash.setVisible(false);
@@ -595,7 +595,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 			main5250Frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		else {
-			if (emulSession.isOpenNewFrame()) {
+			if (emulSessionProfile.isOpenNewFrame()) {
 				splash.updateProgress(++step);
 				newView();
 				splash.setVisible(false);
@@ -609,7 +609,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //		if (emulSession.isUseSysNameAsDescription())
 //			frame1.addSessionView(sel, sessiongui);
 //		else
-		main5250Frame.addSessionView(emulSession.getName(), sessiongui);
+		main5250Frame.addSessionView(emulSessionProfile.getName(), sessiongui);
 
 		sessiongui.connect();
 
@@ -620,7 +620,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 	 * @param sel
 	 * @param args
 	 * @deprecated
-	 * @see {@link #newSession(EmulSession)}
+	 * @see {@link #newSession(EmulSessionProfile)}
 	 */
 	@Deprecated
 	private synchronized void newSession(String sel,String[] args) {
@@ -733,7 +733,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 					keysit.remove(); // first, delete all session properties
 				}
 			}
-			for (EmulSession es : emulConfig.getSessions()) {
+			for (EmulSessionProfile es : emulConfig.getSessions()) {
 				sessionProperties.put(es.getName(), ParameterUtils.safeEmulSessionToString(es));
 			}
 			
@@ -801,7 +801,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 		for (Object key : sessionProperties.keySet()) {
 			String k = key.toString();
 			if (!k.startsWith("emul.")) {
-				EmulSession session = ParameterUtils.loadSessionFromArguments(sessionProperties.getProperty(k));
+				EmulSessionProfile session = ParameterUtils.loadSessionFromArguments(sessionProperties.getProperty(k));
 				session.setName(k);
 				emulConfig.addSession(session);
 			}

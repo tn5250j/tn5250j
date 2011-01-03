@@ -28,7 +28,7 @@ import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.gui.model.EmulSession;
+import org.tn5250j.gui.model.EmulSessionProfile;
 import org.tn5250j.interfaces.SessionManagerInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -133,7 +133,7 @@ public class SessionManager implements SessionManagerInterface {
 //
 //	}
 
-	public synchronized Session5250 openSession(EmulSession sesProps, String configurationResource, String sessionName) {
+	public synchronized Session5250 openSession(EmulSessionProfile sesProps, String configurationResource, String sessionName) {
 // XXX: should be checked?
 //		if(sessionName == null)
 //			sesProps.put(TN5250jConstants.SESSION_TERM_NAME,sesProps.getProperty(TN5250jConstants.SESSION_HOST));
