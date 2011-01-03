@@ -733,7 +733,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 					keysit.remove(); // first, delete all session properties
 				}
 			}
-			for (EmulSessionProfile es : emulConfig.getSessions()) {
+			for (EmulSessionProfile es : emulConfig.getProfiles()) {
 				sessionProperties.put(es.getName(), ParameterUtils.safeEmulSessionToString(es));
 			}
 			

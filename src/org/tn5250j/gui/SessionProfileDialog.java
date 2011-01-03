@@ -61,7 +61,7 @@ import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulSessionProfile;
 
-public class SessionPropsDialog extends JDialog implements ActionListener {
+public class SessionProfileDialog extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtSystemName;
@@ -104,7 +104,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 					break;
 				}
 			}
-			SessionPropsDialog dialog = new SessionPropsDialog();
+			SessionProfileDialog dialog = new SessionProfileDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -115,7 +115,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
-	public SessionPropsDialog() {
+	public SessionProfileDialog() {
 		setModal(true);
 		setBounds(100, 100, 500, 600);
 		getContentPane().setLayout(new BorderLayout());
@@ -640,7 +640,7 @@ public class SessionPropsDialog extends JDialog implements ActionListener {
 						fc = new JFileChooser();
 					}
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					int returnVal = fc.showOpenDialog(SessionPropsDialog.this);
+					int returnVal = fc.showOpenDialog(SessionProfileDialog.this);
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						session.setConfigFile(fc.getSelectedFile().getPath());
 						txtConfigFile.setText(fc.getSelectedFile().getPath());

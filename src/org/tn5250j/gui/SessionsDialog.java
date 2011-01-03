@@ -29,6 +29,7 @@ package org.tn5250j.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.SystemColor;
@@ -64,7 +65,6 @@ import org.tn5250j.gui.model.EmulConfig;
 import org.tn5250j.gui.model.EmulSessionProfile;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
-import java.awt.Font;
 
 public class SessionsDialog extends JDialog implements ActionListener {
 
@@ -74,7 +74,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
 	
-	private final EmulConfig emulConfig = new EmulConfig();
+	private final EmulConfig emulConfig;
 	
 	private JTable conTable;
 	private JButton btnEdit;
@@ -130,13 +130,12 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	 * @param title
 	 * @param properties
 	 */
-	public SessionsDialog(Frame owner, String title, EmulConfig sessions) {
+	public SessionsDialog(Frame owner, String title, EmulConfig emulConfig) {
 		super(owner, title, true);
-		this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
+
+		this.emulConfig = emulConfig;
 		
-		for (EmulSessionProfile session : sessions.getSessions()) {
-			emulConfig.addSession(session);
-		}
+		this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 		
 		setBounds(100, 100, 600, 400);
 		getContentPane().setLayout(new BorderLayout());
@@ -262,7 +261,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	public EmulSessionProfile getSelectedSession() {
 		if (conTable.getSelectedRowCount() > 0) {
 			final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
-			return emulConfig.getSessions().get(idx);
+			return emulConfig.getProfiles().get(idx);
 		}
 		return null;
 	}
@@ -339,16 +338,16 @@ public class SessionsDialog extends JDialog implements ActionListener {
 				public void actionPerformed(ActionEvent e) {
 					final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
 					EmulSessionProfile session = null;
-					if (0 <= idx && idx < emulConfig.getSessions().size()) {
-						session = emulConfig.getSessions().get(idx);
+					if (0 <= idx && idx < emulConfig.getProfiles().size()) {
+						session = emulConfig.getProfiles().get(idx);
 					}
 					if (session != null) {
-						SessionPropsDialog editdlg = new SessionPropsDialog();
+						SessionProfileDialog editdlg = new SessionProfileDialog();
 						editdlg.setTitle(LangTool.getString("conf.optEdit"));
 						editdlg.setSession(session);
 						final boolean ok = editdlg.showModal();
 						if (ok) {
-							emulConfig.getSessions().set(idx, editdlg.getSession());
+							emulConfig.getProfiles().set(idx, editdlg.getSession());
 							SessionDataModel model = (SessionDataModel)conTable.getModel();
 							model.fireTableRowsUpdated(idx, idx);
 						}
@@ -360,7 +359,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 			btnNew.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					SessionPropsDialog createdlg = new SessionPropsDialog();
+					SessionProfileDialog createdlg = new SessionProfileDialog();
 					createdlg.setTitle(LangTool.getString("conf.optAdd"));
 					final boolean ok = createdlg.showModal();
 					if (ok) {
@@ -377,8 +376,8 @@ public class SessionsDialog extends JDialog implements ActionListener {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
-					if (0 <= idx && idx < emulConfig.getSessions().size()) {
-						emulConfig.getSessions().remove(idx);
+					if (0 <= idx && idx < emulConfig.getProfiles().size()) {
+						emulConfig.getProfiles().remove(idx);
 						SessionDataModel model = (SessionDataModel)conTable.getModel();
 						model.fireTableRowsDeleted(idx, idx);
 					}
@@ -442,7 +441,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 
 		@Override
 		public int getRowCount() {
-			return emulConfig.getSessions().size();
+			return emulConfig.getProfiles().size();
 		}
 
 		@Override
@@ -452,7 +451,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			final EmulSessionProfile rowitem = emulConfig.getSessions().get(row);
+			final EmulSessionProfile rowitem = emulConfig.getProfiles().get(row);
 			switch (column) {
 			case 0:
 				return rowitem.getName();
