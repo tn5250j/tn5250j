@@ -63,7 +63,7 @@ I have included my sample .jnlp file that I use for deploying in JavaWebStart.
        <homepage href="http://sourceforge.net/tn5250j"/>
        <description>tn5250j - 5250 emulator written in java</description>
        <description kind="short">tn5250j - 5250 emulator</description>
-       <icon href="tnicon.jpg"/>
+       <icon href="tn5250j-32x32.png"/>
          <offline-allowed/>
        </information>
        <security>
