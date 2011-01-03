@@ -1,42 +1,49 @@
-tn5250j CHANGELOG
-------------------------------------------------------------------------------
-TODO/WISHLIST
--------------
 
-Implement the insert (right shift of characters) for continued edit fields.
+ Enhancements/Change Log for Tn5250j
+===============================================================================
 
-Add support for maintaining macros.  Think GUI interface.
+--- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
-Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
-large to implement this - 57 pages worth of specs and the such.  Elementary
-support for this is now there.  We no longer have session errors with this.
+ADD: center connect dialog on top of main frame/window
+FIX: uncheck confirmTabClose in properties
+CHG: removed old images
 
-Implement support for images on the background. Wishlist for the future
+--- v0.6.2 ----------------------------------------------------- 08/12/2010 ---
 
-Add option for sending partial screen information to file and/or e-mail.
+ADD: Improved tab bar with SSL enabled icon (JSE6 only)
+ADD: Nimbus theme as default (JSE6 only)
+ADD: Multiple icons in different sizes (JSE6 only)
+ADD: Saving last connected session at user's preference store, preselecting
+     last selected session on startup
+ADD: Sessions table, sorting by session name ignoring case
+ADD: Sessions table, sorting by host/ip is possible
+ADD: Screen export: concat a '.txt' to the exported file name, if no extension
+     was given
+ADD: Screen export: set the file filter '*.txt' as default
+ADD: New icon set (sf-patchid: 2110159)
+ADD: About dialog/tab
+ADD: Saving last selected session in user's system preferences
+ADD: Send keyboard type, codepage and charset to configure display device
+     (correct CCSID)
+ADD: feature request "Confirm on tab close" (feature request id: 2714023,
+     3085825), contributor: Craig Duncan (duncan3dc)
+FIX: IndexOutOfBoundsException, when trying to reorder a single tab
+FIX: NullPointerExceptions when trying to transmit no file to/from AS400
+FIX: ClassCastException when using MDI mode (sf-patchid: 2555604)
+FIX: SSL connecting problem since Java5 (sf-patchid: 2555362)
+FIX: NPE when using console logger
+FIX: Codepage converter 1147, 1148, 870, 871, 1025, 1026, 1112
+FIX: Dialog for SysReq is not centered within the main window
+     (sf-bugid: 2842807)
+FIX: Instantiating Inflater/Deflater causes OutOfMemoryError;
+     finalizers not called promptly enough (JVM bug 4797189)
+CHG: Update log4j-1.2.15
+CHG: Renamed the applet to "org.tn5250j.My5250Applet" to avoid confusing
+     with 'Application'
+CHG: Reworked some codepages (277,280,284,285,297,500)
+CHG: lot of internal code reworked
 
-Add restore of session sizes in MDI session interface.
-
-Known problems
---------------
-On some JVM linux machines the keymappings will have to be changed from the
-default that I set up.  This is for JVM supplied by IBM.
-
-
-Enhancements/Change Log
------------------------
-
-31/05/2010  Added: Saving last connected session at user's preference store, preselecting last selected session on startup
-
-05/12/2009  Added: Sessions table, sorting by session name ignoring case
-            Added: Sessions table, sorting by host/ip is possible
-
-21/11/2009  Added: screen export: concat a '.txt' to the exported file name, if no extension was given
-            Added: screen export: set the file filter '*.txt' as default
-
-20/11/2009  Renamed: the applet to "org.tn5250j.My5250Applet" to avoid confusing with 'Application'
-            Fixed: IndexOutOfBoundsException, when trying to reorder a single tab
-            Fixed: NullPointerExceptions when trying to transmit no file to/from AS400
+--- v0.6.0 ----------------------------------------------------- 19/06/2005 ---
 
 18/06/2005  New release with a whole lot enhancements.  Do not remember them all
             read the Readme.txt file for more information

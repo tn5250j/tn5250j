@@ -1,0 +1,23 @@
+tn5250j CHANGELOG
+------------------------------------------------------------------------------
+TODO/WISHLIST
+-------------
+
+Implement the insert (right shift of characters) for continued edit fields.
+
+Add support for maintaining macros.  Think GUI interface.
+
+Work on RFE defined as bug to support SNGCHCFLD.  The specifications are very
+large to implement this - 57 pages worth of specs and the such.  Elementary
+support for this is now there.  We no longer have session errors with this.
+
+Implement support for images on the background. Wishlist for the future
+
+Add option for sending partial screen information to file and/or e-mail.
+
+Add restore of session sizes in MDI session interface.
+
+Known problems
+--------------
+On some JVM linux machines the keymappings will have to be changed from the
+default that I set up.  This is for JVM supplied by IBM.

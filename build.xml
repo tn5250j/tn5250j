@@ -370,7 +370,6 @@
         <include name="readme.txt"/>
         <include name="COPYING"/>
         <include name="tn5250jSplash.jpg"/>
-        <include name="tnicon.jpg"/>
       	<include name="tn5250j-icon*.*"/>
       </fileset>
       <fileset dir="${rtm.lib.dir}">
@@ -404,7 +403,7 @@
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
                    mainclass="org.tn5250j.My5250"
-                   icon="${resource.dir}/tnicon.icns"
+                   icon="${resource.dir}/tn5250j-icon.ico"
                    version="${version}"
                    infostring="${Name} ${version}, (c) ${year}"
                    aboutmenuname="${Name}"
