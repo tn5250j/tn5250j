@@ -192,30 +192,34 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		{
 			JPanel panel = new JPanel();
 			panel.setBorder(new EmptyBorder(3, 5, 3, 5));
-			panel.setBackground(SystemColor.activeCaptionText);
-			panel.setForeground(new Color(0, 0, 0));
+			panel.setBackground(Color.WHITE);
+			panel.setForeground(SystemColor.activeCaption);
 			contentPanel.add(panel, BorderLayout.NORTH);
 			panel.setLayout(new BorderLayout(10, 0));
 			{
 				panelTitle = new JPanel();
-				panelTitle.setForeground(SystemColor.windowText);
-				panelTitle.setBackground(SystemColor.activeCaptionText);
+				panelTitle.setForeground(Color.BLACK);
+				panelTitle.setBackground(Color.WHITE);
 				panel.add(panelTitle, BorderLayout.CENTER);
 				panelTitle.setLayout(new BorderLayout(0, 0));
 				{
 					JLabel lblTitle = new JLabel("Tn5250j");
-					lblTitle.setForeground(SystemColor.windowText);
+					lblTitle.setBackground(Color.WHITE);
+					lblTitle.setForeground(Color.BLACK);
 					panelTitle.add(lblTitle, BorderLayout.NORTH);
 					lblTitle.setFont(new Font("Tahoma", Font.BOLD, 15));
 				}
 				{
 					lblSubTitle = new JLabel("developer edition");
-					lblSubTitle.setForeground(SystemColor.windowText);
+					lblSubTitle.setBackground(Color.WHITE);
+					lblSubTitle.setForeground(Color.DARK_GRAY);
 					panelTitle.add(lblSubTitle, BorderLayout.SOUTH);
 				}
 			}
 			{
 				JLabel lblLogoImg = new JLabel("");
+				lblLogoImg.setForeground(Color.BLACK);
+				lblLogoImg.setBackground(Color.WHITE);
 				lblLogoImg.setFont(new Font("Tahoma", Font.PLAIN, 11));
 				final Image img = GUIGraphicsUtils.getApplicationIcons().get(1);
 				lblLogoImg.setIcon(new ImageIcon(img));
