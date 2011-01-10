@@ -60,6 +60,7 @@ import org.tn5250j.Session5250;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.framework.transport.SslType;
 import org.tn5250j.gui.model.EmulSessionProfile;
+import org.tn5250j.tools.GUIGraphicsUtils;
 
 public class SessionProfileDialog extends JDialog implements ActionListener {
 
@@ -116,6 +117,7 @@ public class SessionProfileDialog extends JDialog implements ActionListener {
 	 * Create the dialog.
 	 */
 	public SessionProfileDialog() {
+		setIconImages(GUIGraphicsUtils.getApplicationIcons());
 		setModal(true);
 		setBounds(100, 100, 500, 600);
 		getContentPane().setLayout(new BorderLayout());
