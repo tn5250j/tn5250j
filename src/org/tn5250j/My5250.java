@@ -356,11 +356,11 @@ public class My5250 implements BootListener,SessionListener,
             }
          }
 
-         for (int x = 0; x < session_params.size(); x++)
-         
+         for (int x = 0; x < session_params.size(); x++) {
             m.sessionArgs[x] = session_params.get(x).toString();
+         }
 
-         //m.startNewSession();
+         m.startNewSession();
          
          // shouldn't we be starting x at 0?
          for (int x = 0; x < os400_sessions.size(); x++ ) {
