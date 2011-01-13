@@ -2,6 +2,11 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.6.? ----------------------------------------------------- ??/??/20?? ---
+
+ADD: center connect dialog on top of main frame/window
+FIX: bug id:3155293 (hangs when called with explicit host name)
+
 --- v0.6.2 ----------------------------------------------------- 08/12/2010 ---
 
 ADD: Saving last connected session at user's preference store, preselecting

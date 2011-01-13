@@ -199,6 +199,19 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 	  
       try {
          jbInit();
+         // center on top of main window/frame
+         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+         Dimension frameSize = getSize();
+         if (frameSize.height > screenSize.height) frameSize.height = screenSize.height;
+         if (frameSize.width > screenSize.width) frameSize.width = screenSize.width;
+         int w2 = frame.getWidth();
+         int h2 = frame.getHeight();
+         int x2 = frame.getX();
+         int y2 = frame.getY();
+         setLocation((x2 + w2/2) - frameSize.width/2, (y2 + h2/2) - frameSize.height/2);
+
+         // now show the world what we and they can do
+         this.setVisible(true);
       }
       catch (Exception ex) {
          ex.printStackTrace();
@@ -243,18 +256,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       getContentPane().add(optionTabs, BorderLayout.CENTER);
       getContentPane().add(options, BorderLayout.SOUTH);
 
-      // pack it and center it on the screen
+      // pack it
       pack();
-
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
-
-      setLocation((screenSize.width - frameSize.width) / 2,
-            (screenSize.height - frameSize.height) / 2);
 
       if (sessions.getRowCount() > 0) {
          int selInterval = -1;
@@ -297,9 +300,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       });
 
       
-      // now show the world what we and they can do
-      this.setVisible(true);
-
    }
 
    public void stateChanged(ChangeEvent e) {
