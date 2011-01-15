@@ -4,6 +4,7 @@
 
 --- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
+ADD: About dialog/tab (JSE6 only)
 ADD: center connect dialog on top of main frame/window
 FIX: uncheck confirmTabClose in properties
 FIX: bug id:3158911 (command line switch -s not working any more)

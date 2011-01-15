@@ -110,7 +110,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
    JPanel configOptions = new JPanel();
    JPanel sessionPanel = new JPanel();
    JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
-   JPanel interfacePanel = new JPanel();
+   JPanel interfacePanel = null;
    JPanel sessionOpts = new JPanel();
    JPanel sessionOptPanel = new JPanel(
          new FlowLayout(FlowLayout.CENTER, 30, 10));
@@ -124,6 +124,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
    JPanel externalOpts = new JPanel();
    JPanel externalOptPanel = new JPanel(
          new FlowLayout(FlowLayout.CENTER, 30, 10));
+   JPanel aboutPanel = null;
    
    JTable sessions = null;
    JTable externals = null;
@@ -238,8 +239,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
       optionTabs.addChangeListener(this);
 
-      optionTabs
-            .addTab(LangTool.getString("ss.labelConnections"), sessionPanel);
+      optionTabs.addTab(LangTool.getString("ss.labelConnections"), sessionPanel);
       optionTabs.addTab(LangTool.getString("ss.labelOptions1"), emulOptPanel);
       createLoggingPanel();
       optionTabs.addTab(LangTool.getString("ss.labelLogging"), loggingPanel);
@@ -249,6 +249,9 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       // create external programs panel
       createExternalProgramsPanel();
       optionTabs.addTab(LangTool.getString("ss.labelExternal"), externalPanel);
+
+      createAboutPanel();
+      optionTabs.addTab("About", aboutPanel);
 
       // add the panels to our dialog
       getContentPane().add(optionTabs, BorderLayout.CENTER);
@@ -298,7 +301,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       });
 
       this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
-      
    }
 
    public void stateChanged(ChangeEvent e) {
@@ -923,6 +925,27 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
       addOptButton(LangTool.getString("ss.optCancel"), "DONE", options);
 
+   }
+   
+   /**
+    * Simple about the program ... 
+    */
+   private void createAboutPanel() {
+
+	   aboutPanel = new JPanel();
+	   
+	   JPanel contenpane = new JPanel();
+	   
+	   TitledBorder tb = BorderFactory.createTitledBorder("About");
+	   tb.setTitleJustification(TitledBorder.CENTER);
+	   
+	   contenpane.add(new JLabel("TN5250j"));
+	   contenpane.add(new JLabel("Version: " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer));
+	   
+	   contenpane.setLayout(new BoxLayout(contenpane, BoxLayout.Y_AXIS));
+	   
+	   aboutPanel.add(contenpane);
+	   aboutPanel.setBorder(tb);
    }
 
    private JButton addOptButton(String text, String ac, Container container) {
