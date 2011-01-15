@@ -6,6 +6,8 @@
 
 ADD: center connect dialog on top of main frame/window
 FIX: uncheck confirmTabClose in properties
+FIX: bug id:3158911 (command line switch -s not working any more)
+FIX: bug id:3158902 (settings folder in user's home directory is not created)
 FIX: bug id:3155293 (hangs when called with explicit host name)
 CHG: removed old images
 

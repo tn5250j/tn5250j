@@ -333,37 +333,34 @@ public class My5250 implements BootListener,SessionListener,
       
       if (m.sessionArgs != null) {
 
-         // BEGIN
-         // 2001/09/19 natural computing MR
-         List<String> os400_sessions = new ArrayList<String>();
-         List<String> session_params = new ArrayList<String>();
+    	  // BEGIN
+    	  // 2001/09/19 natural computing MR
+    	  List<String> os400_sessions = new ArrayList<String>();
+    	  List<String> session_params = new ArrayList<String>();
 
-         for (int x = 0; x < m.sessionArgs.length; x++) {
+    	  for (int x = 0; x < args.length; x++) {
+    		  if (args[x].equals("-s")) {
+    			  x++;
+    			  if (args[x] != null && sessions.containsKey(args[x])) {
+    				  os400_sessions.add(args[x]);
+    			  }else{
+    				  x--;
+    				  session_params.add(args[x]);
+    			  }
+    		  }else{
+    			  session_params.add(args[x]);
+    		  }
 
-            final String sessarg = m.sessionArgs[x];
-			if (sessarg != null) {
-               if (sessarg.equals("-s")) {
-                  x++;
-                  if (sessions.containsKey(sessarg)) {
-                     os400_sessions.add(sessarg);
-                  }else{
-                     x--;
-                     session_params.add(sessarg);
-                  }
-               }else{
-                  session_params.add(sessarg);
-               }
-            }
-         }
+    	  }
 
-         for (int x = 0; x < session_params.size(); x++) {
-            m.sessionArgs[x] = session_params.get(x).toString();
-         }
+    	  for (int x = 0; x < session_params.size(); x++) {
+    		  m.sessionArgs[x] = session_params.get(x).toString();
+    	  }
 
-         m.startNewSession();
+    	  m.startNewSession();
          
-         // shouldn't we be starting x at 0?
-         for (int x = 0; x < os400_sessions.size(); x++ ) {
+         // start from 1, cause 0 equals the default session (implizit nr 0) 
+         for (int x = 1; x < os400_sessions.size(); x++ ) {
             String sel = os400_sessions.get(x).toString();
 
             if (!m.frame1.isVisible()) {
