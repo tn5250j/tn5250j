@@ -41,6 +41,8 @@ import org.tn5250j.interfaces.ConfigureFactory;
  */
 public class GlobalConfigure extends ConfigureFactory {
 
+	public static final String TN5250J_FOLDER = ".tn5250j";
+	
    /**
     * A handle to the unitque GlobalConfigure class
     */
@@ -93,11 +95,32 @@ public class GlobalConfigure extends ConfigureFactory {
     *
     */
    private void initialize() {
-
+	  verifiySettingsFolder();
       loadSettings();
       loadSessions();
       loadMacros();
       loadKeyStrokes();
+   }
+
+   /**
+    * check if folder %USERPROFILE%/.tn5250j exists
+    * and create if necessary 
+    */
+   private void verifiySettingsFolder() {
+	   final String settingsfolder = System.getProperty("user.home") + File.separator + TN5250J_FOLDER;
+	   final File f = new File (settingsfolder);
+	   if (!f.exists()) {
+		   try {
+			   if (log.isInfoEnabled()) {
+				   log.info("Settings folder '"+settingsfolder+"' doesn't exist. Will created now.");
+			   }
+			   f.mkdir();
+		   } catch (Exception e) {
+			   if (log.isWarnEnabled()) {
+				   log.warn("Couldn't create settings folder '"+settingsfolder+"'", e);
+			   }
+		   }
+	   }
    }
 
    /**
@@ -151,7 +174,7 @@ public class GlobalConfigure extends ConfigureFactory {
        else {
            settings.setProperty("emulator.settingsDirectory",
            System.getProperty("user.home") + File.separator +
-           ".tn5250j" + File.separator);
+           TN5250J_FOLDER + File.separator);
            try {
                in = new FileInputStream(settingsFile);
                settings.load(in);
@@ -243,7 +266,7 @@ public class GlobalConfigure extends ConfigureFactory {
        /** Copy the config-files to the user's home-dir */
        String srcFile = System.getProperty("user.dir") + File.separator + sesFile;
        String dest = System.getProperty("user.home") +
-       File.separator + ".tn5250j" + File.separator + sesFile;
+       File.separator + TN5250J_FOLDER + File.separator + sesFile;
        File rmvFile = new File(sesFile);
        try {
            FileReader r = new FileReader(srcFile);

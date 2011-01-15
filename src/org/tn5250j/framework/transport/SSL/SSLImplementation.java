@@ -39,6 +39,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import javax.swing.JOptionPane;
 
+import org.tn5250j.GlobalConfigure;
 import org.tn5250j.framework.transport.SSLInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -78,7 +79,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 		try {
 			logger.debug("Initializing User KeyStore");
 			userKsPath = System.getProperty("user.home") + File.separator
-					+ ".tn5250j" + File.separator + "keystore";
+					+ GlobalConfigure.TN5250J_FOLDER + File.separator + "keystore";
 			File userKsFile = new File(userKsPath);
 			userks = KeyStore.getInstance(KeyStore.getDefaultType());
 			userks.load(userKsFile.exists() ? new FileInputStream(userKsFile)

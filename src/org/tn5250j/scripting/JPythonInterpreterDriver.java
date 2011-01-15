@@ -13,11 +13,12 @@ package org.tn5250j.scripting;
 
 import java.io.File;
 
-import org.python.util.PythonInterpreter;
-import org.python.core.*;
-import org.tn5250j.SessionGUI;
-
 import javax.swing.JOptionPane;
+
+import org.python.core.PyException;
+import org.python.util.PythonInterpreter;
+import org.tn5250j.GlobalConfigure;
+import org.tn5250j.SessionGUI;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -33,7 +34,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
       //      PythonInterpreter.initialize(System.getProperties(), props,
       //                        new String[] {""});
       System.setProperty("python.cachedir", 
-      System.getProperty("user.home") + File.separator + ".tn5250j" + 
+      System.getProperty("user.home") + File.separator + GlobalConfigure.TN5250J_FOLDER + 
       File.separator);
       
       try {
