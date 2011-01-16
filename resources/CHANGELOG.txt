@@ -6,6 +6,7 @@
 
 ADD: About dialog/tab (JSE6 only)
 ADD: center connect dialog on top of main frame/window
+ADD: new feature, open URL (marked text) in external browser
 FIX: uncheck confirmTabClose in properties
 FIX: bug id:3158911 (command line switch -s not working any more)
 FIX: bug id:3158902 (settings folder in user's home directory is not created)
