@@ -10,6 +10,7 @@ FIX: uncheck confirmTabClose in properties
 FIX: bug id:3158911 (command line switch -s not working any more)
 FIX: bug id:3158902 (settings folder in user's home directory is not created)
 FIX: bug id:3155293 (hangs when called with explicit host name)
+FIX: reworked internal code for debugging
 CHG: removed old images
 
 --- v0.6.2 ----------------------------------------------------- 08/12/2010 ---
