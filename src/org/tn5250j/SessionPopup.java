@@ -91,6 +91,8 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.SendScreenImageToFile;
 import org.tn5250j.tools.SendScreenToFile;
 import org.tn5250j.tools.XTFRFile;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Custom
@@ -100,6 +102,7 @@ public class SessionPopup {
 	private Screen5250 screen;
 	private SessionGUI session;
 	private tnvt vt;
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public SessionPopup(SessionGUI ses, MouseEvent me) {
 
@@ -628,13 +631,15 @@ public class SessionPopup {
 				inter = l.next().doubleValue();
 			}
 			catch (Exception e) {
-				System.out.println(e.getMessage());
+				log.warn(e);
 			}
 
 			sum += inter;
 
 		}
-		System.out.println("Vector sum " + sum);
+		if (log.isDebugEnabled()) {
+			log.debug("Vector sum " + sum);
+		}
 		sumVector = null;
 		l = null;
 
