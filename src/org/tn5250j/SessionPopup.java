@@ -48,39 +48,38 @@ import static org.tn5250j.TN5250jConstants.MNEMONIC_SPOOL_FILE;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_SYSREQ;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_TOGGLE_CONNECTION;
 
-import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.HeadlessException;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.text.CollationKey;
-import java.text.Collator;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.HexCharMapDialog;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;
@@ -99,9 +98,9 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class SessionPopup {
 
-	private Screen5250 screen;
-	private SessionGUI session;
-	private tnvt vt;
+	private final Screen5250 screen;
+	private final SessionGUI sessiongui;
+	private final tnvt vt;
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public SessionPopup(SessionGUI ses, MouseEvent me) {
@@ -109,19 +108,22 @@ public class SessionPopup {
 		JMenuItem menuItem;
 		Action action;
 		JPopupMenu popup = new JPopupMenu();
-		session = ses;
-		vt = session.getSession().getVT();
-		screen = session.getScreen();
+		this.sessiongui = ses;
+		vt = sessiongui.getSession().getVT();
+		screen = sessiongui.getScreen();
 
-		final int pos = session.getPosFromView(me.getX(),me.getY());
+		final int pos = sessiongui.getPosFromView(me.getX(),me.getY());
 
-		if (!session.rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
+		if (!sessiongui.rubberband.isAreaSelected() && screen.isInField(pos,false) ) {
 			action = new AbstractAction(LangTool.getString("popup.copy")) {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					screen.copyField(pos);
-					session.getFocusForMe();
+					String fcontent = screen.copyTextField(pos);
+					StringSelection contents = new StringSelection(fcontent);
+					Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+					cb.setContents(contents, null);
+					sessiongui.getFocusForMe();
 				}
 			};
 
@@ -132,8 +134,7 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(false);
-					session.getFocusForMe();
+					paste(false);
 				}
 			};
 			popup.add(createMenuItem(action,MNEMONIC_PASTE));
@@ -142,13 +143,25 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(true);
-					session.getFocusForMe();
+					paste(true);
 				}
 			};
 			popup.add(action);
 
-			popup.addSeparator();
+			popup.addSeparator(); // ------------------
+
+			action = new AbstractAction(LangTool.getString("popup.hexMap")) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					showHexMap();
+					sessiongui.getFocusForMe();
+				}
+			};
+			popup.add(createMenuItem(action,""));
+
+			popup.addSeparator(); // ------------------
 		}
 		else {
 
@@ -156,8 +169,8 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					session.actionCopy();
-					session.getFocusForMe();
+					sessiongui.actionCopy();
+					sessiongui.getFocusForMe();
 				}
 			};
 
@@ -167,8 +180,7 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(false);
-					session.getFocusForMe();
+					paste(false);
 				}
 			};
 			popup.add(createMenuItem(action,MNEMONIC_PASTE));
@@ -177,17 +189,16 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					screen.pasteMe(true);
-					session.getFocusForMe();
+					paste(true);
 				}
 			};
 			popup.add(action);
 
 			Rectangle workR = new Rectangle();
-			if (session.rubberband.isAreaSelected()) {
+			if (sessiongui.rubberband.isAreaSelected()) {
 
 				// get the bounded area of the selection
-				session.getBoundingArea(workR);
+				sessiongui.getBoundingArea(workR);
 
 				popup.addSeparator();
 
@@ -230,8 +241,8 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					session.printMe();
-					session.getFocusForMe();
+					sessiongui.printMe();
+					sessiongui.getFocusForMe();
 				}
 			};
 			popup.add(createMenuItem(action,MNEMONIC_PRINT_SCREEN));
@@ -322,7 +333,7 @@ public class SessionPopup {
 
 				public void actionPerformed(ActionEvent e) {
 					showHexMap();
-					session.getFocusForMe();
+					sessiongui.getFocusForMe();
 				}
 			};
 			popup.add(createMenuItem(action,""));
@@ -333,7 +344,7 @@ public class SessionPopup {
 				public void actionPerformed(ActionEvent e) {
 
 					mapMeKeys();
-					session.getFocusForMe();
+					sessiongui.getFocusForMe();
 				}
 			};
 			popup.add(createMenuItem(action,""));
@@ -344,8 +355,8 @@ public class SessionPopup {
 					private static final long serialVersionUID = 1L;
 
 					public void actionPerformed(ActionEvent e) {
-						session.actionAttributes();
-						session.getFocusForMe();
+						sessiongui.actionAttributes();
+						sessiongui.getFocusForMe();
 					}
 				};
 				popup.add(createMenuItem(action,MNEMONIC_DISP_ATTRIBUTES));
@@ -354,12 +365,12 @@ public class SessionPopup {
 
 			popup.addSeparator();
 
-			if (session.isMacroRunning()) {
+			if (sessiongui.isMacroRunning()) {
 				action = new AbstractAction(LangTool.getString("popup.stopScript")) {
 					private static final long serialVersionUID = 1L;
 
 					public void actionPerformed(ActionEvent e) {
-						session.setStopMacroRequested();
+						sessiongui.setStopMacroRequested();
 					}
 				};
 				popup.add(action);
@@ -368,13 +379,13 @@ public class SessionPopup {
 
 				JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
 
-				if (session.isSessionRecording()) {
+				if (sessiongui.isSessionRecording()) {
 					action = new AbstractAction(LangTool.getString("popup.stop")) {
 						private static final long serialVersionUID = 1L;
 
 						public void actionPerformed(ActionEvent e) {
-							session.stopRecordingMe();
-							session.getFocusForMe();
+							sessiongui.stopRecordingMe();
+							sessiongui.getFocusForMe();
 						}
 					};
 
@@ -384,8 +395,8 @@ public class SessionPopup {
 						private static final long serialVersionUID = 1L;
 
 						public void actionPerformed(ActionEvent e) {
-							session.startRecordingMe();
-							session.getFocusForMe();
+							sessiongui.startRecordingMe();
+							sessiongui.getFocusForMe();
 
 						}
 					};
@@ -409,7 +420,7 @@ public class SessionPopup {
 
 					public void actionPerformed(ActionEvent e) {
 						doMeTransfer();
-						session.getFocusForMe();
+						sessiongui.getFocusForMe();
 					}
 				};
 
@@ -423,7 +434,7 @@ public class SessionPopup {
 
 					public void actionPerformed(ActionEvent e) {
 						doMeSpool();
-						session.getFocusForMe();
+						sessiongui.getFocusForMe();
 					}
 				};
 
@@ -442,7 +453,7 @@ public class SessionPopup {
 
 					public void actionPerformed(ActionEvent e) {
 						sendQuickEMail();
-						session.getFocusForMe();
+						sessiongui.getFocusForMe();
 					}
 				};
 				sendMenu.add(createMenuItem(action,MNEMONIC_QUICK_MAIL));
@@ -455,7 +466,7 @@ public class SessionPopup {
 
 					public void actionPerformed(ActionEvent e) {
 						sendScreenEMail();
-						session.getFocusForMe();
+						sessiongui.getFocusForMe();
 					}
 				};
 
@@ -492,7 +503,7 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					session.startNewSession();
+					sessiongui.startNewSession();
 				}
 			};
 
@@ -509,7 +520,7 @@ public class SessionPopup {
 
 					public void actionPerformed(ActionEvent e) {
 						changeConnection();
-						session.getFocusForMe();
+						sessiongui.getFocusForMe();
 					}
 				};
 			}
@@ -520,7 +531,7 @@ public class SessionPopup {
 
 					public void actionPerformed(ActionEvent e) {
 						changeConnection();
-						session.getFocusForMe();
+						sessiongui.getFocusForMe();
 					}
 				};
 
@@ -536,7 +547,7 @@ public class SessionPopup {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e) {
-					session.closeSession();
+					sessiongui.closeSession();
 				}
 			};
 
@@ -568,7 +579,7 @@ public class SessionPopup {
 
 	private void addMacros(JMenu menu) {
 
-		LoadMacroMenu.loadMacros(session, menu);
+		LoadMacroMenu.loadMacros(sessiongui, menu);
 	}
 
 	private JMenuItem createMenuItem(Action action, String accelKey) {
@@ -577,11 +588,11 @@ public class SessionPopup {
 
 		mi = new JMenuItem();
 		mi.setAction(action);
-		if (session.keyHandler.isKeyStrokeDefined(accelKey))
-			mi.setAccelerator(session.keyHandler.getKeyStroke(accelKey));
+		if (sessiongui.keyHandler.isKeyStrokeDefined(accelKey))
+			mi.setAccelerator(sessiongui.keyHandler.getKeyStroke(accelKey));
 		else {
 
-			InputMap map = session.getInputMap();
+			InputMap map = sessiongui.getInputMap();
 			KeyStroke[] allKeys = map.allKeys();
 			for (int x = 0; x < allKeys.length; x++) {
 
@@ -602,9 +613,9 @@ public class SessionPopup {
 		menu.addSeparator();
 		menu.add(sm);
 
-		InputMap map = session.getInputMap();
+		InputMap map = sessiongui.getInputMap();
 		KeyStroke[] allKeys = map.allKeys();
-		ActionMap aMap = session.getActionMap();
+		ActionMap aMap = sessiongui.getActionMap();
 
 		for (int x = 0; x < allKeys.length; x++) {
 
@@ -620,7 +631,7 @@ public class SessionPopup {
 	private void sumArea(boolean which) {
 
 
-		List<Double> sumVector = session.sumThem(which);
+		List<Double> sumVector = sessiongui.sumThem(which);
 		Iterator<Double> l = sumVector.iterator();
 		double sum = 0.0;
 		double inter = 0.0;
@@ -669,115 +680,16 @@ public class SessionPopup {
 	}
 
 	private void showHexMap() {
-
-		JPanel srp = new JPanel();
-		srp.setLayout(new BorderLayout());
-		DefaultListModel listModel = new DefaultListModel();
-		StringBuffer sb = new StringBuffer();
-
-		// we will use a collator here so that we can take advantage of the locales
-		Collator collator = Collator.getInstance();
-		CollationKey key = null;
-
-		Set<CollationKey> set = new TreeSet<CollationKey>();
-		for (int x =0;x < 256; x++) {
-			char c = vt.ebcdic2uni(x);
-			//         char ac = vt.getASCIIChar(x);
-			char ac = vt.ebcdic2uni(x);
-			if (!Character.isISOControl(ac)) {
-				sb.setLength(0);
-				if (Integer.toHexString(ac).length() == 1){
-					sb.append("0x0" + Integer.toHexString(ac).toUpperCase());
-				}
-				else {
-					sb.append("0x" + Integer.toHexString(ac).toUpperCase());
-				}
-
-				sb.append(" - " + c);
-				key = collator.getCollationKey(sb.toString());
-
-				set.add(key);
-			}
+		final HexCharMapDialog dlg = new HexCharMapDialog(sessiongui, vt.getCodePage());
+		String key = dlg.showModal();
+		if (key != null) {
+			screen.sendKeys(key);
 		}
-
-		Iterator<?> iterator = set.iterator();
-		while (iterator.hasNext()) {
-			CollationKey keyc = (CollationKey)iterator.next();
-			listModel.addElement(keyc.getSourceString());
-		}
-
-		//Create the list and put it in a scroll pane
-		JList hm = new JList(listModel);
-
-		hm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		hm.setSelectedIndex(0);
-		JScrollPane listScrollPane = new JScrollPane(hm);
-		listScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		listScrollPane.setSize(40,100);
-		srp.add(listScrollPane,BorderLayout.CENTER);
-		Object[]      message = new Object[1];
-		message[0] = srp;
-		String[] options = {LangTool.getString("hm.optInsert"),
-				LangTool.getString("hm.optCancel")};
-
-		int result = 0;
-
-		Frame parent = (Frame)SwingUtilities.getRoot(session);
-
-		result = JOptionPane.showOptionDialog(
-				parent,   // the parent that the dialog blocks
-				message,                           // the dialog message array
-				LangTool.getString("hm.title"),    // the title of the dialog window
-				JOptionPane.DEFAULT_OPTION,        // option type
-				JOptionPane.INFORMATION_MESSAGE,      // message type
-				null,                              // optional icon, use null to use the default icon
-				options,                           // options string array, will be made into buttons//
-				options[0]                         // option that should be made into a default button
-		);
-
-		switch(result) {
-		case 0: // Insert character
-			String k = "";
-			if (((String)hm.getSelectedValue()).length() > 8)
-				k += ((String)hm.getSelectedValue()).charAt(9);
-			else
-				k += ((String)hm.getSelectedValue()).charAt(7);
-			screen.sendKeys(k);
-			break;
-		case 1: // Cancel
-			//		      System.out.println("Cancel");
-			break;
-		default:
-			break;
-		}
-
-
 	}
-
-	/* *** NEVER USED LOCALLY ************************************************** */
-	//   private void printMe() {
-	//
-	//      session.printMe();
-	//      session.getFocusForMe();
-	//   }
-
-	/* *** NEVER USED LOCALLY ************************************************** */
-	//   private void executeMeMacro(ActionEvent ae) {
-	//
-	//      executeMeMacro(ae.getActionCommand());
-	//
-	//   }
-
-	/* *** NEVER USED LOCALLY ************************************************** */
-	//   private void executeMeMacro(String macro) {
-	//
-	//      Macronizer.invoke(macro,session);
-	//
-	//   }
 
 	private void mapMeKeys() {
 
-		Frame parent = (Frame)SwingUtilities.getRoot(session);
+		Frame parent = (Frame)SwingUtilities.getRoot(sessiongui);
 
 		if (Macronizer.isMacrosExist()) {
 			String[] macrosList = Macronizer.getMacroList();
@@ -798,7 +710,7 @@ public class SessionPopup {
 
 	private void doMeTransfer() {
 
-		new XTFRFile((Frame)SwingUtilities.getRoot(session), vt, session);
+		new XTFRFile((Frame)SwingUtilities.getRoot(sessiongui), vt, sessiongui);
 
 	}
 
@@ -806,11 +718,11 @@ public class SessionPopup {
 
 		try {
 			org.tn5250j.spoolfile.SpoolExporter spooler =
-				new org.tn5250j.spoolfile.SpoolExporter(vt, session);
+				new org.tn5250j.spoolfile.SpoolExporter(vt, sessiongui);
 			spooler.setVisible(true);
 		}
 		catch (NoClassDefFoundError ncdfe) {
-			JOptionPane.showMessageDialog(session,
+			JOptionPane.showMessageDialog(sessiongui,
 					LangTool.getString("messages.noAS400Toolbox"),
 					"Error",
 					JOptionPane.ERROR_MESSAGE,null);
@@ -820,22 +732,22 @@ public class SessionPopup {
 
 	private void sendScreenEMail() {
 
-		new SendEMailDialog((Frame)SwingUtilities.getRoot(session),session);
+		new SendEMailDialog((Frame)SwingUtilities.getRoot(sessiongui),sessiongui);
 	}
 
 	private void sendQuickEMail() {
 
-		new SendEMailDialog((Frame)SwingUtilities.getRoot(session),session,false);
+		new SendEMailDialog((Frame)SwingUtilities.getRoot(sessiongui),sessiongui,false);
 	}
 
 	private void sendMeToFile() {
 
-		SendScreenToFile.showDialog(SwingUtilities.getRoot(session),screen);
+		SendScreenToFile.showDialog(SwingUtilities.getRoot(sessiongui),screen);
 	}
 
 	private void sendMeToImageFile() {
 		// Change sent by LUC - LDC to add a parent frame to be passed
-		new SendScreenImageToFile((Frame)SwingUtilities.getRoot(session),session);
+		new SendScreenImageToFile((Frame)SwingUtilities.getRoot(sessiongui),sessiongui);
 	}
 
 	private void changeConnection() {
@@ -858,6 +770,25 @@ public class SessionPopup {
 			ct.setDaemon(true);
 			ct.start();
 		}
+	}
+	
+	private void paste(boolean special) {
+		try {
+			Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			final Transferable transferable = cb.getContents(this);
+			if (transferable != null) {
+				final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+				screen.pasteText(content, special);
+				sessiongui.getFocusForMe();
+			}
+		} catch (HeadlessException e1) {
+			log.debug("HeadlessException", e1);
+		} catch (UnsupportedFlavorException e1) {
+			log.debug("the requested data flavor is not supported", e1);
+		} catch (IOException e1) {
+			log.debug("data is no longer available in the requested flavor", e1);
+		}
+
 	}
 
 }

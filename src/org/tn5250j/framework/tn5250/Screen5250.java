@@ -27,13 +27,6 @@ package org.tn5250j.framework.tn5250;
 
 import static org.tn5250j.TN5250jConstants.*;
 
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -57,12 +50,11 @@ public class Screen5250 {
 	private int numCols = 0;
 	protected static final int initAttr = 32;
 	protected static final char initChar = 0;
-	private Rectangle workR = new Rectangle();
 	public boolean cursorActive = false;
 	public boolean cursorShown = false;
 	protected boolean insertMode = false;
 	private boolean keyProcessed = false;
-	private Rectangle dirtyScreen = new Rectangle();
+	private Rect dirtyScreen = new Rect();
 
 	public int homePos = 0;
 	public int saveHomePos = 0;
@@ -196,18 +188,16 @@ public class Screen5250 {
 	}
 
 	/**
-	 *
-	 * Copy & Paste start code
-	 *
+	 * Copy & Paste support
+	 * 
+	 * @see {@link #pasteText(String, boolean)}
+	 * @see {@link #copyTextField(int)}
 	 */
-	public final void copyMe(Rectangle area) {
-
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-		StringBuffer s = new StringBuffer();
-
+	public final String copyText(Rect area) {
+		StringBuilder sb = new StringBuilder();
+		Rect workR = new Rect();
 		workR.setBounds(area);
-
-		log.debug("Copying" + workR);
+		log.debug("Copying " + workR);
 
 		// loop through all the screen characters to send them to the clip board
 		int m = workR.x;
@@ -222,133 +212,120 @@ public class Screen5250 {
 				char c = planes.getChar(getPos(m - 1, i - 1));
 				if (c >= ' ' && (planes.screenExtended[getPos(m - 1, i - 1)] & EXTENDED_5250_NON_DSP)
 						== 0)
-					s.append(c);
+					sb.append(c);
 				else
-					s.append(' ');
+					sb.append(' ');
 
 				i++;
 			}
-			s.append('\n');
+			sb.append('\n');
 			m++;
 		}
-
-		// uncomment the next block of code when we implement the copy append
-		//  functionality.  This was a test just to see if it was possible.
-		//      String trString = "";
-		//      try {
-		//      trString= (String)(cb.getContents(this).getTransferData(DataFlavor.stringFlavor));
-		//      }
-		//      catch (Exception e) {
-		//         System.out.println(e.getMessage());
-		//      }
-		//		StringSelection contents = new StringSelection(trString + s.toString());
-
-		StringSelection contents = new StringSelection(s.toString());
-
-		cb.setContents(contents, null);
-
+		return sb.toString();
 	}
 
-	public final void pasteMe(boolean special) {
-
+	/**
+	 * Copy & Paste support
+	 * 
+	 * @param content
+	 * @see {@link #copyText(Rectangle)}
+	 */
+	public final void pasteText(String content, boolean special) {
+		if (log.isDebugEnabled()) {
+			log.debug("Pasting, special:"+special);
+		}
 		setCursorActive(false);
 
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable content = cb.getContents(this);
-		try {
+		StringBuilder sb = new StringBuilder(content);
+		StringBuilder pd = new StringBuilder();
 
-			StringBuffer sb = new StringBuffer((String) content
-					.getTransferData(DataFlavor.stringFlavor));
+		// character counters within the string to be pasted.
+		int nextChar = 0;
+		int nChars = sb.length();
 
-			StringBuffer pd = new StringBuffer();
+		int lr = getRow(lastPos);
+		int lc = getCol(lastPos);
+		resetDirty(lastPos);
 
-			// character counters within the string to be pasted.
-			int nextChar = 0;
-			int nChars = sb.length();
+		int cpos = lastPos;
+		int length = getScreenLength();
 
-			int lr = getRow(lastPos);
-			int lc = getCol(lastPos);
-			resetDirty(lastPos);
+		char c = 0;
+		boolean setIt;
 
-			int cpos = lastPos;
-			int length = getScreenLength();
+		// save our current place within the FFT.
+		screenFields.saveCurrentField();
 
-			char c = 0;
-			boolean setIt;
+		for (int x = nextChar; x < nChars; x++) {
 
-			// save our current place within the FFT.
-			screenFields.saveCurrentField();
+			c = sb.charAt(x);
 
-			for (int x = nextChar; x < nChars; x++) {
+			if ((c == '\n') || (c == '\r')) {
 
-				c = sb.charAt(x);
+				log.info("pasted cr-lf>" + pd + "<");
+				pd.setLength(0);
+				// if we read in a cr lf in the data stream we need to go
+				// to the starting column of the next row and start from there
+				cpos = getPos(getRow(cpos)+1,lc);
 
-				if ((c == '\n') || (c == '\r')) {
-
-					log.info("pasted cr-lf>" + pd + "<");
-					pd.setLength(0);
-					// if we read in a cr lf in the data stream we need to go
-					// to the starting column of the next row and start from there
-					cpos = getPos(getRow(cpos)+1,lc);
-
-					// If we go paste the end of the screen then let's start over from
-					//   the beginning of the screen space.
-					if (cpos > length)
-						cpos = 0;
-				}
-				else {
-
-					// we will default to set the character always.
-					setIt = true;
-
-					// If we are in a special paste scenario then we check for valid
-					//   characters to paste.
-					if (special && (!Character.isLetter(c) && !Character.isDigit(c)))
-						setIt = false;
-
-					// we will only push a character to the screen space if we are in
-					//  a field
-					if (isInField(cpos) && setIt) {
-						planes.setChar(cpos, c);
-						setDirty(cpos);
-						screenFields.setCurrentFieldMDT();
-					}
-					//  If we placed a character then we go to the next position.
-					if (setIt)
-						cpos++;
-					// we will append the information to our debug buffer.
-					pd.append(c);
-				}
+				// If we go paste the end of the screen then let's start over from
+				//   the beginning of the screen space.
+				if (cpos > length)
+					cpos = 0;
 			}
+			else {
 
-			// if we have anything else not logged then log it out.
-			if (pd.length() > 0)
-				log.info("pasted >" + pd + "<");
+				// we will default to set the character always.
+				setIt = true;
 
-			// restore out position within the FFT.
-			screenFields.restoreCurrentField();
-			updateDirty();
+				// If we are in a special paste scenario then we check for valid
+				//   characters to paste.
+				if (special && (!Character.isLetter(c) && !Character.isDigit(c)))
+					setIt = false;
 
-			// restore our cursor position.
-			setCursor(lr + 1, lc + 1);
-
-			setCursorActive(true);
-
-		} catch (Throwable exc) {
-			log.warn("" + exc.getMessage());
+				// we will only push a character to the screen space if we are in
+				//  a field
+				if (isInField(cpos) && setIt) {
+					planes.setChar(cpos, c);
+					setDirty(cpos);
+					screenFields.setCurrentFieldMDT();
+				}
+				//  If we placed a character then we go to the next position.
+				if (setIt)
+					cpos++;
+				// we will append the information to our debug buffer.
+				pd.append(c);
+			}
 		}
+
+		// if we have anything else not logged then log it out.
+		if (pd.length() > 0)
+			log.info("pasted >" + pd + "<");
+
+		// restore out position within the FFT.
+		screenFields.restoreCurrentField();
+		updateDirty();
+
+		// restore our cursor position.
+		setCursor(lr + 1, lc + 1);
+
+		setCursorActive(true);
+
 	}
 
-	public final void copyField(int pos) {
-
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+	/**
+	 * Copy & Paste support
+	 * 
+	 * @param position
+	 * @return
+	 * @see {@link #copyText(int)}
+	 */
+	public final String copyTextField(int position) {
 		screenFields.saveCurrentField();
-		isInField(pos);
-		log.debug("Copying");
-		StringSelection contents = new StringSelection(screenFields
-				.getCurrentFieldText());
-		cb.setContents(contents, null);
+		isInField(position);
+		String result = screenFields.getCurrentFieldText();
 		screenFields.restoreCurrentField();
+		return result;
 	}
 
 	/**
@@ -364,10 +341,10 @@ public class Screen5250 {
 	 *            formatting option to use
 	 * @return vector string of numberic values
 	 */
-	public final Vector<Double> sumThem(boolean which, Rectangle area) {
+	public final Vector<Double> sumThem(boolean which, Rect area) {
 
-		StringBuffer s = new StringBuffer();
-
+		StringBuilder sb = new StringBuilder();
+		Rect workR = new Rect();
 		workR.setBounds(area);
 
 		//      gui.rubberband.reset();
@@ -412,18 +389,18 @@ public class Screen5250 {
 
 				// TODO: update me here to implement the nonDisplay check as well
 				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')) {
-					s.append(c);
+					sb.append(c);
 				}
 				i++;
 			}
 
-			if (s.length() > 0) {
-				if (s.charAt(s.length() - 1) == '-') {
-					s.insert(0, '-');
-					s.deleteCharAt(s.length() - 1);
+			if (sb.length() > 0) {
+				if (sb.charAt(sb.length() - 1) == '-') {
+					sb.insert(0, '-');
+					sb.deleteCharAt(sb.length() - 1);
 				}
 				try {
-					Number n = df.parse(s.toString());
+					Number n = df.parse(sb.toString());
 					//               System.out.println(s + " " + n.doubleValue());
 
 					sumVector.add(new Double(n.doubleValue()));
@@ -433,7 +410,7 @@ public class Screen5250 {
 							+ pe.getErrorOffset());
 				}
 			}
-			s.setLength(0);
+			sb.setLength(0);
 			m++;
 		}
 		log.debug("" + sum);
@@ -447,10 +424,9 @@ public class Screen5250 {
 	 * will leave them here for now until we work out the interaction.  This
 	 * should be up to the gui frontend in my opinion.
 	 *
-	 * @param e
 	 * @param pos
 	 */
-	public boolean moveCursor(MouseEvent e, int pos) {
+	public boolean moveCursor(int pos) {
 
 		if (!oia.isKeyBoardLocked()) {
 
@@ -995,7 +971,7 @@ public class Screen5250 {
 
 			} else {
 				if (isStatusErrorCode()) {
-					Toolkit.getDefaultToolkit().beep();
+					sessionVT.signalBell();
 					return;
 				}
 
@@ -3798,7 +3774,7 @@ public class Screen5250 {
 				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
 						ScreenOIA.OIA_LEVEL_INPUT_ERROR,s);
 
-				Toolkit.getDefaultToolkit().beep();
+				sessionVT.signalBell();
 			} else {
 				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
 						ScreenOIA.OIA_LEVEL_NOT_INHIBITED);

@@ -23,7 +23,48 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import static org.tn5250j.TN5250jConstants.*;
+import static org.tn5250j.TN5250jConstants.AID_HELP;
+import static org.tn5250j.TN5250jConstants.AID_PRINT;
+import static org.tn5250j.TN5250jConstants.CMD_CLEAR_FORMAT_TABLE;
+import static org.tn5250j.TN5250jConstants.CMD_CLEAR_UNIT;
+import static org.tn5250j.TN5250jConstants.CMD_CLEAR_UNIT_ALTERNATE;
+import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
+import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
+import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
+import static org.tn5250j.TN5250jConstants.CMD_READ_SCREEN_IMMEDIATE;
+import static org.tn5250j.TN5250jConstants.CMD_READ_SCREEN_TO_PRINT;
+import static org.tn5250j.TN5250jConstants.CMD_RESTORE_SCREEN;
+import static org.tn5250j.TN5250jConstants.CMD_ROLL;
+import static org.tn5250j.TN5250jConstants.CMD_SAVE_SCREEN;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_ERROR_CODE;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_ERROR_CODE_TO_WINDOW;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_STRUCTURED_FIELD;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_TO_DISPLAY;
+import static org.tn5250j.TN5250jConstants.NR_REQUEST_ERROR;
+import static org.tn5250j.TN5250jConstants.PF1;
+import static org.tn5250j.TN5250jConstants.PF10;
+import static org.tn5250j.TN5250jConstants.PF11;
+import static org.tn5250j.TN5250jConstants.PF12;
+import static org.tn5250j.TN5250jConstants.PF13;
+import static org.tn5250j.TN5250jConstants.PF14;
+import static org.tn5250j.TN5250jConstants.PF15;
+import static org.tn5250j.TN5250jConstants.PF16;
+import static org.tn5250j.TN5250jConstants.PF17;
+import static org.tn5250j.TN5250jConstants.PF18;
+import static org.tn5250j.TN5250jConstants.PF19;
+import static org.tn5250j.TN5250jConstants.PF2;
+import static org.tn5250j.TN5250jConstants.PF20;
+import static org.tn5250j.TN5250jConstants.PF21;
+import static org.tn5250j.TN5250jConstants.PF22;
+import static org.tn5250j.TN5250jConstants.PF23;
+import static org.tn5250j.TN5250jConstants.PF24;
+import static org.tn5250j.TN5250jConstants.PF3;
+import static org.tn5250j.TN5250jConstants.PF4;
+import static org.tn5250j.TN5250jConstants.PF5;
+import static org.tn5250j.TN5250jConstants.PF6;
+import static org.tn5250j.TN5250jConstants.PF7;
+import static org.tn5250j.TN5250jConstants.PF8;
+import static org.tn5250j.TN5250jConstants.PF9;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -50,6 +91,33 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 
 public final class tnvt implements Runnable {
 
+
+	// negotiating commands
+	private static final byte IAC = (byte) -1; // 255 FF
+	private static final byte DONT = (byte) -2; //254 FE
+	private static final byte DO = (byte) -3; //253 FD
+	private static final byte WONT = (byte) -4; //252 FC
+	private static final byte WILL = (byte) -5; //251 FB
+	private static final byte SB = (byte) -6; //250 Sub Begin FA
+	private static final byte SE = (byte) -16; //240 Sub End F0
+	private static final byte EOR = (byte) -17; //239 End of Record EF
+	private static final byte TERMINAL_TYPE = (byte) 24; // 18
+	private static final byte OPT_END_OF_RECORD = (byte) 25; // 19
+	private static final byte TRANSMIT_BINARY = (byte) 0; // 0
+	private static final byte QUAL_IS = (byte) 0; // 0
+	private static final byte TIMING_MARK = (byte) 6; // 6
+	private static final byte NEW_ENVIRONMENT = (byte) 39; // 27
+	private static final byte IS = (byte) 0; // 0
+	private static final byte SEND = (byte) 1; // 1
+	private static final byte INFO = (byte) 2; // 2
+	private static final byte VAR = (byte) 0; // 0
+	private static final byte VALUE = (byte) 1; // 1
+	private static final byte NEGOTIATE_ESC = (byte) 2; // 2
+	private static final byte USERVAR = (byte) 3; // 3
+
+	// miscellaneous
+	private static final byte ESC = 0x04; // 04
+	
 	Socket sock;
 	BufferedInputStream bin;
 	BufferedOutputStream bout;
@@ -1263,7 +1331,7 @@ public final class tnvt implements Runnable {
 				char ch = planes.getChar(y);
 				byte byteCh = (byte) ch;
 				if (isDataUnicode(ch))
-					byteCh = this.uni2ebcdic(ch);
+					byteCh = codePage.uni2ebcdic(ch);
 				sa[sac++] = byteCh;
 			}
 		}
@@ -1321,7 +1389,7 @@ public final class tnvt implements Runnable {
                char ch = planes.getChar(y);
                byte byteCh = (byte) ch;
                if (isDataUnicode(ch))
-                  byteCh = this.uni2ebcdic(ch);
+                  byteCh = codePage.uni2ebcdic(ch);
                sa[sac++] = byteCh;
             }
          }
@@ -1476,7 +1544,7 @@ public final class tnvt implements Runnable {
 						//  The characters on screen are in unicode
 						char ch = (char) b;
 						if (isDataEBCDIC(b))
-							ch = ebcdic2uni(b);
+							ch = codePage.ebcdic2uni(b);
 
 						planes.setScreenCharAndAttr(y, ch, la, false);
 					}
@@ -1834,7 +1902,7 @@ public final class tnvt implements Runnable {
 						else {
 							if (repeat != 0) {
 								//LDC - 13/02/2003 - convert it to unicode
-								repeat = this.ebcdic2uni(repeat);
+								repeat = codePage.ebcdic2uni(repeat);
 								//repeat = getASCIIChar(repeat);
 							}
 
@@ -2028,7 +2096,7 @@ public final class tnvt implements Runnable {
                {
                   b = bk.getNextByte();
                   pco[i] = ((b & 0xff));
-                  c = ebcdic2uni(b);
+                  c = codePage.ebcdic2uni(b);
                   value.append(c);
                }
 
@@ -2772,65 +2840,14 @@ public final class tnvt implements Runnable {
 	}
 
 	public final CodePage getCodePage() {
-
 		return codePage;
 	}
 
-	public char ebcdic2uni(int index) {
-		return codePage.ebcdic2uni(index);
-
+	/**
+	 * @see org.tn5250j.Session5250#signalBell()
+	 */
+	public void signalBell() {
+		controller.signalBell();
 	}
-
-	public byte uni2ebcdic(char index) {
-		return codePage.uni2ebcdic(index);
-
-	}
-
-//      public void dumpScreen() {
-//
-//         for (int y = 0; y < screen52.getRows(); y++) {
-//            System.out.print("row :" + (y + 1) + " ");
-//
-//   //			for (int x = 0; x < screen52.getCols(); x++) {
-//   //				System.out.println("row " + (y + 1) + " col " + (x + 1) + " "
-//   //						+ screen52.screen[y * x].toString());
-//         // implement this part to create a string from a character.
-//   //			for (int x = 0; x < screen52.getCols(); x++) {
-//   //				System.out.println("row " + (y + 1) + " col " + (x + 1) + " "
-//   //						+ screen52.planes.getChar(y * x).toString());
-//
-//            }
-//         }
-//      }
-
-	// negotiating commands
-	private static final byte IAC = (byte) -1; // 255 FF
-	private static final byte DONT = (byte) -2; //254 FE
-	private static final byte DO = (byte) -3; //253 FD
-	private static final byte WONT = (byte) -4; //252 FC
-	private static final byte WILL = (byte) -5; //251 FB
-	private static final byte SB = (byte) -6; //250 Sub Begin FA
-	private static final byte SE = (byte) -16; //240 Sub End F0
-	private static final byte EOR = (byte) -17; //239 End of Record EF
-	private static final byte TERMINAL_TYPE = (byte) 24; // 18
-	private static final byte OPT_END_OF_RECORD = (byte) 25; // 19
-	private static final byte TRANSMIT_BINARY = (byte) 0; // 0
-	private static final byte QUAL_IS = (byte) 0; // 0
-	private static final byte TIMING_MARK = (byte) 6; // 6
-	private static final byte NEW_ENVIRONMENT = (byte) 39; // 27
-	private static final byte IS = (byte) 0; // 0
-	private static final byte SEND = (byte) 1; // 1
-	private static final byte INFO = (byte) 2; // 2
-	private static final byte VAR = (byte) 0; // 0
-	private static final byte VALUE = (byte) 1; // 1
-	private static final byte NEGOTIATE_ESC = (byte) 2; // 2
-	private static final byte USERVAR = (byte) 3; // 3
-
-	// miscellaneous
-	private static final byte ESC = 0x04; // 04
-
-//	private static final char char0 = 0;
-
-	//   private static final byte CMD_READ_IMMEDIATE_ALT = (byte)0x83; // 131
 
 }

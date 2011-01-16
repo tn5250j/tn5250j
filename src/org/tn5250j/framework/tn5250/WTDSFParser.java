@@ -883,8 +883,8 @@ public class WTDSFParser {
                      for (;cnt < minLen; cnt++) {
 
                         byte0 = segment[pos++];
-                        s += vt.ebcdic2uni(byte0);
-                        screen52.setChar(vt.ebcdic2uni(byte0));
+                        s += vt.codePage.ebcdic2uni(byte0);
+                        screen52.setChar(vt.codePage.ebcdic2uni(byte0));
 
                      }
 
