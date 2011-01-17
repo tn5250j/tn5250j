@@ -133,18 +133,13 @@ public class DisplayAttributesPanel extends AttributesPanel {
 		cgp.setLayout(new AlignLayout(1, 5, 5));
 
 		guiCheck = new JCheckBox(LangTool.getString("sa.guiCheck"));
-		guiShowUnderline = new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
-
-		if (getStringProperty("guiInterface").equals(YES))
-			guiCheck.setSelected(true);
+		guiCheck.setSelected(YES.equals(getStringProperty("guiInterface")));
+		cgp.add(guiCheck);
 
 		// since this is a new property added then it might not exist in existing
 		//    profiles and it should be defaulted to yes.
-		String under = getStringProperty("guiShowUnderline");
-		if (under.equals(YES) || under.length() == 0)
-			guiShowUnderline.setSelected(true);
-
-		cgp.add(guiCheck);
+		guiShowUnderline = new JCheckBox(LangTool.getString("sa.guiShowUnderline"));
+		guiShowUnderline.setSelected(YES.equals(getStringProperty("guiShowUnderline")));
 		cgp.add(guiShowUnderline);
 
 		contentPane.add(csp);
@@ -217,17 +212,13 @@ public class DisplayAttributesPanel extends AttributesPanel {
 
 		if (guiShowUnderline.isSelected()) {
 			changes.firePropertyChange(
-					this,
-					"guiShowUnderline",
-					getStringProperty("guiShowUnderline"),
-			YES);
+					this, "guiShowUnderline",
+					getStringProperty("guiShowUnderline"), YES);
 			setProperty("guiShowUnderline", YES);
 		} else {
 			changes.firePropertyChange(
-					this,
-					"guiShowUnderline",
-					getStringProperty("guiShowUnderline"),
-			NO);
+					this, "guiShowUnderline",
+					getStringProperty("guiShowUnderline"), NO);
 			setProperty("guiShowUnderline", NO);
 		}
 
