@@ -78,8 +78,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private final static String xError = "X - II";
 	private int crossRow;
 	private Rectangle crossRect = new Rectangle();
-	protected int offTop = 0;   // offset from top
-	protected int offLeft = 0;  // offset from left
+	private int offTop = 0;   // offset from top
+	private int offLeft = 0;  // offset from left
 	private boolean antialiased = true;
 	private Graphics2D gg2d;
 	private Screen5250 screen;
@@ -106,26 +106,26 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private Color colorHexAttr;
 	protected int crossHair = 0;
 	private boolean updateFont;
-	protected int cursorSize = 0;
+	private int cursorSize = 0;
 	protected boolean hotSpots = false;
 	private float sfh = 1.2f; // font scale height
 	private float sfw = 1.0f; // font scale height
 	private float ps132 = 0; // Font point size
-	protected boolean guiInterface = false;
-	public boolean guiShowUnderline = true;
-	protected int cursorBottOffset;
-	protected boolean rulerFixed;
+	private boolean guiInterface = false;
+	private boolean guiShowUnderline = true;
+	private int cursorBottOffset;
+	private boolean rulerFixed;
 	private javax.swing.Timer blinker;
 	private int colSepLine = 0;
-	private StringBuffer hsMore = new StringBuffer("More...");
-	private StringBuffer hsBottom = new StringBuffer("Bottom");
+	private final StringBuffer hsMore = new StringBuffer("More...");
+	private final StringBuffer hsBottom = new StringBuffer("Bottom");
 	private Rectangle workR = new Rectangle();
 
 	private SessionConfig config;
 
 	protected Rectangle clipper;
 
-	private TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
 
 	public GuiGraphicBuffer (Screen5250 screen, SessionGUI gui, SessionConfig config) {
 
