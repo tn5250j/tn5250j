@@ -61,6 +61,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 											SessionConfigListener,
 											ActionListener {
 
+	// Dup Character array for display output
+	private static final transient char[] dupChar = {'*'};
+	
 	private BufferedImage bi;
 	private final Object lock = new Object();
 	private Line2D separatorLine = new Line2D.Float();
@@ -111,8 +114,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private float sfh = 1.2f; // font scale height
 	private float sfw = 1.0f; // font scale height
 	private float ps132 = 0; // Font point size
-	private boolean guiInterface = false;
-	private boolean guiShowUnderline = true;
+	private boolean cfg_guiInterface = false;
+	private boolean cfg_guiShowUnderline = true;
 	private int cursorBottOffset;
 	private boolean rulerFixed;
 	private javax.swing.Timer blinker;
@@ -120,7 +123,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private final StringBuffer hsMore = new StringBuffer("More...");
 	private final StringBuffer hsBottom = new StringBuffer("Bottom");
 	private Rectangle workR = new Rectangle();
-
+	
+	private boolean colSep = false;
+	private boolean underLine = false;
+	private boolean nonDisplay = false;
+	private Color fg;
+	private Color bg;
+	
 	private SessionConfig config;
 
 	protected Rectangle clipper;
@@ -240,7 +249,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 		colorSep = Color.white;
 		colorHexAttr = Color.white;
 
-		if (guiInterface)
+		if (cfg_guiInterface)
 			colorBg = Color.lightGray;
 		else
 			colorBg = Color.black;
@@ -337,19 +346,19 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 		if (config.isPropertyExists("guiInterface")) {
 			if (getStringProperty("guiInterface").equals("Yes")) {
 				screen.setUseGUIInterface(true);
-				guiInterface = true;
+				cfg_guiInterface = true;
 			}
 			else {
 				screen.setUseGUIInterface(false);
-				guiInterface = false;
+				cfg_guiInterface = false;
 			}
 		}
 
 		if (config.isPropertyExists("guiShowUnderline")) {
 			if (getStringProperty("guiShowUnderline").equals("Yes"))
-				guiShowUnderline = true;
+				cfg_guiShowUnderline = true;
 			else
-				guiShowUnderline = false;
+				cfg_guiShowUnderline = false;
 		}
 
 		if (config.isPropertyExists("hotspots")) {
@@ -613,19 +622,19 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 		if (pn.equals("guiInterface")) {
 			if (pce.getNewValue().equals("Yes")) {
 				screen.setUseGUIInterface(true);
-				guiInterface = true;
+				cfg_guiInterface = true;
 			}
 			else {
 				screen.setUseGUIInterface(true);
-				guiInterface = false;
+				cfg_guiInterface = false;
 			}
 		}
 
 		if (pn.equals("guiShowUnderline")) {
 			if (pce.getNewValue().equals("Yes"))
-				guiShowUnderline = true;
+				cfg_guiShowUnderline = true;
 			else
-				guiShowUnderline = false;
+				cfg_guiShowUnderline = false;
 		}
 
 		if (pn.equals("hotspots")) {
@@ -1428,10 +1437,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 		}
 	}
 
-	// Dup Character array for display output
-	public static final transient char[] dupChar = {'*'};
 	public final void drawChar(Graphics2D g, int pos, int row, int col) {
-
+		Rectangle csArea = new Rectangle();
+		char sChar[] = new char[1];
 		int attr = updateRect.attr[pos];
 		sChar[0] = updateRect.text[pos];
 		setDrawAttr(pos);
@@ -1681,7 +1689,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 				}
 				if(underLine ) {
 
-					if (!useGui || guiShowUnderline) {
+					if (!useGui || cfg_guiShowUnderline) {
 						g.setColor(fg);
 						g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
 
@@ -2034,9 +2042,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 	}
 
-	Rectangle csArea = new Rectangle();
-	char sChar[] = new char[1];
-
 	protected class Data {
 
 
@@ -2142,12 +2147,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 					return Color.orange;
 				}
 	}
-
-	boolean      colSep = false;
-	boolean   underLine = false;
-	boolean   nonDisplay = false;
-	Color fg;
-	Color bg;
 
 	private void setDrawAttr(int pos) {
 
