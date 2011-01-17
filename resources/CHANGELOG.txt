@@ -5,7 +5,6 @@
 --- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
 ADD: About dialog/tab (JSE6 only)
-ADD: new feature, open URL (marked text) in external browser (JSE6 only)
 ADD: center connect dialog on top of main frame/window
 FIX: unchecked confirmTabClose in properties (JSE6 only)
 FIX: bug id:3160345 (Default value of column separator looks strange)
