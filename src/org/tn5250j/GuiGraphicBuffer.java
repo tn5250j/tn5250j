@@ -51,43 +51,48 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
+import org.tn5250j.settings.ColumnSeparator;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
-                                          PropertyChangeListener,
-                                          SessionConfigListener,
-                                          ActionListener {
+public class GuiGraphicBuffer implements ScreenOIAListener,
+											ScreenListener,
+											PropertyChangeListener,
+											SessionConfigListener,
+											ActionListener {
 
-   private BufferedImage bi;
-   private final Object lock = new Object();
-   private Line2D separatorLine = new Line2D.Float();
-   private Rectangle2D tArea; // text area
-   private Rectangle2D aArea; // all screen area
-   private Rectangle2D cArea; // command line area
-   private Rectangle2D sArea; // status area
-   private Rectangle2D pArea; // position area (cursor etc..)
-   private Rectangle2D mArea; // message area
-   private Rectangle2D iArea; // insert indicator
-   private Rectangle2D kbArea; // keybuffer indicator
-   private Rectangle2D scriptArea; // script indicator
-   private Rectangle2D cursor = new Rectangle2D.Float();
-   private final static String xSystem = "X - System";
-   private final static String xError = "X - II";
-   private int crossRow;
-   private Rectangle crossRect = new Rectangle();
-   protected int offTop = 0;   // offset from top
-   protected int offLeft = 0;  // offset from left
-   private boolean antialiased = true;
-   private Graphics2D gg2d;
-   private Screen5250 screen;
-   private Data updateRect;
-   protected int columnWidth;
-   protected int rowHeight;
-   private SessionPanel gui;
+	// Dup Character array for display output
+	private static final transient char[] dupChar = {'*'};
 
-    private LineMetrics lm;
+	private BufferedImage bi;
+	private final Object lock = new Object();
+	private Line2D separatorLine = new Line2D.Float();
+	private Rectangle2D tArea; // text area
+	private Rectangle2D aArea; // all screen area
+	private Rectangle2D cArea; // command line area
+	private Rectangle2D sArea; // status area
+	private Rectangle2D pArea; // position area (cursor etc..)
+	private Rectangle2D mArea; // message area
+	private Rectangle2D iArea; // insert indicator
+	private Rectangle2D kbArea; // keybuffer indicator
+	private Rectangle2D scriptArea; // script indicator
+	private Rectangle2D cursor = new Rectangle2D.Float();
+	private final static String xSystem = "X - System";
+	private final static String xError = "X - II";
+	private int crossRow;
+	private Rectangle crossRect = new Rectangle();
+	private int offTop = 0;   // offset from top
+	private int offLeft = 0;  // offset from left
+	private boolean antialiased = true;
+	private Graphics2D gg2d;
+	private Screen5250 screen;
+	private Data updateRect;
+	protected int columnWidth;
+	protected int rowHeight;
+	private SessionPanel gui;
+
+	private LineMetrics lm;
 	/*default*/ Font font;
 	private int lenScreen;
 	private boolean showHex;
@@ -105,34 +110,38 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 	private Color colorHexAttr;
 	protected int crossHair = 0;
 	private boolean updateFont;
-	protected int cursorSize = 0;
+	private int cursorSize = 0;
 	protected boolean hotSpots = false;
 	private float sfh = 1.2f; // font scale height
 	private float sfw = 1.0f; // font scale height
 	private float ps132 = 0; // Font point size
-	protected boolean guiInterface = false;
-	public boolean guiShowUnderline = true;
-	protected int cursorBottOffset;
-	protected boolean rulerFixed;
+	private boolean cfg_guiInterface = false;
+	private boolean cfg_guiShowUnderline = true;
+	private int cursorBottOffset;
+	private boolean rulerFixed;
 	private javax.swing.Timer blinker;
-   private int colSepLine = 0;
-	private StringBuffer hsMore = new StringBuffer("More...");
-	private StringBuffer hsBottom = new StringBuffer("Bottom");
-   private Rectangle workR = new Rectangle();
+	private ColumnSeparator colSepLine;
+	private final StringBuffer hsMore = new StringBuffer("More...");
+	private final StringBuffer hsBottom = new StringBuffer("Bottom");
+	private Rectangle workR = new Rectangle();
+
+	private boolean colSep = false;
+	private boolean underLine = false;
+	private boolean nonDisplay = false;
+	private Color fg;
+	private Color bg;
 
 	private SessionConfig config;
 
-   protected Rectangle clipper;
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
 
-   private TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
+	public GuiGraphicBuffer (Screen5250 screen, SessionPanel gui, SessionConfig config) {
 
-   public GuiGraphicBuffer (Screen5250 screen, SessionPanel gui, SessionConfig config) {
-
-      this.screen = screen;
+		this.screen = screen;
 		this.config = config;
-      this.gui = gui;
+		this.gui = gui;
 
-      config.addSessionConfigListener(this);
+		config.addSessionConfigListener(this);
 		// load the session properties from it's profile.
 		loadProps();
 
@@ -158,27 +167,27 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		gui.setFont(font);
 
-      getSettings();
-      FontRenderContext frc = new FontRenderContext(font.getTransform(),
-            true, true);
-      lm = font.getLineMetrics("Wy", frc);
-      columnWidth = (int) font.getStringBounds("W", frc).getWidth() + 1;
-      rowHeight = (int) (font.getStringBounds("g", frc).getHeight()
-            + lm.getDescent() + lm.getLeading());
+		getSettings();
+		FontRenderContext frc = new FontRenderContext(font.getTransform(),
+				true, true);
+		lm = font.getLineMetrics("Wy", frc);
+		columnWidth = (int) font.getStringBounds("W", frc).getWidth() + 1;
+		rowHeight = (int) (font.getStringBounds("g", frc).getHeight()
+				+ lm.getDescent() + lm.getLeading());
 
-      screen.getOIA().addOIAListener(this);
-      screen.addScreenListener(this);
-      tArea = new Rectangle2D.Float();
-      cArea = new Rectangle2D.Float();
-      aArea = new Rectangle2D.Float();
-      sArea = new Rectangle2D.Float();
-      pArea = new Rectangle2D.Float();
-      mArea = new Rectangle2D.Float();
-      iArea = new Rectangle2D.Float();
-      kbArea = new Rectangle2D.Float();
-      scriptArea = new Rectangle2D.Float();
+		screen.getOIA().addOIAListener(this);
+		screen.addScreenListener(this);
+		tArea = new Rectangle2D.Float();
+		cArea = new Rectangle2D.Float();
+		aArea = new Rectangle2D.Float();
+		sArea = new Rectangle2D.Float();
+		pArea = new Rectangle2D.Float();
+		mArea = new Rectangle2D.Float();
+		iArea = new Rectangle2D.Float();
+		kbArea = new Rectangle2D.Float();
+		scriptArea = new Rectangle2D.Float();
 
-   }
+	}
 
 	/**
 	 * This is for blinking cursor but should be moved out
@@ -206,25 +215,25 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 	}
 
-   public void resize(int width, int height) {
+	public void resize(int width, int height) {
 
-      if (bi.getWidth() != width || bi.getHeight()  != height) {
-//         synchronized (lock) {
-            bi = null;
-            bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
-            getSettings();
-            // tell waiting threads to wake up
-//            lock.notifyAll();
-//         }
-      }
+		if (bi.getWidth() != width || bi.getHeight()  != height) {
+			//         synchronized (lock) {
+			bi = null;
+			bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+			getSettings();
+			// tell waiting threads to wake up
+			//            lock.notifyAll();
+			//         }
+		}
 
-   }
+	}
 
-      private void getSettings() {
+	private void getSettings() {
 
-         lenScreen = screen.getScreenLength();
+		lenScreen = screen.getScreenLength();
 
-      }
+	}
 
 	protected final void loadColors() {
 
@@ -239,7 +248,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		colorSep = Color.white;
 		colorHexAttr = Color.white;
 
-		if (guiInterface)
+		if (cfg_guiInterface)
 			colorBg = Color.lightGray;
 		else
 			colorBg = Color.black;
@@ -251,7 +260,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		else {
 			colorBg = getColorProperty("colorBg");
 		}
-      gui.setBackground(colorBg);
+		gui.setBackground(colorBg);
 
 		if (!config.isPropertyExists("colorBlue"))
 			setProperty("colorBlue", Integer.toString(colorBlue.getRGB()));
@@ -317,16 +326,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		loadColors();
 
-		if (config.isPropertyExists("colSeparator")) {
-			if (getStringProperty("colSeparator").equals("Line"))
-				colSepLine = 0;
-			if (getStringProperty("colSeparator").equals("ShortLine"))
-				colSepLine = 1;
-			if (getStringProperty("colSeparator").equals("Dot"))
-				colSepLine = 2;
-			if (getStringProperty("colSeparator").equals("Hide"))
-				colSepLine = 3;
-		}
+		colSepLine = ColumnSeparator.getFromName(getStringProperty("colSeparator"));
 
 		if (config.isPropertyExists("showAttr")) {
 			if (getStringProperty("showAttr").equals("Hex"))
@@ -336,19 +336,19 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		if (config.isPropertyExists("guiInterface")) {
 			if (getStringProperty("guiInterface").equals("Yes")) {
 				screen.setUseGUIInterface(true);
-            guiInterface = true;
+				cfg_guiInterface = true;
 			}
 			else {
 				screen.setUseGUIInterface(false);
-            guiInterface = false;
+				cfg_guiInterface = false;
 			}
 		}
 
 		if (config.isPropertyExists("guiShowUnderline")) {
 			if (getStringProperty("guiShowUnderline").equals("Yes"))
-				guiShowUnderline = true;
+				cfg_guiShowUnderline = true;
 			else
-				guiShowUnderline = false;
+				cfg_guiShowUnderline = false;
 		}
 
 		if (config.isPropertyExists("hotspots")) {
@@ -370,17 +370,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 				hsBottom.setLength(0);
 				hsBottom.append(getStringProperty("hsBottom"));
 			}
-		}
-
-		if (config.isPropertyExists("colSeparator")) {
-			if (getStringProperty("colSeparator").equals("Line"))
-				colSepLine = 0;
-			if (getStringProperty("colSeparator").equals("ShortLine"))
-				colSepLine = 1;
-			if (getStringProperty("colSeparator").equals("Dot"))
-				colSepLine = 2;
-			if (getStringProperty("colSeparator").equals("Hide"))
-				colSepLine = 3;
 		}
 
 		if (config.isPropertyExists("cursorSize")) {
@@ -432,9 +421,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (config.isPropertyExists("resetRequired")) {
 			if (getStringProperty("resetRequired").equals("Yes"))
-            screen.setResetRequired(true);
+				screen.setResetRequired(true);
 			else
-            screen.setResetRequired(false);
+				screen.setResetRequired(false);
 		}
 
 		if (config.isPropertyExists("useAntialias")) {
@@ -453,9 +442,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (config.isPropertyExists("backspaceError")) {
 			if (getStringProperty("backspaceError").equals("Yes"))
-            screen.setBackspaceError(true);
+				screen.setBackspaceError(true);
 			else
-            screen.setBackspaceError(false);
+				screen.setBackspaceError(false);
 		}
 	}
 
@@ -489,13 +478,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 	}
 
-   /**
-    * Update the configuration settings
-    * @param pce
-    */
-   public void onConfigChanged(SessionConfigEvent pce) {
-      this.propertyChange(pce);
-   }
+	/**
+	 * Update the configuration settings
+	 * @param pce
+	 */
+	public void onConfigChanged(SessionConfigEvent pce) {
+		this.propertyChange(pce);
+	}
 
 	public void propertyChange(PropertyChangeEvent pce) {
 
@@ -591,16 +580,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 				rulerFixed = false;
 		}
 
-		if (pn.equals("colSeparator")) {
-			if (pce.getNewValue().equals("Line"))
-				colSepLine = 0;
-			if (pce.getNewValue().equals("ShortLine"))
-				colSepLine = 1;
-			if (pce.getNewValue().equals("Dot"))
-				colSepLine = 2;
-			if (pce.getNewValue().equals("Hide"))
-				colSepLine = 3;
-		}
+		colSepLine = ColumnSeparator.getFromName(pce.getNewValue().toString());
 
 		if (pn.equals("showAttr")) {
 			if (pce.getNewValue().equals("Hex"))
@@ -611,20 +591,20 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (pn.equals("guiInterface")) {
 			if (pce.getNewValue().equals("Yes")) {
-            screen.setUseGUIInterface(true);
-				guiInterface = true;
+				screen.setUseGUIInterface(true);
+				cfg_guiInterface = true;
 			}
 			else {
-            screen.setUseGUIInterface(true);
-				guiInterface = false;
+				screen.setUseGUIInterface(true);
+				cfg_guiInterface = false;
 			}
 		}
 
 		if (pn.equals("guiShowUnderline")) {
 			if (pce.getNewValue().equals("Yes"))
-				guiShowUnderline = true;
+				cfg_guiShowUnderline = true;
 			else
-				guiShowUnderline = false;
+				cfg_guiShowUnderline = false;
 		}
 
 		if (pn.equals("hotspots")) {
@@ -636,9 +616,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (pn.equals("resetRequired")) {
 			if (pce.getNewValue().equals("Yes"))
-            screen.setResetRequired(true);
+				screen.setResetRequired(true);
 			else
-            screen.setResetRequired(false);
+				screen.setResetRequired(false);
 		}
 
 		if (pn.equals("hsMore")) {
@@ -718,9 +698,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 		if (pn.equals("backspaceError")) {
 			if (pce.getNewValue().equals("Yes"))
-            screen.setBackspaceError(true);
+				screen.setBackspaceError(true);
 			else
-            screen.setBackspaceError(false);
+				screen.setBackspaceError(false);
 		}
 
 		if (updateFont) {
@@ -730,9 +710,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		}
 
 		if (resetAttr) {
-//			for (int y = 0; y < lenScreen; y++) {
-//				screen[y].setAttribute(screen[y].getCharAttr());
-//			}
+			//			for (int y = 0; y < lenScreen; y++) {
+			//				screen[y].setAttribute(screen[y].getCharAttr());
+			//			}
 			drawOIA();
 		}
 
@@ -848,8 +828,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		// because getRowColFromPoint returns position offset as 1,1 we need
 		// to translate as offset 0,0
 		int pos = getPosFromView(start.x, start.y);
-      int x = columnWidth * screen.getCol(pos);
-      int y = rowHeight * screen.getRow(pos);
+		int x = columnWidth * screen.getCol(pos);
+		int y = rowHeight * screen.getRow(pos);
 		start.setLocation(x, y);
 		return start;
 
@@ -963,289 +943,289 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 
 	}
 
-   public BufferedImage getImageBuffer(int width, int height) {
+	public BufferedImage getImageBuffer(int width, int height) {
 
 
-      int width2 = columnWidth * screen.getColumns();
-      int height2 = rowHeight * (screen.getRows() + 2);
-//      synchronized (lock) {
-         if (bi == null || bi.getWidth() != width2 || bi.getHeight() != height2) {
-            // allocate a buffer Image with appropriate size
-            bi = new BufferedImage(width2,height2,BufferedImage.TYPE_INT_RGB);
-         }
-//         // tell waiting threads to wake up
-//         lock.notifyAll();
-//      }
-      drawOIA();
-      return bi;
-   }
+		int width2 = columnWidth * screen.getColumns();
+		int height2 = rowHeight * (screen.getRows() + 2);
+		//      synchronized (lock) {
+		if (bi == null || bi.getWidth() != width2 || bi.getHeight() != height2) {
+			// allocate a buffer Image with appropriate size
+			bi = new BufferedImage(width2,height2,BufferedImage.TYPE_INT_RGB);
+		}
+		//         // tell waiting threads to wake up
+		//         lock.notifyAll();
+		//      }
+		drawOIA();
+		return bi;
+	}
 
-   /**
-    * Draw the operator information area
-    */
-      public Graphics2D drawOIA () {
+	/**
+	 * Draw the operator information area
+	 */
+	public Graphics2D drawOIA () {
 
-      	int numRows = screen.getRows();
+		int numRows = screen.getRows();
 
-         Graphics2D g2d;
+		Graphics2D g2d;
 
-         // get ourselves a global pointer to the graphics
-         g2d = getDrawingArea();
+		// get ourselves a global pointer to the graphics
+		g2d = getDrawingArea();
 
-         if (antialiased)
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                  RenderingHints.VALUE_ANTIALIAS_ON);
-         g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
-               RenderingHints.VALUE_COLOR_RENDER_SPEED);
-         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-               RenderingHints.VALUE_RENDER_SPEED);
-         g2d.setFont(font);
-
-
-         g2d.setColor(colorBg);
-         g2d.fillRect(0,0,bi.getWidth(null),bi.getHeight(null));
-         tArea.setRect(0,0,bi.getWidth(null),(rowHeight * (numRows)));
-         cArea.setRect(0,rowHeight * (numRows + 1),bi.getWidth(null),rowHeight * (numRows + 1));
-         aArea.setRect(0,0,bi.getWidth(null),bi.getHeight(null));
-         sArea.setRect(columnWidth * 9,rowHeight * (numRows + 1),columnWidth * 20,rowHeight);
-         pArea.setRect(bi.getWidth(null) - columnWidth * 6,rowHeight * (numRows + 1),columnWidth * 6,rowHeight);
-         mArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + columnWidth + columnWidth,
-               rowHeight * (numRows + 1),
-               columnWidth + columnWidth,
-               rowHeight);
-         kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * columnWidth),
-               rowHeight * (numRows + 1),
-               columnWidth + columnWidth,
-               rowHeight);
-         scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * columnWidth),
-               rowHeight * (numRows + 1),
-               columnWidth + columnWidth,
-               rowHeight);
-         iArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (25 * columnWidth),
-               rowHeight * (numRows + 1),
-               columnWidth,
-               rowHeight);
-
-         separatorLine.setLine(0,
-               (rowHeight * (numRows + 1)) - (rowHeight / 2),
-               bi.getWidth(null),
-               (rowHeight * (numRows + 1)) - (rowHeight / 2));
-
-         g2d.setColor(colorBlue);
-         g2d.draw(separatorLine);
-         gg2d = g2d;
-      return g2d;
-   }
+		if (antialiased)
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+				RenderingHints.VALUE_COLOR_RENDER_SPEED);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+				RenderingHints.VALUE_RENDER_SPEED);
+		g2d.setFont(font);
 
 
-   public void drawCursor(int row, int col)   {
+		g2d.setColor(colorBg);
+		g2d.fillRect(0,0,bi.getWidth(null),bi.getHeight(null));
+		tArea.setRect(0,0,bi.getWidth(null),(rowHeight * (numRows)));
+		cArea.setRect(0,rowHeight * (numRows + 1),bi.getWidth(null),rowHeight * (numRows + 1));
+		aArea.setRect(0,0,bi.getWidth(null),bi.getHeight(null));
+		sArea.setRect(columnWidth * 9,rowHeight * (numRows + 1),columnWidth * 20,rowHeight);
+		pArea.setRect(bi.getWidth(null) - columnWidth * 6,rowHeight * (numRows + 1),columnWidth * 6,rowHeight);
+		mArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + columnWidth + columnWidth,
+				rowHeight * (numRows + 1),
+				columnWidth + columnWidth,
+				rowHeight);
+		kbArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (20 * columnWidth),
+				rowHeight * (numRows + 1),
+				columnWidth + columnWidth,
+				rowHeight);
+		scriptArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (16 * columnWidth),
+				rowHeight * (numRows + 1),
+				columnWidth + columnWidth,
+				rowHeight);
+		iArea.setRect((float)(sArea.getX()+ sArea.getWidth()) + (25 * columnWidth),
+				rowHeight * (numRows + 1),
+				columnWidth,
+				rowHeight);
 
-      	int botOffset = cursorBottOffset;
-      	boolean insertMode = screen.getOIA().isInsertMode();
+		separatorLine.setLine(0,
+				(rowHeight * (numRows + 1)) - (rowHeight / 2),
+				bi.getWidth(null),
+				(rowHeight * (numRows + 1)) - (rowHeight / 2));
 
-         Graphics2D g2 = getDrawingArea();
-
-         switch (cursorSize) {
-            case 0:
-               cursor.setRect(
-                     columnWidth * (col),
-                           (rowHeight * (row + 1)) - botOffset,
-                           columnWidth,
-                           1
-                           );
-               break;
-            case 1:
-               cursor.setRect(
-                     columnWidth * (col),
-                           (rowHeight * (row + 1) - rowHeight / 2),
-                           columnWidth,
-                           (rowHeight / 2) - botOffset
-                           );
-               break;
-            case 2:
-               cursor.setRect(
-                     columnWidth * (col),
-                           (rowHeight * row),
-                           columnWidth,
-                           rowHeight - botOffset
-                           );
-               break;
-         }
-
-         if (insertMode && cursorSize != 1) {
-               cursor.setRect(
-                     columnWidth * (col),
-                           (rowHeight * (row + 1) - rowHeight / 2),
-                           columnWidth,
-                           (rowHeight / 2) - botOffset
-                           );
-         }
-
-         Rectangle r = cursor.getBounds();
-         r.setSize(r.width,r.height);
-
-         g2.setColor(colorCursor);
-         g2.setXORMode(colorBg);
-
-         g2.fill(cursor);
-
-         updateImage(r);
-
-         if (!rulerFixed) {
-            crossRow = row;
-            crossRect.setBounds(r);
-         }
-         else {
-            if (crossHair == 0) {
-               crossRow = row;
-               crossRect.setBounds(r);
-            }
-         }
-
-         switch (crossHair) {
-            case 1:  // horizontal
-               g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
-                           bi.getWidth(null),
-                           (rowHeight * (crossRow + 1))- botOffset);
-               updateImage(0,rowHeight * (crossRow + 1)- botOffset,
-                              bi.getWidth(null),1);
-               break;
-            case 2:  // vertical
-               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
-               updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
-               break;
-
-            case 3:  // horizontal & vertical
-               g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
-                           bi.getWidth(null),
-                           (rowHeight * (crossRow + 1))- botOffset);
-               g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
-               updateImage(0,rowHeight * (crossRow + 1)- botOffset,
-                              bi.getWidth(null),1);
-               updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
-               break;
-         }
-
-         g2.dispose();
-         g2 = getWritingArea(font);
-         g2.setPaint(colorBg);
-
-         g2.fill(pArea);
-         g2.setColor(colorWhite);
-
-         g2.drawString((row + 1) + "/" + (col + 1)
-                        ,(float)pArea.getX(),
-                        (float)pArea.getY() + rowHeight);
-         updateImage(pArea.getBounds());
-         g2.dispose();
-
-   }
-
-   private void drawScriptRunning(Color color) {
-
-      Graphics2D g2d;
-
-      // get ourselves a global pointer to the graphics
-      g2d = (Graphics2D)bi.getGraphics();
-
-      g2d.setColor(color);
-
-      // set the points for the polygon
-      int[] xs = {(int)scriptArea.getX(),
-                  (int)scriptArea.getX(),
-                  (int)scriptArea.getX() + (int)(scriptArea.getWidth())};
-      int[] ys = {(int)scriptArea.getY(),
-                  (int)scriptArea.getY() + (int)scriptArea.getHeight(),
-                  (int)scriptArea.getY() + (int)(scriptArea.getHeight() / 2)};
-
-      // now lets draw it
-      g2d.fillPolygon(xs,ys,3);
-      g2d.setClip(scriptArea);
-
-      // get rid of the pointers
-      g2d.dispose();
+		g2d.setColor(colorBlue);
+		g2d.draw(separatorLine);
+		gg2d = g2d;
+		return g2d;
+	}
 
 
-   }
+	public void drawCursor(int row, int col)   {
 
-   private void eraseScriptRunning(Color color) {
+		int botOffset = cursorBottOffset;
+		boolean insertMode = screen.getOIA().isInsertMode();
 
-      Graphics2D g2d;
+		Graphics2D g2 = getDrawingArea();
 
-      // get ourselves a global pointer to the graphics
-      g2d = (Graphics2D)bi.getGraphics();
+		switch (cursorSize) {
+		case 0:
+			cursor.setRect(
+					columnWidth * (col),
+					(rowHeight * (row + 1)) - botOffset,
+					columnWidth,
+					1
+			);
+			break;
+		case 1:
+			cursor.setRect(
+					columnWidth * (col),
+					(rowHeight * (row + 1) - rowHeight / 2),
+					columnWidth,
+					(rowHeight / 2) - botOffset
+			);
+			break;
+		case 2:
+			cursor.setRect(
+					columnWidth * (col),
+					(rowHeight * row),
+					columnWidth,
+					rowHeight - botOffset
+			);
+			break;
+		}
 
-      g2d.setColor(color);
-      g2d.fill(scriptArea);
-      g2d.dispose();
+		if (insertMode && cursorSize != 1) {
+			cursor.setRect(
+					columnWidth * (col),
+					(rowHeight * (row + 1) - rowHeight / 2),
+					columnWidth,
+					(rowHeight / 2) - botOffset
+			);
+		}
+
+		Rectangle r = cursor.getBounds();
+		r.setSize(r.width,r.height);
+
+		g2.setColor(colorCursor);
+		g2.setXORMode(colorBg);
+
+		g2.fill(cursor);
+
+		updateImage(r);
+
+		if (!rulerFixed) {
+			crossRow = row;
+			crossRect.setBounds(r);
+		}
+		else {
+			if (crossHair == 0) {
+				crossRow = row;
+				crossRect.setBounds(r);
+			}
+		}
+
+		switch (crossHair) {
+		case 1:  // horizontal
+			g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
+					bi.getWidth(null),
+					(rowHeight * (crossRow + 1))- botOffset);
+			updateImage(0,rowHeight * (crossRow + 1)- botOffset,
+					bi.getWidth(null),1);
+			break;
+		case 2:  // vertical
+			g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
+			updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
+			break;
+
+		case 3:  // horizontal & vertical
+			g2.drawLine(0,(rowHeight * (crossRow + 1))- botOffset,
+					bi.getWidth(null),
+					(rowHeight * (crossRow + 1))- botOffset);
+			g2.drawLine(crossRect.x,0,crossRect.x,bi.getHeight(null) - rowHeight - rowHeight);
+			updateImage(0,rowHeight * (crossRow + 1)- botOffset,
+					bi.getWidth(null),1);
+			updateImage(crossRect.x,0,1,bi.getHeight(null) - rowHeight - rowHeight);
+			break;
+		}
+
+		g2.dispose();
+		g2 = getWritingArea(font);
+		g2.setPaint(colorBg);
+
+		g2.fill(pArea);
+		g2.setColor(colorWhite);
+
+		g2.drawString((row + 1) + "/" + (col + 1)
+				,(float)pArea.getX(),
+				(float)pArea.getY() + rowHeight);
+		updateImage(pArea.getBounds());
+		g2.dispose();
+
+	}
+
+	private void drawScriptRunning(Color color) {
+
+		Graphics2D g2d;
+
+		// get ourselves a global pointer to the graphics
+		g2d = (Graphics2D)bi.getGraphics();
+
+		g2d.setColor(color);
+
+		// set the points for the polygon
+		int[] xs = {(int)scriptArea.getX(),
+				(int)scriptArea.getX(),
+				(int)scriptArea.getX() + (int)(scriptArea.getWidth())};
+		int[] ys = {(int)scriptArea.getY(),
+				(int)scriptArea.getY() + (int)scriptArea.getHeight(),
+				(int)scriptArea.getY() + (int)(scriptArea.getHeight() / 2)};
+
+		// now lets draw it
+		g2d.fillPolygon(xs,ys,3);
+		g2d.setClip(scriptArea);
+
+		// get rid of the pointers
+		g2d.dispose();
 
 
-   }
+	}
 
-   /**
-    * Returns a pointer to the graphics area that we can draw on
-    */
-   public Graphics2D getDrawingArea() {
+	private void eraseScriptRunning(Color color) {
 
-//      try {
-//         synchronized (lock) {
-            // wait until there is something to read
-//            while (bi == null) {
-//               log.debug(" bi = null ");
-//               lock.wait();
-//            }
-            // we have the lock and state we're seeking
-         // check for selected area and erase it before updating screen
-//         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-//            gui.rubberband.erase();
-//         }
+		Graphics2D g2d;
 
-            Graphics2D g2;
+		// get ourselves a global pointer to the graphics
+		g2d = (Graphics2D)bi.getGraphics();
 
-            g2 = bi.createGraphics();
-            // tell waiting threads to wake up
-//            lock.notifyAll();
-            return g2;
-//         }
-//      }
-//      catch (InterruptedException ie) {
-//         log.warn("getDrawingarea : " + ie.getMessage());
-//         return null;
-//      }
-   }
+		g2d.setColor(color);
+		g2d.fill(scriptArea);
+		g2d.dispose();
 
-   public synchronized void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
 
-       /**
-        * @todo this is a hack and should be fixed at the root of the problem
-        */
-      if (gg2d == null) {
-         log.debug(" we got a null graphic object ");
-         return;
-      }
+	}
 
-//      synchronized (lock) {
-         gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x + offLeft,y+ offTop);
-         // tell waiting threads to wake up
-//         lock.notifyAll();
-//      }
+	/**
+	 * Returns a pointer to the graphics area that we can draw on
+	 */
+	public Graphics2D getDrawingArea() {
 
-   }
+		//      try {
+		//         synchronized (lock) {
+		// wait until there is something to read
+		//            while (bi == null) {
+		//               log.debug(" bi = null ");
+		//               lock.wait();
+		//            }
+		// we have the lock and state we're seeking
+		// check for selected area and erase it before updating screen
+		//         if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
+		//            gui.rubberband.erase();
+		//         }
+
+		Graphics2D g2;
+
+		g2 = bi.createGraphics();
+		// tell waiting threads to wake up
+		//            lock.notifyAll();
+		return g2;
+		//         }
+		//      }
+		//      catch (InterruptedException ie) {
+		//         log.warn("getDrawingarea : " + ie.getMessage());
+		//         return null;
+		//      }
+	}
+
+	public synchronized void drawImageBuffer(Graphics2D gg2d,int x, int y, int width, int height) {
+
+		/**
+		 * @todo this is a hack and should be fixed at the root of the problem
+		 */
+		if (gg2d == null) {
+			log.debug(" we got a null graphic object ");
+			return;
+		}
+
+		//      synchronized (lock) {
+		gg2d.drawImage(bi.getSubimage(x,y,width,height),null,x + offLeft,y+ offTop);
+		// tell waiting threads to wake up
+		//         lock.notifyAll();
+		//      }
+
+	}
 
 	protected void updateImage(int x, int y, int width, int height) {
 
-	   
+
 		// check for selected area and erase it before updating screen
 		if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
 			gui.rubberband.erase();
 		}
-		
-		
+
+
 		gg2d.setClip(x, y, width, height);
-//		if (!cursorActive && x + width <= bi.getWidth(null)
-//				&& y + height <= (bi.getHeight(null) - fmWidth)) {
-//			paintComponent2(biGraphics2d);
-//		}
+		//		if (!cursorActive && x + width <= bi.getWidth(null)
+		//				&& y + height <= (bi.getHeight(null) - fmWidth)) {
+		//			paintComponent2(biGraphics2d);
+		//		}
 
 		//      if (tileimage != null) {
 		//
@@ -1293,7 +1273,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		try {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-		gui.repaint(xf, yf, widthf, heightf);
+					gui.repaint(xf, yf, widthf, heightf);
 				}
 			});
 
@@ -1308,538 +1288,537 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 		updateImage(r.x, r.y, r.width, r.height);
 	}
 
-   public synchronized void drawImageBuffer(Graphics2D gg2d) {
-
-       /**
-        * @todo this is a hack and should be fixed at the root of the problem
-        */
-      if (gg2d == null) {
-		 log.debug(" we got a null graphic object ");
-         return;
-      }
-
-//      synchronized (lock) {
-
-         gg2d.drawImage(bi,null,offLeft,offTop);
-         // tell waiting threads to wake up
-//         lock.notifyAll();
-//      }
-
-
-   }
-
-  /**
-    * Returns a pointer to the graphics area that we can write on
-    */
-   public Graphics2D getWritingArea(Font font) {
-
-      Graphics2D g2;
-      // we could be in the middle of creating the graphics because of the
-      //    threads, resizing etc....   so lets wait until we have one.
-      //    If this causes problems we should implement a thresh-hold of sorts
-      //    to keep an infinate loop from occurring.  So far not problems
-//      try {
-//         synchronized (lock) {
-            // wait until there is something to read
-//            while (bi == null) {
-//               log.debug( " bi = null wa ");
-//               lock.wait();
-//            }
-               // we have the lock and state we're seeking
-
-            g2 = bi.createGraphics();
-
-            if (g2 != null) {
-               if (antialiased)
-                  g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-               g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
-                     RenderingHints.VALUE_COLOR_RENDER_SPEED);
-               g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-                     RenderingHints.VALUE_RENDER_SPEED);
-               g2.setFont(font);
-            }
-
-            // tell waiting threads to wake up
-//            lock.notifyAll();
-            return g2;
-
-//         }
-//      }
-//      catch (InterruptedException ie) {
-//         log.warn("getWritingarea : " + ie.getMessage());
-//         return null;
-//      }
-   }
-
-   public void setUseAntialias(boolean antialiased) {
-      this.antialiased = antialiased;
-   }
-
-   private void setStatus(ScreenOIA oia) {
-
-      int attr = oia.getLevel();
-      int value = oia.getInputInhibited();
-      String s = oia.getInhibitedText();
-      Graphics2D g2d = getWritingArea(font);
-//      log.info(attr + ", " + value + ", " + s);
-      if (g2d == null)
-         return;
-
-      try {
-         g2d.setColor(colorBg);
-         g2d.fill(sArea);
-
-         float Y = ((int)sArea.getY() + rowHeight)- (lm.getLeading() + lm.getDescent());
-
-         switch (attr) {
-
-            case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
-               if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
-                  g2d.setColor(colorWhite);
-
-                  if (s != null)
-                     g2d.drawString(s,(float)sArea.getX(),Y);
-                  else
-                     g2d.drawString(xSystem,(float)sArea.getX(),Y);
-               }
-               break;
-            case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
-               if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
-                  g2d.setColor(colorRed);
-
-                  if (s != null)
-                     g2d.drawString(s,(float)sArea.getX(),Y);
-                  else
-                     g2d.drawString(xError,(float)sArea.getX(),Y);
-
-               }
-               break;
-
-         }
-   		updateImage(sArea.getBounds());
-         g2d.dispose();
-      }
-      catch (Exception e) {
-
-         log.warn(" gui graphics setStatus " + e.getMessage());
-
-      }
-   }
-
-   // Dup Character array for display output
-   public static final transient char[] dupChar = {'*'};
-   public final void drawChar(Graphics2D g, int pos, int row, int col) {
-
-      int attr = updateRect.attr[pos];
-      sChar[0] = updateRect.text[pos];
-      setDrawAttr(pos);
-      boolean attributePlace = updateRect.isAttr[pos] == 0 ? false : true;
-      int whichGui = updateRect.graphic[pos];
-      boolean useGui = whichGui == 0 ? false : true;
-
-      csArea = modelToView(row, col, csArea);
-
-      int x = csArea.x;
-      int y = csArea.y;
-      int cy = (int)(y + rowHeight - (lm.getDescent() + lm.getLeading()));
-
-      if (showHex && attributePlace) {
-         Font f = g.getFont();
-
-         Font k = f.deriveFont(f.getSize2D()/2);
-         g.setFont(k);
-         g.setColor(colorHexAttr);
-         char[] a = Integer.toHexString(attr).toCharArray();
-         g.drawChars(a, 0, 1, x, y + (rowHeight /2));
-         g.drawChars(a, 1, 1, x+(columnWidth/2),
-            (int)(y + rowHeight - (lm.getDescent() + lm.getLeading())-2));
-         g.setFont(f);
-      }
-
-      if(!nonDisplay && !attributePlace) {
-
-         if (!useGui) {
-            g.setColor(bg);
-            g.fill(csArea);
-         }
-         else {
-
-            if (bg == colorBg && whichGui >= TN5250jConstants.FIELD_LEFT && whichGui <= TN5250jConstants.FIELD_ONE)
-               g.setColor(colorGUIField);
-            else
-               g.setColor(bg);
-
-            g.fill(csArea);
-
-         }
-
-         if (useGui && (whichGui < TN5250jConstants.FIELD_LEFT)) {
-
-            g.setColor(fg);
-
-            switch (whichGui) {
-
-               case TN5250jConstants.UPPER_LEFT:
-                  if (sChar[0] == '.') {
-                     if (screen.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinUpperLeft(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             colorBlue,
-                                             x,y,columnWidth,rowHeight);
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinUpperLeft(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-
-                     }
-                  }
-               break;
-               case TN5250jConstants.UPPER:
-                  if (sChar[0] == '.') {
-
-                     if (screen.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinUpper(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             colorBlue,
-                                             x,y,columnWidth,rowHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinUpper(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-                     }
-                  }
-               break;
-               case TN5250jConstants.UPPER_RIGHT:
-                  if (sChar[0] == '.') {
-                     if (screen.isUsingGuiInterface()) {
-
-                        GUIGraphicsUtils.drawWinUpperRight(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             colorBlue,
-                                             x,y,columnWidth,rowHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinUpperRight(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-
-                     }
-                  }
-               break;
-               case TN5250jConstants.GUI_LEFT:
-                  if (sChar[0] == ':') {
-                     if (screen.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinLeft(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,columnWidth,rowHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinLeft(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-
-                        g.drawLine(x + columnWidth / 2,
-                                    y,
-                                    x + columnWidth / 2,
-                                    y + rowHeight);
-                     }
-                  }
-               break;
-               case TN5250jConstants.GUI_RIGHT:
-                  if (sChar[0] == ':') {
-                     if (screen.isUsingGuiInterface()) {
-                        GUIGraphicsUtils.drawWinRight(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,columnWidth,rowHeight);
-
-
-                     }
-                     else {
-                        GUIGraphicsUtils.drawWinRight(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-
-                     }
-                  }
-               break;
-               case TN5250jConstants.LOWER_LEFT:
-                  if (sChar[0] == ':') {
-
-                     if (screen.isUsingGuiInterface()) {
-
-                        GUIGraphicsUtils.drawWinLowerLeft(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,columnWidth,rowHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinLowerLeft(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-                     }
-                  }
-               break;
-               case TN5250jConstants.BOTTOM:
-                  if (sChar[0] == '.') {
-
-                     if (screen.isUsingGuiInterface()) {
-
-
-                        GUIGraphicsUtils.drawWinBottom(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,columnWidth,rowHeight);
-
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinBottom(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-                     }
-                  }
-               break;
-
-               case TN5250jConstants.LOWER_RIGHT:
-                  if (sChar[0] == ':') {
-                     if (screen.isUsingGuiInterface()) {
-
-                        GUIGraphicsUtils.drawWinLowerRight(g,
-                                             GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                             bg,
-                                             x,y,columnWidth,rowHeight);
-
-                     }
-                     else {
-
-                        GUIGraphicsUtils.drawWinLowerRight(g,
-                                             GUIGraphicsUtils.WINDOW_NORMAL,
-                                             fg,
-                                             x,y,columnWidth,rowHeight);
-
-                     }
-                  }
-               break;
-
-            }
-         }
-
-         else {
-            if (sChar[0] != 0x0) {
-            // use this until we define colors for gui stuff
-               if ((useGui && whichGui < TN5250jConstants.BUTTON_LEFT) && (fg == colorGUIField))
-
-                  g.setColor(Color.black);
-               else
-                  g.setColor(fg);
-
-                  try {
-                     if (useGui)
-
-                        if (sChar[0] == 0x1C)
-                           g.drawChars(dupChar, 0, 1, x+1, cy -2);
-                        else
-                           g.drawChars(sChar, 0, 1, x+1, cy -2);
-                     else
-                        if (sChar[0] == 0x1C)
-                           g.drawChars(dupChar, 0, 1, x, cy -2);
-                        else
-                           g.drawChars(sChar, 0, 1, x, cy -2);
-                  }
-                  catch (IllegalArgumentException iae) {
-                     System.out.println(" drawChar iae " + iae.getMessage());
-
-                  }
-            }
-            if(underLine ) {
-
-               if (!useGui || guiShowUnderline) {
-                  g.setColor(fg);
-                  g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
-
-               }
-            }
-
-            if(colSep) {
-               g.setColor(colorSep);
-               switch (colSepLine) {
-                  case 0:  // line
-                     g.drawLine(x, y, x, y + rowHeight - 1);
-                     g.drawLine(x + columnWidth - 1, y, x + columnWidth - 1, y + rowHeight);
-                     break;
-                  case 1:  // short line
-                     g.drawLine(x,  y + rowHeight - (int)lm.getLeading()-4, x, y + rowHeight);
-                     g.drawLine(x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-4, x + columnWidth - 1, y + rowHeight);
-                     break;
-                  case 2:  // dot
-                     g.drawLine(x,  y + rowHeight - (int)lm.getLeading()-3, x, y + rowHeight - (int)lm.getLeading()-4);
-                     g.drawLine(x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-3, x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-4);
-                     break;
-                  case 3:  // hide
-                     break;
-               }
-            }
-         }
-      }
-
-      if (useGui & (whichGui >= TN5250jConstants.FIELD_LEFT)) {
-
-            switch (whichGui) {
-
-               case TN5250jConstants.FIELD_LEFT:
-                  GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.INSET, x,y,
-                                             columnWidth,rowHeight);
-
-               break;
-               case TN5250jConstants.FIELD_MIDDLE:
-                  GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.INSET, x,y,
-                                             columnWidth,rowHeight);
-               break;
-               case TN5250jConstants.FIELD_RIGHT:
-                  GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.INSET, x,y,
-                                             columnWidth,rowHeight);
-               break;
-
-               case TN5250jConstants.FIELD_ONE:
-                  GUIGraphicsUtils.draw3DOne(g, GUIGraphicsUtils.INSET, x,y,
-                                             columnWidth,rowHeight);
-
-               break;
-
-               case TN5250jConstants.BUTTON_LEFT:
-               case TN5250jConstants.BUTTON_LEFT_UP:
-               case TN5250jConstants.BUTTON_LEFT_DN:
-               case TN5250jConstants.BUTTON_LEFT_EB:
-
-                  GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.RAISED, x,y,
-                                             columnWidth,rowHeight);
-
-                  break;
-
-               case TN5250jConstants.BUTTON_MIDDLE:
-               case TN5250jConstants.BUTTON_MIDDLE_UP:
-               case TN5250jConstants.BUTTON_MIDDLE_DN:
-               case TN5250jConstants.BUTTON_MIDDLE_EB:
-
-                  GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.RAISED, x,y,
-                                             columnWidth,rowHeight);
-                  break;
-
-               case TN5250jConstants.BUTTON_RIGHT:
-               case TN5250jConstants.BUTTON_RIGHT_UP:
-               case TN5250jConstants.BUTTON_RIGHT_DN:
-               case TN5250jConstants.BUTTON_RIGHT_EB:
-
-                  GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.RAISED, x,y,
-                                             columnWidth,rowHeight);
-
-               break;
-
-               // scroll bar
-               case TN5250jConstants.BUTTON_SB_UP:
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x,y,
-                                             columnWidth,rowHeight,
-                                             colorWhite,colorBg);
-                  break;
-
-               // scroll bar
-               case TN5250jConstants.BUTTON_SB_DN:
-
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x,y,
-                                             columnWidth,rowHeight,
-                                             colorWhite,colorBg);
-
-
-                  break;
-               // scroll bar
-               case TN5250jConstants.BUTTON_SB_GUIDE:
-
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0,x,y,
-                                             columnWidth,rowHeight,
-                                             colorWhite,colorBg);
-
-
-                  break;
-
-               // scroll bar
-               case TN5250jConstants.BUTTON_SB_THUMB:
-
-                  GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3,x,y,
-                                             columnWidth,rowHeight,
-                                             colorWhite,colorBg);
-
-
-                  break;
-
-            }
-         }
-
-   }
-
-   public void onScreenSizeChanged(int rows, int cols) {
-      log.info("screen size change");
-      gui.resizeMe();
-   }
-
-   public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
-
-
-      if (which == 3 || which == 4) {
-//         log.info("cursor updated -> " +  sr + ", " + sc + "-> active " +
-//                        screen.cursorActive + " -> shown " + screen.cursorShown);
-         drawCursor(sr,sc);
-         return;
-      }
-
-      if (hotSpots)
-         screen.checkHotSpots();
-
-//      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
+	public synchronized void drawImageBuffer(Graphics2D gg2d) {
+
+		/**
+		 * @todo this is a hack and should be fixed at the root of the problem
+		 */
+		if (gg2d == null) {
+			log.debug(" we got a null graphic object ");
+			return;
+		}
+
+		//      synchronized (lock) {
+
+		gg2d.drawImage(bi,null,offLeft,offTop);
+		// tell waiting threads to wake up
+		//         lock.notifyAll();
+		//      }
+
+
+	}
+
+	/**
+	 * Returns a pointer to the graphics area that we can write on
+	 */
+	public Graphics2D getWritingArea(Font font) {
+
+		Graphics2D g2;
+		// we could be in the middle of creating the graphics because of the
+		//    threads, resizing etc....   so lets wait until we have one.
+		//    If this causes problems we should implement a thresh-hold of sorts
+		//    to keep an infinate loop from occurring.  So far not problems
+		//      try {
+		//         synchronized (lock) {
+		// wait until there is something to read
+		//            while (bi == null) {
+		//               log.debug( " bi = null wa ");
+		//               lock.wait();
+		//            }
+		// we have the lock and state we're seeking
+
+		g2 = bi.createGraphics();
+
+		if (g2 != null) {
+			if (antialiased)
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+						RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING,
+					RenderingHints.VALUE_COLOR_RENDER_SPEED);
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+					RenderingHints.VALUE_RENDER_SPEED);
+			g2.setFont(font);
+		}
+
+		// tell waiting threads to wake up
+		//            lock.notifyAll();
+		return g2;
+
+		//         }
+		//      }
+		//      catch (InterruptedException ie) {
+		//         log.warn("getWritingarea : " + ie.getMessage());
+		//         return null;
+		//      }
+	}
+
+	public void setUseAntialias(boolean antialiased) {
+		this.antialiased = antialiased;
+	}
+
+	private void setStatus(ScreenOIA oia) {
+
+		int attr = oia.getLevel();
+		int value = oia.getInputInhibited();
+		String s = oia.getInhibitedText();
+		Graphics2D g2d = getWritingArea(font);
+		//      log.info(attr + ", " + value + ", " + s);
+		if (g2d == null)
+			return;
+
+		try {
+			g2d.setColor(colorBg);
+			g2d.fill(sArea);
+
+			float Y = ((int)sArea.getY() + rowHeight)- (lm.getLeading() + lm.getDescent());
+
+			switch (attr) {
+
+			case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
+				if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
+					g2d.setColor(colorWhite);
+
+					if (s != null)
+						g2d.drawString(s,(float)sArea.getX(),Y);
+					else
+						g2d.drawString(xSystem,(float)sArea.getX(),Y);
+				}
+				break;
+			case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
+				if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
+					g2d.setColor(colorRed);
+
+					if (s != null)
+						g2d.drawString(s,(float)sArea.getX(),Y);
+					else
+						g2d.drawString(xError,(float)sArea.getX(),Y);
+
+				}
+				break;
+
+			}
+			updateImage(sArea.getBounds());
+			g2d.dispose();
+		}
+		catch (Exception e) {
+
+			log.warn(" gui graphics setStatus " + e.getMessage());
+
+		}
+	}
+
+	public final void drawChar(Graphics2D g, int pos, int row, int col) {
+		Rectangle csArea = new Rectangle();
+		char sChar[] = new char[1];
+		int attr = updateRect.attr[pos];
+		sChar[0] = updateRect.text[pos];
+		setDrawAttr(pos);
+		boolean attributePlace = updateRect.isAttr[pos] == 0 ? false : true;
+		int whichGui = updateRect.graphic[pos];
+		boolean useGui = whichGui == 0 ? false : true;
+
+		csArea = modelToView(row, col, csArea);
+
+		int x = csArea.x;
+		int y = csArea.y;
+		int cy = (int)(y + rowHeight - (lm.getDescent() + lm.getLeading()));
+
+		if (showHex && attributePlace) {
+			Font f = g.getFont();
+
+			Font k = f.deriveFont(f.getSize2D()/2);
+			g.setFont(k);
+			g.setColor(colorHexAttr);
+			char[] a = Integer.toHexString(attr).toCharArray();
+			g.drawChars(a, 0, 1, x, y + (rowHeight /2));
+			g.drawChars(a, 1, 1, x+(columnWidth/2),
+					(int)(y + rowHeight - (lm.getDescent() + lm.getLeading())-2));
+			g.setFont(f);
+		}
+
+		if(!nonDisplay && !attributePlace) {
+
+			if (!useGui) {
+				g.setColor(bg);
+				g.fill(csArea);
+			}
+			else {
+
+				if (bg == colorBg && whichGui >= TN5250jConstants.FIELD_LEFT && whichGui <= TN5250jConstants.FIELD_ONE)
+					g.setColor(colorGUIField);
+				else
+					g.setColor(bg);
+
+				g.fill(csArea);
+
+			}
+
+			if (useGui && (whichGui < TN5250jConstants.FIELD_LEFT)) {
+
+				g.setColor(fg);
+
+				switch (whichGui) {
+
+				case TN5250jConstants.UPPER_LEFT:
+					if (sChar[0] == '.') {
+						if (screen.isUsingGuiInterface()) {
+							GUIGraphicsUtils.drawWinUpperLeft(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									colorBlue,
+									x,y,columnWidth,rowHeight);
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinUpperLeft(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+
+						}
+					}
+					break;
+				case TN5250jConstants.UPPER:
+					if (sChar[0] == '.') {
+
+						if (screen.isUsingGuiInterface()) {
+							GUIGraphicsUtils.drawWinUpper(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									colorBlue,
+									x,y,columnWidth,rowHeight);
+
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinUpper(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+						}
+					}
+					break;
+				case TN5250jConstants.UPPER_RIGHT:
+					if (sChar[0] == '.') {
+						if (screen.isUsingGuiInterface()) {
+
+							GUIGraphicsUtils.drawWinUpperRight(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									colorBlue,
+									x,y,columnWidth,rowHeight);
+
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinUpperRight(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+
+						}
+					}
+					break;
+				case TN5250jConstants.GUI_LEFT:
+					if (sChar[0] == ':') {
+						if (screen.isUsingGuiInterface()) {
+							GUIGraphicsUtils.drawWinLeft(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									bg,
+									x,y,columnWidth,rowHeight);
+
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinLeft(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+
+							g.drawLine(x + columnWidth / 2,
+									y,
+									x + columnWidth / 2,
+									y + rowHeight);
+						}
+					}
+					break;
+				case TN5250jConstants.GUI_RIGHT:
+					if (sChar[0] == ':') {
+						if (screen.isUsingGuiInterface()) {
+							GUIGraphicsUtils.drawWinRight(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									bg,
+									x,y,columnWidth,rowHeight);
+
+
+						}
+						else {
+							GUIGraphicsUtils.drawWinRight(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+
+						}
+					}
+					break;
+				case TN5250jConstants.LOWER_LEFT:
+					if (sChar[0] == ':') {
+
+						if (screen.isUsingGuiInterface()) {
+
+							GUIGraphicsUtils.drawWinLowerLeft(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									bg,
+									x,y,columnWidth,rowHeight);
+
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinLowerLeft(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+						}
+					}
+					break;
+				case TN5250jConstants.BOTTOM:
+					if (sChar[0] == '.') {
+
+						if (screen.isUsingGuiInterface()) {
+
+
+							GUIGraphicsUtils.drawWinBottom(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									bg,
+									x,y,columnWidth,rowHeight);
+
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinBottom(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+						}
+					}
+					break;
+
+				case TN5250jConstants.LOWER_RIGHT:
+					if (sChar[0] == ':') {
+						if (screen.isUsingGuiInterface()) {
+
+							GUIGraphicsUtils.drawWinLowerRight(g,
+									GUIGraphicsUtils.WINDOW_GRAPHIC,
+									bg,
+									x,y,columnWidth,rowHeight);
+
+						}
+						else {
+
+							GUIGraphicsUtils.drawWinLowerRight(g,
+									GUIGraphicsUtils.WINDOW_NORMAL,
+									fg,
+									x,y,columnWidth,rowHeight);
+
+						}
+					}
+					break;
+
+				}
+			}
+
+			else {
+				if (sChar[0] != 0x0) {
+					// use this until we define colors for gui stuff
+					if ((useGui && whichGui < TN5250jConstants.BUTTON_LEFT) && (fg == colorGUIField))
+
+						g.setColor(Color.black);
+					else
+						g.setColor(fg);
+
+					try {
+						if (useGui)
+
+							if (sChar[0] == 0x1C)
+								g.drawChars(dupChar, 0, 1, x+1, cy -2);
+							else
+								g.drawChars(sChar, 0, 1, x+1, cy -2);
+						else
+							if (sChar[0] == 0x1C)
+								g.drawChars(dupChar, 0, 1, x, cy -2);
+							else
+								g.drawChars(sChar, 0, 1, x, cy -2);
+					}
+					catch (IllegalArgumentException iae) {
+						System.out.println(" drawChar iae " + iae.getMessage());
+
+					}
+				}
+				if(underLine ) {
+
+					if (!useGui || cfg_guiShowUnderline) {
+						g.setColor(fg);
+						g.drawLine(x, (int)(y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (x + columnWidth), (int)(y + (rowHeight -(lm.getLeading() + lm.getDescent()))));
+
+					}
+				}
+
+				if(colSep) {
+					g.setColor(colorSep);
+					switch (colSepLine) {
+					case Line:  // line
+						g.drawLine(x, y, x, y + rowHeight - 1);
+						g.drawLine(x + columnWidth - 1, y, x + columnWidth - 1, y + rowHeight);
+						break;
+					case ShortLine:  // short line
+						g.drawLine(x,  y + rowHeight - (int)lm.getLeading()-4, x, y + rowHeight);
+						g.drawLine(x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-4, x + columnWidth - 1, y + rowHeight);
+						break;
+					case Dot:  // dot
+						g.drawLine(x,  y + rowHeight - (int)lm.getLeading()-3, x, y + rowHeight - (int)lm.getLeading()-4);
+						g.drawLine(x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-3, x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-4);
+						break;
+					case Hide:  // hide
+						break;
+					}
+				}
+			}
+		}
+
+		if (useGui & (whichGui >= TN5250jConstants.FIELD_LEFT)) {
+
+			switch (whichGui) {
+
+			case TN5250jConstants.FIELD_LEFT:
+				GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.INSET, x,y,
+						columnWidth,rowHeight);
+
+				break;
+			case TN5250jConstants.FIELD_MIDDLE:
+				GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.INSET, x,y,
+						columnWidth,rowHeight);
+				break;
+			case TN5250jConstants.FIELD_RIGHT:
+				GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.INSET, x,y,
+						columnWidth,rowHeight);
+				break;
+
+			case TN5250jConstants.FIELD_ONE:
+				GUIGraphicsUtils.draw3DOne(g, GUIGraphicsUtils.INSET, x,y,
+						columnWidth,rowHeight);
+
+				break;
+
+			case TN5250jConstants.BUTTON_LEFT:
+			case TN5250jConstants.BUTTON_LEFT_UP:
+			case TN5250jConstants.BUTTON_LEFT_DN:
+			case TN5250jConstants.BUTTON_LEFT_EB:
+
+				GUIGraphicsUtils.draw3DLeft(g, GUIGraphicsUtils.RAISED, x,y,
+						columnWidth,rowHeight);
+
+				break;
+
+			case TN5250jConstants.BUTTON_MIDDLE:
+			case TN5250jConstants.BUTTON_MIDDLE_UP:
+			case TN5250jConstants.BUTTON_MIDDLE_DN:
+			case TN5250jConstants.BUTTON_MIDDLE_EB:
+
+				GUIGraphicsUtils.draw3DMiddle(g, GUIGraphicsUtils.RAISED, x,y,
+						columnWidth,rowHeight);
+				break;
+
+			case TN5250jConstants.BUTTON_RIGHT:
+			case TN5250jConstants.BUTTON_RIGHT_UP:
+			case TN5250jConstants.BUTTON_RIGHT_DN:
+			case TN5250jConstants.BUTTON_RIGHT_EB:
+
+				GUIGraphicsUtils.draw3DRight(g, GUIGraphicsUtils.RAISED, x,y,
+						columnWidth,rowHeight);
+
+				break;
+
+				// scroll bar
+			case TN5250jConstants.BUTTON_SB_UP:
+				GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x,y,
+						columnWidth,rowHeight,
+						colorWhite,colorBg);
+				break;
+
+				// scroll bar
+			case TN5250jConstants.BUTTON_SB_DN:
+
+				GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x,y,
+						columnWidth,rowHeight,
+						colorWhite,colorBg);
+
+
+				break;
+				// scroll bar
+			case TN5250jConstants.BUTTON_SB_GUIDE:
+
+				GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0,x,y,
+						columnWidth,rowHeight,
+						colorWhite,colorBg);
+
+
+				break;
+
+				// scroll bar
+			case TN5250jConstants.BUTTON_SB_THUMB:
+
+				GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3,x,y,
+						columnWidth,rowHeight,
+						colorWhite,colorBg);
+
+
+				break;
+
+			}
+		}
+
+	}
+
+	public void onScreenSizeChanged(int rows, int cols) {
+		log.info("screen size change");
+		gui.resizeMe();
+	}
+
+	public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
+
+
+		if (which == 3 || which == 4) {
+			//         log.info("cursor updated -> " +  sr + ", " + sc + "-> active " +
+			//                        screen.cursorActive + " -> shown " + screen.cursorShown);
+			drawCursor(sr,sc);
+			return;
+		}
+
+		if (hotSpots)
+			screen.checkHotSpots();
+
+		//      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
 
 		int cols = 0;
 		int lc = 0;
 
 
-      updateRect = new Data (sr,sc,er,ec);
+		updateRect = new Data (sr,sc,er,ec);
 
-      Rectangle clipper = new Rectangle();
+		Rectangle clipper = new Rectangle();
 
-      int pos = 0;
+		int pos = 0;
 
-      lc = ec;
-      clipper.x      =   sc * columnWidth;
-      clipper.y      =   sr * rowHeight;
-      clipper.width  = ((ec - sc) + 1) * columnWidth;
-      clipper.height =  ((er - sr ) + 1) * rowHeight;
+		lc = ec;
+		clipper.x      =   sc * columnWidth;
+		clipper.y      =   sr * rowHeight;
+		clipper.width  = ((ec - sc) + 1) * columnWidth;
+		clipper.height =  ((er - sr ) + 1) * rowHeight;
 
-      gg2d.setClip(clipper.getBounds());
+		gg2d.setClip(clipper.getBounds());
 
 		gg2d.setColor(colorBg);
 
@@ -1851,316 +1830,307 @@ public class GuiGraphicBuffer implements ScreenOIAListener, ScreenListener,
 			while (cols-- >= 0) {
 				if (sc + cols <= ec) {
 					drawChar(gg2d,pos++,sr,lc);
-               lc++;
+					lc++;
 				}
 			}
 			sr++;
 		}
 
-//      System.out.println(" clipping from screen change " + clipper
-//                        + " clipping region of paint " + gg2d.getClipBounds());
+		//      System.out.println(" clipping from screen change " + clipper
+		//                        + " clipping region of paint " + gg2d.getClipBounds());
 
-      updateImage(clipper);
+		updateImage(clipper);
 
-   }
+	}
 
-   public void onOIAChanged(ScreenOIA changedOIA, int change) {
+	public void onOIAChanged(ScreenOIA changedOIA, int change) {
 
-      switch (changedOIA.getLevel()) {
+		switch (changedOIA.getLevel()) {
 
-         case ScreenOIA.OIA_LEVEL_KEYS_BUFFERED:
-            if (changedOIA.isKeysBuffered()) {
-               Graphics2D g2d = getWritingArea(font);
-               float Y = (rowHeight * (screen.getRows() + 2))
-                     - (lm.getLeading() + lm.getDescent());
-               g2d.setColor(colorYellow);
-               g2d.drawString("KB", (float) kbArea.getX(), Y);
+		case ScreenOIA.OIA_LEVEL_KEYS_BUFFERED:
+			if (changedOIA.isKeysBuffered()) {
+				Graphics2D g2d = getWritingArea(font);
+				float Y = (rowHeight * (screen.getRows() + 2))
+				- (lm.getLeading() + lm.getDescent());
+				g2d.setColor(colorYellow);
+				g2d.drawString("KB", (float) kbArea.getX(), Y);
 
-               updateImage(kbArea.getBounds());
-               g2d.dispose();
-            }
-            else {
+				updateImage(kbArea.getBounds());
+				g2d.dispose();
+			}
+			else {
 
-               Graphics2D g2d = getWritingArea(font);
+				Graphics2D g2d = getWritingArea(font);
 
-               g2d.setColor(colorBg);
-               g2d.fill(kbArea);
-               updateImage(kbArea.getBounds());
-               g2d.dispose();
-
-
-            }
-            break;
-         case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_OFF:
-            Graphics2D g2d = getWritingArea(font);
-
-            g2d.setColor(colorBg);
-            g2d.fill(mArea);
-            updateImage(mArea.getBounds());
-            g2d.dispose();
-            break;
-         case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_ON:
-            g2d = getWritingArea(font);
-            float Y = (rowHeight * (screen.getRows() + 2))
-                  - (lm.getLeading() + lm.getDescent());
-            g2d.setColor(colorBlue);
-            g2d.drawString("MW", (float) mArea.getX(), Y);
-            updateImage(mArea.getBounds());
-            g2d.dispose();
-            break;
-         case ScreenOIA.OIA_LEVEL_SCRIPT:
-            if (changedOIA.isScriptActive()) {
-               drawScriptRunning(colorGreen);
-               updateImage(scriptArea.getBounds());
-            }
-            else {
-               eraseScriptRunning(colorBg);
-               updateImage(scriptArea.getBounds());
-
-            }
-            break;
-         case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
-         case ScreenOIA.OIA_LEVEL_NOT_INHIBITED:
-         case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
-            setStatus(changedOIA);
-            break;
-         case ScreenOIA.OIA_LEVEL_INSERT_MODE:
-            if (changedOIA.isInsertMode()) {
-               g2d = getWritingArea(font);
-               Y = (rowHeight * (screen.getRows() + 2))
-                     - (lm.getLeading() + lm.getDescent());
-               g2d.setColor(colorBlue);
-               g2d.drawLine((int)iArea.getX(),(int)Y,(int)(iArea.getX() + ((iArea.getWidth()/2)-1)),(int)(Y-(rowHeight/2)));
-               g2d.drawLine((int)(iArea.getX() + iArea.getWidth()-1),(int)Y,(int)(iArea.getX() + (iArea.getWidth()/2)),(int)(Y-(rowHeight/2)));
-               //g2d.drawString("I", (float) iArea.getX(), Y);
-
-               updateImage(iArea.getBounds());
-               g2d.dispose();
-            }
-            else {
-
-               g2d = getWritingArea(font);
-
-               g2d.setColor(colorBg);
-               g2d.fill(iArea);
-               updateImage(iArea.getBounds());
-               g2d.dispose();
-
-            }
-            break;
-
-      }
-   }
-
-   /**
-    * get the
-    */
-   public Rectangle2D getTextArea () {
-      return tArea;
-   }
-
-   public Rectangle2D getScreenArea () {
-      return aArea;
-   }
-
-   public Rectangle2D getCommandLineArea () {
-      return cArea;
-   }
-
-   public Rectangle2D getStatusArea () {
-      return sArea;
-   }
-
-   public Rectangle2D getPositionArea () {
-      return pArea;
-   }
-
-   public Rectangle2D getMessageArea () {
-      return mArea;
-   }
-
-   public Rectangle2D getInsertIndicatorArea () {
-      return iArea;
-   }
-
-   public Rectangle2D getKBIndicatorArea () {
-      return kbArea;
-   }
-
-   public Rectangle2D getScriptIndicatorArea () {
-      return scriptArea;
-   }
-
-   public int getWidth() {
-
-      synchronized (lock) {
-         // tell waiting threads to wake up
-         lock.notifyAll();
-         return bi.getWidth();
-      }
-
-   }
-   public int getHeight() {
-
-      synchronized (lock) {
-         // tell waiting threads to wake up
-         lock.notifyAll();
-         return bi.getHeight();
-      }
-   }
-   public int getWidth(ImageObserver io) {
-
-      synchronized (lock) {
-         // tell waiting threads to wake up
-         lock.notifyAll();
-         return bi.getWidth(io);
-      }
-   }
-
-   public int getHeight(ImageObserver io) {
-
-      synchronized (lock) {
-         // tell waiting threads to wake up
-         lock.notifyAll();
-         return bi.getHeight(io);
-      }
-   }
+				g2d.setColor(colorBg);
+				g2d.fill(kbArea);
+				updateImage(kbArea.getBounds());
+				g2d.dispose();
 
 
-   protected Data fillData(int startRow, int startCol, int endRow, int endCol) {
+			}
+			break;
+		case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_OFF:
+			Graphics2D g2d = getWritingArea(font);
 
-      return new Data(startRow, startCol, endRow, endCol );
+			g2d.setColor(colorBg);
+			g2d.fill(mArea);
+			updateImage(mArea.getBounds());
+			g2d.dispose();
+			break;
+		case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_ON:
+			g2d = getWritingArea(font);
+			float Y = (rowHeight * (screen.getRows() + 2))
+			- (lm.getLeading() + lm.getDescent());
+			g2d.setColor(colorBlue);
+			g2d.drawString("MW", (float) mArea.getX(), Y);
+			updateImage(mArea.getBounds());
+			g2d.dispose();
+			break;
+		case ScreenOIA.OIA_LEVEL_SCRIPT:
+			if (changedOIA.isScriptActive()) {
+				drawScriptRunning(colorGreen);
+				updateImage(scriptArea.getBounds());
+			}
+			else {
+				eraseScriptRunning(colorBg);
+				updateImage(scriptArea.getBounds());
 
-   }
+			}
+			break;
+		case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
+		case ScreenOIA.OIA_LEVEL_NOT_INHIBITED:
+		case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
+			setStatus(changedOIA);
+			break;
+		case ScreenOIA.OIA_LEVEL_INSERT_MODE:
+			if (changedOIA.isInsertMode()) {
+				g2d = getWritingArea(font);
+				Y = (rowHeight * (screen.getRows() + 2))
+				- (lm.getLeading() + lm.getDescent());
+				g2d.setColor(colorBlue);
+				g2d.drawLine((int)iArea.getX(),(int)Y,(int)(iArea.getX() + ((iArea.getWidth()/2)-1)),(int)(Y-(rowHeight/2)));
+				g2d.drawLine((int)(iArea.getX() + iArea.getWidth()-1),(int)Y,(int)(iArea.getX() + (iArea.getWidth()/2)),(int)(Y-(rowHeight/2)));
+				//g2d.drawString("I", (float) iArea.getX(), Y);
 
-   Rectangle csArea = new Rectangle();
-   char sChar[] = new char[1];
+				updateImage(iArea.getBounds());
+				g2d.dispose();
+			}
+			else {
 
-   protected class Data {
+				g2d = getWritingArea(font);
+
+				g2d.setColor(colorBg);
+				g2d.fill(iArea);
+				updateImage(iArea.getBounds());
+				g2d.dispose();
+
+			}
+			break;
+
+		}
+	}
+
+	/**
+	 * get the
+	 */
+	public Rectangle2D getTextArea () {
+		return tArea;
+	}
+
+	public Rectangle2D getScreenArea () {
+		return aArea;
+	}
+
+	public Rectangle2D getCommandLineArea () {
+		return cArea;
+	}
+
+	public Rectangle2D getStatusArea () {
+		return sArea;
+	}
+
+	public Rectangle2D getPositionArea () {
+		return pArea;
+	}
+
+	public Rectangle2D getMessageArea () {
+		return mArea;
+	}
+
+	public Rectangle2D getInsertIndicatorArea () {
+		return iArea;
+	}
+
+	public Rectangle2D getKBIndicatorArea () {
+		return kbArea;
+	}
+
+	public Rectangle2D getScriptIndicatorArea () {
+		return scriptArea;
+	}
+
+	public int getWidth() {
+
+		synchronized (lock) {
+			// tell waiting threads to wake up
+			lock.notifyAll();
+			return bi.getWidth();
+		}
+
+	}
+	public int getHeight() {
+
+		synchronized (lock) {
+			// tell waiting threads to wake up
+			lock.notifyAll();
+			return bi.getHeight();
+		}
+	}
+	public int getWidth(ImageObserver io) {
+
+		synchronized (lock) {
+			// tell waiting threads to wake up
+			lock.notifyAll();
+			return bi.getWidth(io);
+		}
+	}
+
+	public int getHeight(ImageObserver io) {
+
+		synchronized (lock) {
+			// tell waiting threads to wake up
+			lock.notifyAll();
+			return bi.getHeight(io);
+		}
+	}
 
 
-      public Data(char[] text, char[] attr, char[] color, char[] extended, char[] graphic) {
-         this.text = text;
-         this.color = color;
-         this.extended = extended;
-         this.graphic = graphic;
-         this.attr = attr;
-         this.field = null;
-      }
+	protected Data fillData(int startRow, int startCol, int endRow, int endCol) {
 
-      public Data(int startRow, int startCol, int endRow, int endCol) {
-         startRow++;
-         startCol++;
-         endRow++;
-         endCol++;
-         int size = ((endCol - startCol) + 1) * ((endRow - startRow) +1);
+		return new Data(startRow, startCol, endRow, endCol );
 
-         text = new char[size];
-         attr = new char[size];
-         isAttr = new char[size];
-         color = new char[size];
-         extended =new char[size];
-         graphic = new char[size];
-         field = new char[size];
+	}
 
-         if (size == lenScreen) {
-	         screen.GetScreen(text, size, TN5250jConstants.PLANE_TEXT);
-	         screen.GetScreen(attr, size, TN5250jConstants.PLANE_ATTR);
-	         screen.GetScreen(isAttr, size, TN5250jConstants.PLANE_IS_ATTR_PLACE);
-	         screen.GetScreen(color, size, TN5250jConstants.PLANE_COLOR);
-	         screen.GetScreen(extended, size, TN5250jConstants.PLANE_EXTENDED);
-	         screen.GetScreen(graphic, size, TN5250jConstants.PLANE_EXTENDED_GRAPHIC);
-	         screen.GetScreen(field, size, TN5250jConstants.PLANE_FIELD);
-         }
-         else {
-	         screen.GetScreenRect(text, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_TEXT);
-	         screen.GetScreenRect(attr, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_ATTR);
-	         screen.GetScreenRect(isAttr, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_IS_ATTR_PLACE);
-	         screen.GetScreenRect(color, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_COLOR);
-	         screen.GetScreenRect(extended, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_EXTENDED);
-	         screen.GetScreenRect(graphic, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_EXTENDED_GRAPHIC);
-	         screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_FIELD);
-         }
-      }
+	protected class Data {
 
-      public char[] text;
-      public char[] attr;
-      public char[] isAttr;
-      public char[] color;
-      public char[] extended;
-      public final char[] graphic;
-      public final char[] field;
-   }
 
-   public final Rectangle modelToView(int row, int col)
-   {
-     return modelToView(row, col, new Rectangle());
-   }
+		public Data(char[] text, char[] attr, char[] color, char[] extended, char[] graphic) {
+			this.text = text;
+			this.color = color;
+			this.extended = extended;
+			this.graphic = graphic;
+			this.attr = attr;
+			this.field = null;
+		}
 
-   public final Rectangle modelToView(int row, int col, Rectangle r) {
+		public Data(int startRow, int startCol, int endRow, int endCol) {
+			startRow++;
+			startCol++;
+			endRow++;
+			endCol++;
+			int size = ((endCol - startCol) + 1) * ((endRow - startRow) +1);
 
-      // right now row and column is 1,1 offset based.  This will need
-      //   to be changed to 0,0 offset based by subtracting 1 from them
-      //   when the screen is being passed this way
-//     r.x      =  (col - 1) * columnWidth;
-//     r.y      =  (row - 1) * rowHeight;
-     r.x      =  col * columnWidth;
-     r.y      =  row * rowHeight;
-     r.width  = columnWidth;
-     r.height = rowHeight;
-     return r;
-   }
+			text = new char[size];
+			attr = new char[size];
+			isAttr = new char[size];
+			color = new char[size];
+			extended =new char[size];
+			graphic = new char[size];
+			field = new char[size];
 
-   protected Color getColor(char color, boolean background) {
-      int c = 0;
-      if (background)
-         // background
-         c = (color & 0xff00) >> 8;
-      else
-         // foreground
-         c = color & 0x00ff;
+			if (size == lenScreen) {
+				screen.GetScreen(text, size, TN5250jConstants.PLANE_TEXT);
+				screen.GetScreen(attr, size, TN5250jConstants.PLANE_ATTR);
+				screen.GetScreen(isAttr, size, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+				screen.GetScreen(color, size, TN5250jConstants.PLANE_COLOR);
+				screen.GetScreen(extended, size, TN5250jConstants.PLANE_EXTENDED);
+				screen.GetScreen(graphic, size, TN5250jConstants.PLANE_EXTENDED_GRAPHIC);
+				screen.GetScreen(field, size, TN5250jConstants.PLANE_FIELD);
+			}
+			else {
+				screen.GetScreenRect(text, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_TEXT);
+				screen.GetScreenRect(attr, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_ATTR);
+				screen.GetScreenRect(isAttr, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+				screen.GetScreenRect(color, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_COLOR);
+				screen.GetScreenRect(extended, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_EXTENDED);
+				screen.GetScreenRect(graphic, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_EXTENDED_GRAPHIC);
+				screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_FIELD);
+			}
+		}
 
-      switch (c) {
-         case TN5250jConstants.COLOR_FG_BLACK:
-            return colorBg;
-         case TN5250jConstants.COLOR_FG_GREEN:
-            return colorGreen;
-         case TN5250jConstants.COLOR_FG_BLUE:
-            return colorBlue;
-         case TN5250jConstants.COLOR_FG_RED:
-            return colorRed;
-         case TN5250jConstants.COLOR_FG_YELLOW:
-            return colorYellow;
-         case TN5250jConstants.COLOR_FG_CYAN:
-            return colorTurq;
-         case TN5250jConstants.COLOR_FG_WHITE:
-            return colorWhite;
-         case TN5250jConstants.COLOR_FG_MAGENTA:
-            return colorPink;
-         default:
-           return Color.orange;
-      }
-   }
+		public char[] text;
+		public char[] attr;
+		public char[] isAttr;
+		public char[] color;
+		public char[] extended;
+		public final char[] graphic;
+		public final char[] field;
+	}
 
-   boolean      colSep = false;
-   boolean   underLine = false;
-   boolean   nonDisplay = false;
-   Color fg;
-   Color bg;
+	public final Rectangle modelToView(int row, int col)
+	{
+		return modelToView(row, col, new Rectangle());
+	}
 
-   private void setDrawAttr(int pos) {
+	public final Rectangle modelToView(int row, int col, Rectangle r) {
 
-      colSep = false;
-      underLine = false;
-      nonDisplay = false;
+		// right now row and column is 1,1 offset based.  This will need
+		//   to be changed to 0,0 offset based by subtracting 1 from them
+		//   when the screen is being passed this way
+		//     r.x      =  (col - 1) * columnWidth;
+		//     r.y      =  (row - 1) * rowHeight;
+		r.x      =  col * columnWidth;
+		r.y      =  row * rowHeight;
+		r.width  = columnWidth;
+		r.height = rowHeight;
+		return r;
+	}
 
-      fg = getColor(updateRect.color[pos],false);
-      bg = getColor(updateRect.color[pos],true);
-      underLine = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0;
-      colSep = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_COL_SEP) != 0;
-      nonDisplay = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_NON_DSP) != 0;
+	protected Color getColor(char color, boolean background) {
+		int c = 0;
+		if (background)
+			// background
+			c = (color & 0xff00) >> 8;
+				else
+					// foreground
+					c = color & 0x00ff;
 
-   }
+				switch (c) {
+				case TN5250jConstants.COLOR_FG_BLACK:
+					return colorBg;
+				case TN5250jConstants.COLOR_FG_GREEN:
+					return colorGreen;
+				case TN5250jConstants.COLOR_FG_BLUE:
+					return colorBlue;
+				case TN5250jConstants.COLOR_FG_RED:
+					return colorRed;
+				case TN5250jConstants.COLOR_FG_YELLOW:
+					return colorYellow;
+				case TN5250jConstants.COLOR_FG_CYAN:
+					return colorTurq;
+				case TN5250jConstants.COLOR_FG_WHITE:
+					return colorWhite;
+				case TN5250jConstants.COLOR_FG_MAGENTA:
+					return colorPink;
+				default:
+					return Color.orange;
+				}
+	}
+
+	private void setDrawAttr(int pos) {
+
+		colSep = false;
+		underLine = false;
+		nonDisplay = false;
+
+		fg = getColor(updateRect.color[pos],false);
+		bg = getColor(updateRect.color[pos],true);
+		underLine = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0;
+		colSep = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_COL_SEP) != 0;
+		nonDisplay = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_NON_DSP) != 0;
+
+	}
 
 
 }

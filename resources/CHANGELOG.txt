@@ -5,9 +5,10 @@
 --- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
 ADD: center connect dialog on top of main frame/window
-FIX: uncheck confirmTabClose in properties
+FIX: unchecked confirmTabClose in properties (JSE6 only)
+FIX: bug id:3160345 (Default value of column separator looks strange)
 FIX: bug id:3158902 (settings folder in user's home directory is not created)
-CHG: removed old images
+CHG: removed old images (JSE6 only)
 
 --- v0.6.2 ----------------------------------------------------- 08/12/2010 ---
 
