@@ -40,6 +40,11 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
+import static org.tn5250j.settings.ColumnSeparator.Line;
+import static org.tn5250j.settings.ColumnSeparator.Hide;
+import static org.tn5250j.settings.ColumnSeparator.ShortLine;
+import static org.tn5250j.settings.ColumnSeparator.Dot;
+
 public class DisplayAttributesPanel extends AttributesPanel {
 
 	private static final String NO = "No";
@@ -89,14 +94,10 @@ public class DisplayAttributesPanel extends AttributesPanel {
 		csGroup.add(csDot);
 		csGroup.add(csShortLine);
 
-		if (getStringProperty("colSeparator").equals("Line"))
-			csLine.setSelected(true);
-		else if (getStringProperty("colSeparator").equals("Dot"))
-			csDot.setSelected(true);
-		else if (getStringProperty("colSeparator").equals("ShortLine"))
-			csShortLine.setSelected(true);
-		else
-			csHide.setSelected(true);
+		csLine.setSelected(Line == ColumnSeparator.getFromName(getStringProperty("colSeparator")));
+		csDot.setSelected(Dot == ColumnSeparator.getFromName(getStringProperty("colSeparator")));
+		csShortLine.setSelected(ShortLine == ColumnSeparator.getFromName(getStringProperty("colSeparator")));
+		csHide.setSelected(Hide == ColumnSeparator.getFromName(getStringProperty("colSeparator")));
 
 		csp.add(csHide);
 		csp.add(csLine);

@@ -51,6 +51,7 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
+import org.tn5250j.settings.ColumnSeparator;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -119,7 +120,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private int cursorBottOffset;
 	private boolean rulerFixed;
 	private javax.swing.Timer blinker;
-	private int colSepLine = 0;
+	private ColumnSeparator colSepLine;
 	private final StringBuffer hsMore = new StringBuffer("More...");
 	private final StringBuffer hsBottom = new StringBuffer("Bottom");
 	private Rectangle workR = new Rectangle();
@@ -327,16 +328,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 		loadColors();
 
-		if (config.isPropertyExists("colSeparator")) {
-			if (getStringProperty("colSeparator").equals("Line"))
-				colSepLine = 0;
-			if (getStringProperty("colSeparator").equals("ShortLine"))
-				colSepLine = 1;
-			if (getStringProperty("colSeparator").equals("Dot"))
-				colSepLine = 2;
-			if (getStringProperty("colSeparator").equals("Hide"))
-				colSepLine = 3;
-		}
+		colSepLine = ColumnSeparator.getFromName(getStringProperty("colSeparator"));
 
 		if (config.isPropertyExists("showAttr")) {
 			if (getStringProperty("showAttr").equals("Hex"))
@@ -380,17 +372,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 				hsBottom.setLength(0);
 				hsBottom.append(getStringProperty("hsBottom"));
 			}
-		}
-
-		if (config.isPropertyExists("colSeparator")) {
-			if (getStringProperty("colSeparator").equals("Line"))
-				colSepLine = 0;
-			if (getStringProperty("colSeparator").equals("ShortLine"))
-				colSepLine = 1;
-			if (getStringProperty("colSeparator").equals("Dot"))
-				colSepLine = 2;
-			if (getStringProperty("colSeparator").equals("Hide"))
-				colSepLine = 3;
 		}
 
 		if (config.isPropertyExists("cursorSize")) {
@@ -601,16 +582,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 				rulerFixed = false;
 		}
 
-		if (pn.equals("colSeparator")) {
-			if (pce.getNewValue().equals("Line"))
-				colSepLine = 0;
-			if (pce.getNewValue().equals("ShortLine"))
-				colSepLine = 1;
-			if (pce.getNewValue().equals("Dot"))
-				colSepLine = 2;
-			if (pce.getNewValue().equals("Hide"))
-				colSepLine = 3;
-		}
+		colSepLine = ColumnSeparator.getFromName(pce.getNewValue().toString());
 
 		if (pn.equals("showAttr")) {
 			if (pce.getNewValue().equals("Hex"))
@@ -1699,19 +1671,19 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 				if(colSep) {
 					g.setColor(colorSep);
 					switch (colSepLine) {
-					case 0:  // line
+					case Line:  // line
 					g.drawLine(x, y, x, y + rowHeight - 1);
 					g.drawLine(x + columnWidth - 1, y, x + columnWidth - 1, y + rowHeight);
 					break;
-					case 1:  // short line
+					case ShortLine:  // short line
 						g.drawLine(x,  y + rowHeight - (int)lm.getLeading()-4, x, y + rowHeight);
 						g.drawLine(x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-4, x + columnWidth - 1, y + rowHeight);
 						break;
-					case 2:  // dot
+					case Dot:  // dot
 						g.drawLine(x,  y + rowHeight - (int)lm.getLeading()-3, x, y + rowHeight - (int)lm.getLeading()-4);
 						g.drawLine(x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-3, x + columnWidth - 1, y + rowHeight - (int)lm.getLeading()-4);
 						break;
-					case 3:  // hide
+					case Hide:  // hide
 						break;
 					}
 				}
