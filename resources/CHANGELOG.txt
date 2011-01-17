@@ -5,14 +5,15 @@
 --- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
 ADD: About dialog/tab (JSE6 only)
+ADD: new feature, open URL (marked text) in external browser (JSE6 only)
 ADD: center connect dialog on top of main frame/window
-ADD: new feature, open URL (marked text) in external browser
-FIX: uncheck confirmTabClose in properties
+FIX: unchecked confirmTabClose in properties (JSE6 only)
+FIX: bug id:3160345 (Default value of column separator looks strange)
 FIX: bug id:3158911 (command line switch -s not working any more)
 FIX: bug id:3158902 (settings folder in user's home directory is not created)
 FIX: bug id:3155293 (hangs when called with explicit host name)
-FIX: reworked internal code for debugging
-CHG: removed old images
+FIX: reworked internal code for debugging (JSE6 only)
+CHG: removed old images (JSE6 only)
 
 --- v0.6.2 ----------------------------------------------------- 08/12/2010 ---
 
