@@ -48,7 +48,6 @@ import static org.tn5250j.TN5250jConstants.MNEMONIC_SPOOL_FILE;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_SYSREQ;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_TOGGLE_CONNECTION;
 
-import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
@@ -62,11 +61,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -99,9 +96,6 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * Custom
  */
 public class SessionPopup {
-
-	// private static final String SIMPLE_URL_CHECK = "((mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
-	private static final String SIMPLE_URL_CHECK = "((((ht|f)tp(s?))\\://){1}\\S+)";
 
 	private final Screen5250 screen;
 	private final SessionPanel sessiongui;
@@ -246,26 +240,6 @@ public class SessionPopup {
 				};
 				sumMenu.add(action);
 
-			}
-
-			// open URL
-			{
-				if (Desktop.isDesktopSupported()) {
-					final String textcontent = screen.copyText(sessiongui.getBoundingArea());
-					if (textcontent != null && textcontent.trim().length() > 0
-							&& Pattern.matches(SIMPLE_URL_CHECK, textcontent.trim())) {
-						JMenuItem mi = new JMenuItem("Open in browser");
-						Action a = new AbstractAction("Open in browser") {
-							private static final long serialVersionUID = 1L;
-							public void actionPerformed(ActionEvent e) {
-								openInBrowser(textcontent.trim());
-							}
-						};
-						mi.setArmed(false);
-						mi.setAction(a);
-						popup.add(mi);
-					}
-				}
 			}
 
 			popup.addSeparator();
@@ -679,23 +653,6 @@ public class SessionPopup {
 			mi.setText(LangTool.getString("key." + (String)map.get(allKeys[x])));
 			mi.setAccelerator(allKeys[x]);
 			sm.add(mi);
-		}
-	}
-
-	/**
-	 * @param uristring
-	 */
-	private void openInBrowser(String uristring) {
-		if (!Desktop.isDesktopSupported()) {
-			log.warn("Java Desktop API not supported.");
-			return;
-		}
-		Desktop d = Desktop.getDesktop();
-		try {
-			URI uri = new URI(uristring);
-			d.browse(uri);
-		} catch (Exception e) {
-			log.error("Error while opening uri: "+uristring, e);
 		}
 	}
 
