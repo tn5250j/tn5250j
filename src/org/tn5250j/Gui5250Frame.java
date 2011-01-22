@@ -194,11 +194,12 @@ public class Gui5250Frame extends GUIViewInterface implements
     */
    private void setSessionTitle(final SessionGUI session) {
       if (session != null) {
-         if (session.getAllocDeviceName() != null && session.isConnected()) {
+        final String name = determineTabName(session);
+		if (name != null && session.isConnected()) {
             if (sequence - 1 > 0)
-               setTitle(session.getAllocDeviceName() + " - tn5250j <" + sequence + ">");
+               setTitle(name + " - tn5250j <" + sequence + ">");
             else
-               setTitle(session.getAllocDeviceName() + " - tn5250j");
+               setTitle(name + " - tn5250j");
          }
          else {
             if (sequence - 1 > 0)
@@ -210,6 +211,28 @@ public class Gui5250Frame extends GUIViewInterface implements
          setTitle("tn5250j");
       }
    }
+
+	/**
+	 * Determines the name, which is configured for one tab ({@link SessionGUI})
+	 * 
+	 * @param sessiongui
+	 * @return
+	 * @NotNull
+	 */
+	private String determineTabName(final SessionGUI sessiongui) {
+		assert sessiongui != null;
+		final String name;
+		if (sessiongui.getSession().isUseSystemName()) {
+			name = sessiongui.getHostName();
+		} else {
+			if (sessiongui.getAllocDeviceName() != null) {
+				name = sessiongui.getAllocDeviceName();
+			} else {
+				name = sessiongui.getSessionName();
+			}
+		}
+		return name;
+	}
    
    /**
     * Sets the main frame title to the same as the current selected tab's title.
@@ -259,10 +282,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 
             createTabWithSessionContent(tabText, firstsesgui, false);
 
-            if (firstsesgui.getAllocDeviceName() != null)
-               sessionPane.setTitleAt(0,firstsesgui.getAllocDeviceName());
-            else
-               sessionPane.setTitleAt(0,firstsesgui.getSessionName());
+            sessionPane.setTitleAt(0,determineTabName(firstsesgui));
 
             this.getContentPane().add(sessionPane, BorderLayout.CENTER);
             SwingUtilities.invokeLater(new Runnable() {
@@ -396,8 +416,8 @@ public class Gui5250Frame extends GUIViewInterface implements
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
       Session5250 ses5250 = (Session5250)changeEvent.getSource();
-      SessionGUI ses = ses5250.getGUI();
-      final int tabidx = sessionPane.indexOfComponent(ses);
+      final SessionGUI sesgui = ses5250.getGUI();
+      final int tabidx = sessionPane.indexOfComponent(sesgui);
       // be aware, when the first tab is not shown 
       if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
          this.sessionPane.setIconAt(tabidx, determineIconForSession(ses5250));
@@ -405,7 +425,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       switch (changeEvent.getState()) {
          case TN5250jConstants.STATE_CONNECTED:
 
-            final String devname = ses.getAllocDeviceName();
+            final String devname = sesgui.getAllocDeviceName();
             if (devname != null) {
                if (log.isDebugEnabled()) {
                		this.log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname);
@@ -413,7 +433,7 @@ public class Gui5250Frame extends GUIViewInterface implements
                if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
                   Runnable tc = new Runnable () {
                      public void run() {
-                        sessionPane.setTitleAt(tabidx,devname);
+                        sessionPane.setTitleAt(tabidx,determineTabName(sesgui));
                      }
                   };
                   SwingUtilities.invokeLater(tc);

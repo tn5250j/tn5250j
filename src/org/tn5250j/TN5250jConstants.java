@@ -38,8 +38,7 @@ public interface TN5250jConstants {
    // SESSION Level key value pairs
    public static final String SESSION_HOST      = "SESSION_HOST";
    public static final String SESSION_HOST_PORT ="SESSION_HOST_PORT";
-   public static final String SESSION_CONFIG_RESOURCE =
-                                              "SESSION_CONFIG_RESOURCE";
+   public static final String SESSION_CONFIG_RESOURCE = "SESSION_CONFIG_RESOURCE";
    public static final String SESSION_TYPE     = "SESSION_HOST_TYPE";
    public static final String SESSION_TN_ENHANCED = "SESSION_TN_ENHANCED";
    public static final String SESSION_SCREEN_SIZE = "SESSION_SCREEN_SIZE";

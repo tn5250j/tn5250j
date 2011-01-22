@@ -132,6 +132,13 @@ public class Session5250 implements SessionInterface {
       return heartBeat;
    }
 
+   /**
+    * @return true if configured, that the host name should be 
+    */
+   public boolean isUseSystemName() {
+	   return sesProps.getProperty(TN5250jConstants.SESSION_TERM_NAME_SYSTEM) != null;
+   }
+
    public Properties getConnectionProperties() {
       return sesProps;
    }

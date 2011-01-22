@@ -1150,7 +1150,7 @@ public class SessionGUI extends JPanel implements ComponentListener,
 
 	public boolean isConnected() {
 
-		return session.getVT().isConnected();
+		return session.getVT() != null && session.getVT().isConnected();
 
 	}
 
@@ -1204,7 +1204,10 @@ public class SessionGUI extends JPanel implements ComponentListener,
 	}
 
 	public String getHostName() {
-		return session.getVT().getHostName();
+		if (session.getVT() != null) {
+			return session.getVT().getHostName();
+		}
+		return session.getConnectionProperties().getProperty(TN5250jConstants.SESSION_HOST);
 	}
 
 	public Screen5250 getScreen() {
