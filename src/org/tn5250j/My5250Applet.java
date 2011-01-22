@@ -91,6 +91,9 @@ public class My5250Applet extends JApplet {
       if (isSpecified("-gui"))
          sesProps.put(TN5250jConstants.SESSION_USE_GUI,"1");
 
+      if (isSpecified("-t"))
+          sesProps.put(TN5250jConstants.SESSION_TERM_NAME_SYSTEM, "1");
+
       if (isSpecified("-132"))
          sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE,TN5250jConstants.SCREEN_SIZE_27X132_STR);
       else

@@ -534,6 +534,9 @@ public class My5250 implements BootListener,SessionListener,
       if (isSpecified("-gui",args))
          sesProps.put(TN5250jConstants.SESSION_USE_GUI,"1");
 
+      if (isSpecified("-t", args))
+         sesProps.put(TN5250jConstants.SESSION_TERM_NAME_SYSTEM, "1");
+
       if (isSpecified("-132",args))
          sesProps.put(TN5250jConstants.SESSION_SCREEN_SIZE,TN5250jConstants.SCREEN_SIZE_27X132_STR);
       else
