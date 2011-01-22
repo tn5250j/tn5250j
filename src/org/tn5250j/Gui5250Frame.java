@@ -174,15 +174,16 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 	/**
 	 * Sets the frame title to the same as the newly selected tab's title.
 	 * 
-	 * @param session can be null, but then nothing happens ;-)
+	 * @param sespanel can be null, but then nothing happens ;-)
 	 */
-	private void setSessionTitle(final SessionPanel session) {
-		if (session != null) {
-			if (session.getAllocDeviceName() != null && session.isConnected()) {
+	private void setSessionTitle(final SessionPanel sespanel) {
+		if (sespanel != null) {
+			final String name = determineTabName(sespanel);
+			if (name != null && sespanel.isConnected()) {
 				if (sequence - 1 > 0)
-					setTitle(session.getAllocDeviceName() + " - tn5250j <" + sequence + ">");
+					setTitle(name + " - tn5250j <" + sequence + ">");
 				else
-					setTitle(session.getAllocDeviceName() + " - tn5250j");
+					setTitle(name + " - tn5250j");
 			}
 			else {
 				if (sequence - 1 > 0)
@@ -193,6 +194,28 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 		} else {
 			setTitle("tn5250j");
 		}
+	}
+
+	/**
+	 * Determines the name, which is configured for one tab ({@link SessionGUI})
+	 * 
+	 * @param sespanel
+	 * @return
+	 * @NotNull
+	 */
+	private String determineTabName(final SessionPanel sespanel) {
+		assert sespanel != null;
+		final String name;
+		if (sespanel.getSession().isUseSysNameAsDescription()) {
+			name = sespanel.getHostName();
+		} else {
+			if (sespanel.getAllocDeviceName() != null) {
+				name = sespanel.getAllocDeviceName();
+			} else {
+				name = sespanel.getSessionName();
+			}
+		}
+		return name;
 	}
 
 	/**
@@ -231,22 +254,19 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 				// remove first component in the main window,
 				// create first tab and put first session into first tab 
 
-				SessionPanel firstsesgui = null;
+				SessionPanel firstsespanel = null;
 				for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
 					if (this.getContentPane().getComponent(x) instanceof SessionPanel) {
-						firstsesgui = (SessionPanel)(this.getContentPane().getComponent(x));
+						firstsespanel = (SessionPanel)(this.getContentPane().getComponent(x));
 						this.getContentPane().remove(x);
 						break;
 					}
 				}
 
-				createTabWithSessionContent(tabText, firstsesgui, false);
+				createTabWithSessionContent(tabText, firstsespanel, false);
 
-				if (firstsesgui.getAllocDeviceName() != null)
-					sessionPane.setTitleAt(0,firstsesgui.getAllocDeviceName());
-				else
-					sessionPane.setTitleAt(0,firstsesgui.getSessionName());
+				sessionPane.setTitleAt(0,determineTabName(firstsespanel));
 
 				this.getContentPane().add(sessionPane, BorderLayout.CENTER);
 				SwingUtilities.invokeLater(new Runnable() {
@@ -361,8 +381,8 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 	public void onSessionChanged(SessionChangeEvent changeEvent) {
 
 		Session5250 ses5250 = (Session5250)changeEvent.getSource();
-		SessionPanel ses = ses5250.getGUI();
-		final int tabidx = sessionPane.indexOfComponent(ses);
+		final SessionPanel sespanel = ses5250.getGUI();
+		final int tabidx = sessionPane.indexOfComponent(sespanel);
 		// be aware, when the first tab is not shown 
 		if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
 			this.sessionPane.setIconAt(tabidx, determineIconForSession(ses5250));
@@ -370,7 +390,7 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 		switch (changeEvent.getState()) {
 		case TN5250jConstants.STATE_CONNECTED:
 
-			final String devname = ses.getAllocDeviceName();
+			final String devname = sespanel.getAllocDeviceName();
 			if (devname != null) {
 				if (log.isDebugEnabled()) {
 					this.log.debug("SessionChangedEvent: " + changeEvent.getState() + " " + devname);
@@ -378,7 +398,7 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 				if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
 					Runnable tc = new Runnable () {
 						public void run() {
-							sessionPane.setTitleAt(tabidx,devname);
+							sessionPane.setTitleAt(tabidx,determineTabName(sespanel));
 						}
 					};
 					SwingUtilities.invokeLater(tc);

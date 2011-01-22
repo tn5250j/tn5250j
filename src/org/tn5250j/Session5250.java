@@ -138,6 +138,14 @@ public class Session5250 implements SessionInterface {
 		return sesProps.getSslType() != SslType.NONE;
 	}
 
+	/**
+	 * @return
+	 * @see {@link EmulSessionProfile#isUseSysNameAsDescription()}
+	 */
+	public boolean isUseSysNameAsDescription() {
+		return sesProps.isUseSysNameAsDescription();
+	}
+
 	public boolean isSendKeepAlive() {
 		return heartBeat;
 	}

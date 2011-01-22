@@ -22,7 +22,6 @@
 package org.tn5250j;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -1158,9 +1157,7 @@ public class SessionPanel extends JPanel implements ComponentListener, ActionLis
 
 
 	public boolean isConnected() {
-
-		return session.getVT().isConnected();
-
+		return session.getVT() != null && session.getVT().isConnected();
 	}
 
 	public boolean isOnSignOnScreen() {
@@ -1213,7 +1210,10 @@ public class SessionPanel extends JPanel implements ComponentListener, ActionLis
 	}
 
 	public String getHostName() {
-		return session.getVT().getHostName();
+		if (session.getVT() != null) {
+			return session.getVT().getHostName();
+		}
+		return session.getConnectionProperties().getProperty(TN5250jConstants.SESSION_HOST);
 	}
 
 	public Screen5250 getScreen() {
