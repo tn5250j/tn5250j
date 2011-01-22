@@ -389,7 +389,7 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 //
 //				sessionArgs[x] = session_params.get(x).toString();
 //
-//			//m.startNewSession();
+//			//m.startNewSession(); // XXX: should be enabled, see bug report ...
 //
 //			// shouldn't we be starting x at 0?
 //			for (int x = 0; x < os400_sessions.size(); x++ ) {

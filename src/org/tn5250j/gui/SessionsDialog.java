@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -39,24 +39,34 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
 import org.tn5250j.TN5250jConstants;
@@ -73,9 +83,9 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	private static final String OK_ACTION = "OK";
 
 	private final JPanel contentPanel = new JPanel();
-	
+
 	private final EmulConfig emulConfig;
-	
+
 	private JTable conTable;
 	private JButton btnEdit;
 	private JButton btnDelete;
@@ -84,39 +94,49 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	private JButton btnOptions;
 	private JButton okButton;
 	private JButton cancelButton;
-	
+
 	private volatile boolean dialogResult;
 	private static final String ACTION_OK = OK_ACTION;
 	private static final String ACTION_CANCEL = "CANCEL";
 	private JLabel lblSubTitle;
 	private JPanel panelTitle;
 
+	private ColumnIDs[] DEFAULT_COLUMN_IDS = new ColumnIDs[]{
+			ColumnIDs.NAME,
+			ColumnIDs.HOST,
+			ColumnIDs.PORT,
+			ColumnIDs.SSL,
+			ColumnIDs.CODEPAGE
+	};
+//	private Vector<ColumnIDs> columnids = new Vector<ColumnIDs>();
+
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		
-	   try  {
-		   for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		            break;
-		        }
-		    }
-	   }
-	   catch(Exception e) {
-		   try {
-			   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		   } catch (Exception ex) {
-			   // we don't care. Cause this should always work.
-		   }
-	   }
+
+		try  {
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch(Exception e) {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception ex) {
+				// we don't care. Cause this should always work.
+			}
+		}
+		LangTool.init(Locale.getDefault());
 		try {
 			SessionsDialog dialog = new SessionsDialog(null, "test", new EmulConfig() );
 			dialog.emulConfig.addSession(new EmulSessionProfile("test1", "234234", false));
 			dialog.emulConfig.addSession(new EmulSessionProfile("test2", "dgd234234", false));
 			dialog.emulConfig.addSession(new EmulSessionProfile("test3", "99234dg234", false));
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			dialog.setLocation(0, 0);
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,7 +145,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 
 	/**
 	 * Create the dialog.
-	 * 
+	 *
 	 * @param owner
 	 * @param title
 	 * @param properties
@@ -134,9 +154,9 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		super(owner, title, true);
 
 		this.emulConfig = emulConfig;
-		
+
 		this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
-		
+
 		setBounds(100, 100, 600, 400);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -246,7 +266,7 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		}
 		initValuesAndListeners();
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		dialogResult = OK_ACTION.equals(e.getActionCommand());
@@ -254,14 +274,14 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	}
 
 	/**
-	 * @return true -&gt; OK and false -&gt; CANCEL 
+	 * @return true -&gt; OK and false -&gt; CANCEL
 	 */
 	public boolean showModal() {
 		this.setModal(true);
 		this.setVisible(true);
 		return dialogResult;
 	}
-	
+
 	public EmulSessionProfile getSelectedSession() {
 		if (conTable.getSelectedRowCount() > 0) {
 			final int idx = conTable.convertRowIndexToModel(conTable.getSelectedRow());
@@ -271,8 +291,15 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	}
 
 	private void initValuesAndListeners() {
+		// reset default layout model
+		Vector<ColumnIDs> columnids = new Vector<ColumnIDs>();
+		for (ColumnIDs colid : DEFAULT_COLUMN_IDS) {
+			columnids.add(colid);
+		}
+		// start initializing
 		{
 			final SessionDataModel model = new SessionDataModel();
+			model.setColumnIdentifiers(columnids);
 			conTable.setModel(model);
 			conTable.setRowSorter(new TableRowSorter<SessionDataModel>(model));
 			conTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -283,38 +310,18 @@ public class SessionsDialog extends JDialog implements ActionListener {
 					btnEdit.setEnabled(conTable.getSelectedRowCount() > 0);
 				}
 			});
+			// column model for visibility of columns
+			conTable.setColumnModel(new DynamicColumnModel());
 			conTable.createDefaultColumnsFromModel();
-			final JTableHeader tableHeader = new JTableHeader(conTable.getColumnModel()) {
-				private static final long serialVersionUID = 7271021945579035652L;
-				@Override
-				public String getToolTipText(MouseEvent event) {
-	                java.awt.Point p = event.getPoint();
-	                int index = columnModel.getColumnIndexAtX(p.x);
-	                int realIndex = 
-	                        columnModel.getColumn(index).getModelIndex();
-	                
-	    			switch (realIndex) {
-	    			case 0:
-	    				return LangTool.getString("conf.tableColA");
-	    			case 1:
-	    				return LangTool.getString("conf.tableColB");
-	    			case 2:
-	    				return "Port";
-	    			case 3:
-	    				return "SSL";
-	    			default:
-	    				break;
-	    			}
-	    			return null;
-				}
-			};
+			// header and column width ...
+			final JTableHeader tableHeader = new SessionTableHeader(conTable.getColumnModel());
 			tableHeader.setReorderingAllowed(true);
 			tableHeader.setResizingAllowed(true);
 			conTable.setTableHeader(tableHeader);
-			conTable.getColumnModel().getColumn(0).setPreferredWidth(250);
-			conTable.getColumnModel().getColumn(1).setPreferredWidth(250);
-			conTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-			conTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+			for (int i=0; i<columnids.size(); i++) {
+				ColumnIDs colid = columnids.get(i);
+				conTable.getColumnModel().getColumn(i).setPreferredWidth(colid.prefSize);
+			}
 			// double clicks
 			conTable.addMouseListener(new MouseAdapter() {
 				@Override
@@ -399,22 +406,100 @@ public class SessionsDialog extends JDialog implements ActionListener {
 	/*
 	 * ========================================================================
 	 */
-	
+
+	/**
+	 * @see {@link javax.swing.table.JTableHeader}
+	 */
+	private final class SessionTableHeader extends JTableHeader implements MouseListener {
+
+		private static final long serialVersionUID = 7271021945579035652L;
+
+		public SessionTableHeader(TableColumnModel cm) {
+			super(cm);
+			addMouseListener(this);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+		 */
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 1 && SwingUtilities.isRightMouseButton(e)) {
+				final DynamicColumnModel tcolmodel = (DynamicColumnModel)getTable().getColumnModel();
+				final JPopupMenu popup = new JPopupMenu();
+				for (int i=0; i<DEFAULT_COLUMN_IDS.length; i++) {
+					final ColumnIDs colid = DEFAULT_COLUMN_IDS[i];
+					final TableColumn tabcol = tcolmodel.getColumnByModelIndex(i);
+					final boolean isset = tcolmodel.isVisible(tabcol);
+					final JCheckBoxMenuItem mi = new JCheckBoxMenuItem(getTable().getModel().getColumnName(i), isset);
+					mi.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							tcolmodel.setVisible(tabcol, !isset);
+						}
+					});
+					popup.add(mi);
+				}
+				GUIGraphicsUtils.positionPopup(e.getComponent(),popup,e.getX(),e.getY());
+				popup.setVisible(true);
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) { /* not used */ }
+
+		@Override
+		public void mouseReleased(MouseEvent e) { /* not used */ }
+
+		@Override
+		public void mouseEntered(MouseEvent e) { /* not used */ }
+
+		@Override
+		public void mouseExited(MouseEvent e) {  /* not used */ }
+
+		//		@Override
+		//		public String getToolTipText(MouseEvent event) {
+		//            java.awt.Point p = event.getPoint();
+		//            int index = columnModel.getColumnIndexAtX(p.x);
+		//            int realIndex = columnModel.getColumn(index).getModelIndex();
+		//
+		//			switch (realIndex) {
+		//			case 0:
+		//				return LangTool.getString("conf.tableColA");
+		//			case 1:
+		//				return LangTool.getString("conf.tableColB");
+		//			case 2:
+		//				return "Port";
+		//			case 3:
+		//				return "SSL";
+		//			default:
+		//				break;
+		//			}
+		//			return null;
+		//		}
+	};
+
+	/**
+	 * @see {@link javax.swing.table.DefaultTableModel}
+	 */
 	private final class SessionDataModel extends DefaultTableModel {
 
 		private static final long serialVersionUID = -8824174311096000429L;
 
 		@Override
 		public String getColumnName(int column) {
-			switch (column) {
-			case 0:
+			final ColumnIDs colid = (ColumnIDs) columnIdentifiers.get(column);
+			switch (colid) {
+			case NAME:
 				return LangTool.getString("conf.tableColA");
-			case 1:
+			case HOST:
 				return LangTool.getString("conf.tableColB");
-			case 2:
-				return "Port";
-			case 3:
+			case PORT:
+				return "Port"; //FIXME: i18n
+			case SSL:
 				return "SSL";
+			case CODEPAGE:
+				return "Codepage"; //FIXME: i18n
 			default:
 				break;
 			}
@@ -423,19 +508,8 @@ public class SessionsDialog extends JDialog implements ActionListener {
 
 		@Override
 		public Class<?> getColumnClass(int column) {
-			switch (column) {
-			case 0:
-				return String.class;
-			case 1:
-				return String.class;
-			case 2:
-				return Integer.class;
-			case 3:
-				return Boolean.class;
-			default:
-				break;
-			}
-			return null;
+			final ColumnIDs colid = (ColumnIDs) columnIdentifiers.get(column);
+			return colid.clazz;
 		}
 
 		@Override
@@ -449,28 +523,161 @@ public class SessionsDialog extends JDialog implements ActionListener {
 		}
 
 		@Override
-		public int getColumnCount() {
-			return 4;
-		}
-
-		@Override
 		public Object getValueAt(int row, int column) {
+			final ColumnIDs colid = (ColumnIDs) columnIdentifiers.get(column);
 			final EmulSessionProfile rowitem = emulConfig.getProfiles().get(row);
-			switch (column) {
-			case 0:
+			switch (colid) {
+			case NAME:
 				return rowitem.getName();
-			case 1:
+			case HOST:
 				return rowitem.getHost();
-			case 2:
+			case PORT:
 				return new Integer(rowitem.getPort());
-			case 3:
+			case SSL:
 				return (rowitem.getSslType() != SslType.NONE) ? Boolean.TRUE : Boolean.FALSE;
+			case CODEPAGE:
+				return rowitem.getCodepage();
 			default:
 				break;
 			}
 			return null;
 		}
-		
+
 	}
-	
+
+	/*
+	 * ========================================================================
+	 */
+
+	private static enum ColumnIDs {
+
+		NAME    (String.class, 250),
+		HOST    (String.class, 250),
+		PORT    (Integer.class, 50),
+		SSL     (Boolean.class, 50),
+		CODEPAGE(String.class, 75);
+
+		public final Class<?> clazz;
+		public final int prefSize;
+
+		private ColumnIDs(Class<?> clazz, int prefSize) {
+			this.clazz = clazz;
+			this.prefSize = prefSize;
+		}
+
+	}
+
+	/*
+	 * ========================================================================
+	 */
+	/**
+	 * @author Stephen Kelvin, mail@StephenKelvin.de (based on version 0.9 04/03/01)
+	 * @author master_jaf
+	 */
+	private static class DynamicColumnModel extends DefaultTableColumnModel {
+
+		private static final long serialVersionUID = -3334354018142910222L;
+
+		private Vector<TableColumn> allTableColumns = new Vector<TableColumn>();
+
+		public void setVisible(TableColumn tabcol, boolean visible) {
+			if(!visible) {
+				super.removeColumn(tabcol);
+			} else {
+				int noVisibleColumns = tableColumns.size();
+				int visIdx = 0;
+				for(int i=0,len=allTableColumns.size(); i<len; i++) {
+					TableColumn visibleColumn = (visIdx < noVisibleColumns ? tableColumns.get(visIdx) : null);
+					TableColumn testColumn = allTableColumns.get(i);
+					if(testColumn.equals(tabcol)) {
+						if(visibleColumn != tabcol) {
+							super.addColumn(tabcol);
+							super.moveColumn(tableColumns.size() - 1, visIdx);
+						}
+						break;
+					}
+					if(testColumn.equals(visibleColumn)) {
+						visIdx++;
+					}
+				}
+			}
+		}
+
+		/**
+		 * Makes all columns in this model visible
+		 */
+		public void setAllVisible() {
+			for(int i=0,len=allTableColumns.size(); i<len; i++) {
+				TableColumn visibleColumn = (i < tableColumns.size() ? tableColumns.get(i) : null);
+				TableColumn invisibleColumn = allTableColumns.get(i);
+				if(!visibleColumn.equals(invisibleColumn)) {
+					super.addColumn(invisibleColumn);
+					super.moveColumn(tableColumns.size() - 1, i);
+				}
+			}
+		}
+
+		/**
+		 * @param colidx
+		 * @return a {@link TableColumn} or null if not found
+		 */
+		public TableColumn getColumnByModelIndex(int colidx) {
+			for (int i=0; i<allTableColumns.size(); i++) {
+				TableColumn column = allTableColumns.elementAt(i);
+				if(column.getModelIndex() == colidx) {
+					return column;
+				}
+			}
+			return null;
+		}
+
+		/**
+		 * @param tabcol
+		 * @return
+		 */
+		public boolean isVisible(TableColumn tabcol) {
+			return tableColumns.indexOf(tabcol) >= 0;
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableColumnModel#addColumn(javax.swing.table.TableColumn)
+		 */
+		@Override
+		public void addColumn(TableColumn tabcol) {
+			allTableColumns.addElement(tabcol);
+			super.addColumn(tabcol);
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableColumnModel#removeColumn(javax.swing.table.TableColumn)
+		 */
+		@Override
+		public void removeColumn(TableColumn tabcol) {
+			int allColumnsIndex = allTableColumns.indexOf(tabcol);
+			if(allColumnsIndex != -1) {
+				allTableColumns.removeElementAt(allColumnsIndex);
+			}
+			super.removeColumn(tabcol);
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableColumnModel#moveColumn(int, int)
+		 */
+		@Override
+		public void moveColumn(int oldIndex, int newIndex) {
+			if ((oldIndex < 0) || (oldIndex >= getColumnCount()) ||
+					(newIndex < 0) || (newIndex >= getColumnCount())) {
+				throw new IllegalArgumentException("moveColumn() - Index out of range");
+			}
+			final TableColumn fromColumn = tableColumns.get(oldIndex);
+			final TableColumn toColumn = tableColumns.get(newIndex);
+			final int allColumnsOldIndex = allTableColumns.indexOf(fromColumn);
+			final int allColumnsNewIndex = allTableColumns.indexOf(toColumn);
+			if(oldIndex != newIndex) {
+				allTableColumns.removeElementAt(allColumnsOldIndex);
+				allTableColumns.insertElementAt(fromColumn, allColumnsNewIndex);
+			}
+			super.moveColumn(oldIndex, newIndex);
+		}
+	}
 }

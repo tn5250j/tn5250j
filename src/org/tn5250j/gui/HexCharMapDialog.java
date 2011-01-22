@@ -4,7 +4,7 @@
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
- * @author: maki
+ * @author: master_jaf
  *
  * Description:
  *
