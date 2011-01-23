@@ -14,7 +14,7 @@
      target="$INSTALL_PATH\bin\tn5250j.bat"
      workingDirectory="$INSTALL_PATH\lib"
      commandLine=""
-     description="A 5250 telnet emulator written in java"
+     description="A 5250 telnet emulator written in Java"
      iconFile="$INSTALL_PATH\bin\icons\izpack.ico"
      iconIndex="0"
      initialState="noShow">

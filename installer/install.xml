@@ -1,9 +1,26 @@
 <installation version="1.0">
     <info>
         <appname>tn5250j</appname>
-        <appversion>0.6.0</appversion>
+        <appversion>0.6.2</appversion>
         <authors>
             <author email="kjp1@users.sourceforge.net" name="Kenneth J. Pouncey"/>
+            <author email="master_jaf@users.sourceforge.net" name="MartinKirst" />
+            <author email="chrisgt@users.sourceforge.net" name="Christian Geisert" />
+            <author email="glen33@users.sourceforge.net" name="Glen Marchesani" />
+            <author email="jnorthr@users.sourceforge.net" name="jim" />
+            <author email="joepbeckeringh@users.sourceforge.net" name="Joep Beckeringh" />
+            <author email="joep_beckeringh@users.sourceforge.net" name="Joep Beckeringh" />
+            <author email="jorjun@users.sourceforge.net" name="Peter Moore" />
+            <author email="kennedyz@users.sourceforge.net" name="Steve Kennedy" />
+            <author email="mbrilli@users.sourceforge.net" name="Maurizio Brilli" />
+            <author email="nicolaken@users.sourceforge.net" name="Nicola Ken Barozzi" />
+            <author email="ozgunm@users.sourceforge.net" name="Mehmet Ozgun" />
+            <author email="pbielen@users.sourceforge.net" name="Patrick Bielen" />
+            <author email="phelgren@users.sourceforge.net" name="Pete Helgren" />
+            <author email="rupshall@users.sourceforge.net" name="Robert Upshall" />
+            <author email="tacticaljack@users.sourceforge.net" name="R.D.Ginsburg" />
+            <author email="wvl@users.sourceforge.net" name="Wim Van Leuven" />
+            <author email="yebob@users.sourceforge.net" name="yebob" />
         </authors>
         <url>http://tn5250j.sourceforge.net</url>
     </info>

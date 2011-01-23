@@ -18,8 +18,8 @@
 	<property name="rtm.lib.dir" value="${basedir}/lib/runtime" /> <!-- runtime libs -->
 	<property name="dev.lib.dir" value="${basedir}/lib/development" /> <!-- development libs -->
 	
-	<property name="compile.source" value="1.5" />
-	<property name="compile.target" value="1.5" />
+	<property name="compile.source" value="1.6" />
+	<property name="compile.target" value="1.6" />
 	
     <property name="jarname" value="${name}.jar" />
     <property name="dist.base.name" value="${name}-${version}" />
