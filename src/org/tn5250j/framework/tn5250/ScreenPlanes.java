@@ -33,31 +33,31 @@ import org.tn5250j.ExternalProgramConfig;
 
 public class ScreenPlanes {
 
-   Screen5250 scr;
-   int screenSize;
-   int numRows;
-   int numCols;
-   int errorLineNum;
+   private final Screen5250 scr;
+   private int screenSize;
+   private int numRows;
+   private int numCols;
+   private int errorLineNum;
 
    private static final int initAttr = 32;
    private static final char initChar = 0;
 
    protected char[] screen;   // text plane
-   protected char[] screenAttr;   // attribute plane
-   protected char[] screenGUI;   // gui plane
-   protected char[] screenIsAttr;
-   protected char[] fieldExtended;
-   protected char[] screenField;
-   protected char[] screenColor;   // color plane
+   private char[] screenAttr;   // attribute plane
+   private char[] screenGUI;   // gui plane
+   private char[] screenIsAttr;
+   private char[] fieldExtended;
+   private char[] screenField;
+   private char[] screenColor;   // color plane
    protected char[] screenExtended;   // extended plane
-   protected char[] screenIsChanged;
+   private char[] screenIsChanged;
 
-   protected char[] initArray;
+   private char[] initArray;
 
-   protected char[] errorLine;
-   protected char[] errorLineAttr;
-   protected char[] errorLineIsAttr;
-   protected char[] errorLineGui;
+   private char[] errorLine;
+   private char[] errorLineAttr;
+   private char[] errorLineIsAttr;
+   private char[] errorLineGui;
 
    public ScreenPlanes(Screen5250 s5250, int size) {
 
