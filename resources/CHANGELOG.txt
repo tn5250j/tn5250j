@@ -5,6 +5,7 @@
 --- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
 ADD: center connect dialog on top of main frame/window
+FIX: bug id:3179868 (Text and fields are not displayed)
 FIX: bug id:3161636 (System Name not in window title bar anymore)
 FIX: bug id:3160345 (Default value of column separator looks strange)
 FIX: bug id:3158911 (command line switch -s not working any more)

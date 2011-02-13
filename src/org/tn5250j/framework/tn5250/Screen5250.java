@@ -3525,37 +3525,25 @@ public class Screen5250 {
 	}
 
 	protected void setChar(int cByte) {
-
+		if (lastPos > 0) {
+			lastAttr = planes.getCharAttr(lastPos - 1);
+		}
 		if (cByte > 0 && (char)cByte < ' ') {
 			planes.setScreenCharAndAttr(lastPos, (char) 0x00, 33, false);
 			setDirty(lastPos);
 			advancePos();
 		} else {
-			if (lastPos > 0) {
-
-				if (planes.isAttributePlace(lastPos - 1)) // &&
-					lastAttr = planes.getCharAttr(lastPos - 1);
-			}
-
 			planes.setScreenCharAndAttr(lastPos, (char) cByte, lastAttr, false);
-
 			setDirty(lastPos);
 			if (guiInterface && !isInField(lastPos, false)) {
 				planes.setUseGUI(lastPos, NO_GUI);
 			}
 			advancePos();
 		}
-
 	}
 
 	protected void setEndingAttr(int cByte) {
-
 		int attr = lastAttr;
-		//      System.out.println("setting ending to " + cByte + " lastAttr is " +
-		// lastAttr +
-		//                     " at " + (lastRow + 1) + "," + (lastCol + 1));
-		//      System.out.print("setting ending to ");
-
 		setAttr(cByte);
 		lastAttr = attr;
 	}
