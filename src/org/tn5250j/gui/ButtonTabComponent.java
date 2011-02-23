@@ -1,41 +1,38 @@
-/*
- * Copyright (c) 1995 - 2008 Sun Microsystems, Inc.  All rights reserved.
+/**
+ * $Id$
+ * 
+ * Title: tn5250J
+ * Copyright:   Copyright (c) 2001,2009
+ * Company:
+ * @author: master_jaf
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ * Description:
+ * Tab component for displaying title text and icons. 
  *
- *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
  *
- *   - Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
  *
- *   - Neither the name of Sun Microsystems nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307 USA
+ *
  */
-
 package org.tn5250j.gui;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -43,6 +40,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +52,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import org.tn5250j.TN5250jConstants;
@@ -66,7 +66,7 @@ import org.tn5250j.tools.LangTool;
  * a JButton to close the tab it belongs to.<br>
  * <br>
  * This class based on the ButtonTabComponent example from
- * Sun Microsystems, Inc. and was modified.
+ * Sun Microsystems, Inc. and was modified to use tool tips, other layout and stuff.
  */
 public final class ButtonTabComponent extends JPanel implements SessionListener {
 
@@ -78,7 +78,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 
 	public ButtonTabComponent(final JTabbedPane pane) {
 		// unset default FlowLayout' gaps
-		super(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		super(new BorderLayout(0, 0));
 		if (pane == null) {
 			throw new NullPointerException("TabbedPane is null");
 		}
@@ -86,14 +86,28 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 		setOpaque(false);
 
 		this.label = new TabLabel(); // {
-		add(label);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setVerticalAlignment(SwingConstants.CENTER);
+		add(label, BorderLayout.CENTER);
 		// add more space between the label and the button
 		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 		// tab button
 		JButton button = new TabButton();
-		add(button);
+		button.setHorizontalAlignment(SwingConstants.TRAILING);
+		add(button, BorderLayout.EAST);
 		// add more space to the top of the component
 		setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+
+		pane.addPropertyChangeListener(new PropertyChangeListener() {
+			// triggers repaint, so size is recalculated, when title text changes
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("indexForTitle".equals(evt.getPropertyName())) {
+					label.revalidate();
+					label.repaint();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -154,7 +168,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 	 * Label delegating icon and text to the corresponding tab.
 	 * Implementing MouseListener is a workaround, cause when applying
 	 * a tool tip to the JLabel, clicking the tabs doesn't work
-	 * (tested on Tn5250j0.6.2; WinXP+WinVista).
+	 * (tested on Tn5250j0.6.2; WinXP+WinVista+Win7; JRE 1.6.0_20+).
 	 */
 	private final class TabLabel extends JLabel implements MouseListener {
 		private static final long serialVersionUID = 1L;
