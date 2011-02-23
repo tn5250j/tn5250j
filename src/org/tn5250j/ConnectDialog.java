@@ -326,6 +326,11 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
       // create a table using our custom table model
       sessions = new JSortTable(ctm);
+      
+      // prefered sizes ...
+      sessions.getColumnModel().getColumn(0).setPreferredWidth(250);
+      sessions.getColumnModel().getColumn(1).setPreferredWidth(250);
+      sessions.getColumnModel().getColumn(2).setPreferredWidth(65);
 
       // Add enter as default key for connect with this session
       Action connect = new AbstractAction("connect") {
