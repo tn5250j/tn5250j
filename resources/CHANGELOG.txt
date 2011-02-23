@@ -6,6 +6,7 @@
 
 ADD: About dialog/tab (JSE6 only)
 ADD: center connect dialog on top of main frame/window
+FIX: wrong display of title text, when tab title changes
 FIX: unchecked confirmTabClose in properties (JSE6 only)
 FIX: bug id:3179868 (Text and fields are not displayed)
 FIX: bug id:3161636 (System Name not in window title bar anymore)
