@@ -1049,6 +1049,32 @@ public class ScreenPlanes {
 				}
 
 			}
+			// now lets check for MAILTO: .
+			else if (!hs && x > 0 && x < lenScreen - 7 &&
+					Character.toLowerCase(screen[x]) == 'm' &&
+					screen[x - 1] <= ' ' &&
+					screenGUI[x] == NO_GUI &&
+					(screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
+			) {
+
+				if (Character.toLowerCase(screen[x+1]) == 'a' &&
+						Character.toLowerCase(screen[x+2]) == 'i' &&
+						Character.toLowerCase(screen[x+3]) == 'l' &&
+						Character.toLowerCase(screen[x+4]) == 't' &&
+						Character.toLowerCase(screen[x+5]) == 'o' &&
+						screen[x+6] == ':') {
+
+					hs = true;
+
+					screenGUI[x] = BUTTON_LEFT_EB;
+
+					while (screen[++x] > ' ') {
+						screenGUI[x] = BUTTON_MIDDLE_EB;
+
+					}
+					screenGUI[--x] = BUTTON_RIGHT_EB;
+				}
+			}
 			// now lets check for External Program: .
 			else if (!hs && x > 0 && x < lenScreen - 7 &&
 					screen[x - 1] <= ' ' &&
@@ -1075,34 +1101,6 @@ public class ScreenPlanes {
 							screenGUI[--x] = BUTTON_RIGHT_EB;
 							break;
 						}
-					}
-				}
-			}
-			else {
-				// now lets check for MAILTO: .
-				if (!hs && x > 0 && x < lenScreen - 7 &&
-						Character.toLowerCase(screen[x]) == 'm' &&
-						screen[x - 1] <= ' ' &&
-						screenGUI[x] == NO_GUI &&
-						(screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
-				) {
-
-					if (Character.toLowerCase(screen[x+1]) == 'a' &&
-							Character.toLowerCase(screen[x+2]) == 'i' &&
-							Character.toLowerCase(screen[x+3]) == 'l' &&
-							Character.toLowerCase(screen[x+4]) == 't' &&
-							Character.toLowerCase(screen[x+5]) == 'o' &&
-							screen[x+6] == ':') {
-
-						hs = true;
-
-						screenGUI[x] = BUTTON_LEFT_EB;
-
-						while (screen[++x] > ' ') {
-							screenGUI[x] = BUTTON_MIDDLE_EB;
-
-						}
-						screenGUI[--x] = BUTTON_RIGHT_EB;
 					}
 				}
 			}
