@@ -25,13 +25,23 @@
  */
 package org.tn5250j;
 
-import java.util.Properties;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Hashtable;
-import java.io.*;
-import javax.swing.*;
+import java.util.Properties;
 
-import org.tn5250j.tools.logging.*;
+import javax.swing.JOptionPane;
+
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Utility class for referencing global settings and functions of which at most
