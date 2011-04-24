@@ -5,6 +5,7 @@
 --- v0.6.? ----------------------------------------------------- ??/??/20?? ---
 
 ADD: center connect dialog on top of main frame/window
+FIX: bug id:3292459 (Reload macros file on launch)
 FIX: bug id:3205299 (email addresses prefixed with "mailto:" are not considered as hotspots)
 FIX: bug id:3179868 (Text and fields are not displayed)
 FIX: bug id:3161636 (System Name not in window title bar anymore)
