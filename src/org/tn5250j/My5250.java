@@ -244,7 +244,7 @@ public class My5250 implements BootListener,SessionListener,
          if (!checkBootStrapper(args)) {
 
             // if we did not find a running instance and the -d options is
-            //    specified start up the bootstrap deamon to allow checking
+            //    specified start up the bootstrap daemon to allow checking
             //    for running instances
             if (isSpecified("-d",args)) {
                strapper = new BootStrapper();
