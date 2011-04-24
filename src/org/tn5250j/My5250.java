@@ -186,7 +186,9 @@ public class My5250 implements BootListener,SessionListener, EmulatorActionListe
 
 	public void bootOptionsReceived(BootEvent bootEvent) {
 		log.info(" boot options received " + bootEvent.getNewSessionOptions());
-		//System.out.println(" boot options received " + bootEvent.getNewSessionOptions());
+
+		  // reload setting, to ensure correct bootstraps
+	      ConfigureFactory.getInstance().reloadSettings();
 
 		// If the options are not equal to the string 'null' then we have
 		//    boot options
