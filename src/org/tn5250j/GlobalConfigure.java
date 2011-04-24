@@ -163,15 +163,15 @@ public class GlobalConfigure extends ConfigureFactory {
 	 */
 	@Override
 	public void reloadSettings() {
-		if (log.isDebugEnabled()) {
-			log.debug("reloading settings");
+		if (log.isInfoEnabled()) {
+			log.info("reloading settings");
 		}
 		loadSettings();
 		loadSessions();
 		loadMacros();
 		loadKeyStrokes();
-		if (log.isDebugEnabled()) {
-			log.debug("Done (reloading settings).");
+		if (log.isInfoEnabled()) {
+			log.info("Done (reloading settings).");
 		}
 	}
 
