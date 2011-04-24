@@ -54,7 +54,7 @@ public class GlobalConfigure extends ConfigureFactory {
 	public static final String TN5250J_FOLDER = ".tn5250j";
 
 	/**
-	 * A handle to the unitque GlobalConfigure class
+	 * A handle to the unique GlobalConfigure class
 	 */
 	static private GlobalConfigure _instance;
 
@@ -73,7 +73,7 @@ public class GlobalConfigure extends ConfigureFactory {
 	//   static final public String KEYMAP = "keymap";
 
 	static final private String settingsFile = "tn5250jstartup.cfg";
-	private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
 
 	/**
 	 * The constructor is made protected to allow overriding.
@@ -163,7 +163,16 @@ public class GlobalConfigure extends ConfigureFactory {
 	 */
 	@Override
 	public void reloadSettings() {
-
+		if (log.isDebugEnabled()) {
+			log.debug("reloading settings");
+		}
+		loadSettings();
+		loadSessions();
+		loadMacros();
+		loadKeyStrokes();
+		if (log.isDebugEnabled()) {
+			log.debug("Done (reloading settings).");
+		}
 	}
 
 	/**
