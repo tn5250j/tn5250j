@@ -72,7 +72,6 @@ public class SessionGUI extends JPanel implements ComponentListener,
 
 	private static final long serialVersionUID = 1L;
 
-	private String sessionName;
 	private boolean firstScreen;
 	private char[] signonSave;
 
@@ -113,8 +112,6 @@ public class SessionGUI extends JPanel implements ComponentListener,
 			      catch(Exception e) {
 			         log.warn("Error in constructor: "+e.getMessage());
 			      }
-
-		      this.sessionName = session.getSessionName();
 
 		      session.getConfiguration().addSessionConfigListener(this);
 		      session.addSessionListener(this);
@@ -1192,8 +1189,12 @@ public class SessionGUI extends JPanel implements ComponentListener,
       return true;
    }
 
+   /**
+    * @return
+    * @see org.tn5250j.Session5250#getSessionName()
+    */
    public String getSessionName() {
-      return sessionName;
+      return session.getSessionName();
    }
 
    public String getAllocDeviceName() {
