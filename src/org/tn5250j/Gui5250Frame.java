@@ -207,12 +207,12 @@ public class Gui5250Frame extends GenericTn5250JFrame implements ChangeListener,
 		assert sespanel != null;
 		final String name;
 		if (sespanel.getSession().isUseSysNameAsDescription()) {
-			name = sespanel.getHostName();
+			name = sespanel.getSessionName();
 		} else {
 			if (sespanel.getAllocDeviceName() != null) {
 				name = sespanel.getAllocDeviceName();
 			} else {
-				name = sespanel.getSessionName();
+				name = sespanel.getHostName();
 			}
 		}
 		return name;
