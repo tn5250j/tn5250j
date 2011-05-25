@@ -193,23 +193,18 @@ public class Gui5250Frame extends GUIViewInterface implements
     * @param session can be null, but then nothing happens ;-)
     */
    private void setSessionTitle(final SessionGUI session) {
-      if (session != null) {
-        final String name = determineTabName(session);
-		if (name != null && session.isConnected()) {
-            if (sequence - 1 > 0)
-               setTitle(name + " - tn5250j <" + sequence + ">");
-            else
-               setTitle(name + " - tn5250j");
-         }
-         else {
-            if (sequence - 1 > 0)
-               setTitle("tn5250j <" + sequence + ">");
-            else
-               setTitle("tn5250j");
-         }
-      } else {
-         setTitle("tn5250j");
-      }
+	   if (session != null && session.isConnected()) {
+		   final String name = determineTabName(session);
+		   if (sequence - 1 > 0)
+			   setTitle(name + " - tn5250j <" + sequence + ">");
+		   else
+			   setTitle(name + " - tn5250j");
+	   } else {
+		   if (sequence - 1 > 0)
+			   setTitle("tn5250j <" + sequence + ">");
+		   else
+			   setTitle("tn5250j");
+	   }
    }
 
 	/**
