@@ -238,8 +238,8 @@ public class Gui5250Frame extends GUIViewInterface implements
 
       SessionGUI ses = getSessionAt(selectedIndex);
 
-      final String name = determineTabName(ses);
-	  if (ses != null && name != null && ses.isConnected()) {
+	  if (ses != null && ses.isConnected()) {
+		 final String name = determineTabName(ses);
          if (sequence - 1 > 0)
             setTitle(name + " - tn5250j <" + sequence + "> - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer);
          else
