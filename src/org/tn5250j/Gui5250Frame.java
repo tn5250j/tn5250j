@@ -223,12 +223,12 @@ public class Gui5250Frame extends GUIViewInterface implements
 		assert sessiongui != null;
 		final String name;
 		if (sessiongui.getSession().isUseSystemName()) {
-			name = sessiongui.getHostName();
+			name = sessiongui.getSessionName();
 		} else {
 			if (sessiongui.getAllocDeviceName() != null) {
 				name = sessiongui.getAllocDeviceName();
 			} else {
-				name = sessiongui.getSessionName();
+				name = sessiongui.getHostName();
 			}
 		}
 		return name;
