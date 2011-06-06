@@ -38,12 +38,12 @@ public class SessionScroller implements MouseWheelListener {
 
 	private Screen5250 screen = null;;
 
-	public void addMouseWheelListener(SessionGUI ses) {
+	public void addMouseWheelListener(SessionPanel ses) {
 		this.screen = ses.getScreen();
 		ses.addMouseWheelListener(this);
 	}
 
-	public void removeMouseWheelListener(SessionGUI ses) {
+	public void removeMouseWheelListener(SessionPanel ses) {
 		this.screen = null;
 		ses.removeMouseWheelListener(this);
 	}

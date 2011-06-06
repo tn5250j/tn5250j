@@ -43,7 +43,7 @@ import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
 import org.tn5250j.tools.filters.*;
 import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.GenericTn5250JFrame;
 import org.tn5250j.gui.TN5250jFileChooser;
@@ -105,11 +105,11 @@ public class XTFRFile
 	ProgressOptionPane monitor;
 	JDialog dialog;
 	XTFRFileFilter filter;
-	SessionGUI session;
+	SessionPanel session;
 
 	static String messageProgress;
 
-	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session) {
+	public XTFRFile(Frame parent, tnvt pvt, SessionPanel session) {
 
       this(parent, pvt, session, null);
 //		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -136,7 +136,7 @@ public class XTFRFile
 //		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	public XTFRFile(Frame parent, tnvt pvt, SessionGUI session, Properties XTFRProps) {
+	public XTFRFile(Frame parent, tnvt pvt, SessionPanel session, Properties XTFRProps) {
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.session = session;

@@ -184,7 +184,7 @@ public class Gui5250Frame extends GUIViewInterface implements
     */
    public void stateChanged(ChangeEvent e) {
       JTabbedPane p = (JTabbedPane)e.getSource();
-      setSessionTitle((SessionGUI)p.getSelectedComponent());
+      setSessionTitle((SessionPanel)p.getSelectedComponent());
    }
 
    /**
@@ -192,7 +192,7 @@ public class Gui5250Frame extends GUIViewInterface implements
     * 
     * @param session can be null, but then nothing happens ;-)
     */
-   private void setSessionTitle(final SessionGUI session) {
+   private void setSessionTitle(final SessionPanel session) {
 	   if (session != null && session.isConnected()) {
 		   final String name = determineTabName(session);
 		   if (sequence - 1 > 0)
@@ -208,13 +208,13 @@ public class Gui5250Frame extends GUIViewInterface implements
    }
 
 	/**
-	 * Determines the name, which is configured for one tab ({@link SessionGUI})
+	 * Determines the name, which is configured for one tab ({@link SessionPanel})
 	 * 
 	 * @param sessiongui
 	 * @return
 	 * @NotNull
 	 */
-	private String determineTabName(final SessionGUI sessiongui) {
+	private String determineTabName(final SessionPanel sessiongui) {
 		assert sessiongui != null;
 		final String name;
 		if (sessiongui.getSession().isUseSystemName()) {
@@ -231,17 +231,17 @@ public class Gui5250Frame extends GUIViewInterface implements
    
    /**
     * Sets the main frame title to the same as the current selected tab's title.
-    * @see {@link #setSessionTitle(SessionGUI)}
+    * @see {@link #setSessionTitle(SessionPanel)}
     */
    private void updateSessionTitle() {
-      SessionGUI selectedComponent = (SessionGUI)this.sessionPane.getSelectedComponent();
+      SessionPanel selectedComponent = (SessionPanel)this.sessionPane.getSelectedComponent();
       setSessionTitle(selectedComponent);
    }
 
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#addSessionView(java.lang.String, org.tn5250j.SessionGUI)
     */
-   public void addSessionView(final String tabText, final SessionGUI newsesui) {
+   public void addSessionView(final String tabText, final SessionPanel newsesui) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0 && !embedded) {
          // put Session just in the main content window and don't create any tabs
@@ -265,11 +265,11 @@ public class Gui5250Frame extends GUIViewInterface implements
             // remove first component in the main window,
             // create first tab and put first session into first tab 
 
-            SessionGUI firstsesgui = null;
+            SessionPanel firstsesgui = null;
             for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-               if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
-                  firstsesgui = (SessionGUI)(this.getContentPane().getComponent(x));
+               if (this.getContentPane().getComponent(x) instanceof SessionPanel) {
+                  firstsesgui = (SessionPanel)(this.getContentPane().getComponent(x));
                   this.getContentPane().remove(x);
                   break;
                }
@@ -296,7 +296,7 @@ public class Gui5250Frame extends GUIViewInterface implements
     * @param sesgui
     * @param focus TRUE is the new tab should be focused, otherwise FALSE
     */
-   private final void createTabWithSessionContent(final String tabText, final SessionGUI sesgui, final boolean focus) {
+   private final void createTabWithSessionContent(final String tabText, final SessionPanel sesgui, final boolean focus) {
       
       sessionPane.addTab(tabText, determineIconForSession(sesgui.session), sesgui);
       final int idx = sessionPane.indexOfComponent(sesgui);
@@ -327,7 +327,7 @@ public class Gui5250Frame extends GUIViewInterface implements
 	 * @see org.tn5250j.event.TabClosedListener#onTabClosed(int)
 	 */
 	public void onTabClosed(int tabToBeClosed) {
-		final SessionGUI sessionAt = this.getSessionAt(tabToBeClosed);
+		final SessionPanel sessionAt = this.getSessionAt(tabToBeClosed);
 
 		final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(sessionAt);
 
@@ -353,10 +353,10 @@ public class Gui5250Frame extends GUIViewInterface implements
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#removeSessionView(org.tn5250j.SessionGUI)
     */
-   public void removeSessionView(SessionGUI targetSession) {
+   public void removeSessionView(SessionPanel targetSession) {
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < getContentPane().getComponentCount(); x++) {
-            if (getContentPane().getComponent(x) instanceof SessionGUI) {
+            if (getContentPane().getComponent(x) instanceof SessionPanel) {
                getContentPane().remove(x);
             }
          }
@@ -378,7 +378,7 @@ public class Gui5250Frame extends GUIViewInterface implements
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-            if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
+            if (this.getContentPane().getComponent(x) instanceof SessionPanel) {
                return 1;
             }
          }
@@ -390,19 +390,19 @@ public class Gui5250Frame extends GUIViewInterface implements
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#getSessionAt(int)
     */
-   public SessionGUI getSessionAt( int index) {
+   public SessionPanel getSessionAt( int index) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-            if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
-               return (SessionGUI)getContentPane().getComponent(x);
+            if (this.getContentPane().getComponent(x) instanceof SessionPanel) {
+               return (SessionPanel)getContentPane().getComponent(x);
             }
          }
          return null;
       }
       if (sessionPane.getTabCount() <= 0) return null;
-      return (SessionGUI)sessionPane.getComponentAt(index);
+      return (SessionPanel)sessionPane.getComponentAt(index);
    }
 
    /* (non-Javadoc)
@@ -411,7 +411,7 @@ public class Gui5250Frame extends GUIViewInterface implements
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
       Session5250 ses5250 = (Session5250)changeEvent.getSource();
-      final SessionGUI sesgui = ses5250.getGUI();
+      final SessionPanel sesgui = ses5250.getGUI();
       final int tabidx = sessionPane.indexOfComponent(sesgui);
       // be aware, when the first tab is not shown 
       if (tabidx >= 0 && tabidx < sessionPane.getTabCount()) {
@@ -457,13 +457,13 @@ public class Gui5250Frame extends GUIViewInterface implements
    /* (non-Javadoc)
     * @see org.tn5250j.interfaces.GUIViewInterface#containsSession(org.tn5250j.SessionGUI)
     */
-   public boolean containsSession(SessionGUI session) {
+   public boolean containsSession(SessionPanel session) {
 
       if (hideTabBar && sessionPane.getTabCount() == 0) {
          for (int x=0; x < this.getContentPane().getComponentCount(); x++) {
 
-            if (this.getContentPane().getComponent(x) instanceof SessionGUI) {
-               return ((SessionGUI)getContentPane().getComponent(x)).equals(session);
+            if (this.getContentPane().getComponent(x) instanceof SessionPanel) {
+               return ((SessionPanel)getContentPane().getComponent(x)).equals(session);
             }
          }
          return false;

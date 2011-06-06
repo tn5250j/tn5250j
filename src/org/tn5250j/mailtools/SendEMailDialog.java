@@ -49,7 +49,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.GenericTn5250JFrame;
@@ -69,7 +69,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	JTextArea bodyText;
 	JTextField attachmentName;
 	SessionConfig config;
-	SessionGUI session;
+	SessionPanel session;
 	String fileName;
 	JRadioButton text;
 	JRadioButton graphic;
@@ -88,7 +88,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	 * @param session
     * @param sendScreen
 	 */
-	public SendEMailDialog(Frame parent, SessionGUI session) {
+	public SendEMailDialog(Frame parent, SessionPanel session) {
       this(parent,session,true);
 	}
 
@@ -98,7 +98,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	 * @param parent
 	 * @param session
 	 */
-	public SendEMailDialog(Frame parent, SessionGUI session, boolean sendScreen) {
+	public SendEMailDialog(Frame parent, SessionPanel session, boolean sendScreen) {
       super();
 		if (!isEMailAvailable()) {
 
@@ -271,7 +271,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 	 * @param parent
 	 * @param session
 	 */
-	public SendEMailDialog(Frame parent, SessionGUI session, String fileName) {
+	public SendEMailDialog(Frame parent, SessionPanel session, String fileName) {
 
 		if (!isEMailAvailable()) {
 

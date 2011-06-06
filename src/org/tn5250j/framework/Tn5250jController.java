@@ -39,7 +39,7 @@ import javax.swing.JFrame;
 
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.Session5250;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.TN5250jConstants;
@@ -207,7 +207,7 @@ public class Tn5250jController extends Thread {
 		return current;
 	}
 
-	public void createSession(Screen5250 screen, tnvt vt, SessionGUI ses) {
+	public void createSession(Screen5250 screen, tnvt vt, SessionPanel ses) {
 		final Tn5250jSession session = new Tn5250jSession(screen, vt, ses);
 		Iterator<Tn5250jListener> listenerIt = listeners.iterator();
 		log.info("New session created and received");
@@ -254,7 +254,7 @@ public class Tn5250jController extends Thread {
 		parseArgs((String) sesprops.get(name), args);
 		Properties fin = convertToProps(args);
 		Session5250 newses = manager.openSession(fin, null, name);
-      SessionGUI newGui = new SessionGUI(newses);
+      SessionPanel newGui = new SessionPanel(newses);
 		frame.getContentPane().add(newGui);
 		frame.setBounds(50, 50, 960, 700);
 		frame.setVisible(true);

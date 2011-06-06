@@ -479,7 +479,7 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   private void startDuplicateSession(SessionGUI ses) {
+   private void startDuplicateSession(SessionPanel ses) {
 
       loadSessions();
       if (ses == null) {
@@ -590,7 +590,7 @@ public class My5250 implements BootListener,SessionListener,
       int sessionCount = manager.getSessions().getCount();
 
       Session5250 s2 = manager.openSession(sesProps,propFileName,sel);
-      SessionGUI s = new SessionGUI(s2);
+      SessionPanel s = new SessionPanel(s2);
 
 
       if (!frame1.isVisible()) {
@@ -679,14 +679,14 @@ public class My5250 implements BootListener,SessionListener,
       frame.setSize(width,height);
    }
 
-   private void closingDown(SessionGUI targetSession) {
+   private void closingDown(SessionPanel targetSession) {
 
       closingDown(getParentView(targetSession));
    }
 
    protected void closingDown(GUIViewInterface view) {
 
-      SessionGUI jf = null;
+      SessionPanel jf = null;
       Sessions sess = manager.getSessions();
 
       if (log.isDebugEnabled()) {
@@ -743,7 +743,7 @@ public class My5250 implements BootListener,SessionListener,
 
    }
 
-   protected void closeSession(SessionGUI targetSession) {
+   protected void closeSession(SessionPanel targetSession) {
 
       GUIViewInterface f = getParentView(targetSession);
       if (f == null)
@@ -793,7 +793,7 @@ public class My5250 implements BootListener,SessionListener,
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
       Session5250 ses5250 = (Session5250)changeEvent.getSource();
-      SessionGUI ses = ses5250.getGUI();
+      SessionPanel ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
          case TN5250jConstants.STATE_REMOVE:
@@ -804,7 +804,7 @@ public class My5250 implements BootListener,SessionListener,
 
    public void onEmulatorAction(EmulatorActionEvent actionEvent) {
 
-      SessionGUI ses = (SessionGUI)actionEvent.getSource();
+      SessionPanel ses = (SessionPanel)actionEvent.getSource();
 
       switch (actionEvent.getAction()) {
          case EmulatorActionEvent.CLOSE_SESSION:
@@ -822,7 +822,7 @@ public class My5250 implements BootListener,SessionListener,
       }
    }
 
-   private GUIViewInterface getParentView(SessionGUI session) {
+   private GUIViewInterface getParentView(SessionPanel session) {
 
       GUIViewInterface f = null;
 

@@ -29,7 +29,7 @@ package org.tn5250j.keyboard;
 import javax.swing.KeyStroke;
 import java.awt.event.*;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.Session5250;
 import org.tn5250j.keyboard.actions.*;
 
@@ -135,7 +135,7 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       if (session.getGUI() == null)
          return;
 
-      SessionGUI sessionGui = session.getGUI();
+      SessionPanel sessionGui = session.getGUI();
 
       KeyStroke ks;
 

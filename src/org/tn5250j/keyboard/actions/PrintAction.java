@@ -30,7 +30,7 @@ import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.keyboard.KeyMapper;
 
 /**
@@ -40,7 +40,7 @@ public class PrintAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
-public PrintAction(SessionGUI session, KeyMapper keyMap) {
+public PrintAction(SessionPanel session, KeyMapper keyMap) {
       super(session,
     		  TN5250jConstants.MNEMONIC_PRINT_SCREEN,
             KeyStroke.getKeyStroke(KeyEvent.VK_P,KeyEvent.ALT_MASK),

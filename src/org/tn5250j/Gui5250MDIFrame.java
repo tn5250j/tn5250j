@@ -270,7 +270,7 @@ BorderLayout borderLayout1 = new BorderLayout();
 
    }
 
-   public void addSessionView(String tabText,SessionGUI session) {
+   public void addSessionView(String tabText,SessionPanel session) {
 
       MyInternalFrame frame = new MyInternalFrame();
       frame.setVisible(true);
@@ -293,7 +293,7 @@ BorderLayout borderLayout1 = new BorderLayout();
 
    }
 
-   public void removeSessionView(SessionGUI targetSession) {
+   public void removeSessionView(SessionPanel targetSession) {
 
       int index = getIndexOfSession(targetSession);
       MyInternalFrame nextMIF = getNextInternalFrame();
@@ -329,10 +329,10 @@ BorderLayout borderLayout1 = new BorderLayout();
       return desktop.getAllFrames().length;
    }
 
-   public SessionGUI getSessionAt( int index) {
+   public SessionPanel getSessionAt( int index) {
 
       JInternalFrame[] frames = desktop.getAllFrames();
-      SessionGUI s = (SessionGUI)frames[index].getContentPane();
+      SessionPanel s = (SessionPanel)frames[index].getContentPane();
 
       return s;
    }
@@ -340,7 +340,7 @@ BorderLayout borderLayout1 = new BorderLayout();
    public void onSessionChanged(SessionChangeEvent changeEvent) {
 
       Session5250 ses5250 = (Session5250)changeEvent.getSource();
-      SessionGUI ses = ses5250.getGUI();
+      SessionPanel ses = ses5250.getGUI();
 
       switch (changeEvent.getState()) {
          case TN5250jConstants.STATE_CONNECTED:
@@ -368,19 +368,19 @@ BorderLayout borderLayout1 = new BorderLayout();
 
    }
 
-   public boolean containsSession(SessionGUI session) {
+   public boolean containsSession(SessionPanel session) {
 
       return getIndexOfSession(session) >= 0;
 
    }
 
-   public int getIndexOfSession(SessionGUI session) {
+   public int getIndexOfSession(SessionPanel session) {
 
       JInternalFrame[] frames = desktop.getAllFrames();
       int index = -1;
 
       for (int idx = 0; idx < frames.length; idx++) {
-         SessionGUI ses = (SessionGUI)frames[idx].getContentPane();
+         SessionPanel ses = (SessionPanel)frames[idx].getContentPane();
          if (ses.equals(session)) {
             index = idx;
             return index;
@@ -553,14 +553,14 @@ BorderLayout borderLayout1 = new BorderLayout();
 
          private void disconnectMe() {
 
-            SessionGUI s = (SessionGUI)getContentPane();
+            SessionPanel s = (SessionPanel)getContentPane();
             me.closeSession(s);
          }
 
          public void resizeMe() {
 
-            if (getContentPane() instanceof SessionGUI) {
-               SessionGUI s = (SessionGUI)getContentPane();
+            if (getContentPane() instanceof SessionPanel) {
+               SessionPanel s = (SessionPanel)getContentPane();
                s.resizeMe();
             }
          }

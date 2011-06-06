@@ -26,7 +26,7 @@ import java.util.Properties;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.interfaces.SessionManagerInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -86,13 +86,13 @@ public class SessionManager implements SessionManagerInterface {
 
    public void closeSession(String sessionName) {
 
-      SessionGUI session = (sessions.item(sessionName)).getGUI();
+      SessionPanel session = (sessions.item(sessionName)).getGUI();
       if (session != null)
          closeSession(session);
 
    }
 
-   public void closeSession(SessionGUI sessionObject) {
+   public void closeSession(SessionPanel sessionObject) {
 
       sessionObject.closeDown();
       sessions.removeSession((sessionObject).getSession());

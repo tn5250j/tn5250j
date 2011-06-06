@@ -33,7 +33,7 @@ public interface SessionManagerInterface {
 
    public abstract void closeSession(String sessionName);
 
-   public abstract void closeSession(SessionGUI sessionObject);
+   public abstract void closeSession(SessionPanel sessionObject);
 
 //   public abstract Session openSession(String configurationResource
 //                                                , String sessionName);

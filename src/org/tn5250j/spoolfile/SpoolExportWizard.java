@@ -50,7 +50,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
 import org.tn5250j.gui.GenericTn5250JFrame;
@@ -133,7 +133,7 @@ JPanel contentPane;
    SpooledFile splfile;
 
    // Session object
-   SessionGUI session;
+   SessionPanel session;
 
    JPanel twoPDF;
    JPanel twoText;
@@ -161,7 +161,7 @@ JPanel contentPane;
    private Thread workingThread;
 
    //Construct the frame
-   public SpoolExportWizard(SpooledFile splfile, SessionGUI session) {
+   public SpoolExportWizard(SpooledFile splfile, SessionPanel session) {
 
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       this.splfile = splfile;

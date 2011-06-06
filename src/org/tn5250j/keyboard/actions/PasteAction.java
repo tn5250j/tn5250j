@@ -37,7 +37,7 @@ import java.io.IOException;
 
 import javax.swing.KeyStroke;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -52,7 +52,7 @@ public class PasteAction extends EmulatorAction {
 	
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-	public PasteAction(SessionGUI session, KeyMapper keyMap) {
+	public PasteAction(SessionPanel session, KeyMapper keyMap) {
 		super(session,
 				TN5250jConstants.MNEMONIC_PASTE,
 				KeyStroke.getKeyStroke(KeyEvent.VK_V,KeyEvent.ALT_MASK),

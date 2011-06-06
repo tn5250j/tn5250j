@@ -30,7 +30,7 @@ import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.keyboard.KeyMapper;
 
 /**
@@ -40,7 +40,7 @@ public class CloseAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
-public CloseAction(SessionGUI session, KeyMapper keyMap) {
+public CloseAction(SessionPanel session, KeyMapper keyMap) {
       super(session,
             TN5250jConstants.MNEMONIC_CLOSE,
             KeyStroke.getKeyStroke(KeyEvent.VK_Q,KeyEvent.ALT_MASK),

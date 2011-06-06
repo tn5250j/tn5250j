@@ -50,7 +50,7 @@ public class Session5250 implements SessionInterface {
    protected SessionConfig sesConfig;
    tnvt vt;
    Screen5250 screen;
-   SessionGUI guiComponent;
+   SessionPanel guiComponent;
    
    private List<SessionListener> sessionListeners = null;
    private final ReadWriteLock sessionListenerLock = new ReentrantReadWriteLock(); 
@@ -143,11 +143,11 @@ public class Session5250 implements SessionInterface {
       return sesProps;
    }
 
-   public void setGUI (SessionGUI gui) {
+   public void setGUI (SessionPanel gui) {
       guiComponent = gui;
    }
 
-   public SessionGUI getGUI() {
+   public SessionPanel getGUI() {
       return guiComponent;
    }
    public String getSessionName() {
