@@ -4,6 +4,10 @@
 
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 
+CHG: simplified internal mouse wheel scroll implementation, discarded older JRE support (older than 1.4.2) 
+
+--- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
+
 ADD: About dialog/tab (JSE6 only)
 ADD: center connect dialog on top of main frame/window
 ADD: tool tips for session tab titles
