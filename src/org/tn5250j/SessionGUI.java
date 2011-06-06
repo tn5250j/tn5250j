@@ -57,7 +57,6 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.interfaces.SessionScrollerInterface;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
@@ -95,7 +94,7 @@ public class SessionGUI extends JPanel implements ComponentListener,
 	private boolean doubleClick;
 	protected SessionConfig sesConfig;
 	protected KeyboardHandler keyHandler;
-	protected SessionScrollerInterface scroller;
+	protected final SessionScroller scroller = new SessionScroller();
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
@@ -201,10 +200,10 @@ public class SessionGUI extends JPanel implements ComponentListener,
 
 		});
 
-		scroller = new SessionScroller().getScrollerInstance(this);
-		if (!sesConfig.getStringProperty("mouseWheel").equals("Yes"))
-			scroller.removeMouseWheelListener(this);
-
+		if (sesConfig.getStringProperty("mouseWheel").equals("Yes")) {
+			scroller.addMouseWheelListener(this);
+		}
+		
 		log.debug("Initializing macros");
 		Macronizer.init();
 
