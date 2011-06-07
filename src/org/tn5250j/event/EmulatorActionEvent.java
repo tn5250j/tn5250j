@@ -24,40 +24,40 @@ import java.util.EventObject;
 
 public class EmulatorActionEvent extends EventObject {
 
-   private static final long serialVersionUID = 1L;
-public static final int CLOSE_SESSION = 1;
-   public static final int START_NEW_SESSION = 2;
-   public static final int CLOSE_EMULATOR = 3;
-   public static final int START_DUPLICATE = 4;
+	private static final long serialVersionUID = 1L;
+	public static final int CLOSE_SESSION = 1;
+	public static final int START_NEW_SESSION = 2;
+	public static final int CLOSE_EMULATOR = 3;
+	public static final int START_DUPLICATE = 4;
 
-   public EmulatorActionEvent(Object obj){
-      super(obj);
+	public EmulatorActionEvent(Object obj) {
+		super(obj);
 
-   }
+	}
 
-   public EmulatorActionEvent(Object obj, String s) {
-      super(obj);
-      message = s;
-   }
+	public EmulatorActionEvent(Object obj, String s) {
+		super(obj);
+		message = s;
+	}
 
-   public String getMessage() {
-      return message;
-   }
+	public String getMessage() {
+		return message;
+	}
 
-   public void setMessage(String s) {
-      message = s;
-   }
+	public void setMessage(String s) {
+		message = s;
+	}
 
-   public int getAction() {
+	public int getAction() {
 
-      return action;
-   }
+		return action;
+	}
 
-   public void setAction(int s) {
+	public void setAction(int s) {
 
-      action = s;
-   }
+		action = s;
+	}
 
-   private String message;
-   private int action;
+	private String message;
+	private int action;
 }
