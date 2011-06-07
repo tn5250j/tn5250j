@@ -612,8 +612,7 @@ SessionListener {
 	public void closeDown() {
 
 		sesConfig.saveSessionProps(getParent());
-
-		session.getVT().disconnect();
+		if (session.getVT() != null) session.getVT().disconnect();
 		// Added by Luc to fix a memory leak. The keyHandler was still receiving
 		//   events even though nothing was really attached.
 		keyHandler.sessionClosed(this);
