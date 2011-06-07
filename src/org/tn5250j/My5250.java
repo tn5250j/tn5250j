@@ -643,10 +643,6 @@ EmulatorActionListener {
 		if (sessions.containsKey("emul.height"))
 			height = Integer.parseInt(sessions.getProperty("emul.height"));
 
-//		if (useMDIFrames)
-//			frame1 = new Gui5250MDIFrame(this);
-//		//         frame1 = new Gui5250SplitFrame(this);
-//		else
 		frame1 = new Gui5250Frame(this);
 
 		frame1.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
