@@ -20,24 +20,30 @@
  */
 package org.tn5250j.interfaces;
 
-import java.util.*;
+import java.util.Properties;
 
-import org.tn5250j.*;
-import org.tn5250j.framework.common.*;;
-
+import org.tn5250j.Session5250;
+import org.tn5250j.SessionPanel;
+import org.tn5250j.framework.common.Sessions;
 
 public interface SessionManagerInterface {
 
+	/**
+	 * @return
+	 */
+	public abstract Sessions getSessions();
 
-   public abstract Sessions getSessions();
+	/**
+	 * @param sessionObject
+	 */
+	public abstract void closeSession(SessionPanel sessionObject);
 
-   public abstract void closeSession(String sessionName);
-
-   public abstract void closeSession(SessionPanel sessionObject);
-
-//   public abstract Session openSession(String configurationResource
-//                                                , String sessionName);
-   public abstract Session5250 openSession(Properties props, String configurationResource
-                                                , String sessionName);
+	/**
+	 * @param props
+	 * @param configurationResource
+	 * @param sessionName
+	 * @return
+	 */
+	public abstract Session5250 openSession(Properties props, String configurationResource, String sessionName);
 
 }
