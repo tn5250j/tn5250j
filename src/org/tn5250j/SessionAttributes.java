@@ -103,7 +103,7 @@ public class SessionAttributes extends JDialog {
 		jp.setLayout(cardLayout);
 
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
-		Enumeration e = root.children();
+		Enumeration<?> e = root.children();
 		Object child;
 		while (e.hasMoreElements()) {
 			child = e.nextElement();
@@ -319,7 +319,7 @@ public class SessionAttributes extends JDialog {
 	private void applyAttributes() {
 
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
-		Enumeration e = root.children();
+		Enumeration<?> e = root.children();
 		Object child;
 		while (e.hasMoreElements()) {
 			child = e.nextElement();
@@ -336,7 +336,7 @@ public class SessionAttributes extends JDialog {
 	private void saveProps() {
 
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree.getModel().getRoot();
-		Enumeration e = root.children();
+		Enumeration<?> e = root.children();
 		Object child;
 		while (e.hasMoreElements()) {
 			child = e.nextElement();
