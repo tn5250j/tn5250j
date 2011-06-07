@@ -27,7 +27,6 @@ package org.tn5250j.keyboard;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.tools.system.OperatingSystem;
 
 public class KeyMapper {
 
@@ -53,73 +51,13 @@ public class KeyMapper {
 	private static Vector<KeyChangeListener> listeners;
 	private static boolean useJava14;
 
-	/**
-	 * String value for the jdk 1.4 version of KeyStroker
-	 */
-	private static final String      STROKER_NAME14 = "org.tn5250j.keyboard.KeyStroker14";
-	/**
-	 * String value for the jdk versions of KeyStroker less than 1.4
-	 */
-	private static final String      STROKER_NAME = "org.tn5250j.keyboard.KeyStroker";
-
-	private static final Constructor NEW_STROKER1;
-	private static final Constructor NEW_STROKER2;
-	private static final Constructor NEW_STROKER3;
-
-	static {
-
-		useJava14 = OperatingSystem.hasJava14() && !OperatingSystem.isMacOS();
-		Class       stroker_class;
-
-		// the different KeyStroker constructors
-		Constructor constructor1;
-		Constructor constructor2;
-		Constructor constructor3;
-
-		try {
-
-			ClassLoader loader = KeyMapper.class.getClassLoader();
-
-			if (loader == null)
-				loader = ClassLoader.getSystemClassLoader();
-
-			if (useJava14)
-				stroker_class       = loader.loadClass(STROKER_NAME14);
-			else
-				stroker_class       = loader.loadClass(STROKER_NAME);
-
-			constructor1 = stroker_class.getConstructor(new Class[] {KeyEvent.class});
-
-			constructor2 = stroker_class.getConstructor(new Class[] {KeyEvent.class,
-					boolean.class});
-
-			constructor3 = stroker_class.getConstructor(new Class[] {int.class,
-					boolean.class,
-					boolean.class,
-					boolean.class,
-					boolean.class,
-					int.class});
-
-		}
-		catch (Throwable t) {
-			stroker_class = null;
-			constructor1  = null;
-			constructor2  = null;
-			constructor3  = null;
-		}
-
-		NEW_STROKER1 = constructor1;
-		NEW_STROKER2 = constructor2;
-		NEW_STROKER3 = constructor3;
-	}
-
 	public static void init() {
 
 		if (mappedKeys != null)
 			return;
 
 		mappedKeys = new HashMap<KeyStroker, String>(60);
-		workStroke = newKeyStroker(0, false, false, false,false,KeyStroker.KEY_LOCATION_STANDARD);
+		workStroke = new KeyStroker(0, false, false, false,false,KeyStroker.KEY_LOCATION_STANDARD);
 
 		Properties keys = ConfigureFactory.getInstance().getProperties(
 				ConfigureFactory.KEYMAP);
@@ -130,103 +68,103 @@ public class KeyMapper {
 			// Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown, location
 
 			// my personal preference
-			// mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
+			// mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
 
 			if (useJava14) {
-				mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
-				mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_NUMPAD),"[enter].alt2");
+				mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
+				mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_NUMPAD),"[enter].alt2");
 			}
 			else
-				mappedKeys.put(newKeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
+				mappedKeys.put(new KeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
 
-			mappedKeys.put(newKeyStroker(8, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[backspace]");
-			mappedKeys.put(newKeyStroker(9, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[tab]");
-			mappedKeys.put(newKeyStroker(9, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[backtab]");
-			mappedKeys.put(newKeyStroker(127, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[delete]");
-			mappedKeys.put(newKeyStroker(155, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[insert]");
-			mappedKeys.put(newKeyStroker(19, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[clear]");
-
-			if (useJava14)
-				mappedKeys.put(newKeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_LEFT),"[reset]");
-			else
-				mappedKeys.put(newKeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[reset]");
+			mappedKeys.put(new KeyStroker(8, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[backspace]");
+			mappedKeys.put(new KeyStroker(9, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[tab]");
+			mappedKeys.put(new KeyStroker(9, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[backtab]");
+			mappedKeys.put(new KeyStroker(127, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[delete]");
+			mappedKeys.put(new KeyStroker(155, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[insert]");
+			mappedKeys.put(new KeyStroker(19, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[clear]");
 
 			if (useJava14)
-				mappedKeys.put(newKeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
+				mappedKeys.put(new KeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_LEFT),"[reset]");
 			else
-				mappedKeys.put(newKeyStroker(27, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
-
-			mappedKeys.put(newKeyStroker(35, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[eof]");
-			mappedKeys.put(newKeyStroker(36, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[home]");
-			mappedKeys.put(newKeyStroker(39, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[right]");
-			mappedKeys.put(newKeyStroker(39, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[nextword]");
-			mappedKeys.put(newKeyStroker(37, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[left]");
-			mappedKeys.put(newKeyStroker(37, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[prevword]");
-			mappedKeys.put(newKeyStroker(38, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[up]");
-			mappedKeys.put(newKeyStroker(40, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[down]");
-			mappedKeys.put(newKeyStroker(34, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pgdown]");
-			mappedKeys.put(newKeyStroker(33, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pgup]");
-
-			mappedKeys.put(newKeyStroker(96, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad0]");
-			mappedKeys.put(newKeyStroker(97, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad1]");
-			mappedKeys.put(newKeyStroker(98, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad2]");
-			mappedKeys.put(newKeyStroker(99, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad3]");
-			mappedKeys.put(newKeyStroker(100, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad4]");
-			mappedKeys.put(newKeyStroker(101, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad5]");
-			mappedKeys.put(newKeyStroker(102, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad6]");
-			mappedKeys.put(newKeyStroker(103, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad7]");
-			mappedKeys.put(newKeyStroker(104, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad8]");
-			mappedKeys.put(newKeyStroker(105, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad9]");
-
-			mappedKeys.put(newKeyStroker(109, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[field-]");
-			mappedKeys.put(newKeyStroker(107, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[field+]");
-			mappedKeys.put(newKeyStroker(112, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf1]");
-			mappedKeys.put(newKeyStroker(113, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf2]");
-			mappedKeys.put(newKeyStroker(114, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf3]");
-			mappedKeys.put(newKeyStroker(115, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf4]");
-			mappedKeys.put(newKeyStroker(116, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf5]");
-			mappedKeys.put(newKeyStroker(117, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf6]");
-			mappedKeys.put(newKeyStroker(118, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf7]");
-			mappedKeys.put(newKeyStroker(119, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf8]");
-			mappedKeys.put(newKeyStroker(120, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf9]");
-			mappedKeys.put(newKeyStroker(121, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf10]");
-			mappedKeys.put(newKeyStroker(122, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf11]");
-			mappedKeys.put(newKeyStroker(123, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf12]");
-			mappedKeys.put(newKeyStroker(112, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf13]");
-			mappedKeys.put(newKeyStroker(113, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf14]");
-			mappedKeys.put(newKeyStroker(114, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf15]");
-			mappedKeys.put(newKeyStroker(115, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf16]");
-			mappedKeys.put(newKeyStroker(116, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf17]");
-			mappedKeys.put(newKeyStroker(117, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf18]");
-			mappedKeys.put(newKeyStroker(118, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf19]");
-			mappedKeys.put(newKeyStroker(119, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf20]");
-			mappedKeys.put(newKeyStroker(120, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf21]");
-			mappedKeys.put(newKeyStroker(121, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf22]");
-			mappedKeys.put(newKeyStroker(122, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf23]");
-			mappedKeys.put(newKeyStroker(123, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf24]");
-			mappedKeys.put(newKeyStroker(112, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[help]");
-
-			mappedKeys.put(newKeyStroker(72, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[hostprint]");
+				mappedKeys.put(new KeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[reset]");
 
 			if (useJava14)
-				mappedKeys.put(newKeyStroker(67, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
+				mappedKeys.put(new KeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
 			else
-				mappedKeys.put(newKeyStroker(67, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
+				mappedKeys.put(new KeyStroker(27, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
+
+			mappedKeys.put(new KeyStroker(35, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[eof]");
+			mappedKeys.put(new KeyStroker(36, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[home]");
+			mappedKeys.put(new KeyStroker(39, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[right]");
+			mappedKeys.put(new KeyStroker(39, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[nextword]");
+			mappedKeys.put(new KeyStroker(37, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[left]");
+			mappedKeys.put(new KeyStroker(37, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[prevword]");
+			mappedKeys.put(new KeyStroker(38, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[up]");
+			mappedKeys.put(new KeyStroker(40, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[down]");
+			mappedKeys.put(new KeyStroker(34, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pgdown]");
+			mappedKeys.put(new KeyStroker(33, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pgup]");
+
+			mappedKeys.put(new KeyStroker(96, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad0]");
+			mappedKeys.put(new KeyStroker(97, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad1]");
+			mappedKeys.put(new KeyStroker(98, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad2]");
+			mappedKeys.put(new KeyStroker(99, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad3]");
+			mappedKeys.put(new KeyStroker(100, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad4]");
+			mappedKeys.put(new KeyStroker(101, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad5]");
+			mappedKeys.put(new KeyStroker(102, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad6]");
+			mappedKeys.put(new KeyStroker(103, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad7]");
+			mappedKeys.put(new KeyStroker(104, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad8]");
+			mappedKeys.put(new KeyStroker(105, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[keypad9]");
+
+			mappedKeys.put(new KeyStroker(109, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[field-]");
+			mappedKeys.put(new KeyStroker(107, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[field+]");
+			mappedKeys.put(new KeyStroker(112, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf1]");
+			mappedKeys.put(new KeyStroker(113, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf2]");
+			mappedKeys.put(new KeyStroker(114, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf3]");
+			mappedKeys.put(new KeyStroker(115, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf4]");
+			mappedKeys.put(new KeyStroker(116, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf5]");
+			mappedKeys.put(new KeyStroker(117, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf6]");
+			mappedKeys.put(new KeyStroker(118, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf7]");
+			mappedKeys.put(new KeyStroker(119, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf8]");
+			mappedKeys.put(new KeyStroker(120, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf9]");
+			mappedKeys.put(new KeyStroker(121, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf10]");
+			mappedKeys.put(new KeyStroker(122, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf11]");
+			mappedKeys.put(new KeyStroker(123, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf12]");
+			mappedKeys.put(new KeyStroker(112, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf13]");
+			mappedKeys.put(new KeyStroker(113, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf14]");
+			mappedKeys.put(new KeyStroker(114, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf15]");
+			mappedKeys.put(new KeyStroker(115, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf16]");
+			mappedKeys.put(new KeyStroker(116, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf17]");
+			mappedKeys.put(new KeyStroker(117, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf18]");
+			mappedKeys.put(new KeyStroker(118, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf19]");
+			mappedKeys.put(new KeyStroker(119, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf20]");
+			mappedKeys.put(new KeyStroker(120, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf21]");
+			mappedKeys.put(new KeyStroker(121, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf22]");
+			mappedKeys.put(new KeyStroker(122, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf23]");
+			mappedKeys.put(new KeyStroker(123, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[pf24]");
+			mappedKeys.put(new KeyStroker(112, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[help]");
+
+			mappedKeys.put(new KeyStroker(72, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[hostprint]");
 
 			if (useJava14)
-				mappedKeys.put(newKeyStroker(86, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
+				mappedKeys.put(new KeyStroker(67, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
 			else
-				mappedKeys.put(newKeyStroker(86, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
+				mappedKeys.put(new KeyStroker(67, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
 
-			mappedKeys.put(newKeyStroker(39, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markright]");
-			mappedKeys.put(newKeyStroker(37, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markleft]");
-			mappedKeys.put(newKeyStroker(38, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markup]");
-			mappedKeys.put(newKeyStroker(40, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markdown]");
+			if (useJava14)
+				mappedKeys.put(new KeyStroker(86, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
+			else
+				mappedKeys.put(new KeyStroker(86, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
 
-			mappedKeys.put(newKeyStroker(155, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[dupfield]");
-			mappedKeys.put(newKeyStroker(17, true, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[newline]");
-			mappedKeys.put(newKeyStroker(34, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[jumpnext]");
-			mappedKeys.put(newKeyStroker(33, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[jumpprev]");
+			mappedKeys.put(new KeyStroker(39, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markright]");
+			mappedKeys.put(new KeyStroker(37, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markleft]");
+			mappedKeys.put(new KeyStroker(38, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markup]");
+			mappedKeys.put(new KeyStroker(40, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markdown]");
+
+			mappedKeys.put(new KeyStroker(155, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[dupfield]");
+			mappedKeys.put(new KeyStroker(17, true, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[newline]");
+			mappedKeys.put(new KeyStroker(34, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[jumpnext]");
+			mappedKeys.put(new KeyStroker(33, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[jumpprev]");
 
 			saveKeyMap();
 		}
@@ -238,71 +176,6 @@ public class KeyMapper {
 
 	}
 
-	private static KeyStroker newKeyStroker(int keyCode,
-			boolean isShiftDown,
-			boolean isControlDown,
-			boolean isAltDown,
-			boolean isAltGrDown,
-			int location) {
-
-		Integer keyInt = new Integer(keyCode);
-		Boolean shiftBool = new Boolean(isShiftDown);
-		Boolean controlBool = new Boolean(isControlDown);
-		Boolean altBool = new Boolean(isAltDown);
-		Boolean altGrBool = new Boolean(isAltGrDown);
-		Integer locationInt = new Integer(location);
-
-
-		try {
-			Object obj= NEW_STROKER3.newInstance(new Object[] {keyInt,
-					shiftBool,
-					controlBool,
-					altBool,
-					altGrBool,
-					locationInt});
-			return (KeyStroker)obj;
-		}
-		catch (Throwable crap) {
-
-		}
-
-		return new KeyStroker(keyCode, isShiftDown, isControlDown, isAltDown,
-				isAltGrDown, location );
-
-	}
-
-	private static KeyStroker newKeyStroker(KeyEvent keyEvent) {
-
-
-		try {
-			Object obj= NEW_STROKER1.newInstance(new Object[] {keyEvent});
-			return (KeyStroker)obj;
-		}
-		catch (Throwable crap) {
-
-		}
-
-		return new KeyStroker(keyEvent);
-
-	}
-
-	private static KeyStroker newKeyStroker(KeyEvent keyEvent, boolean isAltGrDown) {
-
-		Boolean altGrBool = new Boolean(isAltGrDown);
-
-
-		try {
-			Object obj= NEW_STROKER2.newInstance(new Object[] {keyEvent,
-					altGrBool});
-			return (KeyStroker)obj;
-		}
-		catch (Throwable crap) {
-
-		}
-
-		return new KeyStroker(keyEvent, isAltGrDown);
-
-	}
 
 	private static boolean loadKeyStrokes(Properties keystrokes) {
 
@@ -365,7 +238,7 @@ public class KeyMapper {
 				}
 			}
 
-			mappedKeys.put(newKeyStroker(kc, is, ic, ia, iag,location),theKey);
+			mappedKeys.put(new KeyStroker(kc, is, ic, ia, iag,location),theKey);
 
 		}
 
@@ -563,13 +436,13 @@ public class KeyMapper {
 			String keyVal = i.next();
 			if (keyVal.equals(which)) {
 				mappedKeys.remove(ks);
-				mappedKeys.put(newKeyStroker(ke),keyVal);
+				mappedKeys.put(new KeyStroker(ke),keyVal);
 				return;
 			}
 		}
 
 		// if we got here it was a dead key and we need to add it.
-		mappedKeys.put(newKeyStroker(ke),which);
+		mappedKeys.put(new KeyStroker(ke),which);
 
 	}
 
@@ -586,13 +459,13 @@ public class KeyMapper {
 			String keyVal = i.next();
 			if (keyVal.equals(which)) {
 				mappedKeys.remove(ks);
-				mappedKeys.put(newKeyStroker(ke, isAltGr), keyVal);
+				mappedKeys.put(new KeyStroker(ke, isAltGr), keyVal);
 				return;
 			}
 		}
 
 		// if we got here it was a dead key and we need to add it.
-		mappedKeys.put(newKeyStroker(ke, isAltGr), which);
+		mappedKeys.put(new KeyStroker(ke, isAltGr), which);
 
 	}
 
