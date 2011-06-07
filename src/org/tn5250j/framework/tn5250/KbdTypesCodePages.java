@@ -52,6 +52,7 @@ public enum KbdTypesCodePages {
 	NWB("Norwegian","NWB","697","277","277"),
 	NWI("Norwegian MNCS","NWI","697","500","500"),
 	PLB("Polish","PLB","959","870","870"),
+	PLBX("Polish 870-pl","PLB","959","870","870-pl"), // Workaround, to catch up Java codepage '870-pl'
 	PRB("Portuguese","PRB","697","37","37"),
 	PRI("Portuguese MNCS","PRI","697","500","500"),
 	RMB("Romanian","RMB","959","870","870"),
@@ -60,6 +61,7 @@ public enum KbdTypesCodePages {
 	YGI("Serbian, Latin","YGI","959","870","870"),
 	RCB("Simplified Chinese","RCB","1174","836","836"),
 	SKB("Slovakian","SKB","959","870","870"),
+	SKBX("Slovakian 870-sk","SKB","959","870","870-sk"), // Workaround, to catch up Java codepage '870-sk'
 //	YGI("Slovenian","YGI","959","870","870"),
 	SPB("Spanish","SPB","697","284","284"),
 	SPI("Spanish MNCS","SPI","697","500","500"),
@@ -99,5 +101,11 @@ public enum KbdTypesCodePages {
 		this.ccsid = ccsid;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "[description=" + description + ", kbdType=" + kbdType
+		+ ", charset=" + charset + ", codepage=" + codepage
+		+ ", ccsid=" + ccsid + "]";
+	}
+
 }

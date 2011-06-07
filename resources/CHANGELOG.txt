@@ -4,6 +4,7 @@
 
 --- v0.7.0 ----------------------------------------------------- ??/??/2011 ---
 
+FIX: wrong keyboard mapping for CCSID 870-pl and 870-sk
 FIX: reworked tab close & session close, now unified handling on all events
 CHG: New default option use Enter instead of Ctrl key (See feature request ID: 3161670 and poll on mailing list in 01/2011)
 CHG: New default option use 'mouse wheel: send page up/down'

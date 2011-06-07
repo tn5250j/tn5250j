@@ -2825,6 +2825,9 @@ public final class tnvt implements Runnable {
 				break;
 			}
 		}
+		if (log.isInfoEnabled()) {
+			log.info("Choosed keyboard mapping " + kbdTypesCodePage.toString() + " for code page " + cp);
+		}
 	}
 
 	public final CodePage getCodePage() {
