@@ -66,15 +66,15 @@ import org.tn5250j.tools.LangTool;
 public class SessionAttributes extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	String fileName;
-	Properties props = null;
-	JPanel jpm = new JPanel(new BorderLayout());
+	private final String fileName;
+	private final Properties props;
+	private JPanel jpm = new JPanel(new BorderLayout());
 
-	private SessionConfig changes = null;
+	private final SessionConfig changes;
 
-	JTree tree = new JTree();
-	CardLayout cardLayout;
-	JPanel jp;
+	private JTree tree = new JTree();
+	private CardLayout cardLayout;
+	private JPanel jp;
 
 	public SessionAttributes(Frame parent, SessionConfig config ) {
 		super(parent);
