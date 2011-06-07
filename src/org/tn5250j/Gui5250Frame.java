@@ -121,12 +121,22 @@ SessionJumpListener {
 		if(e.getID() == WindowEvent.WINDOW_CLOSING) {
 			final int oldidx = sessTabbedPane.getSelectedIndex();
 			boolean close = true;
-			for (int i=0,len=sessTabbedPane.getTabCount(); i<len; i++) {
+			
+			if (hideTabBar && sessTabbedPane.getTabCount() == 0) {
+				 for (int i=0,len=this.getContentPane().getComponentCount(); i < len; i++) {
+					 if (this.getContentPane().getComponent(i) instanceof SessionPanel) {
+						 SessionPanel sesspanel = (SessionPanel)this.getContentPane().getComponent(i);
+						 close &= sesspanel.confirmCloseSession(false);
+						 break;
+					 }
+				 }
+			}
+			
+			for (int i=0,len=sessTabbedPane.getTabCount(); i<len && close; i++) {
 				sessTabbedPane.setSelectedIndex(i);
 				updateSessionTitle();
 				SessionPanel sesspanel = (SessionPanel)sessTabbedPane.getSelectedComponent();
 				close &= sesspanel.confirmCloseSession(false);
-				if (!close) break;
 			}
 			if (!close) {
 				// restore old selected index
