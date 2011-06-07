@@ -58,6 +58,7 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
@@ -70,10 +71,10 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * (Hint: old name was SessionGUI)
  */
 public class SessionPanel extends JPanel implements ComponentListener,
-													ActionListener,
-													RubberBandCanvasIF,
-													SessionConfigListener,
-													SessionListener {
+ActionListener,
+RubberBandCanvasIF,
+SessionConfigListener,
+SessionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -236,48 +237,6 @@ public class SessionPanel extends JPanel implements ComponentListener,
 		else
 			doubleClick = false;
 
-		//	         DropTargetAdapter dta = new DropTargetAdapter() {
-		//	            public void drop(DropTargetDropEvent dtde) {
-		//	               Transferable tr = dtde.getTransferable();
-		//	               dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-		//	               DataFlavor[] dfs = dtde.getCurrentDataFlavors();
-		//	               if(tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-		//	                  try {
-		//	                     log.debug("dtde drop it2 ");
-		//
-		//	                     java.util.List fileList =
-		//	                        (java.util.List)tr.getTransferData(DataFlavor.javaFileListFlavor);
-		//	                        // implementation for when we are able to process a list
-		//	                        //   of files.
-		//   //                   Iterator iterator = fileList.iterator();
-		//   //                   if (iterator.hasNext()) {
-		//   //                      File file = (File)iterator.next();
-		//   //                   }
-		//	                     java.io.File file = (java.io.File)fileList.get(0);
-		//	                     System.out.println(file.toString());
-		//	                     dtde.dropComplete(true);
-		//	                     doTransfer(file);
-		//	                     return;
-		//	                  }
-		//	                  catch (UnsupportedFlavorException ufe) {
-		//	                     log.info("importData: unsupported data flavor");
-		//	                  }
-		//	                  catch (java.io.IOException ieo) {
-		//	                     log.warn("importData: I/O exception");
-		//	                  }
-		//	                  catch (Exception ex) {
-		//	                     log.warn(""+ex.getMessage());
-		//	                  }
-		//	                  finally {
-		//	                     dtde.dropComplete(false);
-		//	                  }
-		//	               }
-		//	            }
-		//	         };
-		//	         DropTarget dt = new DropTarget((JPanel)this,dta);
-		//
-		//	         setDropTarget(dt);
-
 	}
 
 	public void setRunningHeadless(boolean headless) {
@@ -372,43 +331,44 @@ public class SessionPanel extends JPanel implements ComponentListener,
 
 	}
 
-	public void closeSession() {
 
-		Object[]      message = new Object[1];
-		message[0] = LangTool.getString("cs.message");
+	/**
+	 * @param reallyclose TRUE if session/tab should be closed;
+	 *                    FALSE, if only ask for confirmation
+	 * @return True if closed; False if still open
+	 */
+	public boolean confirmCloseSession(boolean reallyclose) {
+		// regular, only ask on connected sessions
+		boolean close = !isConnected() || confirmTabClose();
+		if (close) {
+			// special case, no SignonScreen than confirm signing off
+			close = isOnSignOnScreen() || confirmSignOffClose();
+		}
+		if (close && reallyclose) {
+			fireEmulatorAction(EmulatorActionEvent.CLOSE_SESSION);
+		}
+		return close;
+	}
 
-		String[] options = {LangTool.getString("cs.optThis"),
-				LangTool.getString("cs.optAll"),
-				LangTool.getString("cs.optCancel")};
-
-		int result = JOptionPane.showOptionDialog(
-				this.getParent(),            // the parent that the dialog blocks
-				message,                           // the dialog message array
-				LangTool.getString("cs.title"),    // the title of the dialog window
-				JOptionPane.DEFAULT_OPTION,        // option type
-				JOptionPane.QUESTION_MESSAGE,      // message type
-				null,                              // optional icon, use null to use the default icon
-				options,                           // options string array, will be made into buttons//
-				options[0]                         // option that should be made into a default button
-		);
-
-		if (result == 0) {
-			if (!this.isOnSignOnScreen()) {
-
-				if (confirmClose()) {
-					closeMe();
-
+	/**
+	 * Asks the user to confirm tab close,
+	 * only if configured (option 'confirm tab close')
+	 *
+	 * @param sesConfig
+	 * @return true if tab should be closed, false if not
+	 */
+	private boolean confirmTabClose() {
+		boolean result = true;
+		if (session.getConfiguration().isPropertyExists("confirmTabClose")) {
+			this.requestFocus();
+			final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(this);
+			if(session.getConfiguration().getStringProperty("confirmTabClose").equals("Yes")) {
+				if(!tabclsdlg.show()) {
+					result = false;
 				}
 			}
-			else {
-				closeMe();
-			}
-
 		}
-		if (result == 1) {
-			fireEmulatorAction(EmulatorActionEvent.CLOSE_EMULATOR);
-		}
-
+		return result;
 	}
 
 	/**
@@ -418,11 +378,11 @@ public class SessionPanel extends JPanel implements ComponentListener,
 	 *
 	 * @return whether or not the signon on screen is the current screen
 	 */
-	private boolean confirmClose() {
+	private boolean confirmSignOffClose() {
 
 		if (sesConfig.isPropertyExists("confirmSignoff") &&
 				sesConfig.getStringProperty("confirmSignoff").equals("Yes")) {
-
+			this.requestFocus();
 			int result = JOptionPane.showConfirmDialog(
 					this.getParent(),            // the parent that the dialog blocks
 					LangTool.getString("messages.signOff"),  // the dialog message array
@@ -540,14 +500,18 @@ public class SessionPanel extends JPanel implements ComponentListener,
 		session.getVT().sendAidKey(whichOne);
 	}
 
-	public void changeConnection() {
+	/**
+	 * Toggles connection (connect or disconnect)
+	 */
+	public void toggleConnection() {
 
-		if (session.getVT().isConnected()) {
-
-			session.getVT().disconnect();
-
-		}
-		else {
+		if (isConnected()) {
+			// special case, no SignonScreen than confirm signing off
+			boolean disconnect = confirmTabClose() && (isOnSignOnScreen() || confirmSignOffClose());
+			if (disconnect) {
+				session.getVT().disconnect();
+			}
+		} else {
 			// lets set this puppy up to connect within its own thread
 			Runnable connectIt = new Runnable() {
 				@Override
@@ -608,8 +572,7 @@ public class SessionPanel extends JPanel implements ComponentListener,
 		if (actionListeners != null) {
 			int size = actionListeners.size();
 			for (int i = 0; i < size; i++) {
-				EmulatorActionListener target =
-					actionListeners.elementAt(i);
+				EmulatorActionListener target =	actionListeners.elementAt(i);
 				EmulatorActionEvent sae = new EmulatorActionEvent(this);
 				sae.setAction(action);
 				target.onEmulatorAction(sae);
@@ -646,20 +609,9 @@ public class SessionPanel extends JPanel implements ComponentListener,
 		setMacroRunning(false);
 	}
 
-	//   public void sendNegResponse2(int ec) {
-	//
-	//	      vt.sendNegResponse2(ec);
-	//
-	//   }
-
 	public void closeDown() {
 
 		sesConfig.saveSessionProps(getParent());
-
-		// Let's stop the cursor blinking as well as it seems to be causing problems
-		//	      if (screen.isBlinkCursor()) {
-		//	         screen.setBlinkCursorStop();
-		//	      }
 
 		session.getVT().disconnect();
 		// Added by Luc to fix a memory leak. The keyHandler was still receiving
@@ -704,12 +656,6 @@ public class SessionPanel extends JPanel implements ComponentListener,
 					"Error",
 					JOptionPane.ERROR_MESSAGE,null);
 		}
-
-	}
-
-	protected void closeMe() {
-
-		fireEmulatorAction(EmulatorActionEvent.CLOSE_SESSION);
 
 	}
 

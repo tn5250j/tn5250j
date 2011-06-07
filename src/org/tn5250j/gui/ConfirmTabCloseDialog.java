@@ -34,6 +34,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.tn5250j.tools.LangTool;
+
 /**
  * Small dialog asking the user to confirm the close tab request
  *
@@ -41,7 +43,7 @@ import javax.swing.JPanel;
  */
 public class ConfirmTabCloseDialog {
 
-	private final static String[] OPTIONS = new String[] { "Close", "Cancel" };
+	private final static String[] OPTIONS = new String[] {  LangTool.getString("key.labelClose"), LangTool.getString("ss.optCancel") };
 
 	private final Component parent;
 
@@ -75,7 +77,7 @@ public class ConfirmTabCloseDialog {
 				OPTIONS, // options string array, will be made into buttons
 				OPTIONS[0]);
 
-		dialog = pane.createDialog(parent, "Confirm Tab Close");
+		dialog = pane.createDialog(parent,  LangTool.getString("sa.confirmTabClose"));
 
 	}
 

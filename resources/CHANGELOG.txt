@@ -4,6 +4,7 @@
 
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 
+FIX: reworked tab close & session close, now unified handling on all events
 CHG: New default option use Enter instead of Ctrl key (See feature request ID: 3161670 and poll on mailing list in 01/2011)
 CHG: New default option use 'mouse wheel: send page up/down'
 CHG: New default option 'confirm signon screen before close'
