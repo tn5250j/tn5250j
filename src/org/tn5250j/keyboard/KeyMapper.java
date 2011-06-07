@@ -130,10 +130,10 @@ public class KeyMapper {
 			// Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown, location
 
 			// my personal preference
-			mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
+			// mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
 
 			if (useJava14) {
-				mappedKeys.put(newKeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_RIGHT),"[enter]");
+				mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
 				mappedKeys.put(newKeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_NUMPAD),"[enter].alt2");
 			}
 			else
