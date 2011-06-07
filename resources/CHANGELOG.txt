@@ -10,7 +10,8 @@ CHG: New default option use Enter instead of Ctrl key (See feature request ID: 3
 CHG: New default option use 'mouse wheel: send page up/down'
 CHG: New default option 'confirm signon screen before close'
 CHG: simplified internal mouse wheel scroll implementation, discarded older JRE support (older than 1.4.2)
-DEL: dropped internal source code for older JRE support (older than 1.4.2) 
+DEL: dropped internal source code for older JRE support (older than 1.4.2)
+DEL: finally dropped broken MDI implementation 
 
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 

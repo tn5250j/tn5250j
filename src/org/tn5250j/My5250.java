@@ -69,7 +69,6 @@ EmulatorActionListener {
 	private static BootStrapper strapper = null;
 	private SessionManager manager;
 	private static List<GUIViewInterface> frames;
-	private static boolean useMDIFrames;
 	private TN5250jSplashScreen splash;
 	private int step;
 
@@ -93,7 +92,7 @@ EmulatorActionListener {
 
 		// sets the starting frame type.  At this time there are tabs which is
 		//    default and Multiple Document Interface.
-		startFrameType();
+//		startFrameType();
 
 		frames = new ArrayList<GUIViewInterface>();
 
@@ -237,9 +236,9 @@ EmulatorActionListener {
 
 	static public void main(String[] args) {
 
-		if (isSpecified("-MDI",args)) {
-			useMDIFrames = true;
-		}
+//		if (isSpecified("-MDI",args)) {
+//			useMDIFrames = true;
+//		}
 
 		if (!isSpecified("-nc",args)) {
 
@@ -426,15 +425,15 @@ EmulatorActionListener {
 		return null;
 	}
 
-	private static void startFrameType() {
-
-		if (sessions.containsKey("emul.interface")) {
-			String s = sessions.getProperty("emul.interface");
-			if (s.equalsIgnoreCase("MDI"))
-				useMDIFrames = true;
-
-		}
-	}
+//	private static void startFrameType() {
+//
+////		if (sessions.containsKey("emul.interface")) {
+////			String s = sessions.getProperty("emul.interface");
+////			if (s.equalsIgnoreCase("MDI"))
+////				useMDIFrames = true;
+////
+////		}
+//	}
 
 	private void startNewSession() {
 
@@ -644,11 +643,11 @@ EmulatorActionListener {
 		if (sessions.containsKey("emul.height"))
 			height = Integer.parseInt(sessions.getProperty("emul.height"));
 
-		if (useMDIFrames)
-			frame1 = new Gui5250MDIFrame(this);
-		//         frame1 = new Gui5250SplitFrame(this);
-		else
-			frame1 = new Gui5250Frame(this);
+//		if (useMDIFrames)
+//			frame1 = new Gui5250MDIFrame(this);
+//		//         frame1 = new Gui5250SplitFrame(this);
+//		else
+		frame1 = new Gui5250Frame(this);
 
 		frame1.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 

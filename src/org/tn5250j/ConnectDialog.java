@@ -167,7 +167,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
    
    // property input structures
    JRadioButton intTABS = null;
-   JRadioButton intMDI = null;
    JCheckBox hideTabBar = null;
    JCheckBox showMe = null;
    JCheckBox lastView = null;
@@ -462,23 +461,13 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       intTABS.setSelected(true);
       intTABS.addItemListener(new java.awt.event.ItemListener() {
          public void itemStateChanged(ItemEvent e) {
-            intTABS_itemStateChanged(e);
+            // intTABS_itemStateChanged(e);
+        	// nothing to do because there is only one option
          }
       });
-      intMDI = new JRadioButton(LangTool.getString("conf.labelMDI"));
 
       // add the interface options to the group control
       intGroup.add(intTABS);
-      intGroup.add(intMDI);
-
-      if (props.containsKey("emul.interface")) {
-         if (props.getProperty("emul.interface").equalsIgnoreCase("MDI"))
-            intMDI.setSelected(true);
-      }
-
-      // MDI interface will be phased out because it is a pain in the ass
-      // to implement correctly.
-      intMDI.setEnabled(false);
 
       gbc = new GridBagConstraints();
       gbc.gridx = 0;
@@ -492,13 +481,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       gbc.anchor = GridBagConstraints.WEST;
       gbc.insets = new Insets(5, 27, 5, 10);
       interfacePanel.add(hideTabBar, gbc);
-      gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 2;
-      gbc.anchor = GridBagConstraints.WEST;
-      gbc.insets = new Insets(5, 10, 10, 10);
-      interfacePanel.add(intMDI, gbc);
-      // interfacePanel.add(new JLabel());
 
       // create startup panel
       JPanel startupPanel = new JPanel();
@@ -1282,22 +1264,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 	  etnProps.clear();
 	  etnProps.putAll(newProps);
       etm.removeSession(selectedRow);
-   }
-
-   void intTABS_itemStateChanged(ItemEvent e) {
-
-      if (intTABS.isSelected()) {
-         props.remove("emul.interface");
-         hideTabBar.setEnabled(true);
-
-      }
-      else {
-
-         props.setProperty("emul.interface", "MDI");
-         hideTabBar.setEnabled(false);
-
-      }
-
    }
 
    void hideTabBar_itemStateChanged(ItemEvent e) {
