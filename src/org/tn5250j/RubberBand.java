@@ -34,12 +34,12 @@ import java.awt.event.MouseMotionAdapter;
 import javax.swing.SwingUtilities;
 
 public abstract class RubberBand {
-	private RubberBandCanvasIF canvas;
-	protected Point startPoint;
-	protected Point endPoint;
-	private boolean eraseSomething = false;
-	private boolean isSomethingBounded = false;
-	private boolean isDragging = false;
+	private volatile RubberBandCanvasIF canvas;
+	protected volatile Point startPoint;
+	protected volatile Point endPoint;
+	private volatile boolean eraseSomething = false;
+	private volatile boolean isSomethingBounded = false;
+	private volatile boolean isDragging = false;
 
 	private class MouseHandler extends MouseAdapter
 	{
@@ -72,8 +72,12 @@ public abstract class RubberBand {
 		public void mouseDragged(MouseEvent e) {
 
 			if(!SwingUtilities.isRightMouseButton(e) && getCanvas().canDrawRubberBand(RubberBand.this)) {
-				isDragging = true;
 				erase();
+				if (!isDragging) {
+					reset();
+					start(canvas.translateStart(e.getPoint()));
+				}
+				isDragging = true;
 				stop(canvas.translateEnd(e.getPoint()));
 				notifyRubberBandCanvas();
 				draw();

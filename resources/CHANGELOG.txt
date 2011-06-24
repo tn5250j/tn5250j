@@ -4,14 +4,15 @@
 
 --- v0.7.0 ----------------------------------------------------- ??/??/2011 ---
 
-FIX: wrong keyboard mapping for CCSID 870-pl and 870-sk
-FIX: reworked tab close & session close, now unified handling on all events
+FIX: Wrong keyboard mapping for CCSID 870-pl and 870-sk
+FIX: Reworked tab close & session close, now unified handling on all events
 CHG: New default option use Enter instead of Ctrl key (See feature request ID: 3161670 and poll on mailing list in 01/2011)
 CHG: New default option use 'mouse wheel: send page up/down'
 CHG: New default option 'confirm signon screen before close'
-CHG: simplified internal mouse wheel scroll implementation, discarded older JRE support (older than 1.4.2)
-DEL: dropped internal source code for older JRE support (older than 1.4.2)
-DEL: finally dropped broken MDI implementation 
+CHG: Simplified internal mouse wheel scroll implementation, discarded older JRE support (older than 1.4.2)
+CHG: When selecting areas with mouse, always start a new rectangle
+DEL: Dropped internal source code for older JRE support (older than 1.4.2)
+DEL: Finally dropped broken MDI implementation 
 
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 
