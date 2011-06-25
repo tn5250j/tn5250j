@@ -14,28 +14,14 @@
      target="$INSTALL_PATH\bin\tn5250j.bat"
      workingDirectory="$INSTALL_PATH\lib"
      commandLine=""
-     description="A 5250 telnet emulator written in java"
-     iconFile="$INSTALL_PATH\bin\icons\izpack.ico"
+     description="A 5250 Telnet emulator written in Java"
+     iconFile="$INSTALL_PATH\bin\icons\tnicon.ico"
      iconIndex="0"
      initialState="noShow">
 
      <createForPack name="Core"/>
 
    </shortcut>
-
-   <!--shortcut
-     name="Documentation"
-     programGroup="yes"
-     desktop="no"
-     applications="no"
-     startMenu="no"
-     startup="no"
-     target="$INSTALL_PATH\doc\izpack\html\izpack-doc.html"
-     commandLine=""
-     description="IzPack user documentation (HTML format)">
-
-     <createForPack name="Documentation" />
-   </shortcut -->
 
    <shortcut
      name="Uninstaller"
