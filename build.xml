@@ -338,7 +338,7 @@
         <tar destfile="${dist.dir}/${dist.src.name}.tar"
         	casesensitive="true"
             basedir="${dist.dir}"
-            includes="**">
+        	excludes="**/_svn/**, **/.svn/**">
         </tar>
         <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
         <delete file="${dist.dir}/${dist.src.name}.tar"/>
@@ -356,25 +356,20 @@
     <delete dir="${dist.dir}/installer"/>
     <mkdir dir="${dist.dir}/installer"/>
     <copy todir="${dist.dir}/installer" includeEmptyDirs="yes">
-      <!--fileset dir="${basedir}">
-        <include name="bin/**"/>
-        <include name="lib/*.jar"/>
-      </fileset-->
        <fileset dir="${build.dir}">
           <include name="${jarname}" />
        </fileset>
-      <fileset dir="${dist.dir}/${dist.base.name}/installer">
-        <include name="**"/>
-      </fileset>
+      <fileset dir="${dist.dir}/${dist.base.name}/installer" excludes="**/_svn/**, **/.svn/**" />
       <fileset dir="${dist.dir}/${dist.base.name}/resources">
-        <include name="readme.txt"/>
+        <include name="*.txt"/>
+      	<include name="*.htm*"/>
+      	<include name="*.php"/>
         <include name="COPYING"/>
         <include name="tn5250jSplash.jpg"/>
-      	<include name="tn5250j-icon*.*"/>
+        <include name="tn5250j*.png"/>
+      	<include name="tn5250j*.ico"/>
       </fileset>
-      <fileset dir="${rtm.lib.dir}">
-        <include name="**"/>
-      </fileset>
+      <fileset dir="${rtm.lib.dir}" excludes="**/_svn/**, **/.svn/**" />
     </copy>
 
     <!-- We call IzPack -->
@@ -421,8 +416,10 @@
     	               workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
                    screenmenu="true" >
          <jarfileset dir="${dist.dir}/${dist.base.name}">
-           <include name="**/*.jar" />
-           <exclude name="**/CVS" />
+            <include name="**/*.jar" />
+            <exclude name="**/CVS" />
+            <exclude name="**/_svn/**" />
+            <exclude name="**/.svn/**" />
          </jarfileset>
        </jarbundler>
 	   </target>
