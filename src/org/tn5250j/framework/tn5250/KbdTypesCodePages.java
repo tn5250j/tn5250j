@@ -10,7 +10,7 @@ public enum KbdTypesCodePages {
 	ALI("Albanian","ALI","697","500","500"),
 	CLB("Arabic","CLB","235","420","420"),
 	AGB("Austrian/ German","AGB","697","273","273"),
-	AGE("Austrian/ German","AGB","697","1141","1141"),
+	AGE("Austrian/ German","AGB","695","1141","1141"),
 	AGI("Austrian/German (MNCS)","AGI","697","500","500"),
 	BLI("Belgian MNCS","BLI","697","500","500"),
 	BRB("Brazilian Portuguese","BRB","697","37","37"),
