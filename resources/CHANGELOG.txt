@@ -2,6 +2,10 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.?.? ----------------------------------------------------- ??/??/???? ---
+
+FIX: Updated JarBundler and fixed tnicon.icns (Thanks to Christian Gut)
+
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 
 ADD: center connect dialog on top of main frame/window

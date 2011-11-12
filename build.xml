@@ -257,7 +257,7 @@
         </copy>
     </target>
     
-    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-nosubdir-zip, dist-bin-scripting-nosubdir-zip" description="Create a Zip and TGZ Archives with all the binary files">
+    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-nosubdir-zip, dist-bin-scripting-nosubdir-zip, dist-bin-jarbundle" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
     <target name= "dist-bin-prepare" depends="package"  description="Prepares binary distribution">
@@ -393,14 +393,14 @@
 
 <!-- start jar bundler task -->
 	<taskdef name="jarbundler"
-	                  classpath="${dev.lib.dir}/jarbundler-1.4.jar"
-	                  classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
+	                  classpath="${dev.lib.dir}/jarbundler-2.2.0.jar"
+	                  classname="net.sourceforge.jarbundler.JarBundler" />
 	
-    <target name= "dist-bin-jarbundle" depends="dist-bin-prepare"  description="Prepares jar bundle binary distribution">
+    <target name= "dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
                    mainclass="org.tn5250j.My5250"
-                   icon="${resource.dir}/tnicon.ico"
+                   icon="${resource.dir}/tnicon.icns"
                    version="${version}"
                    infostring="${Name} ${version}, (c) ${year}"
                    aboutmenuname="${Name}"
@@ -415,7 +415,7 @@
                    antialiasedtext="true"
                    liveresize="true"
                    growboxintrudes="false"
-    	               workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+                   workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
                    screenmenu="true" >
          <jarfileset dir="${dist.dir}/${dist.base.name}">
            <include name="**/*.jar" />
