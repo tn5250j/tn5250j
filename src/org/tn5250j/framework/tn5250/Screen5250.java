@@ -2100,8 +2100,8 @@ public class Screen5250 {
 
 			row = lastPos / numCols;
 		}
-		if (row > lenScreen - 1)
-			row = lenScreen - 1;
+ 		if (row > (lenScreen / numCols) - 1)
+ 			row = (lenScreen / numCols) - 1;
 
 		return row;
 
@@ -3155,6 +3155,7 @@ public class Screen5250 {
 		//    0 - up
 		//    1 - down
 		int updown = direction & 0x80;
+		final int lines = direction & 0x7F; 
 
 		// calculate the reference points for the move.
 		int start = this.getPos(topLine - 1, 0);
@@ -3166,14 +3167,25 @@ public class Screen5250 {
 		switch (updown) {
 		case 0:
 			//  Now round em up and head em UP.
-			for (int x = start; x < len + numCols; x++) {
-				planes.setChar(x, planes.getChar(x + numCols));
+			for (int x = start; x < end + numCols; x++) {
+				if (x + lines * numCols >= lenScreen) {
+					//Clear at the end
+					planes.setChar(x, ' ');
+				} else {
+					planes.setChar(x, planes.getChar(x + lines * numCols  ));
+				}
 			}
 			break;
 		case 1:
 			//  Now round em up and head em DOWN.
 			for (int x = end + numCols; x > 0; x--) {
-				planes.setChar(x + numCols, planes.getChar(x));
+				if ((x - lines * numCols ) < 0 ) {
+					//Do nothing ... tooo small!!!
+				} else {
+					planes.setChar(x - lines  * numCols, planes.getChar(x));
+					//and clear 
+					planes.setChar(x, ' ');
+				}
 			}
 			break;
 		default:

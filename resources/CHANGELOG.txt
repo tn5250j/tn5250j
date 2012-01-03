@@ -9,6 +9,7 @@ FIX: Wrong keyboard mapping for CCSID 870-pl and 870-sk
 FIX: Reworked tab close & session close, now unified handling on all events
 FIX: Charset for CCSID 1141, according to http://www-01.ibm.com/software/globalization/cs/cs00695.html
 FIX: Updated JarBundler and fixed tnicon.icns (Thanks to Christian Gut)
+FIX: bug id:3469004 (Scrolling Problem) - Thanks to Frank Töpfer
 CHG: New default option use Enter instead of Ctrl key (See feature request ID: 3161670 and poll on mailing list in 01/2011)
 CHG: New default option use 'mouse wheel: send page up/down'
 CHG: New default option 'confirm signon screen before close'
