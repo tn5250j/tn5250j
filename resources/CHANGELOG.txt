@@ -5,6 +5,7 @@
 --- v0.?.? ----------------------------------------------------- ??/??/???? ---
 
 FIX: Updated JarBundler and fixed tnicon.icns (Thanks to Christian Gut)
+FIX: bug id:3469004 (Scrolling Problem) - Thanks to Frank Töpfer
 
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 
