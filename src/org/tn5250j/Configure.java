@@ -490,7 +490,7 @@ public class Configure {
 
 
   /**
-   * Return the list of availble code pages depending on which character
+   * Return the list of available code pages depending on which character
    * mapping flag is set.
    *
    * @return list of available code pages
