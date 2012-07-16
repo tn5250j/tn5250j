@@ -67,7 +67,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.tn5250j.TN5250jConstants;
-import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyStroker;
 import org.tn5250j.scripting.InterpreterDriverManager;
@@ -93,12 +93,12 @@ public class KeyConfigure extends JDialog implements ActionListener {
    private DefaultListModel lm = new DefaultListModel();
    private boolean macros;
    private boolean special;
-   private CodePage codePage;
+   private ICodePage codePage;
    private boolean isLinux;
    private boolean isAltGr;
    private boolean altKey;
 
-   public KeyConfigure(Frame parent, String[] macros, CodePage cp) {
+   public KeyConfigure(Frame parent, String[] macros, ICodePage cp) {
 
       super(parent);
 

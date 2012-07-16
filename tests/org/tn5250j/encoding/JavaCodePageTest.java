@@ -26,7 +26,9 @@
  */
 package org.tn5250j.encoding;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -36,11 +38,11 @@ import org.junit.Test;
 public class JavaCodePageTest {
 
 	/**
-	 * Test method for {@link org.tn5250j.encoding.JavaCodePage#ebcdic2uni(int)}.
+	 * Test method for {@link org.tn5250j.encoding.JavaCodePageFactory#ebcdic2uni(int)}.
 	 */
 	@Test
 	public void testEbcdic2uni() {
-		CodePage jcp = JavaCodePage.getCodePage("ASCII");
+		ICodePage jcp = JavaCodePageFactory.getCodePage("ASCII");
 		assertNotNull("At least an ASCII Codepage should be available.", jcp);
 		
 		char actual = jcp.ebcdic2uni(97);
@@ -48,11 +50,11 @@ public class JavaCodePageTest {
 	}
 
 	/**
-	 * Test method for {@link org.tn5250j.encoding.JavaCodePage#uni2ebcdic(char)}.
+	 * Test method for {@link org.tn5250j.encoding.JavaCodePageFactory#uni2ebcdic(char)}.
 	 */
 	@Test
 	public void testUni2ebcdic() {
-		CodePage jcp = JavaCodePage.getCodePage("ASCII");
+		ICodePage jcp = JavaCodePageFactory.getCodePage("ASCII");
 		assertNotNull("At least an ASCII Codepage should be available.", jcp);
 		
 		byte actual = jcp.uni2ebcdic('a');
@@ -64,7 +66,7 @@ public class JavaCodePageTest {
 	 */
 	@Test
 	public void testNotExistingCodePage() {
-		CodePage jcp = JavaCodePage.getCodePage("FOOBAR");
+		ICodePage jcp = JavaCodePageFactory.getCodePage("FOOBAR");
 		assertNull("There should be no such Codepage available", jcp);
 	}		
 }

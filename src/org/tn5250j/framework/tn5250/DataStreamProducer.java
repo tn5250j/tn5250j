@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
-import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -26,7 +26,7 @@ public class DataStreamProducer implements Runnable {
    private FileOutputStream fw;
    private BufferedOutputStream dw;
    private boolean dumpBytes = false;
-   private CodePage codePage;
+   private ICodePage codePage;
 
    private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
 
@@ -242,7 +242,7 @@ public class DataStreamProducer implements Runnable {
          return rBytes;
 	}
 
-   protected final void toggleDebug (CodePage cp) {
+   protected final void toggleDebug (ICodePage cp) {
 
       if (codePage == null)
          codePage = cp;

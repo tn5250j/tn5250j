@@ -26,61 +26,60 @@
  */
 package org.tn5250j.encoding;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Character Mappings for EBCDIC to ASCII and ASCII to EBCDIC translations
  */
 public class CharMappings {
 
-// note to myself - execute the following on linux to obtain others
-// EXAMPLE *** recode -v -h ebcdic-cp-es > ebcdic284.txt
+	public static final String DFT_ENC = "37";
+	public static final int NATIVE_CP = 0;
+	public static final int TOOLBOX_CP = 1;
 
-   public static final String DFT_ENC = "37";
-   public static final int NATIVE_CP = 0;
-   public static final int TOOLBOX_CP = 1;
+	private static final HashMap<String,ICodePage> map = new HashMap<String, ICodePage>();
 
-   private static final HashMap<String,CodePage> map = new HashMap<String, CodePage>();
+	public static String[] getAvailableCodePages() {
+		Set<String> cpset = new HashSet<String>(); // no double entries
+		for (String cp : BuiltInCodePageFactory.getInstance().getAvailableCodePages()) {
+			cpset.add(cp);
+		}
+		for (String cp : ToolboxCodePageFactory.getInstance().getAvailableCodePages()) {
+			cpset.add(cp);
+		}
+		String[] cparray = cpset.toArray(new String[cpset.size()]);
+		Arrays.sort(cparray);
+		return cparray;
+	}
 
-   public static String[] getAvailableCodePages() {
-      return  NativeCodePage.acp;
-   }
+	public static ICodePage getCodePage(String encoding) {
+		if (map.containsKey(encoding)) {
+			return map.get(encoding);
+		}
 
-   public static String[] getAvailableCodePages(int which) {
-      switch (which) {
-         case TOOLBOX_CP:
-            return ToolboxCodePage.acp;
-         default:
-            return getAvailableCodePages();
-      }
-   }
+		ICodePage cp = BuiltInCodePageFactory.getInstance().getCodePage(encoding);
+		if (cp != null) {
+			map.put(encoding, cp);
+			return cp;
+		}
 
-   public static CodePage getCodePage(String encoding) {
-     if (map.containsKey(encoding)) {
-       return map.get(encoding);
-     }
+		cp = ToolboxCodePageFactory.getInstance().getCodePage(encoding);
+		if (cp != null) {
+			map.put(encoding, cp);
+			return cp;
+		}
 
-     CodePage cp = NativeCodePage.getCodePage(encoding);
-     if (cp != null) {
-       map.put(encoding, cp);
-       return cp;
-     }
+		cp = JavaCodePageFactory.getCodePage(encoding);
+		if (cp != null) {
+			map.put(encoding, cp);
+			return cp;
+		}
 
-     cp = ToolboxCodePage.getCodePage(encoding);
-     if (cp != null) {
-       map.put(encoding, cp);
-       return cp;
-     }
-
-     cp = JavaCodePage.getCodePage(encoding);
-     if (cp != null) {
-       map.put(encoding, cp);
-       return cp;
-     }
-
-     // unsupported codepage
-     // ==> return default;
-     return NativeCodePage.getCodePage(DFT_ENC);
-   }
+		// unsupported codepage ==> return default
+		return BuiltInCodePageFactory.getInstance().getCodePage(DFT_ENC);
+	}
 
 }

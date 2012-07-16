@@ -4,7 +4,7 @@
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
- * @author: maki
+ * @author: master_jaf
  *
  * Description:
  *
@@ -24,23 +24,36 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.encoding;
+package org.tn5250j.encoding.builtin;
 
-/**
- * Just a workaround to make {@link ToolboxCodePageFactory} methods public available.
- * 
- * @author maki
- */
-public class ToolboxCodePageProvider {
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-	/**
-	 * Just a workaround to make {@link ToolboxCodePageFactory#getCodePage(String)} methods public available.
-	 * 
-	 * @param encoding
-	 * @return
-	 */
-	public final static ICodePage getCodePage(String encoding) {
-		return ToolboxCodePageFactory.getInstance().getCodePage(encoding);
-	}
-	
+@Suite.SuiteClasses ( {
+	CCSID37Test.class,
+	CCSID273Test.class,
+	CCSID280Test.class,
+	CCSID284Test.class,
+	CCSID285Test.class,
+	CCSID277dkTest.class,
+	CCSID277noTest.class,
+	CCSID278Test.class,
+	CCSID297Test.class,
+	CCSID424Test.class,
+	CCSID500Test.class,
+	CCSID870skTest.class,
+	CCSID870plTest.class,
+	CCSID871Test.class,
+	CCSID875Test.class,
+	CCSID1025Test.class,
+	CCSID1026Test.class,
+	CCSID1112Test.class,
+	CCSID1140Test.class,
+	CCSID1141Test.class,
+	CCSID1147Test.class,
+	CCSID1148Test.class,
+} )
+@RunWith(Suite.class)
+public class AllTests {
+
 }

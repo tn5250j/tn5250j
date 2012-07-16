@@ -23,7 +23,48 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import static org.tn5250j.TN5250jConstants.*;
+import static org.tn5250j.TN5250jConstants.AID_HELP;
+import static org.tn5250j.TN5250jConstants.AID_PRINT;
+import static org.tn5250j.TN5250jConstants.CMD_CLEAR_FORMAT_TABLE;
+import static org.tn5250j.TN5250jConstants.CMD_CLEAR_UNIT;
+import static org.tn5250j.TN5250jConstants.CMD_CLEAR_UNIT_ALTERNATE;
+import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
+import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
+import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
+import static org.tn5250j.TN5250jConstants.CMD_READ_SCREEN_IMMEDIATE;
+import static org.tn5250j.TN5250jConstants.CMD_READ_SCREEN_TO_PRINT;
+import static org.tn5250j.TN5250jConstants.CMD_RESTORE_SCREEN;
+import static org.tn5250j.TN5250jConstants.CMD_ROLL;
+import static org.tn5250j.TN5250jConstants.CMD_SAVE_SCREEN;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_ERROR_CODE;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_ERROR_CODE_TO_WINDOW;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_STRUCTURED_FIELD;
+import static org.tn5250j.TN5250jConstants.CMD_WRITE_TO_DISPLAY;
+import static org.tn5250j.TN5250jConstants.NR_REQUEST_ERROR;
+import static org.tn5250j.TN5250jConstants.PF1;
+import static org.tn5250j.TN5250jConstants.PF10;
+import static org.tn5250j.TN5250jConstants.PF11;
+import static org.tn5250j.TN5250jConstants.PF12;
+import static org.tn5250j.TN5250jConstants.PF13;
+import static org.tn5250j.TN5250jConstants.PF14;
+import static org.tn5250j.TN5250jConstants.PF15;
+import static org.tn5250j.TN5250jConstants.PF16;
+import static org.tn5250j.TN5250jConstants.PF17;
+import static org.tn5250j.TN5250jConstants.PF18;
+import static org.tn5250j.TN5250jConstants.PF19;
+import static org.tn5250j.TN5250jConstants.PF2;
+import static org.tn5250j.TN5250jConstants.PF20;
+import static org.tn5250j.TN5250jConstants.PF21;
+import static org.tn5250j.TN5250jConstants.PF22;
+import static org.tn5250j.TN5250jConstants.PF23;
+import static org.tn5250j.TN5250jConstants.PF24;
+import static org.tn5250j.TN5250jConstants.PF3;
+import static org.tn5250j.TN5250jConstants.PF4;
+import static org.tn5250j.TN5250jConstants.PF5;
+import static org.tn5250j.TN5250jConstants.PF6;
+import static org.tn5250j.TN5250jConstants.PF7;
+import static org.tn5250j.TN5250jConstants.PF8;
+import static org.tn5250j.TN5250jConstants.PF9;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -42,7 +83,7 @@ import javax.swing.SwingUtilities;
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
-import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -92,7 +133,7 @@ public final class tnvt implements Runnable {
 	private boolean keepTrucking = true;
 	private boolean pendingUnlock = false;
 	private boolean[] dataIncluded;
-	protected CodePage codePage;
+	private ICodePage codePage;
 	private boolean firstScreen;
 	private String sslType;
 	WTDSFParser sfParser;
@@ -2758,7 +2799,7 @@ public final class tnvt implements Runnable {
 		}
 	}
 
-	public final CodePage getCodePage() {
+	public final ICodePage getCodePage() {
 
 		return codePage;
 	}
