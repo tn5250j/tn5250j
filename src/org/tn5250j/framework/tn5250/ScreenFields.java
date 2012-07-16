@@ -31,7 +31,7 @@ import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
 
 import java.io.ByteArrayOutputStream;
 
-import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.ICodePage;
 
 public class ScreenFields {
 
@@ -611,8 +611,7 @@ public class ScreenFields {
       }
    }
 
-   protected void readFormatTable(ByteArrayOutputStream baosp,int readType,
-                                    CodePage codePage) {
+   protected void readFormatTable(ByteArrayOutputStream baosp,int readType, ICodePage codePage) {
 
       ScreenField sf;
       boolean isSigned = false;

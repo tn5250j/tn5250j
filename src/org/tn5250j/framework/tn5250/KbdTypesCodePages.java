@@ -34,6 +34,7 @@ public enum KbdTypesCodePages {
 	ICB("Icelandic","ICB","697","871","871"),
 	ICI("Icelandic MNCS","ICI","697","500","500"),
 	INB("International","INB","697","500","500"),
+	INBX("International-X","INB","697","500","500-ch"),
 //	INB("International MNCS","INB","697","500","500"),
 	IRB("Farsi (Iran)","IRB","1219","1097","1097"),
 	ITB("Italian","ITB","697","280","280"),

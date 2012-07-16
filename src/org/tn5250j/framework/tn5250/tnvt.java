@@ -84,7 +84,7 @@ import javax.swing.SwingUtilities;
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
-import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -157,7 +157,7 @@ public final class tnvt implements Runnable {
 	private boolean keepTrucking = true;
 	private boolean pendingUnlock = false;
 	private boolean[] dataIncluded;
-	protected CodePage codePage;
+	protected ICodePage codePage;
 	private boolean firstScreen;
 	private String sslType;
 	private WTDSFParser sfParser;
@@ -2830,7 +2830,7 @@ public final class tnvt implements Runnable {
 		}
 	}
 
-	public final CodePage getCodePage() {
+	public final ICodePage getCodePage() {
 		return codePage;
 	}
 

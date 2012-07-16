@@ -41,7 +41,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import org.tn5250j.encoding.CodePage;
+
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.LangTool;
 
 /**
@@ -53,7 +54,7 @@ public class HexCharMapDialog {
 	private final JList hexList;
 	private final Component parent;
 
-	public HexCharMapDialog(Component parent, CodePage codepage) {
+	public HexCharMapDialog(Component parent, ICodePage codepage) {
 		assert codepage != null : new IllegalArgumentException("A codepage is needed!");
 
 		this.parent = parent;

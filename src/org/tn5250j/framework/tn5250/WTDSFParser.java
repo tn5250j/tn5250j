@@ -25,12 +25,21 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import static org.tn5250j.TN5250jConstants.*;
+import static org.tn5250j.TN5250jConstants.BOTTOM;
+import static org.tn5250j.TN5250jConstants.GUI_LEFT;
+import static org.tn5250j.TN5250jConstants.GUI_RIGHT;
+import static org.tn5250j.TN5250jConstants.LOWER_LEFT;
+import static org.tn5250j.TN5250jConstants.LOWER_RIGHT;
+import static org.tn5250j.TN5250jConstants.NO_GUI;
+import static org.tn5250j.TN5250jConstants.NR_REQUEST_ERROR;
+import static org.tn5250j.TN5250jConstants.UPPER;
+import static org.tn5250j.TN5250jConstants.UPPER_LEFT;
+import static org.tn5250j.TN5250jConstants.UPPER_RIGHT;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tn5250j.encoding.CodePage;
+import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -46,7 +55,7 @@ public class WTDSFParser {
 
    private Screen5250 screen52;
    private tnvt vt;
-   private CodePage codePage;
+   private ICodePage codePage;
    int pos;
    byte[] segment;
    int length;

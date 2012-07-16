@@ -497,8 +497,6 @@ public class Configure {
    *
    */
    private static String[] getAvailableCodePages() {
-
-      if (jtb.isSelected()) return CharMappings.getAvailableCodePages(CharMappings.TOOLBOX_CP);
       return CharMappings.getAvailableCodePages();
    }
 
