@@ -15,6 +15,12 @@ To make a long story short, doing a refactoring would ease future
 development. There are also posts in the SF.net forum, requesting
 support for more codepages.
 
+UPDATE 07/2012 - It's done!
+------------------------------------------------------------------
+Finally, I've got in contact with someone who supported me 
+with a Hebrew test environment. So I've decided to rewrite the 
+built-in code page converters. It's done and works fine :-)
+
 
 Refactoring roadmap
 ------------------------------------------------------------------
