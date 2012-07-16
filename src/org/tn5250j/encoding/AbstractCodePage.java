@@ -37,12 +37,6 @@ public abstract class AbstractCodePage implements ICodePage {
 		this.encoding = encoding;
 	}
 
-	@Override
-	public abstract char ebcdic2uni(int index);
-
-	@Override
-	public abstract byte uni2ebcdic(char index);
-
 	public String getEncoding() {
 		return encoding;
 	}
