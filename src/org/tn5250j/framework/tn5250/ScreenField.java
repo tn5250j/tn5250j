@@ -372,6 +372,10 @@ public class ScreenField {
       return (getFieldShift() == 7);
 
    }
+   
+   public boolean isRightToLeft() {
+	   return (getFieldShift() == 0x04);
+   }
 
    public boolean isNumeric () {
 
