@@ -5,6 +5,7 @@
 
 --- v0.7.0 ----------------------------------------------------- ??/??/2011 ---
 
+ADD: Support for detecting reverse fields - Thanks to Roi Mor (roi.m@openlegacy.org)
 FIX: Wrong keyboard mapping for CCSID 870-pl and 870-sk
 FIX: Reworked tab close & session close, now unified handling on all events
 FIX: Charset for CCSID 1141, according to http://www-01.ibm.com/software/globalization/cs/cs00695.html
