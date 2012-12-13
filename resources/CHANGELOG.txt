@@ -4,6 +4,7 @@
 
 --- v0.?.? ----------------------------------------------------- ??/??/???? ---
 
+ADD: Support for detecting reverse fields - Thanks to Roi Mor (roi.m@openlegacy.org)
 FIX: Updated JarBundler and fixed tnicon.icns (Thanks to Christian Gut)
 FIX: bug id:3469004 (Scrolling Problem) - Thanks to Frank Töpfer
 
