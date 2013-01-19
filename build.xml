@@ -219,7 +219,7 @@
         </copy>
     </target>
     
-    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-nosubdir-zip, dist-bin-scripting-nosubdir-zip, dist-bin-jarbundle" description="Create a Zip and TGZ Archives with all the binary files">
+    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-jarbundle" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
     <target name= "dist-bin-prepare" depends="package"  description="Prepares binary distribution">
@@ -268,21 +268,6 @@
         </zip>
     </target>
 
-    <target name= "dist-bin-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
-        <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
-            basedir="${dist.dir}/${dist.base.name}"
-            includes="**"
-            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar,log4j-1.2.15.jar">
-        </zip>
-    </target>
-
-    <target name= "dist-bin-scripting-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
-        <zip zipfile="${dist.dir}/${dist.bin.name}-full-nosubdir.zip"
-            basedir="${dist.dir}/${dist.base.name}"
-            includes="**">
-        </zip>
-    </target>
-
     <target name= "dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
         <tar tarfile="${dist.dir}/${dist.bin.name}.tar"
             basedir="${dist.dir}/"
@@ -314,8 +299,8 @@
         <tar destfile="${dist.dir}/${dist.src.name}.tar"
         	casesensitive="true"
             basedir="${dist.dir}"
-        	excludes="**/_svn/**, **/.svn/**">
-        </tar>
+        	includes="${dist.base.name}/**"
+        />
         <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
         <delete file="${dist.dir}/${dist.src.name}.tar"/>
     </target>
