@@ -152,7 +152,8 @@
         <javac srcdir="${source.dir}" target="${compile.target}" source="${compile.source}"
         		debug="${debug}"
                 destdir="${build.classes.dir}"
-                excludes="**/Cvs/**,**/*.ini" >
+                excludes="**/Cvs/**,**/*.ini"
+        		includeantruntime="false" >
             <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
                       if="oldJava" />
             <exclude name="org/tn5250j/transport/SSL/X509*.java"
