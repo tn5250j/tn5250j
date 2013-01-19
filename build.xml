@@ -24,7 +24,7 @@
     <property name="jarname" value="${name}.jar" />
     <property name="dist.base.name" value="${name}-${version}" />
     <property name="dist.src.name" value="${dist.base.name}-src" />
-    <property name="dist.bin.name" value="${dist.base.name}-bin" />
+    <property name="dist.bin.name" value="${dist.base.name}-full-bin" />
     <property name="dist-run.name" value="${dist.base.name}-run"/>
     <property name="dist-run.dir"  value="${dist.dir}/${dist-run.name}"/>
 
@@ -49,6 +49,19 @@
        <exclude name="org/**"/>
        <exclude name="*.gif"/>
     </fileset>
+	
+	<fileset dir="${resource.dir}" id="resources.fileset">
+        <include name="*.txt"/>
+		<exclude name="antbuild.txt"/>
+		<exclude name="wishlist.txt"/>
+      	<include name="*.htm*"/>
+      	<include name="*.php"/>
+        <include name="COPYING"/>
+        <include name="tn5250j*.jpg"/>
+        <include name="tn5250j*.png"/>
+      	<include name="tn5250j*.ico"/>
+		<include name="tn5250j*.icns"/>
+	</fileset>
 
     <!-- files for source distribution -->
     <!--<fileset dir="${source.dir}" id="dist.src">-->
@@ -219,56 +232,36 @@
         </copy>
     </target>
     
-    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-jarbundle" description="Create a Zip and TGZ Archives with all the binary files">
+    <target name="dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-jarbundle, dist-core-jar-only" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
-    <target name= "dist-bin-prepare" depends="package"  description="Prepares binary distribution">
+	<target name="dist-core-jar-only" depends="dist-bin-prepare">
+		<copy tofile="${dist.dir}/${dist.base.name}-no-depedencies.jar" file="${build.dir}/${jarname}"/>
+	</target>
+	
+    <target name="dist-bin-prepare" depends="package"  description="Prepares binary distribution">
         <delete dir="${dist.dir}/${dist.base.name}"/>
         <mkdir dir="${dist.dir}/${dist.base.name}"/>
         <copy todir="${dist.dir}/${dist.base.name}">
             <fileset refid="dist.bin"/>
+        	<fileset dir="${rtm.lib.dir}">
+        		<include name="*.jar"/>
+        	</fileset>
+        	<fileset dir="${build.dir}">
+        		<include name="${jarname}"/>
+        	</fileset>
+    		<fileset refid="resources.fileset" />
         </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${build.dir}/${jarname}">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/jython.jar">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/jythonlib.jar">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/itext.jar">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-        		file="${rtm.lib.dir}/log4j-1.2.15.jar">
-        </copy>
-    	<copy todir="${dist.dir}/${dist.base.name}">
-    		<fileset dir="${basedir}/resources">
-    			<include name="COPYING"/>
-    			<exclude name="antbuild.txt"/>
-    			<exclude name="wishlist.txt"/>
-    			<include name="*.txt"/>
-    			<include name="tn5250j-icon.ico"/>
-    			<include name="tn5250j-16x16.png"/>
-    			<include name="tn5250j-32x32.png"/>
-    			<include name="tn5250j-48x48.png"/>
-    			<include name="tn5250j-128.png"/>
-    			<include name="tn5250j-256.png"/>
-    			<include name="tn5250j-512.png"/>
-    			<include name="tn5250j-512.icns"/>
-    		</fileset>
-    	</copy>
     </target>
 
-    <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
+    <target name="dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
         <zip zipfile="${dist.dir}/${dist.bin.name}.zip"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**">
         </zip>
     </target>
 
-    <target name= "dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
+    <target name="dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
         <tar tarfile="${dist.dir}/${dist.bin.name}.tar"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**">
@@ -277,10 +270,10 @@
         <delete file="${dist.dir}/${dist.bin.name}.tar"/>
     </target>
 
-    <target name= "dist-src" depends="dist-src-zip, dist-src-tgz" description="Create a Zip and TGZ Archives with all source files">
+    <target name="dist-src" depends="dist-src-zip, dist-src-tgz" description="Create a Zip and TGZ Archives with all source files">
     </target>
 
-    <target name= "dist-src-prepare" depends="package"  description="Prepares source distribution">
+    <target name="dist-src-prepare" depends="package"  description="Prepares source distribution">
         <delete dir="${dist.dir}/${dist.base.name}"/>
         <mkdir dir="${dist.dir}/${dist.base.name}"/>
         <copy todir="${dist.dir}/${dist.base.name}">
@@ -288,14 +281,14 @@
         </copy>
     </target>
 
-    <target name= "dist-src-zip" depends="dist-src-prepare" description="Create a Zip-File with all the source files">
+    <target name="dist-src-zip" depends="dist-src-prepare" description="Create a Zip-File with all the source files">
         <zip zipfile="${dist.dir}/${dist.src.name}.zip"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**"
         />
     </target>
 
-    <target name= "dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
+    <target name="dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
         <tar destfile="${dist.dir}/${dist.src.name}.tar"
         	casesensitive="true"
             basedir="${dist.dir}"
@@ -321,32 +314,17 @@
           <include name="${jarname}" />
        </fileset>
       <fileset dir="${dist.dir}/${dist.base.name}/installer" excludes="**/_svn/**, **/.svn/**" />
-      <fileset dir="${dist.dir}/${dist.base.name}/resources">
-        <include name="*.txt"/>
-      	<include name="*.htm*"/>
-      	<include name="*.php"/>
-        <include name="COPYING"/>
-        <include name="tn5250jSplash.jpg"/>
-        <include name="tn5250j*.png"/>
-      	<include name="tn5250j*.ico"/>
-      </fileset>
+      <fileset refid="resources.fileset" />
       <fileset dir="${rtm.lib.dir}" excludes="**/_svn/**, **/.svn/**" />
     </copy>
 
     <!-- We call IzPack -->
     <echo message="Makes the installer using IzPack"/>
     <izpack input="${dist.dir}/installer/install.xml"
-            output="${dist.dir}/tn5250j-install-${version}.jar"
+            output="${dist.dir}/tn5250j-${version}-installer.jar"
             installerType="standard"
             basedir="${dist.dir}"
         	izPackDir="${IzPack.dir}"/>
-
-    <!--echo message="Makes the web installer using IzPack"/-->
-    <!--izpack input="${dist.dir}/installer/install.xml"
-            output="${dist.dir}/tn5250j-install-web-${version}.jar"
-            installerType="web"
-            basedir="${dist.dir}"
-            izPackDir="${IzPack.dir}"/-->
 
    </target>
 
@@ -355,7 +333,7 @@
 	                  classpath="${dev.lib.dir}/jarbundler-2.2.0.jar"
 	                  classname="net.sourceforge.jarbundler.JarBundler" />
 	
-    <target name= "dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
+    <target name="dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
                    mainclass="org.tn5250j.My5250"
@@ -385,7 +363,7 @@
        </jarbundler>
 	   </target>
 
-    <target name= "dist-bin-jarbundle-tgz" depends="dist-bin-jarbundle" description="Create a Tgz-File of the jar bundle distribution">
+    <target name="dist-bin-jarbundle-tgz" depends="dist-bin-jarbundle" description="Create a Tgz-File of the jar bundle distribution">
         <tar tarfile="${dist.dir}/${dist.bin.name}.app.tar"
             basedir="${dist.dir}/"
             includes="${Name}.app/**">
@@ -393,7 +371,5 @@
         <gzip zipfile="${dist.dir}/${dist.bin.name}.app.tgz" src="${dist.dir}/${dist.bin.name}.app.tar" />
         <delete file="${dist.dir}/${dist.bin.name}.app.tar"/>
     </target>
-
-<!-- start jar bundler task -->
 
 </project>
