@@ -60,27 +60,6 @@
        <include name="installer/**"/>
     </fileset>
 
-  <!-- ===================================================================== -->
-  <!-- Test Java version.                                                    -->
-  <!-- ===================================================================== -->
-
-   <target name="testjava">
-      <condition property="oldJava">
-         <or>
-            <equals arg1="1.3" arg2="${ant.java.version}" />
-         </or>
-      </condition>
-   </target>
-
-
-    <!-- the ftp task can be used to transfer files to a remote system -->
-    <!--
-    <taskdef name="ftp"
-             classname="org.apache.tools.ant.taskdefs.optional.net.FTP"
-             classpath="${ant_home}/lib/optional.jar"
-    />
-    -->
-
     <!-- =================================================================== -->
     <!-- Shows some information                                              -->
     <!-- =================================================================== -->
@@ -122,16 +101,7 @@
         <echo message="os.name:                 ${os.name}" />
         <echo message="os.arch:                 ${os.arch}" />
         <echo message="os.version:              ${os.version}" />
-        <!--
-        <echo message="" />
-        <echo message="file.separator:          ${file.separator}" />
-        <echo message="path.separator:          ${path.separator}" />
-        <echo message="line.separator:          ${line.separator}" />
-        <echo message="" />
-        <echo message="user.name:               ${user.name}" />
-        <echo message="user.home:               ${user.home}" />
-        <echo message="user.dir:                ${user.dir}" />
-        -->
+
     </target>
 
     <!-- =================================================================== -->
@@ -148,20 +118,12 @@
     <!-- Compiles the source directory                                       -->
     <!-- To use debugging add the debug="true" parameter to javac            -->
     <!-- =================================================================== -->
-    <target name="compile" depends="prepare,testjava" description="Compile your source-files">
+    <target name="compile" depends="prepare" description="Compile your source-files">
         <javac srcdir="${source.dir}" target="${compile.target}" source="${compile.source}"
         		debug="${debug}"
                 destdir="${build.classes.dir}"
                 excludes="**/Cvs/**,**/*.ini"
         		includeantruntime="false" >
-            <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
-                      if="oldJava" />
-            <exclude name="org/tn5250j/transport/SSL/X509*.java"
-                      if="oldJava" />
-            <exclude name="org/tn5250j/keyboard/KeyStroker14.java"
-                      if="oldJava" />
-            <exclude name="org/tn5250j/keyboard/configure/KeyGetter.java"
-                      if="oldJava" />
             <classpath>
                 <path refid="classpath"/>
             </classpath>
@@ -189,7 +151,7 @@
     <!-- =================================================================== -->
     <!-- Creates the API documentation                                       -->
     <!-- =================================================================== -->
-    <target name= "javadoc" depends="prepare" description="Creates the javadoc API documentation">
+    <target name="javadoc" depends="prepare" description="Creates the javadoc API documentation">
         <javadoc packagenames="org.*" sourcepath="${source.dir}" destdir="${javadoc.dir}"
                 doctitle="${Name}"
                 windowtitle="Javadoc for ${Name} (Telnet 5250 in Java)"
@@ -204,7 +166,7 @@
     <!-- =================================================================== -->
     <!-- Creates the Jar                                                     -->
     <!-- =================================================================== -->
-    <target name= "package" depends="compile" description="Create a Jar-File of your compiled classes">
+    <target name="package" depends="compile" description="Create a Jar-File of your compiled classes">
         <tstamp><format property="ts" pattern="yyyyMMdd-HHmmss-z"/> </tstamp>
 
         <jar jarfile="${build.dir}/${jarname}">
@@ -226,13 +188,13 @@
     </target>
 
 
-    <target name= "all" depends="clean, compile, package"   description="Clean, Compile, Jar">
+    <target name="all" depends="clean, compile, package"   description="Clean, Compile, Jar">
     </target>
 
     <!-- =================================================================== -->
     <!-- Creates the distribution                                            -->
     <!-- =================================================================== -->
-    <target name= "dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
+    <target name="dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
     </target>
 
     <target name= "dist-run-prepare" depends="package"  description="Prepares all-in-one distribution">
@@ -275,15 +237,28 @@
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${rtm.lib.dir}/jythonlib.jar">
         </copy>
-        <!--copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/jt400.jar">
-        </copy -->
         <copy todir="${dist.dir}/${dist.base.name}"
                 file="${rtm.lib.dir}/itext.jar">
         </copy>
         <copy todir="${dist.dir}/${dist.base.name}"
         		file="${rtm.lib.dir}/log4j-1.2.15.jar">
         </copy>
+    	<copy todir="${dist.dir}/${dist.base.name}">
+    		<fileset dir="${basedir}/resources">
+    			<include name="COPYING"/>
+    			<exclude name="antbuild.txt"/>
+    			<exclude name="wishlist.txt"/>
+    			<include name="*.txt"/>
+    			<include name="tn5250j-icon.ico"/>
+    			<include name="tn5250j-16x16.png"/>
+    			<include name="tn5250j-32x32.png"/>
+    			<include name="tn5250j-48x48.png"/>
+    			<include name="tn5250j-128.png"/>
+    			<include name="tn5250j-256.png"/>
+    			<include name="tn5250j-512.png"/>
+    			<include name="tn5250j-512.icns"/>
+    		</fileset>
+    	</copy>
     </target>
 
     <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
