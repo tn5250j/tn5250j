@@ -3,7 +3,11 @@
 ===============================================================================
 
 
---- v0.7.0 ----------------------------------------------------- ??/??/2011 ---
+--- v0.7.1 ----------------------------------------------------- 22/02/2013 ---
+
+FIX: Initial default key bindung was broken - Thanks to Roi Mor (roi.m@openlegacy.org)
+
+--- v0.7.0 ----------------------------------------------------- 19/01/2013 ---
 
 ADD: Support for detecting reverse fields - Thanks to Roi Mor (roi.m@openlegacy.org)
 FIX: Built in code page support for Hebrew (CP424) - Thanks to Roi Mor (roi.m@openlegacy.org)

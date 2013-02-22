@@ -49,7 +49,6 @@ public class KeyMapper {
 	private static KeyStroker workStroke;
 	private static String lastKeyMnemonic;
 	private static Vector<KeyChangeListener> listeners;
-	private static boolean useJava14;
 
 	public static void init() {
 
@@ -63,19 +62,10 @@ public class KeyMapper {
 				ConfigureFactory.KEYMAP);
 
 		if (!loadKeyStrokes(keys)) {
-			// keycode shift control alternate
-
 			// Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown, location
 
-			// my personal preference
-			// mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[fldext]");
-
-			if (useJava14) {
-				mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
-				mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_NUMPAD),"[enter].alt2");
-			}
-			else
-				mappedKeys.put(new KeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
+			mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
+			mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_NUMPAD),"[enter].alt2");
 
 			mappedKeys.put(new KeyStroker(8, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[backspace]");
 			mappedKeys.put(new KeyStroker(9, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[tab]");
@@ -84,15 +74,9 @@ public class KeyMapper {
 			mappedKeys.put(new KeyStroker(155, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[insert]");
 			mappedKeys.put(new KeyStroker(19, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[clear]");
 
-			if (useJava14)
-				mappedKeys.put(new KeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_LEFT),"[reset]");
-			else
-				mappedKeys.put(new KeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[reset]");
+			mappedKeys.put(new KeyStroker(17, false, true, false, false,KeyStroker.KEY_LOCATION_LEFT),"[reset]");
 
-			if (useJava14)
-				mappedKeys.put(new KeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
-			else
-				mappedKeys.put(new KeyStroker(27, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
+			mappedKeys.put(new KeyStroker(27, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[sysreq]");
 
 			mappedKeys.put(new KeyStroker(35, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[eof]");
 			mappedKeys.put(new KeyStroker(36, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[home]");
@@ -146,15 +130,9 @@ public class KeyMapper {
 
 			mappedKeys.put(new KeyStroker(72, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[hostprint]");
 
-			if (useJava14)
-				mappedKeys.put(new KeyStroker(67, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
-			else
-				mappedKeys.put(new KeyStroker(67, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
+			mappedKeys.put(new KeyStroker(67, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[copy]");
 
-			if (useJava14)
-				mappedKeys.put(new KeyStroker(86, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
-			else
-				mappedKeys.put(new KeyStroker(86, false, true, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
+			mappedKeys.put(new KeyStroker(86, false, false, true, false,KeyStroker.KEY_LOCATION_STANDARD),"[paste]");
 
 			mappedKeys.put(new KeyStroker(39, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markright]");
 			mappedKeys.put(new KeyStroker(37, true, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[markleft]");
