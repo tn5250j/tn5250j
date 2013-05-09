@@ -60,8 +60,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class My5250 implements BootListener,SessionListener,
-EmulatorActionListener {
+public class My5250 implements BootListener, SessionListener, EmulatorActionListener {
 
 	private GUIViewInterface frame1;
 	private String[] sessionArgs = null;
@@ -236,10 +235,6 @@ EmulatorActionListener {
 
 	static public void main(String[] args) {
 
-//		if (isSpecified("-MDI",args)) {
-//			useMDIFrames = true;
-//		}
-
 		if (!isSpecified("-nc",args)) {
 
 			if (!checkBootStrapper(args)) {
@@ -329,7 +324,9 @@ EmulatorActionListener {
 				sessions.containsKey("emul.startLastView")) {
 			String[] sargs = new String[TN5250jConstants.NUM_PARMS];
 			parseArgs(sessions.getProperty("emul.view"), sargs);
-			m.sessionArgs = sargs;
+			if (containsNotOnlyNullValues(sargs)) {
+				m.sessionArgs = sargs;
+			}
 		}
 
 		if (m.sessionArgs != null) {
@@ -384,6 +381,17 @@ EmulatorActionListener {
 
 	}
 
+	private static boolean containsNotOnlyNullValues(String[] stringArray) {
+		if (stringArray != null) {
+			for (String s : stringArray) {
+				if (s != null) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private void setDefaultLocale () {
 
 		if (sessions.containsKey("emul.locale")) {
@@ -425,21 +433,11 @@ EmulatorActionListener {
 		return null;
 	}
 
-//	private static void startFrameType() {
-//
-////		if (sessions.containsKey("emul.interface")) {
-////			String s = sessions.getProperty("emul.interface");
-////			if (s.equalsIgnoreCase("MDI"))
-////				useMDIFrames = true;
-////
-////		}
-//	}
-
 	private void startNewSession() {
 
 		String sel = "";
 
-		if (sessionArgs != null && !sessionArgs[0].startsWith("-"))
+		if (containsNotOnlyNullValues(sessionArgs) && !sessionArgs[0].startsWith("-"))
 			sel = sessionArgs[0];
 		else {
 			sel = getDefaultSession();
