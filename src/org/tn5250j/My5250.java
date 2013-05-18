@@ -320,29 +320,38 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		lastViewNames = filterExistingViewNames(lastViewNames);
 
 		if (lastViewNames.size() > 0) {
-			m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-			My5250.parseArgs(sessions.getProperty(lastViewNames.get(0)), m.sessionArgs);
-			m.startNewSession();
-
-			// start from 1, cause 0 equals the default session (implizit nr 0)
-			for (int i=1; i<lastViewNames.size(); i++) {
-				String viewName = lastViewNames.get(i);
-				if (!m.frame1.isVisible()) {
-					m.splash.updateProgress(++m.step);
-					m.splash.setVisible(false);
-					m.frame1.setVisible(true);
-					m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-
-				m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-				My5250.parseArgs(sessions.getProperty(viewName),m.sessionArgs);
-				m.newSession(viewName, m.sessionArgs);
+			insertDefaultSessionIfConfigured(lastViewNames);
+			startSessionsFromList(m, lastViewNames);
+			if (sessions.containsKey("emul.showConnectDialog")) {
+				m.openConnectSessionDialogAndStartSelectedSession();
 			}
 		}
 		else {
 			m.startNewSession();
 		}
 
+	}
+
+	private static void startSessionsFromList(My5250 m, List<String> lastViewNames) {
+		for (int i=0; i<lastViewNames.size(); i++) {
+			String viewName = lastViewNames.get(i);
+			if (!m.frame1.isVisible()) {
+				m.splash.updateProgress(++m.step);
+				m.splash.setVisible(false);
+				m.frame1.setVisible(true);
+				m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
+			My5250.parseArgs(sessions.getProperty(viewName),m.sessionArgs);
+			m.newSession(viewName, m.sessionArgs);
+		}
+	}
+
+	private static void insertDefaultSessionIfConfigured(List<String> lastViewNames) {
+		if (getDefaultSession() != null && !lastViewNames.contains(getDefaultSession())) {
+			lastViewNames.add(0, getDefaultSession());
+		}
 	}
 
 	static List<String> loadLastSessionViewNamesFrom(String[] commandLineArgs) {
@@ -435,9 +444,9 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 	}
 
 	private static String getDefaultSession() {
-
-		if (sessions.containsKey("emul.default")) {
-			return sessions.getProperty("emul.default");
+		String defaultSession = sessions.getProperty("emul.default");
+		if (defaultSession != null && !defaultSession.trim().isEmpty()) {
+			return defaultSession;
 		}
 		return null;
 	}
@@ -446,42 +455,39 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
 		String sel = "";
 
-		if (containsNotOnlyNullValues(sessionArgs) && !sessionArgs[0].startsWith("-"))
+		if (containsNotOnlyNullValues(sessionArgs) && !sessionArgs[0].startsWith("-")) {
 			sel = sessionArgs[0];
-		else {
+		} else {
 			sel = getDefaultSession();
 		}
 
 		Sessions sess = manager.getSessions();
 
-		if (sel != null && sess.getCount() == 0
-				&& sessions.containsKey(sel)){
+		if (sel != null && sess.getCount() == 0 && sessions.containsKey(sel)) {
 			sessionArgs = new String[TN5250jConstants.NUM_PARMS];
 			parseArgs(sessions.getProperty(sel), sessionArgs);
 		}
 
-		if (sessionArgs == null  || sess.getCount() > 0
-				|| sessions.containsKey("emul.showConnectDialog")) {
-
-			sel = getConnectSession();
-
-			if (sel != null) {
-				String selArgs = sessions.getProperty(sel);
-				sessionArgs = new String[TN5250jConstants.NUM_PARMS];
-				parseArgs(selArgs, sessionArgs);
-
-				newSession(sel,sessionArgs);
-			}
-			else {
-				if (sess.getCount() == 0)
-					System.exit(0);
-			}
-
+		if (sessionArgs == null || sess.getCount() > 0 || sessions.containsKey("emul.showConnectDialog")) {
+			openConnectSessionDialogAndStartSelectedSession();
+		} else {
+			newSession(sel, sessionArgs);
 		}
-		else {
+	}
 
-			newSession(sel,sessionArgs);
 
+	private void openConnectSessionDialogAndStartSelectedSession() {
+		String sel = openConnectSessionDialog();
+		Sessions sess = manager.getSessions();
+		if (sel != null) {
+			String selArgs = sessions.getProperty(sel);
+			sessionArgs = new String[TN5250jConstants.NUM_PARMS];
+			parseArgs(selArgs, sessionArgs);
+
+			newSession(sel, sessionArgs);
+		} else {
+			if (sess.getCount() == 0)
+				System.exit(0);
 		}
 	}
 
@@ -507,7 +513,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		newSession(ses.getSessionName(),sessionArgs);
 	}
 
-	private String getConnectSession () {
+	private String openConnectSessionDialog () {
 
 		splash.setVisible(false);
 		ConnectDialog sc = new ConnectDialog(frame1,LangTool.getString("ss.title"),sessions);
