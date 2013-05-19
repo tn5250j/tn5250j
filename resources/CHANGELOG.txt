@@ -2,6 +2,10 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.7.3 ----------------------------------------------------- 19/05/2013 ---
+
+FIX: Start Tn5250j with views from last time running
+
 --- v0.7.2 ----------------------------------------------------- 09/05/2013 ---
 
 FIX: NPE when 'emul.startLastView' is set but 'emul.view' is empty
