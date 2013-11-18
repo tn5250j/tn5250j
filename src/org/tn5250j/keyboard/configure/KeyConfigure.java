@@ -45,8 +45,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -86,7 +89,6 @@ public class KeyConfigure extends JDialog implements ActionListener {
    private JLabel strokeLocation = new JLabel();
    private JLabel strokeLocationAlt = new JLabel();
    private JList functions;
-   private KeyMapper mapper;
    private JDialog dialog;
    private boolean mods;
    private String[] macrosList;
@@ -97,6 +99,40 @@ public class KeyConfigure extends JDialog implements ActionListener {
    private boolean isLinux;
    private boolean isAltGr;
    private boolean altKey;
+   
+   private static final SortedMap<Integer, String> colorMap = new TreeMap<Integer, String>();
+   
+   static {
+	   colorMap.put(0x20, "Green");
+	   colorMap.put(0x21, "Green RI");
+	   colorMap.put(0x22, "White");
+	   colorMap.put(0x23, "White RI");
+	   colorMap.put(0x24, "Green UL");
+	   colorMap.put(0x25, "Green RI UL");
+	   colorMap.put(0x26, "White UL");
+	   colorMap.put(0x27, "NonDisplay");
+	   colorMap.put(0x28, "Red");
+	   colorMap.put(0x29, "Red RI");
+	   colorMap.put(0x2A, "Red BL");
+	   colorMap.put(0x2B, "Red RI BL");
+	   colorMap.put(0x2C, "Red UL");
+	   colorMap.put(0x2D, "Red UL RI");
+	   colorMap.put(0x2E, "Red UL BL");
+	   colorMap.put(0x30, "Turquoise CS");
+	   colorMap.put(0x31, "Turquoise CS RI");
+	   colorMap.put(0x32, "Yellow CS");
+	   colorMap.put(0x33, "Yellow CS RI");
+	   colorMap.put(0x34, "Turquoise UL");
+	   colorMap.put(0x35, "Turquoise UL RI ");
+	   colorMap.put(0x36, "Yellow UL");
+	   colorMap.put(0x38, "Pink");
+	   colorMap.put(0x39, "Pink RI");
+	   colorMap.put(0x3A, "Blue");
+	   colorMap.put(0x3B, "Blue RI");
+	   colorMap.put(0x3C, "Pink UL");
+	   colorMap.put(0x3D, "Pink UL RI");
+	   colorMap.put(0x3E, "Blue UL");
+   }
 
    public KeyConfigure(Frame parent, String[] macros, ICodePage cp) {
 
@@ -123,7 +159,6 @@ public class KeyConfigure extends JDialog implements ActionListener {
       // create some reusable borders and layouts
       BorderLayout borderLayout = new BorderLayout();
 
-      mapper = new KeyMapper();
       KeyMapper.init();
 
 
@@ -420,6 +455,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
             StringBuffer sb = new StringBuffer();
 
             Set<CollationKey> set = new TreeSet<CollationKey>();
+                      
+            supportAplColorCodesInSEU(collator, sb, set);
+            
             for (int x =0;x < 256; x++) {
                char c = codePage.ebcdic2uni(x);
                char ac = codePage.ebcdic2uni(x);
@@ -453,6 +491,20 @@ public class KeyConfigure extends JDialog implements ActionListener {
       if (!lm.isEmpty())
          functions.setSelectedIndex(0);
    }
+
+	private void supportAplColorCodesInSEU(Collator collator, StringBuffer sb, Set<CollationKey> set) {
+		for (Entry<Integer, String> color : colorMap.entrySet()) {
+			int keyVal = color.getKey().intValue();
+			char c = (char)('\uff00' + keyVal);
+			
+		    sb.setLength(0);
+		    sb.append("0FF" + Integer.toHexString(keyVal).toUpperCase());
+		    sb.append(" - " + c + " - " + color.getValue());
+		    CollationKey key = collator.getCollationKey(sb.toString());
+	
+		    set.add(key);            	
+		}
+	}
 
    private String getUnicodeString(char c) {
 
