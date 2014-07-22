@@ -23,6 +23,8 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static org.tn5250j.TN5250jConstants.AID_HELP;
 import static org.tn5250j.TN5250jConstants.AID_PRINT;
 import static org.tn5250j.TN5250jConstants.CMD_CLEAR_FORMAT_TABLE;
@@ -1308,7 +1310,7 @@ public final class tnvt implements Runnable {
 			} else {
 				if (planes.getCharAttr(y) != la) {
 					la = planes.getCharAttr(y);
-					sac--;
+					sac = max(sac--, 0);
 					sa[sac++] = (byte) la;
 				}
 				//LDC: Check to see if it is an displayable character. If not,
@@ -1320,7 +1322,7 @@ public final class tnvt implements Runnable {
 				byte byteCh = (byte) ch;
 				if (isDataUnicode(ch))
 					byteCh = codePage.uni2ebcdic(ch);
-				sa[sac++] = byteCh;
+				sa[min(sac++, len - 1)] = byteCh;
 			}
 		}
 	}
@@ -1366,7 +1368,7 @@ public final class tnvt implements Runnable {
 				} else {
 					if (planes.getCharAttr(y) != la) {
 						la = planes.getCharAttr(y);
-						sac--;
+						sac = max(sac--, 0);
 						sa[sac++] = (byte) la;
 					}
 					//LDC: Check to see if it is an displayable character. If not,
@@ -1378,7 +1380,7 @@ public final class tnvt implements Runnable {
 					byte byteCh = (byte) ch;
 					if (isDataUnicode(ch))
 						byteCh = codePage.uni2ebcdic(ch);
-					sa[sac++] = byteCh;
+					sa[min(sac++, len - 1)] = byteCh;
 				}
 			}
 		}
