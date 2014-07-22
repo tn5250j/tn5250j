@@ -226,10 +226,11 @@ public class ScreenField {
 				text.setCharAt(x,
 						(char) ('\uff00' + s.planes.getCharAttr(cursorPos)));
 			} else {
-				if (s.planes.getChar(cursorPos) < ' ')
+				if (s.planes.getChar(cursorPos) < ' ') {
 					text.setCharAt(x, ' ');
-				else
+				} else {
 					text.setCharAt(x, s.planes.getChar(cursorPos));
+				}
 			}
 			changePos(-1);
 
@@ -476,8 +477,9 @@ public class ScreenField {
 
 	public boolean withinField(int pos) {
 
-		if (pos >= startPos && pos <= endPos)
+		if (pos >= startPos && pos <= endPos) {
 			return true;
+		}
 		return false;
 
 	}
@@ -530,24 +532,23 @@ public class ScreenField {
 	 */
 	public void setString(String text) {
 
-		int y = length;
 		cursorPos = startPos;
-		int len = text.length();
-		char[] c = text.toCharArray();
-		char tc = ' ';
 
-		for (int x = 0; x < y; x++) {
-			tc = ' ';
-			if (x < len) {
-				tc = c[x];
-			}
-			s.getPlanes().setChar(cursorPos, tc);
+		if (isRightToLeft()) {
+			text = new StringBuilder(text).reverse().toString();
+		}
+
+		final ScreenPlanes planes = s.getPlanes();
+		for (int x = 0,len = text.length(); x < length; x++) {
+			char tc = (x < len) ? text.charAt(x) : ' ';
+			planes.setChar(cursorPos, tc);
 			changePos(1);
 		}
 		setMDT();
 		s.getScreenFields().setMasterMDT();
 	}
 
+	@Override
 	public String toString() {
 		int fcw = (fcw1 & 0xff) << 8 | fcw2 & 0xff;
 		return "startRow = " + startRow() + " startCol = " + startCol()
