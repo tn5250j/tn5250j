@@ -150,7 +150,7 @@ public class My5250Applet extends JApplet {
 
    /**Get Applet information*/
    public String getAppletInfo() {
-      return "tn5250j - " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer + " - Jave tn5250 Client";
+      return "tn5250j - " + TN5250jConstants.VERSION_INFO + " - Java tn5250 Client";
    }
 
    /**Get parameter info*/

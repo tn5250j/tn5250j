@@ -927,7 +927,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 	   tb.setTitleJustification(TitledBorder.CENTER);
 	   
 	   contenpane.add(new JLabel("TN5250j"));
-	   contenpane.add(new JLabel("Version: " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer));
+	   contenpane.add(new JLabel("Version: " + TN5250jConstants.VERSION_INFO));
 	   
 	   contenpane.setLayout(new BoxLayout(contenpane, BoxLayout.Y_AXIS));
 	   
