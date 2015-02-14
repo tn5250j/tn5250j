@@ -12,7 +12,6 @@ public class DataStreamProducer implements Runnable {
 
   private BufferedInputStream bin;
   private ByteArrayOutputStream baosin;
-  private Thread me;
   private byte[] saveStream;
   private final BlockingQueue<Object> dsq;
   private tnvt vt;
@@ -32,17 +31,11 @@ public class DataStreamProducer implements Runnable {
     abyte2 = init;
   }
 
-  public void setInputStream(ByteArrayOutputStream is) {
-
-    baosin = is;
-
-  }
-
   public final void run() {
 
     boolean done = false;
 
-    me = Thread.currentThread();
+    Thread me = Thread.currentThread();
 
     // load the first response screen
     loadStream(abyte2, 0);
@@ -91,14 +84,12 @@ public class DataStreamProducer implements Runnable {
     }
   }
 
-  private final void loadStream(byte abyte0[], int i) {
+  private void loadStream(byte abyte0[], int i) {
 
-    int j = 0;
-    int size = 0;
-    if (saveStream == null) {
-      j = (abyte0[i] & 0xff) << 8 | abyte0[i + 1] & 0xff;
-      size = abyte0.length;
-    } else {
+    int j = (abyte0[i] & 0xff) << 8 | abyte0[i + 1] & 0xff;
+    int size = abyte0.length;
+    if (saveStream != null) {
+      log.debug("partial stream found");
       size = saveStream.length + abyte0.length;
       byte[] inter = new byte[size];
       System.arraycopy(saveStream, 0, inter, 0, saveStream.length);
@@ -106,32 +97,28 @@ public class DataStreamProducer implements Runnable {
       abyte0 = new byte[size];
       System.arraycopy(inter, 0, abyte0, 0, size);
       saveStream = null;
-      inter = null;
-      j = (abyte0[i] & 0xff) << 8 | abyte0[i + 1] & 0xff;
-      log.debug("partial stream found");
     }
 
     if (j > size) {
       saveStream = new byte[abyte0.length];
-      System.arraycopy(abyte0, 0, saveStream, 0, abyte0.length);
       log.debug("partial stream saved");
+      System.arraycopy(abyte0, 0, saveStream, 0, abyte0.length);
     } else {
-      byte abyte1[];
+      int buf_len = j + 2;
+      byte[] buf = new byte[buf_len];
+      System.arraycopy(abyte0, i, buf, 0, buf_len);
       try {
-        abyte1 = new byte[j + 2];
-
-        System.arraycopy(abyte0, i, abyte1, 0, j + 2);
-        dsq.put(abyte1);
-        if (abyte0.length > abyte1.length + i)
-          loadStream(abyte0, i + j + 2);
-      } catch (Exception ex) {
+        dsq.put(buf);
+        int minimal_partial_stream_len = 2;
+        if (abyte0.length > buf.length + i + minimal_partial_stream_len)
+          loadStream(abyte0, i + buf_len);
+      } catch (InterruptedException ex) {
         log.warn("load stream error " + ex.getMessage());
       }
     }
   }
 
-  public final byte[] readIncoming()
-      throws IOException {
+  public final byte[] readIncoming() throws IOException {
 
     boolean done = false;
     boolean negotiate = false;
@@ -264,7 +251,7 @@ public class DataStreamProducer implements Runnable {
       log.info("\n Buffer Dump of data from AS400: ");
       dw.write("\r\n Buffer Dump of data from AS400: ".getBytes());
 
-      StringBuffer h = new StringBuffer();
+      StringBuilder h = new StringBuilder();
       for (int x = 0; x < abyte0.length; x++) {
         if (x % 16 == 0) {
           System.out.println("  " + h.toString());
@@ -305,9 +292,8 @@ public class DataStreamProducer implements Runnable {
       dw.write("\r\n".getBytes());
 
       dw.flush();
-    } catch (EOFException _ex) {
-    } catch (Exception _ex) {
-      log.warn("Cannot dump from host\n\r");
+    } catch (IOException e) {
+      log.warn("Cannot dump from host! Message=" + e.getMessage());
     }
 
   }
