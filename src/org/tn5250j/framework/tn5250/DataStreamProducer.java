@@ -4,7 +4,9 @@ import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
@@ -16,10 +18,8 @@ public class DataStreamProducer implements Runnable {
   private final BlockingQueue<Object> dsq;
   private tnvt vt;
   private byte[] abyte2;
-  private FileOutputStream fw;
-  private BufferedOutputStream dw;
+
   private DataStreamDumper dataStreamDumper = new DataStreamDumper();
-  private ICodePage codePage;
 
   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
@@ -84,10 +84,10 @@ public class DataStreamProducer implements Runnable {
     }
   }
 
-  private void loadStream(byte abyte0[], int offset) {
+  private void loadStream(byte streamBuffer[], int offset) {
 
-    int j = (abyte0[offset] & 0xff) << 8 | abyte0[offset + 1] & 0xff;
-    int size = abyte0.length;
+    int j = (streamBuffer[offset] & 0xff) << 8 | streamBuffer[offset + 1] & 0xff;
+    int size = streamBuffer.length;
 
     if (log.isDebugEnabled()) {
       log.debug("loadStream() offset=" + offset + " j=" + j + " size=" + size);
@@ -95,28 +95,28 @@ public class DataStreamProducer implements Runnable {
 
     if (saveStream != null) {
       log.debug("partial stream found");
-      size = saveStream.length + abyte0.length;
+      size = saveStream.length + streamBuffer.length;
       byte[] inter = new byte[size];
       System.arraycopy(saveStream, 0, inter, 0, saveStream.length);
-      System.arraycopy(abyte0, 0, inter, saveStream.length, abyte0.length);
-      abyte0 = new byte[size];
-      System.arraycopy(inter, 0, abyte0, 0, size);
+      System.arraycopy(streamBuffer, 0, inter, saveStream.length, streamBuffer.length);
+      streamBuffer = new byte[size];
+      System.arraycopy(inter, 0, streamBuffer, 0, size);
       saveStream = null;
     }
 
     if (j > size) {
-      saveStream = new byte[abyte0.length];
+      saveStream = new byte[streamBuffer.length];
       log.debug("partial stream saved");
-      System.arraycopy(abyte0, 0, saveStream, 0, abyte0.length);
+      System.arraycopy(streamBuffer, 0, saveStream, 0, streamBuffer.length);
     } else {
       int buf_len = j + 2;
       byte[] buf = new byte[buf_len];
-      System.arraycopy(abyte0, offset, buf, 0, buf_len);
+      System.arraycopy(streamBuffer, offset, buf, 0, buf_len);
       try {
         dsq.put(buf);
         int minimal_partial_stream_len = 2;
-        if (abyte0.length > buf.length + offset + minimal_partial_stream_len)
-          loadStream(abyte0, offset + buf_len);
+        if (streamBuffer.length > buf.length + offset + minimal_partial_stream_len)
+          loadStream(streamBuffer, offset + buf_len);
       } catch (InterruptedException ex) {
         log.warn("load stream error.", ex);
       }
