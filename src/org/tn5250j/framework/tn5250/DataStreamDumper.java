@@ -2,20 +2,21 @@
  * Title: Screen5250.java
  * Copyright:   Copyright (c) 2015
  * Company:
- * @author  Martin W. Kirst
  *
+ * @author Martin W. Kirst
+ * <p/>
  * Description:
- *
+ * <p/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
@@ -31,23 +32,27 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DataStreamDumper {
 
+  private AtomicInteger counter = new AtomicInteger(0);
+
   private FileOutputStream fw;
   private BufferedOutputStream dw;
-  private boolean dumpBytes = false;
+  private boolean dumpActive = false;
   private ICodePage codePage;
 
   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+
 
   public void toggleDebug(ICodePage cp) {
 
     if (codePage == null)
       codePage = cp;
 
-    dumpBytes = !dumpBytes;
-    if (dumpBytes) {
+    dumpActive = !dumpActive;
+    if (dumpActive) {
 
       try {
         if (fw == null) {
@@ -75,11 +80,11 @@ public class DataStreamDumper {
       }
     }
 
-    log.info("Data Stream output is now " + dumpBytes);
+    log.info("Data Stream output is now " + dumpActive);
   }
 
   public void dump(byte[] abyte0) {
-    if (!dumpBytes) {
+    if (!dumpActive) {
       return;
     }
 
@@ -135,4 +140,17 @@ public class DataStreamDumper {
 
   }
 
+  void dumpRaw(byte[] buffer) {
+    try {
+      String fname = "dump_" + counter.get() + ".data";
+      log.debug("Dumping file: " + fname);
+      FileOutputStream fos = new FileOutputStream(fname);
+      fos.write(buffer);
+      fos.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 }
