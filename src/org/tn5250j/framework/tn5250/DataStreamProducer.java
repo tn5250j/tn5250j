@@ -84,9 +84,9 @@ public class DataStreamProducer implements Runnable {
     }
   }
 
-  private void loadStream(byte abyte0[], int i) {
+  private void loadStream(byte abyte0[], int offset) {
 
-    int j = (abyte0[i] & 0xff) << 8 | abyte0[i + 1] & 0xff;
+    int j = (abyte0[offset] & 0xff) << 8 | abyte0[offset + 1] & 0xff;
     int size = abyte0.length;
     if (saveStream != null) {
       log.debug("partial stream found");
@@ -106,12 +106,12 @@ public class DataStreamProducer implements Runnable {
     } else {
       int buf_len = j + 2;
       byte[] buf = new byte[buf_len];
-      System.arraycopy(abyte0, i, buf, 0, buf_len);
+      System.arraycopy(abyte0, offset, buf, 0, buf_len);
       try {
         dsq.put(buf);
         int minimal_partial_stream_len = 2;
-        if (abyte0.length > buf.length + i + minimal_partial_stream_len)
-          loadStream(abyte0, i + buf_len);
+        if (abyte0.length > buf.length + offset + minimal_partial_stream_len)
+          loadStream(abyte0, offset + buf_len);
       } catch (InterruptedException ex) {
         log.warn("load stream error.", ex);
       }
