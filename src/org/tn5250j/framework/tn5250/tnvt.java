@@ -337,9 +337,7 @@ public final class tnvt implements Runnable {
 
 			producer = new DataStreamProducer(this, bin, dsq, abyte0);
 			pthread = new Thread(producer);
-			//         pthread.setPriority(pthread.MIN_PRIORITY);
 			pthread.setPriority(Thread.NORM_PRIORITY);
-			//			pthread.setPriority(Thread.NORM_PRIORITY / 2);
 			pthread.start();
 
 			try {
@@ -455,12 +453,6 @@ public final class tnvt implements Runnable {
 		bout.write(abyte0);
 		bout.flush();
 	}
-
-	//	private final void writeByte(byte byte0) throws IOException {
-	//
-	//		bout.write(byte0);
-	//		bout.flush();
-	//	}
 
 	public final void sendHeartBeat() throws IOException {
 
@@ -1163,9 +1155,8 @@ public final class tnvt implements Runnable {
 				} else {
 					strpccmd();
 				}
-			} catch (Exception exd) {
-				log.warn(" tnvt.run: " + exd.getMessage());
-				exd.printStackTrace();
+			} catch (RuntimeException e) {
+				log.warn("tnvt.run: ", e);
 			}
 
 			if (pendingUnlock && !screen52.isStatusErrorCode()) {
@@ -1291,7 +1282,6 @@ public final class tnvt implements Runnable {
 		byte abyte0[] = new byte[rows * cols];
 		fillScreenArray(abyte0, rows, cols);
 		writeGDS(0, 0, abyte0);
-		abyte0 = null;
 	}
 
 	private final void fillScreenArray(byte[] sa, int rows, int cols) {
@@ -1347,9 +1337,6 @@ public final class tnvt implements Runnable {
 
 					byte[] guiSeg = sfParser.getSegmentAtPos(y);
 					if (guiSeg != null) {
-						//log.info(" gui saved at " + y + " - " + screen52.getRow(y) + "," +
-						//    screen52.getCol(y));
-
 						byte[] gsa = new byte[sa.length + guiSeg.length + 2];
 						System.arraycopy(sa,0,gsa,0,sa.length);
 						System.arraycopy(guiSeg,0,gsa,sac+2,guiSeg.length);
