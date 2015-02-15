@@ -113,7 +113,7 @@ public class DataStreamProducer implements Runnable {
         if (abyte0.length > buf.length + i + minimal_partial_stream_len)
           loadStream(abyte0, i + buf_len);
       } catch (InterruptedException ex) {
-        log.warn("load stream error " + ex.getMessage());
+        log.warn("load stream error.", ex);
       }
     }
   }
