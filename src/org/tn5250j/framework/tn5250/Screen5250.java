@@ -593,9 +593,6 @@ public class Screen5250 {
 	 * @param activate
 	 */
 	public void setCursorActive(boolean activate) {
-
-		//      System.out.println("cursor active " + updateCursorLoc + " " +
-		// cursorActive + " " + activate);
 		if (cursorActive && !activate) {
 			setCursorOff();
 			cursorActive = activate;
@@ -607,35 +604,22 @@ public class Screen5250 {
 		}
 	}
 
-	/**
-	 * Set the cursor on
-	 */
 	public void setCursorOn() {
 		cursorShown = true;
 		updateCursorLoc();
 	}
 
-	/**
-	 * Set the cursor off
-	 */
 	public void setCursorOff() {
-
 		cursorShown = false;
 		updateCursorLoc();
-		//      System.out.println("cursor off " + updateCursorLoc + " " +
-		// cursorActive);
-
 	}
 
 	/**
 	 *
 	 */
 	private void updateCursorLoc() {
-
 		if (cursorActive) {
-
 			fireCursorChanged(3);
-
 		}
 	}
 
@@ -3901,11 +3885,8 @@ public class Screen5250 {
 
 		if (listeners != null) {
 			Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
-			//int size = listeners.size();
-			int size = lc.size();
-			for (int i = 0; i < size; i++) {
-				ScreenListener target =
-					lc.elementAt(i);
+			for (int i = 0, len = lc.size(); i < len; i++) {
+				ScreenListener target = lc.elementAt(i);
 				target.onScreenChanged(update,startRow,startCol,startRow,startCol);
 			}
 		}
@@ -3916,12 +3897,9 @@ public class Screen5250 {
 	 *
 	 */
 	private void fireScreenSizeChanged() {
-
 		if (listeners != null) {
 			Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
-			//int size = listeners.size();
-			int size = lc.size();
-			for (int i = 0; i < size; i++) {
+			for (int i = 0, size = lc.size(); i < size; i++) {
 				ScreenListener target =
 					lc.elementAt(i);
 				target.onScreenSizeChanged(numRows,numCols);
