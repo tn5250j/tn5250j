@@ -10,14 +10,18 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
+import static org.tn5250j.framework.tn5250.Stream5250.OPCODE_OFFSET;
+
 public class DataStreamProducer implements Runnable {
+
+  private static final int MINIMAL_PARTIAL_STREAM_LEN = 2;
 
   private BufferedInputStream bin;
   private ByteArrayOutputStream baosin;
   private byte[] saveStream;
   private final BlockingQueue<Object> dsq;
   private tnvt vt;
-  private byte[] abyte2;
+  private byte[] dataStream;
 
   private DataStreamDumper dataStreamDumper = new DataStreamDumper();
 
@@ -28,7 +32,7 @@ public class DataStreamProducer implements Runnable {
     this.vt = vt;
     baosin = new ByteArrayOutputStream();
     dsq = queue;
-    abyte2 = init;
+    dataStream = init;
   }
 
   public final void run() {
@@ -38,7 +42,7 @@ public class DataStreamProducer implements Runnable {
     Thread me = Thread.currentThread();
 
     // load the first response screen
-    loadStream(abyte2, 0);
+    loadStream(dataStream, 0);
 
     while (!done) {
       try {
@@ -86,41 +90,55 @@ public class DataStreamProducer implements Runnable {
 
   private void loadStream(byte streamBuffer[], int offset) {
 
-    int j = (streamBuffer[offset] & 0xff) << 8 | streamBuffer[offset + 1] & 0xff;
-    int size = streamBuffer.length;
+    int partialLen = (streamBuffer[offset] & 0xff) << 8 | streamBuffer[offset + 1] & 0xff;
+    int bufferLen = streamBuffer.length;
 
     if (log.isDebugEnabled()) {
-      log.debug("loadStream() offset=" + offset + " j=" + j + " size=" + size);
+      log.debug("loadStream() offset=" + offset + " partialLen=" + partialLen + " bufferLen=" + bufferLen);
     }
 
     if (saveStream != null) {
       log.debug("partial stream found");
-      size = saveStream.length + streamBuffer.length;
-      byte[] inter = new byte[size];
+      bufferLen = saveStream.length + streamBuffer.length;
+      byte[] inter = new byte[bufferLen];
       System.arraycopy(saveStream, 0, inter, 0, saveStream.length);
       System.arraycopy(streamBuffer, 0, inter, saveStream.length, streamBuffer.length);
-      streamBuffer = new byte[size];
-      System.arraycopy(inter, 0, streamBuffer, 0, size);
+      streamBuffer = new byte[bufferLen];
+      System.arraycopy(inter, 0, streamBuffer, 0, bufferLen);
       saveStream = null;
     }
 
-    if (j > size) {
+    if (partialLen > bufferLen) {
       saveStream = new byte[streamBuffer.length];
       log.debug("partial stream saved");
       System.arraycopy(streamBuffer, 0, saveStream, 0, streamBuffer.length);
     } else {
-      int buf_len = j + 2;
+      int buf_len = partialLen + 2;
       byte[] buf = new byte[buf_len];
-      System.arraycopy(streamBuffer, offset, buf, 0, buf_len);
+      if (isBufferShifted(partialLen, bufferLen) && isOpcodeShifted(streamBuffer, offset)) {
+        log.debug("Invalid stream buffer detected. Ignoring the inserted byte.");
+        System.arraycopy(streamBuffer, offset, buf, 0, MINIMAL_PARTIAL_STREAM_LEN);
+        System.arraycopy(streamBuffer, offset + MINIMAL_PARTIAL_STREAM_LEN + 1, buf, MINIMAL_PARTIAL_STREAM_LEN, partialLen);
+      } else {
+        System.arraycopy(streamBuffer, offset, buf, 0, buf_len);
+      }
       try {
         dsq.put(buf);
-        int minimal_partial_stream_len = 2;
-        if (streamBuffer.length > buf.length + offset + minimal_partial_stream_len)
+        if (streamBuffer.length > buf.length + offset + MINIMAL_PARTIAL_STREAM_LEN)
           loadStream(streamBuffer, offset + buf_len);
       } catch (InterruptedException ex) {
         log.warn("load stream error.", ex);
       }
     }
+  }
+
+  private boolean isOpcodeShifted(byte[] streamBuffer, int offset) {
+    byte code = streamBuffer[offset + 1 + OPCODE_OFFSET];
+    return (0 <= code && code <= 12);
+  }
+
+  private boolean isBufferShifted(int partialLen, int bufferLen) {
+    return partialLen + MINIMAL_PARTIAL_STREAM_LEN + 1 == bufferLen;
   }
 
   public final byte[] readIncoming() throws IOException {
@@ -130,11 +148,10 @@ public class DataStreamProducer implements Runnable {
 
     baosin.reset();
     int j = -1;
-    int i = 0;
 
     while (!done) {
 
-      i = bin.read();
+      int i = bin.read();
 
       // WVL - LDC : 16/07/2003 : TR.000345
       // The inStream return -1 when end-of-stream is reached. This
