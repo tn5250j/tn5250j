@@ -18,7 +18,7 @@ public class DataStreamProducer implements Runnable {
   private byte[] abyte2;
   private FileOutputStream fw;
   private BufferedOutputStream dw;
-  private boolean dumpBytes = false;
+  private DataStreamDumper dataStreamDumper = new DataStreamDumper();
   private ICodePage codePage;
 
   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
@@ -194,9 +194,7 @@ public class DataStreamProducer implements Runnable {
     //     Impacts the run method! Added the null check.
     byte[] rBytes = baosin.toByteArray();
 
-    if (dumpBytes) {
-      dump(rBytes);
-    }
+    dataStreamDumper.dump(rBytes);
 
     if (negotiate) {
       // get the negotiation option
@@ -208,94 +206,7 @@ public class DataStreamProducer implements Runnable {
     return rBytes;
   }
 
-  protected final void toggleDebug(ICodePage cp) {
-
-    if (codePage == null)
-      codePage = cp;
-
-    dumpBytes = !dumpBytes;
-    if (dumpBytes) {
-
-      try {
-        if (fw == null) {
-          fw = new FileOutputStream("log.txt");
-          dw = new BufferedOutputStream(fw);
-        }
-      } catch (FileNotFoundException fnfe) {
-        log.warn(fnfe.getMessage());
-      }
-
-    } else {
-
-      try {
-
-        if (dw != null)
-          dw.close();
-        if (fw != null)
-          fw.close();
-        dw = null;
-        fw = null;
-        codePage = null;
-      } catch (IOException ioe) {
-
-        log.warn(ioe.getMessage());
-      }
-    }
-
-    log.info("Data Stream output is now " + dumpBytes);
+  protected void toggleDebug(ICodePage codePage) {
+    dataStreamDumper.toggleDebug(codePage);
   }
-
-  public void dump(byte[] abyte0) {
-    try {
-
-      log.info("\n Buffer Dump of data from AS400: ");
-      dw.write("\r\n Buffer Dump of data from AS400: ".getBytes());
-
-      StringBuilder h = new StringBuilder();
-      for (int x = 0; x < abyte0.length; x++) {
-        if (x % 16 == 0) {
-          System.out.println("  " + h.toString());
-          dw.write(("  " + h.toString() + "\r\n").getBytes());
-
-          h.setLength(0);
-          h.append("+0000");
-          h.setLength(5 - Integer.toHexString(x).length());
-          h.append(Integer.toHexString(x).toUpperCase());
-
-          System.out.print(h.toString());
-          dw.write(h.toString().getBytes());
-
-          h.setLength(0);
-        }
-        char ac = codePage.ebcdic2uni(abyte0[x]);
-        if (ac < ' ')
-          h.append('.');
-        else
-          h.append(ac);
-        if (x % 4 == 0) {
-          System.out.print(" ");
-          dw.write((" ").getBytes());
-
-        }
-
-        if (Integer.toHexString(abyte0[x] & 0xff).length() == 1) {
-          System.out.print("0" + Integer.toHexString(abyte0[x] & 0xff).toUpperCase());
-          dw.write(("0" + Integer.toHexString(abyte0[x] & 0xff).toUpperCase()).getBytes());
-
-        } else {
-          System.out.print(Integer.toHexString(abyte0[x] & 0xff).toUpperCase());
-          dw.write((Integer.toHexString(abyte0[x] & 0xff).toUpperCase()).getBytes());
-        }
-
-      }
-      System.out.println();
-      dw.write("\r\n".getBytes());
-
-      dw.flush();
-    } catch (IOException e) {
-      log.warn("Cannot dump from host! Message=" + e.getMessage());
-    }
-
-  }
-
 }
