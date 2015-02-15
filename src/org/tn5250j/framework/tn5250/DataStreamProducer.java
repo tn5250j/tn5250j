@@ -88,6 +88,11 @@ public class DataStreamProducer implements Runnable {
 
     int j = (abyte0[offset] & 0xff) << 8 | abyte0[offset + 1] & 0xff;
     int size = abyte0.length;
+
+    if (log.isDebugEnabled()) {
+      log.debug("loadStream() offset=" + offset + " j=" + j + " size=" + size);
+    }
+
     if (saveStream != null) {
       log.debug("partial stream found");
       size = saveStream.length + abyte0.length;
