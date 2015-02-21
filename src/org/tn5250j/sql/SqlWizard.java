@@ -73,7 +73,7 @@ private SQLConnection connection;
 
       try {
 
-         setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
+         setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
          // set title
          setTitle(LangTool.getString("xtfr.wizardTitle"));

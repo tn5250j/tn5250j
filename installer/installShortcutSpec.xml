@@ -15,7 +15,7 @@
      workingDirectory="$INSTALL_PATH\lib"
      commandLine=""
      description="A 5250 Telnet emulator written in Java"
-     iconFile="$INSTALL_PATH\bin\icons\tnicon.ico"
+     iconFile="$INSTALL_PATH\bin\icons\tn5250j-icon.ico"
      iconIndex="0"
      initialState="noShow">
 

@@ -32,6 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
+import org.tn5250j.encoding.builtin.CCSID277;
 
 /**
  * Testing the correctness of {@link CCSID277} and comparing with existing implementation.

@@ -18,13 +18,13 @@
 	<property name="rtm.lib.dir" value="${basedir}/lib/runtime" /> <!-- runtime libs -->
 	<property name="dev.lib.dir" value="${basedir}/lib/development" /> <!-- development libs -->
 	
-	<property name="compile.source" value="1.5" />
-	<property name="compile.target" value="1.5" />
+	<property name="compile.source" value="1.6" />
+	<property name="compile.target" value="1.6" />
 	
     <property name="jarname" value="${name}.jar" />
     <property name="dist.base.name" value="${name}-${version}" />
     <property name="dist.src.name" value="${dist.base.name}-src" />
-    <property name="dist.bin.name" value="${dist.base.name}-bin" />
+    <property name="dist.bin.name" value="${dist.base.name}-full-bin" />
     <property name="dist-run.name" value="${dist.base.name}-run"/>
     <property name="dist-run.dir"  value="${dist.dir}/${dist-run.name}"/>
 
@@ -47,7 +47,21 @@
        <exclude name="antbuild.txt"/>
        <exclude name="build.xml"/>
        <exclude name="org/**"/>
+       <exclude name="*.gif"/>
     </fileset>
+	
+	<fileset dir="${resource.dir}" id="resources.fileset">
+        <include name="*.txt"/>
+		<exclude name="antbuild.txt"/>
+		<exclude name="wishlist.txt"/>
+      	<include name="*.htm*"/>
+      	<include name="*.php"/>
+        <include name="COPYING"/>
+        <include name="tn5250j*.jpg"/>
+        <include name="tn5250j*.png"/>
+      	<include name="tn5250j*.ico"/>
+		<include name="tn5250j*.icns"/>
+	</fileset>
 
     <!-- files for source distribution -->
     <!--<fileset dir="${source.dir}" id="dist.src">-->
@@ -58,27 +72,6 @@
        <include name="resources/**"/>
        <include name="installer/**"/>
     </fileset>
-
-  <!-- ===================================================================== -->
-  <!-- Test Java version.                                                    -->
-  <!-- ===================================================================== -->
-
-   <target name="testjava">
-      <condition property="oldJava">
-         <or>
-            <equals arg1="1.3" arg2="${ant.java.version}" />
-         </or>
-      </condition>
-   </target>
-
-
-    <!-- the ftp task can be used to transfer files to a remote system -->
-    <!--
-    <taskdef name="ftp"
-             classname="org.apache.tools.ant.taskdefs.optional.net.FTP"
-             classpath="${ant_home}/lib/optional.jar"
-    />
-    -->
 
     <!-- =================================================================== -->
     <!-- Shows some information                                              -->
@@ -121,16 +114,7 @@
         <echo message="os.name:                 ${os.name}" />
         <echo message="os.arch:                 ${os.arch}" />
         <echo message="os.version:              ${os.version}" />
-        <!--
-        <echo message="" />
-        <echo message="file.separator:          ${file.separator}" />
-        <echo message="path.separator:          ${path.separator}" />
-        <echo message="line.separator:          ${line.separator}" />
-        <echo message="" />
-        <echo message="user.name:               ${user.name}" />
-        <echo message="user.home:               ${user.home}" />
-        <echo message="user.dir:                ${user.dir}" />
-        -->
+
     </target>
 
     <!-- =================================================================== -->
@@ -147,21 +131,12 @@
     <!-- Compiles the source directory                                       -->
     <!-- To use debugging add the debug="true" parameter to javac            -->
     <!-- =================================================================== -->
-    <target name="compile" depends="prepare,testjava" description="Compile your source-files">
-        <javac srcdir="${source.dir}"
-        		target="${compile.target}"
-        		source="${compile.source}"
+    <target name="compile" depends="prepare" description="Compile your source-files">
+        <javac srcdir="${source.dir}" target="${compile.target}" source="${compile.source}"
         		debug="${debug}"
                 destdir="${build.classes.dir}"
-                excludes="**/Cvs/**,**/*.ini" >
-            <exclude name="org/tn5250j/transport/SSL/SSLImplementation.java"
-                      if="oldJava" />
-            <exclude name="org/tn5250j/transport/SSL/X509*.java"
-                      if="oldJava" />
-            <exclude name="org/tn5250j/keyboard/KeyStroker14.java"
-                      if="oldJava" />
-            <exclude name="org/tn5250j/keyboard/configure/KeyGetter.java"
-                      if="oldJava" />
+                excludes="**/Cvs/**,**/*.ini"
+        		includeantruntime="false" >
             <classpath>
                 <path refid="classpath"/>
             </classpath>
@@ -189,7 +164,7 @@
     <!-- =================================================================== -->
     <!-- Creates the API documentation                                       -->
     <!-- =================================================================== -->
-    <target name= "javadoc" depends="prepare" description="Creates the javadoc API documentation">
+    <target name="javadoc" depends="prepare" description="Creates the javadoc API documentation">
         <javadoc packagenames="org.*" sourcepath="${source.dir}" destdir="${javadoc.dir}"
                 doctitle="${Name}"
                 windowtitle="Javadoc for ${Name} (Telnet 5250 in Java)"
@@ -204,14 +179,14 @@
     <!-- =================================================================== -->
     <!-- Creates the Jar                                                     -->
     <!-- =================================================================== -->
-    <target name= "package" depends="compile" description="Create a Jar-File of your compiled classes">
+    <target name="package" depends="compile" description="Create a Jar-File of your compiled classes">
         <tstamp><format property="ts" pattern="yyyyMMdd-HHmmss-z"/> </tstamp>
 
         <jar jarfile="${build.dir}/${jarname}">
             <fileset dir="${build.classes.dir}"
                     includes="*org/**"/>
             <fileset dir="${source.dir}" 
-            	includes="*.properties,*.props,*.gif,*.jpg"/>
+            	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <fileset dir="${resource.dir}" 
             	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <manifest>
@@ -226,13 +201,13 @@
     </target>
 
 
-    <target name= "all" depends="clean, compile, package"   description="Clean, Compile, Jar">
+    <target name="all" depends="clean, compile, package"   description="Clean, Compile, Jar">
     </target>
 
     <!-- =================================================================== -->
     <!-- Creates the distribution                                            -->
     <!-- =================================================================== -->
-    <target name= "dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
+    <target name="dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
     </target>
 
     <target name= "dist-run-prepare" depends="package"  description="Prepares all-in-one distribution">
@@ -257,58 +232,36 @@
         </copy>
     </target>
     
-    <target name= "dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-nosubdir-zip, dist-bin-scripting-nosubdir-zip, dist-bin-jarbundle" description="Create a Zip and TGZ Archives with all the binary files">
+    <target name="dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-jarbundle, dist-core-jar-only" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
-    <target name= "dist-bin-prepare" depends="package"  description="Prepares binary distribution">
+	<target name="dist-core-jar-only" depends="dist-bin-prepare">
+		<copy tofile="${dist.dir}/${dist.base.name}-no-depedencies.jar" file="${build.dir}/${jarname}"/>
+	</target>
+	
+    <target name="dist-bin-prepare" depends="package"  description="Prepares binary distribution">
         <delete dir="${dist.dir}/${dist.base.name}"/>
         <mkdir dir="${dist.dir}/${dist.base.name}"/>
         <copy todir="${dist.dir}/${dist.base.name}">
             <fileset refid="dist.bin"/>
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${build.dir}/${jarname}">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/jython.jar">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/jythonlib.jar">
-        </copy>
-        <!--copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/jt400.jar">
-        </copy -->
-        <copy todir="${dist.dir}/${dist.base.name}"
-                file="${rtm.lib.dir}/itext.jar">
-        </copy>
-        <copy todir="${dist.dir}/${dist.base.name}"
-        		file="${rtm.lib.dir}/log4j-1.2.15.jar">
+        	<fileset dir="${rtm.lib.dir}">
+        		<include name="*.jar"/>
+        	</fileset>
+        	<fileset dir="${build.dir}">
+        		<include name="${jarname}"/>
+        	</fileset>
+    		<fileset refid="resources.fileset" />
         </copy>
     </target>
 
-    <target name= "dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
+    <target name="dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
         <zip zipfile="${dist.dir}/${dist.bin.name}.zip"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**">
         </zip>
     </target>
 
-    <target name= "dist-bin-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
-        <zip zipfile="${dist.dir}/${dist.bin.name}-nosubdir.zip"
-            basedir="${dist.dir}/${dist.base.name}"
-            includes="**"
-            excludes="jython.jar,jythonlib.jar,jt400.jar,itext.jar,log4j-1.2.15.jar">
-        </zip>
-    </target>
-
-    <target name= "dist-bin-scripting-nosubdir-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files no sub directory">
-        <zip zipfile="${dist.dir}/${dist.bin.name}-full-nosubdir.zip"
-            basedir="${dist.dir}/${dist.base.name}"
-            includes="**">
-        </zip>
-    </target>
-
-    <target name= "dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
+    <target name="dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
         <tar tarfile="${dist.dir}/${dist.bin.name}.tar"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**">
@@ -317,10 +270,10 @@
         <delete file="${dist.dir}/${dist.bin.name}.tar"/>
     </target>
 
-    <target name= "dist-src" depends="dist-src-zip, dist-src-tgz" description="Create a Zip and TGZ Archives with all source files">
+    <target name="dist-src" depends="dist-src-zip, dist-src-tgz" description="Create a Zip and TGZ Archives with all source files">
     </target>
 
-    <target name= "dist-src-prepare" depends="package"  description="Prepares source distribution">
+    <target name="dist-src-prepare" depends="package"  description="Prepares source distribution">
         <delete dir="${dist.dir}/${dist.base.name}"/>
         <mkdir dir="${dist.dir}/${dist.base.name}"/>
         <copy todir="${dist.dir}/${dist.base.name}">
@@ -328,20 +281,19 @@
         </copy>
     </target>
 
-    <target name= "dist-src-zip" depends="dist-src-prepare" description="Create a Zip-File with all the source files">
+    <target name="dist-src-zip" depends="dist-src-prepare" description="Create a Zip-File with all the source files">
         <zip zipfile="${dist.dir}/${dist.src.name}.zip"
             basedir="${dist.dir}/"
             includes="${dist.base.name}/**"
-        	excludes="**/_svn/**, **/.svn/**"
         />
     </target>
 
-    <target name= "dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
+    <target name="dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
         <tar destfile="${dist.dir}/${dist.src.name}.tar"
         	casesensitive="true"
             basedir="${dist.dir}"
-        	excludes="**/_svn/**, **/.svn/**">
-        </tar>
+        	includes="${dist.base.name}/**"
+        />
         <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
         <delete file="${dist.dir}/${dist.src.name}.tar"/>
     </target>
@@ -362,32 +314,17 @@
           <include name="${jarname}" />
        </fileset>
       <fileset dir="${dist.dir}/${dist.base.name}/installer" excludes="**/_svn/**, **/.svn/**" />
-      <fileset dir="${dist.dir}/${dist.base.name}/resources">
-        <include name="*.txt"/>
-      	<include name="*.htm*"/>
-      	<include name="*.php"/>
-        <include name="COPYING"/>
-        <include name="tn5250jSplash.jpg"/>
-        <include name="tnicon.png"/>
-      	<include name="tnicon.ico"/>
-      </fileset>
+      <fileset refid="resources.fileset" />
       <fileset dir="${rtm.lib.dir}" excludes="**/_svn/**, **/.svn/**" />
     </copy>
 
     <!-- We call IzPack -->
     <echo message="Makes the installer using IzPack"/>
     <izpack input="${dist.dir}/installer/install.xml"
-            output="${dist.dir}/tn5250j-install-${version}.jar"
+            output="${dist.dir}/tn5250j-${version}-installer.jar"
             installerType="standard"
             basedir="${dist.dir}"
         	izPackDir="${IzPack.dir}"/>
-
-    <!--echo message="Makes the web installer using IzPack"/-->
-    <!--izpack input="${dist.dir}/installer/install.xml"
-            output="${dist.dir}/tn5250j-install-web-${version}.jar"
-            installerType="web"
-            basedir="${dist.dir}"
-            izPackDir="${IzPack.dir}"/-->
 
    </target>
 
@@ -396,11 +333,11 @@
 	                  classpath="${dev.lib.dir}/jarbundler-2.2.0.jar"
 	                  classname="net.sourceforge.jarbundler.JarBundler" />
 	
-    <target name= "dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
+    <target name="dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
                    mainclass="org.tn5250j.My5250"
-                   icon="${resource.dir}/tnicon.icns"
+                   icon="${resource.dir}/tn5250j-icon.icns"
                    version="${version}"
                    infostring="${Name} ${version}, (c) ${year}"
                    aboutmenuname="${Name}"
@@ -415,18 +352,18 @@
                    antialiasedtext="true"
                    liveresize="true"
                    growboxintrudes="false"
-                   workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+    	           workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
                    screenmenu="true" >
          <jarfileset dir="${dist.dir}/${dist.base.name}">
-           <include name="**/*.jar" />
-           <exclude name="**/CVS" />
-           <exclude name="**/_svn/**" />
-           <exclude name="**/.svn/**" />
+            <include name="**/*.jar" />
+            <exclude name="**/CVS" />
+            <exclude name="**/_svn/**" />
+            <exclude name="**/.svn/**" />
          </jarfileset>
        </jarbundler>
 	   </target>
 
-    <target name= "dist-bin-jarbundle-tgz" depends="dist-bin-jarbundle" description="Create a Tgz-File of the jar bundle distribution">
+    <target name="dist-bin-jarbundle-tgz" depends="dist-bin-jarbundle" description="Create a Tgz-File of the jar bundle distribution">
         <tar tarfile="${dist.dir}/${dist.bin.name}.app.tar"
             basedir="${dist.dir}/"
             includes="${Name}.app/**">
@@ -434,7 +371,5 @@
         <gzip zipfile="${dist.dir}/${dist.bin.name}.app.tgz" src="${dist.dir}/${dist.bin.name}.app.tar" />
         <delete file="${dist.dir}/${dist.bin.name}.app.tar"/>
     </target>
-
-<!-- start jar bundler task -->
 
 </project>

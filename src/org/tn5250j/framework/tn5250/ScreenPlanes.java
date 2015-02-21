@@ -33,31 +33,31 @@ import org.tn5250j.ExternalProgramConfig;
 
 public class ScreenPlanes {
 
-	Screen5250 scr;
-	int screenSize;
-	int numRows;
-	int numCols;
-	int errorLineNum;
+	private final Screen5250 scr;
+	private int screenSize;
+	private int numRows;
+	private int numCols;
+	private int errorLineNum;
 
 	private static final int initAttr = 32;
 	private static final char initChar = 0;
 
 	protected char[] screen;   // text plane
-	protected char[] screenAttr;   // attribute plane
-	protected char[] screenGUI;   // gui plane
-	protected char[] screenIsAttr;
-	protected char[] fieldExtended;
-	protected char[] screenField;
-	protected char[] screenColor;   // color plane
+	private char[] screenAttr;   // attribute plane
+	private char[] screenGUI;   // gui plane
+	private char[] screenIsAttr;
+	private char[] fieldExtended;
+	private char[] screenField;
+	private char[] screenColor;   // color plane
 	protected char[] screenExtended;   // extended plane
-	protected char[] screenIsChanged;
+	private char[] screenIsChanged;
 
-	protected char[] initArray;
+	private char[] initArray;
 
-	protected char[] errorLine;
-	protected char[] errorLineAttr;
-	protected char[] errorLineIsAttr;
-	protected char[] errorLineGui;
+	private char[] errorLine;
+	private char[] errorLineAttr;
+	private char[] errorLineIsAttr;
+	private char[] errorLineGui;
 
 	public ScreenPlanes(Screen5250 s5250, int size) {
 
@@ -240,8 +240,8 @@ public class ScreenPlanes {
 
 		switch(attr) {
 		case 32: // green normal
-		c = ATTR_32;
-		break;
+			c = ATTR_32;
+			break;
 
 		case 33: // green/revers
 			c = ATTR_33;
@@ -276,8 +276,8 @@ public class ScreenPlanes {
 
 		case 40:
 		case 42: // red/normal
-		c = ATTR_40;
-		break;
+			c = ATTR_40;
+			break;
 
 		case 41:
 		case 43: // red/reverse
@@ -342,8 +342,8 @@ public class ScreenPlanes {
 			break;
 
 		case 56: // pink
-		c = ATTR_56;
-		break;
+			c = ATTR_56;
+			break;
 
 		case 57: // pink/reverse
 			c = ATTR_57;
@@ -1076,7 +1076,7 @@ public class ScreenPlanes {
 				}
 			}
 			// now lets check for External Program: .
-			else if (!hs && x > 0 && x < lenScreen - 7 &&	                     
+			else if (!hs && x > 0 && x < lenScreen - 7 &&
 					screen[x - 1] <= ' ' &&
 					screenGUI[x] == NO_GUI &&
 					(screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
@@ -1091,8 +1091,8 @@ public class ScreenPlanes {
 						if(x + program.length() >= screen.length) break;
 						for(int j=0;j<=program.length();j++){
 							key+=screen[x+j];
-						}								
-						if(key.toLowerCase().equals(program.toLowerCase()+":")) {									 	
+						}
+						if(key.toLowerCase().equals(program.toLowerCase()+":")) {
 							hs = true;
 							screenGUI[x] = BUTTON_LEFT_EB;
 							while (screen[++x] > ' ') {
@@ -1102,7 +1102,7 @@ public class ScreenPlanes {
 							break;
 						}
 					}
-				}	        
+				}
 			}
 
 			if (!retHS && hs)

@@ -67,6 +67,7 @@ JComboBox colorSchemaList;
                 Object obj = cb.getSelectedItem();
                 if (obj instanceof Schema) {
 
+                  System.out.println(" we got a schema ");
                   colorSchema = (Schema)obj;
                 }
                 else {
@@ -483,7 +484,6 @@ JComboBox colorSchemaList;
          s.setColorHexAttr(getSchemaProp(prefix + ".colorHexAttr"));
          schemas.addItem(s);
       }
-
    }
 
    private int getSchemaProp(String key) {

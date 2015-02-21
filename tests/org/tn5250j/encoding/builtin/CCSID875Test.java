@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
-import org.tn5250j.encoding.ToolboxCodePageProvider;
+import org.tn5250j.encoding.builtin.CCSID875;
 
 /**
  * Testing the correctness of {@link CCSID875} and comparing with existing implementation.
@@ -99,65 +99,4 @@ public class CCSID875Test {
 		}
 	}
 
-	/*
-	 * ==============================================
-	 */
-	/**
-	 * Testing for correctness new implementation and JTOpen ...
-	 * Testing byte -> Unicode -> byte
-	 */
-	@Test
-	public void testNewAndToolbox() {
-		final ICodePage cp = ToolboxCodePageProvider.getCodePage("875");
-		final CCSID875 cpex = new CCSID875();
-		cpex.init();
-		assertNotNull("At least an ASCII Codepage should be available.", cpex);
-
-		// According to
-		// http://www-01.ibm.com/software/globalization/cp/cp00875.jsp
-		// Characters less than 0x40 are not defined.
-		
-		for (int i=4*16; i<256; i++) {
-			
-			if (i == 0xDC) continue; // not defined code point
-			if (i == 0xED) continue; // not defined code point
-			if (i == 0xFD) continue; // not defined code point
-			
-			final byte beginvalue = (byte)i;
-			assertEquals("Testing to EBCDIC item #" + i, cp.ebcdic2uni(beginvalue), cpex.ebcdic2uni(beginvalue));
-			final char converted = cp.ebcdic2uni(beginvalue);
-			assertEquals("Testing to UNICODE item #" + i, cp.uni2ebcdic(converted), cpex.uni2ebcdic(converted));
-			final byte afterall = cp.uni2ebcdic(converted);
-			assertEquals("Testing before and after item #" + i, beginvalue, afterall);
-		}
-	}
-
-	/**
-	 * Testing for correctness old implementation and JTOpen ...
-	 * Testing byte -> Unicode -> byte
-	 */
-	@Test
-	public void testOldAndToolbox() {
-		final ICodePage cp = ToolboxCodePageProvider.getCodePage("875");
-		final ICodePage cpex = CharMappings.getCodePage("875");
-		assertNotNull("At least an ASCII Codepage should be available.", cpex);
-
-		// According to
-		// http://www-01.ibm.com/software/globalization/cp/cp00875.jsp
-		// Characters less than 0x40 are not defined.
-		
-		for (int i=4*16; i<256; i++) {
-
-			if (i == 0xDC) continue; // not defined code point
-			if (i == 0xED) continue; // not defined code point
-			if (i == 0xFD) continue; // not defined code point
-			
-			final byte beginvalue = (byte)i;
-			assertEquals("Testing to EBCDIC item #" + i, cp.ebcdic2uni(beginvalue), cpex.ebcdic2uni(beginvalue));
-			final char converted = cp.ebcdic2uni(beginvalue);
-			assertEquals("Testing to UNICODE item #" + i, cp.uni2ebcdic(converted), cpex.uni2ebcdic(converted));
-			final byte afterall = cp.uni2ebcdic(converted);
-			assertEquals("Testing before and after item #" + i, beginvalue, afterall);
-		}
-	}
 }

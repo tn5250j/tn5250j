@@ -24,36 +24,38 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.tools;
+package org.tn5250j.framework.tn5250;
 
-import static org.junit.Assert.*;
-
-import java.util.Iterator;
-
-import org.junit.Before;
-import org.junit.Test;
 
 /**
- * JUnit test for {@link ServiceLoader}.
- * 
- * @author maki
+ * Simplified rectangle class. Very much similar like java.awt.Rectangle,
+ * but we want to decouple the packages ...
  */
-public class ServiceLoaderTest {
+public class Rect {
 
-	@Before
-	public void setUp() throws Exception {
+	/* default */ int x;
+	/* default */ int y;
+	/* default */ int height;
+	/* default */ int width;
+	
+	/**
+	 * @param rect
+	 */
+	public void setBounds(Rect rect) {
+		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
-
-	@Test
-	public void testLoad() {
-		ServiceLoader<org.tn5250j.tools.IEmptyTestBean> sl = ServiceLoader.load(org.tn5250j.tools.IEmptyTestBean.class);
-		Iterator<IEmptyTestBean> beaniterator = sl.iterator();
-		assertTrue("There should be at least one class available", beaniterator.hasNext());		
-		while (beaniterator.hasNext()) {
-			IEmptyTestBean bean = beaniterator.next();
-			assertNotNull("Of course nulls are not allowed!", bean);
-			assertNotNull("Of course nulls are not allowed!", bean.getName());
-		}
+	
+    /**
+     * @param x the new X coordinate for the upper-left corner of this rectangle
+     * @param y the new Y coordinate for the upper-left corner of this rectangle
+     * @param width the new width for this rectangle
+     * @param height the new height for this rectangle
+     */
+	public void setBounds(int x, int y, int width, int height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 	}
 
 }

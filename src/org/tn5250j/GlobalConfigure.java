@@ -54,7 +54,7 @@ public class GlobalConfigure extends ConfigureFactory {
 	public static final String TN5250J_FOLDER = ".tn5250j";
 
 	/**
-	 * A handle to the unitque GlobalConfigure class
+	 * A handle to the unique GlobalConfigure class
 	 */
 	static private GlobalConfigure _instance;
 

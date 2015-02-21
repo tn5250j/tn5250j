@@ -24,9 +24,7 @@ package org.tn5250j;
 public interface TN5250jConstants {
 
    // Version information
-   public static final String tn5250jRelease = "0";
-   public static final String tn5250jVersion = ".6";
-   public static final String tn5250jSubVer= ".3";
+   public static final String VERSION_INFO = "0.7.4";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
@@ -53,7 +51,7 @@ public interface TN5250jConstants {
    public static final String SESSION_IS_APPLET = "SESSION_IS_APPLET";
    public static final String SESSION_HEART_BEAT = "SESSION_KEEP_ALIVE_ENABLED";
 
-   public static final String GUI_MDI_TYPE = "GUI_MDI_TYPE";
+//   public static final String GUI_MDI_TYPE = "GUI_MDI_TYPE";
    public static final String GUI_FRAME_WIDTH = "GUI_FRAME_WIDTH";
    public static final String GUI_FRAME_HEIGHT = "GUI_FRAME_HEIGHT";
    public static final String GUI_NO_TAB = "GUI_NO_TAB";

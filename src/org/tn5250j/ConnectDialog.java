@@ -93,17 +93,20 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.DESSHA1;
+import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class ConnectDialog extends JDialog implements ActionListener, ChangeListener {
-	
-	private static final String USER_PREF_LAST_SESSION = "last_session";
+public class ConnectDialog extends JDialog implements ActionListener, ChangeListener, TN5250jConstants {
 
-	private static final long serialVersionUID = 1L;
-	
-// panels to be displayed
+   private static final String USER_PREF_LAST_SESSION = "last_session";
+
+   private static final long serialVersionUID = 1L;
+
+   volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(ConnectDialog.class);
+
+   // panels to be displayed
    JPanel configOptions = new JPanel();
    JPanel sessionPanel = new JPanel();
    JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
@@ -164,7 +167,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
    
    // property input structures
    JRadioButton intTABS = null;
-   JRadioButton intMDI = null;
    JCheckBox hideTabBar = null;
    JCheckBox showMe = null;
    JCheckBox lastView = null;
@@ -186,8 +188,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
    private JTextField browser;
    private JTextField mailer;
-
-   private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
    public ConnectDialog(Frame frame, String title, Properties prop) {
 
@@ -214,7 +214,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
          this.setVisible(true);
       }
       catch (Exception ex) {
-         ex.printStackTrace();
+         LOG.warn("Error while initializing!", ex);
       }
    }
 
@@ -251,7 +251,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
       createAboutPanel();
       optionTabs.addTab("About", aboutPanel);
-      
+
       // add the panels to our dialog
       getContentPane().add(optionTabs, BorderLayout.CENTER);
       getContentPane().add(options, BorderLayout.SOUTH);
@@ -299,7 +299,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
          }
       });
 
-      
+      this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
    }
 
    public void stateChanged(ChangeEvent e) {
@@ -461,23 +461,13 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       intTABS.setSelected(true);
       intTABS.addItemListener(new java.awt.event.ItemListener() {
          public void itemStateChanged(ItemEvent e) {
-            intTABS_itemStateChanged(e);
+            // intTABS_itemStateChanged(e);
+        	// nothing to do because there is only one option
          }
       });
-      intMDI = new JRadioButton(LangTool.getString("conf.labelMDI"));
 
       // add the interface options to the group control
       intGroup.add(intTABS);
-      intGroup.add(intMDI);
-
-      if (props.containsKey("emul.interface")) {
-         if (props.getProperty("emul.interface").equalsIgnoreCase("MDI"))
-            intMDI.setSelected(true);
-      }
-
-      // MDI interface will be phased out because it is a pain in the ass
-      // to implement correctly.
-      intMDI.setEnabled(false);
 
       gbc = new GridBagConstraints();
       gbc.gridx = 0;
@@ -491,13 +481,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       gbc.anchor = GridBagConstraints.WEST;
       gbc.insets = new Insets(5, 27, 5, 10);
       interfacePanel.add(hideTabBar, gbc);
-      gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 2;
-      gbc.anchor = GridBagConstraints.WEST;
-      gbc.insets = new Insets(5, 10, 10, 10);
-      interfacePanel.add(intMDI, gbc);
-      // interfacePanel.add(new JLabel());
 
       // create startup panel
       JPanel startupPanel = new JPanel();
@@ -910,7 +893,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
             }
          }
          catch (Exception ex) {
-        	 this.log.warn(ex.getMessage(), ex);
+        	 LOG.warn(ex.getMessage(), ex);
          }
       }
    }
@@ -944,13 +927,12 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 	   tb.setTitleJustification(TitledBorder.CENTER);
 	   
 	   contenpane.add(new JLabel("TN5250j"));
-	   contenpane.add(new JLabel("Version: " + TN5250jConstants.tn5250jRelease + TN5250jConstants.tn5250jVersion + TN5250jConstants.tn5250jSubVer));
+	   contenpane.add(new JLabel("Version: " + TN5250jConstants.VERSION_INFO));
 	   
 	   contenpane.setLayout(new BoxLayout(contenpane, BoxLayout.Y_AXIS));
 	   
 	   aboutPanel.add(contenpane);
 	   aboutPanel.setBorder(tb);
-	   
    }
 
    private JButton addOptButton(String text, String ac, Container container) {
@@ -1282,22 +1264,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 	  etnProps.clear();
 	  etnProps.putAll(newProps);
       etm.removeSession(selectedRow);
-   }
-
-   void intTABS_itemStateChanged(ItemEvent e) {
-
-      if (intTABS.isSelected()) {
-         props.remove("emul.interface");
-         hideTabBar.setEnabled(true);
-
-      }
-      else {
-
-         props.setProperty("emul.interface", "MDI");
-         hideTabBar.setEnabled(false);
-
-      }
-
    }
 
    void hideTabBar_itemStateChanged(ItemEvent e) {

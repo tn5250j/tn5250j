@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.InterpreterDriverManager;
 
@@ -185,7 +185,7 @@ public class Macronizer {
 
    }
 
-   public static void showRunScriptDialog(SessionGUI session) {
+   public static void showRunScriptDialog(SessionPanel session) {
 
       JPanel rsp = new JPanel();
       rsp.setLayout(new BorderLayout());
@@ -247,7 +247,7 @@ public class Macronizer {
 
    }
 
-   public final static void invoke (String macro, SessionGUI session) {
+   public final static void invoke (String macro, SessionPanel session) {
 
       String keys = getMacroByName(macro);
       if (keys != null)

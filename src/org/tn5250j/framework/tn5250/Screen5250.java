@@ -27,13 +27,6 @@ package org.tn5250j.framework.tn5250;
 
 import static org.tn5250j.TN5250jConstants.*;
 
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -57,12 +50,11 @@ public class Screen5250 {
 	private int numCols = 0;
 	protected static final int initAttr = 32;
 	protected static final char initChar = 0;
-	private Rectangle workR = new Rectangle();
 	public boolean cursorActive = false;
 	public boolean cursorShown = false;
 	protected boolean insertMode = false;
 	private boolean keyProcessed = false;
-	private Rectangle dirtyScreen = new Rectangle();
+	private Rect dirtyScreen = new Rect();
 
 	public int homePos = 0;
 	public int saveHomePos = 0;
@@ -91,22 +83,22 @@ public class Screen5250 {
 
 	private boolean guiInterface = false;
 	private boolean resetRequired = true;
-    private boolean backspaceError = true;
+	private boolean backspaceError = true;
 	private boolean feError;
 
-   // vector of listeners for changes to the screen.
-   Vector<ScreenListener> listeners = null;
+	// vector of listeners for changes to the screen.
+	Vector<ScreenListener> listeners = null;
 
-   // Operator Information Area
-   private ScreenOIA oia;
+	// Operator Information Area
+	private ScreenOIA oia;
 
-   // screen planes
-   protected ScreenPlanes planes;
+	// screen planes
+	protected ScreenPlanes planes;
 
 	//Added by Barry
 	private StringBuffer keybuf;
 
-	private transient final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public Screen5250() {
 
@@ -141,18 +133,18 @@ public class Screen5250 {
 		strokenizer = new KeyStrokenizer();
 	}
 
-   protected ScreenPlanes getPlanes() {
-      return planes;
-   }
+	protected ScreenPlanes getPlanes() {
+		return planes;
+	}
 
-   public final ScreenOIA getOIA() {
-      return oia;
-   }
+	public final ScreenOIA getOIA() {
+		return oia;
+	}
 
 	protected final void setRowsCols(int rows, int cols) {
 
-      int oldRows = numRows;
-      int oldCols = numCols;
+		int oldRows = numRows;
+		int oldCols = numCols;
 
 		// default number of rows and columns
 		numRows = rows;
@@ -160,54 +152,52 @@ public class Screen5250 {
 
 		lenScreen = numRows * numCols;
 
-      planes.setSize(rows);
+		planes.setSize(rows);
 
-      //  If they are not the same then we need to inform the listeners that
-      //  the size changed.
-      if (oldRows != numRows || oldCols != numCols)
-         fireScreenSizeChanged();
+		//  If they are not the same then we need to inform the listeners that
+		//  the size changed.
+		if (oldRows != numRows || oldCols != numCols)
+			fireScreenSizeChanged();
 
 	}
 
 
-   public boolean isCursorActive() {
-      return cursorActive;
+	public boolean isCursorActive() {
+		return cursorActive;
 
-   }
+	}
 
-   public boolean isCursorShown() {
-	   return cursorShown;
-   }
+	public boolean isCursorShown() {
+		return cursorShown;
+	}
 
-   public void setUseGUIInterface(boolean gui) {
-      guiInterface = gui;
-   }
+	public void setUseGUIInterface(boolean gui) {
+		guiInterface = gui;
+	}
 
 	public void toggleGUIInterface() {
 		guiInterface = !guiInterface;
 	}
 
-   public void setResetRequired(boolean reset) {
-      resetRequired = reset;
-   }
+	public void setResetRequired(boolean reset) {
+		resetRequired = reset;
+	}
 
-   public void setBackspaceError(boolean onError) {
-      backspaceError = onError;
-   }
+	public void setBackspaceError(boolean onError) {
+		backspaceError = onError;
+	}
 
-   /**
-	 *
-	 * Copy & Paste start code
-	 *
+	/**
+	 * Copy & Paste support
+	 * 
+	 * @see {@link #pasteText(String, boolean)}
+	 * @see {@link #copyTextField(int)}
 	 */
-	public final void copyMe(Rectangle area) {
-
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-		StringBuffer s = new StringBuffer();
-
-      workR.setBounds(area);
-
-		log.debug("Copying" + workR);
+	public final String copyText(Rect area) {
+		StringBuilder sb = new StringBuilder();
+		Rect workR = new Rect();
+		workR.setBounds(area);
+		log.debug("Copying " + workR);
 
 		// loop through all the screen characters to send them to the clip board
 		int m = workR.x;
@@ -221,137 +211,121 @@ public class Screen5250 {
 				// only copy printable characters (in this case >= ' ')
 				char c = planes.getChar(getPos(m - 1, i - 1));
 				if (c >= ' ' && (planes.screenExtended[getPos(m - 1, i - 1)] & EXTENDED_5250_NON_DSP)
-                              == 0)
-					s.append(c);
+						== 0)
+					sb.append(c);
 				else
-					s.append(' ');
+					sb.append(' ');
 
 				i++;
 			}
-			s.append('\n');
+			sb.append('\n');
 			m++;
 		}
-
-      // uncomment the next block of code when we implement the copy append
-      //  functionality.  This was a test just to see if it was possible.
-//      String trString = "";
-//      try {
-//      trString= (String)(cb.getContents(this).getTransferData(DataFlavor.stringFlavor));
-//      }
-//      catch (Exception e) {
-//         System.out.println(e.getMessage());
-//      }
-//		StringSelection contents = new StringSelection(trString + s.toString());
-
-		StringSelection contents = new StringSelection(s.toString());
-
-		cb.setContents(contents, null);
-
+		return sb.toString();
 	}
 
-	public final void pasteMe(boolean special) {
-
+	/**
+	 * Copy & Paste support
+	 * 
+	 * @param content
+	 * @see {@link #copyText(Rectangle)}
+	 */
+	public final void pasteText(String content, boolean special) {
+		if (log.isDebugEnabled()) {
+			log.debug("Pasting, special:"+special);
+		}
 		setCursorActive(false);
 
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable content = cb.getContents(this);
-		try {
+		StringBuilder sb = new StringBuilder(content);
+		StringBuilder pd = new StringBuilder();
 
-			StringBuffer sb = new StringBuffer((String) content
-					.getTransferData(DataFlavor.stringFlavor));
+		// character counters within the string to be pasted.
+		int nextChar = 0;
+		int nChars = sb.length();
 
-			StringBuffer pd = new StringBuffer();
+		int lr = getRow(lastPos);
+		int lc = getCol(lastPos);
+		resetDirty(lastPos);
 
-         // character counters within the string to be pasted.
-			int nextChar = 0;
-			int nChars = sb.length();
+		int cpos = lastPos;
+		int length = getScreenLength();
 
-			int lr = getRow(lastPos);
-			int lc = getCol(lastPos);
-			resetDirty(lastPos);
+		char c = 0;
+		boolean setIt;
 
-         int cpos = lastPos;
-         int length = getScreenLength();
+		// save our current place within the FFT.
+		screenFields.saveCurrentField();
 
-         char c = 0;
-         boolean setIt;
+		for (int x = nextChar; x < nChars; x++) {
 
-         // save our current place within the FFT.
-			screenFields.saveCurrentField();
+			c = sb.charAt(x);
 
-         for (int x = nextChar; x < nChars; x++) {
+			if ((c == '\n') || (c == '\r')) {
 
-            c = sb.charAt(x);
+				log.info("pasted cr-lf>" + pd + "<");
+				pd.setLength(0);
+				// if we read in a cr lf in the data stream we need to go
+				// to the starting column of the next row and start from there
+				cpos = getPos(getRow(cpos)+1,lc);
 
-            if ((c == '\n') || (c == '\r')) {
-            	if (log.isDebugEnabled()) {
-            		log.debug("pasted cr-lf>" + pd + "<");
-            	}
-               pd.setLength(0);
-               // if we read in a cr lf in the data stream we need to go
-               // to the starting column of the next row and start from there
-               cpos = getPos(getRow(cpos)+1,lc);
+				// If we go paste the end of the screen then let's start over from
+				//   the beginning of the screen space.
+				if (cpos > length)
+					cpos = 0;
+			}
+			else {
 
-               // If we go paste the end of the screen then let's start over from
-               //   the beginning of the screen space.
-               if (cpos > length)
-                  cpos = 0;
-            }
-            else {
+				// we will default to set the character always.
+				setIt = true;
 
-               // we will default to set the character always.
-               setIt = true;
+				// If we are in a special paste scenario then we check for valid
+				//   characters to paste.
+				if (special && (!Character.isLetter(c) && !Character.isDigit(c)))
+					setIt = false;
 
-               // If we are in a special paste scenario then we check for valid
-               //   characters to paste.
-               if (special && (!Character.isLetter(c) && !Character.isDigit(c)))
-                  setIt = false;
-
-               // we will only push a character to the screen space if we are in
-               //  a field
-               if (isInField(cpos) && setIt) {
-                  planes.setChar(cpos, c);
-                  setDirty(cpos);
-                  screenFields.setCurrentFieldMDT();
-               }
-               //  If we placed a character then we go to the next position.
-               if (setIt)
-                  cpos++;
-               // we will append the information to our debug buffer.
-               pd.append(c);
-            }
-         }
-
-         // if we have anything else not logged then log it out.
-         if (pd.length() > 0)
-        	 if (log.isDebugEnabled()) {
-        		 log.debug("pasted >" + pd + "<");
-        	 }
-
-         // restore out position within the FFT.
-			screenFields.restoreCurrentField();
-			updateDirty();
-
-         // restore our cursor position.
-			setCursor(lr + 1, lc + 1);
-
-			setCursorActive(true);
-
-		} catch (Throwable exc) {
-			log.warn("" + exc.getMessage());
+				// we will only push a character to the screen space if we are in
+				//  a field
+				if (isInField(cpos) && setIt) {
+					planes.setChar(cpos, c);
+					setDirty(cpos);
+					screenFields.setCurrentFieldMDT();
+				}
+				//  If we placed a character then we go to the next position.
+				if (setIt)
+					cpos++;
+				// we will append the information to our debug buffer.
+				pd.append(c);
+			}
 		}
+
+		// if we have anything else not logged then log it out.
+		if (pd.length() > 0)
+			log.info("pasted >" + pd + "<");
+
+		// restore out position within the FFT.
+		screenFields.restoreCurrentField();
+		updateDirty();
+
+		// restore our cursor position.
+		setCursor(lr + 1, lc + 1);
+
+		setCursorActive(true);
+
 	}
 
-	public final void copyField(int pos) {
-
-		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+	/**
+	 * Copy & Paste support
+	 * 
+	 * @param position
+	 * @return
+	 * @see {@link #copyText(int)}
+	 */
+	public final String copyTextField(int position) {
 		screenFields.saveCurrentField();
-		isInField(pos);
-		log.debug("Copying");
-		StringSelection contents = new StringSelection(screenFields
-				.getCurrentFieldText());
-		cb.setContents(contents, null);
+		isInField(position);
+		String result = screenFields.getCurrentFieldText();
 		screenFields.restoreCurrentField();
+		return result;
 	}
 
 	/**
@@ -367,11 +341,11 @@ public class Screen5250 {
 	 *            formatting option to use
 	 * @return vector string of numberic values
 	 */
-	public final Vector<Double> sumThem(boolean which, Rectangle area) {
+	public final Vector<Double> sumThem(boolean which, Rect area) {
 
-		StringBuffer s = new StringBuffer();
-
-      workR.setBounds(area);
+		StringBuilder sb = new StringBuilder();
+		Rect workR = new Rect();
+		workR.setBounds(area);
 
 		//      gui.rubberband.reset();
 		//      gui.repaint();
@@ -408,52 +382,51 @@ public class Screen5250 {
 			while (t-- > 0) {
 
 				// only copy printable numeric characters (in this case >= ' ')
-//				char c = screen[getPos(m - 1, i - 1)].getChar();
+				//				char c = screen[getPos(m - 1, i - 1)].getChar();
 				char c = planes.getChar(getPos(m - 1, i - 1));
-//				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')
-//						&& !screen[getPos(m - 1, i - 1)].nonDisplay) {
+				//				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')
+				//						&& !screen[getPos(m - 1, i - 1)].nonDisplay) {
 
-            // TODO: update me here to implement the nonDisplay check as well
+				// TODO: update me here to implement the nonDisplay check as well
 				if (((c >= '0' && c <= '9') || c == '.' || c == ',' || c == '-')) {
-					s.append(c);
+					sb.append(c);
 				}
 				i++;
 			}
 
-			if (s.length() > 0) {
-				if (s.charAt(s.length() - 1) == '-') {
-					s.insert(0, '-');
-					s.deleteCharAt(s.length() - 1);
+			if (sb.length() > 0) {
+				if (sb.charAt(sb.length() - 1) == '-') {
+					sb.insert(0, '-');
+					sb.deleteCharAt(sb.length() - 1);
 				}
 				try {
-					Number n = df.parse(s.toString());
+					Number n = df.parse(sb.toString());
 					//               System.out.println(s + " " + n.doubleValue());
 
 					sumVector.add(new Double(n.doubleValue()));
 					sum += n.doubleValue();
 				} catch (ParseException pe) {
-					System.out.println(pe.getMessage() + " at "
+					log.warn(pe.getMessage() + " at "
 							+ pe.getErrorOffset());
 				}
 			}
-			s.setLength(0);
+			sb.setLength(0);
 			m++;
 		}
 		log.debug("" + sum);
 		return sumVector;
 	}
 
-   /**
-    * This will move the screen cursor based on the mouse event.
-    *
-    * I do not think the checks here for the gui characters should be here but
-    * will leave them here for now until we work out the interaction.  This
-    * should be up to the gui frontend in my opinion.
-    *
-    * @param e
-    * @param pos
-    */
-	public boolean moveCursor(MouseEvent e, int pos) {
+	/**
+	 * This will move the screen cursor based on the mouse event.
+	 *
+	 * I do not think the checks here for the gui characters should be here but
+	 * will leave them here for now until we work out the interaction.  This
+	 * should be up to the gui frontend in my opinion.
+	 *
+	 * @param pos
+	 */
+	public boolean moveCursor(int pos) {
 
 		if (!oia.isKeyBoardLocked()) {
 
@@ -463,7 +436,7 @@ public class Screen5250 {
 			//    translate to offset 0,0
 			//         pos -= (numCols + 1);
 
-         int g = planes.getWhichGUI(pos);
+			int g = planes.getWhichGUI(pos);
 
 			// lets check for hot spots
 			if (g >= BUTTON_LEFT && g <= BUTTON_LAST) {
@@ -481,7 +454,7 @@ public class Screen5250 {
 						aidFlag = false;
 
 					if (planes.getChar(pos + 1) != '='
-							&& planes.getChar(pos + 1) != '.'
+						&& planes.getChar(pos + 1) != '.'
 							&& planes.getChar(pos + 1) != '/') {
 						//                     System.out.println(" Hotspot clicked!!! we will send
 						// characters " +
@@ -555,9 +528,9 @@ public class Screen5250 {
 					}
 
 				}
-            // return back to the calling routine that the cursor was not moved
-            // but something else here was done like aid keys or the such
-            return false;
+				// return back to the calling routine that the cursor was not moved
+				// but something else here was done like aid keys or the such
+				return false;
 			}
 			// this is a note to not execute this code here when we
 			// implement
@@ -574,7 +547,7 @@ public class Screen5250 {
 			return true;
 			//				}
 		}
-      return false;
+		return false;
 	}
 
 	public void setVT(tnvt v) {
@@ -609,7 +582,7 @@ public class Screen5250 {
 		else
 			oia.setKeyBoardLocked(lockKeyboard);
 		bufferedKeys = null;
-      oia.setKeysBuffered(false);
+		oia.setKeysBuffered(false);
 
 
 	}
@@ -620,9 +593,6 @@ public class Screen5250 {
 	 * @param activate
 	 */
 	public void setCursorActive(boolean activate) {
-
-		//      System.out.println("cursor active " + updateCursorLoc + " " +
-		// cursorActive + " " + activate);
 		if (cursorActive && !activate) {
 			setCursorOff();
 			cursorActive = activate;
@@ -634,35 +604,22 @@ public class Screen5250 {
 		}
 	}
 
-	/**
-	 * Set the cursor on
-	 */
 	public void setCursorOn() {
 		cursorShown = true;
 		updateCursorLoc();
 	}
 
-	/**
-	 * Set the cursor off
-	 */
 	public void setCursorOff() {
-
 		cursorShown = false;
 		updateCursorLoc();
-		//      System.out.println("cursor off " + updateCursorLoc + " " +
-		// cursorActive);
-
 	}
 
 	/**
 	 *
 	 */
 	private void updateCursorLoc() {
-
 		if (cursorActive) {
-
-         fireCursorChanged(3);
-
+			fireCursorChanged(3);
 		}
 	}
 
@@ -998,11 +955,11 @@ public class Screen5250 {
 
 			} else {
 				if (isStatusErrorCode()) {
-					Toolkit.getDefaultToolkit().beep();
+					sessionVT.signalBell();
 					return;
 				}
 
-            oia.setKeysBuffered(true);
+				oia.setKeysBuffered(true);
 
 				if (bufferedKeys == null) {
 					bufferedKeys = text;
@@ -1081,9 +1038,9 @@ public class Screen5250 {
 						if (oia.isKeyBoardLocked()) {
 
 							bufferedKeys = strokenizer
-									.getUnprocessedKeyStroked();
+							.getUnprocessedKeyStroked();
 							if (bufferedKeys != null) {
-                        oia.setKeysBuffered(true);
+								oia.setKeysBuffered(true);
 
 							}
 							done = true;
@@ -1221,13 +1178,13 @@ public class Screen5250 {
 					&& !screenFields.isCurrentFieldBypassField()) {
 
 				if (screenFields.getCurrentField().startPos() == lastPos) {
-               if (backspaceError)
-					   displayError(ERR_CURSOR_PROTECTED);
-               else {
-                  gotoFieldPrev();
-                  goto_XY(screenFields.getCurrentField().endPos());
-                  updateDirty();
-               }
+					if (backspaceError)
+						displayError(ERR_CURSOR_PROTECTED);
+					else {
+						gotoFieldPrev();
+						goto_XY(screenFields.getCurrentField().endPos());
+						updateDirty();
+					}
 				}
 				else {
 					screenFields.getCurrentField().getKeyPos(lastPos);
@@ -1460,7 +1417,7 @@ public class Screen5250 {
 
 				int s = screenFields.getCurrentField().getFieldShift();
 				if (s == 3 || s == 5 || s == 7) {
-               planes.setChar(lastPos,'-');
+					planes.setChar(lastPos,'-');
 
 					resetDirty(lastPos);
 					advancePos();
@@ -1474,7 +1431,7 @@ public class Screen5250 {
 							} while (screenFields
 									.isCurrentFieldContinuedMiddle()
 									|| screenFields
-											.isCurrentFieldContinuedLast());
+									.isCurrentFieldContinuedLast());
 						}
 						simulated = true;
 						updateDirty();
@@ -1503,7 +1460,7 @@ public class Screen5250 {
 				if (fieldExit()) {
 					screenFields.setCurrentFieldMDT();
 					if (!screenFields.isCurrentFieldContinued() &&
-					      !screenFields.isCurrentFieldAutoEnter()) {
+							!screenFields.isCurrentFieldAutoEnter()) {
 						gotoFieldNext();
 					} else {
 						do {
@@ -1536,7 +1493,7 @@ public class Screen5250 {
 				if (fieldExit()) {
 					screenFields.setCurrentFieldMDT();
 					if (!screenFields.isCurrentFieldContinued() &&
-					      !screenFields.isCurrentFieldAutoEnter()) {
+							!screenFields.isCurrentFieldAutoEnter()) {
 						gotoFieldNext();
 					} else {
 						do {
@@ -1558,48 +1515,48 @@ public class Screen5250 {
 			break;
 		case FIELD_MINUS:
 			if (screenFields.getCurrentField() != null
-               && screenFields.withinCurrentField(lastPos)
-               && !screenFields.isCurrentFieldBypassField()) {
+					&& screenFields.withinCurrentField(lastPos)
+					&& !screenFields.isCurrentFieldBypassField()) {
 
-            int s = screenFields.getCurrentField().getFieldShift();
-            if (s == 3 || s == 5 || s == 7) {
-               planes.setChar(lastPos, '-');
+				int s = screenFields.getCurrentField().getFieldShift();
+				if (s == 3 || s == 5 || s == 7) {
+					planes.setChar(lastPos, '-');
 
-               resetDirty(lastPos);
-               advancePos();
+					resetDirty(lastPos);
+					advancePos();
 
-               boolean autoFE = screenFields.isCurrentFieldAutoEnter();
+					boolean autoFE = screenFields.isCurrentFieldAutoEnter();
 
-               if (fieldExit()) {
-                  screenFields.setCurrentFieldMDT();
-                  if (!screenFields.isCurrentFieldContinued()
-                        && !screenFields.isCurrentFieldAutoEnter()) {
-                     gotoFieldNext();
-                  }
-                  else {
-                     do {
-                        gotoFieldNext();
-                     }
-                     while (screenFields.isCurrentFieldContinuedMiddle()
-                           || screenFields.isCurrentFieldContinuedLast());
-                  }
-               }
-               updateDirty();
-               simulated = true;
-               if (autoFE)
-                  sendAid(AID_ENTER);
+					if (fieldExit()) {
+						screenFields.setCurrentFieldMDT();
+						if (!screenFields.isCurrentFieldContinued()
+								&& !screenFields.isCurrentFieldAutoEnter()) {
+							gotoFieldNext();
+						}
+						else {
+							do {
+								gotoFieldNext();
+							}
+							while (screenFields.isCurrentFieldContinuedMiddle()
+									|| screenFields.isCurrentFieldContinuedLast());
+						}
+					}
+					updateDirty();
+					simulated = true;
+					if (autoFE)
+						sendAid(AID_ENTER);
 
-            }
-            else {
-               displayError(ERR_FIELD_MINUS);
+				}
+				else {
+					displayError(ERR_FIELD_MINUS);
 
-            }
-         }
-         else {
-            displayError(ERR_CURSOR_PROTECTED);
-         }
+				}
+			}
+			else {
+				displayError(ERR_CURSOR_PROTECTED);
+			}
 
-         break;
+			break;
 		case BOF:
 			if (screenFields.getCurrentField() != null
 					&& screenFields.withinCurrentField(lastPos)
@@ -1685,43 +1642,43 @@ public class Screen5250 {
 			simulated = true;
 			break;
 		case FAST_CURSOR_DOWN:
-         int rowNow = (getCurrentRow()-1) + 3;
-         if (rowNow > getRows()-1)
-            rowNow = rowNow - getRows();
-         this.goto_XY(getPos(rowNow,getCurrentCol()-1));
+			int rowNow = (getCurrentRow()-1) + 3;
+			if (rowNow > getRows()-1)
+				rowNow = rowNow - getRows();
+			this.goto_XY(getPos(rowNow,getCurrentCol()-1));
 			simulated = true;
 			break;
 		case FAST_CURSOR_UP:
-         rowNow = (getCurrentRow()-1) - 3;
-         if (rowNow < 0)
-            rowNow = (getRows()) + rowNow;
-         this.goto_XY(getPos(rowNow,getCurrentCol()-1));
+			rowNow = (getCurrentRow()-1) - 3;
+			if (rowNow < 0)
+				rowNow = (getRows()) + rowNow;
+			this.goto_XY(getPos(rowNow,getCurrentCol()-1));
 			simulated = true;
 			break;
 		case FAST_CURSOR_LEFT:
-         int colNow = (getCurrentCol()-1) - 3;
-         rowNow = getCurrentRow()-1;
-         if (colNow <= 0) {
-            colNow = getColumns() + colNow;
-            rowNow--;
-         }
-         if (rowNow < 0)
-            rowNow = getRows() - 1;
+			int colNow = (getCurrentCol()-1) - 3;
+			rowNow = getCurrentRow()-1;
+			if (colNow <= 0) {
+				colNow = getColumns() + colNow;
+				rowNow--;
+			}
+			if (rowNow < 0)
+				rowNow = getRows() - 1;
 
-  			process_XY(getPos(rowNow,colNow));
+			process_XY(getPos(rowNow,colNow));
 			simulated = true;
 			break;
 		case FAST_CURSOR_RIGHT:
-         colNow = (getCurrentCol()-1) + 3;
-         rowNow = getCurrentRow()-1;
-         if (colNow >= getColumns()) {
-            colNow = colNow - getColumns();
-            rowNow++;
-         }
-         if (rowNow > getRows() - 1)
-            rowNow = getRows() - rowNow;
+			colNow = (getCurrentCol()-1) + 3;
+			rowNow = getCurrentRow()-1;
+			if (colNow >= getColumns()) {
+				colNow = colNow - getColumns();
+				rowNow++;
+			}
+			if (rowNow > getRows() - 1)
+				rowNow = getRows() - rowNow;
 
-  			process_XY(getPos(rowNow,colNow));
+			process_XY(getPos(rowNow,colNow));
 			simulated = true;
 			break;
 		default:
@@ -1735,10 +1692,10 @@ public class Screen5250 {
 
 	protected boolean simulateKeyStroke(char c) {
 
-      if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
-         if (resetRequired) return false;
-         resetError();
-      }
+		if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
+			if (resetRequired) return false;
+			resetError();
+		}
 
 		boolean updateField = false;
 		boolean numericError = false;
@@ -1754,8 +1711,8 @@ public class Screen5250 {
 				if (screenFields.isCurrentFieldFER()
 						&& !screenFields.withinCurrentField(screenFields
 								.getCurrentFieldPos())
-						&& lastPos == screenFields.getCurrentField().endPos()
-						&& screenFields.getCurrentFieldPos() > screenFields
+								&& lastPos == screenFields.getCurrentField().endPos()
+								&& screenFields.getCurrentFieldPos() > screenFields
 								.getCurrentField().endPos()) {
 
 					displayError(ERR_FIELD_EXIT_INVALID);
@@ -1771,12 +1728,12 @@ public class Screen5250 {
 					break;
 				case 1: // Alpha Only
 					if (Character.isLetter(c) || c == ',' || c == '-'
-							|| c == '.' || c == ' ')
+						|| c == '.' || c == ' ')
 						updateField = true;
 					break;
 				case 3: // Numeric only
 					if (Character.isDigit(c) || c == '+' || c == ','
-							|| c == '-' || c == '.' || c == ' ')
+						|| c == '-' || c == '.' || c == ' ')
 						updateField = true;
 					else
 						numericError = true;
@@ -1823,7 +1780,7 @@ public class Screen5250 {
 								getRow(lastPos), getCol(lastPos));
 						screenFields.getCurrentField().changePos(1);
 
-                  planes.setChar(lastPos,c);
+						planes.setChar(lastPos,c);
 
 						screenFields.setCurrentFieldMDT();
 
@@ -1854,7 +1811,7 @@ public class Screen5250 {
 
 					}
 
-               fireScreenChanged(1);
+					fireScreenChanged(1);
 
 					if (autoEnter)
 						sendAid(AID_ENTER);
@@ -1929,86 +1886,86 @@ public class Screen5250 {
 
 	}
 
-   private boolean fieldExit() {
+	private boolean fieldExit() {
 
-      int pos = lastPos;
-      boolean mdt = false;
-      int end = endOfField(false); // get the ending position of the first
-      // non blank character in field
+		int pos = lastPos;
+		boolean mdt = false;
+		int end = endOfField(false); // get the ending position of the first
+		// non blank character in field
 
-      ScreenField sf = screenFields.getCurrentField();
+		ScreenField sf = screenFields.getCurrentField();
 
-      if (sf.isMandatoryEnter() && end == sf.startPos()) {
-         displayError(ERR_MANDITORY_ENTER);
-         return false;
-      }
+		if (sf.isMandatoryEnter() && end == sf.startPos()) {
+			displayError(ERR_MANDITORY_ENTER);
+			return false;
+		}
 
-      // save off the current pos of the field for checking field exit required
-      //   positioning.  the getKeyPos resets this information so it is useless
-      //   for comparing if we are positioned passed the end of field.
-      //   Maybe this should be changed to not update the current cursor position
-      //   of the field.
-      int currentPos = sf.getCurrentPos();
-      
-      // get the number of characters to the right
-      int count = (end - sf.startPos()) - sf.getKeyPos(pos);
+		// save off the current pos of the field for checking field exit required
+		//   positioning.  the getKeyPos resets this information so it is useless
+		//   for comparing if we are positioned passed the end of field.
+		//   Maybe this should be changed to not update the current cursor position
+		//   of the field.
+		int currentPos = sf.getCurrentPos();
 
-      if (count == 0 && sf.isFER()) {
-         if (currentPos > sf.endPos()) {
-            mdt = true;
-            return mdt;
-         }
-      }
+		// get the number of characters to the right
+		int count = (end - sf.startPos()) - sf.getKeyPos(pos);
 
-      for (; count >= 0; count--) {
-         planes.setChar(pos, initChar);
-         setDirty(pos);
-         pos++;
-         mdt = true;
-      }
+		if (count == 0 && sf.isFER()) {
+			if (currentPos > sf.endPos()) {
+				mdt = true;
+				return mdt;
+			}
+		}
 
-      // This checks for a field minus because a field minus places
-      // a negative sign and then advances a position. If it is the
-      // end of the field where the minus is placed then this offset will
-      //  place the count as -1.
-      if (count == -1) {
-         int s = sf.getFieldShift();
-         if (s == 3 || s == 5 || s == 7) {
-            mdt = true;
-         }
-      }
+		for (; count >= 0; count--) {
+			planes.setChar(pos, initChar);
+			setDirty(pos);
+			pos++;
+			mdt = true;
+		}
 
-      int adj = sf.getAdjustment();
+		// This checks for a field minus because a field minus places
+		// a negative sign and then advances a position. If it is the
+		// end of the field where the minus is placed then this offset will
+		//  place the count as -1.
+		if (count == -1) {
+			int s = sf.getFieldShift();
+			if (s == 3 || s == 5 || s == 7) {
+				mdt = true;
+			}
+		}
 
-      if (adj != 0) {
+		int adj = sf.getAdjustment();
 
-         switch (adj) {
+		if (adj != 0) {
 
-         case 5:
-            rightAdjustField('0');
-            sf.setRightAdjusted();
-            break;
-         case 6:
-            rightAdjustField(' ');
-            sf.setRightAdjusted();
+			switch (adj) {
 
-            break;
-         case 7:
-            sf.setManditoryEntered();
-            break;
+			case 5:
+				rightAdjustField('0');
+				sf.setRightAdjusted();
+				break;
+			case 6:
+				rightAdjustField(' ');
+				sf.setRightAdjusted();
 
-         }
-      }
-      else {
+				break;
+			case 7:
+				sf.setManditoryEntered();
+				break;
 
-         // we need to right adjust signed numeric fields as well.
-         if (sf.isSignedNumeric()) {
-            rightAdjustField(' ');
-         }
-      }
+			}
+		}
+		else {
 
-      return mdt;
-   }
+			// we need to right adjust signed numeric fields as well.
+			if (sf.isSignedNumeric()) {
+				rightAdjustField(' ');
+			}
+		}
+
+		return mdt;
+	}
 
 	private void rightAdjustField(char fill) {
 
@@ -2029,7 +1986,7 @@ public class Screen5250 {
 		while (count-- >= 0) {
 
 			shiftRight(pos);
-         planes.setChar(pos,fill);
+			planes.setChar(pos,fill);
 
 			setDirty(pos);
 
@@ -2049,17 +2006,17 @@ public class Screen5250 {
 		int count;
 		do {
 			end = endOfField(pPos, false); // get the ending position of the
-										   // first
+			// first
 			// non blank character in field
 
 			count = (end - screenFields.getCurrentField().startPos())
-					- screenFields.getCurrentField().getKeyPos(pPos);
+			- screenFields.getCurrentField().getKeyPos(pPos);
 
 			// now we loop through and shift the remaining characters to the
 			// left
 			while (count-- > 0) {
 				pos++;
-            planes.setChar(pPos,planes.getChar(pos));
+				planes.setChar(pPos,planes.getChar(pos));
 				setDirty(pPos);
 				pPos = pos;
 
@@ -2071,7 +2028,7 @@ public class Screen5250 {
 					break;
 
 				pos = screenFields.getCurrentField().startPos();
-            planes.setChar(pPos,planes.getChar(pos));
+				planes.setChar(pPos,planes.getChar(pos));
 				setDirty(pPos);
 
 				pPos = pos;
@@ -2089,7 +2046,7 @@ public class Screen5250 {
 		}
 
 		screenFields.setCurrentField(sf);
-      planes.setChar(endPos,initChar);
+		planes.setChar(endPos,initChar);
 		setDirty(endPos);
 		goto_XY(screenFields.getCurrentFieldPos());
 		sf = null;
@@ -2160,80 +2117,80 @@ public class Screen5250 {
 	 */
 	public int getCurrentPos() {
 
-//		return lastPos + numCols + 1;
+		//		return lastPos + numCols + 1;
 		return lastPos + 1;
 
 	}
 
 	/**
-    * I got this information from a tcp trace of each error. I could not find
-    * any documenation for this. Maybe there is but I could not find it. If
-    * anybody finds this documention could you please send me a copy. Please
-    * note that I did not look that hard either.
-    * <p>
-    * 0000: 00 50 73 1D 89 81 00 50 DA 44 C8 45 08 00 45 00 .Ps....P.D.E..E.
-    * </p>
-    * <p>
-    * 0010: 00 36 E9 1C 40 00 80 06 9B F9 C1 A8 33 58 C0 A8 .6..@...k....3X..
-    * </p>
-    * <p>
-    * 0020: C0 02 06 0E 00 17 00 52 6E 88 73 40 DE CB 50 18 .......Rn.s@..P.
-    * </p>
-    * <p>
-    * 0030: 20 12 3C 53 00 00 00 0C 12 A0 00 00 04 01 00 00 . <S............
-    * </p>
-    * <p>
-    * 0040: 00 05 FF EF .... ----------|| The 00 XX is the code to be sent. I
-    * found the following <table BORDER COLS=2 WIDTH="50%" >
-    * <tr>
-    * <td>ERR_CURSOR_PROTECTED</td>
-    * <td>0x05</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_INVALID_SIGN</td>
-    * <td>0x11</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_NO_ROOM_INSERT</td>
-    * <td>0x12</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_NUMERIC_ONLY</td>
-    * <td>0x09</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_NUMERIC_09</td>
-    * <td>0x10</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_FIELD_MINUS</td>
-    * <td>0x16</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_ENTER_NOT_ALLOWED</td>
-    * <td>0x20</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_MANDITORY_ENTER</td>
-    * <td>0x21</td>
-    * </tr>
-    * <tr>
-    * <td>ERR_ENTER_NOT_ALLOWED</td>
-    * <td>0x20</td>
-    * </tr>
-    * </table> I am tired of typing and they should be self explanitory. Finding
-    * them in the first place was the pain.
-    * </p>
-    *
-    * @param ec error code
-    */
-   private void displayError(int ec) {
-      saveHomePos = homePos;
-      homePos = lastPos + numCols + 1;
-      pendingInsert = true;
-      sessionVT.sendNegResponse2(ec);
+	 * I got this information from a tcp trace of each error. I could not find
+	 * any documenation for this. Maybe there is but I could not find it. If
+	 * anybody finds this documention could you please send me a copy. Please
+	 * note that I did not look that hard either.
+	 * <p>
+	 * 0000: 00 50 73 1D 89 81 00 50 DA 44 C8 45 08 00 45 00 .Ps....P.D.E..E.
+	 * </p>
+	 * <p>
+	 * 0010: 00 36 E9 1C 40 00 80 06 9B F9 C1 A8 33 58 C0 A8 .6..@...k....3X..
+	 * </p>
+	 * <p>
+	 * 0020: C0 02 06 0E 00 17 00 52 6E 88 73 40 DE CB 50 18 .......Rn.s@..P.
+	 * </p>
+	 * <p>
+	 * 0030: 20 12 3C 53 00 00 00 0C 12 A0 00 00 04 01 00 00 . <S............
+	 * </p>
+	 * <p>
+	 * 0040: 00 05 FF EF .... ----------|| The 00 XX is the code to be sent. I
+	 * found the following <table BORDER COLS=2 WIDTH="50%" >
+	 * <tr>
+	 * <td>ERR_CURSOR_PROTECTED</td>
+	 * <td>0x05</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_INVALID_SIGN</td>
+	 * <td>0x11</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_NO_ROOM_INSERT</td>
+	 * <td>0x12</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_NUMERIC_ONLY</td>
+	 * <td>0x09</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_NUMERIC_09</td>
+	 * <td>0x10</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_FIELD_MINUS</td>
+	 * <td>0x16</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_ENTER_NOT_ALLOWED</td>
+	 * <td>0x20</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_MANDITORY_ENTER</td>
+	 * <td>0x21</td>
+	 * </tr>
+	 * <tr>
+	 * <td>ERR_ENTER_NOT_ALLOWED</td>
+	 * <td>0x20</td>
+	 * </tr>
+	 * </table> I am tired of typing and they should be self explanitory. Finding
+	 * them in the first place was the pain.
+	 * </p>
+	 *
+	 * @param ec error code
+	 */
+	private void displayError(int ec) {
+		saveHomePos = homePos;
+		homePos = lastPos + numCols + 1;
+		pendingInsert = true;
+		sessionVT.sendNegResponse2(ec);
 
-   }
+	}
 
 	private void process_XY(int pos) {
 
@@ -2267,16 +2224,16 @@ public class Screen5250 {
 			sf.changePos(-1);
 		} else {
 			if (sf != null&& sf.isFER()){
-			   if ((sf.getCurrentPos()
-			         > sf.endPos())) {
-			      if (sf.withinField(pos)) {
-			         sf.getKeyPos(pos);
-			         return;
-			      }
-			      sf.getKeyPos(sf.endPos());
-			   }
+				if ((sf.getCurrentPos()
+						> sf.endPos())) {
+					if (sf.withinField(pos)) {
+						sf.getKeyPos(pos);
+						return;
+					}
+					sf.getKeyPos(sf.endPos());
+				}
 			}
-		   
+
 			goto_XY(pos);
 		}
 	}
@@ -2455,13 +2412,13 @@ public class Screen5250 {
 		char c;
 
 		for (int x = 0; x < lenScreen; x++) {
-         c = planes.getChar(x);
+			c = planes.getChar(x);
 			// only draw printable characters (in this case >= ' ')
 			if ((c >= ' ') && (!planes.isAttributePlace(x))) {
 				sac[x] = c;
-            // TODO: implement the underline check here
-//				if (screen[x].underLine && c <= ' ')
-//					sac[x] = '_';
+				// TODO: implement the underline check here
+				//				if (screen[x].underLine && c <= ' ')
+				//					sac[x] = '_';
 			} else
 				sac[x] = ' ';
 		}
@@ -2480,13 +2437,13 @@ public class Screen5250 {
 		char c;
 
 		for (int x = 0; x < lenScreen; x++) {
-         c = planes.getChar(x);
+			c = planes.getChar(x);
 			// only draw printable characters (in this case >= ' ')
 			if ((c >= ' ') && (!planes.isAttributePlace(x))) {
 				sac[x] = c;
-            // TODO: implement the underline check here
-//				if (screen[x].underLine && c <= ' ')
-//					sac[x] = '_';
+				// TODO: implement the underline check here
+				//				if (screen[x].underLine && c <= ' ')
+				//					sac[x] = '_';
 			} else
 				sac[x] = ' ';
 		}
@@ -2494,242 +2451,242 @@ public class Screen5250 {
 		return sac;
 	}
 
-   public char[] getData(int startRow, int startCol, int endRow, int endCol, int plane) {
-      try {
-         int from = getPos(startRow,startCol);
-         int to = getPos(endRow,endCol);
-         if (from > to) {
+	public char[] getData(int startRow, int startCol, int endRow, int endCol, int plane) {
+		try {
+			int from = getPos(startRow,startCol);
+			int to = getPos(endRow,endCol);
+			if (from > to) {
 
-            int f = from;
-            to = f;
-            from = f;
-         }
-         return planes.getPlaneData(from,to,plane);
-      }
-      catch (Exception oe) {
-         return null;
-      }
+				int f = from;
+				to = f;
+				from = f;
+			}
+			return planes.getPlaneData(from,to,plane);
+		}
+		catch (Exception oe) {
+			return null;
+		}
 
-   }
+	}
 
-   /**
-    * <p>
-    *  GetScreen retrieves the various planes associated with the presentation
-    *  space. The data is returned as a linear array of character values in the
-    *  array provided. The array is not terminated by a null character except
-    *  when data is retrieved from the text plane, in which case a single null
-    *  character is appended.
-    *  </p>
-    *  <p>
-    *  The application must supply a buffer for the returned data and the length
-    *  of the buffer. Data is returned starting from the beginning of the
-    *  presentation space and continuing until the buffer is full or the entire
-    *  plane has been copied. For text plane data, the buffer must include one
-    *  extra position for the terminating null character.
-    *  <p>
-    *
-    * @param buffer
-    * @param bufferLength
-    * @param plane
-    * @return The number of characters copied to the buffer
-    * @throws OhioException
-    */
-   public synchronized int GetScreen(char buffer[], int bufferLength, int plane)
-//                                       throws OhioException {
-                                       {
-      return GetScreen(buffer,bufferLength,0,lenScreen,plane);
+	/**
+	 * <p>
+	 *  GetScreen retrieves the various planes associated with the presentation
+	 *  space. The data is returned as a linear array of character values in the
+	 *  array provided. The array is not terminated by a null character except
+	 *  when data is retrieved from the text plane, in which case a single null
+	 *  character is appended.
+	 *  </p>
+	 *  <p>
+	 *  The application must supply a buffer for the returned data and the length
+	 *  of the buffer. Data is returned starting from the beginning of the
+	 *  presentation space and continuing until the buffer is full or the entire
+	 *  plane has been copied. For text plane data, the buffer must include one
+	 *  extra position for the terminating null character.
+	 *  <p>
+	 *
+	 * @param buffer
+	 * @param bufferLength
+	 * @param plane
+	 * @return The number of characters copied to the buffer
+	 * @throws OhioException
+	 */
+	public synchronized int GetScreen(char buffer[], int bufferLength, int plane)
+	//                                       throws OhioException {
+	{
+		return GetScreen(buffer,bufferLength,0,lenScreen,plane);
 
-   }
+	}
 
-   /**
-    * <p>
-    *  GetScreen retrieves the various planes associated with the presentation
-    *  space. The data is returned as a linear array of character values in the
-    *  array provided. The array is not terminated by a null character except
-    *  when data is retrieved from the text plane, in which case a single null
-    *  character is appended.
-    * </p>
-    * <p>
-    * The application must supply a buffer for the returned data and the length
-    * of the buffer. Data is returned starting from the given position and
-    * continuing until the specified number of characters have been copied, the
-    * buffer is full or the entire plane has been copied. For text plane data,
-    * the buffer must include one extra position for the terminating null character.
-    * </p>
-    *
-    * @param buffer
-    * @param bufferLength
-    * @param from
-    * @param length
-    * @param plane
-    * @return The number of characters copied to the buffer
-    * @throws OhioException
-    */
-   public synchronized int GetScreen(char buffer[], int bufferLength, int from,
-                                    int length, int plane)
-//                                    throws OhioException {
-                                    {
+	/**
+	 * <p>
+	 *  GetScreen retrieves the various planes associated with the presentation
+	 *  space. The data is returned as a linear array of character values in the
+	 *  array provided. The array is not terminated by a null character except
+	 *  when data is retrieved from the text plane, in which case a single null
+	 *  character is appended.
+	 * </p>
+	 * <p>
+	 * The application must supply a buffer for the returned data and the length
+	 * of the buffer. Data is returned starting from the given position and
+	 * continuing until the specified number of characters have been copied, the
+	 * buffer is full or the entire plane has been copied. For text plane data,
+	 * the buffer must include one extra position for the terminating null character.
+	 * </p>
+	 *
+	 * @param buffer
+	 * @param bufferLength
+	 * @param from
+	 * @param length
+	 * @param plane
+	 * @return The number of characters copied to the buffer
+	 * @throws OhioException
+	 */
+	public synchronized int GetScreen(char buffer[], int bufferLength, int from,
+			int length, int plane)
+	//                                    throws OhioException {
+	{
 
-      return planes.GetScreen(buffer,bufferLength, from, length, plane);
-   }
+		return planes.GetScreen(buffer,bufferLength, from, length, plane);
+	}
 
-   /**
-    * <p>
-    *  GetScreen retrieves the various planes associated with the presentation
-    *  space. The data is returned as a linear array of character values in the
-    *  array provided. The array is not terminated by a null character except
-    *  when data is retrieved from the text plane, in which case a single null
-    *  character is appended.
-    *  </p>
-    *  <p>
-    *  The application must supply a buffer for the returned data and the length
-    *  of the buffer. Data is returned starting from the given coordinates and
-    *  continuing until the specified number of characters have been copied,
-    *  the buffer is full, or the entire plane has been copied. For text plane
-    *  data, the buffer must include one extra position for the terminating null
-    *  character.
-    *  </p>
-    *
-    * @param buffer
-    * @param bufferLength
-    * @param row
-    * @param col
-    * @param length
-    * @param plane
-    * @return The number of characters copied to the buffer.
-    * @throws OhioException
-    */
-   public synchronized int GetScreen(char buffer[], int bufferLength, int row,
-                                       int col, int length, int plane)
-//                                       throws OhioException {
-                                       {
-      // Call GetScreen function after converting row and column to
-      // a position.
-      return planes.GetScreen(buffer,bufferLength, row, col, length, plane);
-   }
+	/**
+	 * <p>
+	 *  GetScreen retrieves the various planes associated with the presentation
+	 *  space. The data is returned as a linear array of character values in the
+	 *  array provided. The array is not terminated by a null character except
+	 *  when data is retrieved from the text plane, in which case a single null
+	 *  character is appended.
+	 *  </p>
+	 *  <p>
+	 *  The application must supply a buffer for the returned data and the length
+	 *  of the buffer. Data is returned starting from the given coordinates and
+	 *  continuing until the specified number of characters have been copied,
+	 *  the buffer is full, or the entire plane has been copied. For text plane
+	 *  data, the buffer must include one extra position for the terminating null
+	 *  character.
+	 *  </p>
+	 *
+	 * @param buffer
+	 * @param bufferLength
+	 * @param row
+	 * @param col
+	 * @param length
+	 * @param plane
+	 * @return The number of characters copied to the buffer.
+	 * @throws OhioException
+	 */
+	public synchronized int GetScreen(char buffer[], int bufferLength, int row,
+			int col, int length, int plane)
+	//                                       throws OhioException {
+	{
+		// Call GetScreen function after converting row and column to
+		// a position.
+		return planes.GetScreen(buffer,bufferLength, row, col, length, plane);
+	}
 
-   /**
-    * <p>
-    *  GetScreenRect retrieves data from the various planes associated with the
-    *  presentation space. The data is returned as a linear array of character
-    *  values in the buffer provided.
-    *  </p>
-    *
-    * <p>
-    * The application supplies two positions that represent opposing corners of
-    * a rectangle within the presentation space. The starting and ending
-    * positions can have any spatial relationship to each other. The data
-    * returned starts from the row containing the upper-most point to the row
-    * containing the lower-most point, and from the left-most column to the
-    * right-most column.
-    * </p>
-    * <p>
-    * The specified buffer must be at least large enough to contain the number
-    * of characters in the rectangle. If the buffer is too small, no data is
-    * copied and zero is returned by the method. Otherwise, the method returns
-    * the number of characters copied.
-    * </p>
-    *
-    * @param buffer
-    * @param bufferLength
-    * @param startPos
-    * @param endPos
-    * @param plane
-    * @return The number of characters copied to the buffer
-    * @throws OhioException
-    */
-   public synchronized int GetScreenRect(char buffer[], int bufferLength,
-                                             int startPos, int endPos, int plane)
-//                                             throws OhioException {
-                                             {
-      return planes.GetScreenRect(buffer, bufferLength, startPos, endPos, plane);
+	/**
+	 * <p>
+	 *  GetScreenRect retrieves data from the various planes associated with the
+	 *  presentation space. The data is returned as a linear array of character
+	 *  values in the buffer provided.
+	 *  </p>
+	 *
+	 * <p>
+	 * The application supplies two positions that represent opposing corners of
+	 * a rectangle within the presentation space. The starting and ending
+	 * positions can have any spatial relationship to each other. The data
+	 * returned starts from the row containing the upper-most point to the row
+	 * containing the lower-most point, and from the left-most column to the
+	 * right-most column.
+	 * </p>
+	 * <p>
+	 * The specified buffer must be at least large enough to contain the number
+	 * of characters in the rectangle. If the buffer is too small, no data is
+	 * copied and zero is returned by the method. Otherwise, the method returns
+	 * the number of characters copied.
+	 * </p>
+	 *
+	 * @param buffer
+	 * @param bufferLength
+	 * @param startPos
+	 * @param endPos
+	 * @param plane
+	 * @return The number of characters copied to the buffer
+	 * @throws OhioException
+	 */
+	public synchronized int GetScreenRect(char buffer[], int bufferLength,
+			int startPos, int endPos, int plane)
+	//                                             throws OhioException {
+	{
+		return planes.GetScreenRect(buffer, bufferLength, startPos, endPos, plane);
 
-   }
+	}
 
-   /**
-    * <p>
-    *  GetScreenRect retrieves data from the various planes associated with the
-    *  presentation space. The data is returned as a linear array of character
-    *  values in the buffer provided. The buffer is not terminated by a null
-    *  character.
-    * </p>
-    * <p>
-    * The application supplies two coordinates that represent opposing corners
-    * of a rectangle within the presentation space. The starting and ending
-    * coordinates can have any spatial relationship to each other. The data
-    * returned starts from the row containing the upper-most point to the row
-    * containing the lower-most point, and from the left-most column to the
-    * right-most column.
-    * </p>
-    * <p>
-    * The specified buffer must be at least large enough to contain the number
-    * of characters in the rectangle. If the buffer is too small, no data is
-    * copied and zero is returned by the method. Otherwise, the method returns
-    * the number of characters copied.
-    * </p>
-    *
-    * @param buffer
-    * @param bufferLength
-    * @param startRow
-    * @param startCol
-    * @param endRow
-    * @param endCol
-    * @param plane
-    * @return The number characters copied to the buffer
-    * @throws OhioException
-    */
-   public synchronized int GetScreenRect(char buffer[], int bufferLength,
-                                             int startRow, int startCol,
-                                             int endRow, int endCol, int plane)
-//                                             throws OhioException {
-                                             {
+	/**
+	 * <p>
+	 *  GetScreenRect retrieves data from the various planes associated with the
+	 *  presentation space. The data is returned as a linear array of character
+	 *  values in the buffer provided. The buffer is not terminated by a null
+	 *  character.
+	 * </p>
+	 * <p>
+	 * The application supplies two coordinates that represent opposing corners
+	 * of a rectangle within the presentation space. The starting and ending
+	 * coordinates can have any spatial relationship to each other. The data
+	 * returned starts from the row containing the upper-most point to the row
+	 * containing the lower-most point, and from the left-most column to the
+	 * right-most column.
+	 * </p>
+	 * <p>
+	 * The specified buffer must be at least large enough to contain the number
+	 * of characters in the rectangle. If the buffer is too small, no data is
+	 * copied and zero is returned by the method. Otherwise, the method returns
+	 * the number of characters copied.
+	 * </p>
+	 *
+	 * @param buffer
+	 * @param bufferLength
+	 * @param startRow
+	 * @param startCol
+	 * @param endRow
+	 * @param endCol
+	 * @param plane
+	 * @return The number characters copied to the buffer
+	 * @throws OhioException
+	 */
+	public synchronized int GetScreenRect(char buffer[], int bufferLength,
+			int startRow, int startCol,
+			int endRow, int endCol, int plane)
+	//                                             throws OhioException {
+	{
 
-      return planes.GetScreenRect(buffer, bufferLength, startRow, startCol, endRow,
-                                    endCol, plane);
-   }
+		return planes.GetScreenRect(buffer, bufferLength, startRow, startCol, endRow,
+				endCol, plane);
+	}
 
-   public synchronized boolean[] getActiveAidKeys() {
-      return sessionVT.getActiveAidKeys();
-   }
+	public synchronized boolean[] getActiveAidKeys() {
+		return sessionVT.getActiveAidKeys();
+	}
 
-   protected synchronized void setScreenData(String text, int location) {
-//                                             throws OhioException {
+	protected synchronized void setScreenData(String text, int location) {
+		//                                             throws OhioException {
 
-      if (location < 0 || location > lenScreen) {
-         return;
-//         throw new OhioException(sessionVT.getSessionConfiguration(),
-//         				OhioScreen5250.class.getName(), "osohio.screen.ohio00300", 1);
-      }
+		if (location < 0 || location > lenScreen) {
+			return;
+			//         throw new OhioException(sessionVT.getSessionConfiguration(),
+			//         				OhioScreen5250.class.getName(), "osohio.screen.ohio00300", 1);
+		}
 
-      int pos = location;
+		int pos = location;
 
-      int l = text.length();
-      boolean updated = false;
-      boolean flag = false;
-      int x =0;
-      for (; x < l; x++) {
-         if (isInField(pos + x,true)) {
-            if (!screenFields.getCurrentField().isBypassField()) {
-               if (!flag) {
-                  screenFields.getCurrentField().setMDT();
-                  updated = true;
-                  resetDirty(pos + x);
-                  screenFields.setMasterMDT();
-                  flag = true;
-               }
+		int l = text.length();
+		boolean updated = false;
+		boolean flag = false;
+		int x =0;
+		for (; x < l; x++) {
+			if (isInField(pos + x,true)) {
+				if (!screenFields.getCurrentField().isBypassField()) {
+					if (!flag) {
+						screenFields.getCurrentField().setMDT();
+						updated = true;
+						resetDirty(pos + x);
+						screenFields.setMasterMDT();
+						flag = true;
+					}
 
-               planes.screen[pos + x] = text.charAt(x);
-               setDirty(pos + x);
-            }
-         }
+					planes.screen[pos + x] = text.charAt(x);
+					setDirty(pos + x);
+				}
+			}
 
-      }
-      lastPos = pos + x;
-      if (updated) {
-         fireScreenChanged(1);
-      }
+		}
+		lastPos = pos + x;
+		if (updated) {
+			fireScreenChanged(1);
+		}
 
-   }
+	}
 
 	/**
 	 * This routine is based on offset 1,1 not 0,0 it will translate to offset
@@ -2879,23 +2836,23 @@ public class Screen5250 {
 
 	}
 
-/* *** NEVER USED LOCALLY ************************************************** */
-//	/**
-//	 * Used to restrict the cursor to a particular position on the screen. Used
-//	 * in combination with windows to restrict the cursor to the active window
-//	 * show on the screen.
-//	 *
-//	 * Not supported yet. Please implement me :-(
-//	 *
-//	 * @param depth
-//	 * @param width
-//	 */
-//	protected void setRestrictCursor(int depth, int width) {
-//
-//		restrictCursor = true;
-//		//      restriction
-//
-//	}
+	/* *** NEVER USED LOCALLY ************************************************** */
+	//	/**
+	//	 * Used to restrict the cursor to a particular position on the screen. Used
+	//	 * in combination with windows to restrict the cursor to the active window
+	//	 * show on the screen.
+	//	 *
+	//	 * Not supported yet. Please implement me :-(
+	//	 *
+	//	 * @param depth
+	//	 * @param width
+	//	 */
+	//	protected void setRestrictCursor(int depth, int width) {
+	//
+	//		restrictCursor = true;
+	//		//      restriction
+	//
+	//	}
 
 	/**
 	 * Creates a window on the screen
@@ -2925,16 +2882,16 @@ public class Screen5250 {
 
 		w = width;
 		// set leading attribute byte
-//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+		//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 		planes.setScreenCharAndAttr(lastPos, initChar, initAttr, true);
 		setDirty(lastPos);
 
 		advancePos();
 		// set upper left
-//		screen[lastPos].setCharAndAttr((char) ul, colorAttr, false);
+		//		screen[lastPos].setCharAndAttr((char) ul, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos, (char) ul, colorAttr, false);
 		if (gui) {
-//			screen[lastPos].setUseGUI(UPPER_LEFT);
+			//			screen[lastPos].setUseGUI(UPPER_LEFT);
 			planes.setUseGUI(lastPos, UPPER_LEFT);
 		}
 		setDirty(lastPos);
@@ -2944,10 +2901,10 @@ public class Screen5250 {
 		// draw top row
 
 		while (w-- >= 0) {
-//			screen[lastPos].setCharAndAttr((char) upper, colorAttr, false);
+			//			screen[lastPos].setCharAndAttr((char) upper, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos, (char) upper, colorAttr, false);
 			if (gui) {
-//				screen[lastPos].setUseGUI(UPPER);
+				//				screen[lastPos].setUseGUI(UPPER);
 				planes.setUseGUI(lastPos,UPPER);
 			}
 			setDirty(lastPos);
@@ -2955,11 +2912,11 @@ public class Screen5250 {
 		}
 
 		// set upper right
-//		screen[lastPos].setCharAndAttr((char) ur, colorAttr, false);
+		//		screen[lastPos].setCharAndAttr((char) ur, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos,(char) ur, colorAttr, false);
 
 		if (gui) {
-//			screen[lastPos].setUseGUI(UPPER_RIGHT);
+			//			screen[lastPos].setUseGUI(UPPER_RIGHT);
 			planes.setUseGUI(lastPos, UPPER_RIGHT);
 		}
 		setDirty(lastPos);
@@ -2992,19 +2949,19 @@ public class Screen5250 {
 			w = width;
 			// fill it in
 			while (w-- >= 0) {
-//				screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+				//				screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 				planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
-//				screen[lastPos].setUseGUI(NO_GUI);
+				//				screen[lastPos].setUseGUI(NO_GUI);
 				planes.setUseGUI(lastPos,NO_GUI);
 				setDirty(lastPos);
 				advancePos();
 			}
 
 			// set right
-//			screen[lastPos].setCharAndAttr((char) right, colorAttr, false);
+			//			screen[lastPos].setCharAndAttr((char) right, colorAttr, false);
 			planes.setScreenCharAndAttr(lastPos,(char) right, colorAttr, false);
 			if (gui) {
-//				screen[lastPos].setUseGUI(RIGHT);
+				//				screen[lastPos].setUseGUI(RIGHT);
 				planes.setUseGUI(lastPos,GUI_RIGHT);
 			}
 
@@ -3012,7 +2969,7 @@ public class Screen5250 {
 			advancePos();
 
 			// set ending attribute byte
-//			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+			//			screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 			planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 			setDirty(lastPos);
 
@@ -3020,16 +2977,16 @@ public class Screen5250 {
 		}
 
 		// set leading attribute byte
-//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
+		//		screen[lastPos].setCharAndAttr(initChar, initAttr, true);
 		planes.setScreenCharAndAttr(lastPos,initChar, initAttr, true);
 		setDirty(lastPos);
 		advancePos();
 
 		// set lower left
-//		screen[lastPos].setCharAndAttr((char) ll, colorAttr, false);
+		//		screen[lastPos].setCharAndAttr((char) ll, colorAttr, false);
 		planes.setScreenCharAndAttr(lastPos,(char) ll, colorAttr, false);
 		if (gui) {
-//			screen[lastPos].setUseGUI(LOWER_LEFT);
+			//			screen[lastPos].setUseGUI(LOWER_LEFT);
 			planes.setUseGUI(lastPos,LOWER_LEFT);
 		}
 		setDirty(lastPos);
@@ -3237,7 +3194,7 @@ public class Screen5250 {
 				col = 0;
 			}
 		}
-		System.out.println(sb.toString());
+		log.info(sb.toString());
 
 	}
 
@@ -3307,9 +3264,9 @@ public class Screen5250 {
 						planes.setUseGUI(lastPos,FIELD_RIGHT);
 
 				}
-            else {
+				else {
 					planes.setUseGUI(lastPos - 1,FIELD_ONE);
-            }
+				}
 
 			//         screen[lastPos].setCharAndAttr(initChar,initAttr,true);
 			setEndingAttr(initAttr);
@@ -3462,8 +3419,8 @@ public class Screen5250 {
 				}
 			}
 		}
-		
-  		//updateDirty();
+
+		//updateDirty();
 	}
 
 	/**
@@ -3505,7 +3462,7 @@ public class Screen5250 {
 			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
-      fireScreenChanged(1);
+		fireScreenChanged(1);
 
 	}
 
@@ -3527,13 +3484,13 @@ public class Screen5250 {
 			planes.setScreenAttr(pos,na);
 			setDirty(pos++);
 		}
-      fireScreenChanged(1);
+		fireScreenChanged(1);
 
 	}
 
 	public boolean checkHotSpots() {
 
-	   return planes.checkHotSpots();
+		return planes.checkHotSpots();
 	}
 
 	protected void setChar(int cByte) {
@@ -3607,20 +3564,20 @@ public class Screen5250 {
 
 	protected void setScreenCharAndAttr(char right, int colorAttr, boolean isAttr) {
 
-	   planes.setScreenCharAndAttr(lastPos,right, colorAttr, isAttr);
-	   setDirty(lastPos);
-	   advancePos();
+		planes.setScreenCharAndAttr(lastPos,right, colorAttr, isAttr);
+		setDirty(lastPos);
+		advancePos();
 
 	}
 
 	protected void setScreenCharAndAttr(char right, int colorAttr,
-	      							int whichGui, boolean isAttr) {
+			int whichGui, boolean isAttr) {
 
-	   planes.setScreenCharAndAttr(lastPos,right, colorAttr, isAttr);
-	   planes.setUseGUI(lastPos,whichGui);
+		planes.setScreenCharAndAttr(lastPos,right, colorAttr, isAttr);
+		planes.setUseGUI(lastPos,whichGui);
 
-	   setDirty(lastPos);
-	   advancePos();
+		setDirty(lastPos);
+		advancePos();
 
 	}
 
@@ -3634,35 +3591,35 @@ public class Screen5250 {
 	 */
 	protected void updateDirty() {
 
-      fireScreenChanged(1);
+		fireScreenChanged(1);
 
 	}
 
 	protected void setDirty(int pos) {
 
-	   int minr = Math.min(getRow(pos),getRow(dirtyScreen.x));
-	   int minc = Math.min(getCol(pos),getCol(dirtyScreen.x));
+		int minr = Math.min(getRow(pos),getRow(dirtyScreen.x));
+		int minc = Math.min(getCol(pos),getCol(dirtyScreen.x));
 
-	   int maxr = Math.max(getRow(pos),getRow(dirtyScreen.y));
-	   int maxc = Math.max(getCol(pos),getCol(dirtyScreen.y));
+		int maxr = Math.max(getRow(pos),getRow(dirtyScreen.y));
+		int maxc = Math.max(getCol(pos),getCol(dirtyScreen.y));
 
-	   int x1 = getPos(minr,minc);
-      int x2 = getPos(maxr,maxc);
+		int x1 = getPos(minr,minc);
+		int x2 = getPos(maxr,maxc);
 
-      dirtyScreen.setBounds(x1,x2,0,0);
+		dirtyScreen.setBounds(x1,x2,0,0);
 
 	}
-	
-/* *** NEVER USED LOCALLY ************************************************** */
-//	private void setDirty(int row, int col) {
-//
-//		setDirty(getPos(row, col));
-//
-//	}
+
+	/* *** NEVER USED LOCALLY ************************************************** */
+	//	private void setDirty(int row, int col) {
+	//
+	//		setDirty(getPos(row, col));
+	//
+	//	}
 
 	private void resetDirty(int pos) {
 
-      dirtyScreen.setBounds(pos,pos,0,0);
+		dirtyScreen.setBounds(pos,pos,0,0);
 
 	}
 
@@ -3765,7 +3722,7 @@ public class Screen5250 {
 	 *
 	 */
 	protected void saveErrorLine() {
-      planes.saveErrorLine();
+		planes.saveErrorLine();
 	}
 
 	/**
@@ -3776,8 +3733,8 @@ public class Screen5250 {
 	protected void restoreErrorLine() {
 
 		if (planes.isErrorLineSaved()) {
-         planes.restoreErrorLine();
-         fireScreenChanged(1,planes.getErrorLine()-1,0,planes.getErrorLine()-1,numCols - 1);
+			planes.restoreErrorLine();
+			fireScreenChanged(1,planes.getErrorLine()-1,0,planes.getErrorLine()-1,numCols - 1);
 		}
 	}
 
@@ -3788,23 +3745,23 @@ public class Screen5250 {
 
 		case STATUS_SYSTEM:
 			if (value == STATUS_VALUE_ON) {
-            oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, s);
+				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, s);
 			}
-         else {
-            oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,ScreenOIA.OIA_LEVEL_NOT_INHIBITED,s);
-         }
+			else {
+				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,ScreenOIA.OIA_LEVEL_NOT_INHIBITED,s);
+			}
 			break;
 
 		case STATUS_ERROR_CODE:
 			if (value == STATUS_VALUE_ON) {
 				setPrehelpState(true, true, false);
 				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
-				      						ScreenOIA.OIA_LEVEL_INPUT_ERROR,s);
+						ScreenOIA.OIA_LEVEL_INPUT_ERROR,s);
 
-				Toolkit.getDefaultToolkit().beep();
+				sessionVT.signalBell();
 			} else {
-			   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
-			         						ScreenOIA.OIA_LEVEL_NOT_INHIBITED);
+				oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
+						ScreenOIA.OIA_LEVEL_NOT_INHIBITED);
 				setPrehelpState(false, true, true);
 				homePos = saveHomePos;
 				saveHomePos = 0;
@@ -3822,20 +3779,20 @@ public class Screen5250 {
 	}
 
 	/**
-    * This routine clears the screen, resets row and column to 0, resets the
-    * last attribute to 32, clears the fields, turns insert mode off,
-    * clears/initializes the screen character array.
-    */
-   protected void clearAll() {
+	 * This routine clears the screen, resets row and column to 0, resets the
+	 * last attribute to 32, clears the fields, turns insert mode off,
+	 * clears/initializes the screen character array.
+	 */
+	protected void clearAll() {
 
-      lastAttr = 32;
-      lastPos = 0;
+		lastAttr = 32;
+		lastPos = 0;
 
-      clearTable();
-      clearScreen();
-      planes.setScreenAttr(0, initAttr);
-      oia.setInsertMode(false);
-   }
+		clearTable();
+		clearScreen();
+		planes.setScreenAttr(0, initAttr);
+		oia.setInsertMode(false);
+	}
 
 	/**
 	 * Clear the fields table
@@ -3856,9 +3813,9 @@ public class Screen5250 {
 	protected void clearGuiStuff() {
 
 		for (int x = 0; x < lenScreen; x++) {
-         planes.setUseGUI(x,NO_GUI);
+			planes.setUseGUI(x,NO_GUI);
 		}
-      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+		dirtyScreen.setBounds(0,lenScreen - 1,0,0);
 	}
 
 	/**
@@ -3867,94 +3824,88 @@ public class Screen5250 {
 	 */
 	protected void clearScreen() {
 
-      planes.initalizePlanes();
+		planes.initalizePlanes();
 
-      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+		dirtyScreen.setBounds(0,lenScreen - 1,0,0);
 
-      oia.clearScreen();
+		oia.clearScreen();
 
 	}
 
 	protected void restoreScreen() {
 
 		lastAttr = 32;
-      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
-      updateDirty();
+		dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+		updateDirty();
 	}
 
-   /**
-    * Notify all registered listeners of the onScreenChanged event.
-    *
-    */
-   private void fireScreenChanged(int which, int startRow, int startCol,
-                                 int endRow, int endCol) {
-      if (listeners != null) {
-          // Patch below contributed by Mitch Blevins
-         //int size = listeners.size();
-         Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
-         int size = lc.size();
-         for (int i = 0; i < size; i++) {
-            //ScreenListener target =
-              //      (ScreenListener)listeners.elementAt(i);
-              ScreenListener target = lc.elementAt(i);
-            target.onScreenChanged(1,startRow,startCol,endRow,endCol);
-         }
-      }
-      dirtyScreen.setBounds(lenScreen,0,0,0);
-   }
+	/**
+	 * Notify all registered listeners of the onScreenChanged event.
+	 *
+	 */
+	private void fireScreenChanged(int which, int startRow, int startCol,
+			int endRow, int endCol) {
+		if (listeners != null) {
+			// Patch below contributed by Mitch Blevins
+			//int size = listeners.size();
+			Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
+			int size = lc.size();
+			for (int i = 0; i < size; i++) {
+				//ScreenListener target =
+				//      (ScreenListener)listeners.elementAt(i);
+				ScreenListener target = lc.elementAt(i);
+				target.onScreenChanged(1,startRow,startCol,endRow,endCol);
+			}
+		}
+		dirtyScreen.setBounds(lenScreen,0,0,0);
+	}
 
-   /**
-    * Notify all registered listeners of the onScreenChanged event.
-    *
-    */
-   private synchronized void fireScreenChanged(int update) {
-      if (dirtyScreen.x > dirtyScreen.y) {
-//         log.info(" x < y " + dirtyScreen);
-         return;
-      }
+	/**
+	 * Notify all registered listeners of the onScreenChanged event.
+	 *
+	 */
+	private synchronized void fireScreenChanged(int update) {
+		if (dirtyScreen.x > dirtyScreen.y) {
+			//         log.info(" x < y " + dirtyScreen);
+			return;
+		}
 
-      fireScreenChanged(update, getRow(dirtyScreen.x), getCol(dirtyScreen.x),
-                                 getRow(dirtyScreen.y), getCol(dirtyScreen.y));
+		fireScreenChanged(update, getRow(dirtyScreen.x), getCol(dirtyScreen.x),
+				getRow(dirtyScreen.y), getCol(dirtyScreen.y));
 
-   }
+	}
 
-   /**
-    * Notify all registered listeners of the onScreenChanged event.
-    *
-    */
-   private synchronized void fireCursorChanged(int update) {
-      int startRow = getRow(lastPos);
-      int startCol = getCol(lastPos);
+	/**
+	 * Notify all registered listeners of the onScreenChanged event.
+	 *
+	 */
+	private synchronized void fireCursorChanged(int update) {
+		int startRow = getRow(lastPos);
+		int startCol = getCol(lastPos);
 
-      if (listeners != null) {
-         Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
-          //int size = listeners.size();
-         int size = lc.size();
-         for (int i = 0; i < size; i++) {
-            ScreenListener target =
-                    lc.elementAt(i);
-            target.onScreenChanged(update,startRow,startCol,startRow,startCol);
-         }
-      }
-   }
+		if (listeners != null) {
+			Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
+			for (int i = 0, len = lc.size(); i < len; i++) {
+				ScreenListener target = lc.elementAt(i);
+				target.onScreenChanged(update,startRow,startCol,startRow,startCol);
+			}
+		}
+	}
 
-   /**
-    * Notify all registered listeners of the onScreenSizeChanged event.
-    *
-    */
-   private void fireScreenSizeChanged() {
-
-      if (listeners != null) {
-         Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
-          //int size = listeners.size();
-         int size = lc.size();
-         for (int i = 0; i < size; i++) {
-            ScreenListener target =
-                  lc.elementAt(i);
-            target.onScreenSizeChanged(numRows,numCols);
-         }
-      }
-   }
+	/**
+	 * Notify all registered listeners of the onScreenSizeChanged event.
+	 *
+	 */
+	private void fireScreenSizeChanged() {
+		if (listeners != null) {
+			Vector<ScreenListener> lc = new Vector<ScreenListener>(listeners);
+			for (int i = 0, size = lc.size(); i < size; i++) {
+				ScreenListener target =
+					lc.elementAt(i);
+				target.onScreenSizeChanged(numRows,numCols);
+			}
+		}
+	}
 
 	/**
 	 * This method does a complete refresh of the screen.
@@ -3965,32 +3916,32 @@ public class Screen5250 {
 		setCursorActive(true);
 	}
 
-   /**
-    * Add a ScreenListener to the listener list.
-    *
-    * @param listener  The ScreenListener to be added
-    */
-   public void addScreenListener(ScreenListener listener) {
+	/**
+	 * Add a ScreenListener to the listener list.
+	 *
+	 * @param listener  The ScreenListener to be added
+	 */
+	public void addScreenListener(ScreenListener listener) {
 
-      if (listeners == null) {
-          listeners = new java.util.Vector<ScreenListener>(3);
-      }
-      listeners.addElement(listener);
+		if (listeners == null) {
+			listeners = new java.util.Vector<ScreenListener>(3);
+		}
+		listeners.addElement(listener);
 
-   }
+	}
 
-   /**
-    * Remove a ScreenListener from the listener list.
-    *
-    * @param listener  The ScreenListener to be removed
-    */
-   public void removeScreenListener(ScreenListener listener) {
+	/**
+	 * Remove a ScreenListener from the listener list.
+	 *
+	 * @param listener  The ScreenListener to be removed
+	 */
+	public void removeScreenListener(ScreenListener listener) {
 
-      if (listeners == null) {
-          return;
-      }
-      listeners.removeElement(listener);
-   }
+		if (listeners == null) {
+			return;
+		}
+		listeners.removeElement(listener);
+	}
 
 	/**
 	 * Utility method to share the repaint behaviour between setBounds() and
@@ -3998,27 +3949,27 @@ public class Screen5250 {
 	 */
 	public void repaintScreen() {
 
-	   setCursorOff();
-      dirtyScreen.setBounds(0,lenScreen - 1,0,0);
-      updateDirty();
+		setCursorOff();
+		dirtyScreen.setBounds(0,lenScreen - 1,0,0);
+		updateDirty();
 		// restore statuses that were on the screen before resize
 		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR) {
-		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
-		         			ScreenOIA.OIA_LEVEL_INPUT_ERROR);
+			oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+					ScreenOIA.OIA_LEVEL_INPUT_ERROR);
 		}
 
 		if (oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_INHIBITED) {
-		   oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
-		         			ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
+			oia.setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
+					ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 		}
 
 		if (oia.isMessageWait())
 			oia.setMessageLightOn();
-      setCursorOn();
+		setCursorOn();
 	}
 
 	// ADDED BY BARRY - changed by Kenneth to use the character plane
-   //  This should be replaced with the getPlane methods when they are implemented
+	//  This should be replaced with the getPlane methods when they are implemented
 	public char[] getCharacters() {
 		return planes.screen;
 	}

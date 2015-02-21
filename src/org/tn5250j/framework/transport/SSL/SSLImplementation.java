@@ -95,8 +95,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 			userTrustManagers = usertmf.getTrustManagers();
 			logger.debug("Initializing SSL Context");
 			sslContext = SSLContext.getInstance(sslType);
-			sslContext.init(userkmf.getKeyManagers(),
-					new TrustManager[] { this }, null);
+			sslContext.init(userkmf.getKeyManagers(), new TrustManager[] {this}, null);
 		} catch (Exception ex) {
 			logger.error("Error initializing SSL [" + ex.getMessage() + "]");
 		}
@@ -182,10 +181,9 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 			certInfo = certInfo.concat("Public Key: "
 					+ cert.getPublicKey().getFormat() + "\n");
 
-			int accept = JOptionPane.showConfirmDialog(null, certInfo,
-					"Unknown Certificate",
-					javax.swing.JOptionPane.YES_NO_OPTION);
-			
+			int accept = JOptionPane
+					.showConfirmDialog(null, certInfo, "Unknown Certificate - Do you accept it?",
+							javax.swing.JOptionPane.YES_NO_OPTION);
 			if (accept != JOptionPane.YES_OPTION) {
 				throw new java.security.cert.CertificateException(
 						"Certificate Rejected");

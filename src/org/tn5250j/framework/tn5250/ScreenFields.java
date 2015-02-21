@@ -611,8 +611,7 @@ public class ScreenFields {
       }
    }
 
-   protected void readFormatTable(ByteArrayOutputStream baosp,int readType,
-                                    ICodePage codePage) {
+   protected void readFormatTable(ByteArrayOutputStream baosp,int readType, ICodePage codePage) {
 
       ScreenField sf;
       boolean isSigned = false;

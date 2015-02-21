@@ -49,7 +49,7 @@ public class GenericTn5250JFrame extends JFrame {
 
    public GenericTn5250JFrame() {
       super();
-      setIconImage(GUIGraphicsUtils.getApplicationIcon().getImage());
+      setIconImages(GUIGraphicsUtils.getApplicationIcons());
    }
 
    public void centerFrame() {

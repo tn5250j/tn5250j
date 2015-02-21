@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionBean;
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.interfaces.ConfigureFactory;
 
 
@@ -62,7 +62,7 @@ public class ExampleEmbeddedMinimalBootstrap {
 					}
 			);
 			
-			SessionGUI sessgui = new SessionGUI(sb.getSession());
+			SessionPanel sessgui = new SessionPanel(sb.getSession());
 			JPanel main = new JPanel(new BorderLayout());
     		main.add(sessgui,BorderLayout.CENTER);
     		frame.setContentPane(main);

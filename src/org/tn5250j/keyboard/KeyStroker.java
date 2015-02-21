@@ -29,8 +29,7 @@ import java.awt.event.KeyEvent;
 
 /**
  * This class is basically a wrapper for KeyEvent that is used internally to the
- * project instead of KeyEvents.
- *
+ * project instead of KeyEvents. Uses getKeyLocation for 1.4 and greater.
  */
 public class KeyStroker {
 
@@ -98,7 +97,7 @@ public class KeyStroker {
       this.isControlDown = ke.isControlDown();
       this.isAltDown = ke.isAltDown();
       this.isAltGrDown = ke.isAltGraphDown();
-      this.location = KEY_LOCATION_STANDARD;
+      this.location = ke.getKeyLocation();
 
       hashCode = keyCode +
                   (isShiftDown ? 1 : 0) +
@@ -117,7 +116,7 @@ public class KeyStroker {
       this.isControlDown = ke.isControlDown();
       this.isAltDown = ke.isAltDown();
       this.isAltGrDown = isAltGrDown;
-      this.location = KEY_LOCATION_STANDARD;
+      this.location = ke.getKeyLocation();
 
       hashCode = keyCode +
                   (isShiftDown ? 1 : 0) +
@@ -157,7 +156,7 @@ public class KeyStroker {
       isControlDown = ke.isControlDown();
       isAltDown = ke.isAltDown();
       isAltGrDown = isAltGr;
-      location = KEY_LOCATION_STANDARD;
+      location = ke.getKeyLocation();
 
       hashCode = keyCode +
                   (isShiftDown ? 1 : 0) +
@@ -200,7 +199,7 @@ public class KeyStroker {
              isControlDown == ke.isControlDown() &&
              isAltDown == ke.isAltDown() &&
              isAltGrDown == ke.isAltGraphDown() &&
-             location == KEY_LOCATION_STANDARD);
+             location == ke.getKeyLocation());
    }
 
    public boolean equals(Object obj) {
@@ -222,7 +221,7 @@ public class KeyStroker {
              isControlDown == ke.isControlDown() &&
              isAltDown == ke.isAltDown() &&
              isAltGrDown == altGrDown &&
-             location == KEY_LOCATION_STANDARD);
+             location == ke.getKeyLocation());
    }
 
    public boolean equals(Object obj,boolean altGrDown) {

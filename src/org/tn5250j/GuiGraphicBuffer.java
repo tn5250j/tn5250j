@@ -90,7 +90,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private Data updateRect;
 	protected int columnWidth;
 	protected int rowHeight;
-	private SessionGUI gui;
+	private SessionPanel gui;
 
 	private LineMetrics lm;
 	/*default*/ Font font;
@@ -137,7 +137,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger ("GFX");
 
-	public GuiGraphicBuffer (Screen5250 screen, SessionGUI gui, SessionConfig config) {
+	public GuiGraphicBuffer (Screen5250 screen, SessionPanel gui, SessionConfig config) {
 
 		this.screen = screen;
 		this.config = config;

@@ -20,14 +20,11 @@
  */
 package org.tn5250j.interfaces;
 
-import javax.swing.ImageIcon;
-
 import org.tn5250j.My5250;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.gui.GenericTn5250JFrame;
-import org.tn5250j.tools.GUIGraphicsUtils;
 
 /**
  * Abstract class for all main GUI interfaces.<br>
@@ -35,7 +32,6 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  * <ul>
  * <li>{@link org.tn5250j.Gui5250Frame} which shows a window with multiple tabs</li>
  * <li>{@link org.tn5250j.Gui5250MDIFrame}</li>
- * <li>{@link org.tn5250j.Gui5250SplitFrame}</li>
  * </ul>
  */
 public abstract class GUIViewInterface extends GenericTn5250JFrame {
@@ -44,9 +40,6 @@ public abstract class GUIViewInterface extends GenericTn5250JFrame {
    protected static My5250 me;
    protected static int sequence;
    protected int frameSeq;
-   
-   protected static final ImageIcon focused = GUIGraphicsUtils.getFocusedIcon();
-   protected static final ImageIcon unfocused = GUIGraphicsUtils.getUnFocusedIcon();
 
    public GUIViewInterface(My5250 m) {
       super();
@@ -57,11 +50,11 @@ public abstract class GUIViewInterface extends GenericTn5250JFrame {
       return frameSeq;
    }
 
-   public abstract void addSessionView(String descText,SessionGUI session);
-   public abstract void removeSessionView(SessionGUI targetSession);
-   public abstract boolean containsSession(SessionGUI session);
+   public abstract void addSessionView(String descText, SessionPanel session);
+   public abstract void removeSessionView(SessionPanel targetSession);
+   public abstract boolean containsSession(SessionPanel session);
    public abstract int getSessionViewCount();
-   public abstract SessionGUI getSessionAt( int index);
+   public abstract SessionPanel getSessionAt(int index);
    public abstract void onSessionJump(SessionJumpEvent jumpEvent);
    public abstract void onSessionChanged(SessionChangeEvent changeEvent);
 

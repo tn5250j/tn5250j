@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import org.python.core.PyException;
 import org.python.util.PythonInterpreter;
 import org.tn5250j.GlobalConfigure;
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -58,7 +58,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
        
    }
    
-   public void executeScript(SessionGUI session, String script)
+   public void executeScript(SessionPanel session, String script)
          throws InterpreterDriver.InterpreterException {
       try {
          session.setMacroRunning(true);
@@ -82,11 +82,11 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
       }
    }
 
-   public void executeScriptFile(SessionGUI session, String scriptFile)
+   public void executeScriptFile(SessionPanel session, String scriptFile)
                   throws InterpreterDriver.InterpreterException {
 
       try {
-         final SessionGUI s1 = session;
+         final SessionPanel s1 = session;
          final String s2 = scriptFile;
 
          s1.setMacroRunning(true);

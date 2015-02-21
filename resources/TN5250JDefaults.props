@@ -13,3 +13,7 @@ colorGreen=-16711936
 colorBlue=-7571201
 colorBg=-16777216
 colorWhite=-1
+
+confirmTabClose=No
+confirmSignoff=Yes
+mouseWheel=Yes

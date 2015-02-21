@@ -30,7 +30,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.Macronizer;
@@ -42,7 +42,7 @@ public class RunScriptAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
-public RunScriptAction(SessionGUI session, KeyMapper keyMap) {
+public RunScriptAction(SessionPanel session, KeyMapper keyMap) {
       super(session,
     		  TN5250jConstants.MNEMONIC_RUN_SCRIPT,
             KeyStroke.getKeyStroke(KeyEvent.VK_R,KeyEvent.ALT_MASK),

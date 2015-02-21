@@ -30,7 +30,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import org.tn5250j.SessionGUI;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.keyboard.KeyMapper;
 
@@ -41,7 +41,7 @@ public class OpenSameAction extends EmulatorAction {
 
    private static final long serialVersionUID = 1L;
 
-public OpenSameAction(SessionGUI session, KeyMapper keyMap) {
+public OpenSameAction(SessionPanel session, KeyMapper keyMap) {
       super(session,TN5250jConstants.MNEMONIC_OPEN_SAME,
             KeyStroke.getKeyStroke(KeyEvent.VK_U,KeyEvent.ALT_MASK),
             keyMap);

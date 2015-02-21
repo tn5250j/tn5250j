@@ -10,6 +10,7 @@ public enum KbdTypesCodePages {
 	ALI("Albanian","ALI","697","500","500"),
 	CLB("Arabic","CLB","235","420","420"),
 	AGB("Austrian/ German","AGB","697","273","273"),
+	AGE("Austrian/ German","AGB","695","1141","1141"),
 	AGI("Austrian/German (MNCS)","AGI","697","500","500"),
 	BLI("Belgian MNCS","BLI","697","500","500"),
 	BRB("Brazilian Portuguese","BRB","697","37","37"),
@@ -33,6 +34,7 @@ public enum KbdTypesCodePages {
 	ICB("Icelandic","ICB","697","871","871"),
 	ICI("Icelandic MNCS","ICI","697","500","500"),
 	INB("International","INB","697","500","500"),
+	INBX("International-X","INB","697","500","500-ch"),
 //	INB("International MNCS","INB","697","500","500"),
 	IRB("Farsi (Iran)","IRB","1219","1097","1097"),
 	ITB("Italian","ITB","697","280","280"),
@@ -40,7 +42,7 @@ public enum KbdTypesCodePages {
 	JEB("Japanese-English","JEB","697","281","65535"),
 	JEI("Japanese- English MNCS","JEI","697","500","500"),
 	JKB("Japanese Kanji and Katakana","JKB","1172","290","5026"),
-	JUB("Japanese Kanji and US English","JUB","697","37","See note 3."),
+//	JUB("Japanese Kanji and US English","JUB","697","37","See note 3."),
 	KAB("Japanese Katakana","KAB","332","290","290"),
 	JPB("Japanese Latin Extended","JPB","1172","1027","1027"),
 	KOB("Korean","KOB","1173","833","833"),
@@ -51,6 +53,7 @@ public enum KbdTypesCodePages {
 	NWB("Norwegian","NWB","697","277","277"),
 	NWI("Norwegian MNCS","NWI","697","500","500"),
 	PLB("Polish","PLB","959","870","870"),
+	PLBX("Polish 870-pl","PLB","959","870","870-pl"), // Workaround, to catch up Java codepage '870-pl'
 	PRB("Portuguese","PRB","697","37","37"),
 	PRI("Portuguese MNCS","PRI","697","500","500"),
 	RMB("Romanian","RMB","959","870","870"),
@@ -59,6 +62,7 @@ public enum KbdTypesCodePages {
 	YGI("Serbian, Latin","YGI","959","870","870"),
 	RCB("Simplified Chinese","RCB","1174","836","836"),
 	SKB("Slovakian","SKB","959","870","870"),
+	SKBX("Slovakian 870-sk","SKB","959","870","870-sk"), // Workaround, to catch up Java codepage '870-sk'
 //	YGI("Slovenian","YGI","959","870","870"),
 	SPB("Spanish","SPB","697","284","284"),
 	SPI("Spanish MNCS","SPI","697","500","500"),
@@ -98,5 +102,11 @@ public enum KbdTypesCodePages {
 		this.ccsid = ccsid;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "[description=" + description + ", kbdType=" + kbdType
+		+ ", charset=" + charset + ", codepage=" + codepage
+		+ ", ccsid=" + ccsid + "]";
+	}
+
 }

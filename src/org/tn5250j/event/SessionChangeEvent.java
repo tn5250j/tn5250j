@@ -5,7 +5,8 @@ import java.util.EventObject;
 public class SessionChangeEvent extends EventObject {
 
    private static final long serialVersionUID = 1L;
-public SessionChangeEvent(Object obj){
+   
+   public SessionChangeEvent(Object obj){
       super(obj);
 
    }
