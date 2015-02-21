@@ -24,7 +24,7 @@ package org.tn5250j;
 public interface TN5250jConstants {
 
    // Version information
-   public static final String VERSION_INFO = "0.7.4";
+   public static final String VERSION_INFO = "0.7.5";
 
    // STATE
    static final int STATE_DISCONNECTED   =  0;
