@@ -1,0 +1,32 @@
+/**
+   FOR TESTING PURPOSES ONLY
+   1. Copy this file to user's Home Folder and rename to .java.policy
+   2. Edit .java.policy file. Change HOSTNAME1 to hostname or IP of host
+*/
+grant {
+	//Uncomment next permission (AllPermission) to allow applet to 
+	//do (access) anything (makes easier for testing)
+	//permission java.security.AllPermission;
+
+	//Add  SocketPermissions for each host that applets can connect to.
+        //Use "*" to allow applets to connect to any host.
+        permission java.net.SocketPermission "HOSTNAME1","connect,resolve";
+        //permission java.net.SocketPermission "mydomain.com","connect,resolve";
+        //permission java.net.SocketPermission "HOSTNAME3","connect,resolve";
+
+	//Windows based systems use this line
+        permission java.io.FilePermission "${java.home}\\lib\\security\\cacerts","read";
+        //UNIX users comment out the previous line and uncomment the following
+        permission java.io.FilePermission "${java.home}/lib/security/cacerts","read";
+
+
+	//Shouldn't need to change anything below here.
+	//permission java.util.PropertyPermission "tn5250j.ssl", "read,write";
+	permission java.util.PropertyPermission "java.home","read";
+	permission java.util.PropertyPermission "file.seperator","read";
+	permission java.io.FilePermission "TN5250JDefaults.props", "read";
+	permission java.io.FilePermission "keymap","read,write";
+	permission java.io.FilePermission "macros","read,write";
+	permission java.io.FilePermission "scripts","read";
+
+};

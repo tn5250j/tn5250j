@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="tn5250j" default="info" basedir=".">
+
+	<!-- import user preferences first -->
+	<property file="${basedir}/build.${user.name}.properties" />
+	<!-- import project preferences last -->
+	<property file="${basedir}/build.properties" />
+	
+    <!-- global properties -->
+	<property name="source.dir" value="${basedir}/src" />
+	<property name="resource.dir" value="${basedir}/resources" />
+	<property name="tests.dir" value="${basedir}/tests" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="build.classes.dir" value="${build.dir}"/>
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="javadoc.dir" value="${build.dir}/javadoc" />
+	<property name="rtm.lib.dir" value="${basedir}/lib/runtime" /> <!-- runtime libs -->
+	<property name="dev.lib.dir" value="${basedir}/lib/development" /> <!-- development libs -->
+	
+	<property name="compile.source" value="1.6" />
+	<property name="compile.target" value="1.6" />
+	
+    <property name="jarname" value="${name}.jar" />
+    <property name="dist.base.name" value="${name}-${version}" />
+    <property name="dist.src.name" value="${dist.base.name}-src" />
+    <property name="dist.bin.name" value="${dist.base.name}-full-bin" />
+    <property name="dist-run.name" value="${dist.base.name}-run"/>
+    <property name="dist-run.dir"  value="${dist.dir}/${dist-run.name}"/>
+
+    <!-- classpath -->
+    <path id="classpath">
+       <pathelement path="${build.classes.dir}" />
+       <fileset dir="${rtm.lib.dir}" >
+          <include name="*.jar" />
+          <include name="*.zip" />
+       </fileset>
+    </path>
+
+    <!-- files for binary distribution -->
+    <fileset dir="${source.dir}" id="dist.bin">
+       <include name="${build.dir}/${jarname}"/>
+       <include name="COPYING"/>
+       <include name="*.txt"/>
+       <include name="*.html"/>
+       <include name="*.jar"/>
+       <exclude name="antbuild.txt"/>
+       <exclude name="build.xml"/>
+       <exclude name="org/**"/>
+       <exclude name="*.gif"/>
+    </fileset>
+	
+	<fileset dir="${resource.dir}" id="resources.fileset">
+        <include name="*.txt"/>
+		<exclude name="antbuild.txt"/>
+		<exclude name="wishlist.txt"/>
+      	<include name="*.htm*"/>
+      	<include name="*.php"/>
+        <include name="COPYING"/>
+        <include name="tn5250j*.jpg"/>
+        <include name="tn5250j*.png"/>
+      	<include name="tn5250j*.ico"/>
+		<include name="tn5250j*.icns"/>
+	</fileset>
+
+    <!-- files for source distribution -->
+    <!--<fileset dir="${source.dir}" id="dist.src">-->
+    <fileset dir="${basedir}" id="dist.src">
+       <include name="build.xml"/>
+       <include name="build.properties"/>
+       <include name="src/**"/>
+       <include name="resources/**"/>
+       <include name="installer/**"/>
+    </fileset>
+
+    <!-- =================================================================== -->
+    <!-- Shows some information                                              -->
+    <!-- =================================================================== -->
+    <target name="info" description="Prints a short summary of this project">
+        <echo message="" />
+        <echo message="tn5250j:" />
+        <echo message="========" />
+        <echo message="" />
+        <echo message="This application is an open source implementation" />
+        <echo message="of telnet 5250 in java" />
+        <echo message="" />
+        <echo message="" />
+        <echo message="Use 'ant -projecthelp' to show available targets" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Prepares the build directory                                        -->
+    <!-- =================================================================== -->
+    <target name="prepare">
+    <!-- set time stamp -->
+        <tstamp/>
+        <!-- directory structure -->
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${build.classes.dir}" />
+        <mkdir dir="${javadoc.dir}" />
+
+        <echo message="------------------- ${Name} ${version} [${year}] ----------------"/>
+
+        <!-- printout some useful status information -->
+        <echo message="ant.java.version:        ${ant.java.version}" />
+        <echo message="ant.file:                ${ant.file}" />
+        <echo message="" />
+
+        <echo message="java.vm.version:         ${java.vm.version}" />
+        <echo message="java.vm.vendor:          ${java.vm.vendor}" />
+        <echo message="java.vm.name:            ${java.vm.name}" />
+        <echo message="" />
+
+        <echo message="os.name:                 ${os.name}" />
+        <echo message="os.arch:                 ${os.arch}" />
+        <echo message="os.version:              ${os.version}" />
+
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Cleans build directory                                              -->
+    <!-- =================================================================== -->
+    <target name="clean" description="Cleanup your workspace (delete build-directory, ...)">
+        <delete dir="${build.dir}" />
+        <delete dir="${build.classes.dir}" />
+        <delete dir="${javadoc.dir}" />
+        <delete dir="${dist.dir}" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- To use debugging add the debug="true" parameter to javac            -->
+    <!-- =================================================================== -->
+    <target name="compile" depends="prepare" description="Compile your source-files">
+        <javac srcdir="${source.dir}" target="${compile.target}" source="${compile.source}"
+        		debug="${debug}"
+                destdir="${build.classes.dir}"
+                excludes="**/Cvs/**,**/*.ini"
+        		includeantruntime="false" >
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Runs the compiled program                                           -->
+    <!-- =================================================================== -->
+    <target name="run" depends="dist-run-prepare" description="Run the program">
+        <java jar="${dist-run.dir}/${jarname}"
+              fork="yes"
+              dir="${dist-run.dir}">
+          <classpath>
+            <fileset dir="${dist-run.dir}" >
+              <include name="*.jar" />
+              <include name="*.JAR" />
+              <include name="*.zip" />
+              <include name="*.ZIP" />
+            </fileset>
+          </classpath>
+        </java>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the API documentation                                       -->
+    <!-- =================================================================== -->
+    <target name="javadoc" depends="prepare" description="Creates the javadoc API documentation">
+        <javadoc packagenames="org.*" sourcepath="${source.dir}" destdir="${javadoc.dir}"
+                doctitle="${Name}"
+                windowtitle="Javadoc for ${Name} (Telnet 5250 in Java)"
+                header="tn5250j"
+                footer="tn5250j">
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the Jar                                                     -->
+    <!-- =================================================================== -->
+    <target name="package" depends="compile" description="Create a Jar-File of your compiled classes">
+        <tstamp><format property="ts" pattern="yyyyMMdd-HHmmss-z"/> </tstamp>
+
+        <jar jarfile="${build.dir}/${jarname}">
+            <fileset dir="${build.classes.dir}"
+                    includes="*org/**"/>
+            <fileset dir="${source.dir}" 
+            	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
+            <fileset dir="${resource.dir}" 
+            	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="${runtime.classpath}"/>
+                <attribute name="Implementation-Title" value="${Name}"/>
+                <attribute name="Implementation-Version" value="${version}"/>
+                <attribute name="Implementation-Vendor" value="http://tn5250j.sourceforge.net"/>
+                <attribute name="Build-Id" value="${ts} (${user.name} [${os.name} ${os.version} ${os.arch}])"/>
+            </manifest>
+        </jar>
+    </target>
+
+
+    <target name="all" depends="clean, compile, package"   description="Clean, Compile, Jar">
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the distribution                                            -->
+    <!-- =================================================================== -->
+    <target name="dist" depends="dist-bin, dist-src"   description="Creates all distribution archives">
+    </target>
+
+    <target name= "dist-run-prepare" depends="package"  description="Prepares all-in-one distribution">
+        <mkdir dir="${dist-run.dir}"/>
+        <copy todir="${dist-run.dir}">
+          <fileset refid="dist.bin"/>
+          <fileset dir="${build.dir}">
+            <include name="${jarname}"/>
+          </fileset>
+          <fileset dir="${rtm.lib.dir}">
+            <include name="**.jar"/>
+            <include name="**.JAR"/>
+            <include name="**.zip"/>
+            <include name="**.ZIP"/>
+          </fileset>
+        </copy>
+        <mkdir dir="${dist-run.dir}/scripts"/>
+        <copy todir="${dist-run.dir}/scripts">
+          <fileset dir="./scripts">
+            <include name="**"/>
+          </fileset>
+        </copy>
+    </target>
+    
+    <target name="dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-jarbundle, dist-core-jar-only" description="Create a Zip and TGZ Archives with all the binary files">
+    </target>
+
+	<target name="dist-core-jar-only" depends="dist-bin-prepare">
+		<copy tofile="${dist.dir}/${dist.base.name}-no-depedencies.jar" file="${build.dir}/${jarname}"/>
+	</target>
+	
+    <target name="dist-bin-prepare" depends="package"  description="Prepares binary distribution">
+        <delete dir="${dist.dir}/${dist.base.name}"/>
+        <mkdir dir="${dist.dir}/${dist.base.name}"/>
+        <copy todir="${dist.dir}/${dist.base.name}">
+            <fileset refid="dist.bin"/>
+        	<fileset dir="${rtm.lib.dir}">
+        		<include name="*.jar"/>
+        	</fileset>
+        	<fileset dir="${build.dir}">
+        		<include name="${jarname}"/>
+        	</fileset>
+    		<fileset refid="resources.fileset" />
+        </copy>
+    </target>
+
+    <target name="dist-bin-zip" depends="dist-bin-prepare" description="Create a Zip-File with all the binary files">
+        <zip zipfile="${dist.dir}/${dist.bin.name}.zip"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**">
+        </zip>
+    </target>
+
+    <target name="dist-bin-tgz" depends="dist-bin-prepare" description="Create a Tgz-File with all the binary files">
+        <tar tarfile="${dist.dir}/${dist.bin.name}.tar"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**">
+        </tar>
+        <gzip zipfile="${dist.dir}/${dist.bin.name}.tgz" src="${dist.dir}/${dist.bin.name}.tar" />
+        <delete file="${dist.dir}/${dist.bin.name}.tar"/>
+    </target>
+
+    <target name="dist-src" depends="dist-src-zip, dist-src-tgz" description="Create a Zip and TGZ Archives with all source files">
+    </target>
+
+    <target name="dist-src-prepare" depends="package"  description="Prepares source distribution">
+        <delete dir="${dist.dir}/${dist.base.name}"/>
+        <mkdir dir="${dist.dir}/${dist.base.name}"/>
+        <copy todir="${dist.dir}/${dist.base.name}">
+            <fileset refid="dist.src"/>
+        </copy>
+    </target>
+
+    <target name="dist-src-zip" depends="dist-src-prepare" description="Create a Zip-File with all the source files">
+        <zip zipfile="${dist.dir}/${dist.src.name}.zip"
+            basedir="${dist.dir}/"
+            includes="${dist.base.name}/**"
+        />
+    </target>
+
+    <target name="dist-src-tgz" depends="dist-src-prepare" description="Create a Tgz-File with all the source files">
+        <tar destfile="${dist.dir}/${dist.src.name}.tar"
+        	casesensitive="true"
+            basedir="${dist.dir}"
+        	includes="${dist.base.name}/**"
+        />
+        <gzip zipfile="${dist.dir}/${dist.src.name}.tgz"    src="${dist.dir}/${dist.src.name}.tar" />
+        <delete file="${dist.dir}/${dist.src.name}.tar"/>
+    </target>
+
+  <!-- Creates an installer for tn5250j -->
+  <target name="generate-installer" depends="dist" description="Creates installer using IzPack">
+
+    <!-- Allows us to use the IzPack Ant task -->
+    <taskdef name="izpack" classpath="${IzPack.dir}/lib/compiler.jar"
+             classname="com.izforge.izpack.ant.IzPackTask"/>
+
+    <!-- Copies the files to the dist directory -->
+    <echo message="Copies the image of the distribution to ${dist.dir}"/>
+    <delete dir="${dist.dir}/installer"/>
+    <mkdir dir="${dist.dir}/installer"/>
+    <copy todir="${dist.dir}/installer" includeEmptyDirs="yes">
+       <fileset dir="${build.dir}">
+          <include name="${jarname}" />
+       </fileset>
+      <fileset dir="${dist.dir}/${dist.base.name}/installer" excludes="**/_svn/**, **/.svn/**" />
+      <fileset refid="resources.fileset" />
+      <fileset dir="${rtm.lib.dir}" excludes="**/_svn/**, **/.svn/**" />
+    </copy>
+
+    <!-- We call IzPack -->
+    <echo message="Makes the installer using IzPack"/>
+    <izpack input="${dist.dir}/installer/install.xml"
+            output="${dist.dir}/tn5250j-${version}-installer.jar"
+            installerType="standard"
+            basedir="${dist.dir}"
+        	izPackDir="${IzPack.dir}"/>
+
+   </target>
+
+<!-- start jar bundler task -->
+	<taskdef name="jarbundler"
+	                  classpath="${dev.lib.dir}/jarbundler-2.2.0.jar"
+	                  classname="net.sourceforge.jarbundler.JarBundler" />
+	
+    <target name="dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
+    <jarbundler dir="${dist.dir}"
+                   name="${Name}"
+                   mainclass="org.tn5250j.My5250"
+                   icon="${resource.dir}/tn5250j-icon.icns"
+                   version="${version}"
+                   infostring="${Name} ${version}, (c) ${year}"
+                   aboutmenuname="${Name}"
+                   bundleid="org.tn5250j"
+                   developmentregion="English"
+                   signature="????"
+                   type="APPL"
+                   jvmversion="1.5+"
+                   vmoptions="-Xmx256m"
+                   smalltabs="true"
+                   antialiasedgraphics="true"
+                   antialiasedtext="true"
+                   liveresize="true"
+                   growboxintrudes="false"
+    	           workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+                   screenmenu="true" >
+         <jarfileset dir="${dist.dir}/${dist.base.name}">
+            <include name="**/*.jar" />
+            <exclude name="**/CVS" />
+            <exclude name="**/_svn/**" />
+            <exclude name="**/.svn/**" />
+         </jarfileset>
+       </jarbundler>
+	   </target>
+
+    <target name="dist-bin-jarbundle-tgz" depends="dist-bin-jarbundle" description="Create a Tgz-File of the jar bundle distribution">
+        <tar tarfile="${dist.dir}/${dist.bin.name}.app.tar"
+            basedir="${dist.dir}/"
+            includes="${Name}.app/**">
+        </tar>
+        <gzip zipfile="${dist.dir}/${dist.bin.name}.app.tgz" src="${dist.dir}/${dist.bin.name}.app.tar" />
+        <delete file="${dist.dir}/${dist.bin.name}.app.tar"/>
+    </target>
+
+</project>

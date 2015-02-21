@@ -1,0 +1,79 @@
+tn5250j README for SSL
+------------------------------------------------------------------------------
+
+Socket Security
+---------------
+TN5250J supports SSL socket connections using SSL version 1, SSL version 2, or 
+TLS.  Right now, the SSL type is configured on the client, but automatic type
+discovery will be supported in a future version.
+
+During SSL handshaking, a custom Trust Manager is used to validate the server's
+certificate.  If the certificate can not be trusted by default Trust Managers,
+(typically when keys have not been signed by a proper CA), then the user will 
+be prompted to accept the certificate.
+
+
+
+Applet Security
+---------------
+The tn5250j application requires access to many system resources.  To allow
+the applet to access these resources when executed from a web browser, there 
+are two options:
+
+ 1. Use a Java Policy File to define resources the applet can access.
+ 2. Sign the applet using a certificate.
+
+ 
+1. Using a Java Policy File
+
+   This method requires that a file name .java.policy be installed in the home
+  directory of every user who will be using the applet.  Roaming users may 
+  require a copy at each workstation if their home directories do not roam with
+  them.  The simplest form of the policy file looks like this:
+  
+     grant {
+       permission java.security.AllPermission;
+     };
+   
+    The previous entry would permit any applet that is loaded to have complete
+   freedom to access any resource it desires.  THIS IS VERY, VERY, VERY INSECURE
+   and should only be used for testing.  When deploying, you should create a 
+   more restrictive policy file.  See 
+   http://java.sun.com/j2se/1.4.2/docs/guide/security/permissions.html for more
+   information on policy files and policy file entries.
+   
+   
+2. Signing The Applet
+
+    This method requires that the applet jar be signed using a certificate.  
+   This may seem a bit daunting at first, but is very easy to do.  Used along
+   with the Java Plugin, it can make for super-simple administration.  Also,
+   a majority of people seem to think that you need to pay loads of money for
+   a valid certificate but it is not true.  Although it will make the user
+   experience a little easier (they don't have to accept the certificate), it
+   is not a requirement.
+
+   Here is a quick play-by-play on how to create a certificate and sign a JAR
+   file from the main tn5250j directory.
+   
+   Step 1:  Generate Keys and Certificate
+       
+       keytool -genkey -keystore tn5250j.keystore -alias tn5250j -keyalg RSA
+   
+   Step 2:  
+       jarsigner -keystore tn5250j.keystore build/tn5250j.jar tn5250j
+
+
+    That's it!  You just just signed the jar file.  Now when client browsers
+   with the Java Plugin installed uses your JAR file, the user will get 
+   prompted to accept the certificate.  Once they accept, the applet can access
+   the resources that it needs.
+   
+
+   
+Stephen M. Kennedy <kennedyz@users.sourceforge.net>
+
+Make sure you reference tn5250j in the subject or there is a chance I might
+delete it without opening the mail.
+
+

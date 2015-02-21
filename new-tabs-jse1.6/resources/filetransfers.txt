@@ -1,0 +1,125 @@
+File Transfers README
+------------------------------------------------------------------------------
+
+This version of the emulator will allow the downloading of file information from
+an as400.  It will be formatted as an HTML table with the headers being the
+field names.
+
+---- NOTE ---- ---- NOTE ---- ---- NOTE ---- ---- NOTE ---- ---- NOTE ----
+
+I have only been able to test with with OS/400 V4R5 so if there are any problems
+with offsets of fields please let me know
+
+---- NOTE ---- ---- NOTE ---- ---- NOTE ---- ---- NOTE ---- ---- NOTE ----
+
+Modifications for this release 0.4.14 adds:
+-------------------------------------------
+   - Selection of decimal separator to use for numbers
+   - KSpreadSheet file filter
+   - OpenOffice file filter
+
+   *** Note *** for the filters if the numbers do not show up correctly
+   try downloading with the other decimal separator.
+
+Modifications for this release 0.4.9 adds:
+------------------------------------------
+   - File browser for selecting local file
+   - Fix for Signed Numeric fields
+   - Transfer progression panel
+   - Ouput panel of commands and responses from OS400
+   - Transfers are executed in threads to keep user interface from locking up
+   - Support for member transfer and size information used for transfer progress
+   - Local file is appended with the correct extension of the output format
+        for instance in this release we only support HTML so the file will
+        be appended with .html if not specified
+   - Testing for fields transferred if correct or not.
+         - Field types tested:
+
+     A
+     A          R DWNLOAD
+     A            FIELD1        10A         COLHDG('Field 1............
+     A            FIELD2        10P 0       COLHDG('Field 2............
+     A            FIELD3        10P 3       COLHDG('Field 3............
+     A            FIELD4        10S 0       COLHDG('Field 4............
+     A            FIELD5        10S 3       COLHDG('Field 5............
+     A            FIELD6        10B 0       COLHDG('Field 6............
+     A            FIELD7        10B 0       COLHDG('Field 7............
+     A            FIELD8         5F 0       COLHDG('Field 7............
+     A            FIELD9         5F 3       COLHDG('Field 8............
+     A            FIELD10         L         COLHDG('Field 9............
+     A            FIELD11         T         COLHDG('Field 10...........
+     A            FIELD12         Z         COLHDG('Field 11...........
+     A            FIELD13        6H         COLHDG('Field 12...........
+
+
+*** NOTE *** I do not know if I am downloading everything correctly.  Please
+check the files for accuracy and let me know of any problems.
+
+Navigating File Transfer Panel
+=========================================
+
+Right click on session screen pulls up a menu as follows:
+
+:=====================:
+: Copy                :
+: Paste               :
+: Paste Special       :
+:---------------------:
+: Selected Columns XX :
+: Selected Rows XX    :
+:---------------------:
+: Print Screen        :
+:---------------------:
+: System Request      :
+: Help                :
+: Host Print          :
+: Display Messages    :
+:---------------------:
+: Hex Map             :
+: Map Keys...         :
+: Settings...         :
+:---------------------:
+: Macros            > :
+:---------------------:
+: Transfer File...    :
+:---------------------:
+: Connect/Disconnect  :
+:=====================:
+
+After getting the popup menu you will see an option for Transfer File...  Select
+the menu item and you will be presented with a screen to supply the transfer
+parameters.
+
+The following information is requested.
+
+System Name - The DNS name or IP address of the system that you want to connect
+               download files from
+
+File Name - The host file name that you want to download.  The default root
+               directory is probably QGPL so you will have to supply the full
+               name of the file in the format of LIBRARY/FILE.MEMBER
+
+User Id - User Id for security signon
+
+Password - Password for the user.
+
+PC File Name - The local file name where the data is to be placed.  The default
+                  directory is the path of the emulator.  If you want to place
+                  it somewhere else you will need to specify the full path name
+                  where to place it.
+
+                  The file is in HTML format so you will probably want to name
+                  the file with and extension of .htm or .html
+
+Browse Button - Select button to pull up the file browser
+
+Decimal separator - Select the decimal separator to be used for formatting
+                     numbers.
+
+If you have any questions or suggestions please let me know.
+
+The source code is a mess as usual so I will be adding comments sometime in the
+future as well.
+
+Enjoy!!!
+

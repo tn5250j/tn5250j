@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Name: tn5250j
+Main-Class: org.tn5250j.My5250
+Class-Path: activation.jar mailapi.jar smtp.jar

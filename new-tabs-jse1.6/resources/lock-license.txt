@@ -1,0 +1,9 @@
+
+lock.svg
+
+original source:
+http://tango.freedesktop.org/RRZETangoSet
+
+
+derived work:
+lock-open.png

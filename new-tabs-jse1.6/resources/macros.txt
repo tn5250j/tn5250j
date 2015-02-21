@@ -1,0 +1,337 @@
+Macros README
+------------------------------------------------------------------------------
+
+This version of the emulator will allow the recording of macros.  There is
+still no way to remove macros or assign them to function keys yet.  This will
+hopefully be done in the future.  Unless someone wants to take a stab at it
+themselves.  I will be more than happy to put anybody elses code in that fixes
+my mess.
+
+This is an update and the following part is to be followed for recording macros.
+
+Accessing, Recording and executing macros
+=========================================
+
+Right click on session screen pulls up a menu as follows:
+
+:=====================:
+: Copy                :
+: Paste               :
+: Paste Special       :
+:---------------------:
+: Selected Columns XX :
+: Selected Rows XX    :
+:---------------------:
+: Print Screen        :
+:---------------------:
+: System Request      :
+: Help                :
+: Host Print          :
+: Display Messages    :
+:---------------------:
+: Hex Map             :
+: Map Keys...         :
+: Settings...         :
+:---------------------:
+: Macros            > :
+:---------------------:
+: Connect/Disconnect  :
+:=====================:
+
+After getting the popup menu you will see an option for macros if you have
+followed the explanation above.  When you place your cursor over the Macros
+item a list of all available macros will appear.
+
+:=====================:
+: Copy                :
+: Paste               :
+: Paste Special       :
+:---------------------:
+: Selected Columns XX :
+: Selected Rows XX    :
+:---------------------:
+: Print Screen        :
+:---------------------:
+: System Request      :
+: Help                :
+: Host Print          :
+: Display Messages    :
+:---------------------:
+: Hex Map             :
+: Map Keys...         :
+: Settings...         :
+:---------------------:
+: Macros            > ::=====================:
+:---------------------:: Record...           :
+: Connect/Disconnect  ::---------------------:
+:=====================:: WRKACTJOB_BY_USER   :
+                       :=====================:
+
+Clicking on Record will then prompt you with text box asking for the name of
+the macro.  ** NOTE ** This can not contain blanks.
+
+1) Start entering your information as you would normally.
+2) When you are finish right click mouse and the following popup will be
+   presented.
+
+:=====================:
+: Copy                :
+: Paste               :
+: Paste Special       :
+:---------------------:
+: Selected Columns XX :
+: Selected Rows XX    :
+:---------------------:
+: Print Screen        :
+:---------------------:
+: System Request      :
+: Help                :
+: Host Print          :
+: Display Messages    :
+:---------------------:
+: Hex Map             :
+: Map Keys...         :
+: Settings...         :
+:---------------------:
+: Macros            > ::=====================:
+:---------------------:: Stop Recording      :
+: Connect/Disconnect  ::---------------------:
+:=====================:: WRKACTJOB_BY_USER   :
+                       :=====================:
+
+3) Select the option Stop Recording menu option.
+
+4) Proceed to the following with right click and clicking on one of the submenu
+   items will activate and execute the macro.
+
+
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+================================================================================
+The following is deprecated unless you want to set macros up by hand or delete
+any previously setup macros.
+================================================================================
+NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE
+
+So let's begin:
+
+First; create a file called macros in your emulator working path.  You can use
+your favorite editor to do this but make sure you create it as a text file.
+
+Second; define your macros:
+
+The format of the macros file is as follows:
+
+Macro key               =       Keys to send to the emulator
+------------------------ ------------------------------------------
+macro1.WRKACTJOB_BY_USER=wrkactjob[enter][nextword][nextword][pf16]
+
+Where:
+
+Macro Key -
+            1) Starts with macro# where # is a sequential number of the macro.
+            For example the previous would is macro1 the next macro2 the next
+            macro3  ....  You get the idea.
+
+            You do not have to keep the sequence for example:
+            macro10
+            macro20
+            macro30
+            macro40
+
+            2) The period '.' is required
+
+            3) A description that will be displayed. ** NOTE ** this can not
+               contain blanks.
+
+Equals '=' -  This indicates that the key is finished and the next will be
+               the actual key(s)/commands of the macro.
+
+Keys to send -  This is the key strokes and command mnemonics to be sent to the
+                host for processing.
+
+            The following defines the command mnemonics that can be sent to the
+            host.
+
+            Description          Host command value
+            ---------------      ------------------
+               BACK_SPACE           [backspace]
+               BACK_TAB             [backtab]
+               BEGIN_OF_FIELD       [bof]
+               CLEAR                [clear]
+               DELETE               [delete]
+               DOWN                 [down]
+               COPY                 [copy]
+               END_OF_FIELD         [eof]
+               ENTER                [enter]
+               ERASE_EOF            [eraseeof]
+               ERASE_FIELD          [erasefld]
+               FIELD_EXIT           [fldext]
+               FIELD_MINUS          [field-]
+               FIELD_PLUS           [field+]
+               HELP                 [help]
+               HOME                 [home]
+               INSERT               [insert]
+               KEYPAD_COMMA         [keypad,]
+               KEYPAD_MINUS         [keypad-]
+               KEYPAD_PERIOD        [keypad.]
+               KEYPAD0              [keypad0]
+               KEYPAD1              [keypad1]
+               KEYPAD2              [keypad2]
+               KEYPAD3              [keypad3]
+               KEYPAD4              [keypad4]
+               KEYPAD5              [keypad5]
+               KEYPAD6              [keypad6]
+               KEYPAD7              [keypad7]
+               KEYPAD8              [keypad8]
+               KEYPAD9              [keypad9]
+               LEFT                 [left]
+               NEXT_WORD            [nextword]
+               PA1                  [pa1]
+               PA2                  [pa2]
+               PA3                  [pa3]
+               PASTE                [paste]
+               PAGE_DOWN            [pgdown]
+               PAGE_UP              [pgup]
+               PF1                  [pf1]
+               PF10                 [pf10]
+               PF11                 [pf11]
+               PF12                 [pf12]
+               PF13                 [pf13]
+               PF14                 [pf14]
+               PF15                 [pf15]
+               PF16                 [pf16]
+               PF17                 [pf17]
+               PF18                 [pf18]
+               PF19                 [pf19]
+               PF2                  [pf2]
+               PF20                 [pf20]
+               PF21                 [pf21]
+               PF22                 [pf22]
+               PF23                 [pf23]
+               PF24                 [pf24]
+               PF3                  [pf3]
+               PF4                  [pf4]
+               PF5                  [pf5]
+               PF6                  [pf6]
+               PF7                  [pf7]
+               PF8                  [pf8]
+               PF9                  [pf9]
+               PREVIOUS_WORD        [prevword]
+               PRINT                [print]
+               RESET                [reset]
+               RIGHT                [right]
+               SYSREQ               [sysreq]
+               TAB                  [tab]
+               UP                   [up]
+
+Example:
+========
+What we want to achieve here is is a macro that will show the jobs in the system
+sorted by the user.
+
+Lets take the following example and break it up into its parts.
+
+macro1.WRKACTJOB_BY_USER=wrkactjob[enter][nextword][nextword][pf16]
+
+macro1.WRKACTJOB_BY_USER=
+   This is the macro# with sequential number of one (1) followed by the required
+   period, description and equals sign terminating the key and macro description.
+
+wrkactjob[enter][nextword][nextword][pf16]
+   This is actually what will be sent to the cursor position on the screen.
+
+   1) "wrkactjob" is the command to display the active jobs in the system
+
+   2) [enter] will be sent to the host to process the wrkactjob command
+
+   3) [nextword] will place the cursor on the next word of the display under
+      the column Subsystem/Job
+
+   4) [nextword] will place the cursor on the next word of the display so that
+      at the end of this command mnemonic the cursor is sitting under the
+      column User
+
+      Type options, press Enter.
+        2=Change   3=Hold   4=End   5=Work with   6=Release   7=Display message
+        8=Work with spooled files   13=Disconnect ...
+
+      Opt  Subsystem/Job  User        Type  CPU %  Function        Status
+                          X
+
+      Cursor should be here where X marks the spot.
+
+   5) [pf16] will then be sent to the host to tell it to sort the active jobs
+         by user.
+
+
+Accessing and executing macros
+==============================
+
+Right click on session screen pulls up a menu as follows:
+
+:=====================:
+: Copy                :
+: Paste               :
+: Paste Special       :
+:---------------------:
+: Selected Columns XX :
+: Selected Rows XX    :
+:---------------------:
+: Print Screen        :
+:---------------------:
+: System Request      :
+: Help                :
+: Host Print          :
+: Display Messages    :
+:---------------------:
+: Hex Map             :
+: Map Keys...         :
+: Settings...         :
+:---------------------:
+: Macros            > :
+:---------------------:
+: Connect/Disconnect  :
+:=====================:
+
+After getting the popup menu you will see an option for macros if you have
+followed the explanation above.  When you place your cursor over the Macros
+item a list of all available macros will appear.
+
+:=====================:
+: Copy                :
+: Paste               :
+: Paste Special       :
+:---------------------:
+: Selected Columns XX :
+: Selected Rows XX    :
+:---------------------:
+: Print Screen        :
+:---------------------:
+: System Request      :
+: Help                :
+: Host Print          :
+: Display Messages    :
+:---------------------:
+: Hex Map             :
+: Map Keys...         :
+: Settings...         :
+:---------------------:
+: Macros            > ::=====================:
+:---------------------:: WRKACTJOB_BY_USER   :
+: Connect/Disconnect  ::=====================:
+:=====================:
+
+
+Clicking on one of the submenu items will activate and execute the macro.
+
+That is all there is to it.
+
+If you have any questions or suggestions please let me know.
+
+** NOTE *** this is only a work around until I can get a record function to
+interactively define the macros.
+
+
+
+Enjoy!!!
+

@@ -1,0 +1,101 @@
+Scripting
+------------------------------------------------------------------------------
+
+This version of the emulator allows scripting using the python language.  This
+is accomplished using the jython library.
+
+   1) What it is
+   2) Installing
+
+1.  What is is
+--------------
+
+You can interract with the emulator such as:
+
+ screen = _session.getScreen()
+ screen.sendKeys("[enter]")
+
+ to send keystrokes.
+
+ ----------------------------
+ Popup frames and labels:
+ ----------------------------
+
+ win = swing.JFrame("tn5250j test window")
+ win.size = (300,400)
+ win.contentPane.background = awt.Color.white
+ label = swing.JLabel("Hello all you tn5250j'ers script writers")
+ label.foreground = awt.Color.red
+ win.contentPane.add(label)
+ win.show()
+
+ -------------------
+ Access to fields:
+ -------------------
+
+ screen = _session.getScreen()
+
+ screenfields = screen.getScreenFields()
+
+ fields = screenfields.getFields()
+
+ for x in fields:
+     print x.toString()
+     print x.getText()
+
+ print "number of fields %s " % screenfields.getSize()
+
+
+ Now the fun part.  Repetative tasks.  This is really cool as well.
+ ------------------------------------------------------------------
+
+ screen = _session.getScreen()
+
+ while not _session.isStopMacroRequested():
+     screen.sendKeys("[pf5]")
+     time.sleep(5)
+
+
+ Four lines and you have a continuas refresh every 5 seconds until you turn
+ it off.  The session.isStopMacroRequested() is very important here!!!  Is
+ this not the best thing ever.
+ ---------------------------------------------------------------
+
+ All in python.  Very powerful and fun to write.
+
+
+2. Install
+----------
+
+ 1.  go to https://sourceforge.net/projects/jython and download the latest
+ release.
+
+ 2.  install jython.  Follow their directions.  It is very simple
+
+ 3.  checkout or update from CVS the tn5250j emulator.
+
+ 4.  move the jython.jar file from where you installed jython and place it in
+ your libs directory of the build directory.  This will follow the same
+ procedure as for setting up e-mail.  Tip: you do not have to install jython
+ on every computer just the jython.jar file.
+
+ 5.  from command line for ant execute the following
+
+ >ant all
+
+ 6.  Create a directory underneath called "scripts".  This is hardcoded so
+ that all scripts are based off the scripts directory.
+
+ 7.  When everything builds, fire up the emulator making sure the jython.jar
+ file is in the directoy, same as for setting up e-mail.
+
+ 8.  Copy the sample scripts to the scripts directory.
+
+ 9.  Hit Alt-R to receive a Run Script prompt and type in the full name of
+ the script.  Such as testwin.py or testlooping.py
+
+ 10. Or from the popup menu all the scripts in the directory should appear
+     in the macros sub menu
+     
+Enjoy!!!
+

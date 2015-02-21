@@ -1,0 +1,19 @@
+#
+#Thu Mar 20 11:42:38 CET 2003
+colorGUIField=-1
+colorHexAttr=-1
+colorSep=-1
+font=Andale Mono
+colorYellow=-256
+colorCursor=-1
+colorTurq=-16715521
+colorRed=-65536
+colorPink=-65281
+colorGreen=-16711936
+colorBlue=-7571201
+colorBg=-16777216
+colorWhite=-1
+
+confirmTabClose=No
+confirmSignoff=Yes
+mouseWheel=Yes

@@ -1,0 +1,107 @@
+E-mail README
+------------------------------------------------------------------------------
+
+This version of the emulator includes support to send screen to e-mail.
+
+1. Setting up e-mail support
+2. Deployment
+3. Deployment with JavaWebStart
+4. Using emulator to send screen shots via e-mail
+
+
+Setting up e-mail support
+-------------------------
+
+1. Download the e-mail api's from sun.  You will need two packages.
+
+   http://java.sun.com/products/javamail/
+   http://java.sun.com/products/javabeans/glasgow/jaf.html
+
+2. Unzip the files into there respective directories.  I use the same directory
+   names as provided within the zip files.
+
+Deployment
+-----------
+
+1. Copy the file activation.jar from the /jaf-1.0.1 file to the SAME DIRECTORY as
+   the my5250.jar.
+
+2. Copy the files
+      mail.jar
+      mailapi.jar
+      smtp.jar
+
+   to the SAME DIRECTORY as the my5250.jar.
+
+If you list the directory where the my5250.jar file is you should see 4 files
+with the extension .jar.  If this is not true then go to step one of Deployment
+and start again.
+
+3.  Now when selecting any e-mail functions you will have to configure the
+properties first.  There will be a button to configure this before sending
+e-mails.
+
+Deployment with JavaWebStart
+----------------------------
+Using the webstart application the clients are automatically set up for use any
+any changes are automatically downloaded and ready for use.
+
+I also have scripts and or .bat set up to do the signing and copying to the
+intranet.
+
+I have included my sample .jnlp file that I use for deploying in JavaWebStart.
+
+<?xml version="1.0" encoding="utf-8"?>
+     <!-- JNLP File for tn5250j Application -->
+     <jnlp
+       spec="0.2 1.0"
+       codebase="http://xxx.xxx.xxx.xxx:8080/products/javawebstart/apps"
+       href="tn5250j.jnlp">
+       <information>
+         <title>tn5250j</title>
+         <vendor>Kenneth J. Pouncey</vendor>
+       <homepage href="http://sourceforge.net/tn5250j"/>
+       <description>tn5250j - 5250 emulator written in java</description>
+       <description kind="short">tn5250j - 5250 emulator</description>
+       <icon href="tn5250j-32x32.png"/>
+         <offline-allowed/>
+       </information>
+       <security>
+            <all-permissions/>
+       </security>
+       <resources>
+         <j2se version="1.3+" inital-heap-size="64m" max-heap-size="256m"/>
+         <jar href="my5250.jar" main="true" download="eager"/>
+         <jar href="activation.jar"/>
+         <jar href="mail.jar"/>
+         <jar href="mailapi.jar"/>
+         <jar href="smtp.jar"/>
+       </resources>
+       <application-desc main-class="org.tn5250j.My5250"/>
+</jnlp>
+
+All these files are signed before coping to server.
+
+For instructions on Setting up and Using Java webstart please consult the
+experts website.
+
+Using emulator to send screen shots via e-mail
+----------------------------------------------
+
+1.  From the emulator press Alt-e to get an input dialog to enter the following:
+
+      To:
+      Subject:
+      Message:
+      Attachment Name:
+
+2.  Press the Send button or Cancel.
+
+3.  Press the Configure button to configure the e-mail attributes.
+
+
+If you have any questions or suggestions please let me know.  If you have code
+changes PLEASE PLEASE send them to me.
+
+Enjoy!!!
+

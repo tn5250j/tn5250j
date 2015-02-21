@@ -1,0 +1,107 @@
+Ant build README
+------------------------------------------------------------------------------
+
+I have only tested this with ant build 1.4.1 so do not know if it is backwards
+compatible with previous versions.
+
+A lot of new options and targets have been added by Christian Geisert.  This
+really makes the build process more flexible and complete.  Great thanks!!!!
+For a list of these see step 7. below.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+---- NOTE --------- NOTE --------- NOTE --------- NOTE --------- NOTE -----
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+The new .jar file will be in the dist directly and named tn5250j and notmy5250j.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+---- NOTE --------- NOTE --------- NOTE --------- NOTE --------- NOTE -----
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Steps to get started after setting up ant
+-----------------------------------------
+1. Create a base directory to place source
+2. Create two directories beneath the base directory called lib and src
+
+for example your directory structure should look like the following:
+
+base directory
+   |
+   + - lib
+   |
+   + - src
+
+3. Unzip and place all source files from tn5250j source zip file that was
+   downloaded into src directory.
+
+!! As of the newest build.xml the manifest file is built for you automagically.
+
+4. Place the included build.xml file into the base directory.
+5. Place the extra .jar files used for mailing in the lib directory.
+   *** NOTE *** this is very important or some modules will not compile
+
+   You can download the e-mail api's from sun.
+   You will need two packages.
+      http://java.sun.com/products/javamail/
+      http://java.sun.com/products/javabeans/glasgow/jaf.html
+
+   JavaMail jar files
+   ------------------
+   activation.jar
+   mail.jar
+   mailapi.jar
+   smtp.jar
+
+   Scripting jar files
+   ------------------
+   jython.jar
+   
+   The jython.jar file is part of cvs or you can install the whole packes from
+   https://sourceforge.net/projects/jython.  Go ahead and download it so you
+   will have the interactive shell to play and test with the jython code
+   base.
+
+6. Now execute ant using one of the methods described in the ant documentation.
+
+   using the sample bat file for windows below:
+
+   c:\basedirectory>build all
+
+   Sample Windows build.bat that I use on windows
+   ----------------------------------------------
+@echo off
+
+rem this batch-file can be used to override the java_home or ant_home
+rem environment or to set a special classpath and so on...
+set ANT_HOME=D:\jakarta-ant-1.4.1
+set JAVA_HOME=C:\jdk1.3.1
+call %ANT_HOME%\bin\ant -buildfile build.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
+
+   ----------------------------------------------
+
+For more information on the command line parameters that the build process
+supports execute the following:
+
+>ant -projecthelp
+
+7. Main targets:
+
+   all               Clean, Compile, Jar
+   clean             Cleanup your workspace (delete build-directory, ...)
+   compile           Compile your source-files
+   dist              Creates all distribution archives
+   dist-bin          Create a Zip and TGZ Archives with all the binary files
+   dist-bin-prepare  Prepares binary distribution
+   dist-bin-tgz      Create a Tgz-File with all the binary files
+   dist-bin-zip      Create a Zip-File with all the binary files
+   dist-src          Create a Zip and TGZ Archives with all source files
+   dist-src-prepare  Prepares source distribution
+   dist-src-tgz      Create a Tgz-File with all the source files
+   dist-src-zip      Create a Zip-File with all the source files
+   info              Prints a short summary of this project
+   javadoc           Creates the javadoc API documentation
+   package           Create a Jar-File of your compiled classes
+
+If you have any questions or suggestions please let me know.
+If you have codechanges or suggestions PLEASE PLEASE send them to me.
+
+Enjoy!!!
+

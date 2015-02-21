@@ -1,0 +1,104 @@
+<installation version="1.0">
+    <info>
+        <appname>tn5250j</appname>
+        <appversion>0.7.4</appversion>
+        <authors>
+            <author email="kjp1@users.sourceforge.net" name="Kenneth J. Pouncey"/>
+			<author email="master_jaf@users.sourceforge.net" name="Martin Kirst"/>
+			<author email="pbielen@users.sourceforge.net" name="Patrick Bielen"/>
+			<author email="phelgren@users.sourceforge.net" name="Pete Helgren"/>
+			<author email="chrisgt@users.sourceforge.net" name="Christian Geisert"/>
+			<author email="jnorthr@users.sourceforge.net" name="jim"/>
+			<author email="joep_beckeringh@users.sourceforge.net" name="Joep Beckeringh"/>
+			<author email="joepbeckeringh@users.sourceforge.net" name="Joep Beckeringh"/>
+			<author email="jorjun@users.sourceforge.net" name="Peter Moore"/>
+			<author email="kennedyz@users.sourceforge.net" name="Steve Kennedy"/>
+			<author email="glen33@users.sourceforge.net" name="Glen Marchesani"/>
+			<author email="mbrilli@users.sourceforge.net" name="Maurizio Brilli"/>
+			<author email="nicolaken@users.sourceforge.net" name="Nicola Ken Barozzi"/>
+			<author email="ozgunm@users.sourceforge.net" name="Mehmet Ozgun"/>
+			<author email="rupshall@users.sourceforge.net" name="Robert Upshall"/>
+			<author email="tacticaljack@users.sourceforge.net" name="R.D.Ginsburg"/>
+			<author email="wvl@users.sourceforge.net" name="Wim Van Leuven"/>
+			<author email="yebob@users.sourceforge.net" name="yebob"/>
+        </authors>
+        <url>http://tn5250j.sourceforge.net</url>
+    </info>
+    <guiprefs height="480" resizable="no" width="640"/>
+    <locale>
+        <langpack iso3="eng"/>
+        <langpack iso3="deu"/>
+        <langpack iso3="ita"/>
+        <langpack iso3="spa"/>
+    </locale>
+    <resources>
+        <res src="installer/COPYING" id="LicencePanel.licence"/>
+        <res src="installer/installShortcutSpec.xml" id="shortcutSpec.xml"/>
+        <res src="installer/NativeLAF" id="useNativeLAF"/>
+		<res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>        
+    </resources>
+    <panels>
+        <panel classname="HelloPanel"/>
+        <panel classname="LicencePanel"/>
+        <panel classname="TargetPanel"/>
+        <panel classname="PacksPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="ShortcutPanel"/>
+        <panel classname="FinishPanel"/>
+    </panels>
+    <packs>
+        <pack name="Emulator" required="yes">
+            <description>A 5250 Telnet emulator written in Java</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/tn5250j.jar"/>
+            <file targetdir="$INSTALL_PATH" src="installer/COPYING"/>
+            <file targetdir="$INSTALL_PATH" src="installer/readme.txt"/>
+            <file targetdir="$INSTALL_PATH" src="installer/filetransfers.txt"/>
+            <file targetdir="$INSTALL_PATH" src="installer/macros.txt"/>
+            <file targetdir="$INSTALL_PATH" src="installer/CHANGELOG.txt"/>
+            <file targetdir="$INSTALL_PATH" src="installer/bin"/>
+            <parsable targetfile="$INSTALL_PATH/bin/tn5250j"/>
+            <parsable targetfile="$INSTALL_PATH/bin/tn5250j.bat"/>
+            <file targetdir="$INSTALL_PATH/bin/icons" src="installer/tn5250j-icon.ico"/>
+            <file targetdir="$INSTALL_PATH/bin/icons" src="installer/tn5250j-16x16.png"/>
+            <file targetdir="$INSTALL_PATH/bin/icons" src="installer/tn5250j-32x32.png"/>
+            <file targetdir="$INSTALL_PATH/bin/icons" src="installer/tn5250j-48x48.png"/>
+            <executable targetfile="$INSTALL_PATH/bin/tn5250j" stage="never"/>
+        </pack>
+        <pack name="Scripting" required="no">
+            <description>Scripting using jython - http://www.jython.org/</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/jython.jar"/>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/jythonlib.jar"/>
+            <file targetdir="$INSTALL_PATH" src="installer/scripting.txt"/>
+        </pack>
+        <pack name="PDF Generation" required="no">
+            <description>Enables PDF Generation of spool files - http://itext.sourceforge.net/</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/itext.jar"/>
+        </pack>
+        <pack name="Logging with Log4j" required="no">
+            <description>Enables the use of Log4j for logging instead of terminal - http://logging.apache.org/log4j/docs/</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/log4j-1.2.15.jar"/>
+        </pack>
+        <pack name="JTOpen IBM Toolbox for Java" required="no">
+            <description>The IBM Toolbox for Java is a library of Java classes supporting the client/server and internet programming models to a system running IBM i (or i5/OS or OS/400). - http://jt400.sourceforge.net/</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/jt400.jar"/>
+        </pack>
+        <pack name="E-Mail Support" required="no">
+             <description>Enables the E-Mail Screenshot feature. - http://java.sun.com/products/javamail/ http://java.sun.com/products/javabeans/glasgow/jaf.html</description>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/activation.jar"/>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/mailapi.jar"/>
+            <file targetdir="$INSTALL_PATH/lib" src="installer/smtp.jar"/>
+            <file targetdir="$INSTALL_PATH" src="installer/e-mail.txt"/>
+        </pack>
+        <pack name="Java Applet Example" required="no">
+            <description>An example implementation of tn5250j as a web applet.</description>
+            <file targetdir="$INSTALL_PATH/applet" src="installer/My5250App.html"/>
+            <file targetdir="$INSTALL_PATH/applet" src="installer/My5250AppPlugin.html"/>
+            <file targetdir="$INSTALL_PATH/applet" src="installer/My5250SSLApplet.php"/>
+            <file targetdir="$INSTALL_PATH/applet" src="installer/My5250SSLindex.php"/>
+            <file targetdir="$INSTALL_PATH/applet" src="installer/SSLinstructions.html"/>
+            <file targetdir="$INSTALL_PATH" src="installer/applet.txt"/>
+        </pack>
+    </packs>
+    <native name="ShellLink.dll" type="izpack"/>
+    <native name="ShellLink_x64.dll" type="izpack"/>
+</installation>
