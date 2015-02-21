@@ -492,7 +492,7 @@ public class ScreenField {
 	/**
 	 * Get the starting row of the field. Offset is 0 so row 6 returned is row 7
 	 * mapped to screen
-	 * 
+	 *
 	 * @return int starting row of the field offset 0
 	 */
 	public int startRow() {
@@ -504,7 +504,7 @@ public class ScreenField {
 	/**
 	 * Get the starting column of the field. Offset is 0 so column 6 returned is
 	 * column 7 mapped to screen
-	 * 
+	 *
 	 * @return int starting column of the field offset 0
 	 */
 	public int startCol() {
@@ -526,22 +526,21 @@ public class ScreenField {
 	 * subsequent call to getText on this field will not show the changed text.
 	 * To see the changed text, do a refresh on the iOhioFields collection and
 	 * retrieve the refreshed field object.
-	 * 
+	 *
 	 * @param text
 	 *            - The text to be placed in the field's text plane.
 	 */
 	public void setString(String text) {
 
-		cursorPos = startPos;
+		cursorPos = isRightToLeft() ? endPos - text.length() + 1 : startPos;
 
 		if (isRightToLeft()) {
 			text = new StringBuilder(text).reverse().toString();
 		}
 
-		final ScreenPlanes planes = s.getPlanes();
-		for (int x = 0,len = text.length(); x < length; x++) {
-			char tc = (x < len) ? text.charAt(x) : ' ';
-			planes.setChar(cursorPos, tc);
+		for (int x = 0, textLen = text.length(); x < length; x++) {
+			char tc = x < textLen ? text.charAt(x) : ' ';
+			s.getPlanes().setChar(cursorPos, tc);
 			changePos(1);
 		}
 		setMDT();
