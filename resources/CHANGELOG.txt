@@ -2,6 +2,11 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.7.5 ----------------------------------------------------- ??/??/2015 ---
+
+FIX: bug 'DataStreamProducer stumbles upon invalid packets' ; https://sourceforge.net/p/tn5250j/bugs/186/
+FIX: Better support for RTL language support - Thanks to Roi Mor (roi.m@openlegacy.org)
+
 --- v0.7.4 ----------------------------------------------------- 22/07/2014 ---
 
 ADD: Support for inserting APL color codes in SEU - Thanks to Tomasz Krajewski
