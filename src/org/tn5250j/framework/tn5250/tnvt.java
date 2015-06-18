@@ -1175,28 +1175,28 @@ public final class tnvt implements Runnable {
 
 	private final void fillScreenArray(byte[] sa) {
 
-		int la = 32;
+		int lastAttr = 32;
 		int sac = 0;
 
 		ScreenPlanes planes = screen52.planes;
 
-		for (int y = 0; y < sa.length; y++) { // save the screen data
+		for (int i = 0; i < sa.length; i++) { // save the screen data
 
-			if (planes.isAttributePlace(y)) {
-				la = planes.getCharAttr(y);
-				sa[sac++] = (byte) la;
+			if (planes.isAttributePlace(i)) {
+				lastAttr = planes.getCharAttr(i);
+				sa[sac++] = (byte) lastAttr;
 			} else {
-				if (planes.getCharAttr(y) != la) {
-					la = planes.getCharAttr(y);
-					sac = max(sac--, 0);
-					sa[sac++] = (byte) la;
+				if (planes.getCharAttr(i) != lastAttr) {
+					lastAttr = planes.getCharAttr(i);
+					sac = max(--sac, 0);
+					sa[sac++] = (byte) lastAttr;
 				}
 				//LDC: Check to see if it is an displayable character. If not,
 				//  do not convert the character.
 				//  The characters on screen are in unicode
 				//sa[sac++] =
-				// (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
-				char ch = planes.getChar(y);
+				// (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
+				char ch = planes.getChar(i);
 				byte byteCh = (byte) ch;
 				if (isDataUnicode(ch))
 					byteCh = codePage.uni2ebcdic(ch);
@@ -1216,9 +1216,9 @@ public final class tnvt implements Runnable {
 		try {
 			boolean guiExists = sfParser != null && sfParser.isGuisExists();
 
-			for (int y = 0; y < len; y++) { // save the screen data
+			for (int i = 0; i < len; i++) { // save the screen data
 				if (guiExists) {
-					byte[] guiSeg = sfParser.getSegmentAtPos(y);
+					byte[] guiSeg = sfParser.getSegmentAtPos(i);
 					if (guiSeg != null) {
 						byte[] gsa = new byte[sa.length + guiSeg.length + 2];
 						System.arraycopy(sa,0,gsa,0,sa.length);
@@ -1228,25 +1228,23 @@ public final class tnvt implements Runnable {
 						sa[sac++] = (byte)0x04;
 						sa[sac++] = (byte)0x11;
 						sac += guiSeg.length;
-						//y--;
-						//		         continue;
 					}
 				}
-				if (planes.isAttributePlace(y)) {
-					la = planes.getCharAttr(y);
+				if (planes.isAttributePlace(i)) {
+					la = planes.getCharAttr(i);
 					sa[sac++] = (byte) la;
 				} else {
-					if (planes.getCharAttr(y) != la) {
-						la = planes.getCharAttr(y);
-						sac = max(sac--, 0);
+					if (planes.getCharAttr(i) != la) {
+						la = planes.getCharAttr(i);
+						sac = max(--sac, 0);
 						sa[sac++] = (byte) la;
 					}
 					//LDC: Check to see if it is an displayable character. If not,
 					//  do not convert the character.
 					//  The characters on screen are in unicode
 					//sa[sac++] =
-					// (byte)codePage.uni2ebcdic(screen52.screen[y].getChar());
-					char ch = planes.getChar(y);
+					// (byte)codePage.uni2ebcdic(screen52.screen[i].getChar());
+					char ch = planes.getChar(i);
 					byte byteCh = (byte) ch;
 					if (isDataUnicode(ch))
 						byteCh = codePage.uni2ebcdic(ch);
@@ -1959,8 +1957,7 @@ public final class tnvt implements Runnable {
 					// on the screen for later parsing
 					//break;
 
-				default: // all others must be output to screen
-					log.debug("all others must be output to screen");
+				default:
 					byte byte0 = bk.getByteOffset(-1);
 					if (isAttribute(byte0)) {
 						screen52.setAttr(byte0);
@@ -2222,8 +2219,8 @@ public final class tnvt implements Runnable {
 	//  The first 32 characters are non displayable characters
 	//  This is normally the inverse of isDataEBCDIC (That's why there is a
 	//  check on 255 -> 0xFFFF
-	private boolean isDataUnicode(int byte0) {
-		return (((byte0 < 0) || (byte0 >= 32)) && (byte0 != 0xFFFF));
+	private boolean isDataUnicode(int data) {
+		return (((data < 0) || (data >= 32)) && (data != 0xFFFF));
 	}
 
 	private void writeStructuredField() {
