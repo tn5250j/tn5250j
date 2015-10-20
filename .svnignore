@@ -7,3 +7,5 @@ build.*.properties
 dist
 bin
 build
+out
+
