@@ -2,6 +2,10 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.7.6 ----------------------------------------------------- 20/10/2015 ---
+
+FIX: bug the ArrayIndexOutOfBoundsException, reason was wrong decrementing the counter (again, as in #1222)
+
 --- v0.7.5 ----------------------------------------------------- 21/02/2015 ---
 
 FIX: bug 'DataStreamProducer stumbles upon invalid packets' ; https://sourceforge.net/p/tn5250j/bugs/186/
