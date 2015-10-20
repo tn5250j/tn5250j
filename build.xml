@@ -330,22 +330,19 @@
 
 <!-- start jar bundler task -->
 	<taskdef name="jarbundler"
-	                  classpath="${dev.lib.dir}/jarbundler-2.2.0.jar"
+	                  classpath="${dev.lib.dir}/jarbundler-2.4.0.jar"
 	                  classname="net.sourceforge.jarbundler.JarBundler" />
 	
     <target name="dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
     <jarbundler dir="${dist.dir}"
                    name="${Name}"
+									 shortname="${Name}"
                    mainclass="org.tn5250j.My5250"
                    icon="${resource.dir}/tn5250j-icon.icns"
                    version="${version}"
-                   infostring="${Name} ${version}, (c) ${year}"
-                   aboutmenuname="${Name}"
+                   copyright="${Name} ${version}, (c) ${year}"
                    bundleid="org.tn5250j"
-                   developmentregion="English"
-                   signature="????"
-                   type="APPL"
-                   jvmversion="1.5+"
+                   jvmversion="1.6+"
                    vmoptions="-Xmx256m"
                    smalltabs="true"
                    antialiasedgraphics="true"
@@ -353,7 +350,9 @@
                    liveresize="true"
                    growboxintrudes="false"
     	           workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
-                   screenmenu="true" >
+                   screenmenu="true"
+                   stubfile="${resource.dir}/universalJavaApplicationStub"
+                   useJavaXKey="true">
          <jarfileset dir="${dist.dir}/${dist.base.name}">
             <include name="**/*.jar" />
             <exclude name="**/CVS" />
