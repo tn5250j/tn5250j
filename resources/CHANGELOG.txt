@@ -4,7 +4,8 @@
 
 --- v0.7.6 ----------------------------------------------------- 20/10/2015 ---
 
-FIX: bug the ArrayIndexOutOfBoundsException, reason was wrong decrementing the counter (again, as in #1222)
+FIX: bug the ArrayIndexOutOfBoundsException, which causes screen freeze (again, as in #1222 or bug #187)
+FIX: Updated JarBundler and fixes for Mac OSX (Thanks to Christian Gut)
 
 --- v0.7.5 ----------------------------------------------------- 21/02/2015 ---
 
