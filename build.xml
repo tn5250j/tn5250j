@@ -301,9 +301,11 @@
   <!-- Creates an installer for tn5250j -->
   <target name="generate-installer" depends="dist" description="Creates installer using IzPack">
 
+    <path id="build.classpath">
+        <fileset dir="${IzPack.dir}/lib" includes="*.jar"/>
+    </path>
     <!-- Allows us to use the IzPack Ant task -->
-    <taskdef name="izpack" classpath="${IzPack.dir}/lib/compiler.jar"
-             classname="com.izforge.izpack.ant.IzPackTask"/>
+    <taskdef name="izpack" classpathref="build.classpath" classname="com.izforge.izpack.ant.IzPackTask"/>
 
     <!-- Copies the files to the dist directory -->
     <echo message="Copies the image of the distribution to ${dist.dir}"/>

@@ -2,6 +2,10 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.7.7 ----------------------------------------------------- ??/??/20?? ---
+
+CHG: upgraded to use IzPack 5.x packager
+
 --- v0.7.6 ----------------------------------------------------- 20/10/2015 ---
 
 FIX: bug the ArrayIndexOutOfBoundsException, which causes screen freeze (again, as in #1222 or bug #187)
