@@ -3,6 +3,8 @@ A 5250 terminal emulator for the AS/400 written in Java.
 
 Documentation is available at: [tn5250j.github.io](https://tn5250j.github.io/)
 
+[![Build Status](https://travis-ci.org/tn5250j/tn5250j.svg?branch=travis)](https://travis-ci.org/tn5250j/tn5250j)
+
 ## History
 
 This project was created because there was no terminal emulator for Linux with features like continued edit fields, gui windows, cursor progression fields, etc.
