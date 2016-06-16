@@ -868,13 +868,15 @@ public final class tnvt implements Runnable {
 		try
 		{
 			int str = 11;
+			int offset = str+1;
+			int limit = 123; //TODO 1023 from V7R2
 			char c;
 			ScreenPlanes planes = screen52.getPlanes();
 			c = planes.getChar(str);
 			boolean waitFor = !(c == 'a');
 
 			StringBuilder command = new StringBuilder();
-			for (int i = str+1; i < 132; i++)
+			for (int i = offset; i < offset + limit; i++)
 			{
 				c = planes.getChar(i);
 				if (Character.isISOControl(c))
