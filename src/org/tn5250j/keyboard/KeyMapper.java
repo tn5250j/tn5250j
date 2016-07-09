@@ -157,7 +157,6 @@ public class KeyMapper {
 
 	private static boolean loadKeyStrokes(Properties keystrokes) {
 
-		keystrokes = ConfigureFactory.getInstance().getProperties(ConfigureFactory.KEYMAP);
 		if (keystrokes != null && keystrokes.size() > 0)
 			return true;
 		else

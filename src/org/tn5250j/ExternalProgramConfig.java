@@ -106,7 +106,7 @@ public class ExternalProgramConfig {
 		 if (propKey != null) {
 			  for (Enumeration e = props.keys() ; e.hasMoreElements() ;) {
 					 String key = (String)e.nextElement();
-					 if(props.getProperty(key) == propKey){
+					 if(propKey.equals(props.getProperty(key))){
 						 String subKey = key.substring(8);
 						 int index = subKey.indexOf(".");
 						 num = subKey.substring(0,index);

@@ -203,15 +203,17 @@ public class KeyStroker {
    }
 
    public boolean equals(Object obj) {
-
-     KeyStroker ks = (KeyStroker)obj;
-
-     return ks.keyCode == keyCode &&
-            ks.isShiftDown == isShiftDown &&
-            ks.isControlDown == isControlDown &&
-            ks.isAltDown == isAltDown &&
-            ks.isAltGrDown == isAltGrDown &&
-            ks.location == location;
+	   if(obj instanceof KeyStroker){
+	     KeyStroker ks = (KeyStroker)obj;
+	
+	     return ks.keyCode == keyCode &&
+	            ks.isShiftDown == isShiftDown &&
+	            ks.isControlDown == isControlDown &&
+	            ks.isAltDown == isAltDown &&
+	            ks.isAltGrDown == isAltGrDown &&
+	            ks.location == location;
+	   }
+	   return false;
    }
 
    public boolean equals(KeyEvent ke,boolean altGrDown) {

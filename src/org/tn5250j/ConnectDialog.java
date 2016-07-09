@@ -1235,7 +1235,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       
 	  for (Enumeration<Object> e = etnProps.keys() ; e.hasMoreElements() ;) {
 		 String key = (String)e.nextElement();
-		 if(etnProps.getProperty(key) == propKey){
+		 if(propKey != null && propKey.equals(etnProps.getProperty(key))){
 			 String subKey = key.substring(8);
 			 int index = subKey.indexOf(".");
 			 num = Integer.parseInt(subKey.substring(0,index));

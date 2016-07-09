@@ -433,7 +433,7 @@ public class BasicTerminalUI {
     int  index  = deriveScaleIndex(width, height);
     Font font   = new Font(fontName, fontStyle, widthMap[index+1]);
 
-    if (sizePolicy == SIZE_POL_FIXED)
+    if (SIZE_POL_FIXED.equals(sizePolicy ))
     {
       int  cW     = widthMap[index];
       int  cH     = heightMap[index];
