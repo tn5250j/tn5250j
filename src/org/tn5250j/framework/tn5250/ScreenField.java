@@ -531,7 +531,7 @@ public class ScreenField {
 	 *            - The text to be placed in the field's text plane.
 	 */
 	public void setString(String text) {
-
+		s.fireSetFieldString(this,text);
 		cursorPos = isRightToLeft() ? endPos - text.length() + 1 : startPos;
 
 		if (isRightToLeft()) {
