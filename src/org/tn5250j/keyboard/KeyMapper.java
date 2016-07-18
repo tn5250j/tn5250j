@@ -61,7 +61,7 @@ public class KeyMapper {
 		Properties keys = ConfigureFactory.getInstance().getProperties(
 				ConfigureFactory.KEYMAP);
 
-		if (!loadKeyStrokes(keys)) {
+		if (!containsProperties(keys)) {
 			// Key <-> Keycode , isShiftDown , isControlDown , isAlternateDown, location
 
 			mappedKeys.put(new KeyStroker(10, false, false, false, false,KeyStroker.KEY_LOCATION_STANDARD),"[enter]");
@@ -155,7 +155,7 @@ public class KeyMapper {
 	}
 
 
-	private static boolean loadKeyStrokes(Properties keystrokes) {
+	private static boolean containsProperties(Properties keystrokes) {
 
 		if (keystrokes != null && keystrokes.size() > 0)
 			return true;
