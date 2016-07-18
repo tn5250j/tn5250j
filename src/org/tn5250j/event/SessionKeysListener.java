@@ -31,4 +31,6 @@ public interface SessionKeysListener {
 	public void keysSent(final Screen5250 screen, final String keys);
 	
 	public void fieldStringSet(final Screen5250 screen, final ScreenField field, final String keys);
+	
+	public void cursorMoved(final Screen5250 screen, final int pos);
 }

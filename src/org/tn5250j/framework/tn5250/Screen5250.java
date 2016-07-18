@@ -550,6 +550,7 @@ public class Screen5250 {
 
 			// return back to the calling object that the cursor was indeed
 			//  moved with in the screen object
+			fireCursorMoved(pos);
 			return true;
 			//				}
 		}
@@ -2379,7 +2380,7 @@ public class Screen5250 {
 	 *
 	 * @return last position
 	 */
-	protected int getLastPos() {
+	public int getLastPos() {
 
 		return lastPos;
 
@@ -3992,7 +3993,13 @@ public class Screen5250 {
 		}
 	}
 	
-	public void add(final SessionKeysListener sessionKeysListener){
+	protected void fireCursorMoved(final int pos) {
+		for (final SessionKeysListener listener : keysListeners) {
+			listener.cursorMoved(this, pos);
+		}
+	}
+	
+	public void addSessionKeysListener(final SessionKeysListener sessionKeysListener){
 		keysListeners.add(sessionKeysListener);
 	}
 	
