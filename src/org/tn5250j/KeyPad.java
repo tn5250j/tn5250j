@@ -39,219 +39,138 @@ public class KeyPad extends JPanel {
     private static Rectangle textRect = new Rectangle();
     private static Rectangle iconRect = new Rectangle();
     private static int MIN_SIZE = 3;
+    private static final int NO_OF_BUTTONS = 30;
 
-    private BorderLayout borderLayout1 = new BorderLayout();
-    private JButton[] buttons = new JButton[30];
-    private int bSize = 0;
+    private final JButton[] buttons = new JButton[NO_OF_BUTTONS];
     private JPanel keyPadTop;
     private JPanel keyPadBottom;
-    private GridLayout gridLayout1 = new GridLayout();
-    private int numPad = 1;
+    private KeyPadMode currentKeyPadMode = KeyPadMode.ONE;
 
     public KeyPad() {
-        try {
-            jbInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        jbInit();
     }
 
-    void jbInit() throws Exception {
-        this.setLayout(borderLayout1);
+    private void jbInit() {
+        this.setLayout(new BorderLayout());
         keyPadTop = new JPanel();
         keyPadBottom = new JPanel();
-        keyPadTop.setLayout(gridLayout1);
-        keyPadBottom.setLayout(gridLayout1);
+        GridLayout gridLayout = new GridLayout();
+        keyPadTop.setLayout(gridLayout);
+        keyPadBottom.setLayout(gridLayout);
         this.setBorder(BorderFactory.createRaisedBevelBorder());
         this.setBorder(BorderFactory.createLoweredBevelBorder());
-        bSize = buttons.length;
         Insets noMargin = new Insets(0, 0, 0, 0);
 
-        for (int x = 0; x < bSize; x++) {
-
+        for (int x = 0; x < NO_OF_BUTTONS; x++) {
             buttons[x] = new JButton();
             buttons[x].setMargin(noMargin);
         }
 
-        setButtonText(1);
+        switchKeypadMode(KeyPadMode.ONE);
         setButtonTop();
         setButtonBottom();
 
         this.add(keyPadTop, BorderLayout.NORTH);
         this.add(keyPadBottom, BorderLayout.SOUTH);
-
     }
 
     public void addActionListener(ActionListener actionlistener) {
-        for (int x = 0; x < bSize; x++)
+        for (int x = 0; x < NO_OF_BUTTONS; x++) {
             buttons[x].addActionListener(actionlistener);
-
+        }
     }
 
     public void nextPad() {
-
-        if (numPad == 1)
-            setButtonText(2);
+        if (currentKeyPadMode == KeyPadMode.ONE)
+            switchKeypadMode(KeyPadMode.TWO);
         else
-            setButtonText(1);
+            switchKeypadMode(KeyPadMode.ONE);
     }
 
-    private void setButtonText(int which) {
-        numPad = which;
-
-        switch (which) {
-
-            case 1:
-                buttons[0].setText(getString("KP_F1", "PF1"));
-                buttons[0].setActionCommand(MNEMONIC_PF1);
-                buttons[1].setText(getString("KP_F2", "PF2"));
-                buttons[1].setActionCommand(MNEMONIC_PF2);
-                buttons[2].setText(getString("KP_F3", "PF3"));
-                buttons[2].setActionCommand(MNEMONIC_PF3);
-                buttons[3].setText(getString("KP_F4", "PF4"));
-                buttons[3].setActionCommand(MNEMONIC_PF4);
-                buttons[4].setText(getString("KP_F5", "PF5"));
-                buttons[4].setActionCommand(MNEMONIC_PF5);
-                buttons[5].setText(getString("KP_F6", "PF6"));
-                buttons[5].setActionCommand(MNEMONIC_PF6);
-                buttons[6].setText(getString("KP_F7", "PF7"));
-                buttons[6].setActionCommand(MNEMONIC_PF7);
-                buttons[7].setText(getString("KP_F8", "PF8"));
-                buttons[7].setActionCommand(MNEMONIC_PF8);
-                buttons[8].setText(getString("KP_F9", "PF9"));
-                buttons[8].setActionCommand(MNEMONIC_PF9);
-                buttons[9].setText(getString("KP_F10", "PF10"));
-                buttons[9].setActionCommand(MNEMONIC_PF10);
-                buttons[10].setText(getString("KP_F11", "PF11"));
-                buttons[10].setActionCommand(MNEMONIC_PF11);
-                buttons[11].setText(getString("KP_F12", "PF12"));
-                buttons[11].setActionCommand(MNEMONIC_PF12);
-                buttons[12].setText(getString("KP_ENTER", "Enter"));
-                buttons[12].setActionCommand(MNEMONIC_ENTER);
-                buttons[13].setText(getString("KP_PGUP", "PgUp"));
-                buttons[13].setActionCommand(MNEMONIC_PAGE_UP);
-                buttons[14].setText(getString("KP_CLEAR", "Clear"));
-                buttons[14].setActionCommand(MNEMONIC_CLEAR);
-
-                buttons[15].setText(getString("KP_F13", "PF13"));
-                buttons[15].setActionCommand(MNEMONIC_PF13);
-                buttons[16].setText(getString("KP_F14", "PF14"));
-                buttons[16].setActionCommand(MNEMONIC_PF14);
-                buttons[17].setText(getString("KP_F15", "PF15"));
-                buttons[17].setActionCommand(MNEMONIC_PF15);
-                buttons[18].setText(getString("KP_F16", "PF16"));
-                buttons[18].setActionCommand(MNEMONIC_PF16);
-                buttons[19].setText(getString("KP_F17", "PF17"));
-                buttons[19].setActionCommand(MNEMONIC_PF17);
-                buttons[20].setText(getString("KP_F18", "PF18"));
-                buttons[20].setActionCommand(MNEMONIC_PF18);
-                buttons[21].setText(getString("KP_F19", "PF19"));
-                buttons[21].setActionCommand(MNEMONIC_PF19);
-                buttons[22].setText(getString("KP_F20", "PF20"));
-                buttons[22].setActionCommand(MNEMONIC_PF20);
-                buttons[23].setText(getString("KP_F21", "PF21"));
-                buttons[23].setActionCommand(MNEMONIC_PF21);
-                buttons[24].setText(getString("KP_F22", "PF22"));
-                buttons[24].setActionCommand(MNEMONIC_PF22);
-                buttons[25].setText(getString("KP_F23", "PF23"));
-                buttons[25].setActionCommand(MNEMONIC_PF23);
-                buttons[26].setText(getString("KP_F24", "PF24"));
-                buttons[26].setActionCommand(MNEMONIC_PF24);
-                buttons[27].setText(getString("KP_SR", "SysReq"));
-                buttons[27].setActionCommand(MNEMONIC_SYSREQ);
-                buttons[28].setText(getString("KP_PGDN", "PgDn"));
-                buttons[28].setActionCommand(MNEMONIC_PAGE_DOWN);
-
-                break;
-
-            case 2:
-
-                buttons[0].setText(getString("KP_F1", "PF1"));
-                buttons[0].setActionCommand(MNEMONIC_PF1);
-                buttons[1].setText(getString("KP_F2", "PF2"));
-                buttons[1].setActionCommand(MNEMONIC_PF2);
-                buttons[2].setText(getString("KP_F3", "PF3"));
-                buttons[2].setActionCommand(MNEMONIC_PF3);
-                buttons[3].setText(getString("KP_F4", "PF4"));
-                buttons[3].setActionCommand(MNEMONIC_PF4);
-                buttons[4].setText(getString("KP_F5", "PF5"));
-                buttons[4].setActionCommand(MNEMONIC_PF5);
-                buttons[5].setText(getString("KP_F6", "PF6"));
-                buttons[5].setActionCommand(MNEMONIC_PF6);
-                buttons[6].setText(getString("KP_F7", "PF7"));
-                buttons[6].setActionCommand(MNEMONIC_PF7);
-                buttons[7].setText(getString("KP_F8", "PF8"));
-                buttons[7].setActionCommand(MNEMONIC_PF8);
-                buttons[8].setText(getString("KP_F9", "PF9"));
-                buttons[8].setActionCommand(MNEMONIC_PF9);
-                buttons[9].setText(getString("KP_F10", "PF10"));
-                buttons[9].setActionCommand(MNEMONIC_PF10);
-                buttons[10].setText(getString("KP_F11", "PF11"));
-                buttons[10].setActionCommand(MNEMONIC_PF11);
-                buttons[11].setText(getString("KP_F12", "PF12"));
-                buttons[11].setActionCommand(MNEMONIC_PF12);
-                buttons[12].setText(getString("KP_ENTER", "Enter"));
-                buttons[12].setActionCommand(MNEMONIC_ENTER);
-                buttons[13].setText(getString("KP_PGUP", "PgUp"));
-                buttons[13].setActionCommand(MNEMONIC_PAGE_UP);
-                buttons[14].setText(getString("KP_HELP", "Help"));
-                buttons[14].setActionCommand(MNEMONIC_HELP);
-
-                buttons[15].setText(getString("KP_F13", "PF13"));
-                buttons[15].setActionCommand(MNEMONIC_PF13);
-                buttons[16].setText(getString("KP_F14", "PF14"));
-                buttons[16].setActionCommand(MNEMONIC_PF14);
-                buttons[17].setText(getString("KP_F15", "PF15"));
-                buttons[17].setActionCommand(MNEMONIC_PF15);
-                buttons[18].setText(getString("KP_F16", "PF16"));
-                buttons[18].setActionCommand(MNEMONIC_PF16);
-                buttons[19].setText(getString("KP_F17", "PF17"));
-                buttons[19].setActionCommand(MNEMONIC_PF17);
-                buttons[20].setText(getString("KP_F18", "PF18"));
-                buttons[20].setActionCommand(MNEMONIC_PF18);
-                buttons[21].setText(getString("KP_F19", "PF19"));
-                buttons[21].setActionCommand(MNEMONIC_PF19);
-                buttons[22].setText(getString("KP_F20", "PF20"));
-                buttons[22].setActionCommand(MNEMONIC_PF20);
-                buttons[23].setText(getString("KP_F21", "PF21"));
-                buttons[23].setActionCommand(MNEMONIC_PF21);
-                buttons[24].setText(getString("KP_F22", "PF22"));
-                buttons[24].setActionCommand(MNEMONIC_PF22);
-                buttons[25].setText(getString("KP_F23", "PF23"));
-                buttons[25].setActionCommand(MNEMONIC_PF23);
-                buttons[26].setText(getString("KP_F24", "PF24"));
-                buttons[26].setActionCommand(MNEMONIC_PF24);
-                buttons[27].setText(getString("KP_SR", "SysReq"));
-                buttons[27].setActionCommand(MNEMONIC_SYSREQ);
-                buttons[28].setText(getString("KP_PGDN", "PgDn"));
-                buttons[28].setActionCommand(MNEMONIC_PAGE_DOWN);
-
-                break;
+    private void switchKeypadMode(KeyPadMode newKeyPadMode) {
+        currentKeyPadMode = newKeyPadMode;
+        buttons[0].setText(getString("KP_F1", "PF1"));
+        buttons[0].setActionCommand(MNEMONIC_PF1);
+        buttons[1].setText(getString("KP_F2", "PF2"));
+        buttons[1].setActionCommand(MNEMONIC_PF2);
+        buttons[2].setText(getString("KP_F3", "PF3"));
+        buttons[2].setActionCommand(MNEMONIC_PF3);
+        buttons[3].setText(getString("KP_F4", "PF4"));
+        buttons[3].setActionCommand(MNEMONIC_PF4);
+        buttons[4].setText(getString("KP_F5", "PF5"));
+        buttons[4].setActionCommand(MNEMONIC_PF5);
+        buttons[5].setText(getString("KP_F6", "PF6"));
+        buttons[5].setActionCommand(MNEMONIC_PF6);
+        buttons[6].setText(getString("KP_F7", "PF7"));
+        buttons[6].setActionCommand(MNEMONIC_PF7);
+        buttons[7].setText(getString("KP_F8", "PF8"));
+        buttons[7].setActionCommand(MNEMONIC_PF8);
+        buttons[8].setText(getString("KP_F9", "PF9"));
+        buttons[8].setActionCommand(MNEMONIC_PF9);
+        buttons[9].setText(getString("KP_F10", "PF10"));
+        buttons[9].setActionCommand(MNEMONIC_PF10);
+        buttons[10].setText(getString("KP_F11", "PF11"));
+        buttons[10].setActionCommand(MNEMONIC_PF11);
+        buttons[11].setText(getString("KP_F12", "PF12"));
+        buttons[11].setActionCommand(MNEMONIC_PF12);
+        buttons[12].setText(getString("KP_ENTER", "Enter"));
+        buttons[12].setActionCommand(MNEMONIC_ENTER);
+        buttons[13].setText(getString("KP_PGUP", "PgUp"));
+        buttons[13].setActionCommand(MNEMONIC_PAGE_UP);
+        if (newKeyPadMode == KeyPadMode.ONE) {
+            buttons[14].setText(getString("KP_CLEAR", "Clear"));
+            buttons[14].setActionCommand(MNEMONIC_CLEAR);
+        } else if (newKeyPadMode == KeyPadMode.TWO) {
+            buttons[14].setText(getString("KP_HELP", "Help"));
+            buttons[14].setActionCommand(MNEMONIC_HELP);
+        } else {
+            throw new IllegalStateException("Not implemented KeyPadMod: " + newKeyPadMode);
         }
-
+        buttons[15].setText(getString("KP_F13", "PF13"));
+        buttons[15].setActionCommand(MNEMONIC_PF13);
+        buttons[16].setText(getString("KP_F14", "PF14"));
+        buttons[16].setActionCommand(MNEMONIC_PF14);
+        buttons[17].setText(getString("KP_F15", "PF15"));
+        buttons[17].setActionCommand(MNEMONIC_PF15);
+        buttons[18].setText(getString("KP_F16", "PF16"));
+        buttons[18].setActionCommand(MNEMONIC_PF16);
+        buttons[19].setText(getString("KP_F17", "PF17"));
+        buttons[19].setActionCommand(MNEMONIC_PF17);
+        buttons[20].setText(getString("KP_F18", "PF18"));
+        buttons[20].setActionCommand(MNEMONIC_PF18);
+        buttons[21].setText(getString("KP_F19", "PF19"));
+        buttons[21].setActionCommand(MNEMONIC_PF19);
+        buttons[22].setText(getString("KP_F20", "PF20"));
+        buttons[22].setActionCommand(MNEMONIC_PF20);
+        buttons[23].setText(getString("KP_F21", "PF21"));
+        buttons[23].setActionCommand(MNEMONIC_PF21);
+        buttons[24].setText(getString("KP_F22", "PF22"));
+        buttons[24].setActionCommand(MNEMONIC_PF22);
+        buttons[25].setText(getString("KP_F23", "PF23"));
+        buttons[25].setActionCommand(MNEMONIC_PF23);
+        buttons[26].setText(getString("KP_F24", "PF24"));
+        buttons[26].setActionCommand(MNEMONIC_PF24);
+        buttons[27].setText(getString("KP_SR", "SysReq"));
+        buttons[27].setActionCommand(MNEMONIC_SYSREQ);
+        buttons[28].setText(getString("KP_PGDN", "PgDn"));
+        buttons[28].setActionCommand(MNEMONIC_PAGE_DOWN);
         buttons[29].setText(getString("KP_NXTPAD", "Next Pad"));
         buttons[29].setActionCommand("NXTPAD");
-
     }
 
     private void setButtonTop() {
-        for (int x = 0; x < bSize / 2; x++) {
-
+        for (int x = 0; x < NO_OF_BUTTONS / 2; x++) {
             keyPadTop.add(buttons[x]);
-
         }
     }
 
     private void setButtonBottom() {
-        for (int x = bSize / 2; x < bSize; x++) {
-
+        for (int x = NO_OF_BUTTONS / 2; x < NO_OF_BUTTONS; x++) {
             keyPadBottom.add(buttons[x]);
-
         }
-
     }
 
-
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -260,8 +179,6 @@ public class KeyPad extends JPanel {
         k = k.deriveFont(fs);
 
         FontMetrics fm = buttons[0].getFontMetrics(k);
-
-        // initializ the viewRect which is the visible rectangle
         Rectangle viewRect = buttons[0].getVisibleRect();
 
         Insets i = buttons[0].getInsets();
@@ -278,7 +195,7 @@ public class KeyPad extends JPanel {
 
         // now compute the text that will be displayed until we run do not get
         //    elipses or we go passes the minimum of our text size that we want
-        while (SwingUtilities.layoutCompoundLabel(fm, buttons[bSize - 1].getText(), null,
+        while (SwingUtilities.layoutCompoundLabel(fm, buttons[NO_OF_BUTTONS - 1].getText(), null,
                 buttons[0].getVerticalAlignment(),
                 buttons[0].getHorizontalAlignment(),
                 buttons[0].getVerticalTextPosition(),
@@ -294,11 +211,14 @@ public class KeyPad extends JPanel {
         }
 
         if (fs >= MIN_SIZE) {
-
-            for (int x = 0; x < bSize; x++) {
+            for (int x = 0; x < NO_OF_BUTTONS; x++) {
                 buttons[x].setFont(k);
             }
         }
     }
 
+    private enum KeyPadMode {
+        ONE,
+        TWO
+    }
 }
