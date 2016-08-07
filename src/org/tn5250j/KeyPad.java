@@ -53,25 +53,22 @@ public class KeyPad extends JPanel {
     }
 
     private void jbInit() {
-        this.setLayout(new BorderLayout());
-        keyPadTop = new JPanel();
-        keyPadBottom = new JPanel();
-        GridLayout gridLayout = new GridLayout();
-        keyPadTop.setLayout(gridLayout);
-        keyPadBottom.setLayout(gridLayout);
-        this.setBorder(BorderFactory.createRaisedBevelBorder());
-        this.setBorder(BorderFactory.createLoweredBevelBorder());
-        Insets noMargin = new Insets(0, 0, 0, 0);
+        final GridLayout gridLayout = new GridLayout();
+        keyPadTop = new JPanel(gridLayout);
+        keyPadBottom = new JPanel(gridLayout);
 
+        final Insets noMargin = new Insets(0, 0, 0, 0);
         for (int x = 0; x < NO_OF_BUTTONS; x++) {
             buttons[x] = new JButton();
             buttons[x].setMargin(noMargin);
         }
 
-        switchKeypadMode(KeyPadMode.ONE);
-        setButtonTop();
-        setButtonBottom();
+        switchKeypadMode(currentKeyPadMode);
+        addButtonsTop();
+        addButtonsBottom();
 
+        this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createLoweredBevelBorder());
         this.add(keyPadTop, BorderLayout.NORTH);
         this.add(keyPadBottom, BorderLayout.SOUTH);
     }
@@ -160,13 +157,13 @@ public class KeyPad extends JPanel {
         buttons[29].setActionCommand("NXTPAD");
     }
 
-    private void setButtonTop() {
+    private void addButtonsTop() {
         for (int x = 0; x < NO_OF_BUTTONS / 2; x++) {
             keyPadTop.add(buttons[x]);
         }
     }
 
-    private void setButtonBottom() {
+    private void addButtonsBottom() {
         for (int x = NO_OF_BUTTONS / 2; x < NO_OF_BUTTONS; x++) {
             keyPadBottom.add(buttons[x]);
         }
