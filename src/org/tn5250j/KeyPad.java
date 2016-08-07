@@ -26,9 +26,12 @@ package org.tn5250j;
  */
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+import static javax.swing.BorderFactory.createCompoundBorder;
+import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.SwingUtilities.layoutCompoundLabel;
 import static org.tn5250j.TN5250jConstants.*;
 import static org.tn5250j.tools.LangTool.getString;
@@ -53,14 +56,15 @@ public class KeyPad extends JPanel {
     }
 
     private void jbInit() {
-        final GridLayout gridLayout = new GridLayout();
+
+        final GridLayout gridLayout = new GridLayout(1, NO_OF_BUTTONS / 2, 0, 0);
         keyPadTop = new JPanel(gridLayout);
         keyPadBottom = new JPanel(gridLayout);
 
         final Insets noMargin = new Insets(0, 0, 0, 0);
-        for (int x = 0; x < NO_OF_BUTTONS; x++) {
-            buttons[x] = new JButton();
-            buttons[x].setMargin(noMargin);
+        for (int i = 0; i < NO_OF_BUTTONS; i++) {
+            buttons[i] = new JButton();
+            buttons[i].setMargin(noMargin);
         }
 
         switchKeypadMode(currentKeyPadMode);
@@ -68,7 +72,7 @@ public class KeyPad extends JPanel {
         addButtonsBottom();
 
         this.setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createLoweredBevelBorder());
+        this.setBorder(createEmptyBorder());
         this.add(keyPadTop, BorderLayout.NORTH);
         this.add(keyPadBottom, BorderLayout.SOUTH);
     }
