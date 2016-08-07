@@ -29,6 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+import static javax.swing.SwingUtilities.layoutCompoundLabel;
 import static org.tn5250j.TN5250jConstants.*;
 import static org.tn5250j.tools.LangTool.getString;
 
@@ -36,12 +37,13 @@ public class KeyPad extends JPanel {
 
     private static final long serialVersionUID = -7460283401326716314L;
 
-    private static Rectangle textRect = new Rectangle();
-    private static Rectangle iconRect = new Rectangle();
     private static int MIN_SIZE = 3;
     private static final int NO_OF_BUTTONS = 30;
 
     private final JButton[] buttons = new JButton[NO_OF_BUTTONS];
+    private final Rectangle textRect = new Rectangle();
+    private final Rectangle iconRect = new Rectangle();
+
     private JPanel keyPadTop;
     private JPanel keyPadBottom;
     private KeyPadMode currentKeyPadMode = KeyPadMode.ONE;
@@ -124,7 +126,7 @@ public class KeyPad extends JPanel {
             buttons[14].setText(getString("KP_HELP", "Help"));
             buttons[14].setActionCommand(MNEMONIC_HELP);
         } else {
-            throw new IllegalStateException("Not implemented KeyPadMod: " + newKeyPadMode);
+            throw new IllegalStateException("Not implemented KeyPadMode: " + newKeyPadMode);
         }
         buttons[15].setText(getString("KP_F13", "PF13"));
         buttons[15].setActionCommand(MNEMONIC_PF13);
@@ -174,20 +176,21 @@ public class KeyPad extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Font k = buttons[0].getFont();
+        final JButton referenceButton = buttons[NO_OF_BUTTONS - 1];
+        Font buttonFont = referenceButton.getFont();
         float fs = 12; // start size
-        k = k.deriveFont(fs);
+        buttonFont = buttonFont.deriveFont(fs);
 
-        FontMetrics fm = buttons[0].getFontMetrics(k);
-        Rectangle viewRect = buttons[0].getVisibleRect();
+        FontMetrics fm = referenceButton.getFontMetrics(buttonFont);
+        Rectangle viewRect = referenceButton.getVisibleRect();
 
-        Insets i = buttons[0].getInsets();
+        Insets i = referenceButton.getInsets();
 
         // we now subtract the insets which include the border insets as well
         viewRect.x = i.left;
         viewRect.y = i.top;
-        viewRect.width = buttons[0].getWidth() - (i.right + viewRect.x);
-        viewRect.height = buttons[0].getHeight() - (i.bottom + viewRect.y);
+        viewRect.width = referenceButton.getWidth() - (i.right + viewRect.x);
+        viewRect.height = referenceButton.getHeight() - (i.bottom + viewRect.y);
 
         // initialize the textRect and iconRect to 0 so they will be calculated
         textRect.x = textRect.y = textRect.width = textRect.height = 0;
@@ -195,26 +198,39 @@ public class KeyPad extends JPanel {
 
         // now compute the text that will be displayed until we run do not get
         //    elipses or we go passes the minimum of our text size that we want
-        while (SwingUtilities.layoutCompoundLabel(fm, buttons[NO_OF_BUTTONS - 1].getText(), null,
-                buttons[0].getVerticalAlignment(),
-                buttons[0].getHorizontalAlignment(),
-                buttons[0].getVerticalTextPosition(),
-                buttons[0].getHorizontalTextPosition(),
+        final int textIconGap = 0;
+        final Icon icon = null;
+        String largestText = findLargestText();
+        while (layoutCompoundLabel(fm, largestText, icon,
+                referenceButton.getVerticalAlignment(),
+                referenceButton.getHorizontalAlignment(),
+                referenceButton.getVerticalTextPosition(),
+                referenceButton.getHorizontalTextPosition(),
                 viewRect,
-                textRect,
                 iconRect,
-                0).endsWith("...")
+                textRect,
+                textIconGap).endsWith("...")
                 && fs > (MIN_SIZE - 1)) {
-            k = k.deriveFont(--fs);
-            fm = buttons[0].getFontMetrics(k);
+            buttonFont = buttonFont.deriveFont(--fs);
+            fm = referenceButton.getFontMetrics(buttonFont);
 
         }
 
         if (fs >= MIN_SIZE) {
             for (int x = 0; x < NO_OF_BUTTONS; x++) {
-                buttons[x].setFont(k);
+                buttons[x].setFont(buttonFont);
             }
         }
+    }
+
+    private String findLargestText() {
+        String text = "";
+        for (JButton button : buttons) {
+            if (button.getText().length() > text.length()) {
+                text = button.getText();
+            }
+        }
+        return text;
     }
 
     private enum KeyPadMode {
