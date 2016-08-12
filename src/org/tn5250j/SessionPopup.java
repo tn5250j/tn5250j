@@ -42,6 +42,9 @@ import static org.tn5250j.TN5250jConstants.MNEMONIC_OPEN_NEW;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_PASTE;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_PRINT;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_PRINT_SCREEN;
+import static org.tn5250j.TN5250jConstants.MNEMONIC_RECORD_LOG;
+import static org.tn5250j.TN5250jConstants.MNEMONIC_STOPRECORD_LOG;
+import static org.tn5250j.TN5250jConstants.MNEMONIC_ADDNOTE_LOG;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_QUICK_MAIL;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_RESET;
 import static org.tn5250j.TN5250jConstants.MNEMONIC_SPOOL_FILE;
@@ -255,6 +258,47 @@ public class SessionPopup {
 				}
 			};
 			popup.add(createMenuItem(action,MNEMONIC_PRINT_SCREEN));
+
+			popup.addSeparator();
+
+			if(!sessiongui.isSessionLogging()){
+				action = new AbstractAction(LangTool.getString("popup.record")) {
+					private static final long serialVersionUID = 1L;
+	
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						sessiongui.startRecording();
+					}
+				};
+				
+				popup.add(createMenuItem(action,MNEMONIC_RECORD_LOG));
+			}else{
+				action = new AbstractAction(LangTool.getString("popup.stoprecord")) {
+					private static final long serialVersionUID = 1L;
+	
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						sessiongui.stopRecording();
+					}
+				};
+				popup.add(createMenuItem(action,MNEMONIC_STOPRECORD_LOG));
+				
+				action = new AbstractAction(LangTool.getString("popup.addnote")) {
+					private static final long serialVersionUID = 1L;
+	
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String note = JOptionPane.showInputDialog("Note:");
+						if(note != null && !note.isEmpty()){
+							sessiongui.getSessionLogger().addNode(note);
+						}
+					}
+				};
+				popup.add(createMenuItem(action,MNEMONIC_ADDNOTE_LOG));
+				
+			}
+			
+			
 
 			popup.addSeparator();
 

@@ -309,6 +309,9 @@ public interface TN5250jConstants {
    public static final String MNEMONIC_DISP_MESSAGES   =  "[dspmsgs]";
    public static final String MNEMONIC_DISP_ATTRIBUTES   =  "[dspattr]";
    public static final String MNEMONIC_PRINT_SCREEN   =  "[print]";
+   public static final String MNEMONIC_RECORD_LOG   =  "[record]";
+   public static final String MNEMONIC_STOPRECORD_LOG   =  "[stoprecord]";
+   public static final String MNEMONIC_ADDNOTE_LOG   =  "[addnote]";
    public static final String MNEMONIC_CURSOR   =  "[cursor]";
    public static final String MNEMONIC_DEBUG   =  "[debug]";
    public static final String MNEMONIC_CLOSE   =  "[close]";
