@@ -1,52 +1,24 @@
 package org.tn5250j.logging;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.tn5250j.Session5250;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 
-
+/**
+ *   Renders the 5250 stream as HTML.
+ */
 public class HTMLBuilder {
 
-	List<HTMLLogInfo> infos = new ArrayList<HTMLLogInfo>();
 	static public final String NEW_LINE = System.getProperty("line.separator");
-	
-	final Writer writer;
 
-	public HTMLBuilder(final Writer writer) throws IOException {
-		Velocity.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-		Velocity.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		Velocity.init();
-		this.writer = writer;
-	}
-
-	public void logScreen(final Session5250 session) throws IOException {
-		logScreen(session, null);
-	}
-
-	public void logScreen(final Session5250 session, final String notes) throws IOException {
-		infos.add(new HTMLLogInfo(getHTML(session.getScreen()), notes));
-	}
-
-	public void close() throws IOException {
-		final VelocityContext context = new VelocityContext();
-		context.put("info", infos);
-		Velocity.mergeTemplate("/com/terminaldriver/tn5250j/logger/HTMLLogger.template.html", "UTF-8", context, writer);
-		writer.close();
-	}
-
+	/**
+	 * Stores the current screen's rendering
+	 *
+	 */
 	public static class HTMLLogInfo {
-		public final String screenHtml;
+		public String screenHtml;
 		public String logText;
 		public String logName;
-		List<FieldInfo> fields = new ArrayList<FieldInfo>();
 
 		public String getLogName() {
 			return logName;
@@ -64,10 +36,6 @@ public class HTMLBuilder {
 			return logText;
 		}
 
-		public List<FieldInfo> getFields() {
-			return fields;
-		}
-
 		public HTMLLogInfo(final String screenHtml, final String logText) {
 			super();
 			this.screenHtml = screenHtml;
@@ -81,37 +49,93 @@ public class HTMLBuilder {
 			logText += "<br>" + text;
 		}
 
-		public static class FieldInfo {
-
+		public void setScreenHtml(String screenHtml) {
+			this.screenHtml = screenHtml;
 		}
 	}
+	
+	public static class RowReader {
+		Screen5250 screen;
+		int cols;
+		int pos = 0;
+		String screenChars;
+		String attributes;
+		final boolean isattr[];
 
-	public void addLog(final HTMLLogInfo info) {
-		addLog(info, false);
-	}
-
-	/**
-	 * Auto combine two subsequent identical screens, unless verbose = true
-	 * 
-	 * @param info
-	 * @param verbose
-	 */
-	public void addLog(final HTMLLogInfo info, final boolean verbose) {
-		if (!verbose && info != null && infos.size() > 0) {
-			final HTMLLogInfo lastone = infos.get(infos.size() - 1);
-			if (lastone.getScreenHtml().equals(info.getScreenHtml())) {
-				if (info.getLogText() != null && !info.getLogText().trim().isEmpty()) {
-					lastone.addText(info.getLogText().trim());
-				}
-				return;
+		public RowReader(final Screen5250 screen) {
+			this.screen = screen;
+			cols = screen.getColumns();
+			screenChars = new String(screen.getScreenAsChars());
+			final char attr[] = new char[screenChars.length()];
+			screen.GetScreen(attr, attr.length, TN5250jConstants.PLANE_ATTR);
+			attributes = new String(attr);
+			final char isattr[] = new char[screenChars.length()];
+			screen.GetScreen(isattr, isattr.length, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+			this.isattr = new boolean[screenChars.length()];
+			for(int i=0;i<this.isattr.length;i++){
+				this.isattr[i] = isattr[i] > 0;
 			}
 		}
-		infos.add(info);
+
+		public String readRow() {
+			if (pos + cols <= screenChars.length()) {
+				final String row = screenChars.substring(pos, pos + cols);
+				final String rowAttr = attributes.substring(pos, pos + cols);
+				
+				pos += cols;
+				final StringBuilder sb = new StringBuilder();
+				char currentAttr = ' ';
+				ScreenAttribute currentAttrEnum = ScreenAttribute.GRN;
+				sb.append("<pre>");
+				sb.append("<span class=\"greenText\">");
+				for (int i = 0; i < cols; i++) {
+					final boolean isAttribute = isattr[(pos-cols)+i];
+					if(isAttribute){
+						if(currentAttrEnum.isUnderLine()){
+							sb.append("</span><span class=\"greenText\">").append(' ');
+							if(currentAttr == rowAttr.charAt(i)){
+								sb.append("</span><span").append(" class=\"");
+								sb.append(doClass(currentAttrEnum)).append("\">");
+							}
+						}else{
+							sb.append(' ');
+						}
+					}
+					// The first underline is not shown
+					if (currentAttr != rowAttr.charAt(i)) {
+						currentAttr = rowAttr.charAt(i);
+						currentAttrEnum = ScreenAttribute.getAttrEnum(currentAttr);
+						sb.append("</span>").append("<span");
+						sb.append(" class=\"").append(doClass(currentAttrEnum)).append("\">");
+					}
+					if(!isAttribute){
+						if (currentAttrEnum.isNonDisplay()) {
+							sb.append(" ");
+						} else {
+							sb.append(StringEscapeUtils.escapeHtml(String.valueOf(row.charAt(i))));
+						}
+					}
+				}
+				sb.append("</span>");
+				sb.append("</pre>");
+				return sb.toString();
+			}
+			return null;
+		}
+
+		String doClass(final ScreenAttribute attr) {
+			final StringBuilder sb = new StringBuilder();
+			sb.append(attr.getColor()).append("Text");
+			if (attr.isUnderLine()) {
+				sb.append(" underline");
+			}
+			return sb.toString();
+		}
 	}
 	
 	public static String getHTML(final Screen5250 screen) {
 		final StringBuilder sb = new StringBuilder();
-		final HTMLLoggingListener.RowReader rowReader = new HTMLLoggingListener.RowReader(screen);
+		final RowReader rowReader = new RowReader(screen);
 		String row;
 		sb.append("<div class=\"console\">");
 		while ((row = rowReader.readRow()) != null) {

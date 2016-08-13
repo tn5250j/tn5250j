@@ -62,8 +62,9 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
-import org.tn5250j.logging.HTMLLoggingListener;
+import org.tn5250j.logging.DefaultLoggingListenerFactory;
 import org.tn5250j.logging.LoggingListener;
+import org.tn5250j.logging.LoggingListenerFactory;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
@@ -103,6 +104,7 @@ SessionListener {
 	protected KeyboardHandler keyHandler;
 	protected final SessionScroller scroller = new SessionScroller();
 	LoggingListener loggingListener = null;
+	LoggingListenerFactory loggingListenerFactory = new DefaultLoggingListenerFactory();
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
@@ -1208,45 +1210,52 @@ SessionListener {
 		session.removeSessionListener(listener);
 
 	}
-
 	
+	/**
+	 * Stop recording the session
+	 */
 	protected final void stopRecording(){
 		if(loggingListener!=null){
 			try {
 				loggingListener.close();
-				loggingListener=null;
-			} catch (IOException e) {}
+			} catch (IOException e) {e.printStackTrace();}
 		}
 	}
 	
+	/**
+	 * Start recording the session
+	 */
 	protected final void startRecording(){
 		if(loggingListener==null){
-			loggingListener=new HTMLLoggingListener(session);
+			loggingListener=loggingListenerFactory.createInstance(session);
+			session.addSessionListener(loggingListener);
+			BufferedSessionKeysListener bufferedSessionKeysListener 
+					= new BufferedSessionKeysListener(loggingListener);
+			session.getScreen().addSessionKeysListener(bufferedSessionKeysListener);
+			session.getScreen().addScreenListener(bufferedSessionKeysListener);
+			session.getScreen().getOIA().addOIAListener(bufferedSessionKeysListener);
+			session.getScreen().addScreenListener(loggingListener);
+			session.getScreen().getOIA().addOIAListener(loggingListener);
 		}
 		try {
 			loggingListener.open();
 		} catch (IOException e) {}
-		session.addSessionListener(loggingListener);
-		BufferedSessionKeysListener bufferedSessionKeysListener 
-				= new BufferedSessionKeysListener(loggingListener);
-		session.getScreen().addSessionKeysListener(bufferedSessionKeysListener);
-		session.getScreen().addScreenListener(bufferedSessionKeysListener);
-		session.getScreen().getOIA().addOIAListener(bufferedSessionKeysListener);
-		session.getScreen().addScreenListener(loggingListener);
-		session.getScreen().getOIA().addOIAListener(loggingListener);
 	}
-	
 	
 	public boolean isSessionLogging() {
-		return loggingListener != null;
+		return loggingListener != null && loggingListener.isOpen();
 	}
-
-    protected void finalize(){ 
-    	stopRecording();
-    }
     
     public LoggingListener getSessionLogger(){
     	return loggingListener;
     }
-	
+
+	public void setLoggingListenerFactory(LoggingListenerFactory loggingListenerFactory) {
+		if(loggingListenerFactory != null){
+			this.loggingListenerFactory = loggingListenerFactory;
+		}else{
+			this.loggingListenerFactory = new DefaultLoggingListenerFactory();
+		}
+	}
+    
 }

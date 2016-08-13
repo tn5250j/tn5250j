@@ -13,10 +13,14 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenField;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 
-
-public class LoggingListener implements SessionListener,SessionKeysListener,ScreenListener,ScreenOIAListener,Closeable{
+/**
+ * Base class for logging the session screens
+ * 
+ */
+public abstract class LoggingListener implements SessionListener,SessionKeysListener,ScreenListener,ScreenOIAListener,Closeable{
 
 	final Session5250 session;
+	boolean open=false;
 	
 	public LoggingListener(final Session5250 session) {
 		super();
@@ -35,7 +39,7 @@ public class LoggingListener implements SessionListener,SessionKeysListener,Scre
 	}
 	
 	public void open() throws IOException{
-		
+		open=true;
 	}
 	
 	/**
@@ -90,12 +94,15 @@ public class LoggingListener implements SessionListener,SessionKeysListener,Scre
 
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-		
+		open=false;
 	}
 	
 	public void addNode(String note){
 		
+	}
+	
+	public boolean isOpen(){
+		return open;
 	}
 
 }

@@ -10,23 +10,23 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.tn5250j.Session5250;
-import org.tn5250j.TN5250jConstants;
 import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenField;
 import org.tn5250j.framework.tn5250.ScreenOIA;
-
 import org.tn5250j.logging.HTMLBuilder.HTMLLogInfo;
 
-
+/**
+ * Implementation of LoggingListener that renders the screens
+ * in a series of HTML 'screen shots'
+ */
 public class HTMLLoggingListener extends LoggingListener{
 
 	JFileChooser fileChooser = new JFileChooser();
@@ -94,6 +94,15 @@ public class HTMLLoggingListener extends LoggingListener{
 	}
 	
 	public void onScreenPartialUpdate(int startRow, int startCol, int endRow, int endCol) {
+		//Single row changes are updates
+		if (info != null && Math.abs(endRow-startRow) < 3) {
+			info.setScreenHtml(HTMLBuilder.getHTML(session.getScreen()));
+		}else{
+			if (info != null) {
+				addLog(info, false);
+			}
+			info = new HTMLLogInfo(HTMLBuilder.getHTML(session.getScreen()), null);
+		}
 	}
 
 	@Override
@@ -121,6 +130,9 @@ public class HTMLLoggingListener extends LoggingListener{
 	@Override
 	public void close() throws IOException {
 		if(writer!=null){
+			if (info != null) {
+				addLog(info, false);
+			}
 			final VelocityContext context = new VelocityContext();
 			context.put("info", infos);
 			context.put("date", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(Calendar.getInstance().getTime()));
@@ -128,12 +140,18 @@ public class HTMLLoggingListener extends LoggingListener{
 			ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 			ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 			ve.init();
-			Template t = ve.getTemplate("/logging/HTMLLogger.template.html");
+			Template t = ve.getTemplate("/logging/HTMLLogger.template.vm");
 			t.merge( context, writer );
 			writer.close();
 			writer=null;
 		}
+		infos.clear();
+		super.close();
 	}
+
+    protected void finalize() throws IOException{ 
+    	close();
+    }
 
 	@Override
 	public void open() throws IOException{
@@ -147,86 +165,7 @@ public class HTMLLoggingListener extends LoggingListener{
 			}
 			writer = new FileWriter(selectedFile);
 		}
-	}
-	
-	public static class RowReader {
-		Screen5250 screen;
-		int cols;
-		int pos = 0;
-		String screenChars;
-		String attributes;
-		final boolean isattr[];
-
-		public RowReader(final Screen5250 screen) {
-			this.screen = screen;
-			cols = screen.getColumns();
-			screenChars = new String(screen.getScreenAsChars());
-			final char attr[] = new char[screenChars.length()];
-			screen.GetScreen(attr, attr.length, TN5250jConstants.PLANE_ATTR);
-			attributes = new String(attr);
-			final char isattr[] = new char[screenChars.length()];
-			screen.GetScreen(isattr, isattr.length, TN5250jConstants.PLANE_IS_ATTR_PLACE);
-			this.isattr = new boolean[screenChars.length()];
-			for(int i=0;i<this.isattr.length;i++){
-				this.isattr[i] = isattr[i] > 0;
-			}
-		}
-
-		public String readRow() {
-			if (pos + cols <= screenChars.length()) {
-				final String row = screenChars.substring(pos, pos + cols);
-				final String rowAttr = attributes.substring(pos, pos + cols);
-				
-				pos += cols;
-				final StringBuilder sb = new StringBuilder();
-				char currentAttr = ' ';
-				ScreenAttribute currentAttrEnum = ScreenAttribute.GRN;
-				sb.append("<pre>");
-				sb.append("<span class=\"greenText\">");
-				for (int i = 0; i < cols; i++) {
-					//this should be cleaned up.  but make sure it is blank when it's an attribute.
-					final boolean isAttribute = isattr[(pos-cols)+i];
-					if(isAttribute){
-						if(currentAttrEnum.isUnderLine()){
-							sb.append("</span><span class=\"greenText\">").append(' ');
-							if(currentAttr == rowAttr.charAt(i)){
-								sb.append("</span><span").append(" class=\"");
-								sb.append(doClass(currentAttrEnum)).append("\">");
-							}
-						}else{
-							sb.append(' ');
-						}
-					}
-					// The first underline is not shown
-					if (currentAttr != rowAttr.charAt(i)) {
-						currentAttr = rowAttr.charAt(i);
-						currentAttrEnum = ScreenAttribute.getAttrEnum(currentAttr);
-						sb.append("</span>").append("<span");
-						sb.append(" class=\"").append(doClass(currentAttrEnum)).append("\">");
-					}
-					if(!isAttribute){
-						if (currentAttrEnum.isNonDisplay()) {
-							sb.append(" ");
-						} else {
-							sb.append(StringEscapeUtils.escapeHtml(String.valueOf(row.charAt(i))));
-						}
-					}
-				}
-				sb.append("</span>");
-				sb.append("</pre>");
-				return sb.toString();
-			}
-			return null;
-		}
-
-		String doClass(final ScreenAttribute attr) {
-			final StringBuilder sb = new StringBuilder();
-			sb.append(attr.getColor()).append("Text");
-			if (attr.isUnderLine()) {
-				sb.append(" underline");
-			}
-			return sb.toString();
-		}
+		super.open();
 	}
 
 	public void addNode(String note){
