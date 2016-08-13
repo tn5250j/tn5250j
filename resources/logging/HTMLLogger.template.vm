@@ -1,0 +1,126 @@
+<html>
+<head>
+<style>
+.console {
+    background-color: black;
+    color:green;
+}
+.consoleline pre{
+	margin:0;
+}
+.consoleCell{
+	padding-bottom:1em;
+}
+.reverseGreenText{
+        color:black;
+	background-color:green;
+}
+.reverseWhiteText{
+        color:black;
+	background-color:white;
+}
+.reverseBlueText{
+        color:black;
+	background-color:blue;
+}
+
+.reverseTurquoiseText{
+        color:black;
+	background-color:turquoise;
+}
+
+.reverseYellowText{
+        color:black;
+	background-color:yellow;
+}
+
+.reverseRedText{
+        color:black;
+	background-color:red;
+}
+
+.reversePinkText{
+        color:black;
+	background-color:pink;
+}
+
+.whiteText{
+	color:white;
+}
+.blueText{
+	color:SteelBlue;
+}
+
+.turquoiseText{
+	color:turquoise;
+}
+
+.yellowText{
+	color:yellow;
+}
+
+.redText{
+	color:red;
+}
+
+.pinkText{
+	color:pink;
+}
+.underline{
+        text-decoration: underline;
+}
+.table {
+    display:table;
+
+}
+.row {
+    display:table-row;
+	margin-bottom:1em;
+	border-bottom:1em;
+}
+.row:nth-child(odd){
+	background-color:#EDF8F6;
+}
+.cell {
+    display:table-cell;
+}
+.screenInfoBlock{
+	margin:1em;
+	margin-bottom:0;
+	padding:.5em;
+	height:100%;
+	width:500px;
+}
+
+h1{
+text-align: center 
+}
+h3{
+text-align: center 
+}
+</style>
+</head>
+
+#if ( $info1.getLogName()  )
+<h1>$info1.getLogName()</h1>
+#end
+<p style="float:right">$date</p>
+
+<div class="table">
+	#foreach( $info1 in $info )
+	<div class="row consoleRow">
+		<div class="cell consoleCell">
+             $info1.getScreenHtml()
+		</div>
+		<div class="cell">
+			<div class="screenInfoBlock">
+		#if ( $info1.getLogText()  )
+			$info1.getLogText()
+		#end
+			</div>
+		</div>
+	</div>
+    #end
+</div>
+
+</html>

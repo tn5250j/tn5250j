@@ -31,12 +31,16 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.event.ScreenListener;
+import org.tn5250j.event.SessionKeysListener;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
 
 public class Screen5250 {
 
@@ -99,6 +103,8 @@ public class Screen5250 {
 	private StringBuffer keybuf;
 
 	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+
+	List<SessionKeysListener> keysListeners = new ArrayList<SessionKeysListener>();
 
 	public Screen5250() {
 
@@ -934,7 +940,7 @@ public class Screen5250 {
 	 * Added synchronized to fix a StringOutOfBounds error - Luc Gorren LDC
 	 */
 	public synchronized void sendKeys(String text) {
-
+		fireSendKeys(text);
 		//      if (text == null) {
 		//         return;
 		//      }
@@ -3974,4 +3980,20 @@ public class Screen5250 {
 		return planes.screen;
 	}
 
+	protected void fireSendKeys(final String keys) {
+		for (final SessionKeysListener listener : keysListeners) {
+			listener.keysSent(this, keys);
+		}
+	}
+	
+	protected void fireSetFieldString(final ScreenField field, final String keys) {
+		for (final SessionKeysListener listener : keysListeners) {
+			listener.fieldStringSet(this, field,keys);
+		}
+	}
+	
+	public void addSessionKeysListener(final SessionKeysListener sessionKeysListener){
+		keysListeners.add(sessionKeysListener);
+	}
+	
 }
