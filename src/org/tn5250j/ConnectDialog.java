@@ -1,4 +1,4 @@
-/**
+/*
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -98,7 +98,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class ConnectDialog extends JDialog implements ActionListener, ChangeListener, TN5250jConstants {
+public class ConnectDialog extends JDialog implements ActionListener, ChangeListener {
 
    private static final String USER_PREF_LAST_SESSION = "last_session";
 
@@ -107,81 +107,76 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
    volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(ConnectDialog.class);
 
    // panels to be displayed
-   JPanel configOptions = new JPanel();
-   JPanel sessionPanel = new JPanel();
-   JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
-   JPanel interfacePanel = null;
-   JPanel sessionOpts = new JPanel();
-   JPanel sessionOptPanel = new JPanel(
-         new FlowLayout(FlowLayout.CENTER, 30, 10));
-   JPanel emulOptPanel = new JPanel();
-   JPanel emptyPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-   JPanel accessPanel = new JPanel();
-   JPanel loggingPanel = new JPanel();
-   JPanel levelPanel = new JPanel();
-   JPanel appenderPanel = new JPanel();
-   JPanel externalPanel = new JPanel();
-   JPanel externalOpts = new JPanel();
-   JPanel externalOptPanel = new JPanel(
-         new FlowLayout(FlowLayout.CENTER, 30, 10));
-   JPanel aboutPanel = null;
+   private JPanel configOptions = new JPanel();
+   private JPanel sessionPanel = new JPanel();
+   private JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+   private JPanel interfacePanel = null;
+   private JPanel sessionOpts = new JPanel();
+   private JPanel sessionOptPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+   private JPanel emulOptPanel = new JPanel();
+   private JPanel accessPanel = new JPanel();
+   private JPanel loggingPanel = new JPanel();
+   private JPanel levelPanel = new JPanel();
+   private JPanel appenderPanel = new JPanel();
+   private JPanel externalPanel = new JPanel();
+   private JPanel externalOpts = new JPanel();
+   private JPanel externalOptPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
+   private JPanel aboutPanel = null;
    
-   JTable sessions = null;
-   JTable externals = null;
-   GridBagConstraints gbc;
+   private JTable sessions = null;
+   private JTable externals = null;
+   private GridBagConstraints gbc;
 
    // LoggingPanel Components
-   JRadioButton intOFF = null;
-   JRadioButton intDEBUG = null;
-   JRadioButton intINFO = null;
-   JRadioButton intWARN = null;
-   JRadioButton intERROR = null;
-   JRadioButton intFATAL = null;
+   private JRadioButton intOFF = null;
+   private JRadioButton intDEBUG = null;
+   private JRadioButton intINFO = null;
+   private JRadioButton intWARN = null;
+   private JRadioButton intERROR = null;
+   private JRadioButton intFATAL = null;
 
    // button needing global access
-   JButton editButton = null;
-   JButton removeButton = null;
-   JButton connectButton = null;
-   JButton applyButton = null;
-   
-   JButton cAddButton = null;
-   JButton cEditButton = null;
-   JButton cRemoveButton = null;
+   private JButton editButton = null;
+   private JButton removeButton = null;
+   private JButton connectButton = null;
+
+   private JButton cAddButton = null;
+   private JButton cEditButton = null;
+   private JButton cRemoveButton = null;
    
    
    // custom table model
-   SessionsTableModel ctm = null;
-   
-   CustomizedTableModel etm = null;
+   private SessionsTableModel ctm = null;
+
+   private CustomizedTableModel etm = null;
    
    // The scroll pane that holds the table.
-   JScrollPane scrollPane;
-   JScrollPane scrollPane2;
+   private JScrollPane scrollPane;
+   private JScrollPane scrollPane2;
 
    // ListSelectionModel of our custom table.
-   ListSelectionModel rowSM = null;
-   ListSelectionModel rowSM2 = null;
+   private ListSelectionModel rowSM = null;
+   private ListSelectionModel rowSM2 = null;
    // Properties
-   Properties props = null;
-   Properties etnProps = null;
+   private Properties props = null;
+   private Properties etnProps = null;
    
    // property input structures
-   JRadioButton intTABS = null;
-   JCheckBox hideTabBar = null;
-   JCheckBox showMe = null;
-   JCheckBox lastView = null;
+   private JRadioButton intTABS = null;
+   private JCheckBox hideTabBar = null;
+   private JCheckBox showMe = null;
+   private JCheckBox lastView = null;
 
    // create some reusable borders and layouts
-   Border etchedBorder = BorderFactory.createEtchedBorder();
-   BorderLayout borderLayout = new BorderLayout();
+   private BorderLayout borderLayout = new BorderLayout();
 
-   TN5250jMultiSelectList accessOptions;
+   private TN5250jMultiSelectList accessOptions;
    // password protection field for access to options list
-   JPasswordField password;
-   JButton setPassButton;
+   private JPasswordField password;
+   private JButton setPassButton;
 
    // Selection value for connection
-   String connectKey = null;
+   private String connectKey = null;
    private JRadioButton intConsole;
    private JRadioButton intFile;
    private JRadioButton intBoth;
@@ -903,15 +898,9 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
    }
 
    private void createButtonOptions() {
-
-      connectButton = addOptButton(LangTool.getString("ss.optConnect"),
-            "CONNECT", options, false);
-
-      applyButton = addOptButton(LangTool.getString("ss.optApply"), "APPLY",
-            options, true);
-
+      connectButton = addOptButton(LangTool.getString("ss.optConnect"), "CONNECT", options, false);
+      addOptButton(LangTool.getString("ss.optApply"), "APPLY", options, true);
       addOptButton(LangTool.getString("ss.optCancel"), "DONE", options);
-
    }
    
    /**
@@ -1103,23 +1092,11 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       OptionAccessFactory.getInstance().reload();
    }
 
-   /**
-    * Saves the last selected session in a system provided user space.
-    * 
-    * @param connectKey
-    * @see {@link java.util.prefs.Preferences}
-    */
    private void saveSelectedSessionPreference(String connectKey) {
 	   final Preferences userpref = Preferences.userNodeForPackage(SessionsDataModel.class);
 	   userpref.put(USER_PREF_LAST_SESSION, connectKey);
    }
    
-   /**
-    * Saves the last selected session in a system provided user space.
-    * 
-    * @param connectKey
-    * @see {@link java.util.prefs.Preferences}
-    */
    private String loadSelectedSessionPreference() {
 	   final Preferences userpref = Preferences.userNodeForPackage(SessionsDataModel.class);
 	   return userpref.get(USER_PREF_LAST_SESSION, null);
