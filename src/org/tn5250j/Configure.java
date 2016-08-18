@@ -58,34 +58,32 @@ import org.tn5250j.tools.LangTool;
 
 public class Configure {
 
-  static Properties props = null;
+  private static Properties props = null;
 
   // property input structures
-  static JTextField systemName = null;
-  static JTextField systemId = null;
-  static JTextField port = null;
-  static JTextField deviceName = null;
-  static JTextField fpn = null;
-  static JComboBox cpb = null;
-  static JCheckBox jtb = null;
-  static JCheckBox ec = null;
-  static JCheckBox tc = null;
-  static JCheckBox sdn = null;
-  static JRadioButton sdNormal = null;
-  static JCheckBox useProxy = null;
-  static JTextField proxyHost = null;
-  static JTextField proxyPort = null;
-  static JCheckBox noEmbed = null;
-  static JCheckBox deamon = null;
-  static JCheckBox newJVM = null;
-  static JComboBox sslType = null;
-  static JCheckBox heartBeat = null;
+  private static JTextField systemName = null;
+  private static JTextField systemId = null;
+  private static JTextField port = null;
+  private static JTextField deviceName = null;
+  private static JTextField fpn = null;
+  private static JComboBox cpb = null;
+  private static JCheckBox jtb = null;
+  private static JCheckBox ec = null;
+  private static JCheckBox tc = null;
+  private static JCheckBox sdn = null;
+  private static JRadioButton sdNormal = null;
+  private static JCheckBox useProxy = null;
+  private static JTextField proxyHost = null;
+  private static JTextField proxyPort = null;
+  private static JCheckBox noEmbed = null;
+  private static JCheckBox deamon = null;
+  private static JCheckBox newJVM = null;
+  private static JComboBox sslType = null;
+  private static JCheckBox heartBeat = null;
 
-  static JTabbedPane confTabs;
-
-  static JDialog dialog = null;
-
-  static Object[] options;
+  private static JTabbedPane confTabs;
+  private static JDialog dialog = null;
+  private static Object[] options;
 
   public static String doEntry(Frame parent, String propKey, Properties props2) {
 
@@ -179,11 +177,8 @@ public class Configure {
         String codepage = getParm("-cp", args);
         String[] acps = CharMappings.getAvailableCodePages();
         jtb.setSelected(true);
-        for (int x = 0; x < acps.length; x++) {
-
-          if (acps[x].equals(codepage))
-            jtb.setSelected(false);
-
+        for (String acp : acps) {
+          if (acp.equals(codepage)) jtb.setSelected(false);
         }
         cpb.setSelectedItem(codepage);
 
@@ -472,10 +467,9 @@ public class Configure {
         JOptionPane.DEFAULT_OPTION, null,
         options, options[0]);
 
-    Component parentComponent = parent;
     pane.setInitialValue(options[0]);
-    pane.setComponentOrientation(parentComponent.getComponentOrientation());
-    dialog = pane.createDialog(parentComponent, title); //, JRootPane.PLAIN_DIALOG);
+    pane.setComponentOrientation(parent.getComponentOrientation());
+    dialog = pane.createDialog(parent, title); //, JRootPane.PLAIN_DIALOG);
 
     dialog.setVisible(true);
 
@@ -499,7 +493,7 @@ public class Configure {
    * React to the configuration action button to perform to Add or Edit the
    * entry
    *
-   * @param e - key to act upon
+   * @param propKey - key to act upon
    */
   private static void doConfigureAction(String propKey) {
 
@@ -554,7 +548,7 @@ public class Configure {
 
   }
 
-  static protected String getParm(String parm, String[] args) {
+  private static String getParm(String parm, String[] args) {
 
     for (int x = 0; x < args.length; x++) {
 
@@ -565,7 +559,7 @@ public class Configure {
     return null;
   }
 
-  static protected boolean isSpecified(String parm, String[] args) {
+  private static boolean isSpecified(String parm, String[] args) {
 
     for (int x = 0; x < args.length; x++) {
 
@@ -601,7 +595,7 @@ public class Configure {
 
   private static String toArgString() {
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(systemId.getText());
 
     // port
@@ -664,7 +658,7 @@ public class Configure {
     return sb.toString();
   }
 
-  protected static void parseArgs(String theStringList, String[] s) {
+  public static void parseArgs(String theStringList, String[] s) {
     int x = 0;
     StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
     while (tokenizer.hasMoreTokens()) {
@@ -672,7 +666,7 @@ public class Configure {
     }
   }
 
-  public static class SomethingEnteredDocument extends PlainDocument {
+  private static class SomethingEnteredDocument extends PlainDocument {
 
     private static final long serialVersionUID = 1L;
 

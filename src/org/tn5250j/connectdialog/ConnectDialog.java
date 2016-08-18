@@ -23,10 +23,12 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j;
+package org.tn5250j.connectdialog;
 
+import org.tn5250j.Configure;
+import org.tn5250j.ExternalProgramConfig;
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.JSortTable;
-import org.tn5250j.gui.SortTableModel;
 import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
@@ -43,14 +45,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import static java.lang.Boolean.TRUE;
@@ -111,8 +114,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private ListSelectionModel rowSM = null;
   private ListSelectionModel rowSM2 = null;
   // Properties
-  private Properties props = null;
-  private Properties etnProps = null;
+  private Properties properties = null;
+  private Properties externalProgramConfig = null;
 
   private JCheckBox hideTabBar = null;
   private JCheckBox showMe = null;
@@ -139,9 +142,9 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     super(frame, title, true);
 
-    props = ConfigureFactory.getInstance().getProperties(
+    properties = ConfigureFactory.getInstance().getProperties(
         ConfigureFactory.SESSIONS);
-    etnProps = ExternalProgramConfig.getInstance().getEtnPgmProps();
+    externalProgramConfig = ExternalProgramConfig.getInstance().getEtnPgmProps();
 
     try {
       jbInit();
@@ -268,7 +271,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private void createSessionsPanel() {
 
     // get an instance of our table model
-    ctm = new SessionsTableModel();
+    ctm = new SessionsTableModel(properties);
 
     // create a table using our custom table model
     sessions = new JSortTable(ctm);
@@ -392,8 +395,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     hideTabBar = new JCheckBox(LangTool.getString("conf.labelHideTabBar"));
 
     hideTabBar.setSelected(false);
-    if (props.containsKey("emul.hideTabBar")) {
-      if (props.getProperty("emul.hideTabBar").equals("yes"))
+    if (properties.containsKey("emul.hideTabBar")) {
+      if (properties.getProperty("emul.hideTabBar").equals("yes"))
         hideTabBar.setSelected(true);
     }
 
@@ -438,7 +441,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     startupPanel.setBorder(smb);
 
     showMe = new JCheckBox(LangTool.getString("ss.labelShowMe"));
-    if (props.containsKey("emul.showConnectDialog"))
+    if (properties.containsKey("emul.showConnectDialog"))
       showMe.setSelected(true);
 
     showMe.addItemListener(new java.awt.event.ItemListener() {
@@ -448,7 +451,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     });
 
     lastView = new JCheckBox(LangTool.getString("ss.labelLastView"));
-    if (props.containsKey("emul.startLastView"))
+    if (properties.containsKey("emul.startLastView"))
       lastView.setSelected(true);
 
     lastView.addItemListener(new java.awt.event.ItemListener() {
@@ -479,7 +482,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     // The translation section is called ...
     // #Logging Literals
     // Search and translate into the message property-files
-    int logLevel = Integer.parseInt(props.getProperty("emul.logLevel",
+    int logLevel = Integer.parseInt(properties.getProperty("emul.logLevel",
         Integer.toString(TN5250jLogger.INFO)));
 
     ButtonGroup levelGroup = new ButtonGroup();
@@ -646,7 +649,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     accessOptions = new TN5250jMultiSelectList();
 
-    if (props.getProperty("emul.accessDigest") != null)
+    if (properties.getProperty("emul.accessDigest") != null)
       accessOptions.setEnabled(false);
 
     List<String> options = OptionAccessFactory.getInstance().getOptions();
@@ -698,7 +701,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
         if (password.getPassword().length > 0) {
           try {
             DESSHA1 sha = new DESSHA1();
-            props.setProperty("emul.accessDigest", sha.digest(new String(
+            properties.setProperty("emul.accessDigest", sha.digest(new String(
                 password.getPassword()), "tn5205j"));
           } catch (Exception ex) {
           }
@@ -708,7 +711,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     setPassButton = new JButton(action);
 
-    if (props.getProperty("emul.accessDigest") != null)
+    if (properties.getProperty("emul.accessDigest") != null)
       setPassButton.setEnabled(false);
 
     passPanel.add(setPassButton);
@@ -738,16 +741,16 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     externalPrograms.add(new JLabel(LangTool.getString("external.http")));
     browser = new JTextField(30);
-    if (props.containsKey("emul.protocol.http")) {
-      browser.setText(props.getProperty("emul.protocol.http"));
+    if (properties.containsKey("emul.protocol.http")) {
+      browser.setText(properties.getProperty("emul.protocol.http"));
     }
     externalPrograms.add(browser);
     externalPrograms.add(new JButton("..."));
 
     externalPrograms.add(new JLabel(LangTool.getString("external.mailto")));
     mailer = new JTextField(30);
-    if (props.containsKey("emul.protocol.mailto")) {
-      mailer.setText(props.getProperty("emul.protocol.mailto"));
+    if (properties.containsKey("emul.protocol.mailto")) {
+      mailer.setText(properties.getProperty("emul.protocol.mailto"));
     }
     externalPrograms.add(mailer);
     externalPrograms.add(new JButton("..."));
@@ -755,7 +758,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     externalPanel.add(externalPrograms, BorderLayout.NORTH);
 
     //For Customized External Program
-    etm = new CustomizedTableModel();
+    etm = new CustomizedTableModel(externalProgramConfig);
     // create a table using our custom table model
     externals = new JSortTable(etm);
     externals.setSelectionMode(SINGLE_SELECTION);
@@ -823,10 +826,10 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void doSomethingEntered() {
 
-    if (props.getProperty("emul.accessDigest") != null) {
+    if (properties.getProperty("emul.accessDigest") != null) {
       try {
         DESSHA1 sha = new DESSHA1();
-        if (props.getProperty("emul.accessDigest").equals(
+        if (properties.getProperty("emul.accessDigest").equals(
             sha.digest(new String(password.getPassword()), "tn5205j"))) {
           accessOptions.setEnabled(true);
           setPassButton.setEnabled(true);
@@ -907,7 +910,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     if (e.getActionCommand().equals("ADD")) {
       String systemName = Configure.doEntry((JFrame) getParent(), null,
-          props);
+          properties);
       ctm.addSession();
       // I we have only one row then select the first one so that
       // we do not get a selection index out of range problem.
@@ -936,13 +939,13 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     if (e.getActionCommand().equals("EDIT")) {
       int selectedRow = rowSM.getMinSelectionIndex();
       Configure.doEntry((JFrame) getParent(), (String) ctm.getValueAt(
-          selectedRow, 0), props);
+          selectedRow, 0), properties);
       ctm.chgSession(selectedRow);
       sessions.requestFocus();
     }
     if (e.getActionCommand().equals("cADD")) {
       String name = ExternalProgramConfig.doEntry((JFrame) getParent(), null,
-          etnProps);
+          externalProgramConfig);
 
       etm.addSession();
       // I we have only one row then select the first one so that
@@ -966,7 +969,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     if (e.getActionCommand().equals("cEDIT")) {
       int selectedRow = rowSM2.getMinSelectionIndex();
       ExternalProgramConfig.doEntry((JFrame) getParent(), (String) etm.getValueAt(
-          selectedRow, 0), etnProps);
+          selectedRow, 0), externalProgramConfig);
       etm.chgSession(selectedRow);
       externals.requestFocus();
     }
@@ -1010,7 +1013,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   }
 
   public String getConnectKey() {
-
     return connectKey;
   }
 
@@ -1053,19 +1055,19 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     // set the external browser program to use
     if (browser.getText().trim().length() > 0) {
 
-      props.setProperty("emul.protocol.http", browser.getText().trim());
+      properties.setProperty("emul.protocol.http", browser.getText().trim());
     } else {
 
-      props.remove("emul.protocol.http");
+      properties.remove("emul.protocol.http");
     }
 
     // set the external mailer program to use
     if (mailer.getText().trim().length() > 0) {
 
-      props.setProperty("emul.protocol.mailto", mailer.getText().trim());
+      properties.setProperty("emul.protocol.mailto", mailer.getText().trim());
     } else {
 
-      props.remove("emul.protocol.mailto");
+      properties.remove("emul.protocol.mailto");
     }
 
   }
@@ -1074,38 +1076,38 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     if (intOFF.isSelected()) {
 
-      props
+      properties
           .setProperty("emul.logLevel", Integer
               .toString(TN5250jLogger.OFF));
     }
 
     if (intDEBUG.isSelected()) {
 
-      props.setProperty("emul.logLevel", Integer
+      properties.setProperty("emul.logLevel", Integer
           .toString(TN5250jLogger.DEBUG));
     }
 
     if (intINFO.isSelected()) {
 
-      props.setProperty("emul.logLevel", Integer
+      properties.setProperty("emul.logLevel", Integer
           .toString(TN5250jLogger.INFO));
     }
 
     if (intWARN.isSelected()) {
 
-      props.setProperty("emul.logLevel", Integer
+      properties.setProperty("emul.logLevel", Integer
           .toString(TN5250jLogger.WARN));
     }
 
     if (intERROR.isSelected()) {
 
-      props.setProperty("emul.logLevel", Integer
+      properties.setProperty("emul.logLevel", Integer
           .toString(TN5250jLogger.ERROR));
     }
 
     if (intFATAL.isSelected()) {
 
-      props.setProperty("emul.logLevel", Integer
+      properties.setProperty("emul.logLevel", Integer
           .toString(TN5250jLogger.FATAL));
     }
 
@@ -1126,7 +1128,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     for (int x = 0; x < restrict.length; x++) {
       s += ht.get(restrict[x]) + ";";
     }
-    props.setProperty("emul.restricted", s);
+    properties.setProperty("emul.restricted", s);
   }
 
 //   private void addLabelComponent(String text, Component comp,
@@ -1141,7 +1143,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void removeEntry() {
     int selectedRow = rowSM.getMinSelectionIndex();
-    props.remove(ctm.getValueAt(selectedRow, 0));
+    properties.remove(ctm.getValueAt(selectedRow, 0));
     ctm.removeSession(selectedRow);
   }
 
@@ -1150,9 +1152,9 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     String propKey = (String) etm.getValueAt(selectedRow, 0);
     int num = 0;
 
-    for (Enumeration<Object> e = etnProps.keys(); e.hasMoreElements(); ) {
+    for (Enumeration<Object> e = externalProgramConfig.keys(); e.hasMoreElements(); ) {
       String key = (String) e.nextElement();
-      if (propKey != null && propKey.equals(etnProps.getProperty(key))) {
+      if (propKey != null && propKey.equals(externalProgramConfig.getProperty(key))) {
         String subKey = key.substring(8);
         int index = subKey.indexOf(".");
         num = Integer.parseInt(subKey.substring(0, index));
@@ -1160,16 +1162,16 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       }
     }
     Properties newProps = new Properties();
-    String count = etnProps.getProperty("etn.pgm.support.total.num");
+    String count = externalProgramConfig.getProperty("etn.pgm.support.total.num");
     if (count != null && count.length() > 0) {
       int total = Integer.parseInt(count);
       for (int i = 1; i <= total; i++) {
         int order = i;
         if (i > num) order = i - 1;
         if (i != num) {
-          String program = etnProps.getProperty("etn.pgm." + i + ".command.name");
-          String wCommand = etnProps.getProperty("etn.pgm." + i + ".command.window");
-          String uCommand = etnProps.getProperty("etn.pgm." + i + ".command.unix");
+          String program = externalProgramConfig.getProperty("etn.pgm." + i + ".command.name");
+          String wCommand = externalProgramConfig.getProperty("etn.pgm." + i + ".command.window");
+          String uCommand = externalProgramConfig.getProperty("etn.pgm." + i + ".command.unix");
           newProps.setProperty("etn.pgm." + order + ".command.name", program);
           newProps.setProperty("etn.pgm." + order + ".command.window", wCommand);
           newProps.setProperty("etn.pgm." + order + ".command.unix", uCommand);
@@ -1178,27 +1180,27 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       newProps.setProperty("etn.pgm.support.total.num", String.valueOf(total - 1));
     }
 
-    etnProps.clear();
-    etnProps.putAll(newProps);
+    externalProgramConfig.clear();
+    externalProgramConfig.putAll(newProps);
     etm.removeSession(selectedRow);
   }
 
   private void hideTabBar_itemStateChanged(ItemEvent e) {
 
     if (hideTabBar.isSelected())
-      props.setProperty("emul.hideTabBar", "yes");
+      properties.setProperty("emul.hideTabBar", "yes");
     else
-      props.remove("emul.hideTabBar");
+      properties.remove("emul.hideTabBar");
 
   }
 
   private void showMe_itemStateChanged(ItemEvent e) {
 
     if (showMe.isSelected()) {
-      props.setProperty("emul.showConnectDialog", "");
+      properties.setProperty("emul.showConnectDialog", "");
     } else {
 
-      props.remove("emul.showConnectDialog");
+      properties.remove("emul.showConnectDialog");
     }
 
   }
@@ -1206,10 +1208,10 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private void lastView_itemStateChanged(ItemEvent e) {
 
     if (lastView.isSelected()) {
-      props.setProperty("emul.startLastView", "");
+      properties.setProperty("emul.startLastView", "");
     } else {
 
-      props.remove("emul.startLastView");
+      properties.remove("emul.startLastView");
     }
 
   }
@@ -1294,345 +1296,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       if (getText(0, getLength()).length() == 0)
         doNothingEntered();
     }
-  }
-
-   /*
-    * ========================================================================
-    */
-
-  /**
-   * Simple data model representing rows within the {@link SessionsTableModel}.
-   */
-  private static final class SessionsDataModel {
-    private final String name;
-    private final String host;
-    private final Boolean deflt;
-
-    public SessionsDataModel(String name, String host, Boolean deflt) {
-      super();
-      this.name = name;
-      this.host = host;
-      this.deflt = deflt;
-    }
-  }
-   
-   /*
-    * ========================================================================
-    */
-
-  /**
-   * Table model to show all available sessions,
-   * with 'name', 'host' and 'default' column
-   */
-  private class SessionsTableModel extends AbstractTableModel implements SortTableModel {
-
-    private static final long serialVersionUID = 1L;
-
-    private final String[] COLS = {LangTool.getString("conf.tableColA"),
-        LangTool.getString("conf.tableColB"),
-        LangTool.getString("conf.tableColC")};
-
-    private List<SessionsDataModel> sortedItems = new ArrayList<SessionsDataModel>();
-
-    public SessionsTableModel() {
-      super();
-      resetSorted();
-    }
-
-    private void resetSorted() {
-      Enumeration<Object> e = props.keys();
-      sortedItems.clear();
-      String ses = null;
-      while (e.hasMoreElements()) {
-        ses = (String) e.nextElement();
-
-        if (!ses.startsWith("emul.")) {
-          String[] args = new String[TN5250jConstants.NUM_PARMS];
-          Configure.parseArgs(props.getProperty(ses), args);
-          boolean deflt = ses.equals(props.getProperty("emul.default", ""));
-          sortedItems.add(new SessionsDataModel(ses, args[0], deflt));
-        }
-      }
-
-      sortColumn(0, true);
-    }
-
-    public boolean isSortable(int col) {
-      if (col == 0) return true;
-      if (col == 1) return true;
-      return false;
-    }
-
-    public void sortColumn(final int col, final boolean ascending) {
-      if (col == 0) Collections.sort(sortedItems, new Comparator<SessionsDataModel>() {
-        public int compare(SessionsDataModel sdm1, SessionsDataModel sdm2) {
-          if (ascending) return sdm1.name.compareToIgnoreCase(sdm2.name);
-          return sdm2.name.compareToIgnoreCase(sdm1.name);
-        }
-      });
-      if (col == 1) Collections.sort(sortedItems, new Comparator<SessionsDataModel>() {
-        public int compare(SessionsDataModel sdm1, SessionsDataModel sdm2) {
-          if (ascending) return sdm1.host.compareToIgnoreCase(sdm2.host);
-          return sdm2.host.compareToIgnoreCase(sdm1.host);
-        }
-      });
-    }
-
-    public int getColumnCount() {
-      return COLS.length;
-    }
-
-    public String getColumnName(int col) {
-      return COLS[col];
-    }
-
-    public int getRowCount() {
-      return sortedItems.size();
-    }
-
-    /*
-     * Implement this so that the default session can be selected.
-     */
-    public void setValueAt(Object value, int row, int col) {
-
-      boolean which = (Boolean) value;
-      final String newDefaultSession = sortedItems.get(row).name;
-      if (which) {
-        props.setProperty("emul.default", newDefaultSession);
-      } else {
-        props.setProperty("emul.default", "");
-      }
-      // update internal list of data models
-      for (int i = 0, len = sortedItems.size(); i < len; i++) {
-        final SessionsDataModel oldsdm = sortedItems.get(i);
-        if (newDefaultSession.equals(oldsdm.name)) {
-          sortedItems.set(i, new SessionsDataModel(oldsdm.name, oldsdm.host, (Boolean) value));
-        } else if (oldsdm.deflt) {
-          // clear the old default flag
-          sortedItems.set(i, new SessionsDataModel(oldsdm.name, oldsdm.host, Boolean.FALSE));
-        }
-      }
-      this.fireTableDataChanged();
-    }
-
-    public Object getValueAt(int row, int col) {
-      switch (col) {
-        case 0:
-          return this.sortedItems.get(row).name;
-        case 1:
-          return this.sortedItems.get(row).host;
-        case 2:
-          return this.sortedItems.get(row).deflt;
-        default:
-          return null;
-      }
-    }
-
-    /*
-     * We need to implement this so that the default session column can
-     *    be updated.
-     */
-    public boolean isCellEditable(int row, int col) {
-      //Note that the data/cell address is constant,
-      //no matter where the cell appears onscreen.
-      if (col == 2) {
-        return true;
-      }
-      return false;
-    }
-
-    /*
-     * JTable uses this method to determine the default renderer/
-     * editor for each cell.  If we didn't implement this method,
-     * then the default column would contain text ("true"/"false"),
-     * rather than a check box.
-     */
-    public Class<?> getColumnClass(int c) {
-      return getValueAt(0, c).getClass();
-    }
-
-    void addSession() {
-      resetSorted();
-      fireTableRowsInserted(props.size() - 1, props.size() - 1);
-    }
-
-    void chgSession(int row) {
-      resetSorted();
-      fireTableRowsUpdated(row, row);
-    }
-
-    void removeSession(int row) {
-      resetSorted();
-      fireTableRowsDeleted(row, row);
-    }
-
-  }
-   
-   /*
-    * ========================================================================
-    */
-
-  class CustomizedExternalProgram implements Comparable<CustomizedExternalProgram> {
-    private final String name;
-    private final String wCommand;
-    private final String uCommand;
-
-    CustomizedExternalProgram(String name, String wCommand, String uCommand) {
-      this.name = name;
-      this.wCommand = wCommand;
-      this.uCommand = uCommand;
-    }
-
-    public String toString() {
-      return this.name;
-    }
-
-
-    public String getName() {
-      return name;
-    }
-
-
-    String getUCommand() {
-      return uCommand;
-    }
-
-
-    String getWCommand() {
-      return wCommand;
-    }
-
-    @Override
-    public int compareTo(CustomizedExternalProgram o) {
-      return this.name.compareTo(o.getName());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      CustomizedExternalProgram that = (CustomizedExternalProgram) o;
-
-      return name != null ? name.equals(that.name) : that.name == null;
-    }
-
-    @Override
-    public int hashCode() {
-      return name != null ? name.hashCode() : 0;
-    }
-  }
-
-  private class CustomizedTableModel extends AbstractTableModel implements
-      SortTableModel {
-    private static final long serialVersionUID = 1L;
-
-    final String[] cols = {LangTool.getString("customized.name"),
-        LangTool.getString("customized.window"),
-        LangTool.getString("customized.unix")};
-
-    List<CustomizedExternalProgram> externalPrograms = new ArrayList<CustomizedExternalProgram>();
-    int sortedColumn = 0;
-    boolean isAscending = true;
-
-    public CustomizedTableModel() {
-      super();
-      resetSorted();
-    }
-
-    private void resetSorted() {
-      externalPrograms.clear();
-
-      String count = etnProps.getProperty("etn.pgm.support.total.num");
-      if (count != null && count.length() > 0) {
-        int total = Integer.parseInt(count);
-        for (int i = 1; i <= total; i++) {
-          String program = etnProps.getProperty("etn.pgm." + i + ".command.name");
-          String wCommand = etnProps.getProperty("etn.pgm." + i + ".command.window");
-          String uCommand = etnProps.getProperty("etn.pgm." + i + ".command.unix");
-          externalPrograms.add(new CustomizedExternalProgram(program, wCommand, uCommand));
-        }
-      }
-
-      sortColumn(sortedColumn, isAscending);
-    }
-
-    public boolean isSortable(int col) {
-      if (col == 0) return true;
-      return false;
-    }
-
-    public void sortColumn(int col, boolean ascending) {
-      sortedColumn = col;
-      isAscending = ascending;
-      Collections.sort(externalPrograms);
-      if (!isAscending) {
-        Collections.reverse(externalPrograms);
-      }
-    }
-
-    public int getColumnCount() {
-
-      return cols.length;
-    }
-
-    public String getColumnName(int col) {
-      return cols[col];
-    }
-
-    public int getRowCount() {
-      return externalPrograms.size();
-    }
-
-    /*
-     * Implement this so that the default session can be selected.
-     */
-    public void setValueAt(Object value, int row, int col) {
-
-    }
-
-    public Object getValueAt(int row, int col) {
-      CustomizedExternalProgram c = externalPrograms.get(row);
-      if (col == 0)
-        return c.getName();
-      if (col == 1)
-        return c.getWCommand();
-      if (col == 2) {
-        return c.getUCommand();
-      }
-      return null;
-
-    }
-
-    public boolean isCellEditable(int row, int col) {
-      return false;
-    }
-
-    /*
-     * JTable uses this method to determine the default renderer/
-     * editor for each cell.  If we didn't implement this method,
-     * then the default column would contain text ("true"/"false"),
-     * rather than a check box.
-     */
-    public Class<?> getColumnClass(int c) {
-      return getValueAt(0, c).getClass();
-    }
-
-    void addSession() {
-      resetSorted();
-      fireTableRowsInserted(externalPrograms.size() - 1, externalPrograms.size() - 1);
-    }
-
-    void chgSession(int row) {
-      resetSorted();
-      fireTableRowsUpdated(row, row);
-    }
-
-    void removeSession(int row) {
-      resetSorted();
-      fireTableRowsDeleted(row, row);
-    }
-
   }
 
 }
