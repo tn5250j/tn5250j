@@ -1,4 +1,4 @@
-package org.tn5250j;
+package org.tn5250j.settings;
 /**
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
@@ -48,6 +48,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.tn5250j.SessionConfig;
 import org.tn5250j.settings.AttributesPanel;
 import org.tn5250j.settings.ColorAttributesPanel;
 import org.tn5250j.settings.CursorAttributesPanel;
@@ -63,7 +64,7 @@ import org.tn5250j.settings.SignoffAttributesPanel;
 import org.tn5250j.settings.TabAttributesPanel;
 import org.tn5250j.tools.LangTool;
 
-public class SessionAttributes extends JDialog {
+public class SessionSettings extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final String fileName;
@@ -76,7 +77,7 @@ public class SessionAttributes extends JDialog {
 	private CardLayout cardLayout;
 	private JPanel jp;
 
-	public SessionAttributes(Frame parent, SessionConfig config ) {
+	public SessionSettings(Frame parent, SessionConfig config ) {
 		super(parent);
 
 		parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

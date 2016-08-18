@@ -33,7 +33,7 @@ import javax.swing.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class SignoffAttributesPanel extends AttributesPanel {
+ class SignoffAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JCheckBox signoffCheck;

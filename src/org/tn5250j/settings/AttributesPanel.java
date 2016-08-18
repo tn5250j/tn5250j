@@ -35,7 +35,7 @@ import org.tn5250j.SessionConfig;
 /**
  * Base class for all attribute panels
  */
-public abstract class AttributesPanel extends JPanel {
+ abstract class AttributesPanel extends JPanel {
 
    private static final long serialVersionUID = 1L;
 Properties props;

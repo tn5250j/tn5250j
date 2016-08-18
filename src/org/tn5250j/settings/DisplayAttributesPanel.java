@@ -45,7 +45,7 @@ import static org.tn5250j.settings.ColumnSeparator.Hide;
 import static org.tn5250j.settings.ColumnSeparator.ShortLine;
 import static org.tn5250j.settings.ColumnSeparator.Dot;
 
-public class DisplayAttributesPanel extends AttributesPanel {
+ class DisplayAttributesPanel extends AttributesPanel {
 
 	private static final String NO = "No";
 	private static final String YES = "Yes";

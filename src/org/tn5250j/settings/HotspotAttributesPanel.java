@@ -31,7 +31,7 @@ import javax.swing.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class HotspotAttributesPanel extends AttributesPanel {
+ class HotspotAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JCheckBox hsCheck;

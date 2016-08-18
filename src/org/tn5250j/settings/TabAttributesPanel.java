@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
 
-public class TabAttributesPanel extends AttributesPanel {
+ class TabAttributesPanel extends AttributesPanel {
 
 	private static final long serialVersionUID = 1L;
 	JCheckBox tabCloseCheck;

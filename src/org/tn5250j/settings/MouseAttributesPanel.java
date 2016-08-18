@@ -31,7 +31,7 @@ import javax.swing.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class MouseAttributesPanel extends AttributesPanel {
+ class MouseAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JCheckBox dceCheck;

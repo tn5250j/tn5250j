@@ -32,7 +32,7 @@ import javax.swing.border.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class FontAttributesPanel extends AttributesPanel {
+ class FontAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JComboBox fontsList;

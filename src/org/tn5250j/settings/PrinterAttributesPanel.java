@@ -34,7 +34,7 @@ import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.*;
 
-public class PrinterAttributesPanel extends AttributesPanel {
+ class PrinterAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JCheckBox defaultPrinter;

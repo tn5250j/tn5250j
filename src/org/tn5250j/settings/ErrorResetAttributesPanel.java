@@ -31,7 +31,7 @@ import javax.swing.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class ErrorResetAttributesPanel extends AttributesPanel {
+ class ErrorResetAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JCheckBox resetRequired;

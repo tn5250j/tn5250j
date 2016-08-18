@@ -31,7 +31,7 @@ import javax.swing.*;
 import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
 
-public class KeypadAttributesPanel extends AttributesPanel {
+ class KeypadAttributesPanel extends AttributesPanel {
 
    private static final long serialVersionUID = 1L;
 JCheckBox kpCheck;
