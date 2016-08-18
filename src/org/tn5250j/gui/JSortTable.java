@@ -14,10 +14,11 @@ package org.tn5250j.gui;
 =====================================================================
 */
 
-import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class JSortTable extends JTable implements MouseListener {
 
@@ -25,49 +26,22 @@ public class JSortTable extends JTable implements MouseListener {
   private int sortedColumnIndex = -1;
   private boolean sortedColumnAscending = true;
 
-  public JSortTable() {
-    this(new DefaultSortTableModel());
-  }
-
-  public JSortTable(int rows, int cols) {
-    this(new DefaultSortTableModel(rows, cols));
-  }
-
-  public JSortTable(Object[][] data, Object[] names) {
-    this(new DefaultSortTableModel(data, names));
-  }
-
-  public JSortTable(Vector data, Vector names) {
-    this(new DefaultSortTableModel(data, names));
-  }
-
   public JSortTable(SortTableModel model) {
     super(model);
     initSortHeader();
   }
 
-  public JSortTable(SortTableModel model, TableColumnModel colModel) {
-    super(model, colModel);
-    initSortHeader();
-  }
-
-  public JSortTable(SortTableModel model, TableColumnModel colModel,
-                    ListSelectionModel selModel) {
-    super(model, colModel, selModel);
-    initSortHeader();
-  }
-
-  protected void initSortHeader() {
+  private void initSortHeader() {
     JTableHeader header = getTableHeader();
     header.setDefaultRenderer(new SortHeaderRenderer());
     header.addMouseListener(this);
   }
 
-  public int getSortedColumnIndex() {
+  int getSortedColumnIndex() {
     return sortedColumnIndex;
   }
 
-  public boolean isSortedColumnAscending() {
+  boolean isSortedColumnAscending() {
     return sortedColumnAscending;
   }
 
