@@ -75,7 +75,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1527,10 +1526,10 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     * ========================================================================
     */
 
-  class CustomizedExternalProgram {
-    private String name;
-    private String wCommand;
-    private String uCommand;
+  class CustomizedExternalProgram implements Comparable<CustomizedExternalProgram> {
+    private final String name;
+    private final String wCommand;
+    private final String uCommand;
 
     CustomizedExternalProgram(String name, String wCommand, String uCommand) {
       this.name = name;
@@ -1542,23 +1541,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       return this.name;
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode() {
-
-      return getName().hashCode();
-    }
-
-    /**
-     * @see java.lang.Object#equals(Object)
-     */
-    public boolean equals(Object other) {
-      if (!(other instanceof CustomizedExternalProgram)) return false;
-      CustomizedExternalProgram castOther = (CustomizedExternalProgram) other;
-      if (this.hashCode() != castOther.hashCode()) return false;
-      return true;
-    }
 
     public String getName() {
       return name;
@@ -1574,7 +1556,25 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       return wCommand;
     }
 
+    @Override
+    public int compareTo(CustomizedExternalProgram o) {
+      return this.name.compareTo(o.getName());
+    }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      CustomizedExternalProgram that = (CustomizedExternalProgram) o;
+
+      return name != null ? name.equals(that.name) : that.name == null;
+    }
+
+    @Override
+    public int hashCode() {
+      return name != null ? name.hashCode() : 0;
+    }
   }
 
   private class CustomizedTableModel extends AbstractTableModel implements
@@ -1585,7 +1585,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
         LangTool.getString("customized.window"),
         LangTool.getString("customized.unix")};
 
-    List<CustomizedExternalProgram> mySort = new ArrayList<CustomizedExternalProgram>();
+    List<CustomizedExternalProgram> externalPrograms = new ArrayList<CustomizedExternalProgram>();
     int sortedColumn = 0;
     boolean isAscending = true;
 
@@ -1595,7 +1595,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
 
     private void resetSorted() {
-      mySort.clear();
+      externalPrograms.clear();
 
       String count = etnProps.getProperty("etn.pgm.support.total.num");
       if (count != null && count.length() > 0) {
@@ -1604,7 +1604,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
           String program = etnProps.getProperty("etn.pgm." + i + ".command.name");
           String wCommand = etnProps.getProperty("etn.pgm." + i + ".command.window");
           String uCommand = etnProps.getProperty("etn.pgm." + i + ".command.unix");
-          mySort.add(new CustomizedExternalProgram(program, wCommand, uCommand));
+          externalPrograms.add(new CustomizedExternalProgram(program, wCommand, uCommand));
         }
       }
 
@@ -1619,7 +1619,10 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     public void sortColumn(int col, boolean ascending) {
       sortedColumn = col;
       isAscending = ascending;
-      Collections.sort(mySort, new SessionComparator(ascending));
+      Collections.sort(externalPrograms);
+      if (!isAscending) {
+        Collections.reverse(externalPrograms);
+      }
     }
 
     public int getColumnCount() {
@@ -1632,7 +1635,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
 
     public int getRowCount() {
-      return mySort.size();
+      return externalPrograms.size();
     }
 
     /*
@@ -1643,7 +1646,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
 
     public Object getValueAt(int row, int col) {
-      CustomizedExternalProgram c = mySort.get(row);
+      CustomizedExternalProgram c = externalPrograms.get(row);
       if (col == 0)
         return c.getName();
       if (col == 1)
@@ -1671,7 +1674,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     public void addSession() {
       resetSorted();
-      fireTableRowsInserted(mySort.size() - 1, mySort.size() - 1);
+      fireTableRowsInserted(externalPrograms.size() - 1, externalPrograms.size() - 1);
     }
 
     public void chgSession(int row) {
@@ -1686,71 +1689,4 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   }
 
-  public class SessionComparator implements Comparator<Object> {
-    private boolean ascending;
-
-    public SessionComparator(boolean ascending) {
-      this.ascending = ascending;
-    }
-
-    public int compare(Object one, Object two) {
-
-      // Compare, if used for Strings
-      if (one instanceof String && two instanceof String) {
-
-        String s1 = one.toString();
-        String s2 = two.toString();
-        int result = 0;
-
-        if (ascending)
-          result = s1.compareTo(s2);
-        else
-          result = s2.compareTo(s1);
-
-        if (result < 0) {
-          return -1;
-        } else if (result > 0) {
-          return 1;
-        } else
-          return 0;
-      }
-
-      // Compare, if used for Booleans
-      if (one instanceof Boolean && two instanceof Boolean) {
-        boolean bOne = ((Boolean) one).booleanValue();
-        boolean bTwo = ((Boolean) two).booleanValue();
-
-        if (ascending) {
-          if (bOne == bTwo) {
-            return 0;
-          } else if (bOne) { // Define false < true
-            return 1;
-          } else {
-            return -1;
-          }
-        }
-
-        if (bOne == bTwo) {
-          return 0;
-        } else if (bTwo) { // Define false < true
-          return 1;
-        } else {
-          return -1;
-        }
-
-      }
-
-      // Compare, if used for Compareables
-      if (one instanceof Comparable<?> && two instanceof Comparable<?>) {
-        Comparable<Object> cOne = (Comparable<Object>) one;
-        Comparable<Object> cTwo = (Comparable<Object>) two;
-        if (ascending) {
-          return cOne.compareTo(two);
-        }
-        return cTwo.compareTo(cOne);
-      }
-      return 1;
-
-    }
-  }
 }
