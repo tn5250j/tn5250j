@@ -22,7 +22,6 @@
  */
 package org.tn5250j.connectdialog;
 
-import org.tn5250j.Configure;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.SortTableModel;
 import org.tn5250j.tools.LangTool;

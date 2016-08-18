@@ -23,7 +23,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
  */
-package org.tn5250j;
+package org.tn5250j.connectdialog;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -52,11 +52,12 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
-public class Configure {
+class Configure {
 
   private static Properties props = null;
 
@@ -658,7 +659,7 @@ public class Configure {
     return sb.toString();
   }
 
-  public static void parseArgs(String theStringList, String[] s) {
+  static void parseArgs(String theStringList, String[] s) {
     int x = 0;
     StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
     while (tokenizer.hasMoreTokens()) {
