@@ -97,6 +97,11 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import static java.lang.Boolean.TRUE;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
+
 public class ConnectDialog extends JDialog implements ActionListener, ChangeListener {
 
   private static final String USER_PREF_LAST_SESSION = "last_session";
@@ -109,14 +114,11 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private JPanel configOptions = new JPanel();
   private JPanel sessionPanel = new JPanel();
   private JPanel options = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
-  private JPanel interfacePanel = null;
   private JPanel sessionOpts = new JPanel();
   private JPanel sessionOptPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
   private JPanel emulOptPanel = new JPanel();
   private JPanel accessPanel = new JPanel();
   private JPanel loggingPanel = new JPanel();
-  private JPanel levelPanel = new JPanel();
-  private JPanel appenderPanel = new JPanel();
   private JPanel externalPanel = new JPanel();
   private JPanel externalOpts = new JPanel();
   private JPanel externalOptPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
@@ -149,10 +151,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private CustomizedTableModel etm = null;
 
-  // The scroll pane that holds the table.
-  private JScrollPane scrollPane;
-  private JScrollPane scrollPane2;
-
   // ListSelectionModel of our custom table.
   private ListSelectionModel rowSM = null;
   private ListSelectionModel rowSM2 = null;
@@ -160,8 +158,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private Properties props = null;
   private Properties etnProps = null;
 
-  // property input structures
-  private JRadioButton intTABS = null;
   private JCheckBox hideTabBar = null;
   private JCheckBox showMe = null;
   private JCheckBox lastView = null;
@@ -211,7 +207,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
   }
 
-  void jbInit() throws Exception {
+  private void jbInit() throws Exception {
 
     // make it non resizable
     setResizable(false);
@@ -256,7 +252,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       int selInterval = -1;
       // set default selection value as the first row or default session
       for (int x = 0; x < sessions.getRowCount(); x++) {
-        if (((Boolean) ctm.getValueAt(x, 2)).booleanValue()) {
+        if (TRUE.equals(ctm.getValueAt(x, 2))) {
           selInterval = x;
           break;
         }
@@ -339,16 +335,16 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     sessions.getInputMap().put(enter, "connect");
     sessions.getActionMap().put("connect", connect);
 
-    sessions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    sessions.setSelectionMode(SINGLE_SELECTION);
     sessions.setPreferredScrollableViewportSize(new Dimension(500, 200));
     sessions.setShowGrid(false);
 
     // Create the scroll pane and add the table to it.
-    scrollPane = new JScrollPane(sessions);
+    JScrollPane scrollPane = new JScrollPane(sessions);
     scrollPane
-        .setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        .setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
     scrollPane
-        .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        .setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
     // This will make the connect dialog react to two clicks instead of having
     // to click on the selection and then clicking twice
@@ -426,7 +422,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     emulOptPanel.add(contentPane, BorderLayout.NORTH);
 
     // setup the frame interface panel
-    interfacePanel = new JPanel(new GridBagLayout());
+    JPanel interfacePanel = new JPanel(new GridBagLayout());
 
     TitledBorder tb = BorderFactory.createTitledBorder(LangTool
         .getString("conf.labelPresentation"));
@@ -451,7 +447,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       }
     });
 
-    intTABS = new JRadioButton(LangTool.getString("conf.labelTABS"));
+    JRadioButton intTABS = new JRadioButton(LangTool.getString("conf.labelTABS"));
     intTABS.setSelected(true);
     intTABS.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(ItemEvent e) {
@@ -518,7 +514,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private void createLoggingPanel() {
     loggingPanel.setLayout(new GridBagLayout());
     // levelPanel
-    levelPanel = new JPanel(new GridBagLayout());
+    JPanel levelPanel = new JPanel(new GridBagLayout());
     TitledBorder tb = BorderFactory.createTitledBorder(LangTool
         .getString("logscr.Level"));
     tb.setTitleJustification(TitledBorder.CENTER);
@@ -614,7 +610,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     gbc.insets = new Insets(5, 20, 20, 20);
     levelPanel.add(intFATAL, gbc);
 
-    appenderPanel = new JPanel(new GridBagLayout());
+    JPanel appenderPanel = new JPanel(new GridBagLayout());
     tb = BorderFactory.createTitledBorder(LangTool
         .getString("logscr.Appender"));
     tb.setTitleJustification(TitledBorder.CENTER);
@@ -701,8 +697,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
     // set up a hashtable of option descriptions to options
     Hashtable<String, String> ht = new Hashtable<String, String>(options.size());
-    for (int x = 0; x < options.size(); x++) {
-      ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
+    for (String option : options) {
+      ht.put(LangTool.getString("key." + option), option);
     }
 
     // get the sorted descriptions of the options
@@ -713,8 +709,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     accessOptions.setListData(descriptions.toArray());
 
     // we now mark the invalid options
-    int num = OptionAccessFactory.getInstance()
-        .getNumberOfRestrictedOptions();
+    int num = OptionAccessFactory.getInstance().getNumberOfRestrictedOptions();
     int[] si = new int[num];
     int i = 0;
     for (int x = 0; x < descriptions.size(); x++) {
@@ -807,15 +802,13 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     etm = new CustomizedTableModel();
     // create a table using our custom table model
     externals = new JSortTable(etm);
-    externals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    externals.setSelectionMode(SINGLE_SELECTION);
     externals.setPreferredScrollableViewportSize(new Dimension(500, 100));
     externals.setShowGrid(false);
     // Create the scroll pane and add the table to it.
-    scrollPane2 = new JScrollPane(externals);
-    scrollPane2
-        .setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-    scrollPane2
-        .setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane scrollPane2 = new JScrollPane(externals);
+    scrollPane2.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane2.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
     // This will make the connect dialog react to two clicks instead of having
     // to click on the selection and then clicking twice
@@ -877,9 +870,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     if (props.getProperty("emul.accessDigest") != null) {
       try {
         DESSHA1 sha = new DESSHA1();
-        // System.out.println(props.getProperty("emul.accessDigest")
-        // + " -> " + sha.digest(new
-        // String(password.getPassword()),"tn5205j"));
         if (props.getProperty("emul.accessDigest").equals(
             sha.digest(new String(password.getPassword()), "tn5205j"))) {
           accessOptions.setEnabled(true);
@@ -939,7 +929,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     // set it.
     int mnemIdx = text.indexOf("&");
     if (mnemIdx >= 0) {
-      StringBuffer sb = new StringBuffer(text);
+      StringBuilder sb = new StringBuilder(text);
       sb.deleteCharAt(mnemIdx);
       button.setText(sb.toString());
       button.setMnemonic(text.charAt(mnemIdx + 1));
@@ -1237,7 +1227,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     etm.removeSession(selectedRow);
   }
 
-  void hideTabBar_itemStateChanged(ItemEvent e) {
+  private void hideTabBar_itemStateChanged(ItemEvent e) {
 
     if (hideTabBar.isSelected())
       props.setProperty("emul.hideTabBar", "yes");
@@ -1246,7 +1236,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   }
 
-  void showMe_itemStateChanged(ItemEvent e) {
+  private void showMe_itemStateChanged(ItemEvent e) {
 
     if (showMe.isSelected()) {
       props.setProperty("emul.showConnectDialog", "");
@@ -1257,7 +1247,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   }
 
-  void lastView_itemStateChanged(ItemEvent e) {
+  private void lastView_itemStateChanged(ItemEvent e) {
 
     if (lastView.isSelected()) {
       props.setProperty("emul.startLastView", "");
@@ -1403,7 +1393,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
         if (!ses.startsWith("emul.")) {
           String[] args = new String[TN5250jConstants.NUM_PARMS];
           Configure.parseArgs(props.getProperty(ses), args);
-          final Boolean deflt = new Boolean(ses.equals(props.getProperty("emul.default", "")));
+          boolean deflt = ses.equals(props.getProperty("emul.default", ""));
           sortedItems.add(new SessionsDataModel(ses, args[0], deflt));
         }
       }
@@ -1449,7 +1439,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
      */
     public void setValueAt(Object value, int row, int col) {
 
-      boolean which = ((Boolean) value).booleanValue();
+      boolean which = (Boolean) value;
       final String newDefaultSession = sortedItems.get(row).name;
       if (which) {
         props.setProperty("emul.default", newDefaultSession);
@@ -1461,7 +1451,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
         final SessionsDataModel oldsdm = sortedItems.get(i);
         if (newDefaultSession.equals(oldsdm.name)) {
           sortedItems.set(i, new SessionsDataModel(oldsdm.name, oldsdm.host, (Boolean) value));
-        } else if (oldsdm.deflt.booleanValue()) {
+        } else if (oldsdm.deflt) {
           // clear the old default flag
           sortedItems.set(i, new SessionsDataModel(oldsdm.name, oldsdm.host, Boolean.FALSE));
         }
@@ -1505,17 +1495,17 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       return getValueAt(0, c).getClass();
     }
 
-    public void addSession() {
+    void addSession() {
       resetSorted();
       fireTableRowsInserted(props.size() - 1, props.size() - 1);
     }
 
-    public void chgSession(int row) {
+    void chgSession(int row) {
       resetSorted();
       fireTableRowsUpdated(row, row);
     }
 
-    public void removeSession(int row) {
+    void removeSession(int row) {
       resetSorted();
       fireTableRowsDeleted(row, row);
     }
@@ -1547,12 +1537,12 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
 
 
-    public String getUCommand() {
+    String getUCommand() {
       return uCommand;
     }
 
 
-    public String getWCommand() {
+    String getWCommand() {
       return wCommand;
     }
 
@@ -1672,17 +1662,17 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       return getValueAt(0, c).getClass();
     }
 
-    public void addSession() {
+    void addSession() {
       resetSorted();
       fireTableRowsInserted(externalPrograms.size() - 1, externalPrograms.size() - 1);
     }
 
-    public void chgSession(int row) {
+    void chgSession(int row) {
       resetSorted();
       fireTableRowsUpdated(row, row);
     }
 
-    public void removeSession(int row) {
+    void removeSession(int row) {
       resetSorted();
       fireTableRowsDeleted(row, row);
     }
