@@ -64,11 +64,6 @@ class TabAttributesPanel extends AttributesPanel {
 
   }
 
-  @Override
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     String value = "";

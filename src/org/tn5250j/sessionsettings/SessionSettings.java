@@ -285,7 +285,7 @@ public class SessionSettings extends JDialog {
       if (props.containsKey("saveme")) {
         props.remove("saveme");
       }
-      saveProps();
+      changes.saveSessionProps();
       setVisible(false);
       dispose();
     }
@@ -305,23 +305,6 @@ public class SessionSettings extends JDialog {
     }
 
     setProperty("saveme", "yes");
-
-  }
-
-  private void saveProps() {
-
-    DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-    Enumeration<?> e = root.children();
-    Object child;
-    while (e.hasMoreElements()) {
-      child = e.nextElement();
-      Object obj = ((DefaultMutableTreeNode) child).getUserObject();
-      if (obj instanceof AttributesPanel) {
-        ((AttributesPanel) obj).save();
-      }
-    }
-
-    changes.saveSessionProps();
 
   }
 

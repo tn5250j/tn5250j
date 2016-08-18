@@ -66,11 +66,6 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   @Override
-  public void save() {
-
-  }
-
-  @Override
   public void applyAttributes() {
     final String newValue = kpCheck.isSelected() ? YES : NO;
     changes.firePropertyChange(this, KEYPAD, getStringProperty(KEYPAD), newValue);

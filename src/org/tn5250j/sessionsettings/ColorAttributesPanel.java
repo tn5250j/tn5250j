@@ -199,10 +199,6 @@ class ColorAttributesPanel extends AttributesPanel {
 
   }
 
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     String newSelection = (String) colorList.getSelectedItem();

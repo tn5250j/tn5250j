@@ -76,10 +76,6 @@ class MouseAttributesPanel extends AttributesPanel {
 
   }
 
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     //  double click enter

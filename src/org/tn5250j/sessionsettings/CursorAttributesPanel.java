@@ -202,10 +202,6 @@ class CursorAttributesPanel extends AttributesPanel {
 
   }
 
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     if (cFull.isSelected()) {

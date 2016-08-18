@@ -108,10 +108,6 @@ class FontAttributesPanel extends AttributesPanel {
 
   }
 
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     if (!getStringProperty("font").equals(

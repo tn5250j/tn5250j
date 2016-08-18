@@ -63,10 +63,6 @@ class OnConnectAttributesPanel extends AttributesPanel {
 
   }
 
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     changes.firePropertyChange(this, "connectMacro",

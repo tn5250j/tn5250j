@@ -74,8 +74,6 @@ abstract class AttributesPanel extends JPanel {
 
   public abstract void applyAttributes();
 
-  public abstract void save();
-
   protected final String getStringProperty(String prop) {
 
     if (changes.isPropertyExists(prop))

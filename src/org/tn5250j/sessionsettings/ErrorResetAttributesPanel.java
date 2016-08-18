@@ -80,10 +80,6 @@ class ErrorResetAttributesPanel extends AttributesPanel {
 
   }
 
-  public void save() {
-
-  }
-
   public void applyAttributes() {
 
     if (resetRequired.isSelected()) {

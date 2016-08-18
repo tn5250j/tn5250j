@@ -139,11 +139,6 @@ class DisplayAttributesPanel extends AttributesPanel {
   }
 
   @Override
-  public void save() {
-
-  }
-
-  @Override
   public void applyAttributes() {
 
     if (csHide.isSelected()) {
