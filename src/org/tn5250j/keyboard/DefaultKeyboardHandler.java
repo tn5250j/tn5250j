@@ -36,13 +36,13 @@ import java.awt.event.KeyEvent;
 /**
  * The default keyboard input handler.
  */
-public class DefaultKeyboardHandler extends KeyboardHandler {
+class DefaultKeyboardHandler extends KeyboardHandler {
 
   /**
    * Creates a new keyboard handler
    * @param session The session to which the keys should be sent
    */
-  public DefaultKeyboardHandler(Session5250 session) {
+  DefaultKeyboardHandler(Session5250 session) {
     super(session);
   }
 
@@ -137,8 +137,6 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 
     SessionPanel sessionGui = session.getGUI();
 
-    KeyStroke ks;
-
     new NewSessionAction(sessionGui, keyMap);
     new ToggleConnectionAction(sessionGui, keyMap);
     new JumpNextAction(sessionGui, keyMap);
@@ -190,7 +188,6 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 
 
     keyProcessed = true;
-//      displayInfo(e,"Pressed " + keyProcessed);
     int keyCode = e.getKeyCode();
 
     if (isLinux && keyCode == KeyEvent.VK_ALT_GRAPH) {
@@ -198,25 +195,14 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       isAltGr = true;
     }
 
-//      if (linux)
-//      if (keyCode == e.VK_UNDEFINED ||
-//      if (keyCode == e.VK_ALT) {
-//         System.out.println(" cursor active " + screen.cursorActive);
-//         e.consume();
-//         return;
-//      }
-
     if (keyCode == KeyEvent.VK_CAPS_LOCK ||
         keyCode == KeyEvent.VK_SHIFT ||
         keyCode == KeyEvent.VK_ALT ||
         keyCode == KeyEvent.VK_ALT_GRAPH
         ) {
-//         displayInfo(e,"Pressed ");
 
       return;
     }
-
-//      displayInfo(e,"Pressed " + keyProcessed);
 
     KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(), e.getModifiers(), false);
 
@@ -229,8 +215,6 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
       lastKeyStroke = KeyMapper.getKeyStrokeText(e, isAltGr);
     else
       lastKeyStroke = KeyMapper.getKeyStrokeText(e);
-
-    //System.out.println("lastKeyStroke " + lastKeyStroke);
 
     if (lastKeyStroke != null && !lastKeyStroke.equals("null")) {
 
@@ -268,7 +252,6 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
     // so we check if it's a letter (with or without shift) and skip return
     if (isLinux) {
 
-      //if (!((Character.isLetter(kc) || kc == '?')  && (e.getModifiers() == 0
       if (!((Character.isLetter(kc) || kc == '\u20AC') && (e.getModifiers() == 0
           || e.getModifiers() == KeyEvent.SHIFT_MASK))) {
 
@@ -281,25 +264,11 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
         return;
       }
     }
-//      displayInfo(e,"Typed processed " + keyProcessed);
-    String s = "";
-//      if (isLinux) {
-//         lastKeyStroke = keyMap.getKeyStrokeText(e,isAltGr);
-//         System.out.println("last " + lastKeyStroke);
-//         if (lastKeyStroke != null) {
-//            s = lastKeyStroke;
-//            System.out.println("last " + s);
-//         }
-//         else
-//            s +=kc;
-//      }
-//      else
-    s += kc;
     if (!session.isConnected())
       return;
-    screen.sendKeys(s);
+    screen.sendKeys(Character.toString(kc));
     if (recording)
-      recordBuffer.append(s);
+      recordBuffer.append(kc);
     keyProcessed = true;
     e.consume();
   }
@@ -314,8 +283,6 @@ public class DefaultKeyboardHandler extends KeyboardHandler {
 
     if (Character.isISOControl(e.getKeyChar()) || keyProcessed || e.isConsumed())
       return;
-
-//      displayInfo(e,"Released " + keyProcessed);
 
     String s = KeyMapper.getKeyStrokeText(e);
 
