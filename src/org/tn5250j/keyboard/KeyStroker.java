@@ -33,13 +33,13 @@ import java.awt.event.KeyEvent;
  */
 public class KeyStroker {
 
-   protected int keyCode;
-   protected boolean isShiftDown;
-   protected boolean isControlDown;
-   protected boolean isAltDown;
-   protected boolean isAltGrDown;
    protected int location;
-   protected int hashCode;
+   private int keyCode;
+   private boolean isShiftDown;
+   private boolean isControlDown;
+   private boolean isAltDown;
+   private boolean isAltGrDown;
+   private int hashCode;
 
    public static final String altSuffix = ".alt2";
 
