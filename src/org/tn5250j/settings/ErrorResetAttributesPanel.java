@@ -1,4 +1,4 @@
-/**
+/*
  * Title: ErrorResetAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -34,14 +34,16 @@ import java.awt.*;
 class ErrorResetAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JCheckBox resetRequired;
-  JCheckBox backspaceError;
+  private JCheckBox resetRequired;
+  private JCheckBox backspaceError;
 
-  public ErrorResetAttributesPanel(SessionConfig config) {
+  ErrorResetAttributesPanel(SessionConfig config) {
     super(config, "ErrorReset");
   }
 
-  /**Component initialization*/
+  /**
+   * Component initialization
+   */
   public void initPanel() throws Exception {
 
     setLayout(new BorderLayout());

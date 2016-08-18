@@ -1,5 +1,5 @@
 package org.tn5250j.settings;
-/**
+/*
  * Title: DisplayAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -43,13 +43,12 @@ class DisplayAttributesPanel extends AttributesPanel {
   private static final long serialVersionUID = 1L;
   private JRadioButton csHide;
   private JRadioButton csLine;
-  private JRadioButton csDot;
   private JRadioButton csShortLine;
   private JRadioButton saNormal;
   private JCheckBox guiCheck;
   private JCheckBox guiShowUnderline;
 
-  public DisplayAttributesPanel(SessionConfig config) {
+  DisplayAttributesPanel(SessionConfig config) {
     super(config, "Display");
   }
 
@@ -72,7 +71,7 @@ class DisplayAttributesPanel extends AttributesPanel {
     csHide.setActionCommand("Hide");
     csLine = new JRadioButton(LangTool.getString("sa.csLine"));
     csLine.setActionCommand("Line");
-    csDot = new JRadioButton(LangTool.getString("sa.csDot"));
+    JRadioButton csDot = new JRadioButton(LangTool.getString("sa.csDot"));
     csDot.setActionCommand("Dot");
     csShortLine = new JRadioButton(LangTool.getString("sa.csShortLine"));
     csShortLine.setActionCommand("ShortLine");

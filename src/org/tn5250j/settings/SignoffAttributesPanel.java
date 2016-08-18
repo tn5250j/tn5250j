@@ -1,4 +1,4 @@
-/**
+/*
  * Title: SignoffAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -36,13 +36,13 @@ import java.awt.event.ItemEvent;
 class SignoffAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JCheckBox signoffCheck;
-  JTextField fromRow;
-  JTextField fromCol;
-  JTextField toRow;
-  JTextField toCol;
+  private JCheckBox signoffCheck;
+  private JTextField fromRow;
+  private JTextField fromCol;
+  private JTextField toRow;
+  private JTextField toCol;
 
-  public SignoffAttributesPanel(SessionConfig config) {
+  SignoffAttributesPanel(SessionConfig config) {
     super(config, "Signoff");
   }
 

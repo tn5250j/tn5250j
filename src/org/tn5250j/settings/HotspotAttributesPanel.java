@@ -1,5 +1,5 @@
 package org.tn5250j.settings;
-/**
+/*
  * Title: HotspotAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -35,15 +35,17 @@ import java.awt.*;
 class HotspotAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JCheckBox hsCheck;
-  JTextField hsMore;
-  JTextField hsBottom;
+  private JCheckBox hsCheck;
+  private JTextField hsMore;
+  private JTextField hsBottom;
 
-  public HotspotAttributesPanel(SessionConfig config) {
+  HotspotAttributesPanel(SessionConfig config) {
     super(config, "HS");
   }
 
-  /**Component initialization*/
+  /**
+   * Component initialization
+   */
   public void initPanel() throws Exception {
 
     setLayout(new BorderLayout());

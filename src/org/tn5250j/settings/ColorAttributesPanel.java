@@ -1,5 +1,5 @@
 package org.tn5250j.settings;
-/**
+/*
  * Title: ColorAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -39,18 +39,18 @@ import java.util.Properties;
 class ColorAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JComboBox colorSchemaList;
-  JComboBox colorList;
-  JColorChooser jcc;
-  Schema colorSchema;
-  Properties schemaProps;
+  private JComboBox colorList;
+  private JColorChooser jcc;
+  private Schema colorSchema;
+  private Properties schemaProps;
 
-
-  public ColorAttributesPanel(SessionConfig config) {
+  ColorAttributesPanel(SessionConfig config) {
     super(config, "Colors");
   }
 
-  /**Component initialization*/
+  /**
+   * Component initialization
+   */
   public void initPanel() throws Exception {
 
     JPanel cp = new JPanel();
@@ -59,7 +59,7 @@ class ColorAttributesPanel extends AttributesPanel {
     JPanel cschp = new JPanel();
     TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.colorSchema"));
     cschp.setBorder(tb);
-    colorSchemaList = new JComboBox();
+    JComboBox colorSchemaList = new JComboBox();
     loadSchemas(colorSchemaList);
 
     colorSchemaList.addActionListener(new ActionListener() {

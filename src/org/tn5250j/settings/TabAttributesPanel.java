@@ -1,4 +1,4 @@
-/**
+/*
  * $Id$
  * <p>
  * Title: tn5250J
@@ -35,9 +35,9 @@ import java.awt.*;
 class TabAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JCheckBox tabCloseCheck;
+  private JCheckBox tabCloseCheck;
 
-  public TabAttributesPanel(SessionConfig config) {
+  TabAttributesPanel(SessionConfig config) {
     super(config, "Tabs");
   }
 
@@ -64,6 +64,7 @@ class TabAttributesPanel extends AttributesPanel {
 
   }
 
+  @Override
   public void save() {
 
   }

@@ -1,5 +1,5 @@
 package org.tn5250j.settings;
-/**
+/*
  * Title: CursorAttributesPanel
  * Copyright:   Copyright (c) 2001, 2002
  * Company:
@@ -34,22 +34,24 @@ import java.awt.*;
 class CursorAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JRadioButton cFull;
-  JRadioButton cHalf;
-  JRadioButton cLine;
-  JRadioButton chNone;
-  JRadioButton chHorz;
-  JRadioButton chVert;
-  JRadioButton chCross;
-  JCheckBox rulerFixed;
-  JTextField cursorBottOffset;
-  JRadioButton blink;
+  private JRadioButton cFull;
+  private JRadioButton cHalf;
+  private JRadioButton cLine;
+  private JRadioButton chNone;
+  private JRadioButton chHorz;
+  private JRadioButton chVert;
+  private JRadioButton chCross;
+  private JCheckBox rulerFixed;
+  private JTextField cursorBottOffset;
+  private JRadioButton blink;
 
-  public CursorAttributesPanel(SessionConfig config) {
+  CursorAttributesPanel(SessionConfig config) {
     super(config, "Cursor");
   }
 
-  /**Component initialization*/
+  /**
+   * Component initialization
+   */
   public void initPanel() throws Exception {
 
     setLayout(new BorderLayout());

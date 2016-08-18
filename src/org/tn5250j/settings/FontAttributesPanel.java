@@ -1,4 +1,4 @@
-/**
+/*
  * Title: ColorAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -36,17 +36,19 @@ import java.awt.*;
 class FontAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JComboBox fontsList;
-  JCheckBox useAntialias;
-  JTextField verticalScale;
-  JTextField horizontalScale;
-  JTextField pointSize;
+  private JComboBox fontsList;
+  private JCheckBox useAntialias;
+  private JTextField verticalScale;
+  private JTextField horizontalScale;
+  private JTextField pointSize;
 
-  public FontAttributesPanel(SessionConfig config) {
+  FontAttributesPanel(SessionConfig config) {
     super(config, "Fonts");
   }
 
-  /**Component initialization*/
+  /**
+   * Component initialization
+   */
   public void initPanel() throws Exception {
 
     setLayout(new BorderLayout());

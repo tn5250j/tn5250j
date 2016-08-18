@@ -1,5 +1,5 @@
 package org.tn5250j.settings;
-/**
+/*
  * Title: KeypadAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -34,13 +34,15 @@ import java.awt.*;
 class KeypadAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JCheckBox kpCheck;
+  private JCheckBox kpCheck;
 
-  public KeypadAttributesPanel(SessionConfig config) {
+  KeypadAttributesPanel(SessionConfig config) {
     super(config, "KP");
   }
 
-  /**Component initialization*/
+  /**
+   * Component initialization
+   */
   public void initPanel() throws Exception {
 
     setLayout(new BorderLayout());

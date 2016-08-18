@@ -1,4 +1,4 @@
-/**
+/*
  * Title: MouseAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -34,10 +34,10 @@ import java.awt.*;
 class MouseAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JCheckBox dceCheck;
-  JCheckBox mwCheck;
+  private JCheckBox dceCheck;
+  private JCheckBox mwCheck;
 
-  public MouseAttributesPanel(SessionConfig config) {
+  MouseAttributesPanel(SessionConfig config) {
     super(config, "Mouse");
   }
 

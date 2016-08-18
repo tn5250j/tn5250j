@@ -1,5 +1,5 @@
 package org.tn5250j.settings;
-/**
+/*
  * Title: SignoffAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -34,9 +34,9 @@ import java.awt.*;
 class OnConnectAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  JTextField connectMacro;
+  private JTextField connectMacro;
 
-  public OnConnectAttributesPanel(SessionConfig config) {
+  OnConnectAttributesPanel(SessionConfig config) {
     super(config, "OnConnect");
   }
 
