@@ -1,4 +1,4 @@
-/**
+/*
  * Title: PrinterThread
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -35,22 +35,19 @@ import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
 
-public class PrinterThread extends Thread implements Printable {
+class PrinterThread extends Thread implements Printable {
 
-  char[] screen;
-  char[] screenExtendedAttr;
-  char[] screenAttrPlace;
-  Screen5250 scr;
-  int numCols;
-  int numRows;
-  Color colorBg;
-  Font font;
-  SessionPanel session;
-  boolean toDefault;
-  SessionConfig config;
+  private char[] screen;
+  private char[] screenExtendedAttr;
+  private char[] screenAttrPlace;
+  private int numCols;
+  private int numRows;
+  private Font font;
+  private SessionPanel session;
+  private SessionConfig config;
 
-  public PrinterThread(Screen5250 scr, Font font, int cols, int rows,
-                       Color colorBg, boolean toDefaultPrinter, SessionPanel ses) {
+  PrinterThread(Screen5250 scr, Font font, int cols, int rows,
+                Color colorBg, boolean toDefaultPrinter, SessionPanel ses) {
 
 
     setPriority(1);
@@ -62,14 +59,12 @@ public class PrinterThread extends Thread implements Printable {
     screen = new char[len];
     screenExtendedAttr = new char[len];
     screenAttrPlace = new char[len];
-    int ret = scr.GetScreen(screen, len, TN5250jConstants.PLANE_TEXT);
-    ret = scr.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
-    ret = scr.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
-    toDefault = toDefaultPrinter;
+    scr.GetScreen(screen, len, TN5250jConstants.PLANE_TEXT);
+    scr.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+    scr.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
 
     numCols = cols;
     numRows = rows;
-    this.colorBg = colorBg;
     this.font = font;
   }
 
@@ -205,13 +200,12 @@ public class PrinterThread extends Thread implements Printable {
       int w = (int) pageFormat.getImageableWidth() / numCols;     // proposed width
       int h = (int) pageFormat.getImageableHeight() / numRows;     // proposed height
 
-      Font k = font;
 
       LineMetrics l;
       FontRenderContext f = null;
 
       float j = 1;
-
+      Font k;
       for (; j < 50; j++) {
 
         // derive the font and obtain the relevent information to compute
