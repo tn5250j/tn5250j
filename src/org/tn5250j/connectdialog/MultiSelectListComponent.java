@@ -1,4 +1,4 @@
-/**
+/*
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -41,9 +41,9 @@ import java.io.Serializable;
 import java.util.Vector;
 
 /**
- *  A multiselection list component.  It is a proxy class wrapping a JList
- *  component that controls two internal JLists for the selection of what is
- *  to be included and not included on the two sides of a list.
+ * A multiselection list component.  It is a proxy class wrapping a JList
+ * component that controls two internal JLists for the selection of what is
+ * to be included and not included on the two sides of a list.
  */
 class MultiSelectListComponent extends JComponent {
 
@@ -54,6 +54,7 @@ class MultiSelectListComponent extends JComponent {
   private static final String SELECT_ALL = ">>|";
   private static final String DESELECT_ITEM = "<";
   private static final String DESELECT_ALL = "|<<";
+  private static final Dimension BUTTON_SIZE = new Dimension(48, 32);
 
   // Internal components
   private JList mainList = null;
@@ -69,10 +70,6 @@ class MultiSelectListComponent extends JComponent {
   private EventHandler eventHandler = new EventHandler();
   private Dimension defaultListSize = new Dimension(100, 200);
   private FontMetrics lastFontMetrics = null;
-  private String sourceColumnHeader;
-  private String selectionColumnHeader;
-  private String sourceHeader;
-  private String selectionHeader;
   private JPanel sourcePanel;
   private JPanel selectionPanel;
 
@@ -161,7 +158,7 @@ class MultiSelectListComponent extends JComponent {
     deselectAllButton = initButton(new SelectionButton(DESELECT_ALL),
         LangTool.getString("oaa.RemoveAll"));
 
-    Dimension dimButton = getButtonSize();
+    Dimension dimButton = BUTTON_SIZE;
     buttonPanel.setPreferredSize(new Dimension(dimButton.width, 4 * dimButton.height));
 
     // setup our layout to center the source buttons and selections
@@ -295,11 +292,10 @@ class MultiSelectListComponent extends JComponent {
 
   /**
    * Sets the column header of the source list
+   *
    * @param header
    */
   public void setSourceColumnHeader(String header) {
-
-    sourceColumnHeader = header;
     JViewport jvp = new JViewport();
     jvp.setView(new JLabel(header));
     sourcePane.setColumnHeader(jvp);
@@ -308,11 +304,10 @@ class MultiSelectListComponent extends JComponent {
 
   /**
    * Sets the column header of the selection list
+   *
    * @param header
    */
   public void setSelectionColumnHeader(String header) {
-
-    selectionColumnHeader = header;
     JViewport jvp = new JViewport();
     jvp.setView(new JLabel(header));
     selectionPane.setColumnHeader(jvp);
@@ -321,6 +316,7 @@ class MultiSelectListComponent extends JComponent {
 
   /**
    * Sets the header of the source list
+   *
    * @param header
    */
   public void setSourceHeader(String header) {
@@ -331,34 +327,31 @@ class MultiSelectListComponent extends JComponent {
 
   /**
    * Sets the header of the source list
+   *
    * @param header
    * @param horizontalAlignment
    */
-  public void setSourceHeader(String header, int horizontalAlignment) {
-
-    sourceHeader = header;
+  void setSourceHeader(String header, int horizontalAlignment) {
     sourcePanel.add(new JLabel(header, horizontalAlignment), BorderLayout.NORTH);
 
   }
 
   /**
    * Sets the header of the selection list
+   *
    * @param header
    */
   public void setSelectionHeader(String header) {
-
     setSelectionHeader(header, JLabel.LEFT);
-
   }
 
   /**
    * Sets the header of the selection list
+   *
    * @param header
    * @param horizontalAlignment
    */
-  public void setSelectionHeader(String header, int horizontalAlignment) {
-
-    selectionHeader = header;
+  void setSelectionHeader(String header, int horizontalAlignment) {
     selectionPanel.add(new JLabel(header, horizontalAlignment), BorderLayout.NORTH);
 
   }
@@ -383,7 +376,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Constructs the list's data model from an array of Objects.
    */
-  public void setListData(final Object[] listData) {
+  void setListData(final Object[] listData) {
     mainList.setListData(listData);
     updateView();
   }
@@ -426,8 +419,8 @@ class MultiSelectListComponent extends JComponent {
    * Forwards the given notification event to all registered
    * listeners.
    */
-  protected void fireSelectionValueChanged(int firstIndex,
-                                           int lastIndex, boolean isAdjusting) {
+  private void fireSelectionValueChanged(int firstIndex,
+                                         int lastIndex, boolean isAdjusting) {
     // Guaranteed to return a non-null array
     Object[] listeners = listenerList.getListenerList();
     ListSelectionEvent e = null;
@@ -559,7 +552,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Selects the specified cells.
    */
-  public void setSelectedIndices(int[] indices) {
+  void setSelectedIndices(int[] indices) {
     mainList.setSelectedIndices(indices);
     updateView();
   }
@@ -567,7 +560,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Returns an array of the selected cell values.
    */
-  public Object[] getSelectedValues() {
+  Object[] getSelectedValues() {
     return mainList.getSelectedValues();
   }
 
@@ -596,7 +589,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Initializes and adds a button to the component.
    */
-  protected SelectionButton initButton(SelectionButton button, String toolTipText) {
+  private SelectionButton initButton(SelectionButton button, String toolTipText) {
     if (button != null) {
       buttonPanel.add(button);
       button.addActionListener(eventHandler);
@@ -615,7 +608,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Initializes and adds a button to the component.
    */
-  protected void updateView() {
+  private void updateView() {
     ListModel mainModel = mainList.getModel();
     int[] selected = mainList.getSelectedIndices();
 
@@ -636,7 +629,7 @@ class MultiSelectListComponent extends JComponent {
   /*
    * Enables (or disables) the buttons.
    */
-  public void updateButtons() {
+  private void updateButtons() {
 
     if (!sourceList.isEnabled()) {
       selectItemButton.setEnabled(false);
@@ -649,13 +642,6 @@ class MultiSelectListComponent extends JComponent {
       deselectItemButton.setEnabled(!selectionList.isSelectionEmpty());
       deselectAllButton.setEnabled(selectionList.getModel().getSize() > 0);
     }
-  }
-
-  /**
-   * Returns the nominal size of the component.
-   */
-  public static final Dimension getButtonSize() {
-    return new Dimension(48, 32);
   }
 
   /**
@@ -703,7 +689,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Returns the preferred width of the list.
    */
-  public int getListPreferredWidth() {
+  private int getListPreferredWidth() {
     ListModel mainModel = mainList.getModel();
     int maxWidth = 0;
     if (lastFontMetrics != null) {
@@ -721,7 +707,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Moves the items selected in the left list to the right list.
    */
-  protected void selectItem() {
+  private void selectItem() {
     int[] indices = mainList.getSelectedIndices();
     Object[] values = sourceList.getSelectedValues();
 
@@ -745,7 +731,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Moves all items from the left list to the right list.
    */
-  protected void selectAll() {
+  private void selectAll() {
     addSelectionInterval(0, mainList.getModel().getSize() - 1);
     updateView();
   }
@@ -753,7 +739,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Moves the items selected in the right list to the left list.
    */
-  protected void deselectItem() {
+  private void deselectItem() {
     int[] indices = mainList.getSelectedIndices();
     Object[] values = selectionList.getSelectedValues();
 
@@ -781,11 +767,12 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Move the selected items from one list and
    * also select the next item in the list.
-   * @param list the list which is to be changed
-   * @param values the selected values
+   *
+   * @param list       the list which is to be changed
+   * @param values     the selected values
    * @param newIndices the indeces of the selected items
    */
-  protected void doUpdate(JList list, Object values[], int newIndices[]) {
+  private void doUpdate(JList list, Object values[], int newIndices[]) {
     if (values != null && values.length > 0) {
       // Order is important. This must come before the updateView since
       // it recreates the selection/source lists.
@@ -810,11 +797,12 @@ class MultiSelectListComponent extends JComponent {
 
   /**
    * Given an Object finds its index in the list.
+   *
    * @param list the JList to be searched.
    * @param item the Object to search for.
    * @return the item's index or -1 if not found
    */
-  public int getIndexFromItem(JList list, Object item) {
+  private int getIndexFromItem(JList list, Object item) {
     ListModel lm = list.getModel();
     for (int i = 0; i < lm.getSize(); i++) {
       Object o = lm.getElementAt(i);
@@ -828,7 +816,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Moves all items from the right list to the left list.
    */
-  protected void deselectAll() {
+  private void deselectAll() {
     mainList.clearSelection();
     updateView();
   }
@@ -885,7 +873,7 @@ class MultiSelectListComponent extends JComponent {
   /**
    * Internal selection button class.
    */
-  class SelectionButton extends JButton {
+  private static class SelectionButton extends JButton {
 
     private static final long serialVersionUID = 1L;
 
@@ -902,7 +890,7 @@ class MultiSelectListComponent extends JComponent {
      * Returns the preferred size of the component.
      */
     public Dimension getPreferredSize() {
-      return getButtonSize();
+      return BUTTON_SIZE;
     }
 
     /**
@@ -923,7 +911,8 @@ class MultiSelectListComponent extends JComponent {
 
 
   // dummy class to handle Look and Feel and proper serialization
-  protected class MultiSelectListUI extends ComponentUI {
+  private static class MultiSelectListUI extends ComponentUI {
+
   }
 
 }
