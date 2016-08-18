@@ -2,112 +2,110 @@
  * Title: MouseAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
- * @author  Kenneth J. Pouncey
+ *
+ * @author Kenneth J. Pouncey
  * @version 0.5
- *
+ * <p>
  * Description:
- *
+ * <p>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
- *
  */
 package org.tn5250j.settings;
 
-import java.awt.*;
-import javax.swing.*;
-
-import org.tn5250j.tools.*;
 import org.tn5250j.SessionConfig;
+import org.tn5250j.tools.LangTool;
 
- class MouseAttributesPanel extends AttributesPanel {
+import javax.swing.*;
+import java.awt.*;
 
-   private static final long serialVersionUID = 1L;
-JCheckBox dceCheck;
-   JCheckBox mwCheck;
+class MouseAttributesPanel extends AttributesPanel {
 
-   public MouseAttributesPanel(SessionConfig config ) {
-      super(config,"Mouse");
-   }
+  private static final long serialVersionUID = 1L;
+  JCheckBox dceCheck;
+  JCheckBox mwCheck;
 
-   /**Component initialization*/
-   public void initPanel() throws Exception  {
+  public MouseAttributesPanel(SessionConfig config) {
+    super(config, "Mouse");
+  }
 
-      setLayout(new BorderLayout());
-      contentPane = new JPanel();
-      contentPane.setLayout(new BoxLayout(contentPane,BoxLayout.Y_AXIS));
-      add(contentPane,BorderLayout.NORTH);
+  /**Component initialization*/
+  public void initPanel() throws Exception {
 
-      // define double click as enter
-      JPanel dcep = new JPanel();
-      dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.doubleClick")));
+    setLayout(new BorderLayout());
+    contentPane = new JPanel();
+    contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+    add(contentPane, BorderLayout.NORTH);
 
-      dceCheck = new JCheckBox(LangTool.getString("sa.sendEnter"));
+    // define double click as enter
+    JPanel dcep = new JPanel();
+    dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.doubleClick")));
 
-      // check if double click sends enter
-      dceCheck.setSelected(getStringProperty("doubleClick").equals("Yes"));
+    dceCheck = new JCheckBox(LangTool.getString("sa.sendEnter"));
 
-      dcep.add(dceCheck);
+    // check if double click sends enter
+    dceCheck.setSelected(getStringProperty("doubleClick").equals("Yes"));
 
-      // define double click as enter
-      JPanel mwp = new JPanel();
-      mwp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.mouseWheel")));
+    dcep.add(dceCheck);
 
-      mwCheck = new JCheckBox(LangTool.getString("sa.activateMW"));
+    // define double click as enter
+    JPanel mwp = new JPanel();
+    mwp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.mouseWheel")));
 
-      // check if mouse wheel active
-      mwCheck.setSelected(getStringProperty("mouseWheel").equals("Yes"));
+    mwCheck = new JCheckBox(LangTool.getString("sa.activateMW"));
 
-      mwp.add(mwCheck);
+    // check if mouse wheel active
+    mwCheck.setSelected(getStringProperty("mouseWheel").equals("Yes"));
 
-      contentPane.add(dcep);
-      contentPane.add(mwp);
+    mwp.add(mwCheck);
 
-   }
+    contentPane.add(dcep);
+    contentPane.add(mwp);
 
-   public void save() {
+  }
 
-   }
+  public void save() {
 
-   public void applyAttributes() {
+  }
 
-      //  double click enter
-      if (dceCheck.isSelected()) {
-         changes.firePropertyChange(this,"doubleClick",
-                           getStringProperty("doubleClick"),
-                           "Yes");
-         setProperty("doubleClick","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"doubleClick",
-                           getStringProperty("doubleClick"),
-                           "No");
-         setProperty("doubleClick","No");
-      }
+  public void applyAttributes() {
 
-      if (mwCheck.isSelected()) {
-         changes.firePropertyChange(this,"mouseWheel",
-                           getStringProperty("mouseWheel"),
-                           "Yes");
-         setProperty("mouseWheel","Yes");
-      }
-      else {
-         changes.firePropertyChange(this,"mouseWheel",
-                           getStringProperty("mouseWheel"),
-                           "No");
-         setProperty("mouseWheel","No");
-      }
+    //  double click enter
+    if (dceCheck.isSelected()) {
+      changes.firePropertyChange(this, "doubleClick",
+          getStringProperty("doubleClick"),
+          "Yes");
+      setProperty("doubleClick", "Yes");
+    } else {
+      changes.firePropertyChange(this, "doubleClick",
+          getStringProperty("doubleClick"),
+          "No");
+      setProperty("doubleClick", "No");
+    }
 
-   }
+    if (mwCheck.isSelected()) {
+      changes.firePropertyChange(this, "mouseWheel",
+          getStringProperty("mouseWheel"),
+          "Yes");
+      setProperty("mouseWheel", "Yes");
+    } else {
+      changes.firePropertyChange(this, "mouseWheel",
+          getStringProperty("mouseWheel"),
+          "No");
+      setProperty("mouseWheel", "No");
+    }
+
+  }
 }
