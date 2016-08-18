@@ -87,7 +87,7 @@ SessionListener {
 	private GuiGraphicBuffer guiGraBuf;
 	protected TNRubberBand rubberband;
 	private JPanel s = new JPanel();
-	private KeyPad keyPad = new KeyPad();
+	private KeyPad keyPad;
 	private String newMacName;
 	private Vector<SessionJumpListener> listeners = null;
 	private Vector<EmulatorActionListener> actionListeners = null;
@@ -97,14 +97,12 @@ SessionListener {
 	private boolean doubleClick;
 	protected SessionConfig sesConfig;
 	protected KeyboardHandler keyHandler;
-	protected final SessionScroller scroller = new SessionScroller();
+	private final SessionScroller scroller = new SessionScroller();
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public SessionPanel (Session5250 session) {
-		//Construct the frame
-		//, SessionConfig config) {
-
+		this.keyPad = new KeyPad(session.getConfiguration().getConfig());
 		this.session = session;
 
 		sesConfig = session.getConfiguration();
@@ -354,7 +352,6 @@ SessionListener {
 	 * Asks the user to confirm tab close,
 	 * only if configured (option 'confirm tab close')
 	 *
-	 * @param sesConfig
 	 * @return true if tab should be closed, false if not
 	 */
 	private boolean confirmTabClose() {

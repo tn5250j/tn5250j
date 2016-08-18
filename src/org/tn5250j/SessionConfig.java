@@ -42,10 +42,20 @@ import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
+import static java.lang.Float.parseFloat;
+
 /**
  * A host session configuration object
  */
 public class SessionConfig {
+
+  public static final float KEYPAD_FONT_SIZE_DEFAULT_VALUE = 12.0f;
+  public static final String KEYPAD_FONT_SIZE = "keypadFontSize";
+  public static final String KEYPAD_ENABLED = "keypad";
+	public static final String YES = "Yes";
+	public static final String NO = "No";
+
+	private final SessionConfiguration sessionConfiguration = new SessionConfiguration();
 
 	private String configurationResource;
 	private String sessionName;
@@ -54,6 +64,8 @@ public class SessionConfig {
 
 	private List<SessionConfigListener> sessionCfglisteners = null;
 	private final ReadWriteLock sessionCfglistenersLock = new ReentrantReadWriteLock();
+	private float keypadFontSize;
+	private KeyPad config;
 
 	public SessionConfig (String configurationResource, String sessionName) {
 
@@ -98,7 +110,12 @@ public class SessionConfig {
 
 	}
 
-	public Properties getProperties() {
+  /**
+   * @deprecated see {@link SessionConfiguration}
+   * @return
+   */
+  @Deprecated
+  public Properties getProperties() {
 
 		return sesProps;
 	}
@@ -250,6 +267,11 @@ public class SessionConfig {
 		return sesProps.containsKey(prop);
 	}
 
+  /**
+   * @deprecated see {@link SessionConfiguration}
+   * @return
+   */
+  @Deprecated
 	public String getStringProperty(String prop) {
 
 		if (sesProps.containsKey(prop)){
@@ -259,6 +281,11 @@ public class SessionConfig {
 
 	}
 
+  /**
+   * @deprecated see {@link SessionConfiguration}
+   * @return
+   */
+  @Deprecated
 	public int getIntegerProperty(String prop) {
 
 		if (sesProps.containsKey(prop)) {
@@ -274,6 +301,11 @@ public class SessionConfig {
 
 	}
 
+  /**
+   * @deprecated see {@link SessionConfiguration}
+   * @return
+   */
+  @Deprecated
 	public Color getColorProperty(String prop) {
 
 		if (sesProps.containsKey(prop)) {
@@ -315,14 +347,25 @@ public class SessionConfig {
 		sesProps.setProperty(key,rectStr);
 	}
 
+  /**
+   * @deprecated see {@link SessionConfiguration}
+   * @return
+   */
+  @Deprecated
 	public float getFloatProperty(String prop) {
+		return getFloatProperty(prop, 0.0f);
+	}
 
-		if (sesProps.containsKey(prop)) {
-			float f = Float.parseFloat((String)sesProps.get(prop));
-			return f;
+  /**
+   * @deprecated see {@link SessionConfiguration}
+   * @return
+   */
+  @Deprecated
+	public float getFloatProperty(String propertyName, float defaultValue) {
+		if (sesProps.containsKey(propertyName)) {
+			return parseFloat((String) sesProps.get(propertyName));
 		}
-		return 0.0f;
-
+		return defaultValue;
 	}
 
 	public Object setProperty(String key, String value ) {
@@ -368,6 +411,22 @@ public class SessionConfig {
 			}
 		} finally {
 			sessionCfglistenersLock.writeLock().unlock();
+		}
+	}
+
+	public SessionConfiguration getConfig() {
+		return sessionConfiguration;
+	}
+
+  /**
+   * This is the new intended way to access configuration.
+   * Only Getters are allowed here!
+   *
+   * TODO: refactor all former usages which access properties directly
+   */
+	public class SessionConfiguration {
+		public float getKeypadFontSize() {
+			return getFloatProperty(KEYPAD_FONT_SIZE, KEYPAD_FONT_SIZE_DEFAULT_VALUE);
 		}
 	}
 
