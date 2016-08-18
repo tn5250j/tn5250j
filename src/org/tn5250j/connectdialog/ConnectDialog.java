@@ -581,7 +581,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     intConsole.setEnabled(false);
     intConsole.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        intConsole_itemStateChanged(e);
+        // TODO: Provide the itemstatechanged for the intConsole checkbox
       }
     });
     intFile = new JRadioButton(LangTool.getString("logscr.File"));
@@ -1131,16 +1131,6 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     properties.setProperty("emul.restricted", s);
   }
 
-//   private void addLabelComponent(String text, Component comp,
-//         Container container) {
-//
-//      JLabel label = new JLabel(text);
-//      label.setAlignmentX(Component.LEFT_ALIGNMENT);
-//      label.setHorizontalTextPosition(JLabel.LEFT);
-//      container.add(label);
-//      container.add(comp);
-//   }
-
   private void removeEntry() {
     int selectedRow = rowSM.getMinSelectionIndex();
     properties.remove(ctm.getValueAt(selectedRow, 0));
@@ -1232,51 +1222,32 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void intDEBUG_itemStateChanged(ItemEvent e) {
     if (intDEBUG.isSelected()) {
-      // intConsole.setEnabled(true);
-      // intFile.setEnabled(true);
-      // intBoth.setEnabled(true);
       TN5250jLogFactory.setLogLevels(TN5250jLogger.DEBUG);
     }
   }
 
   private void intINFO_itemStateChanged(ItemEvent e) {
     if (intINFO.isSelected()) {
-      // intConsole.setEnabled(true);
-      // intFile.setEnabled(true);
-      // intBoth.setEnabled(true);
       TN5250jLogFactory.setLogLevels(TN5250jLogger.INFO);
     }
   }
 
   private void intWARN_itemStateChanged(ItemEvent e) {
     if (intWARN.isSelected()) {
-      // intConsole.setEnabled(true);
-      // intFile.setEnabled(true);
-      // intBoth.setEnabled(true);
       TN5250jLogFactory.setLogLevels(TN5250jLogger.WARN);
     }
   }
 
   private void intERROR_itemStateChanged(ItemEvent e) {
     if (intERROR.isSelected()) {
-      // intConsole.setEnabled(true);
-      // intFile.setEnabled(true);
-      // intBoth.setEnabled(true);
       TN5250jLogFactory.setLogLevels(TN5250jLogger.ERROR);
     }
   }
 
   private void intFATAL_itemStateChanged(ItemEvent e) {
     if (intFATAL.isSelected()) {
-      // intConsole.setEnabled(true);
-      // intFile.setEnabled(true);
-      // intBoth.setEnabled(true);
       TN5250jLogFactory.setLogLevels(TN5250jLogger.FATAL);
     }
-  }
-
-  private void intConsole_itemStateChanged(ItemEvent e) {
-    // TODO: Provide the itemstatechanged for the intConsole checkbox
   }
 
   private class CheckPasswordDocument extends PlainDocument {
