@@ -61,7 +61,7 @@ import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.settings.SessionSettings;
+import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;

@@ -1,6 +1,6 @@
-package org.tn5250j.settings;
+package org.tn5250j.sessionsettings;
 /*
- * Title: KeypadAttributesPanel
+ * Title: SignoffAttributesPanel
  * Copyright:   Copyright (c) 2001
  * Company:
  *
@@ -31,18 +31,16 @@ import org.tn5250j.tools.LangTool;
 import javax.swing.*;
 import java.awt.*;
 
-class KeypadAttributesPanel extends AttributesPanel {
+class OnConnectAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
-  private JCheckBox kpCheck;
+  private JTextField connectMacro;
 
-  KeypadAttributesPanel(SessionConfig config) {
-    super(config, "KP");
+  OnConnectAttributesPanel(SessionConfig config) {
+    super(config, "OnConnect");
   }
 
-  /**
-   * Component initialization
-   */
+  /**Component initialization*/
   public void initPanel() throws Exception {
 
     setLayout(new BorderLayout());
@@ -50,17 +48,18 @@ class KeypadAttributesPanel extends AttributesPanel {
     contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
     add(contentPane, BorderLayout.NORTH);
 
-    // define Key Pad panel
-    JPanel kpp = new JPanel();
-    kpp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.kpp")));
-    kpCheck = new JCheckBox(LangTool.getString("sa.kpCheck"));
+    // define onConnect macro to run
+    JPanel ocMacrop = new JPanel();
+    ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
 
-    if (getStringProperty("keypad").equals("Yes"))
-      kpCheck.setSelected(true);
+    connectMacro = new JTextField();
+    connectMacro.setColumns(30);
 
-    kpp.add(kpCheck);
+    // sets the connect macro
+    connectMacro.setText(getStringProperty("connectMacro"));
 
-    contentPane.add(kpp);
+    ocMacrop.add(connectMacro);
+    contentPane.add(ocMacrop);
 
   }
 
@@ -70,17 +69,10 @@ class KeypadAttributesPanel extends AttributesPanel {
 
   public void applyAttributes() {
 
-    if (kpCheck.isSelected()) {
-      changes.firePropertyChange(this, "keypad",
-          getStringProperty("keypad"),
-          "Yes");
-      setProperty("keypad", "Yes");
-    } else {
-      changes.firePropertyChange(this, "keypad",
-          getStringProperty("keypad"),
-          "No");
-      setProperty("keypad", "No");
-    }
+    changes.firePropertyChange(this, "connectMacro",
+        getStringProperty("connectMacro"),
+        connectMacro.getText());
+    setProperty("connectMacro", connectMacro.getText());
 
   }
 }

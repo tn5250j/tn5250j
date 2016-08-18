@@ -1,4 +1,4 @@
-package org.tn5250j.settings;
+package org.tn5250j.sessionsettings;
 /*
  * Title: CursorAttributesPanel
  * Copyright:   Copyright (c) 2001, 2002

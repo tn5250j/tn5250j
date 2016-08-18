@@ -1,4 +1,4 @@
-package org.tn5250j.settings;
+package org.tn5250j.sessionsettings;
 /*
  * Title: DisplayAttributesPanel
  * Copyright:   Copyright (c) 2001
@@ -33,7 +33,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 
-import static org.tn5250j.settings.ColumnSeparator.*;
+import static org.tn5250j.sessionsettings.ColumnSeparator.*;
 
 class DisplayAttributesPanel extends AttributesPanel {
 
