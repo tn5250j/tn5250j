@@ -33,6 +33,10 @@ import java.awt.*;
 
 public class KeypadAttributesPanel extends AttributesPanel {
 
+  private static final String YES = "Yes";
+  private static final String NO = "No";
+  private static final String KEYPAD = "keypad";
+
   private static final long serialVersionUID = 1L;
   private JCheckBox kpCheck;
 
@@ -53,15 +57,12 @@ public class KeypadAttributesPanel extends AttributesPanel {
     // define Key Pad panel
     JPanel kpp = new JPanel();
     kpp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.kpp")));
+
     kpCheck = new JCheckBox(LangTool.getString("sa.kpCheck"));
-
-    if (getStringProperty("keypad").equals("Yes"))
-      kpCheck.setSelected(true);
-
+    kpCheck.setSelected(YES.equals(getStringProperty(KEYPAD)));
     kpp.add(kpCheck);
 
     contentPane.add(kpp);
-
   }
 
   @Override
@@ -69,19 +70,10 @@ public class KeypadAttributesPanel extends AttributesPanel {
 
   }
 
+  @Override
   public void applyAttributes() {
-
-    if (kpCheck.isSelected()) {
-      changes.firePropertyChange(this, "keypad",
-          getStringProperty("keypad"),
-          "Yes");
-      setProperty("keypad", "Yes");
-    } else {
-      changes.firePropertyChange(this, "keypad",
-          getStringProperty("keypad"),
-          "No");
-      setProperty("keypad", "No");
-    }
-
+    final String newValue = kpCheck.isSelected() ? YES : NO;
+    changes.firePropertyChange(this, KEYPAD, getStringProperty(KEYPAD), newValue);
+    setProperty(KEYPAD, newValue);
   }
 }
