@@ -29,7 +29,6 @@ import org.tn5250j.Configure;
 import org.tn5250j.ExternalProgramConfig;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.JSortTable;
-import org.tn5250j.gui.TN5250jMultiSelectList;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.tools.AlignLayout;
@@ -124,7 +123,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   // create some reusable borders and layouts
   private BorderLayout borderLayout = new BorderLayout();
 
-  private TN5250jMultiSelectList accessOptions;
+  private MultiSelectListComponent accessOptions;
   // password protection field for access to options list
   private JPasswordField password;
   private JButton setPassButton;
@@ -647,7 +646,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void createAccessPanel() {
 
-    accessOptions = new TN5250jMultiSelectList();
+    accessOptions = new MultiSelectListComponent();
 
     if (properties.getProperty("emul.accessDigest") != null)
       accessOptions.setEnabled(false);

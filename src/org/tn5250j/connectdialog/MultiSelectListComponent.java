@@ -23,7 +23,7 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.gui;
+package org.tn5250j.connectdialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -62,79 +62,79 @@ import org.tn5250j.tools.LangTool;
  *  component that controls two internal JLists for the selection of what is
  *  to be included and not included on the two sides of a list.
  */
-public class TN5250jMultiSelectList extends JComponent {
+class MultiSelectListComponent extends JComponent {
 
 	private static final long serialVersionUID = 1L;
 	
 // Button types
-   protected static final String SELECT_ITEM 	= ">";
-   protected static final String SELECT_ALL 	= ">>|";
-   protected static final String DESELECT_ITEM = "<";
-   protected static final String DESELECT_ALL	= "|<<";
+   private static final String SELECT_ITEM 	= ">";
+   private static final String SELECT_ALL 	= ">>|";
+   private static final String DESELECT_ITEM = "<";
+   private static final String DESELECT_ALL	= "|<<";
 
    // Internal components
-   protected JList mainList = null;
-   protected JList sourceList = null;
-   protected JList selectionList = null;
-   protected JScrollPane sourcePane = null;
-   protected JScrollPane selectionPane = null;
-   protected SelectionButton selectItemButton = null;
-   protected SelectionButton selectAllButton = null;
-   protected SelectionButton deselectItemButton = null;
-   protected SelectionButton deselectAllButton = null;
-   protected JPanel buttonPanel = null;
-   protected EventHandler eventHandler = new EventHandler();
-   protected Dimension defaultListSize = new Dimension(100, 200);
-   protected FontMetrics lastFontMetrics = null;
-   protected String sourceColumnHeader;
-   protected String selectionColumnHeader;
-   protected String sourceHeader;
-   protected String selectionHeader;
-   protected JPanel sourcePanel;
-   protected JPanel selectionPanel;
+   private JList mainList = null;
+   private JList sourceList = null;
+   private JList selectionList = null;
+   private JScrollPane sourcePane = null;
+   private JScrollPane selectionPane = null;
+   private SelectionButton selectItemButton = null;
+   private SelectionButton selectAllButton = null;
+   private SelectionButton deselectItemButton = null;
+   private SelectionButton deselectAllButton = null;
+   private JPanel buttonPanel = null;
+   private EventHandler eventHandler = new EventHandler();
+   private Dimension defaultListSize = new Dimension(100, 200);
+   private FontMetrics lastFontMetrics = null;
+   private String sourceColumnHeader;
+   private String selectionColumnHeader;
+   private String sourceHeader;
+   private String selectionHeader;
+   private JPanel sourcePanel;
+   private JPanel selectionPanel;
 
    /**
-    * Constructs a <code>TN5250jMultiSelectList</code> that displays the elements in the specified non-null model.
-    * All <code>TN5250jMultiSelectList</code> constructors delegate to this one.
+    * Constructs a <code>MultiSelectListComponent</code> that displays the elements in the specified non-null model.
+    * All <code>MultiSelectListComponent</code> constructors delegate to this one.
     */
-   public TN5250jMultiSelectList(ListModel dataModel) {
+   public MultiSelectListComponent(ListModel dataModel) {
       this();
       mainList.setModel(dataModel);
       init();
    }
 
    /**
-    * Constructs a <code>TN5250jMultiSelectList</code> that displays the elements in the specified array.
+    * Constructs a <code>MultiSelectListComponent</code> that displays the elements in the specified array.
     * This constructor just delegates to the <code>ListModel</code> constructor.
     */
-   public TN5250jMultiSelectList(Object[] listData) {
+   public MultiSelectListComponent(Object[] listData) {
       this();
        mainList.setListData(listData);
        init();
    }
 
    /**
-    * Constructs a <code>TN5250jMultiSelectList</code> that displays the elements in the specified Vector.
+    * Constructs a <code>MultiSelectListComponent</code> that displays the elements in the specified Vector.
     * This constructor just delegates to the ListModel constructor.
     */
-   public TN5250jMultiSelectList(Vector listData) {
+   public MultiSelectListComponent(Vector listData) {
       this();
        mainList.setListData(listData);
        init();
    }
 
    /**
-    * Creates a new <code>TN5250jMultiSelectList</code> component with an empty model.
+    * Creates a new <code>MultiSelectListComponent</code> component with an empty model.
     */
-   public TN5250jMultiSelectList() {
+   public MultiSelectListComponent() {
       this(4);
    }
 
    /**
-    * Creates a new <code>TN5250jMultiSelectList</code> component with an empty model and
+    * Creates a new <code>MultiSelectListComponent</code> component with an empty model and
     * the specified horizontal gap between components.
     */
-   public TN5250jMultiSelectList(int hgap) {
+   public MultiSelectListComponent(int hgap) {
       super();
 
       mainList = new JList();
@@ -876,13 +876,13 @@ public class TN5250jMultiSelectList extends JComponent {
            if (event.getSource() instanceof SelectionButton) {
                SelectionButton btn = (SelectionButton)event.getSource();
                if (btn.equals(selectItemButton)) {
-                   TN5250jMultiSelectList.this.selectItem();
+                   MultiSelectListComponent.this.selectItem();
                } else if (btn.equals(selectAllButton)) {
-                   TN5250jMultiSelectList.this.selectAll();
+                   MultiSelectListComponent.this.selectAll();
                } else if (btn.equals(deselectItemButton)) {
-                   TN5250jMultiSelectList.this.deselectItem();
+                   MultiSelectListComponent.this.deselectItem();
                } else if (btn.equals(deselectAllButton)) {
-                   TN5250jMultiSelectList.this.deselectAll();
+                   MultiSelectListComponent.this.deselectAll();
                }
            }
        }
@@ -893,11 +893,11 @@ public class TN5250jMultiSelectList extends JComponent {
         * Called whenever the value of the selection changes.
         */
        public void valueChanged(ListSelectionEvent e) {
-         if (e.getSource() == TN5250jMultiSelectList.this.mainList) {
-               TN5250jMultiSelectList.this.fireSelectionValueChanged(e.getFirstIndex(),
+         if (e.getSource() == MultiSelectListComponent.this.mainList) {
+               MultiSelectListComponent.this.fireSelectionValueChanged(e.getFirstIndex(),
                              e.getLastIndex(), e.getValueIsAdjusting());
            }
-           TN5250jMultiSelectList.this.updateButtons();
+           MultiSelectListComponent.this.updateButtons();
        }
 
    } // EventHandler
