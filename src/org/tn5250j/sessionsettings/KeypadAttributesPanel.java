@@ -30,15 +30,17 @@ import org.tn5250j.tools.LangTool;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
+import static javax.swing.BorderFactory.createTitledBorder;
+import static org.tn5250j.SessionConfig.KEYPAD_FONT_SIZE_DEFAULT_VALUE;
 
 class KeypadAttributesPanel extends AttributesPanel {
 
-  private static final String YES = "Yes";
-  private static final String NO = "No";
-  private static final String KEYPAD = "keypad";
-
   private static final long serialVersionUID = 1L;
-  private JCheckBox kpCheck;
+
+  private JCheckBox keyPadEnable;
+  private JTextField fontSize;
 
   KeypadAttributesPanel(SessionConfig config) {
     super(config, "KP");
@@ -54,21 +56,67 @@ class KeypadAttributesPanel extends AttributesPanel {
     contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
     add(contentPane, BorderLayout.NORTH);
 
-    // define Key Pad panel
-    JPanel kpp = new JPanel();
-    kpp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.kpp")));
+    JPanel keypadPanel = new JPanel();
+    keypadPanel.setLayout(new BoxLayout(keypadPanel, BoxLayout.Y_AXIS));
+    keypadPanel.setBorder(createTitledBorder(LangTool.getString("sa.kpp")));
+    keypadPanel.add(createKeypadPanel());
+    keypadPanel.add(createFontSizePanel());
+    contentPane.add(keypadPanel);
+  }
 
-    kpCheck = new JCheckBox(LangTool.getString("sa.kpCheck"));
-    kpCheck.setSelected(YES.equals(getStringProperty(KEYPAD)));
-    kpp.add(kpCheck);
+  private JPanel createKeypadPanel() {
+    JPanel panel = new JPanel();
+    keyPadEnable = new JCheckBox(LangTool.getString("sa.kpCheck"));
+    keyPadEnable.setSelected(SessionConfig.YES.equals(getStringProperty(SessionConfig.KEYPAD_ENABLED)));
+    keyPadEnable.addActionListener(new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        updateFontSizeTextEnabled();
+      }
+    });
+    panel.add(keyPadEnable);
+    return panel;
+  }
 
-    contentPane.add(kpp);
+  private void updateFontSizeTextEnabled() {
+    fontSize.setEnabled(keyPadEnable.isSelected());
+  }
+
+  private JPanel createFontSizePanel() {
+    JPanel fontSizePanel = new JPanel();
+    fontSize = new JTextField(Float.toString(KEYPAD_FONT_SIZE_DEFAULT_VALUE), 5);
+    if (getStringProperty(SessionConfig.KEYPAD_FONT_SIZE).length() != 0) {
+      fontSize.setText(getStringProperty(SessionConfig.KEYPAD_FONT_SIZE));
+    }
+    fontSizePanel.add(new JLabel(LangTool.getString("spool.labelOptsFontSize")));
+    fontSizePanel.add(fontSize);
+    return fontSizePanel;
   }
 
   @Override
   public void applyAttributes() {
-    final String newValue = kpCheck.isSelected() ? YES : NO;
-    changes.firePropertyChange(this, KEYPAD, getStringProperty(KEYPAD), newValue);
-    setProperty(KEYPAD, newValue);
+    applyKeypadEnabled();
+    applyFontSize();
+  }
+
+  private void applyKeypadEnabled() {
+    final String newValue = keyPadEnable.isSelected() ? SessionConfig.YES : SessionConfig.NO;
+    changes.firePropertyChange(this, SessionConfig.KEYPAD_ENABLED, getStringProperty(SessionConfig.KEYPAD_ENABLED), newValue);
+    setProperty(SessionConfig.KEYPAD_ENABLED, newValue);
+  }
+
+  private void applyFontSize() {
+    final String newValue = ensureValidFloatAsString(fontSize.getText());
+    changes.firePropertyChange(this, SessionConfig.KEYPAD_FONT_SIZE, getStringProperty(SessionConfig.KEYPAD_FONT_SIZE), newValue);
+    setProperty(SessionConfig.KEYPAD_FONT_SIZE, newValue);
+  }
+
+  private String ensureValidFloatAsString(String value) {
+    if (value != null) {
+      value = value.trim();
+      float v = Float.parseFloat(value);
+      return Float.toString(v);
+    }
+    return Float.toString(KEYPAD_FONT_SIZE_DEFAULT_VALUE);
   }
 }
