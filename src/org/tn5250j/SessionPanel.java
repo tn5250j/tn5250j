@@ -61,6 +61,7 @@ import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -624,7 +625,7 @@ SessionListener {
 	 */
 	public void actionAttributes() {
 
-		SessionAttributes sa = new SessionAttributes((Frame)SwingUtilities.getRoot(this),
+		SessionSettings sa = new SessionSettings((Frame)SwingUtilities.getRoot(this),
 				sesConfig);
 		sa.showIt();
 
