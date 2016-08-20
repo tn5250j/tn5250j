@@ -64,11 +64,8 @@ public class SessionConfig {
 
 	private List<SessionConfigListener> sessionCfglisteners = null;
 	private final ReadWriteLock sessionCfglistenersLock = new ReentrantReadWriteLock();
-	private float keypadFontSize;
-	private KeyPad config;
 
 	public SessionConfig (String configurationResource, String sessionName) {
-
 		this.configurationResource = configurationResource;
 		this.sessionName = sessionName;
 		loadConfigurationResource();
@@ -375,11 +372,6 @@ public class SessionConfig {
 	public Object removeProperty(String key) {
 		return sesProps.remove(key);
 	}
-
-	//   public synchronized Vector getSessionConfigListeners () {
-	//
-	//      return sessionCfglisteners;
-	//   }
 
 	/**
 	 * Add a SessionConfigListener to the listener list.
