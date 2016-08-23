@@ -26,9 +26,11 @@ package org.tn5250j;
  */
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.SwingUtilities.layoutCompoundLabel;
 import static org.tn5250j.TN5250jConstants.*;
@@ -61,11 +63,12 @@ class KeyPad extends JPanel {
     keyPadBottom = new JPanel(gridLayout);
 
     final Insets noMargin = new Insets(0, 0, 0, 0);
+    final CompoundBorder minimalBorder = createCompoundBorder(createEmptyBorder(), createEmptyBorder(2, 3, 3, 3));
     for (int i = 0; i < NO_OF_BUTTONS; i++) {
       buttons[i] = new JButton();
       buttons[i].setMargin(noMargin);
+      buttons[i].setBorder(minimalBorder);
     }
-
     switchKeypadMode(currentKeyPadMode);
     addButtonsTop();
     addButtonsBottom();
