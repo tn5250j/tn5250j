@@ -44,6 +44,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import org.tn5250j.connectdialog.ConnectDialog;
 import org.tn5250j.event.BootEvent;
 import org.tn5250j.event.BootListener;
 import org.tn5250j.event.EmulatorActionEvent;
@@ -72,7 +73,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 	private static List<GUIViewInterface> frames;
 	private TN5250jSplashScreen splash;
 	private int step;
-	StringBuilder viewNamesForNextStartBuilder = null;
+	private StringBuilder viewNamesForNextStartBuilder = null;
 
 	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 

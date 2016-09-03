@@ -51,7 +51,7 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
-import org.tn5250j.settings.ColumnSeparator;
+import org.tn5250j.sessionsettings.ColumnSeparator;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
