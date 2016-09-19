@@ -1,4 +1,4 @@
-/**
+/*
  * Title: OptionAccess.java
  * Copyright:   Copyright (c) 2001, 2002, 2003
  * Company:
@@ -25,17 +25,14 @@
  */
 package org.tn5250j;
 
-import static org.tn5250j.TN5250jConstants.mnemonicData;
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.sessionsettings.KeypadMnemonicResolver;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.tools.LangTool;
 
 /**
  * Utility class for referencing the global options allowed for access
@@ -54,6 +51,8 @@ public class OptionAccess extends OptionAccessFactory {
     * A handle to non valid options.
     */
    static private List<String> restricted = new ArrayList<String>();
+
+   private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
 
    /**
     * The constructor is made protected to allow overriding.
@@ -106,29 +105,6 @@ public class OptionAccess extends OptionAccessFactory {
          }
       }
 
-   }
-
-   public Vector<String> getOptions() {
-
-      Vector<String> v = new Vector<String>(mnemonicData.length);
-      for (int x = 0; x < mnemonicData.length; x++) {
-         v.add(mnemonicData[x]);
-      }
-
-      Collections.sort(v);
-
-      return v;
-   }
-
-   public Vector<String> getOptionDescriptions() {
-
-      Vector<String> v = new Vector<String>(mnemonicData.length);
-      for (int x = 0; x < mnemonicData.length; x++) {
-         v.add(LangTool.getString("key."+mnemonicData[x]));
-      }
-
-      Collections.sort(v);
-      return v;
    }
 
    public boolean isValidOption(String option) {

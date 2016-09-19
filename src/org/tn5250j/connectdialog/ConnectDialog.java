@@ -30,6 +30,7 @@ import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.sessionsettings.KeypadMnemonicResolver;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.DESSHA1;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -66,6 +67,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private static final long serialVersionUID = 1L;
 
   volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(ConnectDialog.class);
+
+  private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
 
   // panels to be displayed
   private JPanel configOptions = new JPanel();
@@ -650,7 +653,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     if (properties.getProperty("emul.accessDigest") != null)
       accessOptions.setEnabled(false);
 
-    List<String> options = OptionAccessFactory.getInstance().getOptions();
+    List<String> options = keypadMnemonicResolver.getOptions();
 
     // set up a hashtable of option descriptions to options
     Hashtable<String, String> ht = new Hashtable<String, String>(options.size());
@@ -659,8 +662,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
 
     // get the sorted descriptions of the options
-    List<String> descriptions = OptionAccessFactory.getInstance()
-        .getOptionDescriptions();
+    List<String> descriptions = keypadMnemonicResolver.getOptionDescriptions();
 
     // set the option descriptions
     accessOptions.setListData(descriptions.toArray());
@@ -1113,7 +1115,7 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void setOptionAccess() {
 
-    List<String> options = OptionAccessFactory.getInstance().getOptions();
+    List<String> options = keypadMnemonicResolver.getOptions();
 
     // set up a hashtable of option descriptions to options
     Hashtable<String, String> ht = new Hashtable<String, String>(options.size());

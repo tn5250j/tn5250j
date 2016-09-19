@@ -1,4 +1,4 @@
-/**
+/*
  * Title: DebugAction.java
  * Copyright:   Copyright (c) 2001,2002
  * Company:
@@ -25,31 +25,31 @@
  */
 package org.tn5250j.keyboard.actions;
 
+import org.tn5250j.SessionPanel;
+import org.tn5250j.keyboard.KeyMapper;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.KeyStroke;
-
-import org.tn5250j.SessionPanel;
-import org.tn5250j.TN5250jConstants;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.sessionsettings.KeypadMnemonic.DEBUG;
 
 /**
  * Display session attributes
  */
 public class DebugAction extends EmulatorAction {
 
-   private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-   public DebugAction(SessionPanel session, KeyMapper keyMap) {
-      super(session,
-    		  TN5250jConstants.MNEMONIC_DEBUG,
-            KeyStroke.getKeyStroke(KeyEvent.VK_O,KeyEvent.ALT_MASK),
-            keyMap);
+  public DebugAction(SessionPanel session, KeyMapper keyMap) {
+    super(session,
+        DEBUG.mnemonic,
+        KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.ALT_MASK),
+        keyMap);
 
-   }
+  }
 
-   public void actionPerformed(ActionEvent e) {
-     session.toggleDebug();
-   }
+  public void actionPerformed(ActionEvent e) {
+    session.toggleDebug();
+  }
 }

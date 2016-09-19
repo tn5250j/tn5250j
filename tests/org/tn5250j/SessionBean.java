@@ -1,4 +1,4 @@
-/**
+/*
 *
 * <p>Title: SessionBean</p>
 * <p>Description: TN5250 Session as a bean with auto signon features</p>
@@ -26,6 +26,8 @@
 */
 
 package org.tn5250j;
+
+import org.tn5250j.sessionsettings.KeypadMnemonic;
 
 import static org.tn5250j.TN5250jConstants.*;
 
@@ -401,17 +403,17 @@ public class SessionBean extends SessionPanel {
 
   private void connectSimulated()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     if (isSignificant(user))
       sb.append(user);
     if (!isFieldLength(user))
-      sb.append(MNEMONIC_TAB);
+      sb.append(KeypadMnemonic.TAB.mnemonic);
 
     if (isSignificant(password))
       sb.append(password);
     if (!isFieldLength(password))
-      sb.append(MNEMONIC_TAB);
+      sb.append(KeypadMnemonic.TAB.mnemonic);
 
     // First we test if we have something signicant to send.
     // If so, we presume we have a standard IBM login screen!
@@ -420,17 +422,17 @@ public class SessionBean extends SessionPanel {
       if (isSignificant(program))
         sb.append(program);
       if (!isFieldLength(program))
-        sb.append(MNEMONIC_TAB);
+        sb.append(KeypadMnemonic.TAB.mnemonic);
 
       if (isSignificant(menu))
         sb.append(menu);
       if (!isFieldLength(menu))
-        sb.append(MNEMONIC_TAB);
+        sb.append(KeypadMnemonic.TAB.mnemonic);
 
       if (isSignificant(library))
         sb.append(library);
     }
-    sb.append(MNEMONIC_ENTER);
+    sb.append(KeypadMnemonic.ENTER.mnemonic);
 
     super.connect();
 
@@ -449,8 +451,7 @@ public class SessionBean extends SessionPanel {
   {
     if (isSignificant(initialCommand))
     {
-      this.getScreen().sendKeys(initialCommand + MNEMONIC_ENTER);
-//      this.getScreen().sendKeys(MNEMONIC_ENTER);
+      this.getScreen().sendKeys(initialCommand + KeypadMnemonic.ENTER.mnemonic);
     }
   }
 
@@ -465,7 +466,6 @@ public class SessionBean extends SessionPanel {
     }
     else if (!isVisible())
     {
-//      this.setVisible(true);
       new DoVisible().run();
     }
   }
@@ -549,7 +549,6 @@ public class SessionBean extends SessionPanel {
   public void setNoSaveConfigFile()
   {
     this.sesConfig.removeProperty("saveme");
-//     sessionProperties.remove("saveme");
   }
 
 

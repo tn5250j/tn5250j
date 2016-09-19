@@ -67,6 +67,7 @@ import static org.tn5250j.TN5250jConstants.PF6;
 import static org.tn5250j.TN5250jConstants.PF7;
 import static org.tn5250j.TN5250jConstants.PF8;
 import static org.tn5250j.TN5250jConstants.PF9;
+import static org.tn5250j.sessionsettings.KeypadMnemonic.ENTER;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -889,7 +890,7 @@ public final class tnvt implements Runnable {
 		finally
 		{
 			strpccmd = false;
-			screen52.sendKeys(TN5250jConstants.MNEMONIC_ENTER);
+			screen52.sendKeys(ENTER);
 		}
 	}
 

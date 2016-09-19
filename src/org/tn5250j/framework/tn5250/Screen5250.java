@@ -35,10 +35,15 @@ import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.event.ScreenListener;
+import org.tn5250j.sessionsettings.KeypadMnemonic;
+import org.tn5250j.sessionsettings.KeypadMnemonicResolver;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class Screen5250 {
+
+	private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	private ScreenFields screenFields;
 	private int lastAttr;
@@ -97,8 +102,6 @@ public class Screen5250 {
 
 	//Added by Barry
 	private StringBuffer keybuf;
-
-	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public Screen5250() {
 
@@ -189,7 +192,7 @@ public class Screen5250 {
 
 	/**
 	 * Copy & Paste support
-	 * 
+	 *
 	 * @see {@link #pasteText(String, boolean)}
 	 * @see {@link #copyTextField(int)}
 	 */
@@ -226,7 +229,7 @@ public class Screen5250 {
 
 	/**
 	 * Copy & Paste support
-	 * 
+	 *
 	 * @param content
 	 * @see {@link #copyText(Rectangle)}
 	 */
@@ -315,7 +318,7 @@ public class Screen5250 {
 
 	/**
 	 * Copy & Paste support
-	 * 
+	 *
 	 * @param position
 	 * @return
 	 * @see {@link #copyText(int)}
@@ -555,26 +558,6 @@ public class Screen5250 {
 		sessionVT = v;
 	}
 
-	/**
-	 * Searches the mnemonicData array looking for the specified string. If it
-	 * is found it will return the value associated from the mnemonicValue
-	 *
-	 * @see #sendKeys
-	 * @param mnem
-	 *            string mnemonic value
-	 * @return key value of Mnemonic
-	 */
-	private int getMnemonicValue(String mnem) {
-
-		for (int x = 0; x < mnemonicData.length; x++) {
-
-			if (mnemonicData[x].equals(mnem))
-				return mnemonicValue[x];
-		}
-		return 0;
-
-	}
-
 	protected void setPrehelpState(boolean setErrorCode, boolean lockKeyboard,
 			boolean unlockIfLocked) {
 		if (oia.isKeyBoardLocked() && unlockIfLocked)
@@ -628,6 +611,10 @@ public class Screen5250 {
 		String result = this.keybuf.toString();
 		this.keybuf = new StringBuffer();
 		return result;
+	}
+
+	public synchronized void sendKeys(KeypadMnemonic keypadMnemonic) {
+		sendKeys(keypadMnemonic.mnemonic);
 	}
 
 	/**
@@ -935,14 +922,11 @@ public class Screen5250 {
 	 */
 	public synchronized void sendKeys(String text) {
 
-		//      if (text == null) {
-		//         return;
-		//      }
 		this.keybuf.append(text);
 
 		if (isStatusErrorCode() && !resetRequired) {
 			setCursorActive(false);
-			simulateMnemonic(getMnemonicValue("[reset]"));
+			simulateMnemonic(keypadMnemonicResolver.getMnemonicValue("[reset]"));
 			setCursorActive(true);
 		}
 
@@ -950,7 +934,7 @@ public class Screen5250 {
 			if (text.equals("[reset]") || text.equals("[sysreq]")
 					|| text.equals("[attn]")) {
 				setCursorActive(false);
-				simulateMnemonic(getMnemonicValue(text));
+				simulateMnemonic(keypadMnemonicResolver.getMnemonicValue(text));
 				setCursorActive(true);
 
 			} else {
@@ -1028,7 +1012,7 @@ public class Screen5250 {
 							//                     setCursorOn();
 							//                  }
 						} else {
-							simulateMnemonic(getMnemonicValue(s));
+							simulateMnemonic(keypadMnemonicResolver.getMnemonicValue(s));
 							//                  if (!cursorActive && !keysBuffered) {
 							//                     System.out.println(" m one");
 							//                     setCursorOn();
@@ -1879,7 +1863,7 @@ public class Screen5250 {
 
 			return endPos;
 
-		} 
+		}
 		screenFields.getCurrentField().getKeyPos(endPos);
 		if (posSpace) screenFields.getCurrentField().changePos(+1);
 		return screenFields.getCurrentFieldPos();
@@ -3139,7 +3123,7 @@ public class Screen5250 {
 		//    0 - up
 		//    1 - down
 		int updown = direction & 0x80;
-		final int lines = direction & 0x7F; 
+		final int lines = direction & 0x7F;
 
 		// calculate the reference points for the move.
 		int start = this.getPos(topLine - 1, 0);
@@ -3167,7 +3151,7 @@ public class Screen5250 {
 					//Do nothing ... tooo small!!!
 				} else {
 					planes.setChar(x - lines  * numCols, planes.getChar(x));
-					//and clear 
+					//and clear
 					planes.setChar(x, ' ');
 				}
 			}

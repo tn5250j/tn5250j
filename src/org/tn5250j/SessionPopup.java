@@ -31,6 +31,7 @@ import org.tn5250j.gui.HexCharMapDialog;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.sessionsettings.KeypadMnemonic;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -46,6 +47,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.tn5250j.sessionsettings.KeypadMnemonic.*;
 
 /**
  * Custom
@@ -82,7 +85,7 @@ public class SessionPopup {
         }
       };
 
-      popup.add(createMenuItem(action, MNEMONIC_COPY));
+      popup.add(createMenuItem(action, COPY));
 
 
       action = new AbstractAction(LangTool.getString("popup.paste")) {
@@ -93,7 +96,7 @@ public class SessionPopup {
           paste(false);
         }
       };
-      popup.add(createMenuItem(action, MNEMONIC_PASTE));
+      popup.add(createMenuItem(action, PASTE));
 
       action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
         private static final long serialVersionUID = 1L;
@@ -131,7 +134,7 @@ public class SessionPopup {
         }
       };
 
-      popup.add(createMenuItem(action, MNEMONIC_COPY));
+      popup.add(createMenuItem(action, COPY));
 
       action = new AbstractAction(LangTool.getString("popup.paste")) {
         private static final long serialVersionUID = 1L;
@@ -141,7 +144,7 @@ public class SessionPopup {
           paste(false);
         }
       };
-      popup.add(createMenuItem(action, MNEMONIC_PASTE));
+      popup.add(createMenuItem(action, PASTE));
 
       action = new AbstractAction(LangTool.getString("popup.pasteSpecial")) {
         private static final long serialVersionUID = 1L;
@@ -207,7 +210,7 @@ public class SessionPopup {
           sessiongui.getFocusForMe();
         }
       };
-      popup.add(createMenuItem(action, MNEMONIC_PRINT_SCREEN));
+      popup.add(createMenuItem(action, PRINT_SCREEN));
 
       popup.addSeparator();
 
@@ -229,14 +232,14 @@ public class SessionPopup {
 
       kbMenu.addSeparator();
 
-      createKeyboardItem(kbMenu, MNEMONIC_ATTN);
+      createKeyboardItem(kbMenu, ATTN);
 
-      createKeyboardItem(kbMenu, MNEMONIC_RESET);
+      createKeyboardItem(kbMenu, RESET);
 
-      createKeyboardItem(kbMenu, MNEMONIC_SYSREQ);
+      createKeyboardItem(kbMenu, SYSREQ);
 
       if (screen.getOIA().isMessageWait() &&
-          OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
+          OptionAccessFactory.getInstance().isValidOption(DISP_MESSAGES.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
           private static final long serialVersionUID = 1L;
@@ -247,24 +250,24 @@ public class SessionPopup {
           }
         };
 
-        kbMenu.add(createMenuItem(action, MNEMONIC_DISP_MESSAGES));
+        kbMenu.add(createMenuItem(action, DISP_MESSAGES));
       }
 
       kbMenu.addSeparator();
 
-      createKeyboardItem(kbMenu, MNEMONIC_DUP_FIELD);
+      createKeyboardItem(kbMenu, DUP_FIELD);
 
-      createKeyboardItem(kbMenu, MNEMONIC_HELP);
+      createKeyboardItem(kbMenu, HELP);
 
-      createKeyboardItem(kbMenu, MNEMONIC_ERASE_EOF);
+      createKeyboardItem(kbMenu, ERASE_EOF);
 
-      createKeyboardItem(kbMenu, MNEMONIC_FIELD_PLUS);
+      createKeyboardItem(kbMenu, FIELD_PLUS);
 
-      createKeyboardItem(kbMenu, MNEMONIC_FIELD_MINUS);
+      createKeyboardItem(kbMenu, FIELD_MINUS);
 
-      createKeyboardItem(kbMenu, MNEMONIC_NEW_LINE);
+      createKeyboardItem(kbMenu, NEW_LINE);
 
-      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_PRINT)) {
+      if (OptionAccessFactory.getInstance().isValidOption(PRINT.mnemonic)) {
         action = new AbstractAction(LangTool.getString("popup.hostPrint")) {
           private static final long serialVersionUID = 1L;
 
@@ -273,13 +276,13 @@ public class SessionPopup {
             vt.hostPrint(1);
           }
         };
-        kbMenu.add(createMenuItem(action, MNEMONIC_PRINT));
+        kbMenu.add(createMenuItem(action, PRINT));
       }
 
       createShortCutItems(kbMenu);
 
       if (screen.getOIA().isMessageWait() &&
-          OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_MESSAGES)) {
+          OptionAccessFactory.getInstance().isValidOption(DISP_MESSAGES.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.displayMessages")) {
           private static final long serialVersionUID = 1L;
@@ -289,7 +292,7 @@ public class SessionPopup {
             vt.systemRequest('4');
           }
         };
-        popup.add(createMenuItem(action, MNEMONIC_DISP_MESSAGES));
+        popup.add(createMenuItem(action, DISP_MESSAGES));
       }
 
       popup.addSeparator();
@@ -317,7 +320,7 @@ public class SessionPopup {
       };
       popup.add(createMenuItem(action, ""));
 
-      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_DISP_ATTRIBUTES)) {
+      if (OptionAccessFactory.getInstance().isValidOption(DISP_ATTRIBUTES.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.settings")) {
           private static final long serialVersionUID = 1L;
@@ -328,7 +331,7 @@ public class SessionPopup {
             sessiongui.getFocusForMe();
           }
         };
-        popup.add(createMenuItem(action, MNEMONIC_DISP_ATTRIBUTES));
+        popup.add(createMenuItem(action, DISP_ATTRIBUTES));
 
       }
 
@@ -383,7 +386,7 @@ public class SessionPopup {
 
       JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
 
-      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_FILE_TRANSFER)) {
+      if (OptionAccessFactory.getInstance().isValidOption(FILE_TRANSFER.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.xtfrFile")) {
           private static final long serialVersionUID = 1L;
@@ -395,10 +398,10 @@ public class SessionPopup {
           }
         };
 
-        xtfrMenu.add(createMenuItem(action, MNEMONIC_FILE_TRANSFER));
+        xtfrMenu.add(createMenuItem(action, FILE_TRANSFER));
       }
 
-      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_SPOOL_FILE)) {
+      if (OptionAccessFactory.getInstance().isValidOption(SPOOL_FILE.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.xtfrSpool")) {
           private static final long serialVersionUID = 1L;
@@ -418,7 +421,7 @@ public class SessionPopup {
       JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
       popup.add(sendMenu);
 
-      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_QUICK_MAIL)) {
+      if (OptionAccessFactory.getInstance().isValidOption(QUICK_MAIL.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.quickmail")) {
           private static final long serialVersionUID = 1L;
@@ -429,10 +432,10 @@ public class SessionPopup {
             sessiongui.getFocusForMe();
           }
         };
-        sendMenu.add(createMenuItem(action, MNEMONIC_QUICK_MAIL));
+        sendMenu.add(createMenuItem(action, QUICK_MAIL));
       }
 
-      if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_E_MAIL)) {
+      if (OptionAccessFactory.getInstance().isValidOption(E_MAIL.mnemonic)) {
 
         action = new AbstractAction(LangTool.getString("popup.email")) {
           private static final long serialVersionUID = 1L;
@@ -444,7 +447,7 @@ public class SessionPopup {
           }
         };
 
-        sendMenu.add(createMenuItem(action, MNEMONIC_E_MAIL));
+        sendMenu.add(createMenuItem(action, E_MAIL));
       }
 
       action = new AbstractAction(LangTool.getString("popup.file")) {
@@ -473,7 +476,7 @@ public class SessionPopup {
 
     }
 
-    if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_OPEN_NEW)) {
+    if (OptionAccessFactory.getInstance().isValidOption(OPEN_NEW.mnemonic)) {
 
       action = new AbstractAction(LangTool.getString("popup.connections")) {
         private static final long serialVersionUID = 1L;
@@ -484,12 +487,12 @@ public class SessionPopup {
         }
       };
 
-      popup.add(createMenuItem(action, MNEMONIC_OPEN_NEW));
+      popup.add(createMenuItem(action, OPEN_NEW));
     }
 
     popup.addSeparator();
 
-    if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_TOGGLE_CONNECTION)) {
+    if (OptionAccessFactory.getInstance().isValidOption(TOGGLE_CONNECTION.mnemonic)) {
 
       if (vt.isConnected()) {
         action = new AbstractAction(LangTool.getString("popup.disconnect")) {
@@ -516,10 +519,10 @@ public class SessionPopup {
 
       }
 
-      popup.add(createMenuItem(action, MNEMONIC_TOGGLE_CONNECTION));
+      popup.add(createMenuItem(action, TOGGLE_CONNECTION));
     }
 
-    if (OptionAccessFactory.getInstance().isValidOption(MNEMONIC_CLOSE)) {
+    if (OptionAccessFactory.getInstance().isValidOption(CLOSE.mnemonic)) {
 
       action = new AbstractAction(LangTool.getString("popup.close")) {
         private static final long serialVersionUID = 1L;
@@ -530,13 +533,17 @@ public class SessionPopup {
         }
       };
 
-      popup.add(createMenuItem(action, MNEMONIC_CLOSE));
+      popup.add(createMenuItem(action, CLOSE));
 
     }
 
     GUIGraphicsUtils.positionPopup(me.getComponent(), popup,
         me.getX(), me.getY());
 
+  }
+
+  private void createKeyboardItem(JMenu menu, KeypadMnemonic keypadMnemonic) {
+    createKeyboardItem(menu, keypadMnemonic.mnemonic);
   }
 
   private void createKeyboardItem(JMenu menu, String key) {
@@ -562,11 +569,10 @@ public class SessionPopup {
     LoadMacroMenu.loadMacros(sessiongui, menu);
   }
 
-  /**
-   * @param action
-   * @param accelKey can be null
-   * @return
-   */
+  private JMenuItem createMenuItem(Action action, KeypadMnemonic keypadMnemonic) {
+    return createMenuItem(action, keypadMnemonic.mnemonic);
+  }
+
   private JMenuItem createMenuItem(Action action, String accelKey) {
     JMenuItem mi = new JMenuItem();
     mi.setAction(action);
@@ -575,9 +581,9 @@ public class SessionPopup {
     } else {
       InputMap map = sessiongui.getInputMap();
       KeyStroke[] allKeys = map.allKeys();
-      for (int x = 0; x < allKeys.length; x++) {
-        if (map.get(allKeys[x]).equals(accelKey)) {
-          mi.setAccelerator(allKeys[x]);
+      for (KeyStroke keyStroke : allKeys) {
+        if (map.get(keyStroke).equals(accelKey)) {
+          mi.setAccelerator(keyStroke);
           break;
         }
       }
@@ -587,7 +593,6 @@ public class SessionPopup {
 
   private void createShortCutItems(JMenu menu) {
 
-    JMenuItem mi;
     JMenu sm = new JMenu(LangTool.getString("popup.shortCuts"));
     menu.addSeparator();
     menu.add(sm);
@@ -596,13 +601,12 @@ public class SessionPopup {
     KeyStroke[] allKeys = map.allKeys();
     ActionMap aMap = sessiongui.getActionMap();
 
-    for (int x = 0; x < allKeys.length; x++) {
-
-      mi = new JMenuItem();
-      Action a = aMap.get(map.get(allKeys[x]));
+    for (KeyStroke allKey : allKeys) {
+      Action a = aMap.get(map.get(allKey));
+      JMenuItem mi = new JMenuItem();
       mi.setAction(a);
-      mi.setText(LangTool.getString("key." + map.get(allKeys[x])));
-      mi.setAccelerator(allKeys[x]);
+      mi.setText(LangTool.getString("key." + map.get(allKey)));
+      mi.setAccelerator(allKey);
       sm.add(mi);
     }
   }
@@ -613,12 +617,12 @@ public class SessionPopup {
     List<Double> sumVector = sessiongui.sumThem(which);
     Iterator<Double> l = sumVector.iterator();
     double sum = 0.0;
-    double inter = 0.0;
+    double inter;
     while (l.hasNext()) {
 
       inter = 0.0;
       try {
-        inter = l.next().doubleValue();
+        inter = l.next();
       } catch (Exception e) {
         log.warn(e);
       }
@@ -629,12 +633,9 @@ public class SessionPopup {
     if (log.isDebugEnabled()) {
       log.debug("Vector sum " + sum);
     }
-    sumVector = null;
-    l = null;
 
     // obtain the decimal format for parsing
-    DecimalFormat df =
-        (DecimalFormat) NumberFormat.getInstance();
+    DecimalFormat df = (DecimalFormat) NumberFormat.getInstance();
 
     DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
 
