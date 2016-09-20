@@ -180,30 +180,6 @@ public interface TN5250jConstants {
   int PF23 = 0xBB;
   int PF24 = 0xBC;
 
-  @Deprecated // use #org.tn5250j.sessionsettings.KeypadMnemonicResolver instead
-  String mnemonicData[] = {
-      "[backspace]", "[backtab]", "[up]", "[down]", "[left]",
-      "[right]", "[delete]", "[tab]", "[eof]", "[eraseeof]",
-      "[erasefld]", "[insert]", "[home]", "[keypad0]", "[keypad1]",
-      "[keypad2]", "[keypad3]", "[keypad4]", "[keypad5]", "[keypad6]",
-      "[keypad7]", "[keypad8]", "[keypad9]", "[keypad.]", "[keypad,]",
-      "[keypad-]", "[fldext]", "[field+]", "[field-]", "[bof]",
-      "[enter]", "[pf1]", "[pf2]", "[pf3]", "[pf4]",
-      "[pf5]", "[pf6]", "[pf7]", "[pf8]", "[pf9]",
-      "[pf10]", "[pf11]", "[pf12]", "[pf13]", "[pf14]",
-      "[pf15]", "[pf16]", "[pf17]", "[pf18]", "[pf19]",
-      "[pf20]", "[pf21]", "[pf22]", "[pf23]", "[pf24]",
-      "[clear]", "[help]", "[pgup]", "[pgdown]", "[rollleft]",
-      "[rollright]", "[hostprint]", "[pa1]", "[pa2]", "[pa3]",
-      "[sysreq]", "[reset]", "[nextword]", "[prevword]", "[copy]",
-      "[paste]", "[attn]", "[markup]", "[markdown]", "[markleft]",
-      "[markright]", "[dupfield]", "[newline]", "[jumpnext]", "[jumpprev]",
-      "[opennew]", "[togcon]", "[hotspots]", "[gui]", "[dspmsgs]",
-      "[dspattr]", "[print]", "[cursor]", "[debug]", "[close]",
-      "[transfer]", "[e-mail]", "[runscript]", "[spoolfile]", "[quick-mail]",
-      "[open-same]", "[fastcursordown]", "[fastcursorup]", "[fastcursorright]", "[fastcursorleft]"
-  };
-
   // AID-Generating Keys
   int AID_CLEAR = 0xBD;
   int AID_ENTER = 0xF1;

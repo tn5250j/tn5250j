@@ -69,7 +69,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyStroker;
@@ -77,6 +76,8 @@ import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
+
+import static org.tn5250j.sessionsettings.KeypadMnemonic.mnemonics;
 
 public class KeyConfigure extends JDialog implements ActionListener {
 
@@ -328,7 +329,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
             KeyDescription kd = (KeyDescription)lm.getElementAt(index);
 
-            setKeyInformation(TN5250jConstants.mnemonicData[kd.getIndex()]);
+            setKeyInformation(mnemonics()[kd.getIndex()]);
          }
          else {
             if (macros) {
@@ -422,14 +423,14 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
 
       if (which.equals(LangTool.getString("key.labelKeys"))) {
-         Vector<KeyDescription> lk = new Vector<KeyDescription>(TN5250jConstants.mnemonicData.length);
-         for (int x = 0; x < TN5250jConstants.mnemonicData.length; x++) {
-            lk.addElement(new KeyDescription(LangTool.getString("key."+TN5250jConstants.mnemonicData[x]),x));
+         Vector<KeyDescription> lk = new Vector<KeyDescription>(mnemonics().length);
+         for (int x = 0; x < mnemonics().length; x++) {
+            lk.addElement(new KeyDescription(LangTool.getString("key."+ mnemonics()[x]),x));
          }
 
          Collections.sort(lk, new KeyDescriptionCompare());
 
-         for (int x = 0; x < TN5250jConstants.mnemonicData.length; x++) {
+         for (int x = 0; x < mnemonics().length; x++) {
             lm.addElement(lk.get(x));
          }
          macros = false;
@@ -692,7 +693,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
 
-         String function = TN5250jConstants.mnemonicData[index];
+         String function = mnemonics()[index];
 
          if (altKey)
             function += KeyStroker.altSuffix;
@@ -738,7 +739,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
-         String stroke = TN5250jConstants.mnemonicData[index];
+         String stroke = mnemonics()[index];
 
          if (altKey)
             stroke += KeyStroker.altSuffix;

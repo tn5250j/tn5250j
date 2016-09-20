@@ -653,10 +653,10 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     if (properties.getProperty("emul.accessDigest") != null)
       accessOptions.setEnabled(false);
 
-    List<String> options = keypadMnemonicResolver.getOptions();
+    String[] options = keypadMnemonicResolver.getMnemonicsSorted();
 
     // set up a hashtable of option descriptions to options
-    Hashtable<String, String> ht = new Hashtable<String, String>(options.size());
+    Hashtable<String, String> ht = new Hashtable<String, String>(options.length);
     for (String option : options) {
       ht.put(LangTool.getString("key." + option), option);
     }
@@ -1115,12 +1115,12 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void setOptionAccess() {
 
-    List<String> options = keypadMnemonicResolver.getOptions();
+    String[] options = keypadMnemonicResolver.getMnemonicsSorted();
 
     // set up a hashtable of option descriptions to options
-    Hashtable<String, String> ht = new Hashtable<String, String>(options.size());
-    for (int x = 0; x < options.size(); x++) {
-      ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
+    Hashtable<String, String> ht = new Hashtable<String, String>(options.length);
+    for (int x = 0; x < options.length; x++) {
+      ht.put(LangTool.getString("key." + options[x]), options[x]);
     }
 
     Object[] restrict = accessOptions.getSelectedValues();

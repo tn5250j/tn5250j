@@ -27,6 +27,7 @@ package org.tn5250j.sessionsettings;
 import org.tn5250j.tools.LangTool;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,14 +42,10 @@ public class KeypadMnemonicResolver {
     return 0;
   }
 
-  public List<String> getOptions() {
-    KeypadMnemonic[] mnemonicData = KeypadMnemonic.values();
-    List<String> result = new ArrayList<String>(mnemonicData.length);
-    for (KeypadMnemonic mnemonic : mnemonicData) {
-      result.add(mnemonic.mnemonic);
-    }
-    Collections.sort(result);
-    return result;
+  public String[] getMnemonicsSorted() {
+    String[] mnemonics = KeypadMnemonic.mnemonics();
+    Arrays.sort(mnemonics);
+    return mnemonics;
   }
 
   public List<String> getOptionDescriptions() {

@@ -134,4 +134,13 @@ public enum KeypadMnemonic {
     this.mnemonic = mnemonic;
     this.value = value;
   }
+
+  public static String[] mnemonics() {
+    String[] result = new String[values().length];
+    int i = 0;
+    for (KeypadMnemonic keypadMnemonic : values()) {
+      result[i++] = keypadMnemonic.mnemonic;
+    }
+    return result;
+  }
 }
