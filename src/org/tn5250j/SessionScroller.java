@@ -30,8 +30,8 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.PAGE_DOWN;
-import static org.tn5250j.sessionsettings.KeypadMnemonic.PAGE_UP;
+import static org.tn5250j.keyboard.KeypadMnemonic.PAGE_DOWN;
+import static org.tn5250j.keyboard.KeypadMnemonic.PAGE_UP;
 
 /**
  * Session Scroller to allow the use of the mouse wheel to move the list on the

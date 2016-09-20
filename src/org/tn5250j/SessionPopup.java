@@ -31,7 +31,7 @@ import org.tn5250j.gui.HexCharMapDialog;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.sessionsettings.KeypadMnemonic;
+import org.tn5250j.keyboard.KeypadMnemonic;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -48,7 +48,7 @@ import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.*;
+import static org.tn5250j.keyboard.KeypadMnemonic.*;
 
 /**
  * Custom

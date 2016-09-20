@@ -35,8 +35,8 @@ import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.event.ScreenListener;
-import org.tn5250j.sessionsettings.KeypadMnemonic;
-import org.tn5250j.sessionsettings.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeypadMnemonic;
+import org.tn5250j.keyboard.KeypadMnemonicResolver;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 

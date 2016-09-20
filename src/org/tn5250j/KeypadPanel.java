@@ -33,10 +33,10 @@ import java.awt.event.ActionListener;
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.SwingUtilities.layoutCompoundLabel;
-import static org.tn5250j.sessionsettings.KeypadMnemonic.*;
+import static org.tn5250j.keyboard.KeypadMnemonic.*;
 import static org.tn5250j.tools.LangTool.getString;
 
-class KeyPad extends JPanel {
+class KeypadPanel extends JPanel {
 
   private static final long serialVersionUID = -7460283401326716314L;
   private static final int MIN_SIZE = 3;
@@ -51,7 +51,7 @@ class KeyPad extends JPanel {
   private JPanel keyPadBottom;
   private KeyPadMode currentKeyPadMode = KeyPadMode.ONE;
 
-  KeyPad(SessionConfig.SessionConfiguration sessionConfiguration) {
+  KeypadPanel(SessionConfig.SessionConfiguration sessionConfiguration) {
     this.sessionConfig = sessionConfiguration;
     jbInit();
   }

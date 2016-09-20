@@ -40,7 +40,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.PASTE;
+import static org.tn5250j.keyboard.KeypadMnemonic.PASTE;
 
 /**
  * Paste from the clipboard

@@ -88,7 +88,7 @@ SessionListener {
 	private GuiGraphicBuffer guiGraBuf;
 	protected TNRubberBand rubberband;
 	private JPanel s = new JPanel();
-	private KeyPad keyPad;
+	private KeypadPanel keypadPanel;
 	private String newMacName;
 	private Vector<SessionJumpListener> listeners = null;
 	private Vector<EmulatorActionListener> actionListeners = null;
@@ -103,7 +103,7 @@ SessionListener {
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public SessionPanel (Session5250 session) {
-		this.keyPad = new KeyPad(session.getConfiguration().getConfig());
+		this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
 		this.session = session;
 
 		sesConfig = session.getConfiguration();
@@ -212,18 +212,18 @@ SessionListener {
 		log.debug("Initializing macros");
 		Macronizer.init();
 
-		keyPad.addActionListener(this);
+		keypadPanel.addActionListener(this);
 		if (sesConfig.getStringProperty("keypad").equals("Yes"))
-			keyPad.setVisible(true);
+			keypadPanel.setVisible(true);
 		else
-			keyPad.setVisible(false);
+			keypadPanel.setVisible(false);
 
 		// Warning do not change the the order of the adding of keypad and
 		//    the screen.  This will cause resizing problems because it will
 		//    resize the screen first and during the resize we need to calculate
 		//    the bouding area based on the height of the keyPad.
 		//    See resizeMe() and getDrawingBounds()
-		this.add(keyPad,BorderLayout.SOUTH);
+		this.add(keypadPanel,BorderLayout.SOUTH);
 		this.add(s,BorderLayout.CENTER);
 
 		this.requestFocus();
@@ -424,7 +424,7 @@ SessionListener {
 		String ac = ((JButton)obj).getActionCommand();
 
 		if (ac.equals("NXTPAD"))
-			keyPad.nextPad();
+			keypadPanel.nextPad();
 		else
 			screen.sendKeys(ac);
 
@@ -444,10 +444,10 @@ SessionListener {
 
 		if (pn.equals("keypad")) {
 			if (((String)pce.getNewValue()).equals("Yes")) {
-				keyPad.setVisible(true);
+				keypadPanel.setVisible(true);
 			}
 			else {
-				keyPad.setVisible(false);
+				keypadPanel.setVisible(false);
 			}
 			this.validate();
 		}
@@ -710,9 +710,9 @@ SessionListener {
 	public Rectangle getDrawingBounds() {
 
 		Rectangle r = this.getBounds();
-		if (keyPad != null && keyPad.isVisible())
+		if (keypadPanel != null && keypadPanel.isVisible())
 			//	         r.height -= (int)(keyPad.getHeight() * 1.25);
-			r.height -= (keyPad.getHeight());
+			r.height -= (keypadPanel.getHeight());
 
 		r.setSize(r.width,r.height);
 

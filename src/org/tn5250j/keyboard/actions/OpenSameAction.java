@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.OPEN_SAME;
+import static org.tn5250j.keyboard.KeypadMnemonic.OPEN_SAME;
 
 /**
  * Open Same Session emulator action to open a duplicate session

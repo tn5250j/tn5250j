@@ -33,7 +33,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.QUICK_MAIL;
+import static org.tn5250j.keyboard.KeypadMnemonic.QUICK_MAIL;
 
 /**
  * Quick Email Action

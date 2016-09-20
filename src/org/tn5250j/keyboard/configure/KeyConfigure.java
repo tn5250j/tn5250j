@@ -77,7 +77,7 @@ import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.mnemonics;
+import static org.tn5250j.keyboard.KeypadMnemonic.mnemonics;
 
 public class KeyConfigure extends JDialog implements ActionListener {
 

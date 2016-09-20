@@ -27,12 +27,11 @@ package org.tn5250j;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.sessionsettings.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeypadMnemonicResolver;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 /**
  * Utility class for referencing the global options allowed for access

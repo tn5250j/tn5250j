@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.E_MAIL;
+import static org.tn5250j.keyboard.KeypadMnemonic.E_MAIL;
 
 /**
  * Display session attributes

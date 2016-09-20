@@ -27,7 +27,7 @@
 
 package org.tn5250j;
 
-import org.tn5250j.sessionsettings.KeypadMnemonic;
+import org.tn5250j.keyboard.KeypadMnemonic;
 
 import static org.tn5250j.TN5250jConstants.*;
 

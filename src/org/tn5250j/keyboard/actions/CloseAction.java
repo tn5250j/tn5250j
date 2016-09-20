@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.sessionsettings.KeypadMnemonic.CLOSE;
+import static org.tn5250j.keyboard.KeypadMnemonic.CLOSE;
 
 
 /**

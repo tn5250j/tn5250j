@@ -30,7 +30,7 @@ import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.sessionsettings.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeypadMnemonicResolver;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.DESSHA1;
 import org.tn5250j.tools.GUIGraphicsUtils;

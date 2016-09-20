@@ -1,7 +1,8 @@
-package org.tn5250j.sessionsettings;
+package org.tn5250j.keyboard;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tn5250j.keyboard.KeypadMnemonicResolver;
 
 import static org.junit.Assert.assertEquals;
 
