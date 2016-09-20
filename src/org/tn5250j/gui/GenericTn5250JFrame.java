@@ -21,8 +21,7 @@
 
 package org.tn5250j.gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 
 import javax.swing.JFrame;
 
@@ -49,7 +48,9 @@ public class GenericTn5250JFrame extends JFrame {
 
    public GenericTn5250JFrame() {
       super();
-      setIconImages(GUIGraphicsUtils.getApplicationIcons());
+      java.util.List<Image> icons = GUIGraphicsUtils.getApplicationIcons();
+      setIconImages(icons);
+      new AppleApplicationTools().tryToSetDockIconImages(icons);
    }
 
    public void centerFrame() {

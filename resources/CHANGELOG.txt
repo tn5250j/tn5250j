@@ -7,6 +7,7 @@
 ADD: font size of keypad is configurable
 CHG: upgraded to use IzPack 5.x packager
 ADD: izpack 5.x update and now create start menu shortcuts - Thanks to Justin Dearing (https://sourceforge.net/p/tn5250j/patches/11/)
+ADD: set Dock icon on Mac OSX
 CHG: update JTOpen 8.7
 
 --- v0.7.6 ----------------------------------------------------- 20/10/2015 ---
