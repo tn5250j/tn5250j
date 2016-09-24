@@ -42,7 +42,6 @@ class PrinterAttributesPanel extends AttributesPanel {
   private JCheckBox defaultPrinter;
   private Paper pappyPort;
   private Paper pappyLand;
-  private JComboBox fontsList;
   private TN5250jFontsSelection fs;
 
   PrinterAttributesPanel(SessionConfig config) {
