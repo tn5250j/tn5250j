@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,6 @@ public class SessionConfig {
 		this.configurationResource = configurationResource;
 		this.sessionName = sessionName;
 		loadConfigurationResource();
-
 	}
 
 	public String getConfigurationResource() {
@@ -203,51 +203,30 @@ public class SessionConfig {
 	}
 
 	private void loadDefaults() {
-
+		final ConfigureFactory configureFactory = ConfigureFactory.getInstance();
 		try {
-
-			sesProps = ConfigureFactory.getInstance().getProperties(
-					"dfltSessionProps",
-					getConfigurationResource(),true,
-			"Default Settings");
+			sesProps = configureFactory
+					.getProperties("dfltSessionProps", getConfigurationResource(), true, "Default Settings");
 			if (sesProps.size() == 0) {
+				sesProps.putAll(loadPropertiesFromResource(getConfigurationResource()));
 
-
-				ClassLoader cl = this.getClass().getClassLoader();
-				if (cl == null) {
-					cl = ClassLoader.getSystemClassLoader();
-				}
-
-				// emul defaults
-				java.net.URL file = cl.getResource(getConfigurationResource());
-				Properties emuldefaults = new Properties();
-				emuldefaults.load(file.openStream());
-				sesProps.putAll(emuldefaults);
-
-				// color schema defaults
-				file = cl.getResource("tn5250jSchemas.properties");
-				Properties schemaProps = new Properties();
-				schemaProps.load(file.openStream());
-
-				// we will now load the default schema
-				String prefix = schemaProps.getProperty("schemaDefault");
-				sesProps.setProperty("colorBg",schemaProps.getProperty(prefix + ".colorBg"));
-				sesProps.setProperty("colorRed",schemaProps.getProperty(prefix + ".colorRed"));
-				sesProps.setProperty("colorTurq",schemaProps.getProperty(prefix + ".colorTurq"));
-				sesProps.setProperty("colorCursor",schemaProps.getProperty(prefix + ".colorCursor"));
-				sesProps.setProperty("colorGUIField",schemaProps.getProperty(prefix + ".colorGUIField"));
-				sesProps.setProperty("colorWhite",schemaProps.getProperty(prefix + ".colorWhite"));
-				sesProps.setProperty("colorYellow",schemaProps.getProperty(prefix + ".colorYellow"));
-				sesProps.setProperty("colorGreen",schemaProps.getProperty(prefix + ".colorGreen"));
-				sesProps.setProperty("colorPink",schemaProps.getProperty(prefix + ".colorPink"));
-				sesProps.setProperty("colorBlue",schemaProps.getProperty(prefix + ".colorBlue"));
-				sesProps.setProperty("colorSep",schemaProps.getProperty(prefix + ".colorSep"));
-				sesProps.setProperty("colorHexAttr",schemaProps.getProperty(prefix + ".colorHexAttr"));
+        Properties colorSchemaDefaults = loadPropertiesFromResource("tn5250jSchemas.properties");
+				String prefix = colorSchemaDefaults.getProperty("schemaDefault");
+				sesProps.setProperty("colorBg",colorSchemaDefaults.getProperty(prefix + ".colorBg"));
+				sesProps.setProperty("colorRed",colorSchemaDefaults.getProperty(prefix + ".colorRed"));
+				sesProps.setProperty("colorTurq",colorSchemaDefaults.getProperty(prefix + ".colorTurq"));
+				sesProps.setProperty("colorCursor",colorSchemaDefaults.getProperty(prefix + ".colorCursor"));
+				sesProps.setProperty("colorGUIField",colorSchemaDefaults.getProperty(prefix + ".colorGUIField"));
+				sesProps.setProperty("colorWhite",colorSchemaDefaults.getProperty(prefix + ".colorWhite"));
+				sesProps.setProperty("colorYellow",colorSchemaDefaults.getProperty(prefix + ".colorYellow"));
+				sesProps.setProperty("colorGreen",colorSchemaDefaults.getProperty(prefix + ".colorGreen"));
+				sesProps.setProperty("colorPink",colorSchemaDefaults.getProperty(prefix + ".colorPink"));
+				sesProps.setProperty("colorBlue",colorSchemaDefaults.getProperty(prefix + ".colorBlue"));
+				sesProps.setProperty("colorSep",colorSchemaDefaults.getProperty(prefix + ".colorSep"));
+				sesProps.setProperty("colorHexAttr",colorSchemaDefaults.getProperty(prefix + ".colorHexAttr"));
 				sesProps.setProperty("font",GUIGraphicsUtils.getDefaultFont());
 
-				ConfigureFactory.getInstance().saveSettings("dfltSessionProps",
-						getConfigurationResource(),
-				"");
+				configureFactory.saveSettings("dfltSessionProps", getConfigurationResource(), "");
 			}
 		}
 		catch (IOException ioe) {
@@ -258,6 +237,15 @@ public class SessionConfig {
 		catch (SecurityException se) {
 			System.out.println(se.getMessage());
 		}
+	}
+
+  private Properties loadPropertiesFromResource(String resourceName) throws IOException {
+    Properties properties = new Properties();
+		URL url = getClass().getClassLoader().getResource(resourceName);
+		if (url != null) {
+			properties.load(url.openStream());
+		}
+		return properties;
 	}
 
 	public boolean isPropertyExists(String prop) {
