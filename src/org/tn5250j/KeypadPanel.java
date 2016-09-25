@@ -45,14 +45,14 @@ class KeypadPanel extends JPanel {
   private final JButton[] buttons = new JButton[NO_OF_BUTTONS];
   private final Rectangle textRect = new Rectangle();
   private final Rectangle iconRect = new Rectangle();
-  private final SessionConfig.SessionConfiguration sessionConfig;
+  private final SessionConfig.SessionConfiguration configuration;
 
   private JPanel keyPadTop;
   private JPanel keyPadBottom;
   private KeyPadMode currentKeyPadMode = KeyPadMode.ONE;
 
   KeypadPanel(SessionConfig.SessionConfiguration sessionConfiguration) {
-    this.sessionConfig = sessionConfiguration;
+    this.configuration = sessionConfiguration;
     jbInit();
   }
 
@@ -181,7 +181,7 @@ class KeypadPanel extends JPanel {
 
     final JButton referenceButton = buttons[NO_OF_BUTTONS - 1];
     Font buttonFont = referenceButton.getFont();
-    float fs = sessionConfig.getKeypadFontSize();
+    float fs = configuration.getKeypadFontSize();
     buttonFont = buttonFont.deriveFont(fs);
 
     FontMetrics fm = referenceButton.getFontMetrics(buttonFont);
