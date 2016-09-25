@@ -33,8 +33,7 @@ import org.tn5250j.tools.LangTool;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.util.*;
 
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.X_AXIS;
@@ -64,6 +63,7 @@ class KeypadAttributesPanel extends AttributesPanel {
   public void applyAttributes() {
     applyKeypadEnabled();
     applyFontSize();
+    changes.setKeypadMnemonicsAndFireChangeEvent(getConfiguredKeypadMnemonics());
   }
 
   /**
@@ -91,7 +91,7 @@ class KeypadAttributesPanel extends AttributesPanel {
   private JPanel createEnableKeypadCheckboxPanel() {
     JPanel panel = new JPanel();
     keyPadEnable = new JCheckBox(LangTool.getString("sa.kpCheck"));
-    keyPadEnable.setSelected(YES.equals(getStringProperty(SessionConfig.KEYPAD_ENABLED)));
+    keyPadEnable.setSelected(YES.equals(getStringProperty(SessionConfig.CONFIG_KEYPAD_ENABLED)));
     keyPadEnable.addActionListener(new UpdateFontSizeTextEnabledAction());
     panel.add(keyPadEnable);
     return panel;
@@ -176,11 +176,7 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private JComponent createAvailableButtonsList() {
-    DefaultListModel listModel = new DefaultListModel();
-    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
-      listModel.addElement(mnemonic);
-    }
-    availableButtonsList = new JList(listModel);
+    availableButtonsList = new JList(createListModelMnemonics(getAvailableAndNotYetConfiguredMnemonics()));
     availableButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
     availableButtonsList.setLayoutOrientation(JList.VERTICAL);
     availableButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
@@ -188,14 +184,44 @@ class KeypadAttributesPanel extends AttributesPanel {
     return createScrollPaneForList(availableButtonsList);
   }
 
+  private KeypadMnemonic[] getAvailableAndNotYetConfiguredMnemonics() {
+    java.util.List<KeypadMnemonic> result = new ArrayList<KeypadMnemonic>();
+    Set<KeypadMnemonic> alreadyConfigured = new HashSet<KeypadMnemonic>();
+    Collections.addAll(alreadyConfigured, this.changes.getConfig().getKeypadMnemonics());
+    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
+      if (!alreadyConfigured.contains(mnemonic)) result.add(mnemonic);
+    }
+    Collections.sort(result, new KeypadMnemonicDescriptionComparator());
+    return result.toArray(new KeypadMnemonic[result.size()]);
+  }
+
+  private KeypadMnemonic[] getConfiguredKeypadMnemonics() {
+    DefaultListModel model = (DefaultListModel) configuredButtonsList.getModel();
+    KeypadMnemonic[] newValue = new KeypadMnemonic[model.size()];
+    Enumeration<?> elements = model.elements();
+    int counter = 0;
+    while (elements.hasMoreElements()) {
+      KeypadMnemonic mnemonic = (KeypadMnemonic) elements.nextElement();
+      newValue[counter++] = mnemonic;
+    }
+    return newValue;
+  }
+
   private JComponent createConfiguredButtonsList() {
-    DefaultListModel listModel = new DefaultListModel();
-    configuredButtonsList = new JList(listModel);
+    configuredButtonsList = new JList(createListModelMnemonics(this.changes.getConfig().getKeypadMnemonics()));
     configuredButtonsList.setSelectionMode(SINGLE_SELECTION);
     configuredButtonsList.setLayoutOrientation(JList.VERTICAL);
     configuredButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
     configuredButtonsList.setCellRenderer(new KeypadMnemonicListCellRenderer());
     return createScrollPaneForList(configuredButtonsList);
+  }
+
+  private DefaultListModel createListModelMnemonics(KeypadMnemonic[] keypadMnemonics) {
+    DefaultListModel model = new DefaultListModel();
+    for (KeypadMnemonic mnemonic : keypadMnemonics) {
+      model.addElement(mnemonic);
+    }
+    return model;
   }
 
   private JScrollPane createScrollPaneForList(JList list) {
@@ -210,8 +236,8 @@ class KeypadAttributesPanel extends AttributesPanel {
   private JPanel createFontSizePanel() {
     JPanel fontSizePanel = new JPanel();
     fontSize = new JTextField(Float.toString(KEYPAD_FONT_SIZE_DEFAULT_VALUE), 5);
-    if (getStringProperty(SessionConfig.KEYPAD_FONT_SIZE).length() != 0) {
-      fontSize.setText(getStringProperty(SessionConfig.KEYPAD_FONT_SIZE));
+    if (getStringProperty(SessionConfig.CONFIG_KEYPAD_FONT_SIZE).length() != 0) {
+      fontSize.setText(getStringProperty(SessionConfig.CONFIG_KEYPAD_FONT_SIZE));
     }
     fontSizePanel.add(new JLabel(LangTool.getString("spool.labelOptsFontSize")));
     fontSizePanel.add(fontSize);
@@ -219,15 +245,15 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private void applyKeypadEnabled() {
-    final String newValue = keyPadEnable.isSelected() ? YES : SessionConfig.NO;
-    changes.firePropertyChange(this, SessionConfig.KEYPAD_ENABLED, getStringProperty(SessionConfig.KEYPAD_ENABLED), newValue);
-    setProperty(SessionConfig.KEYPAD_ENABLED, newValue);
+    final String newValueEnabled = keyPadEnable.isSelected() ? YES : SessionConfig.NO;
+    changes.firePropertyChange(this, SessionConfig.CONFIG_KEYPAD_ENABLED, getStringProperty(SessionConfig.CONFIG_KEYPAD_ENABLED), newValueEnabled);
+    setProperty(SessionConfig.CONFIG_KEYPAD_ENABLED, newValueEnabled);
   }
 
   private void applyFontSize() {
     final String newValue = ensureValidFloatAsString(fontSize.getText());
-    changes.firePropertyChange(this, SessionConfig.KEYPAD_FONT_SIZE, getStringProperty(SessionConfig.KEYPAD_FONT_SIZE), newValue);
-    setProperty(SessionConfig.KEYPAD_FONT_SIZE, newValue);
+    changes.firePropertyChange(this, SessionConfig.CONFIG_KEYPAD_FONT_SIZE, getStringProperty(SessionConfig.CONFIG_KEYPAD_FONT_SIZE), newValue);
+    setProperty(SessionConfig.CONFIG_KEYPAD_FONT_SIZE, newValue);
   }
 
   private String ensureValidFloatAsString(String value) {
@@ -256,6 +282,15 @@ class KeypadAttributesPanel extends AttributesPanel {
     JButton button = new JButton(text);
     button.addActionListener(action);
     return button;
+  }
+
+  private static class KeypadMnemonicDescriptionComparator implements Comparator<KeypadMnemonic> {
+    private final KeypadMnemonicResolver resolver = new KeypadMnemonicResolver();
+
+    @Override
+    public int compare(KeypadMnemonic mnemonic1, KeypadMnemonic mnemonic2) {
+      return resolver.getDescription(mnemonic1).compareToIgnoreCase(resolver.getDescription(mnemonic2));
+    }
   }
 
   private class UpdateFontSizeTextEnabledAction extends AbstractAction {

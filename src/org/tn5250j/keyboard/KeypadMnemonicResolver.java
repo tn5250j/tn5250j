@@ -31,12 +31,19 @@ import java.util.Arrays;
 public class KeypadMnemonicResolver {
 
   public int findMnemonicValue(String mnemonicStr) {
-    KeypadMnemonic[] mnemonics = KeypadMnemonic.values();
-    for (KeypadMnemonic mnemonic : mnemonics) {
+    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
       if (mnemonic.mnemonic.equals(mnemonicStr))
         return mnemonic.value;
     }
     return 0;
+  }
+
+  public KeypadMnemonic findMnemonic(String mnemonicStr) {
+    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
+      if (mnemonic.mnemonic.equals(mnemonicStr))
+        return mnemonic;
+    }
+    return null;
   }
 
   public String[] getMnemonics() {

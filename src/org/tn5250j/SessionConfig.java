@@ -23,6 +23,8 @@ package org.tn5250j;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.keyboard.KeypadMnemonic;
+import org.tn5250j.keyboard.KeypadMnemonicSerializer;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
@@ -42,6 +44,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.Float.parseFloat;
+import static org.tn5250j.keyboard.KeypadMnemonic.*;
 
 /**
  * A host session configuration object
@@ -49,12 +52,14 @@ import static java.lang.Float.parseFloat;
 public class SessionConfig {
 
   public static final float KEYPAD_FONT_SIZE_DEFAULT_VALUE = 12.0f;
-  public static final String KEYPAD_FONT_SIZE = "keypadFontSize";
-  public static final String KEYPAD_ENABLED = "keypad";
+  public static final String CONFIG_KEYPAD_FONT_SIZE = "keypadFontSize";
+  public static final String CONFIG_KEYPAD_ENABLED = "keypad";
+  private static final String CONFIG_KEYPAD_MNEMONICS = "keypadMnemonics";
   public static final String YES = "Yes";
   public static final String NO = "No";
 
   private final SessionConfiguration sessionConfiguration = new SessionConfiguration();
+  private final KeypadMnemonicSerializer keypadMnemonicSerializer = new KeypadMnemonicSerializer();
 
   private String configurationResource;
   private String sessionName;
@@ -379,6 +384,12 @@ public class SessionConfig {
     return sessionConfiguration;
   }
 
+  public void setKeypadMnemonicsAndFireChangeEvent(KeypadMnemonic[] keypadMnemonics) {
+    String newValue = keypadMnemonicSerializer.serialize(keypadMnemonics);
+    firePropertyChange(this, CONFIG_KEYPAD_MNEMONICS, getStringProperty(CONFIG_KEYPAD_MNEMONICS), newValue);
+    setProperty(CONFIG_KEYPAD_MNEMONICS, newValue);
+  }
+
   /**
    * This is the new intended way to access configuration.
    * Only Getters are allowed here!
@@ -387,8 +398,25 @@ public class SessionConfig {
    */
   public class SessionConfiguration {
     public float getKeypadFontSize() {
-      return getFloatProperty(KEYPAD_FONT_SIZE, KEYPAD_FONT_SIZE_DEFAULT_VALUE);
+      return getFloatProperty(CONFIG_KEYPAD_FONT_SIZE, KEYPAD_FONT_SIZE_DEFAULT_VALUE);
     }
+
+    public KeypadMnemonic[] getKeypadMnemonics() {
+      String s = getStringProperty(CONFIG_KEYPAD_MNEMONICS);
+      KeypadMnemonic[] result = keypadMnemonicSerializer.deserialize(s);
+      if (result.length == 0) {
+        return defaultKeypadMnemonics();
+      }
+      return result;
+    }
+
+    private KeypadMnemonic[] defaultKeypadMnemonics() {
+      return new KeypadMnemonic[]{
+          PF1, PF2, PF3, PF4, PF5, PF6, PF7, PF8, PF9, PF10, PF11, PF12, ENTER, PAGE_UP, CLEAR,
+          PF13, PF14, PF15, PF16, PF17, PF18, PF19, PF20, PF21, PF22, PF23, PF24, SYSREQ, PAGE_DOWN
+      };
+    }
+
   }
 
 }
