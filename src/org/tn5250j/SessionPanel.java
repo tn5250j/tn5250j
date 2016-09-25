@@ -60,12 +60,17 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
+import org.tn5250j.keyboard.KeypadMnemonicSerializer;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_ENABLED;
+import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_MNEMONICS;
+import static org.tn5250j.SessionConfig.YES;
 
 /**
  * A host GUI session
@@ -205,7 +210,7 @@ SessionListener {
 
 		});
 
-		if (sesConfig.getStringProperty("mouseWheel").equals("Yes")) {
+		if (YES.equals(sesConfig.getStringProperty("mouseWheel"))) {
 			scroller.addMouseWheelListener(this);
 		}
 
@@ -213,7 +218,7 @@ SessionListener {
 		Macronizer.init();
 
 		keypadPanel.addActionListener(this);
-		if (sesConfig.getStringProperty("keypad").equals("Yes"))
+		if (YES.equals(sesConfig.getStringProperty(CONFIG_KEYPAD_ENABLED)))
 			keypadPanel.setVisible(true);
 		else
 			keypadPanel.setVisible(false);
@@ -231,7 +236,7 @@ SessionListener {
 
 
 		// check if double click sends enter
-		if (sesConfig.getStringProperty("doubleClick").equals("Yes"))
+		if (YES.equals(sesConfig.getStringProperty("doubleClick")))
 			doubleClick = true;
 		else
 			doubleClick = false;
@@ -360,7 +365,7 @@ SessionListener {
 		if (session.getConfiguration().isPropertyExists("confirmTabClose")) {
 			this.requestFocus();
 			final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(this);
-			if(session.getConfiguration().getStringProperty("confirmTabClose").equals("Yes")) {
+			if(YES.equals(session.getConfiguration().getStringProperty("confirmTabClose"))) {
 				if(!tabclsdlg.show()) {
 					result = false;
 				}
@@ -379,7 +384,7 @@ SessionListener {
 	private boolean confirmSignOffClose() {
 
 		if (sesConfig.isPropertyExists("confirmSignoff") &&
-				sesConfig.getStringProperty("confirmSignoff").equals("Yes")) {
+				YES.equals(sesConfig.getStringProperty("confirmSignoff"))) {
 			this.requestFocus();
 			int result = JOptionPane.showConfirmDialog(
 					this.getParent(),            // the parent that the dialog blocks
@@ -411,68 +416,39 @@ SessionListener {
 	@Override
 	public boolean isManagingFocus() { return true; }
 
-	public JPanel getDrawingCanvas() {
-
-		return s;
-
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent actionevent) {
-
-		Object obj = actionevent.getSource();
-		String ac = ((JButton)obj).getActionCommand();
-
-		if (ac.equals("NXTPAD"))
-			keypadPanel.nextPad();
-		else
-			screen.sendKeys(ac);
-
-
+		screen.sendKeys(((JButton) actionevent.getSource()).getActionCommand());
 		getFocusForMe();
-
 	}
 
-	/**
-	 * Update the configuration settings
-	 * @param pce
-	 */
 	@Override
-	public void onConfigChanged(SessionConfigEvent pce) {
+	public void onConfigChanged(SessionConfigEvent configEvent) {
+		final String configName = configEvent.getPropertyName();
 
-		String pn = pce.getPropertyName();
-
-		if (pn.equals("keypad")) {
-			if (((String)pce.getNewValue()).equals("Yes")) {
-				keypadPanel.setVisible(true);
-			}
-			else {
-				keypadPanel.setVisible(false);
-			}
+		if (CONFIG_KEYPAD_ENABLED.equals(configName)) {
+			keypadPanel.setVisible(YES.equals(configEvent.getNewValue()));
 			this.validate();
 		}
 
-		if (pn.equals("doubleClick")) {
-			if (((String)pce.getNewValue()).equals("Yes")) {
-				doubleClick = true;
-			}
-			else {
-				doubleClick = false;
-			}
+		if (CONFIG_KEYPAD_MNEMONICS.equals(configName)) {
+			keypadPanel.reInitializeButtons(new KeypadMnemonicSerializer().deserialize((String) configEvent.getNewValue()));
 		}
 
-		if (pn.equals("mouseWheel")) {
-			if (((String)pce.getNewValue()).equals("Yes")) {
+		if ("doubleClick".equals(configName)) {
+			doubleClick = YES.equals(configEvent.getNewValue());
+		}
+
+		if ("mouseWheel".equals(configName)) {
+			if (YES.equals(configEvent.getNewValue())) {
 				scroller.addMouseWheelListener(this);
-			}
-			else {
+			}	else {
 				scroller.removeMouseWheelListener(this);
 			}
 		}
 
 		resizeMe();
 		repaint();
-
 	}
 
 	public tnvt getVT() {
@@ -491,11 +467,6 @@ SessionListener {
 
 	public void startDuplicateSession() {
 		fireEmulatorAction(EmulatorActionEvent.START_DUPLICATE);
-	}
-
-	public void sendAidKey(int whichOne) {
-
-		session.getVT().sendAidKey(whichOne);
 	}
 
 	/**
@@ -531,15 +502,11 @@ SessionListener {
 	}
 
 	public void nextSession() {
-
 		fireSessionJump(TN5250jConstants.JUMP_NEXT);
-
 	}
 
 	public void prevSession() {
-
 		fireSessionJump(TN5250jConstants.JUMP_PREVIOUS);
-
 	}
 
 	/**
@@ -547,8 +514,7 @@ SessionListener {
 	 *
 	 * @param dir  The direction to jump.
 	 */
-	protected void fireSessionJump(int dir) {
-
+	private void fireSessionJump(int dir) {
 		if (listeners != null) {
 			int size = listeners.size();
 			for (int i = 0; i < size; i++) {
@@ -624,20 +590,12 @@ SessionListener {
 	 *
 	 */
 	public void actionAttributes() {
-
-		SessionSettings sa = new SessionSettings((Frame)SwingUtilities.getRoot(this),
-				sesConfig);
-		sa.showIt();
-
+		new SessionSettings((Frame)SwingUtilities.getRoot(this), sesConfig).showIt();
 		getFocusForMe();
-		sa = null;
 	}
 
-	private void actionPopup (MouseEvent me) {
-
+	private void actionPopup(MouseEvent me) {
 		new SessionPopup(this,me);
-
-
 	}
 
 	public void actionSpool() {
@@ -657,15 +615,11 @@ SessionListener {
 	}
 
 	public void executeMacro(ActionEvent ae) {
-
 		executeMacro(ae.getActionCommand());
-
 	}
 
 	public void executeMacro(String macro) {
-
 		Macronizer.invoke(macro,this);
-
 	}
 
 	protected void stopRecordingMe() {
@@ -939,14 +893,11 @@ SessionListener {
 	 */
 	@Override
 	public Graphics getDrawingGraphics(){
-
 		return guiGraBuf.getDrawingArea();
 	}
 
 	protected final void setRubberBand(TNRubberBand newValue) {
-
 		rubberband = newValue;
-
 	}
 
 	public Rect getBoundingArea() {

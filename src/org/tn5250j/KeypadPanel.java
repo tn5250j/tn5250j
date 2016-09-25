@@ -25,6 +25,9 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  */
 
+import org.tn5250j.keyboard.KeypadMnemonic;
+import org.tn5250j.keyboard.KeypadMnemonicResolver;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
@@ -32,146 +35,65 @@ import java.awt.event.ActionListener;
 
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
+import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.SwingUtilities.layoutCompoundLabel;
-import static org.tn5250j.keyboard.KeypadMnemonic.*;
+import static org.tn5250j.keyboard.KeypadMnemonic.PF1;
 import static org.tn5250j.tools.LangTool.getString;
 
 class KeypadPanel extends JPanel {
 
   private static final long serialVersionUID = -7460283401326716314L;
   private static final int MIN_SIZE = 3;
-  private static final int NO_OF_BUTTONS = 30;
+  private static final int NO_OF_BUTTONS_PER_ROW = 15;
 
-  private final JButton[] buttons = new JButton[NO_OF_BUTTONS];
+  private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
   private final Rectangle textRect = new Rectangle();
   private final Rectangle iconRect = new Rectangle();
   private final SessionConfig.SessionConfiguration configuration;
 
-  private JPanel keyPadTop;
-  private JPanel keyPadBottom;
-  private KeyPadMode currentKeyPadMode = KeyPadMode.ONE;
+  private JButton[] buttons;
 
   KeypadPanel(SessionConfig.SessionConfiguration sessionConfiguration) {
     this.configuration = sessionConfiguration;
-    jbInit();
+    setBorder(createEmptyBorder());
+    setLayout(new BoxLayout(this, Y_AXIS));
+    reInitializeButtons(configuration.getKeypadMnemonics());
   }
 
-  private void jbInit() {
-
-    final GridLayout gridLayout = new GridLayout(1, NO_OF_BUTTONS / 2, 0, 0);
-    keyPadTop = new JPanel(gridLayout);
-    keyPadBottom = new JPanel(gridLayout);
-
+  void reInitializeButtons(KeypadMnemonic[] keypadMnemonics) {
+    removeAll();
     final Insets noMargin = new Insets(0, 0, 0, 0);
     final CompoundBorder minimalBorder = createCompoundBorder(createEmptyBorder(), createEmptyBorder(2, 3, 3, 3));
-    for (int i = 0; i < NO_OF_BUTTONS; i++) {
+    buttons = new JButton[keypadMnemonics.length];
+    JPanel buttonPanel = null;
+    for (int i = 0; i < buttons.length; i++) {
       buttons[i] = new JButton();
       buttons[i].setMargin(noMargin);
       buttons[i].setBorder(minimalBorder);
+      buttons[i].setText(getString("KP_" + keypadMnemonics[i].name(), keypadMnemonicResolver.getDescription(keypadMnemonics[i])));
+      buttons[i].setActionCommand(PF1.mnemonic);
+      if (i % NO_OF_BUTTONS_PER_ROW == 0 || buttonPanel == null) {
+        buttonPanel = new JPanel(new GridLayout(1, NO_OF_BUTTONS_PER_ROW, 0, 0));
+        add(buttonPanel);
+      }
+      buttonPanel.add(buttons[i]);
     }
-    switchKeypadMode(currentKeyPadMode);
-    addButtonsTop();
-    addButtonsBottom();
+    addInvisibleButtonsToPreventLayout(buttonPanel);
+  }
 
-    this.setLayout(new BorderLayout());
-    this.setBorder(createEmptyBorder());
-    this.add(keyPadTop, BorderLayout.NORTH);
-    this.add(keyPadBottom, BorderLayout.SOUTH);
+  private void addInvisibleButtonsToPreventLayout(JPanel bottomPanel) {
+    if (buttons.length > NO_OF_BUTTONS_PER_ROW) {
+      for (int i = buttons.length % NO_OF_BUTTONS_PER_ROW; i < NO_OF_BUTTONS_PER_ROW; i++) {
+        JButton button = new JButton();
+        button.setVisible(false);
+        bottomPanel.add(button);
+      }
+    }
   }
 
   void addActionListener(ActionListener actionlistener) {
-    for (int x = 0; x < NO_OF_BUTTONS; x++) {
-      buttons[x].addActionListener(actionlistener);
-    }
-  }
-
-  void nextPad() {
-    if (currentKeyPadMode == KeyPadMode.ONE)
-      switchKeypadMode(KeyPadMode.TWO);
-    else
-      switchKeypadMode(KeyPadMode.ONE);
-  }
-
-  private void switchKeypadMode(KeyPadMode newKeyPadMode) {
-    currentKeyPadMode = newKeyPadMode;
-    buttons[0].setText(getString("KP_F1", "PF1"));
-    buttons[0].setActionCommand(PF1.mnemonic);
-    buttons[1].setText(getString("KP_F2", "PF2"));
-    buttons[1].setActionCommand(PF2.mnemonic);
-    buttons[2].setText(getString("KP_F3", "PF3"));
-    buttons[2].setActionCommand(PF3.mnemonic);
-    buttons[3].setText(getString("KP_F4", "PF4"));
-    buttons[3].setActionCommand(PF4.mnemonic);
-    buttons[4].setText(getString("KP_F5", "PF5"));
-    buttons[4].setActionCommand(PF5.mnemonic);
-    buttons[5].setText(getString("KP_F6", "PF6"));
-    buttons[5].setActionCommand(PF6.mnemonic);
-    buttons[6].setText(getString("KP_F7", "PF7"));
-    buttons[6].setActionCommand(PF7.mnemonic);
-    buttons[7].setText(getString("KP_F8", "PF8"));
-    buttons[7].setActionCommand(PF8.mnemonic);
-    buttons[8].setText(getString("KP_F9", "PF9"));
-    buttons[8].setActionCommand(PF9.mnemonic);
-    buttons[9].setText(getString("KP_F10", "PF10"));
-    buttons[9].setActionCommand(PF10.mnemonic);
-    buttons[10].setText(getString("KP_F11", "PF11"));
-    buttons[10].setActionCommand(PF11.mnemonic);
-    buttons[11].setText(getString("KP_F12", "PF12"));
-    buttons[11].setActionCommand(PF12.mnemonic);
-    buttons[12].setText(getString("KP_ENTER", "Enter"));
-    buttons[12].setActionCommand(ENTER.mnemonic);
-    buttons[13].setText(getString("KP_PGUP", "PgUp"));
-    buttons[13].setActionCommand(PAGE_UP.mnemonic);
-    if (newKeyPadMode == KeyPadMode.ONE) {
-      buttons[14].setText(getString("KP_CLEAR", "Clear"));
-      buttons[14].setActionCommand(CLEAR.mnemonic);
-    } else if (newKeyPadMode == KeyPadMode.TWO) {
-      buttons[14].setText(getString("KP_HELP", "Help"));
-      buttons[14].setActionCommand(HELP.mnemonic);
-    } else {
-      throw new IllegalStateException("Not implemented KeyPadMode: " + newKeyPadMode);
-    }
-    buttons[15].setText(getString("KP_F13", "PF13"));
-    buttons[15].setActionCommand(PF13.mnemonic);
-    buttons[16].setText(getString("KP_F14", "PF14"));
-    buttons[16].setActionCommand(PF14.mnemonic);
-    buttons[17].setText(getString("KP_F15", "PF15"));
-    buttons[17].setActionCommand(PF15.mnemonic);
-    buttons[18].setText(getString("KP_F16", "PF16"));
-    buttons[18].setActionCommand(PF16.mnemonic);
-    buttons[19].setText(getString("KP_F17", "PF17"));
-    buttons[19].setActionCommand(PF17.mnemonic);
-    buttons[20].setText(getString("KP_F18", "PF18"));
-    buttons[20].setActionCommand(PF18.mnemonic);
-    buttons[21].setText(getString("KP_F19", "PF19"));
-    buttons[21].setActionCommand(PF19.mnemonic);
-    buttons[22].setText(getString("KP_F20", "PF20"));
-    buttons[22].setActionCommand(PF20.mnemonic);
-    buttons[23].setText(getString("KP_F21", "PF21"));
-    buttons[23].setActionCommand(PF21.mnemonic);
-    buttons[24].setText(getString("KP_F22", "PF22"));
-    buttons[24].setActionCommand(PF22.mnemonic);
-    buttons[25].setText(getString("KP_F23", "PF23"));
-    buttons[25].setActionCommand(PF23.mnemonic);
-    buttons[26].setText(getString("KP_F24", "PF24"));
-    buttons[26].setActionCommand(PF24.mnemonic);
-    buttons[27].setText(getString("KP_SR", "SysReq"));
-    buttons[27].setActionCommand(SYSREQ.mnemonic);
-    buttons[28].setText(getString("KP_PGDN", "PgDn"));
-    buttons[28].setActionCommand(PAGE_DOWN.mnemonic);
-    buttons[29].setText(getString("KP_NXTPAD", "Next Pad"));
-    buttons[29].setActionCommand("NXTPAD");
-  }
-
-  private void addButtonsTop() {
-    for (int x = 0; x < NO_OF_BUTTONS / 2; x++) {
-      keyPadTop.add(buttons[x]);
-    }
-  }
-
-  private void addButtonsBottom() {
-    for (int x = NO_OF_BUTTONS / 2; x < NO_OF_BUTTONS; x++) {
-      keyPadBottom.add(buttons[x]);
+    for (JButton button : buttons) {
+      button.addActionListener(actionlistener);
     }
   }
 
@@ -179,7 +101,7 @@ class KeypadPanel extends JPanel {
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
-    final JButton referenceButton = buttons[NO_OF_BUTTONS - 1];
+    final JButton referenceButton = buttons[buttons.length - 1];
     Font buttonFont = referenceButton.getFont();
     float fs = configuration.getKeypadFontSize();
     buttonFont = buttonFont.deriveFont(fs);
@@ -220,8 +142,8 @@ class KeypadPanel extends JPanel {
     }
 
     if (fs >= MIN_SIZE) {
-      for (int x = 0; x < NO_OF_BUTTONS; x++) {
-        buttons[x].setFont(buttonFont);
+      for (JButton button : buttons) {
+        button.setFont(buttonFont);
       }
     }
   }
@@ -236,8 +158,4 @@ class KeypadPanel extends JPanel {
     return text;
   }
 
-  private enum KeyPadMode {
-    ONE,
-    TWO
-  }
 }

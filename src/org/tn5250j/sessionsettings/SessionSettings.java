@@ -221,9 +221,6 @@ public class SessionSettings extends JDialog {
           @Override
           public void propertyChange(PropertyChangeEvent e) {
             String prop = e.getPropertyName();
-
-            //                     System.out.println("prop > " + prop);
-
             if (isVisible()
                 && (e.getSource() == saOptionPane)
                 && (prop.equals(JOptionPane.VALUE_PROPERTY) ||

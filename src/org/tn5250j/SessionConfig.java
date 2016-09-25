@@ -54,7 +54,7 @@ public class SessionConfig {
   public static final float KEYPAD_FONT_SIZE_DEFAULT_VALUE = 12.0f;
   public static final String CONFIG_KEYPAD_FONT_SIZE = "keypadFontSize";
   public static final String CONFIG_KEYPAD_ENABLED = "keypad";
-  private static final String CONFIG_KEYPAD_MNEMONICS = "keypadMnemonics";
+  public static final String CONFIG_KEYPAD_MNEMONICS = "keypadMnemonics";
   public static final String YES = "Yes";
   public static final String NO = "No";
 
