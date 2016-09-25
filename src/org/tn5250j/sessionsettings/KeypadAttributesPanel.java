@@ -33,12 +33,14 @@ import org.tn5250j.tools.LangTool;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 
 import static javax.swing.BorderFactory.createTitledBorder;
 import static javax.swing.BoxLayout.X_AXIS;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
+import static javax.swing.ListSelectionModel.SINGLE_SELECTION;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static org.tn5250j.SessionConfig.KEYPAD_FONT_SIZE_DEFAULT_VALUE;
@@ -98,23 +100,24 @@ class KeypadAttributesPanel extends AttributesPanel {
   private JPanel createCustomButtonConfigurationPanel() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, X_AXIS));
-    panel.setBorder(createTitledBorder("Custom Buttons"));
+    panel.setBorder(createTitledBorder("Buttons Visible at Keypad (available <-> configured)"));
     panel.add(createAvailableButtonsList());
     panel.add(createListMoveButtons());
     panel.add(createConfiguredButtonsList());
+    panel.add(createListOrderButtons());
     return panel;
   }
 
-  private JPanel createListMoveButtons() {
+  private Component createListMoveButtons() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, Y_AXIS));
-    panel.add(createMoveButton(">", new AbstractAction() {
+    panel.add(createButton(">", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         moveFromTo(availableButtonsList, configuredButtonsList);
       }
     }));
-    panel.add(createMoveButton("<", new AbstractAction() {
+    panel.add(createButton("<", new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
         moveFromTo(configuredButtonsList, availableButtonsList);
@@ -123,10 +126,42 @@ class KeypadAttributesPanel extends AttributesPanel {
     return panel;
   }
 
-  private JButton createMoveButton(String text, AbstractAction abstractAction) {
-    JButton button = new JButton(text);
-    button.addActionListener(abstractAction);
-    return button;
+  private Component createListOrderButtons() {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, Y_AXIS));
+    panel.add(createButton(UIManager.getIcon("Table.ascendingSortIcon"), new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        moveUp();
+      }
+    }));
+    panel.add(createButton(UIManager.getIcon("Table.descendingSortIcon"), new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        moveDown();
+      }
+    }));
+    return panel;
+  }
+
+  private void moveUp() {
+    int selectedIndex = configuredButtonsList.getSelectedIndex();
+    if (selectedIndex > 0) {
+      DefaultListModel model = (DefaultListModel) configuredButtonsList.getModel();
+      Object element = model.remove(selectedIndex);
+      model.insertElementAt(element, selectedIndex - 1);
+      configuredButtonsList.setSelectedIndex(selectedIndex - 1);
+    }
+  }
+
+  private void moveDown() {
+    int selectedIndex = configuredButtonsList.getSelectedIndex();
+    DefaultListModel model = (DefaultListModel) configuredButtonsList.getModel();
+    if (selectedIndex < model.size() - 1) {
+      Object element = model.remove(selectedIndex);
+      model.insertElementAt(element, selectedIndex + 1);
+      configuredButtonsList.setSelectedIndex(selectedIndex + 1);
+    }
   }
 
   private void moveFromTo(JList sourceList, JList destinationList) {
@@ -156,7 +191,7 @@ class KeypadAttributesPanel extends AttributesPanel {
   private JComponent createConfiguredButtonsList() {
     DefaultListModel listModel = new DefaultListModel();
     configuredButtonsList = new JList(listModel);
-    configuredButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
+    configuredButtonsList.setSelectionMode(SINGLE_SELECTION);
     configuredButtonsList.setLayoutOrientation(JList.VERTICAL);
     configuredButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
     configuredButtonsList.setCellRenderer(new KeypadMnemonicListCellRenderer());
@@ -211,6 +246,18 @@ class KeypadAttributesPanel extends AttributesPanel {
     }
   }
 
+  private static JButton createButton(Icon icon, AbstractAction action) {
+    JButton button = new JButton(icon);
+    button.addActionListener(action);
+    return button;
+  }
+
+  private static JButton createButton(String text, AbstractAction action) {
+    JButton button = new JButton(text);
+    button.addActionListener(action);
+    return button;
+  }
+
   private class UpdateFontSizeTextEnabledAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -228,6 +275,5 @@ class KeypadAttributesPanel extends AttributesPanel {
       return delegateRenderer.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
     }
   }
-
 
 }
