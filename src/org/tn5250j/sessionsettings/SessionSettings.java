@@ -86,7 +86,7 @@ public class SessionSettings extends JDialog {
       child = e.nextElement();
       Object obj = ((DefaultMutableTreeNode) child).getUserObject();
       if (obj instanceof AttributesPanel) {
-        jp.add((AttributesPanel) obj, ((AttributesPanel) obj).toString());
+        jp.add((AttributesPanel) obj, obj.toString());
       }
     }
 
@@ -110,11 +110,7 @@ public class SessionSettings extends JDialog {
 
         if (node == null)
           return;
-
-        Object nodeInfo = node.getUserObject();
-
-        showPanel(nodeInfo);
-
+        showPanel(node.getUserObject());
       }
     });
 
@@ -182,16 +178,8 @@ public class SessionSettings extends JDialog {
 
   }
 
-  protected final int getIntProperty(String prop) {
-
-    return Integer.parseInt((String) props.get(prop));
-
-  }
-
   protected final void setProperty(String key, String val) {
-
     props.setProperty(key, val);
-
   }
 
   public Properties getProperties() {
