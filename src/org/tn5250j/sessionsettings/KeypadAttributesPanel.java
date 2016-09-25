@@ -98,14 +98,41 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private JPanel createCustomButtonConfigurationPanel() {
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, X_AXIS));
-    panel.setBorder(createTitledBorder("Buttons Visible at Keypad (available <-> configured)"));
-    panel.add(createAvailableButtonsList());
-    panel.add(createListMoveButtons());
-    panel.add(createConfiguredButtonsList());
-    panel.add(createListOrderButtons());
-    return panel;
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout(new BoxLayout(mainPanel, Y_AXIS));
+    mainPanel.setBorder(createTitledBorder(LangTool.getString("sa.kpVisibleButtons")));
+
+    JPanel listPanel = new JPanel();
+    listPanel.setLayout(new BoxLayout(listPanel, X_AXIS));
+    listPanel.add(createAvailableButtonsList());
+    listPanel.add(createListMoveButtons());
+    listPanel.add(createConfiguredButtonsList());
+    listPanel.add(createListOrderButtons());
+
+    mainPanel.add(listPanel);
+    JButton resetButton = new JButton(LangTool.getString("sa.kpResetDefaults"));
+    resetButton.addActionListener(new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        resetModelsToDefaultValues();
+      }
+    });
+    mainPanel.add(resetButton);
+    return mainPanel;
+  }
+
+  private void resetModelsToDefaultValues() {
+    DefaultListModel configuredModel = (DefaultListModel) configuredButtonsList.getModel();
+    configuredModel.clear();
+    for (KeypadMnemonic mnemonic : changes.getConfig().getDefaultKeypadMnemonics()) {
+      configuredModel.addElement(mnemonic);
+    }
+
+    DefaultListModel availableModel = (DefaultListModel) availableButtonsList.getModel();
+    availableModel.clear();
+    for (KeypadMnemonic mnemonic : getAvailableAndNotYetConfiguredMnemonics(changes.getConfig().getDefaultKeypadMnemonics())) {
+      availableModel.addElement(mnemonic);
+    }
   }
 
   private Component createListMoveButtons() {
@@ -176,7 +203,9 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private JComponent createAvailableButtonsList() {
-    availableButtonsList = new JList(createListModelMnemonics(getAvailableAndNotYetConfiguredMnemonics()));
+    KeypadMnemonic[] configuredMnemonics = this.changes.getConfig().getKeypadMnemonics();
+    KeypadMnemonic[] availableMnemonics = getAvailableAndNotYetConfiguredMnemonics(configuredMnemonics);
+    availableButtonsList = new JList(createListModelMnemonics(availableMnemonics));
     availableButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
     availableButtonsList.setLayoutOrientation(JList.VERTICAL);
     availableButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
@@ -184,10 +213,10 @@ class KeypadAttributesPanel extends AttributesPanel {
     return createScrollPaneForList(availableButtonsList);
   }
 
-  private KeypadMnemonic[] getAvailableAndNotYetConfiguredMnemonics() {
+  private KeypadMnemonic[] getAvailableAndNotYetConfiguredMnemonics(KeypadMnemonic[] excludedMnemonics) {
     java.util.List<KeypadMnemonic> result = new ArrayList<KeypadMnemonic>();
     Set<KeypadMnemonic> alreadyConfigured = new HashSet<KeypadMnemonic>();
-    Collections.addAll(alreadyConfigured, this.changes.getConfig().getKeypadMnemonics());
+    Collections.addAll(alreadyConfigured, excludedMnemonics);
     for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
       if (!alreadyConfigured.contains(mnemonic)) result.add(mnemonic);
     }

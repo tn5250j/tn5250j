@@ -405,12 +405,12 @@ public class SessionConfig {
       String s = getStringProperty(CONFIG_KEYPAD_MNEMONICS);
       KeypadMnemonic[] result = keypadMnemonicSerializer.deserialize(s);
       if (result.length == 0) {
-        return defaultKeypadMnemonics();
+        return getDefaultKeypadMnemonics();
       }
       return result;
     }
 
-    private KeypadMnemonic[] defaultKeypadMnemonics() {
+    public KeypadMnemonic[] getDefaultKeypadMnemonics() {
       return new KeypadMnemonic[]{
           PF1, PF2, PF3, PF4, PF5, PF6, PF7, PF8, PF9, PF10, PF11, PF12, ENTER, PAGE_UP, CLEAR,
           PF13, PF14, PF15, PF16, PF17, PF18, PF19, PF20, PF21, PF22, PF23, PF24, SYSREQ, PAGE_DOWN
