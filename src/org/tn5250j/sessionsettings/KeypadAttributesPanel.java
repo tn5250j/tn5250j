@@ -51,8 +51,6 @@ class KeypadAttributesPanel extends AttributesPanel {
 
   private JCheckBox keyPadEnable;
   private JTextField fontSize;
-  private DefaultListModel availableButtonsListModel;
-  private DefaultListModel configuredButtonsListModel;
   private JList availableButtonsList;
   private JList configuredButtonsList;
 
@@ -143,11 +141,11 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private JComponent createAvailableButtonsList() {
-    availableButtonsListModel = new DefaultListModel();
+    DefaultListModel listModel = new DefaultListModel();
     for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
-      availableButtonsListModel.addElement(mnemonic);
+      listModel.addElement(mnemonic);
     }
-    availableButtonsList = new JList(availableButtonsListModel);
+    availableButtonsList = new JList(listModel);
     availableButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
     availableButtonsList.setLayoutOrientation(JList.VERTICAL);
     availableButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
@@ -156,8 +154,8 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private JComponent createConfiguredButtonsList() {
-    configuredButtonsListModel = new DefaultListModel();
-    configuredButtonsList = new JList(configuredButtonsListModel);
+    DefaultListModel listModel = new DefaultListModel();
+    configuredButtonsList = new JList(listModel);
     configuredButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
     configuredButtonsList.setLayoutOrientation(JList.VERTICAL);
     configuredButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
