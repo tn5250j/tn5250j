@@ -26,10 +26,7 @@ package org.tn5250j.keyboard;
 
 import org.tn5250j.tools.LangTool;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class KeypadMnemonicResolver {
 
