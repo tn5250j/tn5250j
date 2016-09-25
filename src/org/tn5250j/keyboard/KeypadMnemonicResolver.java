@@ -33,7 +33,7 @@ import java.util.List;
 
 public class KeypadMnemonicResolver {
 
-  public int getMnemonicValue(String mnemonicStr) {
+  public int findMnemonicValue(String mnemonicStr) {
     KeypadMnemonic[] mnemonics = KeypadMnemonic.values();
     for (KeypadMnemonic mnemonic : mnemonics) {
       if (mnemonic.mnemonic.equals(mnemonicStr))
@@ -42,19 +42,32 @@ public class KeypadMnemonicResolver {
     return 0;
   }
 
+  public String[] getMnemonics() {
+    String[] result = new String[KeypadMnemonic.values().length];
+    int i = 0;
+    for (KeypadMnemonic keypadMnemonic : KeypadMnemonic.values()) {
+      result[i++] = keypadMnemonic.mnemonic;
+    }
+    return result;
+  }
+
   public String[] getMnemonicsSorted() {
-    String[] mnemonics = KeypadMnemonic.mnemonics();
+    String[] mnemonics = getMnemonics();
     Arrays.sort(mnemonics);
     return mnemonics;
   }
 
-  public List<String> getOptionDescriptions() {
+  public String[] getMnemonicDescriptions() {
     KeypadMnemonic[] mnemonicData = KeypadMnemonic.values();
-    List<String> result = new ArrayList<String>(mnemonicData.length);
+    String[] result = new String[KeypadMnemonic.values().length];
+    int i = 0;
     for (KeypadMnemonic mnemonic : mnemonicData) {
-      result.add(LangTool.getString("key." + mnemonic.mnemonic));
+      result[i++] = getDescription(mnemonic);
     }
-    Collections.sort(result);
     return result;
+  }
+
+  public String getDescription(KeypadMnemonic mnemonic) {
+    return LangTool.getString("key." + mnemonic.mnemonic);
   }
 }

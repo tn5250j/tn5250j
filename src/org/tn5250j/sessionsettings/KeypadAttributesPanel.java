@@ -26,60 +26,152 @@ package org.tn5250j.sessionsettings;
  */
 
 import org.tn5250j.SessionConfig;
+import org.tn5250j.keyboard.KeypadMnemonic;
+import org.tn5250j.keyboard.KeypadMnemonicResolver;
 import org.tn5250j.tools.LangTool;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 
 import static javax.swing.BorderFactory.createTitledBorder;
+import static javax.swing.BoxLayout.X_AXIS;
+import static javax.swing.BoxLayout.Y_AXIS;
+import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static org.tn5250j.SessionConfig.KEYPAD_FONT_SIZE_DEFAULT_VALUE;
+import static org.tn5250j.SessionConfig.YES;
 
 class KeypadAttributesPanel extends AttributesPanel {
 
   private static final long serialVersionUID = 1L;
+  private static final int VISIBLE_ROW_COUNT = 15;
 
   private JCheckBox keyPadEnable;
   private JTextField fontSize;
+  private DefaultListModel availableButtonsListModel;
+  private DefaultListModel configuredButtonsListModel;
+  private JList availableButtonsList;
+  private JList configuredButtonsList;
 
   KeypadAttributesPanel(SessionConfig config) {
     super(config, "KP");
+  }
+
+  @Override
+  public void applyAttributes() {
+    applyKeypadEnabled();
+    applyFontSize();
   }
 
   /**
    * Component initialization
    */
   public void initPanel() throws Exception {
-
     setLayout(new BorderLayout());
     contentPane = new JPanel();
-    contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+    contentPane.setLayout(new BoxLayout(contentPane, Y_AXIS));
     add(contentPane, BorderLayout.NORTH);
 
-    JPanel keypadPanel = new JPanel();
-    keypadPanel.setLayout(new BoxLayout(keypadPanel, BoxLayout.Y_AXIS));
-    keypadPanel.setBorder(createTitledBorder(LangTool.getString("sa.kpp")));
-    keypadPanel.add(createKeypadPanel());
-    keypadPanel.add(createFontSizePanel());
-    contentPane.add(keypadPanel);
+    contentPane.add(createEnableKeypadAndFontSizePanel());
+    contentPane.add(createCustomButtonConfigurationPanel());
   }
 
-  private JPanel createKeypadPanel() {
+  private JPanel createEnableKeypadAndFontSizePanel() {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, Y_AXIS));
+    panel.setBorder(createTitledBorder(LangTool.getString("sa.kpp")));
+    panel.add(createEnableKeypadCheckboxPanel());
+    panel.add(createFontSizePanel());
+    return panel;
+  }
+
+  private JPanel createEnableKeypadCheckboxPanel() {
     JPanel panel = new JPanel();
     keyPadEnable = new JCheckBox(LangTool.getString("sa.kpCheck"));
-    keyPadEnable.setSelected(SessionConfig.YES.equals(getStringProperty(SessionConfig.KEYPAD_ENABLED)));
-    keyPadEnable.addActionListener(new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateFontSizeTextEnabled();
-      }
-    });
+    keyPadEnable.setSelected(YES.equals(getStringProperty(SessionConfig.KEYPAD_ENABLED)));
+    keyPadEnable.addActionListener(new UpdateFontSizeTextEnabledAction());
     panel.add(keyPadEnable);
     return panel;
   }
 
-  private void updateFontSizeTextEnabled() {
-    fontSize.setEnabled(keyPadEnable.isSelected());
+  private JPanel createCustomButtonConfigurationPanel() {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, X_AXIS));
+    panel.setBorder(createTitledBorder("Custom Buttons"));
+    panel.add(createAvailableButtonsList());
+    panel.add(createListMoveButtons());
+    panel.add(createConfiguredButtonsList());
+    return panel;
+  }
+
+  private JPanel createListMoveButtons() {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, Y_AXIS));
+    panel.add(createMoveButton(">", new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        moveFromTo(availableButtonsList, configuredButtonsList);
+      }
+    }));
+    panel.add(createMoveButton("<", new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        moveFromTo(configuredButtonsList, availableButtonsList);
+      }
+    }));
+    return panel;
+  }
+
+  private JButton createMoveButton(String text, AbstractAction abstractAction) {
+    JButton button = new JButton(text);
+    button.addActionListener(abstractAction);
+    return button;
+  }
+
+  private void moveFromTo(JList sourceList, JList destinationList) {
+    int[] selectedIndices = sourceList.getSelectedIndices();
+    DefaultListModel sourceModel = (DefaultListModel) sourceList.getModel();
+    DefaultListModel destinationModel = (DefaultListModel) destinationList.getModel();
+    for (int selectedIndex : selectedIndices) {
+      Object element = sourceModel.getElementAt(selectedIndex);
+      destinationModel.addElement(element);
+    }
+    safeDeleteByIndex(sourceModel, selectedIndices);
+  }
+
+  private JComponent createAvailableButtonsList() {
+    availableButtonsListModel = new DefaultListModel();
+    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
+      availableButtonsListModel.addElement(mnemonic);
+    }
+    availableButtonsList = new JList(availableButtonsListModel);
+    availableButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
+    availableButtonsList.setLayoutOrientation(JList.VERTICAL);
+    availableButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
+    availableButtonsList.setCellRenderer(new KeypadMnemonicListCellRenderer());
+    return createScrollPaneForList(availableButtonsList);
+  }
+
+  private JComponent createConfiguredButtonsList() {
+    configuredButtonsListModel = new DefaultListModel();
+    configuredButtonsList = new JList(configuredButtonsListModel);
+    configuredButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
+    configuredButtonsList.setLayoutOrientation(JList.VERTICAL);
+    configuredButtonsList.setVisibleRowCount(VISIBLE_ROW_COUNT);
+    configuredButtonsList.setCellRenderer(new KeypadMnemonicListCellRenderer());
+    return createScrollPaneForList(configuredButtonsList);
+  }
+
+  private JScrollPane createScrollPaneForList(JList list) {
+    JScrollPane scrollPane = new JScrollPane(list);
+    scrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
+    scrollPane.setPreferredSize(list.getPreferredScrollableViewportSize());
+    scrollPane.setVisible(true);
+    return scrollPane;
   }
 
   private JPanel createFontSizePanel() {
@@ -93,14 +185,8 @@ class KeypadAttributesPanel extends AttributesPanel {
     return fontSizePanel;
   }
 
-  @Override
-  public void applyAttributes() {
-    applyKeypadEnabled();
-    applyFontSize();
-  }
-
   private void applyKeypadEnabled() {
-    final String newValue = keyPadEnable.isSelected() ? SessionConfig.YES : SessionConfig.NO;
+    final String newValue = keyPadEnable.isSelected() ? YES : SessionConfig.NO;
     changes.firePropertyChange(this, SessionConfig.KEYPAD_ENABLED, getStringProperty(SessionConfig.KEYPAD_ENABLED), newValue);
     setProperty(SessionConfig.KEYPAD_ENABLED, newValue);
   }
@@ -119,4 +205,31 @@ class KeypadAttributesPanel extends AttributesPanel {
     }
     return Float.toString(KEYPAD_FONT_SIZE_DEFAULT_VALUE);
   }
+
+  private static void safeDeleteByIndex(DefaultListModel listModel, int[] indexesToBeDeleted) {
+    Arrays.sort(indexesToBeDeleted);
+    for (int i = indexesToBeDeleted.length - 1; i >= 0; i--) {
+      listModel.remove(indexesToBeDeleted[i]);
+    }
+  }
+
+  private class UpdateFontSizeTextEnabledAction extends AbstractAction {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      fontSize.setEnabled(keyPadEnable.isSelected());
+    }
+  }
+
+  private static class KeypadMnemonicListCellRenderer implements ListCellRenderer {
+    private DefaultListCellRenderer delegateRenderer = new DefaultListCellRenderer();
+    private KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+
+    @Override
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+      String description = keypadMnemonicResolver.getDescription((KeypadMnemonic) value);
+      return delegateRenderer.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
+    }
+  }
+
+
 }

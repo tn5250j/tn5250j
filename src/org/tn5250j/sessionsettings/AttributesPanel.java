@@ -1,4 +1,4 @@
-/**
+/*
  * Title: AttributesPanel
  * Copyright:   Copyright (c) 2001,2002
  * Company:
@@ -27,6 +27,8 @@ package org.tn5250j.sessionsettings;
 
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,12 +40,12 @@ import java.util.Properties;
 abstract class AttributesPanel extends JPanel {
 
   private static final long serialVersionUID = 1L;
-  Properties props;
-  Properties schemaProps;
-  static final String nodePrefix = "sa.node";
-  String name;
-  SessionConfig changes = null;
+  private static final String nodePrefix = "sa.node";
 
+  private final TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
+
+  private String name;
+  SessionConfig changes = null;
   // content pane to be used if needed by subclasses
   JPanel contentPane;
 
@@ -58,15 +60,13 @@ abstract class AttributesPanel extends JPanel {
   public AttributesPanel(SessionConfig config, String name, String prefix) {
     super();
     changes = config;
-    props = config.getProperties();
     this.name = LangTool.getString(prefix + name);
-    // define layout
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
     try {
       initPanel();
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error(e);
     }
   }
 
@@ -96,12 +96,6 @@ abstract class AttributesPanel extends JPanel {
 
   }
 
-  protected final int getIntProperty(String prop) {
-
-    return changes.getIntegerProperty(prop);
-
-  }
-
   protected final Color getColorProperty(String prop) {
 
     if (changes.isPropertyExists(prop)) {
@@ -122,19 +116,6 @@ abstract class AttributesPanel extends JPanel {
 
   }
 
-  protected final boolean getBooleanProperty(String prop) {
-
-    if (changes.isPropertyExists(prop)) {
-      String b = changes.getStringProperty(prop).toLowerCase();
-      if (b.equals("yes") || b.equals("true"))
-        return true;
-      else
-        return false;
-    } else
-      return false;
-
-  }
-
   protected final boolean getBooleanProperty(String prop, boolean dflt) {
 
     if (changes.isPropertyExists(prop)) {
@@ -149,19 +130,15 @@ abstract class AttributesPanel extends JPanel {
   }
 
   protected Rectangle getRectangleProperty(String key) {
-
     return changes.getRectangleProperty(key);
   }
 
   protected void setRectangleProperty(String key, Rectangle rect) {
-
     changes.setRectangleProperty(key, rect);
   }
 
   protected final void setProperty(String key, String val) {
-
     changes.setProperty(key, val);
-
   }
 
   public String toString() {

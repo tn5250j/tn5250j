@@ -926,7 +926,7 @@ public class Screen5250 {
 
 		if (isStatusErrorCode() && !resetRequired) {
 			setCursorActive(false);
-			simulateMnemonic(keypadMnemonicResolver.getMnemonicValue("[reset]"));
+			simulateMnemonic(keypadMnemonicResolver.findMnemonicValue("[reset]"));
 			setCursorActive(true);
 		}
 
@@ -934,7 +934,7 @@ public class Screen5250 {
 			if (text.equals("[reset]") || text.equals("[sysreq]")
 					|| text.equals("[attn]")) {
 				setCursorActive(false);
-				simulateMnemonic(keypadMnemonicResolver.getMnemonicValue(text));
+				simulateMnemonic(keypadMnemonicResolver.findMnemonicValue(text));
 				setCursorActive(true);
 
 			} else {
@@ -1012,7 +1012,7 @@ public class Screen5250 {
 							//                     setCursorOn();
 							//                  }
 						} else {
-							simulateMnemonic(keypadMnemonicResolver.getMnemonicValue(s));
+							simulateMnemonic(keypadMnemonicResolver.findMnemonicValue(s));
 							//                  if (!cursorActive && !keysBuffered) {
 							//                     System.out.println(" m one");
 							//                     setCursorOn();

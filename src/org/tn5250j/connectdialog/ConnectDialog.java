@@ -51,7 +51,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
@@ -662,18 +661,18 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     }
 
     // get the sorted descriptions of the options
-    List<String> descriptions = keypadMnemonicResolver.getOptionDescriptions();
+    String[] descriptions = keypadMnemonicResolver.getMnemonicDescriptions();
 
     // set the option descriptions
-    accessOptions.setListData(descriptions.toArray());
+    accessOptions.setListData(descriptions);
 
     // we now mark the invalid options
     int num = OptionAccessFactory.getInstance().getNumberOfRestrictedOptions();
     int[] si = new int[num];
     int i = 0;
-    for (int x = 0; x < descriptions.size(); x++) {
+    for (int x = 0; x < descriptions.length; x++) {
       if (!OptionAccessFactory.getInstance().isValidOption(
-          ht.get(descriptions.get(x))))
+          ht.get(descriptions[x])))
         si[i++] = x;
     }
 
