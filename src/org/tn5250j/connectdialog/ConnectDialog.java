@@ -49,6 +49,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -660,8 +661,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
       ht.put(LangTool.getString("key." + option), option);
     }
 
-    // get the sorted descriptions of the options
     String[] descriptions = keypadMnemonicResolver.getMnemonicDescriptions();
+    Arrays.sort(descriptions);
 
     // set the option descriptions
     accessOptions.setListData(descriptions);
