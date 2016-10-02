@@ -31,14 +31,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -76,11 +69,7 @@ import static org.tn5250j.SessionConfig.YES;
  * A host GUI session
  * (Hint: old name was SessionGUI)
  */
-public class SessionPanel extends JPanel implements ComponentListener,
-ActionListener,
-RubberBandCanvasIF,
-SessionConfigListener,
-SessionListener {
+public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionConfigListener, SessionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -95,9 +84,8 @@ SessionListener {
 	private JPanel s = new JPanel();
 	private KeypadPanel keypadPanel;
 	private String newMacName;
-	private Vector<SessionJumpListener> listeners = null;
+	private Vector<SessionJumpListener> sessionJumpListeners = null;
 	private Vector<EmulatorActionListener> actionListeners = null;
-	private SessionJumpEvent jumpEvent;
 	private boolean macroRunning;
 	private boolean stopMacro;
 	private boolean doubleClick;
@@ -138,7 +126,12 @@ SessionListener {
 		//	      screen = new Screen5250(this,sesConfig);
 		screen = session.getScreen();
 
-		this.addComponentListener(this);
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				resizeMe();
+			}
+		});
 
 		ensureGuiGraphicBufferInitialized();
 
@@ -166,11 +159,6 @@ SessionListener {
 				if (SwingUtilities.isRightMouseButton(e)) {
 					actionPopup(e);
 				}
-
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				//	            System.out.println("Mouse Released");
 
 			}
 
@@ -215,7 +203,13 @@ SessionListener {
 		log.debug("Initializing macros");
 		Macronizer.init();
 
-		keypadPanel.addActionListener(this);
+		keypadPanel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				screen.sendKeys(((JButton) e.getSource()).getActionCommand());
+				getFocusForMe();
+			}
+		});
 		keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
 
 		// Warning do not change the the order of the adding of keypad and
@@ -227,7 +221,6 @@ SessionListener {
 		this.add(s,BorderLayout.CENTER);
 
 		this.requestFocus();
-		jumpEvent = new SessionJumpEvent(this);
 		doubleClick = YES.equals(sesConfig.getStringProperty("doubleClick"));
 	}
 
@@ -405,12 +398,6 @@ SessionListener {
 	public boolean isManagingFocus() { return true; }
 
 	@Override
-	public void actionPerformed(ActionEvent actionevent) {
-		screen.sendKeys(((JButton) actionevent.getSource()).getActionCommand());
-		getFocusForMe();
-	}
-
-	@Override
 	public void onConfigChanged(SessionConfigEvent configEvent) {
 		final String configName = configEvent.getPropertyName();
 
@@ -503,12 +490,12 @@ SessionListener {
 	 * @param dir  The direction to jump.
 	 */
 	private void fireSessionJump(int dir) {
-		if (listeners != null) {
-			int size = listeners.size();
+		if (sessionJumpListeners != null) {
+			int size = sessionJumpListeners.size();
+			final SessionJumpEvent jumpEvent = new SessionJumpEvent(this);
+			jumpEvent.setJumpDirection(dir);
 			for (int i = 0; i < size; i++) {
-				SessionJumpListener target =
-					listeners.elementAt(i);
-				jumpEvent.setJumpDirection(dir);
+				SessionJumpListener target = sessionJumpListeners.elementAt(i);
 				target.onSessionJump(jumpEvent);
 			}
 		}
@@ -663,24 +650,6 @@ SessionListener {
 	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentResized(ComponentEvent e) {
-		resizeMe();
-	}
-
-	@Override
-	public void componentShown(ComponentEvent e) {
-		// nothing to do
-	}
-
-	@Override
 	protected void paintComponent(Graphics g) {
 		log.debug("paint from screen");
 
@@ -793,10 +762,10 @@ SessionListener {
 	 */
 	public synchronized void addSessionJumpListener(SessionJumpListener listener) {
 
-		if (listeners == null) {
-			listeners = new java.util.Vector<SessionJumpListener>(3);
+		if (sessionJumpListeners == null) {
+			sessionJumpListeners = new java.util.Vector<SessionJumpListener>(3);
 		}
-		listeners.addElement(listener);
+		sessionJumpListeners.addElement(listener);
 
 	}
 
@@ -806,10 +775,10 @@ SessionListener {
 	 * @param listener  The SessionJumpListener to be removed
 	 */
 	public synchronized void removeSessionJumpListener(SessionJumpListener listener) {
-		if (listeners == null) {
+		if (sessionJumpListeners == null) {
 			return;
 		}
-		listeners.removeElement(listener);
+		sessionJumpListeners.removeElement(listener);
 
 	}
 
