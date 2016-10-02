@@ -216,10 +216,7 @@ SessionListener {
 		Macronizer.init();
 
 		keypadPanel.addActionListener(this);
-		if (YES.equals(sesConfig.getStringProperty(CONFIG_KEYPAD_ENABLED)))
-			keypadPanel.setVisible(true);
-		else
-			keypadPanel.setVisible(false);
+		keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
 
 		// Warning do not change the the order of the adding of keypad and
 		//    the screen.  This will cause resizing problems because it will
@@ -231,14 +228,7 @@ SessionListener {
 
 		this.requestFocus();
 		jumpEvent = new SessionJumpEvent(this);
-
-
-		// check if double click sends enter
-		if (YES.equals(sesConfig.getStringProperty("doubleClick")))
-			doubleClick = true;
-		else
-			doubleClick = false;
-
+		doubleClick = YES.equals(sesConfig.getStringProperty("doubleClick"));
 	}
 
 	public void setRunningHeadless(boolean headless) {

@@ -401,6 +401,10 @@ public class SessionConfig {
       return getFloatProperty(CONFIG_KEYPAD_FONT_SIZE, KEYPAD_FONT_SIZE_DEFAULT_VALUE);
     }
 
+    public boolean isKeypadEnabled() {
+      return YES.equals(getStringProperty(CONFIG_KEYPAD_ENABLED));
+    }
+
     public KeypadMnemonic[] getKeypadMnemonics() {
       String s = getStringProperty(CONFIG_KEYPAD_MNEMONICS);
       KeypadMnemonic[] result = keypadMnemonicSerializer.deserialize(s);
