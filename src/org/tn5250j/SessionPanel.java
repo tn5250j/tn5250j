@@ -140,9 +140,7 @@ SessionListener {
 
 		this.addComponentListener(this);
 
-		if (guiGraBuf == null) {
-			checkOffScreenImage();
-		}
+		ensureGuiGraphicBufferInitialized();
 
 		setRubberBand(new TNRubberBand(this));
 		keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
@@ -684,24 +682,19 @@ SessionListener {
 
 	@Override
 	public void componentResized(ComponentEvent e) {
-
 		resizeMe();
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-
-
+		// nothing to do
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		log.debug("paint from screen");
 
-		if (guiGraBuf == null) {
-			checkOffScreenImage();
-		}
-		//	      screen.paintComponent3(g);
+		ensureGuiGraphicBufferInitialized();
 
 		Graphics2D g2 = (Graphics2D) g;
 		if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
@@ -755,35 +748,11 @@ SessionListener {
 		screen.setCursorActive(true);
 	}
 
-	/**
-	 *
-	 * This routine will make sure we have something to draw on
-	 *
-	 */
-	private void checkOffScreenImage() {
-
-		// do we have something already?
+	private void ensureGuiGraphicBufferInitialized() {
 		if (guiGraBuf == null) {
-
-			guiGraBuf = new GuiGraphicBuffer(screen,this,sesConfig);
-
-			//				if (antialiased) {
-			//					bi.setUseAntialias(true);
-			//				}
-
-			// allocate a buffer Image with appropriate size
+			guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig);
 			guiGraBuf.getImageBuffer(0, 0);
-
-			// fill in the areas
-			//	            tArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//	            cArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//	            aArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//	            sArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//
-			//	            // Draw Operator Information Area
-			//	            drawOIA();
 		}
-
 	}
 
 	/**
