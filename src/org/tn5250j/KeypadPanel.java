@@ -67,11 +67,12 @@ class KeypadPanel extends JPanel {
     buttons = new JButton[keypadMnemonics.length];
     JPanel buttonPanel = null;
     for (int i = 0; i < buttons.length; i++) {
+      final KeypadMnemonic mnemonic = keypadMnemonics[i];
       buttons[i] = new JButton();
       buttons[i].setMargin(noMargin);
       buttons[i].setBorder(minimalBorder);
-      buttons[i].setText(getString("KP_" + keypadMnemonics[i].name(), keypadMnemonicResolver.getDescription(keypadMnemonics[i])));
-      buttons[i].setActionCommand(PF1.mnemonic);
+      buttons[i].setText(getString("KP_" + mnemonic.name(), keypadMnemonicResolver.getDescription(mnemonic)));
+      buttons[i].setActionCommand(mnemonic.mnemonic);
       if (i % NO_OF_BUTTONS_PER_ROW == 0 || buttonPanel == null) {
         buttonPanel = new JPanel(new GridLayout(1, NO_OF_BUTTONS_PER_ROW, 0, 0));
         add(buttonPanel);
