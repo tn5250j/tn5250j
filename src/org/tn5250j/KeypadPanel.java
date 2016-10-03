@@ -82,7 +82,7 @@ class KeypadPanel extends JPanel {
   }
 
   private void addInvisibleButtonsToPreventLayout(JPanel bottomPanel) {
-    if (buttons.length > NO_OF_BUTTONS_PER_ROW) {
+    if (buttons.length > NO_OF_BUTTONS_PER_ROW && buttons.length % NO_OF_BUTTONS_PER_ROW > 0) {
       for (int i = buttons.length % NO_OF_BUTTONS_PER_ROW; i < NO_OF_BUTTONS_PER_ROW; i++) {
         JButton button = new JButton();
         button.setVisible(false);
