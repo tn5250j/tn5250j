@@ -26,8 +26,8 @@ package org.tn5250j.sessionsettings;
  */
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.keyboard.KeypadMnemonic;
-import org.tn5250j.keyboard.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeyMnemonic;
+import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.LangTool;
 
 import javax.swing.*;
@@ -124,13 +124,13 @@ class KeypadAttributesPanel extends AttributesPanel {
   private void resetModelsToDefaultValues() {
     DefaultListModel configuredModel = (DefaultListModel) configuredButtonsList.getModel();
     configuredModel.clear();
-    for (KeypadMnemonic mnemonic : changes.getConfig().getDefaultKeypadMnemonics()) {
+    for (KeyMnemonic mnemonic : changes.getConfig().getDefaultKeypadMnemonics()) {
       configuredModel.addElement(mnemonic);
     }
 
     DefaultListModel availableModel = (DefaultListModel) availableButtonsList.getModel();
     availableModel.clear();
-    for (KeypadMnemonic mnemonic : getAvailableAndNotYetConfiguredMnemonics(changes.getConfig().getDefaultKeypadMnemonics())) {
+    for (KeyMnemonic mnemonic : getAvailableAndNotYetConfiguredMnemonics(changes.getConfig().getDefaultKeypadMnemonics())) {
       availableModel.addElement(mnemonic);
     }
   }
@@ -203,8 +203,8 @@ class KeypadAttributesPanel extends AttributesPanel {
   }
 
   private JComponent createAvailableButtonsList() {
-    KeypadMnemonic[] configuredMnemonics = this.changes.getConfig().getKeypadMnemonics();
-    KeypadMnemonic[] availableMnemonics = getAvailableAndNotYetConfiguredMnemonics(configuredMnemonics);
+    KeyMnemonic[] configuredMnemonics = this.changes.getConfig().getKeypadMnemonics();
+    KeyMnemonic[] availableMnemonics = getAvailableAndNotYetConfiguredMnemonics(configuredMnemonics);
     availableButtonsList = new JList(createListModelMnemonics(availableMnemonics));
     availableButtonsList.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
     availableButtonsList.setLayoutOrientation(JList.VERTICAL);
@@ -213,24 +213,24 @@ class KeypadAttributesPanel extends AttributesPanel {
     return createScrollPaneForList(availableButtonsList);
   }
 
-  private KeypadMnemonic[] getAvailableAndNotYetConfiguredMnemonics(KeypadMnemonic[] excludedMnemonics) {
-    java.util.List<KeypadMnemonic> result = new ArrayList<KeypadMnemonic>();
-    Set<KeypadMnemonic> alreadyConfigured = new HashSet<KeypadMnemonic>();
+  private KeyMnemonic[] getAvailableAndNotYetConfiguredMnemonics(KeyMnemonic[] excludedMnemonics) {
+    java.util.List<KeyMnemonic> result = new ArrayList<KeyMnemonic>();
+    Set<KeyMnemonic> alreadyConfigured = new HashSet<KeyMnemonic>();
     Collections.addAll(alreadyConfigured, excludedMnemonics);
-    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
+    for (KeyMnemonic mnemonic : KeyMnemonic.values()) {
       if (!alreadyConfigured.contains(mnemonic)) result.add(mnemonic);
     }
     Collections.sort(result, new KeypadMnemonicDescriptionComparator());
-    return result.toArray(new KeypadMnemonic[result.size()]);
+    return result.toArray(new KeyMnemonic[result.size()]);
   }
 
-  private KeypadMnemonic[] getConfiguredKeypadMnemonics() {
+  private KeyMnemonic[] getConfiguredKeypadMnemonics() {
     DefaultListModel model = (DefaultListModel) configuredButtonsList.getModel();
-    KeypadMnemonic[] newValue = new KeypadMnemonic[model.size()];
+    KeyMnemonic[] newValue = new KeyMnemonic[model.size()];
     Enumeration<?> elements = model.elements();
     int counter = 0;
     while (elements.hasMoreElements()) {
-      KeypadMnemonic mnemonic = (KeypadMnemonic) elements.nextElement();
+      KeyMnemonic mnemonic = (KeyMnemonic) elements.nextElement();
       newValue[counter++] = mnemonic;
     }
     return newValue;
@@ -245,9 +245,9 @@ class KeypadAttributesPanel extends AttributesPanel {
     return createScrollPaneForList(configuredButtonsList);
   }
 
-  private DefaultListModel createListModelMnemonics(KeypadMnemonic[] keypadMnemonics) {
+  private DefaultListModel createListModelMnemonics(KeyMnemonic[] keyMnemonics) {
     DefaultListModel model = new DefaultListModel();
-    for (KeypadMnemonic mnemonic : keypadMnemonics) {
+    for (KeyMnemonic mnemonic : keyMnemonics) {
       model.addElement(mnemonic);
     }
     return model;
@@ -313,11 +313,11 @@ class KeypadAttributesPanel extends AttributesPanel {
     return button;
   }
 
-  private static class KeypadMnemonicDescriptionComparator implements Comparator<KeypadMnemonic> {
-    private final KeypadMnemonicResolver resolver = new KeypadMnemonicResolver();
+  private static class KeypadMnemonicDescriptionComparator implements Comparator<KeyMnemonic> {
+    private final KeyMnemonicResolver resolver = new KeyMnemonicResolver();
 
     @Override
-    public int compare(KeypadMnemonic mnemonic1, KeypadMnemonic mnemonic2) {
+    public int compare(KeyMnemonic mnemonic1, KeyMnemonic mnemonic2) {
       return resolver.getDescription(mnemonic1).compareToIgnoreCase(resolver.getDescription(mnemonic2));
     }
   }
@@ -331,11 +331,11 @@ class KeypadAttributesPanel extends AttributesPanel {
 
   private static class KeypadMnemonicListCellRenderer implements ListCellRenderer {
     private DefaultListCellRenderer delegateRenderer = new DefaultListCellRenderer();
-    private KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+    private KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-      String description = keypadMnemonicResolver.getDescription((KeypadMnemonic) value);
+      String description = keyMnemonicResolver.getDescription((KeyMnemonic) value);
       return delegateRenderer.getListCellRendererComponent(list, description, index, isSelected, cellHasFocus);
     }
   }

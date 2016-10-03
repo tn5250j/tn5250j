@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.DISP_MESSAGES;
+import static org.tn5250j.keyboard.KeyMnemonic.DISP_MESSAGES;
 
 /**
  * Display system messages

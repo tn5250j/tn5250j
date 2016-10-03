@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.TOGGLE_CONNECTION;
+import static org.tn5250j.keyboard.KeyMnemonic.TOGGLE_CONNECTION;
 
 /**
  * Toggle connection from/to connected

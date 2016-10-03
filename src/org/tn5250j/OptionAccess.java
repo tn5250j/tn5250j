@@ -27,7 +27,7 @@ package org.tn5250j;
 
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.keyboard.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeyMnemonicResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class OptionAccess extends OptionAccessFactory {
     */
    static private List<String> restricted = new ArrayList<String>();
 
-   private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+   private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
    /**
     * The constructor is made protected to allow overriding.

@@ -35,8 +35,8 @@ import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.event.ScreenListener;
-import org.tn5250j.keyboard.KeypadMnemonic;
-import org.tn5250j.keyboard.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeyMnemonic;
+import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -62,7 +62,7 @@ public class Screen5250 {
 	final static int initAttr = 32;
 	final static char initChar = 0;
 
-	private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+	private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	private ScreenFields screenFields;
@@ -595,8 +595,8 @@ public class Screen5250 {
 		return result;
 	}
 
-	public synchronized void sendKeys(KeypadMnemonic keypadMnemonic) {
-		sendKeys(keypadMnemonic.mnemonic);
+	public synchronized void sendKeys(KeyMnemonic keyMnemonic) {
+		sendKeys(keyMnemonic.mnemonic);
 	}
 
 	/**
@@ -608,7 +608,7 @@ public class Screen5250 {
 	 *
 	 * These will be processed as if you had pressed these keys from the
 	 * keyboard. All the valid special key values are contained in the MNEMONIC
-	 * enumeration. See also {@link KeypadMnemonic}
+	 * enumeration. See also {@link KeyMnemonic}
 	 *
 	 * @param text The string of characters to be sent
 	 * @see #sendAid
@@ -619,16 +619,16 @@ public class Screen5250 {
 
 		if (isStatusErrorCode() && !resetRequired) {
 			setCursorActive(false);
-			simulateMnemonic(KeypadMnemonic.RESET.value);
+			simulateMnemonic(KeyMnemonic.RESET.value);
 			setCursorActive(true);
 		}
 
 		if (oia.isKeyBoardLocked()) {
-			if (KeypadMnemonic.RESET.mnemonic.equals(text)
-					|| KeypadMnemonic.SYSREQ.mnemonic.equals(text)
-					|| KeypadMnemonic.ATTN.mnemonic.equals(text)) {
+			if (KeyMnemonic.RESET.mnemonic.equals(text)
+					|| KeyMnemonic.SYSREQ.mnemonic.equals(text)
+					|| KeyMnemonic.ATTN.mnemonic.equals(text)) {
 				setCursorActive(false);
-				simulateMnemonic(keypadMnemonicResolver.findMnemonicValue(text));
+				simulateMnemonic(keyMnemonicResolver.findMnemonicValue(text));
 				setCursorActive(true);
 
 			} else {
@@ -684,7 +684,7 @@ public class Screen5250 {
 						if (s.length() == 1) {
 							simulateKeyStroke(s.charAt(0));
 						} else {
-							simulateMnemonic(keypadMnemonicResolver.findMnemonicValue(s));
+							simulateMnemonic(keyMnemonicResolver.findMnemonicValue(s));
 						}
 
 						if (oia.isKeyBoardLocked()) {

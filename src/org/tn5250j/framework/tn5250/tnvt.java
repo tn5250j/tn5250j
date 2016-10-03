@@ -67,7 +67,7 @@ import static org.tn5250j.TN5250jConstants.PF6;
 import static org.tn5250j.TN5250jConstants.PF7;
 import static org.tn5250j.TN5250jConstants.PF8;
 import static org.tn5250j.TN5250jConstants.PF9;
-import static org.tn5250j.keyboard.KeypadMnemonic.ENTER;
+import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

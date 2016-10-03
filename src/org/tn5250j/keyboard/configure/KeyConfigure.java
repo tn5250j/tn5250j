@@ -72,7 +72,7 @@ import javax.swing.event.ListSelectionListener;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyStroker;
-import org.tn5250j.keyboard.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
@@ -82,7 +82,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
    private static final long serialVersionUID = -421661235666776519L;
 
-   private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+   private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
    private JPanel keyPanel = new JPanel();
    private JPanel options = new JPanel();
@@ -330,7 +330,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
             KeyDescription kd = (KeyDescription)lm.getElementAt(index);
 
-            setKeyInformation(keypadMnemonicResolver.getMnemonics()[kd.getIndex()]);
+            setKeyInformation(keyMnemonicResolver.getMnemonics()[kd.getIndex()]);
          }
          else {
             if (macros) {
@@ -424,14 +424,14 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
 
       if (which.equals(LangTool.getString("key.labelKeys"))) {
-        Vector<KeyDescription> lk = new Vector<KeyDescription>(keypadMnemonicResolver.getMnemonics().length);
-        for (int x = 0; x < keypadMnemonicResolver.getMnemonics().length; x++) {
-          lk.addElement(new KeyDescription(LangTool.getString("key."+ keypadMnemonicResolver.getMnemonics()[x]),x));
+        Vector<KeyDescription> lk = new Vector<KeyDescription>(keyMnemonicResolver.getMnemonics().length);
+        for (int x = 0; x < keyMnemonicResolver.getMnemonics().length; x++) {
+          lk.addElement(new KeyDescription(LangTool.getString("key."+ keyMnemonicResolver.getMnemonics()[x]),x));
          }
 
          Collections.sort(lk, new KeyDescriptionCompare());
 
-        for (int x = 0; x < keypadMnemonicResolver.getMnemonics().length; x++) {
+        for (int x = 0; x < keyMnemonicResolver.getMnemonics().length; x++) {
             lm.addElement(lk.get(x));
          }
          macros = false;
@@ -694,7 +694,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
 
-        String function = keypadMnemonicResolver.getMnemonics()[index];
+        String function = keyMnemonicResolver.getMnemonics()[index];
 
          if (altKey)
             function += KeyStroker.altSuffix;
@@ -740,7 +740,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
       if (!macros && !special) {
          int index = ((KeyDescription)functions.getSelectedValue()).getIndex();
-        String stroke = keypadMnemonicResolver.getMnemonics()[index];
+        String stroke = keyMnemonicResolver.getMnemonics()[index];
 
          if (altKey)
             stroke += KeyStroker.altSuffix;

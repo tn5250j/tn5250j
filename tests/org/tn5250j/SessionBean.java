@@ -27,7 +27,7 @@
 
 package org.tn5250j;
 
-import org.tn5250j.keyboard.KeypadMnemonic;
+import org.tn5250j.keyboard.KeyMnemonic;
 
 import static org.tn5250j.TN5250jConstants.*;
 
@@ -408,12 +408,12 @@ public class SessionBean extends SessionPanel {
     if (isSignificant(user))
       sb.append(user);
     if (!isFieldLength(user))
-      sb.append(KeypadMnemonic.TAB.mnemonic);
+      sb.append(KeyMnemonic.TAB.mnemonic);
 
     if (isSignificant(password))
       sb.append(password);
     if (!isFieldLength(password))
-      sb.append(KeypadMnemonic.TAB.mnemonic);
+      sb.append(KeyMnemonic.TAB.mnemonic);
 
     // First we test if we have something signicant to send.
     // If so, we presume we have a standard IBM login screen!
@@ -422,17 +422,17 @@ public class SessionBean extends SessionPanel {
       if (isSignificant(program))
         sb.append(program);
       if (!isFieldLength(program))
-        sb.append(KeypadMnemonic.TAB.mnemonic);
+        sb.append(KeyMnemonic.TAB.mnemonic);
 
       if (isSignificant(menu))
         sb.append(menu);
       if (!isFieldLength(menu))
-        sb.append(KeypadMnemonic.TAB.mnemonic);
+        sb.append(KeyMnemonic.TAB.mnemonic);
 
       if (isSignificant(library))
         sb.append(library);
     }
-    sb.append(KeypadMnemonic.ENTER.mnemonic);
+    sb.append(KeyMnemonic.ENTER.mnemonic);
 
     super.connect();
 
@@ -451,7 +451,7 @@ public class SessionBean extends SessionPanel {
   {
     if (isSignificant(initialCommand))
     {
-      this.getScreen().sendKeys(initialCommand + KeypadMnemonic.ENTER.mnemonic);
+      this.getScreen().sendKeys(initialCommand + KeyMnemonic.ENTER.mnemonic);
     }
   }
 

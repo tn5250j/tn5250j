@@ -23,8 +23,8 @@ package org.tn5250j;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.keyboard.KeypadMnemonic;
-import org.tn5250j.keyboard.KeypadMnemonicSerializer;
+import org.tn5250j.keyboard.KeyMnemonic;
+import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.Float.parseFloat;
-import static org.tn5250j.keyboard.KeypadMnemonic.*;
+import static org.tn5250j.keyboard.KeyMnemonic.*;
 
 /**
  * A host session configuration object
@@ -59,7 +59,7 @@ public class SessionConfig {
   public static final String NO = "No";
 
   private final SessionConfiguration sessionConfiguration = new SessionConfiguration();
-  private final KeypadMnemonicSerializer keypadMnemonicSerializer = new KeypadMnemonicSerializer();
+  private final KeyMnemonicSerializer keyMnemonicSerializer = new KeyMnemonicSerializer();
 
   private String configurationResource;
   private String sessionName;
@@ -384,8 +384,8 @@ public class SessionConfig {
     return sessionConfiguration;
   }
 
-  public void setKeypadMnemonicsAndFireChangeEvent(KeypadMnemonic[] keypadMnemonics) {
-    String newValue = keypadMnemonicSerializer.serialize(keypadMnemonics);
+  public void setKeypadMnemonicsAndFireChangeEvent(KeyMnemonic[] keyMnemonics) {
+    String newValue = keyMnemonicSerializer.serialize(keyMnemonics);
     firePropertyChange(this, CONFIG_KEYPAD_MNEMONICS, getStringProperty(CONFIG_KEYPAD_MNEMONICS), newValue);
     setProperty(CONFIG_KEYPAD_MNEMONICS, newValue);
   }
@@ -405,17 +405,17 @@ public class SessionConfig {
       return YES.equals(getStringProperty(CONFIG_KEYPAD_ENABLED));
     }
 
-    public KeypadMnemonic[] getKeypadMnemonics() {
+    public KeyMnemonic[] getKeypadMnemonics() {
       String s = getStringProperty(CONFIG_KEYPAD_MNEMONICS);
-      KeypadMnemonic[] result = keypadMnemonicSerializer.deserialize(s);
+      KeyMnemonic[] result = keyMnemonicSerializer.deserialize(s);
       if (result.length == 0) {
         return getDefaultKeypadMnemonics();
       }
       return result;
     }
 
-    public KeypadMnemonic[] getDefaultKeypadMnemonics() {
-      return new KeypadMnemonic[]{
+    public KeyMnemonic[] getDefaultKeypadMnemonics() {
+      return new KeyMnemonic[]{
           PF1, PF2, PF3, PF4, PF5, PF6, PF7, PF8, PF9, PF10, PF11, PF12, ENTER, PAGE_UP, CLEAR,
           PF13, PF14, PF15, PF16, PF17, PF18, PF19, PF20, PF21, PF22, PF23, PF24, SYSREQ, PAGE_DOWN
       };

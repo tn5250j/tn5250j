@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.DEBUG;
+import static org.tn5250j.keyboard.KeyMnemonic.DEBUG;
 
 /**
  * Display session attributes

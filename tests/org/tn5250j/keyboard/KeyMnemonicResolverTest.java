@@ -5,13 +5,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class KeypadMnemonicResolverTest {
+public class KeyMnemonicResolverTest {
 
-  private KeypadMnemonicResolver resolver;
+  private KeyMnemonicResolver resolver;
 
   @Before
   public void setUp() throws Exception {
-    resolver = new KeypadMnemonicResolver();
+    resolver = new KeyMnemonicResolver();
   }
 
   @Test

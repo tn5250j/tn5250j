@@ -33,7 +33,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.RUN_SCRIPT;
+import static org.tn5250j.keyboard.KeyMnemonic.RUN_SCRIPT;
 
 /**
  * Display session attributes

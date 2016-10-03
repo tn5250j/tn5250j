@@ -31,7 +31,7 @@ import org.tn5250j.gui.HexCharMapDialog;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.configure.KeyConfigure;
 import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.keyboard.KeypadMnemonic;
+import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.tools.*;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -48,7 +48,7 @@ import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.*;
+import static org.tn5250j.keyboard.KeyMnemonic.*;
 
 /**
  * Custom
@@ -542,8 +542,8 @@ public class SessionPopup {
 
   }
 
-  private void createKeyboardItem(JMenu menu, KeypadMnemonic keypadMnemonic) {
-    createKeyboardItem(menu, keypadMnemonic.mnemonic);
+  private void createKeyboardItem(JMenu menu, KeyMnemonic keyMnemonic) {
+    createKeyboardItem(menu, keyMnemonic.mnemonic);
   }
 
   private void createKeyboardItem(JMenu menu, String key) {
@@ -569,8 +569,8 @@ public class SessionPopup {
     LoadMacroMenu.loadMacros(sessiongui, menu);
   }
 
-  private JMenuItem createMenuItem(Action action, KeypadMnemonic keypadMnemonic) {
-    return createMenuItem(action, keypadMnemonic.mnemonic);
+  private JMenuItem createMenuItem(Action action, KeyMnemonic keyMnemonic) {
+    return createMenuItem(action, keyMnemonic.mnemonic);
   }
 
   private JMenuItem createMenuItem(Action action, String accelKey) {

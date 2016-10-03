@@ -24,7 +24,7 @@
  */
 package org.tn5250j.keyboard;
 
-public enum KeypadMnemonic {
+public enum KeyMnemonic {
 
   BACK_SPACE("[backspace]", 0x03e9),
   BACK_TAB("[backtab]", 0x03ea),
@@ -130,7 +130,7 @@ public enum KeypadMnemonic {
   public final String mnemonic;
   public final int value;
 
-  KeypadMnemonic(String mnemonic, int value) {
+  KeyMnemonic(String mnemonic, int value) {
     this.mnemonic = mnemonic;
     this.value = value;
   }

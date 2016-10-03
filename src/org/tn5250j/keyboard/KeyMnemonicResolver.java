@@ -28,18 +28,18 @@ import org.tn5250j.tools.LangTool;
 
 import java.util.Arrays;
 
-public class KeypadMnemonicResolver {
+public class KeyMnemonicResolver {
 
   public int findMnemonicValue(String mnemonicStr) {
-    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
+    for (KeyMnemonic mnemonic : KeyMnemonic.values()) {
       if (mnemonic.mnemonic.equals(mnemonicStr))
         return mnemonic.value;
     }
     return 0;
   }
 
-  public KeypadMnemonic findMnemonic(String mnemonicStr) {
-    for (KeypadMnemonic mnemonic : KeypadMnemonic.values()) {
+  public KeyMnemonic findMnemonic(String mnemonicStr) {
+    for (KeyMnemonic mnemonic : KeyMnemonic.values()) {
       if (mnemonic.mnemonic.equals(mnemonicStr))
         return mnemonic;
     }
@@ -47,10 +47,10 @@ public class KeypadMnemonicResolver {
   }
 
   public String[] getMnemonics() {
-    String[] result = new String[KeypadMnemonic.values().length];
+    String[] result = new String[KeyMnemonic.values().length];
     int i = 0;
-    for (KeypadMnemonic keypadMnemonic : KeypadMnemonic.values()) {
-      result[i++] = keypadMnemonic.mnemonic;
+    for (KeyMnemonic keyMnemonic : KeyMnemonic.values()) {
+      result[i++] = keyMnemonic.mnemonic;
     }
     return result;
   }
@@ -62,16 +62,16 @@ public class KeypadMnemonicResolver {
   }
 
   public String[] getMnemonicDescriptions() {
-    KeypadMnemonic[] mnemonicData = KeypadMnemonic.values();
-    String[] result = new String[KeypadMnemonic.values().length];
+    KeyMnemonic[] mnemonicData = KeyMnemonic.values();
+    String[] result = new String[KeyMnemonic.values().length];
     int i = 0;
-    for (KeypadMnemonic mnemonic : mnemonicData) {
+    for (KeyMnemonic mnemonic : mnemonicData) {
       result[i++] = getDescription(mnemonic);
     }
     return result;
   }
 
-  public String getDescription(KeypadMnemonic mnemonic) {
+  public String getDescription(KeyMnemonic mnemonic) {
     return LangTool.getString("key." + mnemonic.mnemonic);
   }
 }

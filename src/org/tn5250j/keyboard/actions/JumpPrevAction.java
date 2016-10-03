@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.JUMP_PREV;
+import static org.tn5250j.keyboard.KeyMnemonic.JUMP_PREV;
 
 /**
  * Jump to the Previous session action

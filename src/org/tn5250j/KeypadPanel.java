@@ -25,8 +25,8 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  */
 
-import org.tn5250j.keyboard.KeypadMnemonic;
-import org.tn5250j.keyboard.KeypadMnemonicResolver;
+import org.tn5250j.keyboard.KeyMnemonic;
+import org.tn5250j.keyboard.KeyMnemonicResolver;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -37,7 +37,6 @@ import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.BoxLayout.Y_AXIS;
 import static javax.swing.SwingUtilities.layoutCompoundLabel;
-import static org.tn5250j.keyboard.KeypadMnemonic.PF1;
 import static org.tn5250j.tools.LangTool.getString;
 
 class KeypadPanel extends JPanel {
@@ -46,7 +45,7 @@ class KeypadPanel extends JPanel {
   private static final int MIN_SIZE = 3;
   private static final int NO_OF_BUTTONS_PER_ROW = 15;
 
-  private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+  private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
   private final Rectangle textRect = new Rectangle();
   private final Rectangle iconRect = new Rectangle();
   private final SessionConfig.SessionConfiguration configuration;
@@ -60,18 +59,18 @@ class KeypadPanel extends JPanel {
     reInitializeButtons(configuration.getKeypadMnemonics());
   }
 
-  void reInitializeButtons(KeypadMnemonic[] keypadMnemonics) {
+  void reInitializeButtons(KeyMnemonic[] keyMnemonics) {
     removeAll();
     final Insets noMargin = new Insets(0, 0, 0, 0);
     final CompoundBorder minimalBorder = createCompoundBorder(createEmptyBorder(), createEmptyBorder(2, 3, 3, 3));
-    buttons = new JButton[keypadMnemonics.length];
+    buttons = new JButton[keyMnemonics.length];
     JPanel buttonPanel = null;
     for (int i = 0; i < buttons.length; i++) {
-      final KeypadMnemonic mnemonic = keypadMnemonics[i];
+      final KeyMnemonic mnemonic = keyMnemonics[i];
       buttons[i] = new JButton();
       buttons[i].setMargin(noMargin);
       buttons[i].setBorder(minimalBorder);
-      buttons[i].setText(getString("KP_" + mnemonic.name(), keypadMnemonicResolver.getDescription(mnemonic)));
+      buttons[i].setText(getString("KP_" + mnemonic.name(), keyMnemonicResolver.getDescription(mnemonic)));
       buttons[i].setActionCommand(mnemonic.mnemonic);
       if (i % NO_OF_BUTTONS_PER_ROW == 0 || buttonPanel == null) {
         buttonPanel = new JPanel(new GridLayout(1, NO_OF_BUTTONS_PER_ROW, 0, 0));

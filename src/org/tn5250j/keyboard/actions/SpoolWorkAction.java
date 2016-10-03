@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.SPOOL_FILE;
+import static org.tn5250j.keyboard.KeyMnemonic.SPOOL_FILE;
 
 /**
  * Work with spooled file

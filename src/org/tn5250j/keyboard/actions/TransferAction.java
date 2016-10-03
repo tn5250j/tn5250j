@@ -34,7 +34,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.FILE_TRANSFER;
+import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
 
 /**
  * Display session attributes

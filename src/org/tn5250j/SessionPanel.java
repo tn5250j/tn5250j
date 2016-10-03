@@ -53,8 +53,7 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
-import org.tn5250j.keyboard.KeypadMnemonic;
-import org.tn5250j.keyboard.KeypadMnemonicSerializer;
+import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.tools.LangTool;
@@ -65,7 +64,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_ENABLED;
 import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_MNEMONICS;
 import static org.tn5250j.SessionConfig.YES;
-import static org.tn5250j.keyboard.KeypadMnemonic.ENTER;
+import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 
 /**
  * A host GUI session
@@ -408,7 +407,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 		}
 
 		if (CONFIG_KEYPAD_MNEMONICS.equals(configName)) {
-			keypadPanel.reInitializeButtons(new KeypadMnemonicSerializer().deserialize((String) configEvent.getNewValue()));
+			keypadPanel.reInitializeButtons(new KeyMnemonicSerializer().deserialize((String) configEvent.getNewValue()));
 		}
 
 		if ("doubleClick".equals(configName)) {

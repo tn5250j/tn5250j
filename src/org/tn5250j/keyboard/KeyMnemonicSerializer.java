@@ -27,32 +27,32 @@ package org.tn5250j.keyboard;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeypadMnemonicSerializer {
+public class KeyMnemonicSerializer {
 
-  private final KeypadMnemonicResolver keypadMnemonicResolver = new KeypadMnemonicResolver();
+  private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
-  public String serialize(KeypadMnemonic[] keypadMnemonics) {
+  public String serialize(KeyMnemonic[] keyMnemonics) {
     StringBuilder sb = new StringBuilder();
-    if (keypadMnemonics != null) {
-      for (int i = 0; i < keypadMnemonics.length; i++) {
+    if (keyMnemonics != null) {
+      for (int i = 0; i < keyMnemonics.length; i++) {
         if (i > 0) sb.append(',');
-        sb.append(keypadMnemonics[i].mnemonic);
+        sb.append(keyMnemonics[i].mnemonic);
       }
     }
     return sb.toString();
   }
 
-  public KeypadMnemonic[] deserialize(String keypadMnemonics) {
-    if (keypadMnemonics == null) return new KeypadMnemonic[0];
+  public KeyMnemonic[] deserialize(String keypadMnemonics) {
+    if (keypadMnemonics == null) return new KeyMnemonic[0];
     String[] parts = keypadMnemonics.split(",");
-    List<KeypadMnemonic> result = new ArrayList<KeypadMnemonic>();
+    List<KeyMnemonic> result = new ArrayList<KeyMnemonic>();
     for (String part : parts) {
-      KeypadMnemonic mnemonic = keypadMnemonicResolver.findMnemonic(part.trim());
+      KeyMnemonic mnemonic = keyMnemonicResolver.findMnemonic(part.trim());
       if (mnemonic != null) {
         result.add(mnemonic);
       }
     }
-    return result.toArray(new KeypadMnemonic[result.size()]);
+    return result.toArray(new KeyMnemonic[result.size()]);
   }
 
 }

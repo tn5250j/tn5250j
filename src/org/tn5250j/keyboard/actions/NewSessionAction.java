@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeypadMnemonic.OPEN_NEW;
+import static org.tn5250j.keyboard.KeyMnemonic.OPEN_NEW;
 
 /**
  * New Session emulator action to open new sessions
