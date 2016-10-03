@@ -21,14 +21,7 @@
  */
 package org.tn5250j;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
@@ -77,7 +70,6 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 	private boolean firstScreen;
 	private char[] signonSave;
 
-	private BorderLayout borderLayout1 = new BorderLayout();
 	private Screen5250 screen;
 	protected Session5250 session;
 	private GuiGraphicBuffer guiGraBuf;
@@ -114,7 +106,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 
 	//Component initialization
 	private void jbInit() throws Exception  {
-		this.setLayout(borderLayout1);
+		this.setLayout(new BorderLayout());
 		session.setGUI(this);
 		screen = session.getScreen();
 
