@@ -32,6 +32,8 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import static javax.swing.BorderFactory.createCompoundBorder;
 import static javax.swing.BorderFactory.createEmptyBorder;
@@ -42,12 +44,10 @@ import static org.tn5250j.tools.LangTool.getString;
 class KeypadPanel extends JPanel {
 
   private static final long serialVersionUID = -7460283401326716314L;
-  private static final int MIN_SIZE = 3;
+  private static final int MIN_FONT_SIZE = 3;
   private static final int NO_OF_BUTTONS_PER_ROW = 15;
 
   private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
-  private final Rectangle textRect = new Rectangle();
-  private final Rectangle iconRect = new Rectangle();
   private final SessionConfig.SessionConfiguration configuration;
 
   private JButton[] buttons;
@@ -56,6 +56,7 @@ class KeypadPanel extends JPanel {
     this.configuration = sessionConfiguration;
     setBorder(createEmptyBorder());
     setLayout(new BoxLayout(this, Y_AXIS));
+    addComponentListener(new KeypadPanelComponentListener());
     reInitializeButtons(configuration.getKeypadMnemonics());
   }
 
@@ -67,18 +68,23 @@ class KeypadPanel extends JPanel {
     JPanel buttonPanel = null;
     for (int i = 0; i < buttons.length; i++) {
       final KeyMnemonic mnemonic = keyMnemonics[i];
-      buttons[i] = new JButton();
-      buttons[i].setMargin(noMargin);
-      buttons[i].setBorder(minimalBorder);
-      buttons[i].setText(getString("KP_" + mnemonic.name(), keyMnemonicResolver.getDescription(mnemonic)));
-      buttons[i].setActionCommand(mnemonic.mnemonic);
-      if (i % NO_OF_BUTTONS_PER_ROW == 0 || buttonPanel == null) {
+      buttons[i] = createButton(mnemonic, noMargin, minimalBorder);
+      if (buttonPanel == null || i % NO_OF_BUTTONS_PER_ROW == 0) {
         buttonPanel = new JPanel(new GridLayout(1, NO_OF_BUTTONS_PER_ROW, 0, 0));
         add(buttonPanel);
       }
       buttonPanel.add(buttons[i]);
     }
     addInvisibleButtonsToPreventLayout(buttonPanel);
+  }
+
+  private JButton createButton(KeyMnemonic mnemonic, Insets noMargin, CompoundBorder minimalBorder) {
+    JButton b = new JButton();
+    b.setMargin(noMargin);
+    b.setBorder(minimalBorder);
+    b.setText(getString("KP_" + mnemonic.name(), keyMnemonicResolver.getDescription(mnemonic)));
+    b.setActionCommand(mnemonic.mnemonic);
+    return b;
   }
 
   private void addInvisibleButtonsToPreventLayout(JPanel bottomPanel) {
@@ -97,11 +103,10 @@ class KeypadPanel extends JPanel {
     }
   }
 
-  @Override
-  protected void paintComponent(Graphics g) {
-    super.paintComponent(g);
+  private void maximizeButtonSize() {
+    if (0 == buttons.length) return;
 
-    final JButton referenceButton = buttons[buttons.length - 1];
+    final JButton referenceButton = buttons[0];
     Font buttonFont = referenceButton.getFont();
     float fs = configuration.getKeypadFontSize();
     buttonFont = buttonFont.deriveFont(fs);
@@ -117,9 +122,8 @@ class KeypadPanel extends JPanel {
     viewRect.width = referenceButton.getWidth() - (i.right + viewRect.x);
     viewRect.height = referenceButton.getHeight() - (i.bottom + viewRect.y);
 
-    // initialize the textRect and iconRect to 0 so they will be calculated
-    textRect.x = textRect.y = textRect.width = textRect.height = 0;
-    iconRect.x = iconRect.y = iconRect.width = iconRect.height = 0;
+    Rectangle textRect = new Rectangle();
+    Rectangle iconRect = new Rectangle();
 
     // now compute the text that will be displayed until we run do not get
     //    elipses or we go passes the minimum of our text size that we want
@@ -135,13 +139,13 @@ class KeypadPanel extends JPanel {
         iconRect,
         textRect,
         textIconGap).endsWith("...")
-        && fs > (MIN_SIZE - 1)) {
+        && fs > (MIN_FONT_SIZE - 1)) {
       buttonFont = buttonFont.deriveFont(--fs);
       fm = referenceButton.getFontMetrics(buttonFont);
 
     }
 
-    if (fs >= MIN_SIZE) {
+    if (fs >= MIN_FONT_SIZE) {
       for (JButton button : buttons) {
         button.setFont(buttonFont);
       }
@@ -158,4 +162,15 @@ class KeypadPanel extends JPanel {
     return text;
   }
 
+  private class KeypadPanelComponentListener extends ComponentAdapter {
+    @Override
+    public void componentShown(ComponentEvent e) {
+      maximizeButtonSize();
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+      maximizeButtonSize();
+    }
+  }
 }
