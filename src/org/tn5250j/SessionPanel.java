@@ -82,7 +82,6 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 	protected Session5250 session;
 	private GuiGraphicBuffer guiGraBuf;
 	protected TNRubberBand rubberband;
-	private JPanel s = new JPanel();
 	private KeypadPanel keypadPanel;
 	private String newMacName;
 	private Vector<SessionJumpListener> sessionJumpListeners = null;
@@ -116,15 +115,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 	//Component initialization
 	private void jbInit() throws Exception  {
 		this.setLayout(borderLayout1);
-
-		//	      this.setOpaque(false);
-		//	      setDoubleBuffered(true);
-		s.setOpaque(false);
-		s.setDoubleBuffered(false);
-
 		session.setGUI(this);
-
-		//	      screen = new Screen5250(this,sesConfig);
 		screen = session.getScreen();
 
 		this.addComponentListener(new ComponentAdapter() {
@@ -211,16 +202,10 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 			}
 		});
 		keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
-
-		// Warning do not change the the order of the adding of keypad and
-		//    the screen.  This will cause resizing problems because it will
-		//    resize the screen first and during the resize we need to calculate
-		//    the bouding area based on the height of the keyPad.
-		//    See resizeMe() and getDrawingBounds()
 		this.add(keypadPanel,BorderLayout.SOUTH);
-		this.add(s,BorderLayout.CENTER);
 
 		this.requestFocus();
+
 		doubleClick = YES.equals(sesConfig.getStringProperty("doubleClick"));
 	}
 
@@ -232,9 +217,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 		else {
 			screen.getOIA().addOIAListener(guiGraBuf);
 			screen.addScreenListener(guiGraBuf);
-
 		}
-
 	}
 
 	@Override
