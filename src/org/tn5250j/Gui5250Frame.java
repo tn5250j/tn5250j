@@ -121,7 +121,7 @@ SessionJumpListener {
 		if(e.getID() == WindowEvent.WINDOW_CLOSING) {
 			final int oldidx = sessTabbedPane.getSelectedIndex();
 			boolean close = true;
-			
+
 			if (hideTabBar && sessTabbedPane.getTabCount() == 0) {
 				 for (int i=0,len=this.getContentPane().getComponentCount(); i < len; i++) {
 					 if (this.getContentPane().getComponent(i) instanceof SessionPanel) {
@@ -131,7 +131,7 @@ SessionJumpListener {
 					 }
 				 }
 			}
-			
+
 			for (int i=0,len=sessTabbedPane.getTabCount(); i<len && close; i++) {
 				sessTabbedPane.setSelectedIndex(i);
 				updateSessionTitle();

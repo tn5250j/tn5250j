@@ -53,7 +53,7 @@ base directory
    Scripting jar files
    ------------------
    jython.jar
-   
+
    The jython.jar file is part of cvs or you can install the whole packes from
    https://sourceforge.net/projects/jython.  Go ahead and download it so you
    will have the interactive shell to play and test with the jython code
@@ -104,4 +104,3 @@ If you have any questions or suggestions please let me know.
 If you have codechanges or suggestions PLEASE PLEASE send them to me.
 
 Enjoy!!!
-

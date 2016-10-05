@@ -189,7 +189,7 @@ public class Screen5250 {
 
 	/**
 	 * Copy & Paste support
-	 * 
+	 *
 	 * @see {@link #pasteText(String, boolean)}
 	 * @see {@link #copyTextField(int)}
 	 */
@@ -226,7 +226,7 @@ public class Screen5250 {
 
 	/**
 	 * Copy & Paste support
-	 * 
+	 *
 	 * @param content
 	 * @see {@link #copyText(Rectangle)}
 	 */
@@ -315,7 +315,7 @@ public class Screen5250 {
 
 	/**
 	 * Copy & Paste support
-	 * 
+	 *
 	 * @param position
 	 * @return
 	 * @see {@link #copyText(int)}
@@ -1879,7 +1879,7 @@ public class Screen5250 {
 
 			return endPos;
 
-		} 
+		}
 		screenFields.getCurrentField().getKeyPos(endPos);
 		if (posSpace) screenFields.getCurrentField().changePos(+1);
 		return screenFields.getCurrentFieldPos();
@@ -3139,7 +3139,7 @@ public class Screen5250 {
 		//    0 - up
 		//    1 - down
 		int updown = direction & 0x80;
-		final int lines = direction & 0x7F; 
+		final int lines = direction & 0x7F;
 
 		// calculate the reference points for the move.
 		int start = this.getPos(topLine - 1, 0);
@@ -3167,7 +3167,7 @@ public class Screen5250 {
 					//Do nothing ... tooo small!!!
 				} else {
 					planes.setChar(x - lines  * numCols, planes.getChar(x));
-					//and clear 
+					//and clear
 					planes.setChar(x, ' ');
 				}
 			}

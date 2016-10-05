@@ -31,7 +31,7 @@ public interface TN5250jLogger {
 	// will be activated by turning on a higher level
 	public static final int DEBUG = 1;	// most verbose
 	public static final int INFO  = 2;
-	public static final int WARN  = 4;  // medium verbose, should be choosen for deployment 
+	public static final int WARN  = 4;  // medium verbose, should be choosen for deployment
 	public static final int ERROR = 8;
 	public static final int FATAL = 16;
 	public static final int OFF   = 32;  // most silence

@@ -38,8 +38,8 @@ public class KeyGetter extends KeyGetterInterface {
 
 	private static final long serialVersionUID = 1691732474472874354L;
 
-	private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(KeyGetter.class); 
-	
+	private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(KeyGetter.class);
+
 	public KeyGetter() {
 		super();
 	}

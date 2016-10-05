@@ -31,9 +31,9 @@ public class KeyStrokenizer {
    private StringBuffer sb;
    private int index;
    private int length;
-	
+
    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
-   
+
    public KeyStrokenizer() {
 
       sb = new StringBuffer();

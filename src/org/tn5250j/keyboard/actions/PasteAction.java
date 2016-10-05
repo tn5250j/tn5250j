@@ -49,7 +49,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public class PasteAction extends EmulatorAction {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public PasteAction(SessionPanel session, KeyMapper keyMap) {
@@ -76,5 +76,5 @@ public class PasteAction extends EmulatorAction {
 			log.debug("data is no longer available in the requested flavor", e1);
 		}
 	}
-	
+
 }

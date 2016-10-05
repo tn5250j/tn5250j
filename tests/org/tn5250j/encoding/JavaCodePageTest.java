@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -42,7 +42,7 @@ public class JavaCodePageTest {
 	public void testEbcdic2uni() {
 		ICodePage jcp = JavaCodePageFactory.getCodePage("ASCII");
 		assertNotNull("At least an ASCII Codepage should be available.", jcp);
-		
+
 		char actual = jcp.ebcdic2uni(97);
 		assertEquals("simple test for character 'a'", 'a', actual);
 	}
@@ -54,7 +54,7 @@ public class JavaCodePageTest {
 	public void testUni2ebcdic() {
 		ICodePage jcp = JavaCodePageFactory.getCodePage("ASCII");
 		assertNotNull("At least an ASCII Codepage should be available.", jcp);
-		
+
 		byte actual = jcp.uni2ebcdic('a');
 		assertEquals("simple test for character 'a' = bytecode 97", 97, actual);
 	}
@@ -66,5 +66,5 @@ public class JavaCodePageTest {
 	public void testNotExistingCodePage() {
 		ICodePage jcp = JavaCodePageFactory.getCodePage("FOOBAR");
 		assertNull("There should be no such Codepage available", jcp);
-	}		
+	}
 }

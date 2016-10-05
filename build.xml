@@ -6,7 +6,7 @@
 	<property file="${basedir}/build.${user.name}.properties" />
 	<!-- import project preferences last -->
 	<property file="${basedir}/build.properties" />
-	
+
     <!-- global properties -->
 	<property name="source.dir" value="${basedir}/src" />
 	<property name="resource.dir" value="${basedir}/resources" />
@@ -17,10 +17,10 @@
 	<property name="javadoc.dir" value="${build.dir}/javadoc" />
 	<property name="rtm.lib.dir" value="${basedir}/lib/runtime" /> <!-- runtime libs -->
 	<property name="dev.lib.dir" value="${basedir}/lib/development" /> <!-- development libs -->
-	
+
 	<property name="compile.source" value="1.6" />
 	<property name="compile.target" value="1.6" />
-	
+
     <property name="jarname" value="${name}.jar" />
     <property name="dist.base.name" value="${name}-${version}" />
     <property name="dist.src.name" value="${dist.base.name}-src" />
@@ -49,7 +49,7 @@
        <exclude name="org/**"/>
        <exclude name="*.gif"/>
     </fileset>
-	
+
 	<fileset dir="${resource.dir}" id="resources.fileset">
         <include name="*.txt"/>
 		<exclude name="antbuild.txt"/>
@@ -185,9 +185,9 @@
         <jar jarfile="${build.dir}/${jarname}">
             <fileset dir="${build.classes.dir}"
                     includes="*org/**"/>
-            <fileset dir="${source.dir}" 
+            <fileset dir="${source.dir}"
             	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
-            <fileset dir="${resource.dir}" 
+            <fileset dir="${resource.dir}"
             	includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
@@ -231,14 +231,14 @@
           </fileset>
         </copy>
     </target>
-    
+
     <target name="dist-bin" depends="dist-bin-zip, dist-bin-tgz, dist-bin-jarbundle, dist-core-jar-only" description="Create a Zip and TGZ Archives with all the binary files">
     </target>
 
 	<target name="dist-core-jar-only" depends="dist-bin-prepare">
 		<copy tofile="${dist.dir}/${dist.base.name}-no-depedencies.jar" file="${build.dir}/${jarname}"/>
 	</target>
-	
+
     <target name="dist-bin-prepare" depends="package"  description="Prepares binary distribution">
         <delete dir="${dist.dir}/${dist.base.name}"/>
         <mkdir dir="${dist.dir}/${dist.base.name}"/>
@@ -334,7 +334,7 @@
 	<taskdef name="jarbundler"
 	                  classpath="${dev.lib.dir}/jarbundler-2.4.0.jar"
 	                  classname="net.sourceforge.jarbundler.JarBundler" />
-	
+
     <target name="dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
     <jarbundler dir="${dist.dir}"
                    name="${Name}"

@@ -39,4 +39,3 @@ public interface Encoder {
    public void encode(Component component, OutputStream stream) throws IOException, EncoderException;
 
 }
-

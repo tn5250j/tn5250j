@@ -862,13 +862,13 @@ public class XTFRFile
 		setVisible(true);
 
 	}
-        
+
         private void txtONKeyPressed(java.awt.event.KeyEvent evt) {
             if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
                 xtfrButton.doClick();
             }
         }
-	
+
         private void initXTFRFields(Properties props) {
 
       if (props == null) {
@@ -967,7 +967,7 @@ public class XTFRFile
 		else
 			props.remove("xtfr.allFields");
 
-        // TODO: save Fielddesc state as one propertyvalue (xtfr.fieldDesc=txt|int)  
+        // TODO: save Fielddesc state as one propertyvalue (xtfr.fieldDesc=txt|int)
 		if (txtDesc.isSelected())
 			props.setProperty("xtfr.txtDesc", "true");
 		else
@@ -1341,7 +1341,7 @@ public class XTFRFile
 
 			addPropertyChangeListener(new PropertyChangeListener() {
 				public void propertyChange(PropertyChangeEvent event) {
-					if (dialog.isVisible() 
+					if (dialog.isVisible()
 						&& event.getSource() == ProgressOptionPane.this
 						&& (event.getPropertyName().equals(VALUE_PROPERTY)
 							|| event.getPropertyName().equals(

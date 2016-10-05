@@ -63,7 +63,7 @@ import org.tn5250j.tools.encoder.EncodeComponent;
 public class SendEMailDialog extends GenericTn5250JFrame implements Runnable  {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	JComboBox toAddress;
 	JTextField subject;
 	JTextArea bodyText;

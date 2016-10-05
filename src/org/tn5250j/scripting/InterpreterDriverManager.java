@@ -14,9 +14,9 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * of themselves with this manager when they are loaded.
  */
 public class InterpreterDriverManager {
-	
+
 	private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(InterpreterDriverManager.class);
-	
+
    private static Map<String, InterpreterDriver> _extensionDriverMap = new HashMap<String, InterpreterDriver>();
    private static Map<String, InterpreterDriver> _languageDriverMap = new HashMap<String, InterpreterDriver>();
 
@@ -122,5 +122,3 @@ public class InterpreterDriverManager {
    }
 
 }
-
-

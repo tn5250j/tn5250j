@@ -36,7 +36,7 @@ import javax.swing.JOptionPane;
  * handshake.  It allows the user to accept the certificate so that connections
  * can be made without requiring the server to have a certificate signed by a
  * CA (Verisign, Thawte, etc.).
- *  
+ *
  * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
  * @deprecated.  no longer used.
  *
@@ -55,14 +55,14 @@ public class X509CertificateTrustManager implements X509TrustManager {
   public void checkClientTrusted(X509Certificate[] chain, String type) throws CertificateException {
   	throw new SecurityException("checkClientTrusted unsupported");
   }
-  
-  
+
+
   /**
    * Checks the server certificate.  If it isn't trusted by the trust manager
    * passed to the constructor, then the user will be prompted to accept the
    * certificate.
    */
-  public void checkServerTrusted(X509Certificate[] chain, String type) 
+  public void checkServerTrusted(X509Certificate[] chain, String type)
   		throws CertificateException {
     try {
     	for (int i=0; i<trustManagers.length; i++) {
@@ -80,7 +80,7 @@ public class X509CertificateTrustManager implements X509TrustManager {
 	      certInfo = certInfo.concat("Valid To: " + cert.getNotAfter()+"\n");
 	      certInfo = certInfo.concat("Subject DN: " + cert.getSubjectDN().getName()+"\n");
 	      certInfo = certInfo.concat("Public Key: " + cert.getPublicKey().getFormat()+"\n");
-	
+
 	      int accept = JOptionPane.showConfirmDialog(null,certInfo,
 	                  "Accept Certificate",javax.swing.JOptionPane.YES_NO_OPTION);
 	      if (accept != JOptionPane.YES_OPTION) {
