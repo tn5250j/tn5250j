@@ -122,12 +122,12 @@ public class OperatingSystem
    public static void displayURL(String url) {
       // Check Customized External Program first
 	  if(launchExternalProgram(url)) return;
-	  
+
       // first let's check if we have an external protocol program defined
       String command = null;
       String protocol = "";
       java.net.URL urlUrl = null;
-	  
+
       try {
          urlUrl = new java.net.URL(url);
          protocol = urlUrl.getProtocol();
@@ -207,8 +207,8 @@ public class OperatingSystem
          }
       }
    }
-   
-	 /** 
+
+	 /**
 	 * @param url
 	 * @return true when found external program and has been launched; false when not found external program.
 	 */
@@ -220,7 +220,7 @@ public class OperatingSystem
 			if(count != null && count.length() > 0){
 				int total = Integer.parseInt(count);
 				for(int i=1;i<=total;i++){
-					String program = properties.getProperty("etn.pgm."+i+".command.name");	  					
+					String program = properties.getProperty("etn.pgm."+i+".command.name");
 					if(url.toLowerCase().startsWith(program.toLowerCase())){
 					  String params = url.substring(program.length() + 1);
 					  params = params.replace(',',' ');
@@ -241,7 +241,7 @@ public class OperatingSystem
 	  }
 	  return false;
    }
-   
+
    public static int execute(String command) {
 
       int exitCode = -1;
@@ -333,6 +333,6 @@ public class OperatingSystem
    } //}}}
 
    //}}}
-   
-   
+
+
 }

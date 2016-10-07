@@ -63,7 +63,7 @@ public class TN5250jFileChooser extends JFileChooser {
 	 * are not included yet. So until Sun fixes this we need to use this
 	 * self-made method (doTranslation) to translate the JFileChoosers.
 	 */
-	 
+
 	static void doTranslation() {
 		UIManager.put("FileChooser.lookInLabelText",
 			LangTool.getString("jfc.Lookin") + ":");

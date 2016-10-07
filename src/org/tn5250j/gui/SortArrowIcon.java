@@ -63,4 +63,3 @@ public class SortArrowIcon implements Icon {
       }
    }
 }
-

@@ -27,9 +27,9 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- * 
- * 
+ *
+ *
+ *
  * Source URL:
  * ---------------------
  * The Java Tutorials - "How to Use Tabbed Panes"
@@ -67,7 +67,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 public class ButtonTabComponent extends JPanel {
 
    private static final long serialVersionUID = 1L;
-   
+
    private final JTabbedPane pane;
 
    public ButtonTabComponent(final JTabbedPane pane) {
@@ -81,11 +81,11 @@ public class ButtonTabComponent extends JPanel {
 
 //      pane.addPropertyChangeListener(null);
 //      pane.addPropertyChangeListener("", null);
-      
+
       // make JLabel read titles from JTabbedPane
 //      JLabel label = new JLabel() {
 //         private static final long serialVersionUID = 1L;
-//         
+//
 //         public String getText() {
 //            int i = pane.indexOfTabComponent(ButtonTabComponent.this);
 //            if (i != -1) {
@@ -118,11 +118,11 @@ public class ButtonTabComponent extends JPanel {
 
    private final class TabLabel extends JLabel implements ActionListener {
       private static final long serialVersionUID = 1L;
-      
+
       public TabLabel() {
 //         addActionListener(this);
       }
-      
+
       public String getText() {
          int i = pane.indexOfTabComponent(ButtonTabComponent.this);
          if (i != -1) {
@@ -130,7 +130,7 @@ public class ButtonTabComponent extends JPanel {
          }
          return null;
       }
-      
+
       public Icon getIcon() {
          int i = pane.indexOfTabComponent(ButtonTabComponent.this);
          if (i != -1) {
@@ -138,13 +138,13 @@ public class ButtonTabComponent extends JPanel {
          }
          return null;
       }
-      
+
       @Override
       public void actionPerformed(ActionEvent e) {
          System.out.println(">>>" + e);
       }
    }
-   
+
    /**
     * @author maki
     */

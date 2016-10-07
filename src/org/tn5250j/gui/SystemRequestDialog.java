@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -39,20 +39,20 @@ import javax.swing.JTextField;
 
 /**
  * Small dialog asking the user to enter a value for doing a system request.
- * 
+ *
  * @author master_jaf
  */
 public class SystemRequestDialog {
 
 	private final static String[] OPTIONS = new String[] { "SysReq", "Cancel" };
-	
+
 	private final Component parent;
 
 	private JDialog dialog;
 	private JOptionPane pane;
 	private JTextField text;
 
-	
+
 	/**
 	 * @param parent
 	 */
@@ -91,9 +91,9 @@ public class SystemRequestDialog {
 	}
 
 	/**
-	 * Shows the dialog and returns the given input 
+	 * Shows the dialog and returns the given input
 	 * or null if the operation was canceled.
-	 * 
+	 *
 	 * @return
 	 */
 	public String show() {

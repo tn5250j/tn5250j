@@ -101,9 +101,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
    private boolean isLinux;
    private boolean isAltGr;
    private boolean altKey;
-   
+
    private static final SortedMap<Integer, String> colorMap = new TreeMap<Integer, String>();
-   
+
    static {
 	   colorMap.put(0x20, "Green");
 	   colorMap.put(0x21, "Green RI");
@@ -457,9 +457,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
             StringBuffer sb = new StringBuffer();
 
             Set<CollationKey> set = new TreeSet<CollationKey>();
-                      
+
             supportAplColorCodesInSEU(collator, sb, set);
-            
+
             for (int x =0;x < 256; x++) {
                char c = codePage.ebcdic2uni(x);
                char ac = codePage.ebcdic2uni(x);
@@ -498,13 +498,13 @@ public class KeyConfigure extends JDialog implements ActionListener {
 		for (Entry<Integer, String> color : colorMap.entrySet()) {
 			int keyVal = color.getKey().intValue();
 			char c = (char)('\uff00' + keyVal);
-			
+
 		    sb.setLength(0);
 		    sb.append("0FF" + Integer.toHexString(keyVal).toUpperCase());
 		    sb.append(" - " + c + " - " + color.getValue());
 		    CollationKey key = collator.getCollationKey(sb.toString());
-	
-		    set.add(key);            	
+
+		    set.add(key);
 		}
 	}
 

@@ -1810,7 +1810,7 @@ public final class tnvt implements Runnable {
 					int saRow = bk.getNextByte();
 					int saCol = bk.getNextByte() & 0xff;
 					// make sure it is in bounds
-					if (saRow <= screen52.getRows() 
+					if (saRow <= screen52.getRows()
 							&& saCol <= screen52.getColumns()) {
 						screen52.setCursor(saRow, saCol); // now set screen
 						// position for output

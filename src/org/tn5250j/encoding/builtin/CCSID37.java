@@ -1,13 +1,13 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
  * @author: master_jaf
  *
  * Description:
- * Alternative (extended) implementation of a codepage converter CCSID 37<->Unicode. 
+ * Alternative (extended) implementation of a codepage converter CCSID 37<->Unicode.
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,11 +77,11 @@ public final class CCSID37 extends CodepageConverterAdapter {
 			'3', '4', '5', '6', '7', '8', '9', '\u00B3', '\u00DB', '\u00DC',
 			'\u00D9', '\u00DA', '\u009F', };
 
-	
+
 	public String getName() {
 		return NAME;
 	}
-	
+
 	public String getDescription() {
 		return DESCR;
 	}

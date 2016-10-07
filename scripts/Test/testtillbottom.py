@@ -48,7 +48,7 @@ while not _session.isStopMacroRequested():
     #loop 9 times to read all the rows from 10 to 18
     while times < lines:
         sj.setLength(0)
-        # get the Subsystem/job information for each row 
+        # get the Subsystem/job information for each row
         fillWithSubArea(10 + times,7,14,sj)
         # print it out
         print sj.toString()

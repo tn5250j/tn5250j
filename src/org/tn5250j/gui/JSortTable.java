@@ -74,4 +74,3 @@ public class JSortTable extends JTable implements MouseListener {
   public void mouseExited(MouseEvent event) {
   }
 }
-

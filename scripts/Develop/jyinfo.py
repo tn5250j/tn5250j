@@ -4,7 +4,7 @@
 #               If possible it will be enhanced to run from tn5250j. #
 ######################################################################
 
-"""GUI for browsing events, properties, and methods of Java classes as 
+"""GUI for browsing events, properties, and methods of Java classes as
     seen from Jython.
 
 -----------------------------------------------------------------------------
@@ -59,7 +59,7 @@ class GridBag:
 		self.frame.add(widget)
 #------------------------------------------------------------------------------#
 # The tree code and property/event code is adapted from
-# Python Programming with the Java Class Libraries: A Tutorial for Building Web 
+# Python Programming with the Java Class Libraries: A Tutorial for Building Web
 #    and Enterprise Applications with Jython
 # By Richard Hightower, Addison-Wesley
 #
@@ -71,10 +71,10 @@ class ListEnumeration(Enumeration):
         self.list = the_list[:]
         self.count = len(self.list)
         self.index = 0
-        
+
     def hasMoreElements(self):
         return self.index < self.count
-        
+
     def nextElement(self):
         object = self.list[self.index]
         self.index = self.index + 1
@@ -90,7 +90,7 @@ class SampleNode (Object, TreeNode):
         self.__name = name
         self.__parent = parent
         self.__leaf=leaf
-        
+
         for name in items:
             node = SampleNode(name, parent=self, leaf=1)
             self.__nodes.append(node)
@@ -98,55 +98,55 @@ class SampleNode (Object, TreeNode):
     def getChildAt(self, index):
         "Get the child at the given index"
         return self.__nodes[index]
-            
+
     def children(self):
         'get children nodes ----------------'
         return ListEnumeration(self.__nodes)
-            
-        
+
+
     def getAllowsChildren(self):
         'Does this node allows children node?'
         return not self.leaf
-        
+
     def getChildCount(self):
         'column count node'
         return len (self.__nodes)
-    
+
     def getIndex(self, node):
         'get index of node in nodes'
         try:
             return self.__nodes.index(node)
         except ValueError, e:
             return None
-    
+
     def getParent(self):
         'get parent node'
         return self.__parent
-    
+
     def isLeaf(self):
         'is leaf node'
         return self.__leaf
-    
+
     def __str__(self):
         'str node'
         return self.__name
-        
+
     def toString(self):
         return self.__str__()
-        
+
     def __repr__(self):
         nodes = []
-        
+
         for node in self.__nodes:
             nodes.append(str(node))
-            
+
         if (self.__parent):
             tpl=(self.__name, nodes, self.__parent, self.__leaf)
             return 'SampleNode(name=%s,list=%s,parent=%s,leaf=%s)' % tpl
         else:
             tpl=(self.__name, nodes, self.__leaf)
             return 'SampleNode(name=%s,list=%s,leaf=%s)' % tpl
-    
+
     #-------- End Node interface, the below is for the SampleModel
     def add(self, node):
         self.__nodes.append(node)
@@ -154,13 +154,13 @@ class SampleNode (Object, TreeNode):
 
     def setParent(self, parent):
         self.__parent = parent
-        
+
     def setName(self, name):
         self.__name=name
-    
+
     def getName(self, name):
         return self.__name
-        
+
 
 
 #------------------------------------------------------------------------------#
@@ -173,16 +173,16 @@ class SampleModel(TreeModel):
         root = SampleNode(root_name, [])
         self._root = root
         self.listeners = []
-        
-    #------------ The following methods implement the TreeModel interface.        
+
+    #------------ The following methods implement the TreeModel interface.
     def addTreeModelListener(self, listener):
         if self.debug: print 'add listener'
         self.listeners.append(listener)
-    
+
     def removeTreeModelListener(self, listener):
         if self.debug: print 'remove listener'
         self.listeners.remove(listener)
-    
+
     def getChild(self, parent, index):
         if self.debug: print 'get child'
         return parent.getChildAt(index)
@@ -194,7 +194,7 @@ class SampleModel(TreeModel):
     def getIndexOfChild(self, parent, child):
         if self.debug: print 'get index of child'
         return parent.getIndex(child)
-    
+
     def getRoot(self):
         if self.debug: print 'get root'
         return self._root
@@ -213,53 +213,53 @@ class SampleModel(TreeModel):
     def getNodePathToRoot(self, node):
         parent = node   # Holds the current node.
         path=[]        # To hold the path to root.
-        
+
             # Get the path to the root
         while not parent is None:
                 # Add the parent to the path and then get the
                 # parent's parent
             path.append(parent)
             parent = parent.getParent()
-            
+
             #Switch the order
         path.reverse()
         return path
-        
-        
+
+
     def fireStructureChanged(self, node):
             # Get the path to the root node.
             # Create a TreeModelEvent class instance.
         path = self.getNodePathToRoot(node)
         event = TreeModelEvent(self, path)
-        
-            # Notify every tree model listener that 
+
+            # Notify every tree model listener that
             # this tree model changed at the tree path.
         for listener in self.listeners:
             listener.treeStructureChanged(event)
-            
-    
+
+
     def addNode(self, name, children=[], parent=None):
             # Set the value of the leaf.
             # No children means the node is a leaf.
         leaf = len(children)==0
-        
+
             # Create a SampleNode,
             # and add the node to the given parent.
         node = SampleNode(name, children, leaf=leaf)
         self.__add(node, parent)
-        return node            
-        
+        return node
+
     def __add(self, node, parent=None):
-            # If the parent is none, 
+            # If the parent is none,
             # then set the parent to the root.
         if not parent:
             parent = self.getRoot()
-            
+
             # Add the node to the parent,
             # and notify the world that the node changed.
-        parent.add(node)    
+        parent.add(node)
         self.fireStructureChanged(parent)
-        
+
 #------------------------------------------------------------------------------#
 # For querying Java classes on their event properties
 
@@ -272,7 +272,7 @@ def getBeanInfo(bean):
     propdict = {}
     methdict = {}
     tbean = bean
-    while tbean != Object:            
+    while tbean != Object:
         events = []
         properties = []
         methods = []
@@ -286,18 +286,18 @@ def getBeanInfo(bean):
         eventdict[tbean.__name__] = events
         propdict[tbean.__name__] = properties
         methdict[tbean.__name__] = methods
-        tbean = tbean.superclass            
+        tbean = tbean.superclass
     return eventdict, propdict, methdict
-    
+
 def parseEventDict(edict):
     pedict = {}
     for key in edict.keys():
         pedict[key] = [e.__name__ for e in edict[key]]
     return pedict
-    
+
 def parsePropDict(pdict):
     ppdict = {}
-    for key in pdict.keys():        
+    for key in pdict.keys():
         ppdict[key] = [p.toString().split()[1] for p in pdict[key]]
     return ppdict
 
@@ -325,8 +325,8 @@ class InfoFrame(JFrame):
         JFrame.__init__(self, title)
         self.size = 400,500
         self.windowClosing = self.closing
-        
-        label = JLabel(text="Class Name:") 
+
+        label = JLabel(text="Class Name:")
         label.horizontalAlignment = JLabel.RIGHT
         tpanel = JPanel(layout = awt.FlowLayout())
         self.text = JTextField(20, actionPerformed = self.entered)
@@ -334,29 +334,29 @@ class InfoFrame(JFrame):
         tpanel.add(label)
         tpanel.add(self.text)
         tpanel.add(btn)
-    
+
         bpanel = JPanel()
         self.tree = JTree(default_tree())
         scrollpane = JScrollPane(self.tree)
         scrollpane.setMinimumSize(awt.Dimension(200,200))
         scrollpane.setPreferredSize(awt.Dimension(350,400))
         bpanel.add(scrollpane)
-        
+
         bag = GridBag(self.contentPane)
         bag.addRow(tpanel, fill='HORIZONTAL', weightx=1.0, weighty=0.5)
-        bag.addRow(bpanel, fill='BOTH', weightx=0.5, weighty=1.0) 
+        bag.addRow(bpanel, fill='BOTH', weightx=0.5, weighty=1.0)
 
     def closing(self, event):
         self.hide()
         self.dispose()
-        
+
     def entered(self, event):
         name = self.text.getText()
         try:
             mod = __import__(name)
             components = name.split('.')
             for comp in components[1:]:
-                mod = getattr(mod, comp)            
+                mod = getattr(mod, comp)
         except ImportError:
             mod = None
             self.setupTree("Invalid Class", {})
@@ -365,27 +365,27 @@ class InfoFrame(JFrame):
         pedict = parseEventDict(edict)
         ppdict = parsePropDict(pdict)
         pmdict = parseMethDict(mdict)
-        
-        self.setupTree(mod.__name__, pedict, ppdict, pmdict)     
-          
+
+        self.setupTree(mod.__name__, pedict, ppdict, pmdict)
+
 
     def setupTree(self, top, pedict, ppdict, pmdict):
         tree_model = SampleModel(top)
         events = tree_model.addNode("Events",["<<Events of the class and its ancestors>>"])
         props = tree_model.addNode("Properties",["<<Properties of the class and its ancestors>>"])
-        meths = tree_model.addNode("Methods",["<<Methods of the class and its ancestors>>"])        
-        
+        meths = tree_model.addNode("Methods",["<<Methods of the class and its ancestors>>"])
+
         for key in pedict.keys():
             tree_model.addNode(key, pedict[key], parent=events)
         for key in ppdict.keys():
             tree_model.addNode(key, ppdict[key], parent=props)
         for key in pmdict.keys():
             tree_model.addNode(key, pmdict[key], parent=meths)
-        
+
         self.tree.setModel(tree_model)
-        
-        
-                
+
+
+
 
 #------------------------------------------------------------------------------#
 def main():
@@ -393,4 +393,4 @@ def main():
 	frame.show()
 
 if __name__=='main' or __name__ =='__main__':
-	main()        
+	main()

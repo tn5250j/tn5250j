@@ -53,7 +53,7 @@ import javax.swing.plaf.ComponentUI;
 
 
 public class SessionBean extends SessionPanel {
-	
+
 	private static final long serialVersionUID = 1L;
 
 //      // ===========================================================================

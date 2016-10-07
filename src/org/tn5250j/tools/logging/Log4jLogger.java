@@ -54,7 +54,7 @@ public final class Log4jLogger implements TN5250jLogger {
 	public void info(Object message) {
 		log.info(message);
 	}
-	
+
 	public void info(Object message, Throwable throwable) {
 		log.info(message, throwable);
 	}
@@ -70,7 +70,7 @@ public final class Log4jLogger implements TN5250jLogger {
 	public void error(Object message) {
 		log.error(message);
 	}
-	
+
 	public void error(Object message, Throwable throwable) {
 		log.error(message, throwable);
 	}
@@ -78,7 +78,7 @@ public final class Log4jLogger implements TN5250jLogger {
 	public void fatal(Object message) {
 		log.fatal(message);
 	}
-	
+
 	public void fatal(Object message, Throwable throwable) {
 		log.fatal(message, throwable);
 	}
@@ -90,7 +90,7 @@ public final class Log4jLogger implements TN5250jLogger {
 	public boolean isInfoEnabled() {
 		return log.isInfoEnabled();
 	}
-	
+
 	public boolean isWarnEnabled() {
 		return (Level.WARN.equals(log.getLevel()));
 	}
@@ -98,11 +98,11 @@ public final class Log4jLogger implements TN5250jLogger {
 	public boolean isFatalEnabled() {
 		return (Level.FATAL.equals(log.getLevel()));
 	}
-	
+
 	public boolean isErrorEnabled() {
 		return (Level.ERROR.equals(log.getLevel()));
 	}
-	
+
 	public void setLevel(int newLevel) {
 
 		switch (newLevel) {

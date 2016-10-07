@@ -44,7 +44,7 @@ public class SocketConnector {
 
   /**
    * Set the type of SSL connection to use.  Specify null or an empty string
-   * to use a plain socket. 
+   * to use a plain socket.
    * @param type The SSL connection type
    * @see org.tn5250j.framework.transport.SSLConstants
    */
@@ -55,18 +55,18 @@ public class SocketConnector {
   /**
    * Create a new client Socket to the given destination and port.  If an SSL
    * socket type has not been specified <i>(by setSSLType(String))</i>, then
-   * a plain socket will be created.  Otherwise, a new SSL socket of the 
+   * a plain socket will be created.  Otherwise, a new SSL socket of the
    * specified type will be created.
    * @param destination
    * @param port
-   * @return a new client socket, or null if  
+   * @return a new client socket, or null if
    */
   public Socket createSocket(String destination, int port) {
 
   	Socket socket = null;
   	Exception ex = null;
-  	
-      if (sslType == null || sslType.trim().length() == 0 || 
+
+      if (sslType == null || sslType.trim().length() == 0 ||
       		sslType.toUpperCase().equals(TN5250jConstants.SSL_TYPE_NONE)) {
         	logger.info("Creating Plain Socket");
         try {
@@ -77,12 +77,12 @@ public class SocketConnector {
 		}
       } else {  //SSL SOCKET
 
-   		logger.info("Creating SSL ["+sslType+"] Socket");      
-      
+   		logger.info("Creating SSL ["+sslType+"] Socket");
+
       	SSLInterface sslIf = null;
-      	
-      	String sslImplClassName = 
-      		"org.tn5250j.framework.transport.SSL.SSLImplementation";  
+
+      	String sslImplClassName =
+      		"org.tn5250j.framework.transport.SSL.SSLImplementation";
 		try {
 			Class<?> c = Class.forName(sslImplClassName);
 			sslIf = (SSLInterface)c.newInstance();
@@ -90,7 +90,7 @@ public class SocketConnector {
 			ex = new Exception("Failed to create SSLInterface Instance. " +
 					"Message is ["+e.getMessage()+"]");
 		}
-		
+
       	if (sslIf != null) {
       		sslIf.init(sslType);
       		socket = sslIf.createSSLSocket(destination,port);
@@ -105,6 +105,6 @@ public class SocketConnector {
       }
       return socket;
   }
-      
-      
+
+
 }

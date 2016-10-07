@@ -62,12 +62,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 /*
- * Creating and using TabComponentsDemo example  
+ * Creating and using TabComponentsDemo example
  */
 public class TabComponentsDemo extends JFrame {
 
    private static final long serialVersionUID = 1L;
-   
+
    private final int tabNumber = 5;
    private final JTabbedPane tabbedPane = new JTabbedPane();
    private JMenuItem tabComponentsItem;
@@ -115,7 +115,7 @@ public class TabComponentsDemo extends JFrame {
       tabbedPane.setTabComponentAt(i, tabComp);
 //      tabbedPane.addContainerListener(getListener(tabComp));
    }
-   
+
 //   private ContainerAdapter getListener(ButtonTabComponent tabComp) {
 //      ContainerAdapter x = new ContainerAdapter() {
 //         @Override
@@ -126,10 +126,10 @@ public class TabComponentsDemo extends JFrame {
 //            System.out.println(s);
 //            System.out.println(c);
 //            System.out.println(p);
-//            
+//
 //            Object o = ((JTabbedPane)e.getSource()).getSelectedComponent();
 //            System.out.println(o);
-//            
+//
 //            System.out.println("Removed: " + e.getComponent());
 //         }
 //      };
