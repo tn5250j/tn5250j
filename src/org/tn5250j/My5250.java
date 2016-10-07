@@ -64,7 +64,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public class My5250 implements BootListener, SessionListener, EmulatorActionListener {
 
 	private static final String PARAM_START_SESSION = "-s";
-	
+
 	private GUIViewInterface frame1;
 	private String[] sessionArgs = null;
 	private static Properties sessions = new Properties();
@@ -314,7 +314,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		else {
 			LangTool.init();
 		}
-		
+
 		List<String> lastViewNames = new ArrayList<String>();
 		lastViewNames.addAll(loadLastSessionViewNames());
 		lastViewNames.addAll(loadLastSessionViewNamesFrom(args));
@@ -399,7 +399,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		}
 		return result;
 	}
-	
+
 	private static boolean containsNotOnlyNullValues(String[] stringArray) {
 		if (stringArray != null) {
 			for (String s : stringArray) {
@@ -882,7 +882,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		 splash.updateProgress(++step);
 
 	 }
-	 
+
 	 static Properties getSessions() {
 		 return sessions;
 	 }

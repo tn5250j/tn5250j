@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -28,7 +28,7 @@ package org.tn5250j.tools;
 
 /**
  * Collection of commonly used methods.
- * 
+ *
  * @author master_jaf
  */
 public class As400Util {

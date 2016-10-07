@@ -106,4 +106,3 @@ Vector<ToggleDocumentListener> listeners;
    }
 
 }
-

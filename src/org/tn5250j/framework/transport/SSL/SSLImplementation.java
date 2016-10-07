@@ -49,9 +49,9 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  * This class implements the SSLInterface and is used to create SSL socket
  * instances.
  * </p>
- * 
+ *
  * @author Stephen M. Kennedy <skennedy@tenthpowertech.com>
- * 
+ *
  */
 public class SSLImplementation implements SSLInterface, X509TrustManager {
 
@@ -119,7 +119,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
 	 */
 	public X509Certificate[] getAcceptedIssuers() {
@@ -128,7 +128,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * javax.net.ssl.X509TrustManager#checkClientTrusted(java.security.cert.
 	 * X509Certificate[], java.lang.String)
@@ -141,7 +141,7 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * javax.net.ssl.X509TrustManager#checkServerTrusted(java.security.cert.
 	 * X509Certificate[], java.lang.String)

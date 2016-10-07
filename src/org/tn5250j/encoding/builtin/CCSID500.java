@@ -1,13 +1,13 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
  * @author: master_jaf
  *
  * Description:
- * Alternative (extended) implementation of a codepage converter CCSID 500<->Unicode. 
+ * Alternative (extended) implementation of a codepage converter CCSID 500<->Unicode.
  *
  *
  * This program is free software; you can redistribute it and/or modify

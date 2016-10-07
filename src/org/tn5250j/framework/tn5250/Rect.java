@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -37,14 +37,14 @@ public class Rect {
 	/* default */ int y;
 	/* default */ int height;
 	/* default */ int width;
-	
+
 	/**
 	 * @param rect
 	 */
 	public void setBounds(Rect rect) {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
-	
+
     /**
      * @param x the new X coordinate for the upper-left corner of this rectangle
      * @param y the new Y coordinate for the upper-left corner of this rectangle

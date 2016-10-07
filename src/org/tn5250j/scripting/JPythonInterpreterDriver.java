@@ -33,16 +33,16 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
       //      props.setProperty("python.path", ".;jt400.jar");
       //      PythonInterpreter.initialize(System.getProperties(), props,
       //                        new String[] {""});
-      System.setProperty("python.cachedir", 
-      System.getProperty("user.home") + File.separator + GlobalConfigure.TN5250J_FOLDER + 
+      System.setProperty("python.cachedir",
+      System.getProperty("user.home") + File.separator + GlobalConfigure.TN5250J_FOLDER +
       File.separator);
-      
+
       try {
         _instance = new JPythonInterpreterDriver();
       }
       catch (Exception ex) {
-          
-          
+
+
       }
       InterpreterDriverManager.registerDriver(_instance);
    }
@@ -53,11 +53,11 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
         _interpreter = new PythonInterpreter();
       }
       catch (Exception ex) {
-        
+
       }
-       
+
    }
-   
+
    public void executeScript(SessionPanel session, String script)
          throws InterpreterDriver.InterpreterException {
       try {

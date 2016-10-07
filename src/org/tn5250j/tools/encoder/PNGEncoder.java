@@ -317,4 +317,3 @@ public class PNGEncoder extends AbstractImageEncoder {
    }
 
 }
-

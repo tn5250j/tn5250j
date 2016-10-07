@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -37,36 +37,36 @@ import org.tn5250j.encoding.builtin.CCSID280;
 
 /**
  * Testing the correctness of {@link CCSID280Ex} and comparing with existing implementation.
- * 
+ *
  * @author master_jaf
  */
 public class CCSID280Test {
 
-	private char[] TESTSTRING = new char[255];	
-	
+	private char[] TESTSTRING = new char[255];
+
 	@Before
 	public void setUp() {
 		for (int i=1; i<=255; i++) {
 			TESTSTRING[i-1] = (char) i;
-		}			
+		}
 	}
-	
+
 	/**
 	 * Correctness test for old implementation ....
 	 */
 	@Test
 	public void testOldConverter280() {
-		
+
 		ICodePage cp = CharMappings.getCodePage("280");
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
-		
+
 		for (int i=0; i<TESTSTRING.length; i++) {
 			final char beginvalue = TESTSTRING[i];
 			final byte converted = cp.uni2ebcdic(beginvalue);
 			final char afterall = cp.ebcdic2uni(converted & 0xFF);
 			assertEquals("Testing item #" + i, beginvalue, afterall);
 		}
-		
+
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class CCSID280Test {
 		CCSID280 cp = new CCSID280();
 		cp.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cp);
-		
+
 		for (int i=0; i<TESTSTRING.length; i++) {
 			final char beginvalue = TESTSTRING[i];
 			final byte converted = cp.uni2ebcdic(beginvalue);
@@ -95,9 +95,9 @@ public class CCSID280Test {
 		final CCSID280 cpex = new CCSID280();
 		cpex.init();
 		assertNotNull("At least an ASCII Codepage should be available.", cpex);
-		
+
 		for (int i=0; i<TESTSTRING.length; i++) {
-			
+
 			final char beginvalue = TESTSTRING[i];
 			assertEquals("Testing to EBCDIC item #" + i, cp.uni2ebcdic(beginvalue), cpex.uni2ebcdic(beginvalue));
 			final byte converted = cp.uni2ebcdic(beginvalue);
@@ -106,5 +106,5 @@ public class CCSID280Test {
 			assertEquals("Testing before and after item #" + i, beginvalue, afterall);
 		}
 	}
-	
+
 }

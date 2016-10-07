@@ -1,6 +1,6 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
@@ -30,20 +30,20 @@ import java.util.Arrays;
 
 /**
  * Adapter class for converters using 8bit codepages.
- * 
+ *
  * @author master_jaf
  */
 public abstract class CodepageConverterAdapter implements ICodepageConverter {
-	
+
 	private char[] codepage = null;
 	private int[] reverse_codepage = null;
-	
+
 	/* (non-Javadoc)
 	 * @see org.tn5250j.cp.ICodepageConverter#init()
 	 */
 	public ICodepageConverter init() {
 		codepage = getCodePage();
-		
+
 		int size = 0;
 		for (int i=0; i<codepage.length; i++) {
 			size = Math.max(size, codepage[i]);
@@ -56,7 +56,7 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
 		}
 		return this;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.tn5250j.cp.ICodepageConverter#uni2ebcdic(char)
 	 */
@@ -64,7 +64,7 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
 		assert index < reverse_codepage.length;
 		return (byte)reverse_codepage[index];
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.tn5250j.cp.ICodepageConverter#ebcdic2uni(int)
 	 */
@@ -75,8 +75,8 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
 	}
 
 	/**
-	 * @return The oringal 8bit codepage. 
+	 * @return The oringal 8bit codepage.
 	 */
 	protected abstract char[] getCodePage();
-	
+
 }

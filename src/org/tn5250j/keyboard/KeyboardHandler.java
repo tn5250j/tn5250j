@@ -44,7 +44,7 @@ import org.tn5250j.tools.system.OperatingSystem;
  *
  */
 public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeListener {
-	
+
    protected Session5250 session;
    protected SessionPanel sessionGui;
    protected Screen5250 screen;
@@ -183,4 +183,3 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
    }
 
 }
-

@@ -52,7 +52,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public final class LoadMacroMenu {
 
    private static Vector macroVector = new Vector();
-   
+
    private static final TN5250jLogger log = TN5250jLogFactory.getLogger(LoadMacroMenu.class);
 
    public static void loadMacros(SessionPanel session, JMenu menu) {
@@ -244,7 +244,7 @@ public final class LoadMacroMenu {
 
    /**
     * Create the scripts menu(s) from the vector of macros provided
-    * 
+    *
     * @param menu
     * @param vector
     * @param start
