@@ -78,38 +78,12 @@ class KeypadPanel extends JPanel {
     addInvisibleButtonsToPreventLayout(buttonPanel);
   }
 
-  private JButton createButton(KeyMnemonic mnemonic, Insets noMargin, CompoundBorder minimalBorder) {
-    JButton b = new JButton();
-    b.setMargin(noMargin);
-    b.setBorder(minimalBorder);
-    b.setText(getString("KP_" + mnemonic.name(), keyMnemonicResolver.getDescription(mnemonic)));
-    b.setActionCommand(mnemonic.mnemonic);
-    return b;
-  }
-
-  private void addInvisibleButtonsToPreventLayout(JPanel bottomPanel) {
-    if (buttons.length > NO_OF_BUTTONS_PER_ROW && buttons.length % NO_OF_BUTTONS_PER_ROW > 0) {
-      for (int i = buttons.length % NO_OF_BUTTONS_PER_ROW; i < NO_OF_BUTTONS_PER_ROW; i++) {
-        JButton button = new JButton();
-        button.setVisible(false);
-        bottomPanel.add(button);
-      }
-    }
-  }
-
-  void addActionListener(ActionListener actionlistener) {
-    for (JButton button : buttons) {
-      button.addActionListener(actionlistener);
-    }
-  }
-
-  private void maximizeButtonSize() {
+  void updateButtonFontSize(float fontSize) {
     if (0 == buttons.length) return;
 
     final JButton referenceButton = buttons[0];
     Font buttonFont = referenceButton.getFont();
-    float fs = configuration.getKeypadFontSize();
-    buttonFont = buttonFont.deriveFont(fs);
+    buttonFont = buttonFont.deriveFont(fontSize);
 
     FontMetrics fm = referenceButton.getFontMetrics(buttonFont);
     Rectangle viewRect = referenceButton.getVisibleRect();
@@ -139,17 +113,45 @@ class KeypadPanel extends JPanel {
         iconRect,
         textRect,
         textIconGap).endsWith("...")
-        && fs > (MIN_FONT_SIZE - 1)) {
-      buttonFont = buttonFont.deriveFont(--fs);
+        && fontSize > (MIN_FONT_SIZE - 1)) {
+      buttonFont = buttonFont.deriveFont(--fontSize);
       fm = referenceButton.getFontMetrics(buttonFont);
-
     }
 
-    if (fs >= MIN_FONT_SIZE) {
+    if (fontSize >= MIN_FONT_SIZE) {
       for (JButton button : buttons) {
         button.setFont(buttonFont);
       }
     }
+  }
+
+  private JButton createButton(KeyMnemonic mnemonic, Insets noMargin, CompoundBorder minimalBorder) {
+    JButton b = new JButton();
+    b.setMargin(noMargin);
+    b.setBorder(minimalBorder);
+    b.setText(getString("KP_" + mnemonic.name(), keyMnemonicResolver.getDescription(mnemonic)));
+    b.setActionCommand(mnemonic.mnemonic);
+    return b;
+  }
+
+  private void addInvisibleButtonsToPreventLayout(JPanel bottomPanel) {
+    if (buttons.length > NO_OF_BUTTONS_PER_ROW && buttons.length % NO_OF_BUTTONS_PER_ROW > 0) {
+      for (int i = buttons.length % NO_OF_BUTTONS_PER_ROW; i < NO_OF_BUTTONS_PER_ROW; i++) {
+        JButton button = new JButton();
+        button.setVisible(false);
+        bottomPanel.add(button);
+      }
+    }
+  }
+
+  void addActionListener(ActionListener actionlistener) {
+    for (JButton button : buttons) {
+      button.addActionListener(actionlistener);
+    }
+  }
+
+  private void maximizeButtonSize() {
+    updateButtonFontSize(configuration.getKeypadFontSize());
   }
 
   private String findLargestText() {

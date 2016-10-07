@@ -54,9 +54,7 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_ENABLED;
-import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_MNEMONICS;
-import static org.tn5250j.SessionConfig.YES;
+import static org.tn5250j.SessionConfig.*;
 import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 
 /**
@@ -383,6 +381,10 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 
 		if (CONFIG_KEYPAD_MNEMONICS.equals(configName)) {
 			keypadPanel.reInitializeButtons(new KeyMnemonicSerializer().deserialize((String) configEvent.getNewValue()));
+		}
+
+		if (CONFIG_KEYPAD_FONT_SIZE.equals(configName)) {
+			keypadPanel.updateButtonFontSize(Float.parseFloat((String)configEvent.getNewValue()));
 		}
 
 		if ("doubleClick".equals(configName)) {
