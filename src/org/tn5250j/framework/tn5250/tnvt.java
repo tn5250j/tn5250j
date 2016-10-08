@@ -120,6 +120,15 @@ public final class tnvt implements Runnable {
 	// miscellaneous
 	private static final byte ESC = 0x04; // 04
 
+	/**
+	 * Until OS V7R1, the length limit for the PCCMD parameter of STRPCCMD is 123 chars.
+	 * (Remark: since V7R2 the new limit is 1023, for now we stick to 123)
+	 * <a href="http://www-01.ibm.com/support/docview.wss?uid=nas8N1014202">
+	 *   CL Example Using the STRPCCMD Command
+	 * </a>
+	 */
+	private static final int PCCMD_MAX_LENGTH = 123;
+
 	private Socket sock;
 	private BufferedInputStream bin;
 	private BufferedOutputStream bout;
@@ -862,34 +871,26 @@ public final class tnvt implements Runnable {
 		invited = true;
 	}
 
-	// WVL - LDC : 05/08/2005 : TFX.006253 - Support STRPCCMD
-	private void strpccmd()
-	{
-		try
-		{
+	private void strpccmd()	{
+		try	{
 			int str = 11;
 			int offset = str+1;
-			int limit = 123; //TODO 1023 from V7R2
-			char c;
 			ScreenPlanes planes = screen52.getPlanes();
-			c = planes.getChar(str);
+			char c = planes.getChar(str);
 			boolean waitFor = !(c == 'a');
 
 			StringBuilder command = new StringBuilder();
-			for (int i = offset; i < offset + limit; i++)
-			{
+			for (int i = offset; i < offset + PCCMD_MAX_LENGTH; i++) {
 				c = planes.getChar(i);
-				if (Character.isISOControl(c))
+				if (Character.isISOControl(c)) {
 					c = ' ';
+				}
 				command.append(c);
 			}
 
-			String cmd = command.toString().trim();
-
-			run(cmd, waitFor);
+			run(command.toString().trim(), waitFor);
 		}
-		finally
-		{
+		finally	{
 			strpccmd = false;
 			screen52.sendKeys(TN5250jConstants.MNEMONIC_ENTER);
 		}
