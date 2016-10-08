@@ -53,4 +53,3 @@ public DefaultSortTableModel() {}
          new ColumnComparator(col, ascending));
    }
 }
-

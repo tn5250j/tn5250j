@@ -1,0 +1,11 @@
+/dist
+/bin
+/build
+/out
+build.*.properties
+*.iml
+.idea
+.classpath
+.project
+.pydevproject
+

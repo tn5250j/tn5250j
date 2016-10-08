@@ -17,9 +17,9 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 //import org.tn5250j.swing.JTerminal;
 
 public class My5250Applet extends JApplet {
-	
+
    private static final long serialVersionUID = 1L;
-   
+
    boolean isStandalone = true;
    private SessionManager manager;
 

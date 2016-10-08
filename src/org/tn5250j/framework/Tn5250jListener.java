@@ -23,16 +23,16 @@ import java.util.Properties;
 
 public abstract class Tn5250jListener {
 	public abstract void actionPerformed(Tn5250jEvent event);
-	
+
 	public abstract void init(File fileDir, Properties config);
-	
+
 	public abstract void run();
-	
+
 	public abstract void destroy();
-	
+
 	public abstract String getName();
-	
+
 	public abstract void setController(Tn5250jController control);
-	
+
 	public abstract void sessionCreated(Tn5250jSession session);
 }

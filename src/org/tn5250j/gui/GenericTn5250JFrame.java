@@ -21,8 +21,7 @@
 
 package org.tn5250j.gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 
 import javax.swing.JFrame;
 
@@ -39,17 +38,19 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  * <li>{@link org.tn5250j.spoolfile.SpoolExporter}</li>
  * <li>{@link org.tn5250j.spoolfile.SpoolExportWizard}</li>
  * <li>{@link org.tn5250j.tools.XTFRFile}</li>
- * </ul> 
+ * </ul>
  */
 public class GenericTn5250JFrame extends JFrame {
 
 	private static final long serialVersionUID = 7349671770294342782L;
-	
+
 	protected boolean packFrame = false;
 
    public GenericTn5250JFrame() {
       super();
-      setIconImages(GUIGraphicsUtils.getApplicationIcons());
+      java.util.List<Image> icons = GUIGraphicsUtils.getApplicationIcons();
+      setIconImages(icons);
+      new AppleApplicationTools().tryToSetDockIconImages(icons);
    }
 
    public void centerFrame() {

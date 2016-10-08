@@ -1,4 +1,4 @@
-/**
+/*
  * Title: KeyStroker
  * Copyright:   Copyright (c) 2001, 2002, 2003
  * Company:
@@ -33,230 +33,238 @@ import java.awt.event.KeyEvent;
  */
 public class KeyStroker {
 
-   protected int keyCode;
-   protected boolean isShiftDown;
-   protected boolean isControlDown;
-   protected boolean isAltDown;
-   protected boolean isAltGrDown;
-   protected int location;
-   protected int hashCode;
+  protected int location;
+  private int keyCode;
+  private boolean isShiftDown;
+  private boolean isControlDown;
+  private boolean isAltDown;
+  private boolean isAltGrDown;
+  private int hashCode;
 
-   public static final String altSuffix = ".alt2";
-
-
-   // literals copied from KeyEvent of JDK Version 1.4.0
-
-    /**
-     * A constant indicating that the keyLocation is indeterminate
-     * or not relevant.
-     * KEY_TYPED events do not have a keyLocation; this value
-     * is used instead.
-     * @since 1.4
-     */
-    public static final int KEY_LOCATION_UNKNOWN  = 0;
-
-    /**
-     * A constant indicating that the key pressed or released
-     * is not distinguished as the left or right version of a key,
-     * and did not originate on the numeric keypad (or did not
-     * originate with a virtual key corresponding to the numeric
-     * keypad).
-     * @since 1.4
-     */
-    public static final int KEY_LOCATION_STANDARD = 1;
-
-    /**
-     * A constant indicating that the key pressed or released is in
-     * the left key location (there is more than one possible location
-     * for this key).  Example: the left shift key.
-     * @since 1.4
-     */
-    public static final int KEY_LOCATION_LEFT     = 2;
-
-    /**
-     * A constant indicating that the key pressed or released is in
-     * the right key location (there is more than one possible location
-     * for this key).  Example: the right shift key.
-     * @since 1.4
-     */
-    public static final int KEY_LOCATION_RIGHT    = 3;
-
-    /**
-     * A constant indicating that the key event originated on the
-     * numeric keypad or with a virtual key corresponding to the
-     * numeric keypad.
-     * @since 1.4
-     */
-    public static final int KEY_LOCATION_NUMPAD   = 4;
-
-   public KeyStroker(KeyEvent ke) {
+  public static final String altSuffix = ".alt2";
 
 
-      this.keyCode = ke.getKeyCode();
-      this.isShiftDown = ke.isShiftDown();
-      this.isControlDown = ke.isControlDown();
-      this.isAltDown = ke.isAltDown();
-      this.isAltGrDown = ke.isAltGraphDown();
-      this.location = ke.getKeyLocation();
+  // literals copied from KeyEvent of JDK Version 1.4.0
 
-      hashCode = keyCode +
-                  (isShiftDown ? 1 : 0) +
-                  (isControlDown ? 1 : 0) +
-                  (isAltDown ? 1 : 0) +
-                  (isAltGrDown ? 1 : 0) +
-                  location;
+  /**
+   * A constant indicating that the keyLocation is indeterminate
+   * or not relevant.
+   * KEY_TYPED events do not have a keyLocation; this value
+   * is used instead.
+   *
+   * @since 1.4
+   */
+  public static final int KEY_LOCATION_UNKNOWN = 0;
 
-   }
+  /**
+   * A constant indicating that the key pressed or released
+   * is not distinguished as the left or right version of a key,
+   * and did not originate on the numeric keypad (or did not
+   * originate with a virtual key corresponding to the numeric
+   * keypad).
+   *
+   * @since 1.4
+   */
+  public static final int KEY_LOCATION_STANDARD = 1;
 
-   public KeyStroker(KeyEvent ke, boolean isAltGrDown) {
+  /**
+   * A constant indicating that the key pressed or released is in
+   * the left key location (there is more than one possible location
+   * for this key).  Example: the left shift key.
+   *
+   * @since 1.4
+   */
+  public static final int KEY_LOCATION_LEFT = 2;
+
+  /**
+   * A constant indicating that the key pressed or released is in
+   * the right key location (there is more than one possible location
+   * for this key).  Example: the right shift key.
+   *
+   * @since 1.4
+   */
+  public static final int KEY_LOCATION_RIGHT = 3;
+
+  /**
+   * A constant indicating that the key event originated on the
+   * numeric keypad or with a virtual key corresponding to the
+   * numeric keypad.
+   *
+   * @since 1.4
+   */
+  public static final int KEY_LOCATION_NUMPAD = 4;
+
+  public KeyStroker(KeyEvent ke) {
 
 
-      this.keyCode = ke.getKeyCode();
-      this.isShiftDown = ke.isShiftDown();
-      this.isControlDown = ke.isControlDown();
-      this.isAltDown = ke.isAltDown();
-      this.isAltGrDown = isAltGrDown;
-      this.location = ke.getKeyLocation();
+    this.keyCode = ke.getKeyCode();
+    this.isShiftDown = ke.isShiftDown();
+    this.isControlDown = ke.isControlDown();
+    this.isAltDown = ke.isAltDown();
+    this.isAltGrDown = ke.isAltGraphDown();
+    this.location = ke.getKeyLocation();
 
-      hashCode = keyCode +
-                  (isShiftDown ? 1 : 0) +
-                  (isControlDown ? 1 : 0) +
-                  (isAltDown ? 1 : 0) +
-                  (isAltGrDown ? 1 : 0) +
-                  location;
+    hashCode = keyCode +
+        (isShiftDown ? 1 : 0) +
+        (isControlDown ? 1 : 0) +
+        (isAltDown ? 1 : 0) +
+        (isAltGrDown ? 1 : 0) +
+        location;
 
-   }
+  }
 
-   public KeyStroker(int keyCode,
-                           boolean isShiftDown,
-                           boolean isControlDown,
-                           boolean isAltDown,
-                           boolean isAltGrDown,
-                           int location) {
+  public KeyStroker(KeyEvent ke, boolean isAltGrDown) {
 
-      this.keyCode = keyCode;
-      this.isShiftDown = isShiftDown;
-      this.isControlDown = isControlDown;
-      this.isAltDown = isAltDown;
-      this.isAltGrDown = isAltGrDown;
-      this.location = location;
 
-      hashCode = keyCode +
-                  (isShiftDown ? 1 : 0) +
-                  (isControlDown ? 1 : 0) +
-                  (isAltDown ? 1 : 0) +
-                  (isAltGrDown ? 1 : 0) +
-                  location;
-   }
+    this.keyCode = ke.getKeyCode();
+    this.isShiftDown = ke.isShiftDown();
+    this.isControlDown = ke.isControlDown();
+    this.isAltDown = ke.isAltDown();
+    this.isAltGrDown = isAltGrDown;
+    this.location = ke.getKeyLocation();
 
-   public void setAttributes(KeyEvent ke,boolean isAltGr) {
+    hashCode = keyCode +
+        (isShiftDown ? 1 : 0) +
+        (isControlDown ? 1 : 0) +
+        (isAltDown ? 1 : 0) +
+        (isAltGrDown ? 1 : 0) +
+        location;
 
-      keyCode = ke.getKeyCode();
-      isShiftDown = ke.isShiftDown();
-      isControlDown = ke.isControlDown();
-      isAltDown = ke.isAltDown();
-      isAltGrDown = isAltGr;
-      location = ke.getKeyLocation();
+  }
 
-      hashCode = keyCode +
-                  (isShiftDown ? 1 : 0) +
-                  (isControlDown ? 1 : 0) +
-                  (isAltDown ? 1 : 0) +
-                  (isAltGrDown ? 1 : 0) +
-                  location;
-   }
+  public KeyStroker(int keyCode,
+                    boolean isShiftDown,
+                    boolean isControlDown,
+                    boolean isAltDown,
+                    boolean isAltGrDown,
+                    int location) {
 
-   public int hashCode() {
-      return hashCode;
-   }
+    this.keyCode = keyCode;
+    this.isShiftDown = isShiftDown;
+    this.isControlDown = isControlDown;
+    this.isAltDown = isAltDown;
+    this.isAltGrDown = isAltGrDown;
+    this.location = location;
 
-   public boolean isShiftDown () {
+    hashCode = keyCode +
+        (isShiftDown ? 1 : 0) +
+        (isControlDown ? 1 : 0) +
+        (isAltDown ? 1 : 0) +
+        (isAltGrDown ? 1 : 0) +
+        location;
+  }
 
-      return isShiftDown;
-   }
-   public boolean isControlDown () {
+  public void setAttributes(KeyEvent ke, boolean isAltGr) {
 
-      return isControlDown;
-   }
-   public boolean isAltDown () {
+    keyCode = ke.getKeyCode();
+    isShiftDown = ke.isShiftDown();
+    isControlDown = ke.isControlDown();
+    isAltDown = ke.isAltDown();
+    isAltGrDown = isAltGr;
+    location = ke.getKeyLocation();
 
-      return isAltDown;
-   }
+    hashCode = keyCode +
+        (isShiftDown ? 1 : 0) +
+        (isControlDown ? 1 : 0) +
+        (isAltDown ? 1 : 0) +
+        (isAltGrDown ? 1 : 0) +
+        location;
+  }
 
-   public boolean isAltGrDown () {
+  public int hashCode() {
+    return hashCode;
+  }
 
-      return isAltGrDown;
-   }
+  public boolean isShiftDown() {
 
-   public int getLocation() {
-      return location;
-   }
+    return isShiftDown;
+  }
 
-   public boolean equals(KeyEvent ke) {
+  public boolean isControlDown() {
 
-      return (keyCode == ke.getKeyCode() &&
-             isShiftDown == ke.isShiftDown() &&
-             isControlDown == ke.isControlDown() &&
-             isAltDown == ke.isAltDown() &&
-             isAltGrDown == ke.isAltGraphDown() &&
-             location == ke.getKeyLocation());
-   }
+    return isControlDown;
+  }
 
-   public boolean equals(Object obj) {
+  public boolean isAltDown() {
 
-     KeyStroker ks = (KeyStroker)obj;
+    return isAltDown;
+  }
 
-     return ks.keyCode == keyCode &&
-            ks.isShiftDown == isShiftDown &&
-            ks.isControlDown == isControlDown &&
-            ks.isAltDown == isAltDown &&
-            ks.isAltGrDown == isAltGrDown &&
-            ks.location == location;
-   }
+  public boolean isAltGrDown() {
 
-   public boolean equals(KeyEvent ke,boolean altGrDown) {
+    return isAltGrDown;
+  }
 
-      return (keyCode == ke.getKeyCode() &&
-             isShiftDown == ke.isShiftDown() &&
-             isControlDown == ke.isControlDown() &&
-             isAltDown == ke.isAltDown() &&
-             isAltGrDown == altGrDown &&
-             location == ke.getKeyLocation());
-   }
+  public int getLocation() {
+    return location;
+  }
 
-   public boolean equals(Object obj,boolean altGrDown) {
-     KeyStroker ks = (KeyStroker)obj;
+  public boolean equals(KeyEvent ke) {
 
-     return ks.keyCode == keyCode &&
-            ks.isShiftDown == isShiftDown &&
-            ks.isControlDown == isControlDown &&
-            ks.isAltDown == isAltDown &&
-            ks.isAltGrDown == altGrDown &&
-            ks.location == location;
-   }
+    return (keyCode == ke.getKeyCode() &&
+        isShiftDown == ke.isShiftDown() &&
+        isControlDown == ke.isControlDown() &&
+        isAltDown == ke.isAltDown() &&
+        isAltGrDown == ke.isAltGraphDown() &&
+        location == ke.getKeyLocation());
+  }
 
-   public String toString() {
+  public boolean equals(Object obj) {
+    if (obj instanceof KeyStroker) {
+      KeyStroker ks = (KeyStroker) obj;
 
-      return new String(keyCode + "," +
-                        (isShiftDown ? "true":"false") + "," +
-                        (isControlDown ? "true":"false") + "," +
-                        (isAltDown ? "true":"false")  + "," +
-                        (isAltGrDown ? "true":"false") + "," +
-                        location);
-   }
+      return ks.keyCode == keyCode &&
+          ks.isShiftDown == isShiftDown &&
+          ks.isControlDown == isControlDown &&
+          ks.isAltDown == isAltDown &&
+          ks.isAltGrDown == isAltGrDown &&
+          ks.location == location;
+    }
+    return false;
+  }
 
-   public String getKeyStrokeDesc() {
+  public boolean equals(KeyEvent ke, boolean altGrDown) {
 
-      return (isShiftDown ? "Shift + ":"") +
-                        (isControlDown ? "Ctrl + ":"") +
-                        (isAltDown ? "Alt + ":"") +
-                        (isAltGrDown ? "Alt-Gr + ":"") +
-                        KeyEvent.getKeyText(keyCode);
-   }
+    return (keyCode == ke.getKeyCode() &&
+        isShiftDown == ke.isShiftDown() &&
+        isControlDown == ke.isControlDown() &&
+        isAltDown == ke.isAltDown() &&
+        isAltGrDown == altGrDown &&
+        location == ke.getKeyLocation());
+  }
 
-   public int getKeyCode() {
-      return keyCode;
-   }
+  public boolean equals(Object obj, boolean altGrDown) {
+    KeyStroker ks = (KeyStroker) obj;
+
+    return ks.keyCode == keyCode &&
+        ks.isShiftDown == isShiftDown &&
+        ks.isControlDown == isControlDown &&
+        ks.isAltDown == isAltDown &&
+        ks.isAltGrDown == altGrDown &&
+        ks.location == location;
+  }
+
+  public String toString() {
+
+    return new String(keyCode + "," +
+        (isShiftDown ? "true" : "false") + "," +
+        (isControlDown ? "true" : "false") + "," +
+        (isAltDown ? "true" : "false") + "," +
+        (isAltGrDown ? "true" : "false") + "," +
+        location);
+  }
+
+  public String getKeyStrokeDesc() {
+
+    return (isShiftDown ? "Shift + " : "") +
+        (isControlDown ? "Ctrl + " : "") +
+        (isAltDown ? "Alt + " : "") +
+        (isAltGrDown ? "Alt-Gr + " : "") +
+        KeyEvent.getKeyText(keyCode);
+  }
+
+  public int getKeyCode() {
+    return keyCode;
+  }
 
 }
-

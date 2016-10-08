@@ -28,16 +28,16 @@ import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class ExternalProgramConfig {
-	
+
 	private static TN5250jLogger log =
         TN5250jLogFactory.getLogger("org.tn5250j.ExternalProgramConfig");
-	
+
 	private static ExternalProgramConfig etnConfig;
 	public static final String EXTERNAL_PROGRAM_REGISTRY_KEY = "etnPgmProps";
 	public static final String EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME = "tn5250jExternalProgram.properties";
 	public static final String EXTERNAL_PROGRAM_HEADER = "External Program Settings";
 	private Properties etnPgmProps;
-	
+
 	private static Properties props = null;
 	private static JTextField name = null;
 	private static JTextField wCommand = null;
@@ -45,7 +45,7 @@ public class ExternalProgramConfig {
 	private static JDialog dialog = null;
 	private static Object[] options;
 	private static String num = "1";
-	
+
 	public static ExternalProgramConfig getInstance(){
 		if(etnConfig == null){
 			etnConfig = new ExternalProgramConfig();
@@ -55,7 +55,7 @@ public class ExternalProgramConfig {
 	private  ExternalProgramConfig(){
 		etnPgmProps = loadExternalProgramSettings();
 	}
-	
+
 	public Properties getEtnPgmProps(){
 		return this.etnPgmProps;
 	}
@@ -66,13 +66,13 @@ public class ExternalProgramConfig {
 					 					EXTERNAL_PROGRAM_REGISTRY_KEY,
 										EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME,false,
 	                                    "Default Settings");
-			 log.info("begin loading external program settings");   
+			 log.info("begin loading external program settings");
 			 if (etnProps.size() == 0) {
 	            Properties defaultProps = new Properties();
 	            java.net.URL file=null;
-				ClassLoader cl = this.getClass().getClassLoader();				
+				ClassLoader cl = this.getClass().getClassLoader();
 	            if (cl == null)
-	               cl = ClassLoader.getSystemClassLoader();				
+	               cl = ClassLoader.getSystemClassLoader();
 	            file = cl.getResource(EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME);
 				defaultProps.load(file.openStream());
 
@@ -81,32 +81,32 @@ public class ExternalProgramConfig {
 					 String key = (String)e.nextElement();
 					 etnProps.setProperty(key,defaultProps.getProperty(key));
 
-			     }	            
+			     }
 	            ConfigureFactory.getInstance().saveSettings(EXTERNAL_PROGRAM_REGISTRY_KEY,
 									EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME,
 									EXTERNAL_PROGRAM_HEADER);
 	         }
-			 
+
 	      }
 	      catch (IOException ioe) {
 			  log.error(ioe.getMessage());
 	      }
-	      catch (SecurityException se) {			 
+	      catch (SecurityException se) {
 			  log.error(se.getMessage());
 	      }
-		  
+
 		  return etnProps;
 	   }
-	
+
 	public static String doEntry(Frame parent, String propKey, Properties props2) {
 	     props= props2;
-         name = new JTextField(20);		 
+         name = new JTextField(20);
          wCommand = new JTextField(40);
-         uCommand = new JTextField(40);	         
+         uCommand = new JTextField(40);
 		 if (propKey != null) {
 			  for (Enumeration e = props.keys() ; e.hasMoreElements() ;) {
 					 String key = (String)e.nextElement();
-					 if(props.getProperty(key) == propKey){
+					 if(propKey.equals(props.getProperty(key))){
 						 String subKey = key.substring(8);
 						 int index = subKey.indexOf(".");
 						 num = subKey.substring(0,index);
@@ -115,8 +115,8 @@ public class ExternalProgramConfig {
 						 uCommand.setText(props.getProperty("etn.pgm."+num+".command.unix"));
 					 }
 
-			     }	 
-	         
+			     }
+
 	      }
 
 	      //External Program settings panel
@@ -135,10 +135,10 @@ public class ExternalProgramConfig {
 		  addLabelComponent(LangTool.getString("customized.unix"),
 	  			   			   uCommand,
 	  			   			   etnp);
-	      
+
 
 	      name.setAlignmentX(Component.CENTER_ALIGNMENT);
-		  
+
 
 	      Object[]      message = new Object[1];
 	      message[0] = etnp;
@@ -197,7 +197,7 @@ public class ExternalProgramConfig {
 	      return name.getText();
 
 	  }
-	
+
 	private static void addLabelComponent(String text,Component comp,Container container) {
 
 	      JLabel label = new JLabel(text);
@@ -207,7 +207,7 @@ public class ExternalProgramConfig {
 	      container.add(comp);
 
 	}
-	
+
 	/**
 	   * React to the configuration action button to perform to Add or Edit the
 	   * entry
@@ -232,7 +232,7 @@ public class ExternalProgramConfig {
 	      dialog.dispose();
 
 	   }
-	   
+
 	   private static class SomethingEnteredDocument extends PlainDocument {
 
 		      private static final long serialVersionUID = 1L;

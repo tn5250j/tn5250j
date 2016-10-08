@@ -38,7 +38,7 @@
         <res src="installer/COPYING" id="LicencePanel.licence"/>
         <res src="installer/installShortcutSpec.xml" id="shortcutSpec.xml"/>
         <res src="installer/NativeLAF" id="useNativeLAF"/>
-        <res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>        
+        <res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>
     </resources>
     <panels>
         <panel classname="HelloPanel"/>

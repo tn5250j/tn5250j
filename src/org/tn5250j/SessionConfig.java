@@ -65,7 +65,7 @@ public class SessionConfig {
 
 	public String getConfigurationResource() {
 
-		if (configurationResource == null || configurationResource == "") {
+		if (configurationResource == null || configurationResource.trim().isEmpty()) {
 			configurationResource = "TN5250JDefaults.props";
 			usingDefaults = true;
 		}
@@ -160,7 +160,7 @@ public class SessionConfig {
 
 		sesProps = new Properties();
 
-		if (configurationResource == null || configurationResource == "") {
+		if (configurationResource == null || configurationResource.trim().isEmpty()) {
 			configurationResource = "TN5250JDefaults.props";
 			usingDefaults = true;
 			loadDefaults();

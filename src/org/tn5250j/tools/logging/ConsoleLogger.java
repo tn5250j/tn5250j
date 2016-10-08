@@ -33,7 +33,7 @@ public final class ConsoleLogger implements TN5250jLogger {
 	private String clazz = null;
 
 	/*
-	 * Package level access only  
+	 * Package level access only
 	 */
 	ConsoleLogger() {
 
@@ -54,7 +54,7 @@ public final class ConsoleLogger implements TN5250jLogger {
 					+ ((message!=null) ? message.toString() : "")
 					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
-	
+
 	public void info(Object message) {
 		if (isInfoEnabled())
 			System.out.println("INFO [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
@@ -66,7 +66,7 @@ public final class ConsoleLogger implements TN5250jLogger {
 					+ ((message!=null) ? message.toString() : "")
 					+ ((throwable!=null) ? throwable.getMessage() : ""));
 	}
-	
+
 	public void warn(Object message) {
 		if (isWarnEnabled())
 			System.err.println("WARN [" + clazz + "] " + ((message!=null) ? message.toString() : ""));
@@ -118,7 +118,7 @@ public final class ConsoleLogger implements TN5250jLogger {
 	public boolean isErrorEnabled() {
 		return (logLevel <= ERROR); // 8
 	}
-	
+
 	public boolean isFatalEnabled() {
 		return (logLevel <= FATAL); // 16
 	}

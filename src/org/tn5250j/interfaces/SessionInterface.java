@@ -42,14 +42,14 @@ public interface SessionInterface {
 	public abstract void removeSessionListener(SessionListener listener);
 
 	/**
-	 * Popups a dialog to ask the user for entering a SysReq value. 
-	 * 
+	 * Popups a dialog to ask the user for entering a SysReq value.
+	 *
 	 * @return null if nothing to do, else a String containing the users input.
 	 */
 	public abstract String showSystemRequest();
-	
+
 	/**
-	 * Signals the user a sound (or maybe a light flash). 
+	 * Signals the user a sound (or maybe a light flash).
 	 */
 	public abstract void signalBell();
 

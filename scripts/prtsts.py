@@ -38,14 +38,14 @@ def StatusWindow():
 
 def waitWhileLocked(timeSeconds):
     while screen.getOIA().isKeyBoardLocked() :
-        time.sleep(timeSeconds)    
-   
+        time.sleep(timeSeconds)
+
 #DebugWindow()
-	
+
 debug = 0
 
 print debug.toString()
-    
+
 screen = _session.getScreen()
 prtdev = java.lang.StringBuffer()
 status = java.lang.StringBuffer()
@@ -125,4 +125,3 @@ while not _session.isStopMacroRequested() and not done:
 
 if basic == 1:
     screen.sendKeys("[pf21]1[enter][pf12][pf12]")
-

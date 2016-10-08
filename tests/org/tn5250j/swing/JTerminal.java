@@ -14,7 +14,7 @@ import org.tn5250j.keyboard.KeyboardHandler;
 public class JTerminal extends JComponent {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private KeyboardHandler keyHandler;
 
   public JTerminal(Session5250 session)

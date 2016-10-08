@@ -22,11 +22,11 @@ so will only list here some of what I remember and the most important.
 First and foremost lots of bug fixes and enhancments.
 Second the whole code base has been refactored to run in headless mode:
    1) You do not need to have the gui to have access to the data stream
-      Can you say screen scraping?  Well hopefully it all works.   
+      Can you say screen scraping?  Well hopefully it all works.
    2) A ProtocolBean has been added for this.
    3) A SessionBean has been added for this.
    4) The code now uses events for all this information so you can write your
-      own listeners to these events. There are some people that have used this for 
+      own listeners to these events. There are some people that have used this for
       such work so ask on the mailing list and am sure some samples can be
       given or at least help with it.  The events are in org.tn5250j.event
 
@@ -38,7 +38,7 @@ on this.
 
 Anything else please ask on the mailing lists.  Hope you enjoy.
 
-==============================================================================   
+==============================================================================
 
 Changes since 0.5.7 pre release 3
 ------------------------------------------------------------------------------
@@ -147,5 +147,3 @@ Sourceforge at http://sourceforge.net/projects/tn5250j/
 
 
 Enjoy!
-
-

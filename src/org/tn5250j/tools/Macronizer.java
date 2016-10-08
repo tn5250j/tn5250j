@@ -144,10 +144,10 @@ public class Macronizer {
 
    /**
     * Add the macro keystrokes to the macros list.
-    * 
+    *
     * This method is a destructive where if the macro already exists it will be
     *   overwritten.
-    *   
+    *
     * @param name
     * @param keyStrokes
     */
@@ -156,7 +156,7 @@ public class Macronizer {
       int x = 0;
 
       // first let's go through all the macros and replace the macro entry if it
-      //   already exists.  
+      //   already exists.
       if (macrosExist && getMacroByName(name) != null) {
          Set<Object> macroSet = macros.keySet();
          Iterator<Object> macroIterator = macroSet.iterator();
@@ -177,7 +177,7 @@ public class Macronizer {
          // If it did not exist and get replaced then we need to find the next
          //  available slot to place the macro in.
          while (getMacroByNumber(++x) != null) {}
-         
+
          macros.put("macro" + x + "." + name,keyStrokes);
          macrosExist = true;
       }
@@ -279,4 +279,3 @@ public class Macronizer {
    }
 
 }
-

@@ -99,7 +99,7 @@ public class HexCharMapDialog {
 
 	/**
 	 * Displays the dialog
-	 * 
+	 *
 	 * @return a String, containing the selected character OR null, if nothing was selected
 	 */
 	public String showModal() {

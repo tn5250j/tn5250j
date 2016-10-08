@@ -44,6 +44,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import org.tn5250j.connectdialog.ConnectDialog;
 import org.tn5250j.event.BootEvent;
 import org.tn5250j.event.BootListener;
 import org.tn5250j.event.EmulatorActionEvent;
@@ -63,7 +64,7 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 public class My5250 implements BootListener, SessionListener, EmulatorActionListener {
 
 	private static final String PARAM_START_SESSION = "-s";
-	
+
 	private GUIViewInterface frame1;
 	private String[] sessionArgs = null;
 	private static Properties sessions = new Properties();
@@ -72,7 +73,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 	private static List<GUIViewInterface> frames;
 	private TN5250jSplashScreen splash;
 	private int step;
-	StringBuilder viewNamesForNextStartBuilder = null;
+	private StringBuilder viewNamesForNextStartBuilder = null;
 
 	private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
@@ -313,7 +314,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		else {
 			LangTool.init();
 		}
-		
+
 		List<String> lastViewNames = new ArrayList<String>();
 		lastViewNames.addAll(loadLastSessionViewNames());
 		lastViewNames.addAll(loadLastSessionViewNamesFrom(args));
@@ -398,7 +399,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		}
 		return result;
 	}
-	
+
 	private static boolean containsNotOnlyNullValues(String[] stringArray) {
 		if (stringArray != null) {
 			for (String s : stringArray) {
@@ -881,7 +882,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 		 splash.updateProgress(++step);
 
 	 }
-	 
+
 	 static Properties getSessions() {
 		 return sessions;
 	 }

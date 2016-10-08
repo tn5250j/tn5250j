@@ -43,7 +43,7 @@ public class My5250Test {
 
 		assertEquals(0, sessionNames.size());
 	}
-	
+
 	@Test
 	public void loadLastSessionViewNames_will_return_emptyList_if_no_session_was_saved() {
 		My5250.getSessions().setProperty("emul.startLastView", "");
@@ -53,14 +53,14 @@ public class My5250Test {
 
 		assertEquals(0, sessionNames.size());
 	}
-	
+
 	@Test
 	public void filterExistingViewNames_only_passes_ViewNames_with_existing_configuration() {
 		My5250.getSessions().setProperty("Session1", "as400.local");
 		My5250.getSessions().setProperty("Session3", "other.server.com");
-		
+
 		List<String> lastViewNames = Arrays.asList("Session1", "Session2", "Session3");
-		
+
 		List<String> sessionNames = My5250.filterExistingViewNames(lastViewNames );
 
 		String[] expected = new String[] { "Session1", "Session3"};

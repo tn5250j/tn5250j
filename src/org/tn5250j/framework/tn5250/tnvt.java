@@ -1811,7 +1811,7 @@ public final class tnvt implements Runnable {
 					int saRow = bk.getNextByte();
 					int saCol = bk.getNextByte() & 0xff;
 					// make sure it is in bounds
-					if (saRow >= 0 && saRow <= screen52.getRows() && saCol >= 0
+					if (saRow <= screen52.getRows()
 							&& saCol <= screen52.getColumns()) {
 						screen52.setCursor(saRow, saCol); // now set screen
 						// position for output
@@ -1838,7 +1838,7 @@ public final class tnvt implements Runnable {
 					log.debug("IC - Insert Cursor");
 					int icX = bk.getNextByte();
 					int icY = bk.getNextByte() & 0xff;
-					if (icX >= 0 && icX <= saRows && icY >= 0 && icY <= saCols) {
+					if (icX <= saRows && icY <= saCols) {
 
 						log.debug(" IC " + icX + " " + icY);
 						screen52.setPendingInsert(true, icX, icY);
@@ -1854,8 +1854,7 @@ public final class tnvt implements Runnable {
 					log.debug("MC - Move Cursor");
 					int imcX = bk.getNextByte();
 					int imcY = bk.getNextByte() & 0xff;
-					if (imcX >= 0 && imcX <= saRows && imcY >= 0
-							&& imcY <= saCols) {
+					if (imcX <= saRows && imcY <= saCols) {
 
 						log.debug(" MC " + imcX + " " + imcY);
 						screen52.setPendingInsert(false, imcX, imcY);

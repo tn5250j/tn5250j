@@ -55,20 +55,20 @@ public class Stream5250 {
     /**
      * This method takes a byte array and initializes the object information
      *    to be used.
-     * 
+     *
      * @param abyte0
      */
     public void initialize(byte abyte0[]) {
-       
+
      buffer = abyte0;
      // size without end of record 0xFF 0xEF
      streamSize = (abyte0[0] & 0xff) << 8 | abyte0[1] & 0xff;
      opCode = abyte0[OPCODE_OFFSET];
      dataStart = 6 + abyte0[6];
      pos = dataStart;
-       
+
     }
-    
+
     public final int getOpCode() {
         return opCode;
     }

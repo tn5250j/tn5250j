@@ -11,9 +11,9 @@ import org.tn5250j.interfaces.ConfigureFactory;
  * For testing purpose
  */
 public class TestFrame extends JFrame {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
   static {
     ConfigureFactory.getInstance();
     // WVL - LDC : 11/07/2003

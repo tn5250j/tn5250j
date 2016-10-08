@@ -51,7 +51,7 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
-import org.tn5250j.settings.ColumnSeparator;
+import org.tn5250j.sessionsettings.ColumnSeparator;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -64,7 +64,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 	// Dup Character array for display output
 	private static final transient char[] dupChar = {'*'};
-	
+
 	private BufferedImage bi;
 	private final Object lock = new Object();
 	private Line2D separatorLine = new Line2D.Float();
@@ -124,13 +124,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	private final StringBuffer hsMore = new StringBuffer("More...");
 	private final StringBuffer hsBottom = new StringBuffer("Bottom");
 	private Rectangle workR = new Rectangle();
-	
+
 	private boolean colSep = false;
 	private boolean underLine = false;
 	private boolean nonDisplay = false;
 	private Color fg;
 	private Color bg;
-	
+
 	private SessionConfig config;
 
 	protected Rectangle clipper;

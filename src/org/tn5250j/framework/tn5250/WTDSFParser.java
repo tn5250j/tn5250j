@@ -89,10 +89,10 @@ public class WTDSFParser {
       int selectIndex;
 
       ChoiceField(int row, int col, int fldRow, int fldCol) {
-         x = row;
-         y = col;
-         row = fldRow;
-         col = fldCol;
+         this.x = row;
+         this.y = col;
+         this.row = fldRow;
+         this.col = fldCol;
       }
 	}
 

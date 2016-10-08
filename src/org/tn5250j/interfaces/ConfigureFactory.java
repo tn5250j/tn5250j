@@ -34,7 +34,7 @@ public abstract class ConfigureFactory {
 
    static final public String SESSIONS = "sessions";
    static final public String MACROS = "macros";
-   static final public String KEYMAP = "keymap";  
+   static final public String KEYMAP = "keymap";
    private static ConfigureFactory  factory;
 
    /**

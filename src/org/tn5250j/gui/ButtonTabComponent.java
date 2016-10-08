@@ -1,13 +1,13 @@
 /**
  * $Id$
- * 
+ *
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001,2009
  * Company:
  * @author: master_jaf
  *
  * Description:
- * Tab component for displaying title text and icons. 
+ * Tab component for displaying title text and icons.
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -124,7 +124,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 
 	/**
 	 * Add a TabClosedListener to the listener list.
-	 * 
+	 *
 	 * @param listener The TabClosedListener to be added
 	 */
 	public synchronized void addTabCloseListener(TabClosedListener listener) {
@@ -136,7 +136,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 
 	/**
 	 * Remove a TabClosedListener from the listener list.
-	 * 
+	 *
 	 * @param listener The TabClosedListener to be removed
 	 */
 	public synchronized void removeTabCloseListener(TabClosedListener listener) {
@@ -148,7 +148,7 @@ public final class ButtonTabComponent extends JPanel implements SessionListener 
 
 	/**
 	 * Notify all the tab listeners that this specific tab was selected to close.
-	 * 
+	 *
 	 * @param tabToClose
 	 */
 	protected void fireTabClosed(int tabToClose) {

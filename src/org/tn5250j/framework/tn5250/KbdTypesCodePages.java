@@ -1,12 +1,12 @@
 package org.tn5250j.framework.tn5250;
 
 /**
- * IBM i 7.1 Information Center > Programmierung > i5/OS globalization > Globalization reference information > Keyboard reference information 
- * 
+ * IBM i 7.1 Information Center > Programmierung > i5/OS globalization > Globalization reference information > Keyboard reference information
+ *
  * @see <a href="http://publib.boulder.ibm.com/infocenter/iseries/v7r1m0/index.jsp?topic=/nls/rbagsnatlangkeybrdtype.htm">National language keyboard types and SBCS code pages</a>
  */
 public enum KbdTypesCodePages {
-	
+
 	ALI("Albanian","ALI","697","500","500"),
 	CLB("Arabic","CLB","235","420","420"),
 	AGB("Austrian/ German","AGB","697","273","273"),
@@ -80,13 +80,13 @@ public enum KbdTypesCodePages {
 	UKI("English (United Kingdom) MNCS","UKI","697","500","500"),
 	USB("English (United States and Canada)","USB","697","37","37"),
 	USI("English (United States and Canada) MNCS","USI","697","500","500");
-	
+
 	public final String description;
 	public final String kbdType;
 	public final String charset;
 	public final String codepage;
 	public final String ccsid;
-	
+
 	/**
 	 * @param description
 	 * @param kbdType
