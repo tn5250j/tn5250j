@@ -1,4 +1,4 @@
-/**
+/*
  * Title: tnvt.java
  * Copyright: Copyright (c) 2001 Company:
  *
@@ -121,7 +121,18 @@ public final class tnvt implements Runnable {
 	// miscellaneous
 	private static final byte ESC = 0x04; // 04
 
-	private Socket sock;
+	/**
+	 * Until OS V7R1, the length limit for the PCCMD parameter of STRPCCMD is 123 chars.
+	 * (Remark: since V7R2 the new limit is 1023, for now we stick to 123)
+	 * <a href="http://www-01.ibm.com/support/docview.wss?uid=nas8N1014202">
+	 *   CL Example Using the STRPCCMD Command
+	 * </a>
+	 */
+	private static final int PCCMD_MAX_LENGTH = 123;
+
+  private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+
+  private Socket sock;
 	private BufferedInputStream bin;
 	private BufferedOutputStream bout;
 	private final BlockingQueue<Object> dsq = new ArrayBlockingQueue<Object>(25);
@@ -129,8 +140,6 @@ public final class tnvt implements Runnable {
 	private DataStreamProducer producer;
 	protected Screen5250 screen52;
 	private boolean waitingForInput;
-	private boolean invited;
-	private boolean negotiated = false;
 	private Thread me;
 	private Thread pthread;
 	private int readType;
@@ -164,8 +173,6 @@ public final class tnvt implements Runnable {
 	private boolean firstScreen;
 	private String sslType;
 	private WTDSFParser sfParser;
-
-	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	/**
 	 * @param session
@@ -328,7 +335,6 @@ public final class tnvt implements Runnable {
 
 			byte abyte0[];
 			while (negotiate(abyte0 = readNegotiations()));
-			negotiated = true;
 			try {
 				screen52.setCursorActive(false);
 			} catch (Exception excc) {
@@ -480,7 +486,6 @@ public final class tnvt implements Runnable {
 
 		screen52.getOIA().setKeyBoardLocked(true);
 		pendingUnlock = false;
-		invited = false;
 
 		screen52.getScreenFields().readFormatTable(baosp, readType, codePage);
 
@@ -514,7 +519,6 @@ public final class tnvt implements Runnable {
 
 		screen52.getOIA().setKeyBoardLocked(true);
 		pendingUnlock = false;
-		invited = false;
 		baosp.write(screen52.getCurrentRow());
 		baosp.write(screen52.getCurrentCol());
 		baosp.write(aid);
@@ -860,35 +864,28 @@ public final class tnvt implements Runnable {
 			screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
 					ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
 
-		invited = true;
 	}
 
-	// WVL - LDC : 05/08/2005 : TFX.006253 - Support STRPCCMD
-	private void strpccmd()
-	{
-		try
-		{
+	private void strpccmd()	{
+		try	{
 			int str = 11;
-			char c;
+			int offset = str+1;
 			ScreenPlanes planes = screen52.getPlanes();
-			c = planes.getChar(str);
+			char c = planes.getChar(str);
 			boolean waitFor = !(c == 'a');
 
 			StringBuilder command = new StringBuilder();
-			for (int i = str+1; i < 132; i++)
-			{
+			for (int i = offset; i < offset + PCCMD_MAX_LENGTH; i++) {
 				c = planes.getChar(i);
-				if (Character.isISOControl(c))
+				if (Character.isISOControl(c)) {
 					c = ' ';
+				}
 				command.append(c);
 			}
 
-			String cmd = command.toString().trim();
-
-			run(cmd, waitFor);
+			run(command.toString().trim(), waitFor);
 		}
-		finally
-		{
+		finally	{
 			strpccmd = false;
 			screen52.sendKeys(ENTER);
 		}
@@ -1030,15 +1027,13 @@ public final class tnvt implements Runnable {
 
 			Thread.yield();
 
-			invited = false;
-
 			screen52.setCursorActive(false);
 
 			if (bk == null)
 				continue;
 
 			switch (bk.getOpCode()) {
-			case 00:
+			case 0:
 				log.debug("No operation");
 				break;
 			case 1:
@@ -1612,27 +1607,6 @@ public final class tnvt implements Runnable {
 				if (error)
 					done = true;
 			}
-			//       BEGIN FRAMEWORK
-			//  I took this out for debugging a problem
-			//			ScreenField[] a = this.screen52.getScreenFields().getFields();
-			//			if (log.isDebugEnabled()) {
-			//				for (int x = 0; x < a.length; x++) {
-			//					log.debug(a[x].toString());
-			//				}
-			//			}
-			//
-			//			String strokes = this.screen52.getKeys();
-			//			if (!strokes.equals("")) {
-			//				Tn5250jKeyEvents e = new Tn5250jKeyEvents(this.screen52,
-			//						strokes);
-			//				//from the previous screen.
-			//				Tn5250jController.getCurrent().handleEvent(e);
-			//			}
-			//
-			//			Tn5250jEvent event = new Tn5250jEvent(screen52);
-			//			Tn5250jController.getCurrent().handleEvent(event);
-			//
-			//			//END FRAMEWORK
 		} catch (Exception exc) {
 			log.warn("incoming " + exc.getMessage());
 		}
@@ -1703,14 +1677,13 @@ public final class tnvt implements Runnable {
 		boolean error = false;
 		boolean done = false;
 		int attr;
-		byte control0 = 0;
 		byte control1 = 0;
 		int saRows = screen52.getRows();
 		int saCols = screen52.getColumns();
 
 		try {
 			if (controlsExist) {
-				control0 = bk.getNextByte();
+				byte control0 = bk.getNextByte();
 				control1 = bk.getNextByte();
 				processCC0(control0);
 			}
@@ -1729,7 +1702,7 @@ public final class tnvt implements Runnable {
 					error = processSOH();
 
 					break;
-				case 02: // RA - Repeat to address
+				case 2: // RA - Repeat to address
 					log.debug("RA - Repeat to address");
 					int row = screen52.getCurrentRow();
 					int col = screen52.getCurrentCol();
@@ -1765,7 +1738,7 @@ public final class tnvt implements Runnable {
 					}
 					break;
 
-				case 03: // EA - Erase to address
+				case 3: // EA - Erase to address
 					log.debug("EA - Erase to address");
 					int EArow = screen52.getCurrentRow();
 					int EAcol = screen52.getCurrentCol();
@@ -1794,7 +1767,7 @@ public final class tnvt implements Runnable {
 						}
 					}
 					break;
-				case 04: // Command - Escape
+				case 4: // Command - Escape
 					log.debug("Command - Escape");
 					done = true;
 					break;
@@ -1930,17 +1903,15 @@ public final class tnvt implements Runnable {
 				case -128: //STRPCCMD
 					//          if (screen52.getCurrentPos() == 82) {
 					log.debug("STRPCCMD got a -128 command at " + screen52.getCurrentPos());
-					StringBuffer value = new StringBuffer();
-					int b;
-					char c;
+					StringBuilder value = new StringBuilder();
 					int[] pco = new int[9];
 					int[] pcoOk = {0xfc, 0xd7, 0xc3, 0xd6, 0x40, 0x83, 0x80, 0xa1, 0x80};
 
 					for (int i = 0; i < 9; i++)
 					{
-						b = bk.getNextByte();
+						byte b = bk.getNextByte();
 						pco[i] = ((b & 0xff));
-						c = codePage.ebcdic2uni(b);
+						char c = codePage.ebcdic2uni(b);
 						value.append(c);
 					}
 
