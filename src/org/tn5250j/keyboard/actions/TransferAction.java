@@ -1,4 +1,4 @@
-/**
+/*
  * Title: TransferAction.java
  * Copyright:   Copyright (c) 2001,2002
  * Company:
@@ -25,35 +25,33 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import java.awt.Frame;
+import org.tn5250j.SessionPanel;
+import org.tn5250j.keyboard.KeyMapper;
+import org.tn5250j.tools.XTFRFile;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
-import org.tn5250j.SessionPanel;
-import org.tn5250j.TN5250jConstants;
-import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.tools.XTFRFile;
+import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
 
 /**
  * Display session attributes
  */
 public class TransferAction extends EmulatorAction {
 
-   private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-public TransferAction(SessionPanel session, KeyMapper keyMap) {
-      super(session,
-    		  TN5250jConstants.MNEMONIC_FILE_TRANSFER,
-            KeyStroke.getKeyStroke(KeyEvent.VK_T,KeyEvent.ALT_MASK),
-            keyMap);
+  public TransferAction(SessionPanel session, KeyMapper keyMap) {
+    super(session,
+        FILE_TRANSFER.mnemonic,
+        KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK),
+        keyMap);
+  }
 
-   }
-
-   public void actionPerformed(ActionEvent e) {
-      new XTFRFile((Frame)SwingUtilities.getRoot(session),
-                                    session.getVT(),session);
-   }
+  public void actionPerformed(ActionEvent e) {
+    new XTFRFile((Frame) SwingUtilities.getRoot(session),
+        session.getVT(), session);
+  }
 }

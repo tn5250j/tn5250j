@@ -4,7 +4,7 @@
                      xsi:schemaLocation="http://izpack.org/schema/installation http://izpack.org/schema/5.0/izpack-installation-5.0.xsd">
     <info>
         <appname>tn5250j</appname>
-        <appversion>0.7.7-Snapshot</appversion>
+        <appversion>0.8.0-Snapshot</appversion>
         <authors>
             <author email="kjp1@users.sourceforge.net" name="Kenneth J. Pouncey"/>
 			<author email="master_jaf@users.sourceforge.net" name="Martin Kirst"/>

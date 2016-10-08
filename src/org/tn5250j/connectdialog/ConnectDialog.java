@@ -30,6 +30,7 @@ import org.tn5250j.TN5250jConstants;
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.DESSHA1;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -48,9 +49,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
@@ -66,6 +67,8 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
   private static final long serialVersionUID = 1L;
 
   volatile private static TN5250jLogger LOG = TN5250jLogFactory.getLogger(ConnectDialog.class);
+
+  private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
   // panels to be displayed
   private JPanel configOptions = new JPanel();
@@ -650,28 +653,27 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
     if (properties.getProperty("emul.accessDigest") != null)
       accessOptions.setEnabled(false);
 
-    List<String> options = OptionAccessFactory.getInstance().getOptions();
+    String[] options = keyMnemonicResolver.getMnemonicsSorted();
 
     // set up a hashtable of option descriptions to options
-    Hashtable<String, String> ht = new Hashtable<String, String>(options.size());
+    Hashtable<String, String> ht = new Hashtable<String, String>(options.length);
     for (String option : options) {
       ht.put(LangTool.getString("key." + option), option);
     }
 
-    // get the sorted descriptions of the options
-    List<String> descriptions = OptionAccessFactory.getInstance()
-        .getOptionDescriptions();
+    String[] descriptions = keyMnemonicResolver.getMnemonicDescriptions();
+    Arrays.sort(descriptions);
 
     // set the option descriptions
-    accessOptions.setListData(descriptions.toArray());
+    accessOptions.setListData(descriptions);
 
     // we now mark the invalid options
     int num = OptionAccessFactory.getInstance().getNumberOfRestrictedOptions();
     int[] si = new int[num];
     int i = 0;
-    for (int x = 0; x < descriptions.size(); x++) {
+    for (int x = 0; x < descriptions.length; x++) {
       if (!OptionAccessFactory.getInstance().isValidOption(
-          ht.get(descriptions.get(x))))
+          ht.get(descriptions[x])))
         si[i++] = x;
     }
 
@@ -1113,12 +1115,12 @@ public class ConnectDialog extends JDialog implements ActionListener, ChangeList
 
   private void setOptionAccess() {
 
-    List<String> options = OptionAccessFactory.getInstance().getOptions();
+    String[] options = keyMnemonicResolver.getMnemonicsSorted();
 
     // set up a hashtable of option descriptions to options
-    Hashtable<String, String> ht = new Hashtable<String, String>(options.size());
-    for (int x = 0; x < options.size(); x++) {
-      ht.put(LangTool.getString("key." + options.get(x)), options.get(x));
+    Hashtable<String, String> ht = new Hashtable<String, String>(options.length);
+    for (int x = 0; x < options.length; x++) {
+      ht.put(LangTool.getString("key." + options[x]), options[x]);
     }
 
     Object[] restrict = accessOptions.getSelectedValues();

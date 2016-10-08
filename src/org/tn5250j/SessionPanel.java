@@ -21,24 +21,10 @@
  */
 package org.tn5250j;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -60,6 +46,7 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.keyboard.KeyboardHandler;
+import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.tools.LangTool;
@@ -67,45 +54,39 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import static org.tn5250j.SessionConfig.*;
+import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
+
 /**
  * A host GUI session
  * (Hint: old name was SessionGUI)
  */
-public class SessionPanel extends JPanel implements ComponentListener,
-ActionListener,
-RubberBandCanvasIF,
-SessionConfigListener,
-SessionListener {
+public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionConfigListener, SessionListener {
 
 	private static final long serialVersionUID = 1L;
 
 	private boolean firstScreen;
 	private char[] signonSave;
 
-	private BorderLayout borderLayout1 = new BorderLayout();
 	private Screen5250 screen;
 	protected Session5250 session;
 	private GuiGraphicBuffer guiGraBuf;
 	protected TNRubberBand rubberband;
-	private JPanel s = new JPanel();
-	private KeyPad keyPad = new KeyPad();
+	private KeypadPanel keypadPanel;
 	private String newMacName;
-	private Vector<SessionJumpListener> listeners = null;
+	private Vector<SessionJumpListener> sessionJumpListeners = null;
 	private Vector<EmulatorActionListener> actionListeners = null;
-	private SessionJumpEvent jumpEvent;
 	private boolean macroRunning;
 	private boolean stopMacro;
 	private boolean doubleClick;
 	protected SessionConfig sesConfig;
 	protected KeyboardHandler keyHandler;
-	protected final SessionScroller scroller = new SessionScroller();
+	private final SessionScroller scroller = new SessionScroller();
 
 	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	public SessionPanel (Session5250 session) {
-		//Construct the frame
-		//, SessionConfig config) {
-
+		this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
 		this.session = session;
 
 		sesConfig = session.getConfiguration();
@@ -123,23 +104,18 @@ SessionListener {
 
 	//Component initialization
 	private void jbInit() throws Exception  {
-		this.setLayout(borderLayout1);
-
-		//	      this.setOpaque(false);
-		//	      setDoubleBuffered(true);
-		s.setOpaque(false);
-		s.setDoubleBuffered(false);
-
+		this.setLayout(new BorderLayout());
 		session.setGUI(this);
-
-		//	      screen = new Screen5250(this,sesConfig);
 		screen = session.getScreen();
 
-		this.addComponentListener(this);
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				resizeMe();
+			}
+		});
 
-		if (guiGraBuf == null) {
-			checkOffScreenImage();
-		}
+		ensureGuiGraphicBufferInitialized();
 
 		setRubberBand(new TNRubberBand(this));
 		keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
@@ -167,11 +143,6 @@ SessionListener {
 				}
 
 			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				//	            System.out.println("Mouse Released");
-
-			}
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -181,8 +152,7 @@ SessionListener {
 				}
 
 				if (e.getClickCount() == 2 & doubleClick) {
-
-					screen.sendKeys("[enter]");
+					screen.sendKeys(ENTER);
 				}
 				else {
 					int pos = guiGraBuf.getPosFromView(e.getX(), e.getY());
@@ -207,37 +177,26 @@ SessionListener {
 
 		});
 
-		if (sesConfig.getStringProperty("mouseWheel").equals("Yes")) {
+		if (YES.equals(sesConfig.getStringProperty("mouseWheel"))) {
 			scroller.addMouseWheelListener(this);
 		}
 
 		log.debug("Initializing macros");
 		Macronizer.init();
 
-		keyPad.addActionListener(this);
-		if (sesConfig.getStringProperty("keypad").equals("Yes"))
-			keyPad.setVisible(true);
-		else
-			keyPad.setVisible(false);
-
-		// Warning do not change the the order of the adding of keypad and
-		//    the screen.  This will cause resizing problems because it will
-		//    resize the screen first and during the resize we need to calculate
-		//    the bouding area based on the height of the keyPad.
-		//    See resizeMe() and getDrawingBounds()
-		this.add(keyPad,BorderLayout.SOUTH);
-		this.add(s,BorderLayout.CENTER);
+		keypadPanel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				screen.sendKeys(((JButton) e.getSource()).getActionCommand());
+				getFocusForMe();
+			}
+		});
+		keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
+		this.add(keypadPanel,BorderLayout.SOUTH);
 
 		this.requestFocus();
-		jumpEvent = new SessionJumpEvent(this);
 
-
-		// check if double click sends enter
-		if (sesConfig.getStringProperty("doubleClick").equals("Yes"))
-			doubleClick = true;
-		else
-			doubleClick = false;
-
+		doubleClick = YES.equals(sesConfig.getStringProperty("doubleClick"));
 	}
 
 	public void setRunningHeadless(boolean headless) {
@@ -248,9 +207,7 @@ SessionListener {
 		else {
 			screen.getOIA().addOIAListener(guiGraBuf);
 			screen.addScreenListener(guiGraBuf);
-
 		}
-
 	}
 
 	@Override
@@ -355,7 +312,6 @@ SessionListener {
 	 * Asks the user to confirm tab close,
 	 * only if configured (option 'confirm tab close')
 	 *
-	 * @param sesConfig
 	 * @return true if tab should be closed, false if not
 	 */
 	private boolean confirmTabClose() {
@@ -363,7 +319,7 @@ SessionListener {
 		if (session.getConfiguration().isPropertyExists("confirmTabClose")) {
 			this.requestFocus();
 			final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(this);
-			if(session.getConfiguration().getStringProperty("confirmTabClose").equals("Yes")) {
+			if(YES.equals(session.getConfiguration().getStringProperty("confirmTabClose"))) {
 				if(!tabclsdlg.show()) {
 					result = false;
 				}
@@ -382,7 +338,7 @@ SessionListener {
 	private boolean confirmSignOffClose() {
 
 		if (sesConfig.isPropertyExists("confirmSignoff") &&
-				sesConfig.getStringProperty("confirmSignoff").equals("Yes")) {
+				YES.equals(sesConfig.getStringProperty("confirmSignoff"))) {
 			this.requestFocus();
 			int result = JOptionPane.showConfirmDialog(
 					this.getParent(),            // the parent that the dialog blocks
@@ -414,68 +370,37 @@ SessionListener {
 	@Override
 	public boolean isManagingFocus() { return true; }
 
-	public JPanel getDrawingCanvas() {
-
-		return s;
-
-	}
-
 	@Override
-	public void actionPerformed(ActionEvent actionevent) {
+	public void onConfigChanged(SessionConfigEvent configEvent) {
+		final String configName = configEvent.getPropertyName();
 
-		Object obj = actionevent.getSource();
-		String ac = ((JButton)obj).getActionCommand();
-
-		if (ac.equals("NXTPAD"))
-			keyPad.nextPad();
-		else
-			screen.sendKeys(ac);
-
-
-		getFocusForMe();
-
-	}
-
-	/**
-	 * Update the configuration settings
-	 * @param pce
-	 */
-	@Override
-	public void onConfigChanged(SessionConfigEvent pce) {
-
-		String pn = pce.getPropertyName();
-
-		if (pn.equals("keypad")) {
-			if (((String)pce.getNewValue()).equals("Yes")) {
-				keyPad.setVisible(true);
-			}
-			else {
-				keyPad.setVisible(false);
-			}
+		if (CONFIG_KEYPAD_ENABLED.equals(configName)) {
+			keypadPanel.setVisible(YES.equals(configEvent.getNewValue()));
 			this.validate();
 		}
 
-		if (pn.equals("doubleClick")) {
-			if (((String)pce.getNewValue()).equals("Yes")) {
-				doubleClick = true;
-			}
-			else {
-				doubleClick = false;
-			}
+		if (CONFIG_KEYPAD_MNEMONICS.equals(configName)) {
+			keypadPanel.reInitializeButtons(new KeyMnemonicSerializer().deserialize((String) configEvent.getNewValue()));
 		}
 
-		if (pn.equals("mouseWheel")) {
-			if (((String)pce.getNewValue()).equals("Yes")) {
+		if (CONFIG_KEYPAD_FONT_SIZE.equals(configName)) {
+			keypadPanel.updateButtonFontSize(Float.parseFloat((String)configEvent.getNewValue()));
+		}
+
+		if ("doubleClick".equals(configName)) {
+			doubleClick = YES.equals(configEvent.getNewValue());
+		}
+
+		if ("mouseWheel".equals(configName)) {
+			if (YES.equals(configEvent.getNewValue())) {
 				scroller.addMouseWheelListener(this);
-			}
-			else {
+			}	else {
 				scroller.removeMouseWheelListener(this);
 			}
 		}
 
 		resizeMe();
 		repaint();
-
 	}
 
 	public tnvt getVT() {
@@ -494,11 +419,6 @@ SessionListener {
 
 	public void startDuplicateSession() {
 		fireEmulatorAction(EmulatorActionEvent.START_DUPLICATE);
-	}
-
-	public void sendAidKey(int whichOne) {
-
-		session.getVT().sendAidKey(whichOne);
 	}
 
 	/**
@@ -534,15 +454,11 @@ SessionListener {
 	}
 
 	public void nextSession() {
-
 		fireSessionJump(TN5250jConstants.JUMP_NEXT);
-
 	}
 
 	public void prevSession() {
-
 		fireSessionJump(TN5250jConstants.JUMP_PREVIOUS);
-
 	}
 
 	/**
@@ -550,14 +466,13 @@ SessionListener {
 	 *
 	 * @param dir  The direction to jump.
 	 */
-	protected void fireSessionJump(int dir) {
-
-		if (listeners != null) {
-			int size = listeners.size();
+	private void fireSessionJump(int dir) {
+		if (sessionJumpListeners != null) {
+			int size = sessionJumpListeners.size();
+			final SessionJumpEvent jumpEvent = new SessionJumpEvent(this);
+			jumpEvent.setJumpDirection(dir);
 			for (int i = 0; i < size; i++) {
-				SessionJumpListener target =
-					listeners.elementAt(i);
-				jumpEvent.setJumpDirection(dir);
+				SessionJumpListener target = sessionJumpListeners.elementAt(i);
 				target.onSessionJump(jumpEvent);
 			}
 		}
@@ -627,20 +542,12 @@ SessionListener {
 	 *
 	 */
 	public void actionAttributes() {
-
-		SessionSettings sa = new SessionSettings((Frame)SwingUtilities.getRoot(this),
-				sesConfig);
-		sa.showIt();
-
+		new SessionSettings((Frame)SwingUtilities.getRoot(this), sesConfig).showIt();
 		getFocusForMe();
-		sa = null;
 	}
 
-	private void actionPopup (MouseEvent me) {
-
+	private void actionPopup(MouseEvent me) {
 		new SessionPopup(this,me);
-
-
 	}
 
 	public void actionSpool() {
@@ -660,15 +567,11 @@ SessionListener {
 	}
 
 	public void executeMacro(ActionEvent ae) {
-
 		executeMacro(ae.getActionCommand());
-
 	}
 
 	public void executeMacro(String macro) {
-
 		Macronizer.invoke(macro,this);
-
 	}
 
 	protected void stopRecordingMe() {
@@ -713,9 +616,9 @@ SessionListener {
 	public Rectangle getDrawingBounds() {
 
 		Rectangle r = this.getBounds();
-		if (keyPad != null && keyPad.isVisible())
+		if (keypadPanel != null && keypadPanel.isVisible())
 			//	         r.height -= (int)(keyPad.getHeight() * 1.25);
-			r.height -= (keyPad.getHeight());
+			r.height -= (keypadPanel.getHeight());
 
 		r.setSize(r.width,r.height);
 
@@ -724,33 +627,10 @@ SessionListener {
 	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentResized(ComponentEvent e) {
-
-		resizeMe();
-	}
-
-	@Override
-	public void componentShown(ComponentEvent e) {
-
-
-	}
-
-	@Override
 	protected void paintComponent(Graphics g) {
 		log.debug("paint from screen");
 
-		if (guiGraBuf == null) {
-			checkOffScreenImage();
-		}
-		//	      screen.paintComponent3(g);
+		ensureGuiGraphicBufferInitialized();
 
 		Graphics2D g2 = (Graphics2D) g;
 		if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
@@ -804,35 +684,11 @@ SessionListener {
 		screen.setCursorActive(true);
 	}
 
-	/**
-	 *
-	 * This routine will make sure we have something to draw on
-	 *
-	 */
-	private void checkOffScreenImage() {
-
-		// do we have something already?
+	private void ensureGuiGraphicBufferInitialized() {
 		if (guiGraBuf == null) {
-
-			guiGraBuf = new GuiGraphicBuffer(screen,this,sesConfig);
-
-			//				if (antialiased) {
-			//					bi.setUseAntialias(true);
-			//				}
-
-			// allocate a buffer Image with appropriate size
+			guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig);
 			guiGraBuf.getImageBuffer(0, 0);
-
-			// fill in the areas
-			//	            tArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//	            cArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//	            aArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//	            sArea = new Rectangle2D.Float(0, 0, 0, 0);
-			//
-			//	            // Draw Operator Information Area
-			//	            drawOIA();
 		}
-
 	}
 
 	/**
@@ -883,10 +739,10 @@ SessionListener {
 	 */
 	public synchronized void addSessionJumpListener(SessionJumpListener listener) {
 
-		if (listeners == null) {
-			listeners = new java.util.Vector<SessionJumpListener>(3);
+		if (sessionJumpListeners == null) {
+			sessionJumpListeners = new java.util.Vector<SessionJumpListener>(3);
 		}
-		listeners.addElement(listener);
+		sessionJumpListeners.addElement(listener);
 
 	}
 
@@ -896,10 +752,10 @@ SessionListener {
 	 * @param listener  The SessionJumpListener to be removed
 	 */
 	public synchronized void removeSessionJumpListener(SessionJumpListener listener) {
-		if (listeners == null) {
+		if (sessionJumpListeners == null) {
 			return;
 		}
-		listeners.removeElement(listener);
+		sessionJumpListeners.removeElement(listener);
 
 	}
 
@@ -942,14 +798,11 @@ SessionListener {
 	 */
 	@Override
 	public Graphics getDrawingGraphics(){
-
 		return guiGraBuf.getDrawingArea();
 	}
 
 	protected final void setRubberBand(TNRubberBand newValue) {
-
 		rubberband = newValue;
-
 	}
 
 	public Rect getBoundingArea() {

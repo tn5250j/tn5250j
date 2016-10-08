@@ -1,4 +1,4 @@
-/**
+/*
  * Title: AttributesAction.java
  * Copyright:   Copyright (c) 2001,2002
  * Company:
@@ -25,31 +25,30 @@
  */
 package org.tn5250j.keyboard.actions;
 
+import org.tn5250j.SessionPanel;
+import org.tn5250j.keyboard.KeyMapper;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.KeyStroke;
-
-import org.tn5250j.SessionPanel;
-import org.tn5250j.TN5250jConstants;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.keyboard.KeyMnemonic.DISP_ATTRIBUTES;
 
 /**
  * Display session attributes
  */
 public class AttributesAction extends EmulatorAction {
 
-   private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-public AttributesAction(SessionPanel session, KeyMapper keyMap) {
-      super(session,
-            TN5250jConstants.MNEMONIC_DISP_ATTRIBUTES,
-            KeyStroke.getKeyStroke(KeyEvent.VK_D,KeyEvent.ALT_MASK),
-            keyMap);
+  public AttributesAction(SessionPanel session, KeyMapper keyMap) {
+    super(session,
+        DISP_ATTRIBUTES.mnemonic,
+        KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_MASK),
+        keyMap);
+  }
 
-   }
-
-   public void actionPerformed(ActionEvent e) {
-     session.actionAttributes();
-   }
+  public void actionPerformed(ActionEvent e) {
+    session.actionAttributes();
+  }
 }
