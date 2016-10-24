@@ -25,9 +25,13 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -219,6 +223,47 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 			super.processKeyEvent(evt);
 	}
 
+	/**
+	 * Function  : saveDataSelected
+	 * Parameter : Null
+	 * Return    : void
+	 * Details   : Copy area selection x, y, width, height & save to file
+	 */
+	
+	public final void saveDataSelected(){
+		final Rect area = getBoundingArea();
+		rubberband.reset();
+		screen.repaintScreen();
+		final String textcontent = screen.copyText(area);
+		Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+		StringSelection contents = new StringSelection(textcontent);
+		cb.setContents(contents, null);
+		
+		JFileChooser chooser = new JFileChooser();
+		int returnVal = chooser.showSaveDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    FileOutputStream stream = null;
+		    PrintStream out = null;
+		    try {
+		        File file = chooser.getSelectedFile();
+		        stream = new FileOutputStream(file); 
+		        out = new PrintStream(stream);
+		        //log.debug("Extract Data selected ---> "+data );
+		        out.print(textcontent);
+
+		    } catch (Exception ex) {
+		        //do something
+		    } finally {
+		        try {
+		            if(stream!=null) stream.close();
+		            if(out!=null) out.close();
+		        } catch (Exception ex) {
+		            //do something
+		        }
+		    }
+		}
+	}
+	
 	public void sendScreenEMail() {
 		new SendEMailDialog((JFrame)SwingUtilities.getRoot(this),this);
 	}
@@ -691,11 +736,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 		}
 	}
 
-	/**
-	 *
-	 * Copy & Paste start code
-	 *
-	 */
+
 	public final void actionCopy() {
 		final Rect area = getBoundingArea();
 		rubberband.reset();
@@ -705,7 +746,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 		StringSelection contents = new StringSelection(textcontent);
 		cb.setContents(contents, null);
 	}
-
+	
 	/**
 	 * Sum them
 	 *

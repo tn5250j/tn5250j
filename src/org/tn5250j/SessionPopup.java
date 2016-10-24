@@ -173,7 +173,25 @@ public class SessionPopup {
             + " " + workR.height);
         menuItem.setArmed(false);
         popup.add(menuItem);
+        
+        popup.addSeparator();
+        /**
+         * actionCopy menuItem
+         */
+        action = new AbstractAction(LangTool.getString("popup.copyselection")) {
+            private static final long serialVersionUID = 1L;
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sessiongui.saveDataSelected();
+                sessiongui.getFocusForMe();
+            }
+          };
+          
+        popup.add(action);
+        popup.addSeparator();
+        
+        
         JMenu sumMenu = new JMenu(LangTool.getString("popup.calc"));
         popup.add(sumMenu);
 
