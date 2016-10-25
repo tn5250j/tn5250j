@@ -185,6 +185,7 @@ public class SessionPopup {
             public void actionPerformed(ActionEvent e) {
                 sessiongui.saveDataSelected();
                 sessiongui.getFocusForMe();
+                log.debug("ActionEvent -> " + e);
             }
           };
           

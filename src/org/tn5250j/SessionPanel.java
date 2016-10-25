@@ -25,17 +25,18 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.JFileChooser;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
@@ -736,7 +737,11 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 		}
 	}
 
-
+	/**
+	 *
+	 * Copy & Paste start code
+	 *
+	 */
 	public final void actionCopy() {
 		final Rect area = getBoundingArea();
 		rubberband.reset();
@@ -746,7 +751,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 		StringSelection contents = new StringSelection(textcontent);
 		cb.setContents(contents, null);
 	}
-	
+
 	/**
 	 * Sum them
 	 *
