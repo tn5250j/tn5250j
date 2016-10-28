@@ -309,7 +309,7 @@ public final class tnvt implements Runnable {
 
 			}
 
-			//         sock = new Socket(s, port);
+			//         sock = new Socket(screen5250, port);
 			//smk - For SSL compability
 			SocketConnector sc = new SocketConnector();
 			if (sslType != null)
@@ -870,7 +870,7 @@ public final class tnvt implements Runnable {
 		try	{
 			int str = 11;
 			int offset = str+1;
-			ScreenPlanes planes = screen52.getPlanes();
+			ExtendedScreenPlanesImpl planes = screen52.getPlanes();
 			char c = planes.getChar(str);
 			boolean waitFor = !(c == 'a');
 
@@ -949,7 +949,7 @@ public final class tnvt implements Runnable {
 		// screen52.screen[1].getChar() + screen52.screen[2].getChar());
 
 		//		ScreenChar[] screen = screen52.screen;
-		ScreenPlanes planes = screen52.getPlanes();
+		ExtendedScreenPlanesImpl planes = screen52.getPlanes();
 
 		if ((planes.getChar(STRSCAN) == '#')
 				&& (planes.getChar(STRSCAN + 1) == '!')
@@ -1174,7 +1174,7 @@ public final class tnvt implements Runnable {
 		int lastAttr = 32;
 		int sac = 0;
 
-		ScreenPlanes planes = screen52.planes;
+		ExtendedScreenPlanesImpl planes = screen52.planes;
 
 		for (int i = 0; i < sa.length; i++) { // save the screen data
 
@@ -1206,7 +1206,7 @@ public final class tnvt implements Runnable {
 		int la = 32;
 		int sac = 0;
 
-		ScreenPlanes planes = screen52.planes;
+		ExtendedScreenPlanesImpl planes = screen52.planes;
 		byte[] sa = new byte[len];
 
 		try {
@@ -1291,7 +1291,7 @@ public final class tnvt implements Runnable {
 				int sp = sf.startPos();
 				sc.write((byte) (sp >> 8 & 0xff));
 				sc.write((byte) (sp & 0xff));
-				if (sf.mdt)
+				if (sf.isMdt())
 					sc.write((byte) 1);
 				else
 					sc.write((byte) 0);
@@ -1328,7 +1328,7 @@ public final class tnvt implements Runnable {
 	public final void restoreScreen() throws IOException {
 		int which = 0;
 
-		ScreenPlanes planes = screen52.planes;
+		ExtendedScreenPlanesImpl planes = screen52.planes;
 
 		try {
 			log.debug("Restore ");
@@ -2100,7 +2100,7 @@ public final class tnvt implements Runnable {
 			for (int x = 0; x < f; x++) {
 				ScreenField sf = screen52.getScreenFields().getField(x);
 				if (!sf.isBypassField()) {
-					if ((nullMDT && sf.mdt) || nullAll) {
+					if ((nullMDT && sf.isMdt()) || nullAll) {
 						sf.setFieldChar((char) 0x0);
 						screen52.drawField(sf);
 					}
@@ -2178,17 +2178,15 @@ public final class tnvt implements Runnable {
 		int byte1 = byte0 & 0xff;
 		// here it should always be less than 255
 		if (byte1 >= 64 && byte1 < 255)
-
 			return true;
 		else
 			return false;
-
 	}
 
 	//LDC - 12/02/2003 - Test if the unicode character is a displayable
 	// character.
 	//  The first 32 characters are non displayable characters
-	//  This is normally the inverse of isDataEBCDIC (That's why there is a
+	//  This is normally the inverse of isDataEBCDIC (That'screen5250 why there is a
 	//  check on 255 -> 0xFFFF
 	private boolean isDataUnicode(int data) {
 		return (((data < 0) || (data >= 32)) && (data != 0xFFFF));
@@ -2221,10 +2219,8 @@ public final class tnvt implements Runnable {
 					break;
 				}
 			}
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
-		;
-
 	}
 
 	private final void writeErrorCode() throws Exception {

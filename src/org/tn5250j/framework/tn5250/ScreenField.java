@@ -1,4 +1,4 @@
-/**
+/*
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -27,571 +27,594 @@ package org.tn5250j.framework.tn5250;
 
 public class ScreenField {
 
-	protected ScreenField(Screen5250 s) {
+  private Screen5250 screen5250;
+  private int startPos = 0;
+  private int endPos = 0;
+  private boolean mdt = false;
+  private boolean rightAdjd;
+  private boolean manditoried;
+  private int attr = 0;
+  private int length = 0;
+  private int ffw1 = 0;
+  private int ffw2 = 0;
+  private int fcw1 = 0;
+  private int fcw2 = 0;
+  private int cursorPos = 0;
+  private int cursorProg = 0;
+  private int fieldId = 0;
+  private ScreenField next = null;
+  private ScreenField prev = null;
+  private boolean isSelectionField;
+  private int selectionIndex;
+  private int selectionPos;
+
+  protected ScreenField(Screen5250 screen5250) {
+    this.screen5250 = screen5250;
+  }
+
+  protected ScreenField setField(int attr, int len, int ffw1, int ffw2,
+                                 int fcw1, int fcw2) {
+
+    return setField(attr, screen5250.getCurrentRow() - 1, screen5250.getCurrentCol() - 1,
+        len, ffw1, ffw2, fcw1, fcw2);
+  }
+
+  protected ScreenField setField(int attr, int row, int col, int len,
+                                 int ffw1, int ffw2, int fcw1, int fcw2) {
+
+    // startRow = row;
+    // startCol = col;
+    startPos = (row * screen5250.getColumns()) + col;
+    endPos = startPos + length - 1;
+    cursorProg = 0;
+    fieldId = 0;
+    length = len;
+    endPos = startPos + length - 1;
+    this.attr = attr;
+    setFFWs(ffw1, ffw2);
+    setFCWs(fcw1, fcw2);
+
+    next = null;
+    prev = null;
+
+    return this;
 
-		this.s = s;
+  }
 
-	}
+  public int getAttr() {
+    return attr;
+  }
+
+  public int getHighlightedAttr() {
+    return (fcw2 & 0x0f) | 0x20;
+  }
+
+  public int getLength() {
+    return length;
+  }
+
+  protected boolean setFFWs(int ffw1, int ffw2) {
+
+    this.ffw1 = ffw1;
+    this.ffw2 = ffw2;
+
+    int adj = getAdjustment();
+
+    if (adj > 0) {
+
+      switch (adj) {
+
+        case 5:
+        case 6:
+          rightAdjd = false;
+          break;
+        case 7:
+          manditoried = false;
+          break;
+      }
+
+    }
+    mdt = (ffw1 & 0x8) == 0x8;
+    return mdt;
+  }
+
+  public int getFFW1() {
+    return ffw1;
+  }
+
+  public int getFFW2() {
+    return ffw2;
+  }
+
+  protected void setFCWs(int fcw1, int fcw2) {
+
+    this.fcw1 = fcw1;
+    this.fcw2 = fcw2;
 
-	protected ScreenField setField(int attr, int len, int ffw1, int ffw2,
-			int fcw1, int fcw2) {
+    // if ((fcw1 & 0x88) == 0x88) {
+    if (fcw1 == 0x88) {
 
-		return setField(attr, s.getCurrentRow() - 1, s.getCurrentCol() - 1,
-				len, ffw1, ffw2, fcw1, fcw2);
-	}
+      cursorProg = fcw2;
+    }
+  }
+
+  public int getFCW1() {
+    return fcw1;
+  }
+
+  public int getFCW2() {
+    return fcw2;
+  }
+
+  public int getFieldLength() {
+    return length;
+  }
+
+  public int getCursorProgression() {
+    return cursorProg;
+  }
+
+  public int getFieldId() {
+    return fieldId;
+  }
+
+  protected void setFieldId(int fi) {
+    fieldId = fi;
+  }
+
+  public int getCursorRow() {
+
+    return cursorPos / screen5250.getColumns();
+  }
+
+  public int getCursorCol() {
+
+    return cursorPos % screen5250.getColumns();
+  }
+
+  protected void changePos(int i) {
+
+    cursorPos += i;
+
+  }
+
+  protected String getText() {
+
+    StringBuffer text = new StringBuffer();
+    getKeyPos(endPos);
+    int x = length;
+    text.setLength(x);
+    while (x-- > 0) {
+
+      // here we manipulate the unicode characters a little for attributes
+      // that are imbedded in input fields. We will offset them by unicode
+      // \uff00. All routines that process these fields will have to
+      // return them to their proper offsets.
+      // example:
+      // if we read an attribute byte of 32 for normal display the unicode
+      // character for this is and the unicode character for
+      // a space is also thus the offset.
+      if (screen5250.planes.isAttributePlace(cursorPos)) {
+        text.setCharAt(x,
+            (char) ('\uff00' + screen5250.planes.getCharAttr(cursorPos)));
+      } else {
+        text.setCharAt(x, screen5250.planes.getChar(cursorPos));
+      }
+      changePos(-1);
+
+    }
+
+    // Since only the mdt of the first continued field is set we will get
+    // the text of the next continued field if we are dealing with continued
+    // fields. See routine setMDT for the whys of this. This is only
+    // executed if this is the first field of a continued field.
+    if (isContinued() && isContinuedFirst()) {
+      ScreenField sf = this;
+      do {
+        sf = sf.next;
+        text.append(sf.getText());
+      } while (!sf.isContinuedLast());
+
+      sf = null;
+    }
+
+    return text.toString();
+
+  }
+
+  public String getString() {
+
+    StringBuffer text = new StringBuffer();
+    getKeyPos(endPos);
+    int x = length;
+    text.setLength(x);
+    while (x-- > 0) {
+
+      // here we manipulate the unicode characters a little for attributes
+      // that are imbedded in input fields. We will offset them by unicode
+      // \uff00. All routines that process these fields will have to
+      // return them to their proper offsets.
+      // example:
+      // if we read an attribute byte of 32 for normal display the unicode
+      // character for this is and the unicode character for
+      // a space is also thus the offset.
+      if (screen5250.planes.isAttributePlace(cursorPos)) {
+        text.setCharAt(x,
+            (char) ('\uff00' + screen5250.planes.getCharAttr(cursorPos)));
+      } else {
+        if (screen5250.planes.getChar(cursorPos) < ' ') {
+          text.setCharAt(x, ' ');
+        } else {
+          text.setCharAt(x, screen5250.planes.getChar(cursorPos));
+        }
+      }
+      changePos(-1);
 
-	protected ScreenField setField(int attr, int row, int col, int len,
-			int ffw1, int ffw2, int fcw1, int fcw2) {
+    }
 
-		// startRow = row;
-		// startCol = col;
-		startPos = (row * s.getColumns()) + col;
-		endPos = startPos + length - 1;
-		cursorProg = 0;
-		fieldId = 0;
-		length = len;
-		endPos = startPos + length - 1;
-		this.attr = attr;
-		setFFWs(ffw1, ffw2);
-		setFCWs(fcw1, fcw2);
+    // Since only the mdt of the first continued field is set we will get
+    // the text of the next continued field if we are dealing with continued
+    // fields. See routine setMDT for the whys of this. This is only
+    // executed if this is the first field of a continued field.
+    if (isContinued() && isContinuedFirst()) {
+      ScreenField sf = this;
+      do {
+        sf = sf.next;
+        text.append(sf.getString());
+      } while (!sf.isContinuedLast());
 
-		next = null;
-		prev = null;
+      sf = null;
+    }
 
-		return this;
+    return text.toString();
 
-	}
+  }
 
-	public int getAttr() {
-		return attr;
-	}
+  public void setFieldChar(char c) {
 
-	public int getHighlightedAttr() {
-		return (fcw2 & 0x0f) | 0x20;
-	}
+    int x = length;
+    cursorPos = startPos;
+    while (x-- > 0) {
+      screen5250.planes.setChar(cursorPos, c);
+      changePos(1);
+    }
 
-	public int getLength() {
-		return length;
-	}
+  }
 
-	protected boolean setFFWs(int ffw1, int ffw2) {
+  public void setFieldChar(int lastPos, char c) {
 
-		this.ffw1 = ffw1;
-		this.ffw2 = ffw2;
+    int x = endPos - lastPos + 1;
+    cursorPos = lastPos;
+    while (x-- > 0) {
+      screen5250.planes.setChar(cursorPos, c);
+      screen5250.setDirty(cursorPos);
+      changePos(1);
+    }
+  }
 
-		int adj = getAdjustment();
+  protected void setRightAdjusted() {
+    rightAdjd = true;
+  }
 
-		if (adj > 0) {
-			checkCanSend = true;
+  protected void setManditoryEntered() {
 
-			switch (adj) {
+    manditoried = true;
+  }
 
-			case 5:
-			case 6:
-				rightAdjd = false;
-				break;
-			case 7:
-				manditoried = false;
-				break;
-			}
+  protected void resetMDT() {
+    mdt = false;
 
-		}
-		mdt = (ffw1 & 0x8) == 0x8;
-		// if (mdt)
-		// s.masterMDT = true;
-		return mdt;
-	}
+  }
 
-	public int getFFW1() {
-		return ffw1;
-	}
+  protected void setMDT() {
 
-	public int getFFW2() {
-		return ffw2;
-	}
+    // get the first field of a continued edit field if it is continued
+    if (isContinued() && !isContinuedFirst()) {
+      ScreenField sf = prev;
+      while (sf.isContinued() && !sf.isContinuedFirst()) {
 
-	protected void setFCWs(int fcw1, int fcw2) {
+        sf = sf.prev;
 
-		this.fcw1 = fcw1;
-		this.fcw2 = fcw2;
+      }
+      sf.setMDT();
+      sf = null;
+    } else {
+      mdt = true;
+    }
 
-		// if ((fcw1 & 0x88) == 0x88) {
-		if (fcw1 == 0x88) {
+  }
 
-			cursorProg = fcw2;
-		}
-	}
+  public boolean isBypassField() {
 
-	public int getFCW1() {
-		return fcw1;
-	}
-
-	public int getFCW2() {
-		return fcw2;
-	}
-
-	public int getFieldLength() {
-		return length;
-	}
-
-	public int getCursorProgression() {
-		return cursorProg;
-	}
-
-	public int getFieldId() {
-		return fieldId;
-	}
-
-	protected void setFieldId(int fi) {
-		fieldId = fi;
-	}
-
-	public int getCursorRow() {
-
-		return cursorPos / s.getColumns();
-	}
-
-	public int getCursorCol() {
-
-		return cursorPos % s.getColumns();
-	}
-
-	protected void changePos(int i) {
-
-		cursorPos += i;
-
-	}
-
-	protected String getText() {
-
-		StringBuffer text = new StringBuffer();
-		getKeyPos(endPos);
-		int x = length;
-		text.setLength(x);
-		while (x-- > 0) {
-
-			// here we manipulate the unicode characters a little for attributes
-			// that are imbedded in input fields. We will offset them by unicode
-			// \uff00. All routines that process these fields will have to
-			// return them to their proper offsets.
-			// example:
-			// if we read an attribute byte of 32 for normal display the unicode
-			// character for this is and the unicode character for
-			// a space is also thus the offset.
-			if (s.planes.isAttributePlace(cursorPos)) {
-				text.setCharAt(x,
-						(char) ('\uff00' + s.planes.getCharAttr(cursorPos)));
-			} else {
-				text.setCharAt(x, s.planes.getChar(cursorPos));
-			}
-			changePos(-1);
-
-		}
-
-		// Since only the mdt of the first continued field is set we will get
-		// the text of the next continued field if we are dealing with continued
-		// fields. See routine setMDT for the whys of this. This is only
-		// executed if this is the first field of a continued field.
-		if (isContinued() && isContinuedFirst()) {
-			ScreenField sf = this;
-			do {
-				sf = sf.next;
-				text.append(sf.getText());
-			} while (!sf.isContinuedLast());
-
-			sf = null;
-		}
-
-		return text.toString();
-
-	}
-
-	public String getString() {
-
-		StringBuffer text = new StringBuffer();
-		getKeyPos(endPos);
-		int x = length;
-		text.setLength(x);
-		while (x-- > 0) {
-
-			// here we manipulate the unicode characters a little for attributes
-			// that are imbedded in input fields. We will offset them by unicode
-			// \uff00. All routines that process these fields will have to
-			// return them to their proper offsets.
-			// example:
-			// if we read an attribute byte of 32 for normal display the unicode
-			// character for this is and the unicode character for
-			// a space is also thus the offset.
-			if (s.planes.isAttributePlace(cursorPos)) {
-				text.setCharAt(x,
-						(char) ('\uff00' + s.planes.getCharAttr(cursorPos)));
-			} else {
-				if (s.planes.getChar(cursorPos) < ' ') {
-					text.setCharAt(x, ' ');
-				} else {
-					text.setCharAt(x, s.planes.getChar(cursorPos));
-				}
-			}
-			changePos(-1);
+    return (ffw1 & 0x20) == 0x20;
 
-		}
+  }
 
-		// Since only the mdt of the first continued field is set we will get
-		// the text of the next continued field if we are dealing with continued
-		// fields. See routine setMDT for the whys of this. This is only
-		// executed if this is the first field of a continued field.
-		if (isContinued() && isContinuedFirst()) {
-			ScreenField sf = this;
-			do {
-				sf = sf.next;
-				text.append(sf.getString());
-			} while (!sf.isContinuedLast());
+  public int getAdjustment() {
 
-			sf = null;
-		}
+    return (ffw2 & 0x7);
+  }
 
-		return text.toString();
+  // is field exit required
+  public boolean isFER() {
 
-	}
+    return (ffw2 & 0x40) == 0x40;
+  }
 
-	public void setFieldChar(char c) {
+  // is field manditory enter
+  public boolean isMandatoryEnter() {
 
-		int x = length;
-		cursorPos = startPos;
-		while (x-- > 0) {
-			s.planes.setChar(cursorPos, c);
-			changePos(1);
-		}
+    return (ffw2 & 0x8) == 0x8;
 
-	}
+  }
 
-	public void setFieldChar(int lastPos, char c) {
+  public boolean isToUpper() {
 
-		int x = endPos - lastPos + 1;
-		cursorPos = lastPos;
-		while (x-- > 0) {
-			s.planes.setChar(cursorPos, c);
-			s.setDirty(cursorPos);
-			changePos(1);
-		}
-	}
+    return (ffw2 & 0x20) == 0x20;
 
-	protected void setRightAdjusted() {
-		rightAdjd = true;
-	}
+  }
 
-	protected void setManditoryEntered() {
+  // bits 5 - 7
+  public int getFieldShift() {
 
-		manditoried = true;
-	}
+    return (ffw1 & 0x7);
 
-	protected void resetMDT() {
-		mdt = false;
+  }
 
-	}
+  public boolean isHiglightedEntry() {
 
-	protected void setMDT() {
+    return (fcw1 == 0x89);
 
-		// get the first field of a continued edit field if it is continued
-		if (isContinued() && !isContinuedFirst()) {
-			ScreenField sf = prev;
-			while (sf.isContinued() && !sf.isContinuedFirst()) {
+  }
 
-				sf = sf.prev;
+  public boolean isAutoEnter() {
 
-			}
-			sf.setMDT();
-			sf = null;
-		} else {
-			mdt = true;
-		}
+    return (ffw2 & 0x80) == 0x80;
 
-	}
+  }
 
-	public boolean isBypassField() {
+  public boolean isSignedNumeric() {
 
-		return (ffw1 & 0x20) == 0x20;
+    return (getFieldShift() == 7);
 
-	}
+  }
 
-	public int getAdjustment() {
+  public boolean isRightToLeft() {
+    return (getFieldShift() == 0x04);
+  }
 
-		return (ffw2 & 0x7);
-	}
+  public boolean isNumeric() {
 
-	// is field exit required
-	public boolean isFER() {
+    return (getFieldShift() == 3);
 
-		return (ffw2 & 0x40) == 0x40;
-	}
+  }
 
-	// is field manditory enter
-	public boolean isMandatoryEnter() {
+  public boolean isDupEnabled() {
 
-		return (ffw2 & 0x8) == 0x8;
+    return (ffw1 & 0x10) == 0x10;
 
-	}
+  }
 
-	public boolean isToUpper() {
+  public boolean isContinued() {
 
-		return (ffw2 & 0x20) == 0x20;
+    return (fcw1 & 0x86) == 0x86 && (fcw2 >= 1 && fcw2 <= 3);
 
-	}
+  }
 
-	// bits 5 - 7
-	public int getFieldShift() {
+  public boolean isContinuedFirst() {
 
-		return (ffw1 & 0x7);
+    return (fcw1 & 0x86) == 0x86 && (fcw2 == 1);
 
-	}
+  }
 
-	public boolean isHiglightedEntry() {
+  public boolean isContinuedMiddle() {
 
-		return (fcw1 == 0x89);
+    return (fcw1 & 0x86) == 0x86 && (fcw2 == 3);
 
-	}
+  }
 
-	public boolean isAutoEnter() {
+  public boolean isContinuedLast() {
 
-		return (ffw2 & 0x80) == 0x80;
+    return (fcw1 & 0x86) == 0x86 && (fcw2 == 2);
 
-	}
+  }
 
-	public boolean isSignedNumeric() {
+  protected boolean isCanSend() {
 
-		return (getFieldShift() == 7);
+    int adj = getAdjustment();
 
-	}
+    // here we need to check the Field Exit Required value first before
+    // checking
+    // the adjustments. If the last character has been entered and we are
+    // now setting past the last position then we are allowed to process the
+    // the field without continuing.
+    if (isFER() && cursorPos > endPos) {
+      return true;
+    }
 
-	public boolean isRightToLeft() {
-		return (getFieldShift() == 0x04);
-	}
+    // signed numeric fields need to be checked as well.
+    if (isSignedNumeric() && cursorPos < endPos - 1) {
+      return false;
+    }
 
-	public boolean isNumeric() {
+    if (adj > 0) {
 
-		return (getFieldShift() == 3);
+      switch (adj) {
 
-	}
+        case 5:
+        case 6:
+          return rightAdjd;
+        case 7:
+          return manditoried;
+        default:
+          return true;
+      }
 
-	public boolean isDupEnabled() {
+    }
+    return true;
+  }
 
-		return (ffw1 & 0x10) == 0x10;
+  public boolean isSelectionField() {
 
-	}
+    return isSelectionField;
 
-	public boolean isContinued() {
+  }
 
-		return (fcw1 & 0x86) == 0x86 && (fcw2 >= 1 && fcw2 <= 3);
+  public void setSelectionFieldInfo(int type, int index, int position) {
 
-	}
+    selectionIndex = index;
+    selectionPos = position;
+    isSelectionField = true;
 
-	public boolean isContinuedFirst() {
+  }
 
-		return (fcw1 & 0x86) == 0x86 && (fcw2 == 1);
+  protected int getKeyPos(int row1, int col1) {
 
-	}
+    int x = ((row1 * screen5250.getColumns()) + col1);
+    int y = x - startPos();
+    cursorPos = x;
 
-	public boolean isContinuedMiddle() {
+    return y;
+  }
 
-		return (fcw1 & 0x86) == 0x86 && (fcw2 == 3);
+  protected int getKeyPos(int pos) {
 
-	}
+    int y = pos - startPos();
+    cursorPos = pos;
 
-	public boolean isContinuedLast() {
+    return y;
+  }
 
-		return (fcw1 & 0x86) == 0x86 && (fcw2 == 2);
+  public int getCurrentPos() {
 
-	}
+    return cursorPos;
+  }
 
-	protected boolean isCanSend() {
+  public boolean withinField(int pos) {
 
-		int adj = getAdjustment();
+    if (pos >= startPos && pos <= endPos) {
+      return true;
+    }
+    return false;
 
-		// here we need to check the Field Exit Required value first before
-		// checking
-		// the adjustments. If the last character has been entered and we are
-		// now setting past the last position then we are allowed to process the
-		// the field without continuing.
-		if (isFER() && cursorPos > endPos) {
-			return true;
-		}
+  }
 
-		// signed numeric fields need to be checked as well.
-		if (isSignedNumeric() && cursorPos < endPos - 1) {
-			return false;
-		}
+  public int startPos() {
 
-		if (adj > 0) {
+    return startPos;
+  }
 
-			switch (adj) {
+  /**
+   * Get the starting row of the field. Offset is 0 so row 6 returned is row 7
+   * mapped to screen
+   *
+   * @return int starting row of the field offset 0
+   */
+  public int startRow() {
 
-			case 5:
-			case 6:
-				return rightAdjd;
-			case 7:
-				return manditoried;
-			default:
-				return true;
-			}
+    return startPos / screen5250.getColumns();
 
-		}
-		return true;
-	}
+  }
 
-	public boolean isSelectionField() {
+  /**
+   * Get the starting column of the field. Offset is 0 so column 6 returned is
+   * column 7 mapped to screen
+   *
+   * @return int starting column of the field offset 0
+   */
+  public int startCol() {
 
-		return isSelectionField;
+    return startPos % screen5250.getColumns();
 
-	}
+  }
 
-	public void setSelectionFieldInfo(int type, int index, int position) {
+  public int endPos() {
 
-		selectionFieldType = type;
-		selectionIndex = index;
-		selectionPos = position;
-		isSelectionField = true;
+    return endPos;
 
-	}
+  }
 
-	protected int getKeyPos(int row1, int col1) {
+  /**
+   * Sets the field'screen5250 text plane to the specified string. If the string is
+   * shorter than the length of the field, the rest of the field is cleared.
+   * If the string is longer than the field, the text is truncated. A
+   * subsequent call to getText on this field will not show the changed text.
+   * To see the changed text, do a refresh on the iOhioFields collection and
+   * retrieve the refreshed field object.
+   *
+   * @param text - The text to be placed in the field'screen5250 text plane.
+   */
+  public void setString(String text) {
+    screen5250.fireSetFieldString(this, text);
+    cursorPos = isRightToLeft() ? endPos - text.length() + 1 : startPos;
 
-		int x = ((row1 * s.getColumns()) + col1);
-		int y = x - startPos();
-		cursorPos = x;
+    if (isRightToLeft()) {
+      text = new StringBuilder(text).reverse().toString();
+    }
 
-		return y;
-	}
+    for (int x = 0, textLen = text.length(); x < length; x++) {
+      char tc = x < textLen ? text.charAt(x) : ' ';
+      screen5250.getPlanes().setChar(cursorPos, tc);
+      changePos(1);
+    }
+    setMDT();
+    screen5250.getScreenFields().setMasterMDT();
+  }
 
-	protected int getKeyPos(int pos) {
+  public boolean isMdt() {
+    return mdt;
+  }
 
-		int y = pos - startPos();
-		cursorPos = pos;
+  public int getStartPos() {
+    return startPos;
+  }
 
-		return y;
-	}
+  public ScreenField getNext() {
+    return next;
+  }
 
-	public int getCurrentPos() {
+  public ScreenField getPrev() {
+    return prev;
+  }
 
-		return cursorPos;
-	}
+  public void setNext(ScreenField next) {
+    this.next = next;
+  }
 
-	public boolean withinField(int pos) {
+  public void setPrev(ScreenField prev) {
+    this.prev = prev;
+  }
 
-		if (pos >= startPos && pos <= endPos) {
-			return true;
-		}
-		return false;
+  public int getSelectionPos() {
+    return selectionPos;
+  }
 
-	}
+  public int getSelectionIndex() {
+    return selectionIndex;
+  }
 
-	public int startPos() {
+  @Override
+  public String toString() {
+    int fcw = (fcw1 & 0xff) << 8 | fcw2 & 0xff;
+    return "startRow = " + startRow() + " startCol = " + startCol()
+        + " length = " + length + " ffw1 = (0x"
+        + Integer.toHexString(ffw1) + ") ffw2 = (0x"
+        + Integer.toHexString(ffw2) + ") fcw1 = (0x"
+        + Integer.toHexString(fcw1) + ") fcw2 = (0x"
+        + Integer.toHexString(fcw2) + ") fcw = ("
+        + Integer.toBinaryString(fcw) + ") fcw hex = (0x"
+        + Integer.toHexString(fcw) + ") is bypass field = "
+        + isBypassField() + ") is autoenter = " + isAutoEnter()
+        + ") is manditoryenter = " + isMandatoryEnter()
+        + ") is field exit required = " + isFER() + ") is Numeric = "
+        + isNumeric() + ") is Signed Numeric = " + isSignedNumeric()
+        + ") is cursor progression = " + (fcw1 == 0x88)
+        + ") next progression field = " + fcw2 + ") field id "
+        + fieldId + " continued edit field = " + isContinued()
+        + " first continued edit field = " + isContinuedFirst()
+        + " middle continued edit field = " + isContinuedMiddle()
+        + " last continued edit field = " + isContinuedLast()
+        + " mdt = " + mdt;
+  }
 
-		return startPos;
-	}
-
-	/**
-	 * Get the starting row of the field. Offset is 0 so row 6 returned is row 7
-	 * mapped to screen
-	 *
-	 * @return int starting row of the field offset 0
-	 */
-	public int startRow() {
-
-		return startPos / s.getColumns();
-
-	}
-
-	/**
-	 * Get the starting column of the field. Offset is 0 so column 6 returned is
-	 * column 7 mapped to screen
-	 *
-	 * @return int starting column of the field offset 0
-	 */
-	public int startCol() {
-
-		return startPos % s.getColumns();
-
-	}
-
-	public int endPos() {
-
-		return endPos;
-
-	}
-
-	/**
-	 * Sets the field's text plane to the specified string. If the string is
-	 * shorter than the length of the field, the rest of the field is cleared.
-	 * If the string is longer than the field, the text is truncated. A
-	 * subsequent call to getText on this field will not show the changed text.
-	 * To see the changed text, do a refresh on the iOhioFields collection and
-	 * retrieve the refreshed field object.
-	 *
-	 * @param text
-	 *            - The text to be placed in the field's text plane.
-	 */
-	public void setString(String text) {
-		s.fireSetFieldString(this,text);
-		cursorPos = isRightToLeft() ? endPos - text.length() + 1 : startPos;
-
-		if (isRightToLeft()) {
-			text = new StringBuilder(text).reverse().toString();
-		}
-
-		for (int x = 0, textLen = text.length(); x < length; x++) {
-			char tc = x < textLen ? text.charAt(x) : ' ';
-			s.getPlanes().setChar(cursorPos, tc);
-			changePos(1);
-		}
-		setMDT();
-		s.getScreenFields().setMasterMDT();
-	}
-
-	@Override
-	public String toString() {
-		int fcw = (fcw1 & 0xff) << 8 | fcw2 & 0xff;
-		return "startRow = " + startRow() + " startCol = " + startCol()
-				+ " length = " + length + " ffw1 = (0x"
-				+ Integer.toHexString(ffw1) + ") ffw2 = (0x"
-				+ Integer.toHexString(ffw2) + ") fcw1 = (0x"
-				+ Integer.toHexString(fcw1) + ") fcw2 = (0x"
-				+ Integer.toHexString(fcw2) + ") fcw = ("
-				+ Integer.toBinaryString(fcw) + ") fcw hex = (0x"
-				+ Integer.toHexString(fcw) + ") is bypass field = "
-				+ isBypassField() + ") is autoenter = " + isAutoEnter()
-				+ ") is manditoryenter = " + isMandatoryEnter()
-				+ ") is field exit required = " + isFER() + ") is Numeric = "
-				+ isNumeric() + ") is Signed Numeric = " + isSignedNumeric()
-				+ ") is cursor progression = " + (fcw1 == 0x88)
-				+ ") next progression field = " + fcw2 + ") field id "
-				+ fieldId + " continued edit field = " + isContinued()
-				+ " first continued edit field = " + isContinuedFirst()
-				+ " middle continued edit field = " + isContinuedMiddle()
-				+ " last continued edit field = " + isContinuedLast()
-				+ " mdt = " + mdt;
-	}
-
-	int startPos = 0;
-	int endPos = 0;
-	boolean mdt = false;
-	protected boolean checkCanSend;
-	protected boolean rightAdjd;
-	protected boolean manditoried;
-	boolean canSend = true;
-	int attr = 0;
-	int length = 0;
-	int ffw1 = 0;
-	int ffw2 = 0;
-	int fcw1 = 0;
-	int fcw2 = 0;
-	int cursorPos = 0;
-	Screen5250 s;
-	int cursorProg = 0;
-	int fieldId = 0;
-	ScreenField next = null;
-	ScreenField prev = null;
-	boolean isSelectionField;
-	int selectionFieldType;
-	int selectionIndex;
-	int selectionPos;
 }

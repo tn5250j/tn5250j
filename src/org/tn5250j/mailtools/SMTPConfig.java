@@ -1,4 +1,4 @@
-/**
+/*
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -25,271 +25,250 @@
  */
 package org.tn5250j.mailtools;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+class SMTPConfig extends JDialog {
 
-import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.LangTool;
+  private static final long serialVersionUID = 1L;
 
-public class SMTPConfig extends JDialog {
+  static final String SMTP_FILE_NAME = "SMTPProperties.cfg";
 
-	private static final long serialVersionUID = 1L;
+  private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-	JPanel mainPanel = new JPanel();
-	BorderLayout borderLayout1 = new BorderLayout();
-	JPanel configPanel = new JPanel(new GridBagLayout());
-	GridBagConstraints gbc;
-	JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-	JLabel labelHost = new JLabel();
-	JTextField fieldHost = new JTextField();
-	JLabel labelPort = new JLabel();
-	JTextField fieldPort = new JTextField();
-	JLabel labelDefault = new JLabel();
-	JLabel labelName = new JLabel();
-	JTextField fieldName = new JTextField();
-	JLabel labelFrom = new JLabel();
-	JTextField fieldFrom = new JTextField();
-	JButton optDone = new JButton();
-	JButton optCancel = new JButton();
-	JLabel labelFileName = new JLabel();
-	JTextField fieldFileName = new JTextField();
-	Properties SMTPProperties;
-	//   String fileName;
+  private final JTextField fieldHost = new JTextField();
+  private final JTextField fieldPort = new JTextField();
+  private final JTextField fieldName = new JTextField();
+  private final JTextField fieldFrom = new JTextField();
+  private final JTextField fieldFileName = new JTextField();
 
-	private static final String smtpFileName = "SMTPProperties.cfg";
+  private Properties smtpProperties;
 
-	public SMTPConfig(Frame frame, String title, boolean modal) {
-		super(frame, title, modal);
-		try {
-			jbInit();
-			pack();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+  public SMTPConfig(Frame frame, String title, boolean modal) {
+    super(frame, title, modal);
+    initLayout();
+    pack();
+  }
 
-	public SMTPConfig() {
-		this(null, "", false);
-	}
+  private void initLayout() {
+    setTitle(LangTool.getString("em.configTitle"));
 
-	void jbInit() throws Exception {
+    JPanel mainPanel = new JPanel();
+    BorderLayout borderLayout1 = new BorderLayout();
+    JPanel configPanel = new JPanel(new GridBagLayout());
+    JPanel optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    JLabel labelHost = new JLabel();
+    JLabel labelPort = new JLabel();
+    JLabel labelDefault = new JLabel();
+    JLabel labelName = new JLabel();
+    JLabel labelFrom = new JLabel();
+    JButton optDone = new JButton();
+    JButton optCancel = new JButton();
+    JLabel labelFileName = new JLabel();
 
-		setTitle(LangTool.getString("em.configTitle"));
-		mainPanel.setLayout(borderLayout1);
-		labelHost.setText(LangTool.getString("em.labelHost"));
-		fieldHost.setColumns(20);
-		labelPort.setText(LangTool.getString("em.labelPort"));
-		fieldPort.setColumns(3);
-		labelDefault.setText(LangTool.getString("em.labelDefault"));
-		labelName.setText(LangTool.getString("em.labelName"));
-		fieldName.setColumns(20);
-		labelFrom.setText(LangTool.getString("em.labelFrom"));
-		fieldFrom.setColumns(20);
-		optDone.setPreferredSize(new Dimension(100, 27));
-		optDone.setText(LangTool.getString("em.optDone"));
-		optDone.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				optDone_actionPerformed(e);
-			}
-		});
+    mainPanel.setLayout(borderLayout1);
+    labelHost.setText(LangTool.getString("em.labelHost"));
+    fieldHost.setColumns(20);
+    labelPort.setText(LangTool.getString("em.labelPort"));
+    fieldPort.setColumns(3);
+    labelDefault.setText(LangTool.getString("em.labelDefault"));
+    labelName.setText(LangTool.getString("em.labelName"));
+    fieldName.setColumns(20);
+    labelFrom.setText(LangTool.getString("em.labelFrom"));
+    fieldFrom.setColumns(20);
+    optDone.setPreferredSize(new Dimension(100, 27));
+    optDone.setText(LangTool.getString("em.optDone"));
+    optDone.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        optDone_actionPerformed(e);
+      }
+    });
 
-		optCancel.setPreferredSize(new Dimension(100, 27));
-		optCancel.setText(LangTool.getString("em.optCancelLabel"));
-		optCancel.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				optCancel_actionPerformed(e);
-			}
-		});
+    optCancel.setPreferredSize(new Dimension(100, 27));
+    optCancel.setText(LangTool.getString("em.optCancelLabel"));
+    optCancel.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        SMTPConfig.this.setVisible(false);
+      }
+    });
 
-		labelFileName.setText(LangTool.getString("em.labelFileName"));
-		fieldFileName.setText("tn5250j.txt");
-		fieldFileName.setColumns(20);
+    labelFileName.setText(LangTool.getString("em.labelFileName"));
+    fieldFileName.setText("tn5250j.txt");
+    fieldFileName.setColumns(20);
 
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		//gbc.gridwidth = 1;
-		gbc.insets = new Insets(10, 10, 5, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(labelHost, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 1;
-		gbc.gridy = 0;
-		gbc.gridwidth = 2;
-		gbc.insets = new Insets(10, 5, 5, 10);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(fieldHost, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.insets = new Insets(5, 10, 5, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(labelPort, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 1;
-		gbc.gridy = 1;
-		gbc.insets = new Insets(5, 5, 5, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(fieldPort, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 2;
-		gbc.gridy = 1;
-		gbc.insets = new Insets(5, 15, 5, 10);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(labelDefault, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		gbc.insets = new Insets(5, 10, 5, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(labelName, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 1;
-		gbc.gridy = 2;
-		gbc.gridwidth = 2;
-		gbc.insets = new Insets(5, 5, 5, 10);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(fieldName, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 3;
-		gbc.insets = new Insets(5, 10, 5, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(labelFrom, gbc);
-		gbc.gridx = 1;
-		gbc.gridy = 3;
-		gbc.gridwidth = 2;
-		gbc.insets = new Insets(5, 5, 5, 10);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(fieldFrom, gbc);
-		gbc.gridx = 0;
-		gbc.gridy = 4;
-		gbc.gridwidth = 1;
-		gbc.insets = new Insets(5, 10, 0, 5);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(labelFileName, gbc);
-		gbc.gridx = 1;
-		gbc.gridy = 4;
-		gbc.gridwidth = 2;
-		gbc.insets = new Insets(5, 5, 0, 10);
-		gbc.anchor = GridBagConstraints.WEST;
-		configPanel.add(fieldFileName, gbc);
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    //gbc.gridwidth = 1;
+    gbc.insets = new Insets(10, 10, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(labelHost, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    gbc.gridwidth = 2;
+    gbc.insets = new Insets(10, 5, 5, 10);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(fieldHost, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    gbc.insets = new Insets(5, 10, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(labelPort, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 1;
+    gbc.insets = new Insets(5, 5, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(fieldPort, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 2;
+    gbc.gridy = 1;
+    gbc.insets = new Insets(5, 15, 5, 10);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(labelDefault, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 2;
+    gbc.insets = new Insets(5, 10, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(labelName, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 2;
+    gbc.gridwidth = 2;
+    gbc.insets = new Insets(5, 5, 5, 10);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(fieldName, gbc);
+    gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 3;
+    gbc.insets = new Insets(5, 10, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(labelFrom, gbc);
+    gbc.gridx = 1;
+    gbc.gridy = 3;
+    gbc.gridwidth = 2;
+    gbc.insets = new Insets(5, 5, 5, 10);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(fieldFrom, gbc);
+    gbc.gridx = 0;
+    gbc.gridy = 4;
+    gbc.gridwidth = 1;
+    gbc.insets = new Insets(5, 10, 0, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(labelFileName, gbc);
+    gbc.gridx = 1;
+    gbc.gridy = 4;
+    gbc.gridwidth = 2;
+    gbc.insets = new Insets(5, 5, 0, 10);
+    gbc.anchor = GridBagConstraints.WEST;
+    configPanel.add(fieldFileName, gbc);
 
-		mainPanel.add(configPanel, BorderLayout.NORTH);
-		optionsPanel.add(optDone);
-		optionsPanel.add(optCancel);
-		mainPanel.add(optionsPanel, BorderLayout.SOUTH);
+    mainPanel.add(configPanel, BorderLayout.NORTH);
+    optionsPanel.add(optDone);
+    optionsPanel.add(optCancel);
+    mainPanel.add(optionsPanel, BorderLayout.SOUTH);
 
-		getContentPane().add(mainPanel);
+    getContentPane().add(mainPanel);
 
-		if (loadConfig(null)) {
+    try {
+      if (loadConfig(null)) {
+        setProperties();
+      }
+    } catch (Exception e) {
+      log.warn(e);
+    }
 
-			setProperties();
+    centerMe();
 
-		}
+  }
 
-		centerMe();
+  private void centerMe() {
+    pack();
 
-	}
+    //Center the window
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension frameSize = getSize();
+    if (frameSize.height > screenSize.height)
+      frameSize.height = screenSize.height;
+    if (frameSize.width > screenSize.width)
+      frameSize.width = screenSize.width;
 
-	private void centerMe() {
-		pack();
+    setLocation(
+        (screenSize.width - frameSize.width) / 2,
+        (screenSize.height - frameSize.height) / 2);
 
-		//Center the window
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension frameSize = getSize();
-		if (frameSize.height > screenSize.height)
-			frameSize.height = screenSize.height;
-		if (frameSize.width > screenSize.width)
-			frameSize.width = screenSize.width;
+  }
 
-		setLocation(
-			(screenSize.width - frameSize.width) / 2,
-			(screenSize.height - frameSize.height) / 2);
+  private void setProperties() {
 
-	}
+    //   mail.smtp.host=            Fill in the host name or ip address of your SMTP
+    //                              mail server.
+    //
+    //   mail.smtp.port=            Fill in the port to use to connect
+    //
+    //   mail.smtp.from=            This is the e-mail address from.  For example I would
+    //                              place kjpou@hotmail.com here as follows:
+    //
+    //                              mail.smtp.from=kjpou@hotmail.com
 
-	private void setProperties() {
+    fieldHost.setText(smtpProperties.getProperty("mail.smtp.host"));
+    fieldPort.setText(smtpProperties.getProperty("mail.smtp.port"));
+    fieldFrom.setText(smtpProperties.getProperty("mail.smtp.from"));
+    fieldName.setText(smtpProperties.getProperty("mail.smtp.realname"));
 
-		//   mail.smtp.host=            Fill in the host name or ip address of your SMTP
-		//                              mail server.
-		//
-		//   mail.smtp.port=            Fill in the port to use to connect
-		//
-		//   mail.smtp.from=            This is the e-mail address from.  For example I would
-		//                              place kjpou@hotmail.com here as follows:
-		//
-		//                              mail.smtp.from=kjpou@hotmail.com
+    // file name
+    fieldFileName.setText(smtpProperties.getProperty("fileName"));
 
-		fieldHost.setText(SMTPProperties.getProperty("mail.smtp.host"));
-		fieldPort.setText(SMTPProperties.getProperty("mail.smtp.port"));
-		fieldFrom.setText(SMTPProperties.getProperty("mail.smtp.from"));
-		fieldName.setText(SMTPProperties.getProperty("mail.smtp.realname"));
+  }
 
-		// file name
-		fieldFileName.setText(SMTPProperties.getProperty("fileName"));
+  /**
+   * <p>Loads the given configuration file.
+   *
+   * @param name Configuration file name
+   * @return true if the configuration file was loaded
+   */
+  private boolean loadConfig(String name) throws Exception {
 
-	}
+    smtpProperties = ConfigureFactory.getInstance().getProperties("smtp", SMTP_FILE_NAME);
 
-	/**
-	 * <p>Loads the given configuration file.
-	 *
-	 * @param name Configuration file name
-	 * @return true if the configuration file was loaded
-	 */
-	private boolean loadConfig(String name) throws Exception {
+    if (smtpProperties.size() > 0)
+      return true;
+    else
+      return false;
+  }
 
-		SMTPProperties =
-			ConfigureFactory.getInstance().getProperties("smtp", smtpFileName);
+  private void optDone_actionPerformed(ActionEvent e) {
 
-		if (SMTPProperties.size() > 0)
-			return true;
-		else
-			return false;
-	}
+    smtpProperties.setProperty("mail.smtp.host", fieldHost.getText());
+    smtpProperties.setProperty("mail.smtp.port", fieldPort.getText());
+    smtpProperties.setProperty("mail.smtp.from", fieldFrom.getText());
+    smtpProperties.setProperty("mail.smtp.realname", fieldName.getText());
 
-	private void optDone_actionPerformed(ActionEvent e) {
+    // file name
+    smtpProperties.setProperty("fileName", fieldFileName.getText());
 
-		SMTPProperties.setProperty("mail.smtp.host", fieldHost.getText());
-		SMTPProperties.setProperty("mail.smtp.port", fieldPort.getText());
-		SMTPProperties.setProperty("mail.smtp.from", fieldFrom.getText());
-		SMTPProperties.setProperty("mail.smtp.realname", fieldName.getText());
+    for (Enumeration<?> x = smtpProperties.propertyNames();
+         x.hasMoreElements();
+        )
+      System.out.println(smtpProperties.get(x.nextElement()));
 
-		// file name
-		SMTPProperties.setProperty("fileName", fieldFileName.getText());
+    ConfigureFactory.getInstance().saveSettings(
+        "smtp",
+        SMTP_FILE_NAME,
+        "------ SMTP Defaults --------");
+    this.setVisible(false);
 
-		for (Enumeration<?> x = SMTPProperties.propertyNames();
-			x.hasMoreElements();
-			)
-			System.out.println(SMTPProperties.get(x.nextElement()));
-
-		ConfigureFactory.getInstance().saveSettings(
-			"smtp",
-			smtpFileName,
-			"------ SMTP Defaults --------");
-		this.setVisible(false);
-
-	}
-
-	void optCancel_actionPerformed(ActionEvent e) {
-
-		this.setVisible(false);
-
-	}
+  }
 
 }
