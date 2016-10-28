@@ -1808,7 +1808,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 		int lc = 0;
 
 
-		updateRect = new Data (sr,sc,er,ec);
+		updateRect = new Data (screen,sr,sc,er,ec);
 
 		Rectangle clipper = new Rectangle();
 
@@ -2010,12 +2010,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 	protected Data fillData(int startRow, int startCol, int endRow, int endCol) {
 
-		return new Data(startRow, startCol, endRow, endCol );
+		return new Data(screen,startRow, startCol, endRow, endCol );
 
 	}
 
-	protected class Data {
-
+	public static class Data {
 
 		public Data(char[] text, char[] attr, char[] color, char[] extended, char[] graphic) {
 			this.text = text;
@@ -2025,8 +2024,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 			this.attr = attr;
 			this.field = null;
 		}
+		
+		public Data(Screen5250 screen){
+			this(screen,1,1,screen.getRows(),screen.getColumns());
+		}
 
-		public Data(int startRow, int startCol, int endRow, int endCol) {
+		public Data(Screen5250 screen,int startRow, int startCol, int endRow, int endCol) {
 			startRow++;
 			startCol++;
 			endRow++;
@@ -2041,7 +2044,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 			graphic = new char[size];
 			field = new char[size];
 
-			if (size == lenScreen) {
+			if (size == screen.getScreenLength()) {
 				screen.GetScreen(text, size, TN5250jConstants.PLANE_TEXT);
 				screen.GetScreen(attr, size, TN5250jConstants.PLANE_ATTR);
 				screen.GetScreen(isAttr, size, TN5250jConstants.PLANE_IS_ATTR_PLACE);
