@@ -26,6 +26,7 @@
 package org.tn5250j.framework.tn5250;
 
 import static org.tn5250j.TN5250jConstants.*;
+import static org.tn5250j.tools.system.OperatingSystem.displayURL;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -67,7 +68,6 @@ public class Screen5250 {
 	final static char initChar = 0;
 
 	private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
-	private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
 	private ScreenFields screenFields;
 	private int lastAttr;
@@ -78,8 +78,8 @@ public class Screen5250 {
 	private int numRows = 0;
 	private int numCols = 0;
 
-	public boolean cursorActive = false;
-	public boolean cursorShown = false;
+	private boolean cursorActive = false;
+	private boolean cursorShown = false;
 	private boolean keyProcessed = false;
 	private Rect dirtyScreen = new Rect();
 
@@ -284,8 +284,7 @@ public class Screen5250 {
 				//   the beginning of the screen space.
 				if (cpos > length)
 					cpos = 0;
-			}
-			else {
+			}	else {
 
 				// we will default to set the character always.
 				setIt = true;
@@ -437,12 +436,13 @@ public class Screen5250 {
 
 			// lets check for hot spots
 			if (g >= BUTTON_LEFT && g <= BUTTON_LAST) {
-				StringBuffer aid = new StringBuffer();
+				StringBuilder aid = new StringBuilder();
 				boolean aidFlag = true;
 				switch (g) {
 				case BUTTON_RIGHT:
 				case BUTTON_MIDDLE:
 					while (planes.getWhichGUI(--pos) != BUTTON_LEFT) {
+						// do nothing
 					}
 				case BUTTON_LEFT:
 					if (planes.getChar(pos) == 'F') {
@@ -487,14 +487,12 @@ public class Screen5250 {
 					case BUTTON_LEFT_EB:
 					case BUTTON_MIDDLE_EB:
 					case BUTTON_RIGHT_EB:
-						StringBuffer eb = new StringBuffer();
-						while (planes.getWhichGUI(pos--) != BUTTON_LEFT_EB)
-							;
+						StringBuilder eb = new StringBuilder();
+						while (planes.getWhichGUI(pos--) != BUTTON_LEFT_EB);
 						while (planes.getWhichGUI(pos++) != BUTTON_RIGHT_EB) {
 							eb.append(planes.getChar(pos));
 						}
-						org.tn5250j.tools.system.OperatingSystem.displayURL(eb
-								.toString());
+						displayURL(eb.toString());
 						// take out the log statement when we are sure it is
 						// working
 						log.info("Send to external Browser: " + eb.toString());
@@ -511,11 +509,8 @@ public class Screen5250 {
 					if (screenFields.getCurrentField() != null) {
 						int xPos = screenFields.getCurrentField().startPos();
 						for (int x = 0; x < aid.length(); x++) {
-							//                  System.out.println(sr + "," + (sc + x) + " " +
-							// aid.charAt(x));
 							planes.setChar(xPos + x , aid.charAt(x));
 						}
-						//                  System.out.println(aid);
 						screenFields.setCurrentFieldMDT();
 						sessionVT.sendAidKey(AID_ENTER);
 					}
@@ -588,9 +583,6 @@ public class Screen5250 {
 		updateCursorLoc();
 	}
 
-	/**
-	 *
-	 */
 	private void updateCursorLoc() {
 		if (cursorActive) {
 			fireCursorChanged(3);
@@ -625,9 +617,7 @@ public class Screen5250 {
 	public synchronized void sendKeys(String text) {
 
 		fireSendKeys(text);
-		//      if (text == null) {
-		//         return;
-		//      }
+
 		this.keybuf.append(text);
 
 		if (isStatusErrorCode() && !resetRequired) {
@@ -764,8 +754,7 @@ public class Screen5250 {
 	 * @see #AID_PF24
 	 */
 	public void sendAid(int aidKey) {
-
-		sessionVT.sendAidKey(aidKey);
+    sessionVT.sendAidKey(aidKey);
 	}
 
 	/**
@@ -1766,7 +1755,6 @@ public class Screen5250 {
 	 * @return
 	 */
 	public int getPos(int row, int col) {
-
 		return (row * numCols) + col;
 	}
 
@@ -1777,10 +1765,7 @@ public class Screen5250 {
 	 * @return int
 	 */
 	public int getCurrentPos() {
-
-		//		return lastPos + numCols + 1;
 		return lastPos + 1;
-
 	}
 
 	/**
@@ -1900,7 +1885,6 @@ public class Screen5250 {
 	}
 
 	public boolean isUsingGuiInterface() {
-
 		return guiInterface;
 	}
 
@@ -1940,7 +1924,6 @@ public class Screen5250 {
 	 * @return true or false
 	 */
 	public boolean isInField(int pos) {
-
 		return screenFields.isInField(pos, true);
 	}
 
@@ -2794,7 +2777,7 @@ public class Screen5250 {
 
 	public void dumpScreen() {
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		char[] s = getScreenAsChars();
 		int c = getColumns();
 		int l = getRows() * c;
