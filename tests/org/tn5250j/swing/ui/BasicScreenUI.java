@@ -1,6 +1,6 @@
 package org.tn5250j.swing.ui;
 
-import org.tn5250j.event.ScreenListener;
+import org.tn5250j.api.screen.ScreenListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.tools.GUIGraphicsUtils;
 
@@ -818,4 +818,14 @@ class BasicScreen extends BasicSubUI implements ScreenListener {
   transient int rows;
   transient boolean cursorEnabled;
   transient Rectangle cursorRectangle = new Rectangle();
+
+  @Override
+  public void onKeysSent(Screen5250 screen, String keys) {
+    // nothing to do
+  }
+
+  @Override
+  public void onCursorMoved(Screen5250 screen, int pos) {
+    // nothing to do
+  }
 }

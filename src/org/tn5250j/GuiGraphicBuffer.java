@@ -25,8 +25,9 @@
  */
 package org.tn5250j;
 
-import org.tn5250j.api.ScreenPlanes;
-import org.tn5250j.event.ScreenListener;
+import org.tn5250j.api.screen.ScreenListenerAdapter;
+import org.tn5250j.api.screen.ScreenPlanes;
+import org.tn5250j.api.screen.ScreenListener;
 import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
@@ -55,7 +56,6 @@ import static org.tn5250j.SessionConfig.YES;
 import static org.tn5250j.tools.GUIGraphicsUtils.*;
 
 public class GuiGraphicBuffer implements ScreenOIAListener,
-    ScreenListener,
     PropertyChangeListener,
     SessionConfigListener,
     ActionListener {
@@ -173,7 +173,17 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         + lm.getDescent() + lm.getLeading());
 
     screen.getOIA().addOIAListener(this);
-    screen.addScreenListener(this);
+    screen.addScreenListener(new ScreenListenerAdapter() {
+      @Override
+      public void onScreenSizeChanged(int rows, int columns) {
+        GuiGraphicBuffer.this.onScreenSizeChanged(rows, columns);
+      }
+
+      @Override
+      public void onScreenChanged(int inUpdate, int startRow, int startCol, int endRow, int endCol) {
+        GuiGraphicBuffer.this.onScreenChanged(inUpdate, startRow, startCol, endRow, endCol);
+      }
+    });
     textArea = new Rectangle2D.Float();
     commandLineArea = new Rectangle2D.Float();
     allScreenArea = new Rectangle2D.Float();
@@ -1520,12 +1530,12 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
   }
 
-  public void onScreenSizeChanged(int rows, int cols) {
+  private void onScreenSizeChanged(int rows, int cols) {
     log.info("screen size change");
     gui.resizeMe();
   }
 
-  public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
+  private void onScreenChanged(int which, int sr, int sc, int er, int ec) {
     if (which == 3 || which == 4) {
       drawCursor(sr, sc);
       return;

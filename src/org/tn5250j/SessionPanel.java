@@ -188,10 +188,8 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
   public void setRunningHeadless(boolean headless) {
     if (headless) {
       screen.getOIA().removeOIAListener(guiGraBuf);
-      screen.removeScreenListener(guiGraBuf);
     } else {
       screen.getOIA().addOIAListener(guiGraBuf);
-      screen.addScreenListener(guiGraBuf);
     }
   }
 
@@ -693,7 +691,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
    * @param which formatting option to use
    * @return vector string of numeric values
    */
-  protected final Vector<Double> sumThem(boolean which) {
+  protected final java.util.List<Double> sumThem(boolean which) {
     log.debug("Summing");
     return screen.sumThem(which, getBoundingArea());
   }

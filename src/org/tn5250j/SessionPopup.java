@@ -546,16 +546,15 @@ public class SessionPopup {
     createKeyboardItem(menu, keyMnemonic.mnemonic);
   }
 
-  private void createKeyboardItem(JMenu menu, String key) {
+  private void createKeyboardItem(JMenu menu, final String key) {
 
     if (OptionAccessFactory.getInstance().isValidOption(key)) {
-      final String key2 = key;
       Action action = new AbstractAction(LangTool.getString("key." + key)) {
         private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent e) {
-          screen.sendKeys(key2);
+          screen.sendKeys(key);
         }
       };
 

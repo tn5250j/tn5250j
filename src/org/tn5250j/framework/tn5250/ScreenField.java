@@ -27,7 +27,7 @@ package org.tn5250j.framework.tn5250;
 
 public class ScreenField {
 
-  private Screen5250 screen5250;
+  private final Screen5250 screen5250;
   private int startPos = 0;
   private int endPos = 0;
   private boolean mdt = false;
@@ -62,8 +62,6 @@ public class ScreenField {
   protected ScreenField setField(int attr, int row, int col, int len,
                                  int ffw1, int ffw2, int fcw1, int fcw2) {
 
-    // startRow = row;
-    // startCol = col;
     startPos = (row * screen5250.getColumns()) + col;
     endPos = startPos + length - 1;
     cursorProg = 0;
@@ -73,12 +71,9 @@ public class ScreenField {
     this.attr = attr;
     setFFWs(ffw1, ffw2);
     setFCWs(fcw1, fcw2);
-
     next = null;
     prev = null;
-
     return this;
-
   }
 
   public int getAttr() {
@@ -127,13 +122,10 @@ public class ScreenField {
   }
 
   protected void setFCWs(int fcw1, int fcw2) {
-
     this.fcw1 = fcw1;
     this.fcw2 = fcw2;
-
     // if ((fcw1 & 0x88) == 0x88) {
     if (fcw1 == 0x88) {
-
       cursorProg = fcw2;
     }
   }
@@ -168,19 +160,16 @@ public class ScreenField {
   }
 
   public int getCursorCol() {
-
     return cursorPos % screen5250.getColumns();
   }
 
   protected void changePos(int i) {
-
     cursorPos += i;
-
   }
 
   protected String getText() {
 
-    StringBuffer text = new StringBuffer();
+    StringBuilder text = new StringBuilder();
     getKeyPos(endPos);
     int x = length;
     text.setLength(x);
@@ -223,8 +212,7 @@ public class ScreenField {
   }
 
   public String getString() {
-
-    StringBuffer text = new StringBuffer();
+    StringBuilder text = new StringBuilder();
     getKeyPos(endPos);
     int x = length;
     text.setLength(x);
@@ -262,12 +250,8 @@ public class ScreenField {
         sf = sf.next;
         text.append(sf.getString());
       } while (!sf.isContinuedLast());
-
-      sf = null;
     }
-
     return text.toString();
-
   }
 
   public void setFieldChar(char c) {
@@ -297,13 +281,11 @@ public class ScreenField {
   }
 
   protected void setManditoryEntered() {
-
     manditoried = true;
   }
 
   protected void resetMDT() {
     mdt = false;
-
   }
 
   protected void setMDT() {
@@ -325,58 +307,42 @@ public class ScreenField {
   }
 
   public boolean isBypassField() {
-
     return (ffw1 & 0x20) == 0x20;
-
   }
 
   public int getAdjustment() {
-
     return (ffw2 & 0x7);
   }
 
   // is field exit required
   public boolean isFER() {
-
     return (ffw2 & 0x40) == 0x40;
   }
 
   // is field manditory enter
   public boolean isMandatoryEnter() {
-
     return (ffw2 & 0x8) == 0x8;
-
   }
 
   public boolean isToUpper() {
-
     return (ffw2 & 0x20) == 0x20;
-
   }
 
   // bits 5 - 7
   public int getFieldShift() {
-
     return (ffw1 & 0x7);
-
   }
 
   public boolean isHiglightedEntry() {
-
     return (fcw1 == 0x89);
-
   }
 
   public boolean isAutoEnter() {
-
     return (ffw2 & 0x80) == 0x80;
-
   }
 
   public boolean isSignedNumeric() {
-
     return (getFieldShift() == 7);
-
   }
 
   public boolean isRightToLeft() {
@@ -384,39 +350,27 @@ public class ScreenField {
   }
 
   public boolean isNumeric() {
-
     return (getFieldShift() == 3);
-
   }
 
   public boolean isDupEnabled() {
-
     return (ffw1 & 0x10) == 0x10;
-
   }
 
   public boolean isContinued() {
-
     return (fcw1 & 0x86) == 0x86 && (fcw2 >= 1 && fcw2 <= 3);
-
   }
 
   public boolean isContinuedFirst() {
-
     return (fcw1 & 0x86) == 0x86 && (fcw2 == 1);
-
   }
 
   public boolean isContinuedMiddle() {
-
     return (fcw1 & 0x86) == 0x86 && (fcw2 == 3);
-
   }
 
   public boolean isContinuedLast() {
-
     return (fcw1 & 0x86) == 0x86 && (fcw2 == 2);
-
   }
 
   protected boolean isCanSend() {
@@ -455,53 +409,35 @@ public class ScreenField {
   }
 
   public boolean isSelectionField() {
-
     return isSelectionField;
-
   }
 
   public void setSelectionFieldInfo(int type, int index, int position) {
-
     selectionIndex = index;
     selectionPos = position;
     isSelectionField = true;
-
   }
 
   protected int getKeyPos(int row1, int col1) {
-
     int x = ((row1 * screen5250.getColumns()) + col1);
-    int y = x - startPos();
+    int y = x - startPos;
     cursorPos = x;
-
     return y;
   }
 
   protected int getKeyPos(int pos) {
-
-    int y = pos - startPos();
+    int y = pos - startPos;
     cursorPos = pos;
-
     return y;
   }
 
-  public int getCurrentPos() {
 
-    return cursorPos;
-  }
 
   public boolean withinField(int pos) {
-
     if (pos >= startPos && pos <= endPos) {
       return true;
     }
     return false;
-
-  }
-
-  public int startPos() {
-
-    return startPos;
   }
 
   /**
@@ -510,10 +446,8 @@ public class ScreenField {
    *
    * @return int starting row of the field offset 0
    */
-  public int startRow() {
-
+  public int getStartRow() {
     return startPos / screen5250.getColumns();
-
   }
 
   /**
@@ -522,16 +456,16 @@ public class ScreenField {
    *
    * @return int starting column of the field offset 0
    */
-  public int startCol() {
-
+  public int getStartCol() {
     return startPos % screen5250.getColumns();
-
   }
 
-  public int endPos() {
+  public int getCurrentPos() {
+    return cursorPos;
+  }
 
+  public int getEndPos() {
     return endPos;
-
   }
 
   /**
@@ -545,7 +479,7 @@ public class ScreenField {
    * @param text - The text to be placed in the field'screen5250 text plane.
    */
   public void setString(String text) {
-    screen5250.fireSetFieldString(this, text);
+    screen5250.fireOnFieldTextChanged(this, text);
     cursorPos = isRightToLeft() ? endPos - text.length() + 1 : startPos;
 
     if (isRightToLeft()) {
@@ -593,10 +527,11 @@ public class ScreenField {
     return selectionIndex;
   }
 
+
   @Override
   public String toString() {
     int fcw = (fcw1 & 0xff) << 8 | fcw2 & 0xff;
-    return "startRow = " + startRow() + " startCol = " + startCol()
+    return "startRow = " + getStartRow() + " startCol = " + getStartCol()
         + " length = " + length + " ffw1 = (0x"
         + Integer.toHexString(ffw1) + ") ffw2 = (0x"
         + Integer.toHexString(ffw2) + ") fcw1 = (0x"

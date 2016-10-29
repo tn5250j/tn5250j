@@ -25,8 +25,8 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import org.tn5250j.event.ScreenListener;
-import org.tn5250j.event.SessionKeysListener;
+import org.tn5250j.api.screen.FieldListener;
+import org.tn5250j.api.screen.ScreenListener;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -38,7 +38,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import static org.tn5250j.TN5250jConstants.*;
 import static org.tn5250j.tools.system.OperatingSystem.displayURL;
@@ -69,6 +68,9 @@ public class Screen5250 {
 
   private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
+  private final List<ScreenListener> screenListeners = new ArrayList<ScreenListener>(3);
+  private final List<FieldListener> fieldListeners = new ArrayList<FieldListener>(3);
+
   private ScreenFields screenFields;
   private int lastAttr;
   private int lastPos;
@@ -80,7 +82,6 @@ public class Screen5250 {
 
   private boolean cursorActive = false;
   private boolean cursorShown = false;
-  private boolean keyProcessed = false;
   private Rect dirtyScreen = new Rect();
 
   public int homePos = 0;
@@ -96,8 +97,6 @@ public class Screen5250 {
   private boolean backspaceError = true;
   private boolean feError;
 
-  private Vector<ScreenListener> screenListeners = null;
-  List<SessionKeysListener> keysListeners = new ArrayList<SessionKeysListener>();
   private ScreenOIA oia;
   protected ExtendedScreenPlanesImpl planes;
   private StringBuffer keybuf;
@@ -330,9 +329,9 @@ public class Screen5250 {
 
   /**
    * @param formatOption formatting option to use
-   * @return vector string of numberic values
+   * @return List string of numberic values
    */
-  public final Vector<Double> sumThem(boolean formatOption, Rect area) {
+  public final List<Double> sumThem(boolean formatOption, Rect area) {
 
     StringBuilder sb = new StringBuilder();
     Rect workR = new Rect();
@@ -355,7 +354,7 @@ public class Screen5250 {
 
     df.setDecimalFormatSymbols(dfs);
 
-    Vector<Double> sumVector = new Vector<Double>();
+    List<Double> sumList = new ArrayList<Double>();
 
     // loop through all the screen characters to send them to the clip board
     int m = workR.x;
@@ -389,7 +388,7 @@ public class Screen5250 {
         }
         try {
           Number n = df.parse(sb.toString());
-          sumVector.add(n.doubleValue());
+          sumList.add(n.doubleValue());
           sum += n.doubleValue();
         } catch (ParseException pe) {
           log.warn(pe.getMessage() + " at "
@@ -400,7 +399,7 @@ public class Screen5250 {
       m++;
     }
     log.debug("" + sum);
-    return sumVector;
+    return sumList;
   }
 
   /**
@@ -497,7 +496,7 @@ public class Screen5250 {
           }
         } else {
           if (screenFields.getCurrentField() != null) {
-            int xPos = screenFields.getCurrentField().startPos();
+            int xPos = screenFields.getCurrentField().getStartPos();
             for (int x = 0; x < aid.length(); x++) {
               planes.setChar(xPos + x, aid.charAt(x));
             }
@@ -522,7 +521,7 @@ public class Screen5250 {
 
       // return back to the calling object that the cursor was indeed
       //  moved with in the screen object
-      fireCursorMoved(pos);
+      fireOnCursorMoved(pos);
       return true;
       //				}
     }
@@ -575,7 +574,7 @@ public class Screen5250 {
 
   private void updateCursorLoc() {
     if (cursorActive) {
-      fireCursorChanged(3);
+      fireCursorChanged();
     }
   }
 
@@ -606,7 +605,7 @@ public class Screen5250 {
    */
   public synchronized void sendKeys(String text) {
 
-    fireSendKeys(text);
+    fireOnSendKeys(text);
 
     this.keybuf.append(text);
 
@@ -776,12 +775,12 @@ public class Screen5250 {
             && screenFields.withinCurrentField(lastPos)
             && !screenFields.isCurrentFieldBypassField()) {
 
-          if (screenFields.getCurrentField().startPos() == lastPos) {
+          if (screenFields.getCurrentField().getStartPos() == lastPos) {
             if (backspaceError)
               displayError(ERR_CURSOR_PROTECTED);
             else {
               gotoFieldPrev();
-              goto_XY(screenFields.getCurrentField().endPos());
+              goto_XY(screenFields.getCurrentField().getEndPos());
               updateDirty();
             }
           } else {
@@ -888,8 +887,7 @@ public class Screen5250 {
         if (screenFields.getCurrentField() != null
             && screenFields.withinCurrentField(lastPos)
             && !screenFields.isCurrentFieldBypassField()) {
-          int where = endOfField(screenFields.getCurrentField()
-              .startPos(), true);
+          int where = endOfField(screenFields.getCurrentField().getStartPos(), true);
           if (where > 0) {
             setCursor((where / numCols) + 1, (where % numCols) + 1);
           }
@@ -935,7 +933,7 @@ public class Screen5250 {
             && !screenFields.isCurrentFieldBypassField()) {
 
           int where = lastPos;
-          lastPos = screenFields.getCurrentField().startPos();
+          lastPos = screenFields.getCurrentField().getStartPos();
           resetDirty(lastPos);
           if (fieldExit()) {
             screenFields.setCurrentFieldMDT();
@@ -1156,7 +1154,7 @@ public class Screen5250 {
         if (screenFields.getCurrentField() != null
             && screenFields.withinCurrentField(lastPos)
             && !screenFields.isCurrentFieldBypassField()) {
-          int where = screenFields.getCurrentField().startPos();
+          int where = screenFields.getCurrentField().getStartPos();
           if (where > 0) {
             goto_XY(where);
           }
@@ -1287,6 +1285,7 @@ public class Screen5250 {
 
   protected boolean simulateKeyStroke(char c) {
 
+    boolean keyProcessed = false;
     if (isStatusErrorCode() && !Character.isISOControl(c) && !keyProcessed) {
       if (resetRequired) return false;
       resetError();
@@ -1306,9 +1305,9 @@ public class Screen5250 {
         if (screenFields.isCurrentFieldFER()
             && !screenFields.withinCurrentField(screenFields
             .getCurrentFieldPos())
-            && lastPos == screenFields.getCurrentField().endPos()
+            && lastPos == screenFields.getCurrentField().getEndPos()
             && screenFields.getCurrentFieldPos() > screenFields
-            .getCurrentField().endPos()) {
+            .getCurrentField().getEndPos()) {
 
           displayError(ERR_FIELD_EXIT_INVALID);
           feError = true;
@@ -1341,7 +1340,7 @@ public class Screen5250 {
             break;
           case 7: // Signed numeric
             if (Character.isDigit(c) || c == '+' || c == '-')
-              if (lastPos == screenFields.getCurrentField().endPos()
+              if (lastPos == screenFields.getCurrentField().getEndPos()
                   && (c != '+' && c != '-'))
                 displayError(ERR_INVALID_SIGN);
               else
@@ -1360,7 +1359,7 @@ public class Screen5250 {
 
           if (oia.isInsertMode()) {
             if (endOfField(false) != screenFields.getCurrentField()
-                .endPos())
+                .getEndPos())
               shiftRight(lastPos);
             else {
 
@@ -1406,7 +1405,7 @@ public class Screen5250 {
 
           }
 
-          fireScreenChanged(1);
+          fireScreenChanged();
 
           if (autoEnter)
             sendAid(AID_ENTER);
@@ -1454,7 +1453,7 @@ public class Screen5250 {
    */
   private int endOfField(int pos, boolean posSpace) {
 
-    int endPos = screenFields.getCurrentField().endPos();
+    int endPos = screenFields.getCurrentField().getEndPos();
     int fePos = endPos;
     // get the number of characters to the right
     int count = endPos - pos;
@@ -1485,7 +1484,7 @@ public class Screen5250 {
 
     ScreenField sf = screenFields.getCurrentField();
 
-    if (sf.isMandatoryEnter() && end == sf.startPos()) {
+    if (sf.isMandatoryEnter() && end == sf.getStartPos()) {
       displayError(ERR_MANDITORY_ENTER);
       return false;
     }
@@ -1498,10 +1497,10 @@ public class Screen5250 {
     int currentPos = sf.getCurrentPos();
 
     // get the number of characters to the right
-    int count = (end - sf.startPos()) - sf.getKeyPos(pos);
+    int count = (end - sf.getStartPos()) - sf.getKeyPos(pos);
 
     if (count == 0 && sf.isFER()) {
-      if (currentPos > sf.endPos()) {
+      if (currentPos > sf.getEndPos()) {
         mdt = true;
         return mdt;
       }
@@ -1562,7 +1561,7 @@ public class Screen5250 {
     // non blank character in field
 
     // get the number of characters to the right
-    int count = screenFields.getCurrentField().endPos() - end;
+    int count = screenFields.getCurrentField().getEndPos() - end;
 
     // subtract 1 from count for signed numeric - note for later
     if (screenFields.getCurrentField().isSignedNumeric()) {
@@ -1570,7 +1569,7 @@ public class Screen5250 {
         count--;
     }
 
-    int pos = screenFields.getCurrentField().startPos();
+    int pos = screenFields.getCurrentField().getStartPos();
 
     while (count-- >= 0) {
 
@@ -1598,7 +1597,7 @@ public class Screen5250 {
       // first
       // non blank character in field
 
-      count = (end - screenFields.getCurrentField().startPos())
+      count = (end - screenFields.getCurrentField().getStartPos())
           - screenFields.getCurrentField().getKeyPos(pPos);
 
       // now we loop through and shift the remaining characters to the
@@ -1616,7 +1615,7 @@ public class Screen5250 {
         if (screenFields.getCurrentField().isContinuedFirst())
           break;
 
-        pos = screenFields.getCurrentField().startPos();
+        pos = screenFields.getCurrentField().getStartPos();
         planes.setChar(pPos, planes.getChar(pos));
         setDirty(pPos);
 
@@ -1810,12 +1809,12 @@ public class Screen5250 {
     } else {
       if (sf != null && sf.isFER()) {
         if ((sf.getCurrentPos()
-            > sf.endPos())) {
+            > sf.getEndPos())) {
           if (sf.withinField(pos)) {
             sf.getKeyPos(pos);
             return;
           }
-          sf.getKeyPos(sf.endPos());
+          sf.getKeyPos(sf.getEndPos());
         }
       }
 
@@ -2233,7 +2232,7 @@ public class Screen5250 {
     }
     lastPos = location + x;
     if (updated) {
-      fireScreenChanged(1);
+      fireScreenChanged();
     }
 
   }
@@ -2252,10 +2251,8 @@ public class Screen5250 {
 
   // this routine is based on offset 0,0 not 1,1
   protected void goto_XY(int pos) {
-    //      setCursorOff();
     updateCursorLoc();
     lastPos = pos;
-    //      setCursorOn();
     updateCursorLoc();
   }
 
@@ -2292,7 +2289,7 @@ public class Screen5250 {
    */
   protected boolean gotoField(ScreenField screenField) {
     if (screenField != null) {
-      goto_XY(screenField.startPos());
+      goto_XY(screenField.getStartPos());
       return true;
     }
     return false;
@@ -2700,13 +2697,9 @@ public class Screen5250 {
       default:
         log.warn(" Invalid roll parameter - please report this");
     }
-    //      System.out.println(" end roll");
-    //      dumpScreen();
-
   }
 
-  public void dumpScreen() {
-
+  public String dumpScreen() {
     StringBuilder sb = new StringBuilder();
     char[] s = getScreenAsChars();
     int c = getColumns();
@@ -2719,8 +2712,7 @@ public class Screen5250 {
         col = 0;
       }
     }
-    log.info(sb.toString());
-
+    return sb.toString();
   }
 
   /**
@@ -2739,12 +2731,8 @@ public class Screen5250 {
     lastAttr = attr;
 
     planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
-
     setDirty(lastPos);
-
     advancePos();
-
-    ScreenField sf = null;
 
     // from 14.6.12 for Start of Field Order 5940 function manual
     //  examine the format table for an entry that begins at the current
@@ -2752,9 +2740,9 @@ public class Screen5250 {
     if (screenFields.existsAtPos(lastPos)) {
       screenFields.setCurrentFieldFFWs(ffw1, ffw2);
     } else {
-      sf = screenFields.setField(attr, getRow(lastPos), getCol(lastPos),
+      ScreenField sf = screenFields.setField(attr, getRow(lastPos), getCol(lastPos),
           len, ffw1, ffw2, fcw1, fcw2);
-      lastPos = sf.startPos();
+      lastPos = sf.getStartPos();
       int x = len;
 
       boolean gui = guiInterface;
@@ -2771,17 +2759,14 @@ public class Screen5250 {
         if (gui) {
           planes.setUseGUI(lastPos, FIELD_MIDDLE);
         }
-
         // now we set the field plane attributes
         planes.setScreenFieldAttr(lastPos, ffw1);
-
         advancePos();
-
       }
 
       if (gui)
         if (len > 1) {
-          planes.setUseGUI(sf.startPos(), FIELD_LEFT);
+          planes.setUseGUI(sf.getStartPos(), FIELD_LEFT);
 
           if (lastPos > 0)
             planes.setUseGUI(lastPos - 1, FIELD_RIGHT);
@@ -2791,11 +2776,8 @@ public class Screen5250 {
         } else {
           planes.setUseGUI(lastPos - 1, FIELD_ONE);
         }
-
-      //         screen[lastPos].setCharAndAttr(initChar,initAttr,true);
       setEndingAttr(initAttr);
-
-      lastPos = sf.startPos();
+      lastPos = sf.getStartPos();
     }
   }
 
@@ -2822,7 +2804,7 @@ public class Screen5250 {
       sf = screenFields.getField(x);
 
       if (!sf.isBypassField()) {
-        int pos = sf.startPos();
+        int pos = sf.getStartPos();
 
         int l = sf.getLength();
 
@@ -2854,8 +2836,6 @@ public class Screen5250 {
         }
       }
     }
-
-    //updateDirty();
   }
 
   /**
@@ -2865,7 +2845,7 @@ public class Screen5250 {
    * @param screenField Field to be redrawn
    */
   protected void drawField(ScreenField screenField) {
-    int pos = screenField.startPos();
+    int pos = screenField.getStartPos();
     int x = screenField.getLength();
     while (x-- > 0) {
       setDirty(pos++);
@@ -2881,7 +2861,7 @@ public class Screen5250 {
    */
   protected void setFieldHighlighted(ScreenField sf) {
 
-    int pos = sf.startPos();
+    int pos = sf.getStartPos();
 
     int x = sf.getLength();
     int na = sf.getHighlightedAttr();
@@ -2890,7 +2870,7 @@ public class Screen5250 {
       planes.setScreenAttr(pos, na);
       setDirty(pos++);
     }
-    fireScreenChanged(1);
+    fireScreenChanged();
 
   }
 
@@ -2903,7 +2883,7 @@ public class Screen5250 {
    */
   protected void unsetFieldHighlighted(ScreenField sf) {
 
-    int pos = sf.startPos();
+    int pos = sf.getStartPos();
 
     int x = sf.getLength();
     int na = sf.getAttr();
@@ -2912,7 +2892,7 @@ public class Screen5250 {
       planes.setScreenAttr(pos, na);
       setDirty(pos++);
     }
-    fireScreenChanged(1);
+    fireScreenChanged();
 
   }
 
@@ -2947,12 +2927,6 @@ public class Screen5250 {
 
   protected void setAttr(int cByte) {
     lastAttr = cByte;
-
-    //      int sattr = screen[lastPos].getCharAttr();
-    //         System.out.println("changing from " + sattr + " to attr " + lastAttr
-    // +
-    //                     " at " + (this.getRow(lastPos) + 1) + "," + (this.getCol(lastPos) +
-    // 1));
     planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
     setDirty(lastPos);
 
@@ -2970,12 +2944,6 @@ public class Screen5250 {
       setDirty(lastPos);
       advancePos();
     }
-
-    // sanity check for right now
-    //      if (times > 200)
-    //         System.out.println(" setAttr = " + times + " start = " + (sr + 1) +
-    // "," + (sc + 1));
-
     lastPos = pos;
   }
 
@@ -3007,9 +2975,7 @@ public class Screen5250 {
    * attributes before calling this routine.
    */
   protected void updateDirty() {
-
-    fireScreenChanged(1);
-
+    fireScreenChanged();
   }
 
   protected void setDirty(int pos) {
@@ -3108,7 +3074,6 @@ public class Screen5250 {
    * @param line
    */
   protected void setErrorLine(int line) {
-
     planes.setErrorLine(line);
   }
 
@@ -3137,7 +3102,7 @@ public class Screen5250 {
 
     if (planes.isErrorLineSaved()) {
       planes.restoreErrorLine();
-      fireScreenChanged(1, planes.getErrorLine() - 1, 0, planes.getErrorLine() - 1, numCols - 1);
+      fireScreenChanged(planes.getErrorLine() - 1, 0, planes.getErrorLine() - 1, numCols - 1);
     }
   }
 
@@ -3175,9 +3140,7 @@ public class Screen5250 {
   }
 
   protected boolean isStatusErrorCode() {
-
     return oia.getLevel() == ScreenOIA.OIA_LEVEL_INPUT_ERROR;
-
   }
 
   /**
@@ -3224,38 +3187,20 @@ public class Screen5250 {
    * to all the positions on the screen
    */
   protected void clearScreen() {
-
     planes.initalizePlanes();
-
     dirtyScreen.setBounds(0, lenScreen - 1, 0, 0);
-
     oia.clearScreen();
-
   }
 
   protected void restoreScreen() {
-
     lastAttr = 32;
     dirtyScreen.setBounds(0, lenScreen - 1, 0, 0);
     updateDirty();
   }
 
-  /**
-   * Notify all registered listeners of the onScreenChanged event.
-   */
-  private void fireScreenChanged(int which, int startRow, int startCol,
-                                 int endRow, int endCol) {
-    if (screenListeners != null) {
-      // Patch below contributed by Mitch Blevins
-      //int size = listeners.size();
-      Vector<ScreenListener> lc = new Vector<ScreenListener>(screenListeners);
-      int size = lc.size();
-      for (int i = 0; i < size; i++) {
-        //ScreenListener target =
-        //      (ScreenListener)listeners.elementAt(i);
-        ScreenListener target = lc.elementAt(i);
-        target.onScreenChanged(1, startRow, startCol, endRow, endCol);
-      }
+  private void fireScreenChanged(int startRow, int startCol, int endRow, int endCol) {
+    for (ScreenListener target : new ArrayList<ScreenListener>(screenListeners)) {
+      target.onScreenChanged(1, startRow, startCol, endRow, endCol);
     }
     dirtyScreen.setBounds(lenScreen, 0, 0, 0);
   }
@@ -3263,30 +3208,18 @@ public class Screen5250 {
   /**
    * Notify all registered listeners of the onScreenChanged event.
    */
-  private synchronized void fireScreenChanged(int update) {
+  private synchronized void fireScreenChanged() {
     if (dirtyScreen.x > dirtyScreen.y) {
-      //         log.info(" x < y " + dirtyScreen);
       return;
     }
-
-    fireScreenChanged(update, getRow(dirtyScreen.x), getCol(dirtyScreen.x),
-        getRow(dirtyScreen.y), getCol(dirtyScreen.y));
-
+    fireScreenChanged(getRow(dirtyScreen.x), getCol(dirtyScreen.x), getRow(dirtyScreen.y), getCol(dirtyScreen.y));
   }
 
-  /**
-   * Notify all registered listeners of the onScreenChanged event.
-   */
-  private synchronized void fireCursorChanged(int update) {
+  private synchronized void fireCursorChanged() {
     int startRow = getRow(lastPos);
     int startCol = getCol(lastPos);
-
-    if (screenListeners != null) {
-      Vector<ScreenListener> lc = new Vector<ScreenListener>(screenListeners);
-      for (int i = 0, len = lc.size(); i < len; i++) {
-        ScreenListener target = lc.elementAt(i);
-        target.onScreenChanged(update, startRow, startCol, startRow, startCol);
-      }
+    for (ScreenListener target : new ArrayList<ScreenListener>(screenListeners)) {
+      target.onScreenChanged(3, startRow, startCol, startRow, startCol);
     }
   }
 
@@ -3294,13 +3227,8 @@ public class Screen5250 {
    * Notify all registered listeners of the onScreenSizeChanged event.
    */
   private void fireScreenSizeChanged() {
-    if (screenListeners != null) {
-      Vector<ScreenListener> lc = new Vector<ScreenListener>(screenListeners);
-      for (int i = 0, size = lc.size(); i < size; i++) {
-        ScreenListener target =
-            lc.elementAt(i);
-        target.onScreenSizeChanged(numRows, numCols);
-      }
+    for (ScreenListener target : new ArrayList<ScreenListener>(screenListeners)) {
+      target.onScreenSizeChanged(numRows, numCols);
     }
   }
 
@@ -3311,33 +3239,6 @@ public class Screen5250 {
     repaintScreen();
     setCursorActive(false);
     setCursorActive(true);
-  }
-
-  /**
-   * Add a ScreenListener to the listener list.
-   *
-   * @param listener The ScreenListener to be added
-   */
-  public void addScreenListener(ScreenListener listener) {
-
-    if (screenListeners == null) {
-      screenListeners = new java.util.Vector<ScreenListener>(3);
-    }
-    screenListeners.addElement(listener);
-
-  }
-
-  /**
-   * Remove a ScreenListener from the listener list.
-   *
-   * @param listener The ScreenListener to be removed
-   */
-  public void removeScreenListener(ScreenListener listener) {
-
-    if (screenListeners == null) {
-      return;
-    }
-    screenListeners.removeElement(listener);
   }
 
   /**
@@ -3371,26 +3272,51 @@ public class Screen5250 {
     return planes.getTextPlane();
   }
 
-  protected void fireSendKeys(final String keys) {
-    for (final SessionKeysListener listener : keysListeners) {
-      listener.keysSent(this, keys);
+  private void fireOnSendKeys(final String keys) {
+    for (final ScreenListener listener : new ArrayList<ScreenListener>(screenListeners)) {
+      listener.onKeysSent(this, keys);
     }
   }
 
-  protected void fireSetFieldString(final ScreenField field, final String keys) {
-    for (final SessionKeysListener listener : keysListeners) {
-      listener.fieldStringSet(this, field, keys);
+  private void fireOnCursorMoved(final int pos) {
+    for (final ScreenListener listener : new ArrayList<ScreenListener>(screenListeners)) {
+      listener.onCursorMoved(this, pos);
     }
   }
 
-  protected void fireCursorMoved(final int pos) {
-    for (final SessionKeysListener listener : keysListeners) {
-      listener.cursorMoved(this, pos);
+  void fireOnFieldTextChanged(ScreenField field, String text) {
+    for (FieldListener fieldListener : new ArrayList<FieldListener>(fieldListeners)) {
+      fieldListener.onFieldTextChanged(this, field, text);
     }
   }
 
-  public void addSessionKeysListener(final SessionKeysListener sessionKeysListener) {
-    keysListeners.add(sessionKeysListener);
+  /**
+   * @param fieldListener fieldListener
+   */
+  public void addFieldListener(final FieldListener fieldListener) {
+    fieldListeners.add(fieldListener);
   }
+
+  /**
+   * @param fieldListener fieldListener
+   */
+  public void removeFieldListener(final FieldListener fieldListener) {
+    fieldListeners.remove(fieldListener);
+  }
+
+  /**
+   * @param listener listener
+   */
+  public void addScreenListener(ScreenListener listener) {
+    screenListeners.add(listener);
+  }
+
+  /**
+   * @param listener listener
+   */
+  public void removeScreenListener(ScreenListener listener) {
+    screenListeners.remove(listener);
+  }
+
 
 }

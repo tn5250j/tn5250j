@@ -1,9 +1,10 @@
 /*
- * Title: ScreenPlanes.java
- * Copyright:   Copyright (c) 2016
+ * Title: ScreenListener.java
+ * Copyright:   Copyright (c) 2001
  * Company:
  *
- * @author Martin W. Kirst
+ * @author Kenneth J. Pouncey
+ * @version 0.5
  * <p>
  * Description:
  * <p>
@@ -22,21 +23,18 @@
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
  */
-package org.tn5250j.api;
+package org.tn5250j.api.screen;
 
-public interface ScreenPlanes {
+import org.tn5250j.framework.tn5250.Screen5250;
 
-  char[] getTextPlane();
+public interface ScreenListener {
 
-  char[] getAttributePlane();
+  void onScreenChanged(int inUpdate, int startRow, int startCol, int endRow, int endCol);
 
-  char[] getIsAttributePlane();
+  void onScreenSizeChanged(int rows, int cols);
 
-  char[] getColorPlane();
+  void onKeysSent(final Screen5250 screen, final String keys);
 
-  char[] getExtendedPlane();
+  void onCursorMoved(final Screen5250 screen, final int pos);
 
-  char[] getGraphicPlane();
-
-  char[] getFieldPlane();
 }

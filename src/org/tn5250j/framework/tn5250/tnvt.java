@@ -1288,7 +1288,7 @@ public final class tnvt implements Runnable {
 			while (x < s) {
 				ScreenField sf = screen52.getScreenFields().getField(x);
 				sc.write((byte) sf.getAttr()); // attribute
-				int sp = sf.startPos();
+				int sp = sf.getStartPos();
 				sc.write((byte) (sp >> 8 & 0xff));
 				sc.write((byte) (sp & 0xff));
 				if (sf.isMdt())

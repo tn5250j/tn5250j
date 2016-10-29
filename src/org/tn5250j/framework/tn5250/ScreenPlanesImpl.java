@@ -26,8 +26,9 @@
 package org.tn5250j.framework.tn5250;
 
 import org.tn5250j.TN5250jConstants;
+import org.tn5250j.api.screen.ScreenPlanes;
 
-public class ScreenPlanesImpl implements org.tn5250j.api.ScreenPlanes {
+public class ScreenPlanesImpl implements ScreenPlanes {
 
   protected char[] textPlane;
   protected char[] attributePlane;

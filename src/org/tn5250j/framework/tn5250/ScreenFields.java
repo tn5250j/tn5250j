@@ -62,7 +62,7 @@ public class ScreenFields {
     //  starting address plus 1.
     for (int x = 0; x < sizeFields; x++) {
       ScreenField sf = screenFields[x];
-      if (lastPos == sf.startPos()) {
+      if (lastPos == sf.getStartPos()) {
         currentField = sf;
         currentModified = false;
         return true;
@@ -189,9 +189,9 @@ public class ScreenFields {
   protected ScreenField setField(int attr, int row, int col, int len, int ffw1,
                                  int ffw2, int fcw1, int fcw2) {
 
-    screenFields[nextField] = new ScreenField(screen);
-    screenFields[nextField].setField(attr, row, col, len, ffw1, ffw2, fcw1, fcw2);
-    ScreenField sf = screenFields[nextField++];
+    final ScreenField sf = new ScreenField(screen);
+    sf.setField(attr, row, col, len, ffw1, ffw2, fcw1, fcw2);
+    screenFields[nextField++] = sf;
     sizeFields++;
 
 
@@ -479,7 +479,7 @@ public class ScreenFields {
 
     } else {
 
-      if (sf.startPos() == lastPos) {
+      if (sf.getStartPos() == lastPos) {
         if (!cpfExists) {
 
           do {
@@ -564,9 +564,6 @@ public class ScreenFields {
 
           }
 
-//               System.out.println("field " + sf.toString());
-//               System.out.println(">" + sb.toString() + "<");
-//               System.out.println(" field is all nulls");
           if (sf.isSignedNumeric() && sb.length() > 0 && sb.charAt(sb.length() - 1) == '-') {
             isSigned = true;
             sb.setLength(sb.length() - 1);
@@ -585,8 +582,8 @@ public class ScreenFields {
                 baosp.write(screen.getRow(sf.getSelectionPos()) + 1);
                 baosp.write(screen.getCol(sf.getSelectionPos()) + 1);
               } else {
-                baosp.write(sf.startRow() + 1);
-                baosp.write(sf.startCol() + 1);
+                baosp.write(sf.getStartRow() + 1);
+                baosp.write(sf.getStartCol() + 1);
               }
 
             }
