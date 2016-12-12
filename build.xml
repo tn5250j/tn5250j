@@ -373,4 +373,82 @@
         <delete file="${dist.dir}/${dist.bin.name}.app.tar"/>
     </target>
 
+<!-- start deb packaging task -->
+	<taskdef name="deb"
+	                  classpath="${dev.lib.dir}/jdeb-1.5.jar"
+	                  classname="org.vafer.jdeb.ant.DebAntTask" />
+
+    <target name="dist-bin-deb" depends="dist-bin-prepare"  description="Creates Debian Package">
+    	
+    	<!-- Prepare the structure -->
+    	<echo message="Copies the image of the distribution to ${dist.dir}"/>
+    	<delete dir="${dist.dir}/deb"/>
+    	<mkdir dir="${dist.dir}/deb"/>
+    	<mkdir dir="${dist.dir}/deb/control"/>
+    	<mkdir dir="${dist.dir}/deb/data"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/bin"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/lib"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/lib/tn5250j"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/applications"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/docs"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/docs/tn5250j"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/16x16"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/16x16/apps"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/32x32"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/32x32/apps"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/48x48"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/48x48/apps"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/128x128"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/128x128/apps"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/256x256"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/256x256/apps"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/512x512"/>
+    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/512x512/apps"/>
+    	    	   	
+    	<!-- Copy the files -->
+    	<copy file="${basedir}/resources/control" todir="${dist.dir}/deb/control">
+    	    <filterset begintoken="[[" endtoken="]]">
+    			<filter token="version" value="${version}"/>
+    			<filter token="name" value="${name}"/>
+    		</filterset>
+    	</copy>
+    	
+    	<copy file="${resource.dir}/tn5250j-16x16.png" 
+    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-32x32.png" 
+    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/32x32/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-48x48.png" 
+    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/48x48/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-128.png" 
+    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/128x128/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-256.png" 
+    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/256x256/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-512.png" 
+    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/512x512/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j.desktop" 
+    		tofile="${dist.dir}/deb/data/usr/share/applications/tn5250j.desktop"/>
+    	<copy file="${build.dir}/tn5250j.jar" 
+    		tofile="${dist.dir}/deb/data/usr/lib/tn5250j/tn5250j.jar"/>
+    	<copy file="${resource.dir}/AUTHORS" 
+    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/AUTHORS"/>
+    	<copy file="${resource.dir}/COPYING" 
+    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/copyright"/>
+    	<copy file="${resource.dir}/readme.txt" 
+    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/README"/>
+    	<copy file="${resource.dir}/tn5250j-icon.gif" 
+    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/icon.gif"/>
+    	<copy file="${basedir}/installer/bin/tn5250j" 
+    		tofile="${dist.dir}/deb/data/usr/bin/tn5250j"/>
+    	
+    	<!-- Create deb -->
+    	<deb destfile="${dist.dir}/${dist.bin.name}.deb" control="${dist.dir}/deb/control" verbose="true" />
+       
+    	<!-- Clean -->
+    	<delete dir="${dist.dir}/deb"/>
+	 </target>
+
 </project>

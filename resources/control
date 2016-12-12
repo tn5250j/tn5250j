@@ -1,0 +1,9 @@
+Package: [[name]]
+Version: [[version]]
+Architecture: all
+Maintainer: Roberto Bizzozero <zenovalle@gmail.com>
+Section: net
+Priority: optional
+Homepage: http://tn5250j.org/
+Description: 5250 terminal emulator for the IBM i (aka AS/400, System i) written in Java.
+ Tn5250j is a 5250 terminal emulator for the IBM i (aka AS/400, System i) written in Java.
