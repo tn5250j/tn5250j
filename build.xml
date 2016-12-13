@@ -432,7 +432,7 @@
     	<copy file="${resource.dir}/tn5250j.desktop" 
     		tofile="${dist.dir}/deb/data/usr/share/applications/tn5250j.desktop"/>
     	<copy file="${build.dir}/tn5250j.jar" 
-    		tofile="${dist.dir}/deb/data/usr/lib/tn5250j/tn5250j.jar"/>
+    		tofile="${dist.dir}/deb/data/usr/share/lib/tn5250j/tn5250j.jar"/>
     	<copy file="${resource.dir}/AUTHORS" 
     		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/AUTHORS"/>
     	<copy file="${resource.dir}/COPYING" 
@@ -445,7 +445,18 @@
     		tofile="${dist.dir}/deb/data/usr/bin/tn5250j"/>
     	
     	<!-- Create deb -->
-    	<deb destfile="${dist.dir}/${dist.bin.name}.deb" control="${dist.dir}/deb/control" verbose="true" />
+    	<deb destfile="${dist.dir}/${dist.base.name}.deb" control="${dist.dir}/deb/control" verbose="true">
+    		<tarfileset dir="${dist.dir}/deb/data"
+    		             filemode="644"
+    		             username="root"
+    		             group="root">
+    		</tarfileset>
+    		<tarfileset dir="${dist.dir}/deb/data/usr/bin"
+    		             filemode="755"
+    		             username="root"
+    		             group="root">
+    		</tarfileset>
+    	</deb>
        
     	<!-- Clean -->
     	<delete dir="${dist.dir}/deb"/>
