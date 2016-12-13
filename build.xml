@@ -383,32 +383,7 @@
     	<!-- Prepare the structure -->
     	<echo message="Copies the image of the distribution to ${dist.dir}"/>
     	<delete dir="${dist.dir}/deb"/>
-    	<mkdir dir="${dist.dir}/deb"/>
-    	<mkdir dir="${dist.dir}/deb/control"/>
-    	<mkdir dir="${dist.dir}/deb/data"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/bin"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/lib"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/lib/tn5250j"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/applications"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/docs"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/docs/tn5250j"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/16x16"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/16x16/apps"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/32x32"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/32x32/apps"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/48x48"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/48x48/apps"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/128x128"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/128x128/apps"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/256x256"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/256x256/apps"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/512x512"/>
-    	<mkdir dir="${dist.dir}/deb/data/usr/share/icons/hicolor/512x512/apps"/>
-    	    	   	
+    	
     	<!-- Copy the files -->
     	<copy file="${basedir}/resources/control" todir="${dist.dir}/deb/control">
     	    <filterset begintoken="[[" endtoken="]]">
@@ -432,7 +407,7 @@
     	<copy file="${resource.dir}/tn5250j.desktop" 
     		tofile="${dist.dir}/deb/data/usr/share/applications/tn5250j.desktop"/>
     	<copy file="${build.dir}/tn5250j.jar" 
-    		tofile="${dist.dir}/deb/data/usr/share/lib/tn5250j/tn5250j.jar"/>
+    		tofile="${dist.dir}/deb/data/usr/lib/tn5250j/tn5250j.jar"/>
     	<copy file="${resource.dir}/AUTHORS" 
     		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/AUTHORS"/>
     	<copy file="${resource.dir}/COPYING" 
@@ -446,20 +421,13 @@
     	
     	<!-- Create deb -->
     	<deb destfile="${dist.dir}/${dist.base.name}.deb" control="${dist.dir}/deb/control" verbose="true">
-    		<tarfileset dir="${dist.dir}/deb/data"
-    		             filemode="644"
-    		             username="root"
-    		             group="root">
-    		</tarfileset>
-    		<tarfileset dir="${dist.dir}/deb/data/usr/bin"
-    		             filemode="755"
-    		             username="root"
-    		             group="root">
-    		</tarfileset>
+    		<data src="${dist.dir}/deb/data" type="directory">
+    			<mapper type="ls" src="${resource.dir}/mapping.txt"/>
+    		</data>
     	</deb>
        
     	<!-- Clean -->
-    	<delete dir="${dist.dir}/deb"/>
+    	<!-- <delete dir="${dist.dir}/deb"/> -->
 	 </target>
 
 </project>

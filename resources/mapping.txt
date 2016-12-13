@@ -1,0 +1,160 @@
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:39 .
+drw-r--r-- 4 root root 4096 dic 13 21:38 ..
+drw-r--r-- 5 root root 4096 dic 13 21:38 usr
+
+./usr:
+total 20
+drw-r--r-- 5 root root 4096 dic 13 21:38 .
+drw-r--r-- 3 root root 4096 dic 13 21:39 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 bin
+drw-r--r-- 3 root root 4096 dic 13 21:38 lib
+drw-r--r-- 6 root root 4096 dic 13 21:38 share
+
+./usr/bin:
+total 12
+drw-r--r-- 2 root root 4096 dic 13 21:38 .
+drw-r--r-- 5 root root 4096 dic 13 21:38 ..
+-rwxr-xr-x 1 root root  232 dic 13 21:38 tn5250j
+
+./usr/lib:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 5 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 tn5250j
+
+./usr/lib/tn5250j:
+total 752
+drw-r--r-- 2 root root   4096 dic 13 21:38 .
+drw-r--r-- 3 root root   4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root 760201 dic 13 21:38 tn5250j.jar
+
+./usr/share:
+total 24
+drw-r--r-- 6 root root 4096 dic 13 21:38 .
+drw-r--r-- 5 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 applications
+drw-r--r-- 3 root root 4096 dic 13 21:38 doc
+drw-r--r-- 3 root root 4096 dic 13 21:38 docs
+drw-r--r-- 3 root root 4096 dic 13 21:38 icons
+
+./usr/share/applications:
+total 12
+drw-r--r-- 2 root root 4096 dic 13 21:38 .
+drw-r--r-- 6 root root 4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root  168 dic 13 21:38 tn5250j.desktop
+
+./usr/share/doc:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 6 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 tn5250j
+
+./usr/share/doc/tn5250j:
+total 44
+drw-r--r-- 2 root root  4096 dic 13 21:38 .
+drw-r--r-- 3 root root  4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root    67 dic 13 21:38 AUTHORS
+-rw-r--r-- 1 root root 17992 dic 13 21:38 copyright
+-rw-r--r-- 1 root root  2634 dic 13 21:38 icon.gif
+-rw-r--r-- 1 root root  5830 dic 13 21:38 README
+
+./usr/share/docs:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 6 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 tn5250j
+
+./usr/share/docs/tn5250j:
+total 8
+drw-r--r-- 2 root root 4096 dic 13 21:38 .
+drw-r--r-- 3 root root 4096 dic 13 21:38 ..
+
+./usr/share/icons:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 6 root root 4096 dic 13 21:38 ..
+drw-r--r-- 8 root root 4096 dic 13 21:38 hicolor
+
+./usr/share/icons/hicolor:
+total 32
+drw-r--r-- 8 root root 4096 dic 13 21:38 .
+drw-r--r-- 3 root root 4096 dic 13 21:38 ..
+drw-r--r-- 3 root root 4096 dic 13 21:38 128x128
+drw-r--r-- 3 root root 4096 dic 13 21:38 16x16
+drw-r--r-- 3 root root 4096 dic 13 21:38 256x256
+drw-r--r-- 3 root root 4096 dic 13 21:38 32x32
+drw-r--r-- 3 root root 4096 dic 13 21:38 48x48
+drw-r--r-- 3 root root 4096 dic 13 21:38 512x512
+
+./usr/share/icons/hicolor/128x128:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 8 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 apps
+
+./usr/share/icons/hicolor/128x128/apps:
+total 24
+drw-r--r-- 2 root root  4096 dic 13 21:38 .
+drw-r--r-- 3 root root  4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root 15843 dic 13 21:38 tn5250j.png
+
+./usr/share/icons/hicolor/16x16:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 8 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 apps
+
+./usr/share/icons/hicolor/16x16/apps:
+total 12
+drw-r--r-- 2 root root 4096 dic 13 21:38 .
+drw-r--r-- 3 root root 4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root  958 dic 13 21:38 tn5250j.png
+
+./usr/share/icons/hicolor/256x256:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 8 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 apps
+
+./usr/share/icons/hicolor/256x256/apps:
+total 40
+drw-r--r-- 2 root root  4096 dic 13 21:38 .
+drw-r--r-- 3 root root  4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root 30235 dic 13 21:38 tn5250j.png
+
+./usr/share/icons/hicolor/32x32:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 8 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 apps
+
+./usr/share/icons/hicolor/32x32/apps:
+total 12
+drw-r--r-- 2 root root 4096 dic 13 21:38 .
+drw-r--r-- 3 root root 4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root 2752 dic 13 21:38 tn5250j.png
+
+./usr/share/icons/hicolor/48x48:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 8 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 apps
+
+./usr/share/icons/hicolor/48x48/apps:
+total 16
+drw-r--r-- 2 root root 4096 dic 13 21:38 .
+drw-r--r-- 3 root root 4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root 4825 dic 13 21:38 tn5250j.png
+
+./usr/share/icons/hicolor/512x512:
+total 12
+drw-r--r-- 3 root root 4096 dic 13 21:38 .
+drw-r--r-- 8 root root 4096 dic 13 21:38 ..
+drw-r--r-- 2 root root 4096 dic 13 21:38 apps
+
+./usr/share/icons/hicolor/512x512/apps:
+total 72
+drw-r--r-- 2 root root  4096 dic 13 21:38 .
+drw-r--r-- 3 root root  4096 dic 13 21:38 ..
+-rw-r--r-- 1 root root 61724 dic 13 21:38 tn5250j.png
