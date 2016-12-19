@@ -1,6 +1,6 @@
 Package: [[name]]
 Version: [[version]]
-Depends: default-jre
+Depends: default-jre | java6-runtime
 Architecture: all
 Section: net
 Maintainer: Roberto Bizzozero <zenovalle@gmail.com>

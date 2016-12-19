@@ -398,6 +398,12 @@
     		</filterset>
     	</copy>
     	
+    	<copy file="${deb-resource.dir}/postinst" 
+    	     tofile="${deb-control.dir}/postinst"/>
+    	<copy file="${deb-resource.dir}/postrm" 
+    	     tofile="${deb-control.dir}/postrm"/>
+    	<copy file="${resource.dir}/tn5250j-16x16.png" 
+    	     tofile="${deb-data.dir}/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-16x16.png" 
     		tofile="${deb-data.dir}/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-32x32.png" 
@@ -432,7 +438,7 @@
     	</deb>
        
     	<!-- Clean -->
-    	<!-- <delete dir="${dist.dir}/deb"/> -->
-	 </target>
+    	<delete dir="${deb.dir}"/>
+	</target>
 
 </project>
