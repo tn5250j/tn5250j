@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Tn5250j
+GenericName=5250 Terminal Emulator
+Comment=5250 terminal emulator for the IBM i
+Type=Application
+Categories=Network
+Icon=tn5250j
+Exec=tn5250j
+Terminal=false
+StartupNotify=true
+Keywords=Internet;Emulator;Terminal;5250;AS400;IBM

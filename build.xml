@@ -28,6 +28,12 @@
     <property name="dist-run.name" value="${dist.base.name}-run"/>
     <property name="dist-run.dir"  value="${dist.dir}/${dist-run.name}"/>
 
+	<!-- deb properties -->
+	<property name="deb.dir" value="${dist.dir}/deb" />
+	<property name="deb-resource.dir" value="${basedir}/deb" />
+	<property name="deb-control.dir" value="${deb.dir}/control" />
+	<property name="deb-data.dir" value="${deb.dir}/data" />
+	
     <!-- classpath -->
     <path id="classpath">
        <pathelement path="${build.classes.dir}" />
@@ -385,7 +391,7 @@
     	<delete dir="${dist.dir}/deb"/>
     	
     	<!-- Copy the files -->
-    	<copy file="${basedir}/resources/control" todir="${dist.dir}/deb/control">
+    	<copy file="${deb-resource.dir}/control" todir="${deb-control.dir}">
     	    <filterset begintoken="[[" endtoken="]]">
     			<filter token="version" value="${version}"/>
     			<filter token="name" value="${name}"/>
@@ -393,36 +399,35 @@
     	</copy>
     	
     	<copy file="${resource.dir}/tn5250j-16x16.png" 
-    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-32x32.png" 
-    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/32x32/apps/tn5250j.png"/>
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/32x32/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-48x48.png" 
-    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/48x48/apps/tn5250j.png"/>
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/48x48/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-128.png" 
-    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/128x128/apps/tn5250j.png"/>
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/128x128/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-256.png" 
-    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/256x256/apps/tn5250j.png"/>
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/256x256/apps/tn5250j.png"/>
     	<copy file="${resource.dir}/tn5250j-512.png" 
-    		tofile="${dist.dir}/deb/data/usr/share/icons/hicolor/512x512/apps/tn5250j.png"/>
-    	<copy file="${resource.dir}/tn5250j.desktop" 
-    		tofile="${dist.dir}/deb/data/usr/share/applications/tn5250j.desktop"/>
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/512x512/apps/tn5250j.png"/>
+    	<copy file="${deb-resource.dir}/tn5250j.desktop" 
+    		tofile="${deb-data.dir}/usr/share/applications/tn5250j.desktop"/>
+    	<copy file="${deb-resource.dir}/copyright" 
+    	    tofile="${deb-data.dir}/usr/share/doc/tn5250j/copyright"/>
+    	<copy file="${deb-resource.dir}/tn5250j" 
+    		tofile="${deb-data.dir}/usr/bin/tn5250j"/>
     	<copy file="${build.dir}/tn5250j.jar" 
-    		tofile="${dist.dir}/deb/data/usr/lib/tn5250j/tn5250j.jar"/>
-    	<copy file="${resource.dir}/AUTHORS" 
-    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/AUTHORS"/>
-    	<copy file="${resource.dir}/COPYING" 
-    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/copyright"/>
-    	<copy file="${resource.dir}/readme.txt" 
-    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/README"/>
-    	<copy file="${resource.dir}/tn5250j-icon.gif" 
-    		tofile="${dist.dir}/deb/data/usr/share/doc/tn5250j/icon.gif"/>
-    	<copy file="${basedir}/installer/bin/tn5250j" 
-    		tofile="${dist.dir}/deb/data/usr/bin/tn5250j"/>
+    	    tofile="${deb-data.dir}/usr/share/tn5250j/lib/tn5250j.jar"/>
+    	    	
     	
     	<!-- Create deb -->
-    	<deb destfile="${dist.dir}/${dist.base.name}.deb" control="${dist.dir}/deb/control" verbose="true">
-    		<data src="${dist.dir}/deb/data" type="directory">
-    			<mapper type="ls" src="${resource.dir}/mapping.txt"/>
+    	<deb destfile="${dist.dir}/${dist.base.name}.deb" control="${deb-control.dir}" verbose="true">
+    		<data src="${deb-data.dir}/" type="directory">
+    			<mapper type="perm" user="root" group="root" fileMode="644"/>
+    			<exclude name="${deb-data.dir}/usr/bin/tn5250j"/>
+    		</data>
+    		<data src="${deb-data.dir}/usr/bin/tn5250j" type="file">
+    		    <mapper type="perm" user="root" group="root" fileMode="755" prefix="/usr/bin"/>
     		</data>
     	</deb>
        
