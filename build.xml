@@ -388,16 +388,25 @@
     	
     	<!-- Prepare the structure -->
     	<echo message="Copies the image of the distribution to ${dist.dir}"/>
-    	<delete dir="${dist.dir}/deb"/>
+    	<delete dir="${deb.dir}"/>
     	
     	<!-- Copy the files -->
     	<copy file="${deb-resource.dir}/control" todir="${deb-control.dir}">
     	    <filterset begintoken="[[" endtoken="]]">
     			<filter token="version" value="${version}"/>
     			<filter token="name" value="${name}"/>
+    	    	<filter token="maintainer" value="${deb.maintainer}"/>
     		</filterset>
     	</copy>
     	
+    	<copy file="${deb-resource.dir}/copyright" todir="${deb-data.dir}/usr/share/doc/tn5250j/">
+    		<filterset begintoken="[[" endtoken="]]">
+    		    <filter token="version" value="${version}"/>
+    		    <filter token="name" value="${name}"/>
+    			<filter token="maintainer" value="${deb.maintainer}"/>
+    		</filterset>
+    	</copy>
+
     	<copy file="${deb-resource.dir}/postinst" 
     	     tofile="${deb-control.dir}/postinst"/>
     	<copy file="${deb-resource.dir}/postrm" 
@@ -418,13 +427,14 @@
     		tofile="${deb-data.dir}/usr/share/icons/hicolor/512x512/apps/tn5250j.png"/>
     	<copy file="${deb-resource.dir}/tn5250j.desktop" 
     		tofile="${deb-data.dir}/usr/share/applications/tn5250j.desktop"/>
-    	<copy file="${deb-resource.dir}/copyright" 
-    	    tofile="${deb-data.dir}/usr/share/doc/tn5250j/copyright"/>
     	<copy file="${deb-resource.dir}/tn5250j" 
     		tofile="${deb-data.dir}/usr/bin/tn5250j"/>
     	<copy file="${build.dir}/tn5250j.jar" 
     	    tofile="${deb-data.dir}/usr/share/tn5250j/lib/tn5250j.jar"/>
-    	    	
+    	<copy file="${deb-resource.dir}/tn5250j.menu" 
+    	    tofile="${deb-data.dir}/usr/share/menu/tn5250j"/>
+    	<copy file="${deb-resource.dir}/tn5250j.xpm" 
+    	    tofile="${deb-data.dir}/usr/share/pixmaps/tn5250j.xpm"/>
     	
     	<!-- Create deb -->
     	<deb destfile="${dist.dir}/${dist.base.name}.deb" control="${deb-control.dir}" verbose="true">

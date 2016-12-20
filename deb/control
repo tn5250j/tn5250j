@@ -3,7 +3,7 @@ Version: [[version]]
 Depends: default-jre | java6-runtime
 Architecture: all
 Section: net
-Maintainer: Roberto Bizzozero <zenovalle@gmail.com>
+Maintainer: [[maintainer]]
 Homepage: http://tn5250j.org/
 Priority: optional
 Description: 5250 terminal emulator for the IBM i written in Java.
