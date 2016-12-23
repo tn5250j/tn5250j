@@ -440,10 +440,6 @@
     		</data>
     	</deb>
 
-    	<copy file="${dist.dir}/${dist.base.name}.deb"
-    	    todir="/home/roberto/Dropbox/Progetti/" overwrite="yes"/>
-
-    	
     	<!-- Clean -->
     	<delete dir="${deb.dir}"/>
 	</target>
