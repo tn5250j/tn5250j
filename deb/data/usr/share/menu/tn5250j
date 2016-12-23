@@ -1,3 +1,3 @@
-?package(tn5250j):needs="X11" section="Applications/Network" \
+?package(tn5250j):needs="X11" section="Applications/Network/Communication" \
   title="5250 terminal emulator for the IBM i" command="/usr/bin/tn5250j" \
   icon="/usr/share/pixmaps/tn5250j.xpm"

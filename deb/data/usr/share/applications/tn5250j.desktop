@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Network;
 Comment=5250 terminal emulator for the IBM i
-Exec=/usr/bin/tn5250j
+Exec=tn5250j
 GenericName=5250 Terminal Emulator
 Icon=tn5250j
 Keywords=Internet;Emulator;Terminal;5250;AS400;IBM;
@@ -11,6 +11,7 @@ StartupNotify=true
 Terminal=false
 TryExec=/usr/bin/tn5250j
 Type=Application
+X-GNOME-FullName=Tn5250j
 X-DBUS-ServiceName=
 X-DBUS-StartupType=
 X-KDE-SubstituteUID=false

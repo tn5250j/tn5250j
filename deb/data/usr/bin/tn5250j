@@ -9,4 +9,4 @@ TN5250J_HOME='/usr/share/tn5250j/lib'
 cd ${TN5250J_HOME}/
 
 # Does the effective launching
-java -jar "tn5250j.jar"
+java -jar tn5250j.jar $@

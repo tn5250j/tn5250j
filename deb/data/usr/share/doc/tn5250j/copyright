@@ -3,7 +3,22 @@ Upstream-Name: tn5250j
 Source: <http://tn5250j.org>
 
 Files: *
-Copyright: 2016 https://github.com/tn5250j/tn5250j/graphs/contributors
+Copyright: 2005-2016 Barry van Someren <golthar@users.sourceforge.net>
+Joep Beckeringh <joep_beckeringh@users.sourceforge.net>
+Peter Moore <jorjun@users.sourceforge.net>
+Steve Kennedy <kennedyz@users.sourceforge.net>
+Maurizio Brilli <mbrilli@users.sourceforge.net>
+Nicola Ken Barozzi <nicolaken@users.sourceforge.net>
+Mehmet Ozgun <ozgunm@users.sourceforge.net>
+Patrick Bielen <pbielen@users.sourceforge.net>
+Robert Upshall <rupshall@users.sourceforge.net>
+Christian Geisert <christian.geisert@isu-gmbh.de>
+Martin W. Kirst <maki@bitkings.de>
+Pete Helgren <pete@valadd.com>
+Kenneth J. Pouncey <kjp1@users.sourceforge.net>
+Craig Duncan
+Ryan Eberly (?)
+Roberto Bizzozero <zenovalle@gmail.com>
 License: GPL-2.0+
 
 Files: debian/*
