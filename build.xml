@@ -400,6 +400,7 @@
     	    <filterset begintoken="[[" endtoken="]]">
     			<filter token="version" value="${version}"/>
     			<filter token="name" value="${name}"/>
+    	    	<filter token="year" value="${year}"/>
     	    	<filter token="maintainer" value="${deb.maintainer}"/>
     	    	<filter token="timestamp" value="${deb.timestamp}"/>
     		</filterset>

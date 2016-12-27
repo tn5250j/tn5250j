@@ -3,7 +3,7 @@ Upstream-Name: tn5250j
 Source: <http://tn5250j.org>
 
 Files: *
-Copyright: 2005-2016 Barry van Someren <golthar@users.sourceforge.net>
+Copyright: [[year]] Barry van Someren <golthar@users.sourceforge.net>
 Joep Beckeringh <joep_beckeringh@users.sourceforge.net>
 Peter Moore <jorjun@users.sourceforge.net>
 Steve Kennedy <kennedyz@users.sourceforge.net>
