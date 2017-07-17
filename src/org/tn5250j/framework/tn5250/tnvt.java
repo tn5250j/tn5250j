@@ -1984,7 +1984,7 @@ public final class tnvt implements Runnable {
 			bk.getNextByte(); // reserved
 			bk.getNextByte(); // resequence fields
 
-			screen52.clearTable();
+			//screen52.clearTable();
 
 			// well that is the first time I have seen this. This fixes a
 			// problem
