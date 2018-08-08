@@ -70,6 +70,7 @@ public class DataStreamProducer implements Runnable {
 
             } catch (SocketException se) {
                 log.warn("   DataStreamProducer thread interrupted and stopping " + se.getMessage());
+                vt.disconnect();
                 done = true;
             } catch (IOException ioe) {
 
