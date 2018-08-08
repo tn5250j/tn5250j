@@ -89,6 +89,17 @@ public class Screen5250 {
     //Added by Barry
     private StringBuffer keybuf;
 
+    // OL
+    private String pcCommand;
+
+    public String getPcCommand() {
+        return pcCommand;
+    }
+
+    public void setPcCommand(String pcCommand) {
+        this.pcCommand = pcCommand;
+    }
+
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public Screen5250() {

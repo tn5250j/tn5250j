@@ -831,10 +831,11 @@ public final class tnvt implements Runnable {
 
             String cmd = command.toString().trim();
 
-            run(cmd, waitFor);
+            screen52.setPcCommand(cmd);
+//            run(cmd, waitFor);
         } finally {
             strpccmd = false;
-            screen52.sendKeys(TN5250jConstants.MNEMONIC_ENTER);
+//            screen52.sendKeys(TN5250jConstants.MNEMONIC_ENTER);
         }
     }
 
@@ -1072,6 +1073,8 @@ public final class tnvt implements Runnable {
             //				screen52.checkHotSpots();
             //			}
 
+            // reset pcCommand
+            screen52.setPcCommand(null);
             try {
                 if (!strpccmd) {
                     //               SwingUtilities.invokeAndWait(
