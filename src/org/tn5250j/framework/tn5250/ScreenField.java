@@ -286,21 +286,37 @@ public class ScreenField {
      * To see the changed text, do a refresh on the iOhioFields collection and
      * retrieve the refreshed field object.
      *
-     * @param text
-     *            - The text to be placed in the field's text plane.
+     * @param text - The text to be placed in the field's text plane.
      */
     public void setString(String text) {
 
-        cursorPos = isRightToLeft() ? endPos - text.length() + 1 : startPos;
+        int y = length;
+        cursorPos = startPos;
+        int len = text.length();
+        char tc = ' ';
 
         if (isRightToLeft()) {
-            text = new StringBuilder(text).reverse().toString();
-        }
+            text = new StringBuffer(text).reverse().toString();
+            char[] c = text.toCharArray();
+            for (int x = y - 1; x >= 0; x--) {
+                tc = ' ';
+                if (x < len) {
+                    tc = c[x];
+                }
+                s.getPlanes().setChar(cursorPos, tc);
+                changePos(1);
+            }
 
-        for (int x = 0, textLen = text.length(); x < length; x++) {
-            char tc = x < textLen ? text.charAt(x) : ' ';
-            s.getPlanes().setChar(cursorPos, tc);
-            changePos(1);
+        } else {
+            char[] c = text.toCharArray();
+            for (int x = 0; x < y; x++) {
+                tc = ' ';
+                if (x < len) {
+                    tc = c[x];
+                }
+                s.getPlanes().setChar(cursorPos, tc);
+                changePos(1);
+            }
         }
         setMDT();
         s.getScreenFields().setMasterMDT();
