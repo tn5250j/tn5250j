@@ -20,10 +20,6 @@
  */
 package org.tn5250j.framework.common;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.SessionPanel;
@@ -32,6 +28,10 @@ import org.tn5250j.interfaces.SessionManagerInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 
 /**
  * The SessionManager is the central repository for access to all sessions.
@@ -39,91 +39,89 @@ import org.tn5250j.tools.logging.TN5250jLogger;
  */
 public class SessionManager implements SessionManagerInterface {
 
-	static private Sessions sessions;
-	static private List<SessionConfig> configs;
+    static private Sessions sessions;
+    static private List<SessionConfig> configs;
+    /**
+     * A handle to the unique SessionManager class
+     */
+    static private SessionManager _instance;
+    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-	private TN5250jLogger log = TN5250jLogFactory.getLogger (this.getClass());
-	/**
-	 * A handle to the unique SessionManager class
-	 */
-	static private SessionManager _instance;
+    /**
+     * The constructor is made protected to allow overriding.
+     */
+    protected SessionManager() {
+        if (_instance == null) {
+            // initialize the settings information
+            initialize();
+            // set our instance to this one.
+            _instance = this;
+        }
+    }
 
-	/**
-	 * The constructor is made protected to allow overriding.
-	 */
-	protected SessionManager() {
-		if (_instance == null) {
-			// initialize the settings information
-			initialize();
-			// set our instance to this one.
-			_instance = this;
-		}
-	}
+    /**
+     * @return The unique instance of this class.
+     */
+    static public SessionManager instance() {
 
-	/**
-	 *
-	 * @return The unique instance of this class.
-	 */
-	static public SessionManager instance() {
+        if (_instance == null) {
+            _instance = new SessionManager();
+        }
+        return _instance;
 
-		if (_instance == null) {
-			_instance = new SessionManager();
-		}
-		return _instance;
+    }
 
-	}
+    private void initialize() {
+        log.info("New session Manager initialized");
+        sessions = new Sessions();
+        configs = new ArrayList<SessionConfig>();
 
-	private void initialize() {
-		log.info("New session Manager initialized");
-		sessions = new Sessions();
-		configs = new ArrayList<SessionConfig>();
+    }
 
-	}
+    @Override
+    public Sessions getSessions() {
+        return sessions;
+    }
 
-	@Override
-	public Sessions getSessions() {
-		return sessions;
-	}
+    @Override
+    public void closeSession(SessionPanel sesspanel) {
 
-	@Override
-	public void closeSession(SessionPanel sesspanel) {
+        sesspanel.closeDown();
+        sessions.removeSession((sesspanel).getSession());
 
-		sesspanel.closeDown();
-		sessions.removeSession((sesspanel).getSession());
+    }
 
-	}
+    @Override
+    public synchronized Session5250 openSession(Properties sesProps, String configurationResource
+            , String sessionName) {
 
-	@Override
-	public synchronized Session5250 openSession(Properties sesProps, String configurationResource
-			, String sessionName) {
+        if (sessionName == null)
+            sesProps.put(TN5250jConstants.SESSION_TERM_NAME, sesProps.getProperty(TN5250jConstants.SESSION_HOST));
+        else
+            sesProps.put(TN5250jConstants.SESSION_TERM_NAME, sessionName);
 
-		if(sessionName == null)
-			sesProps.put(TN5250jConstants.SESSION_TERM_NAME,sesProps.getProperty(TN5250jConstants.SESSION_HOST));
-		else
-			sesProps.put(TN5250jConstants.SESSION_TERM_NAME,sessionName);
+        if (configurationResource == null) configurationResource = "";
 
-		if (configurationResource == null) configurationResource = "";
+        sesProps.put(TN5250jConstants.SESSION_CONFIG_RESOURCE, configurationResource);
 
-		sesProps.put(TN5250jConstants.SESSION_CONFIG_RESOURCE, configurationResource);
+        SessionConfig useConfig = null;
+        for (SessionConfig conf : configs) {
+            if (conf.getSessionName().equals(sessionName)) {
+                useConfig = conf;
+            }
+        }
 
-		SessionConfig useConfig = null;
-		for (SessionConfig conf : configs) {
-			if (conf.getSessionName().equals(sessionName)) {
-				useConfig = conf;
-			}
-		}
+        if (useConfig == null) {
 
-		if (useConfig == null) {
+            useConfig = new SessionConfig(configurationResource, sessionName);
+            configs.add(useConfig);
+        }
 
-			useConfig = new SessionConfig(configurationResource,sessionName);
-			configs.add(useConfig);
-		}
+        Session5250 newSession = new Session5250(sesProps, configurationResource,
+                sessionName, useConfig);
+        sessions.addSession(newSession);
+        return newSession;
 
-		Session5250 newSession = new Session5250(sesProps,configurationResource,
-				sessionName,useConfig);
-		sessions.addSession(newSession);
-		return newSession;
-
-	}
+    }
 
 }

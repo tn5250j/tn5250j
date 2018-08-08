@@ -23,55 +23,53 @@
 package org.tn5250j.interfaces;
 
 import java.util.Vector;
+
 /**
  * An interface defining objects that can create OptionAccess
  * instances.
  */
 public abstract class OptionAccessFactory {
 
-  private static OptionAccessFactory  factory;
-   /**
-    * @return An instance of the OptionAccess.
-    */
-  public static OptionAccessFactory  getInstance()
-  {
-    OptionAccessFactory.setFactory();
-    return factory;
-  }
+    private static OptionAccessFactory factory;
 
-  private static final void setFactory()
-  {
-    if (factory == null)
-    {
-      try
-      {
-        String  className = System.getProperty(OptionAccessFactory.class.getName());
-        if (className != null)
-        {
-          Class<?> classObject = Class.forName(className);
-          Object  object = classObject.newInstance();
-          if (object instanceof OptionAccessFactory)
-          {
-            OptionAccessFactory.factory = (OptionAccessFactory) object;
-          }
-        }
-      }
-      catch (Exception  ex)
-      {
-        ;
-      }
-      if (OptionAccessFactory.factory == null)
-      { //take the default
-        OptionAccessFactory.factory = new org.tn5250j.OptionAccess();
-      }
+    /**
+     * @return An instance of the OptionAccess.
+     */
+    public static OptionAccessFactory getInstance() {
+        OptionAccessFactory.setFactory();
+        return factory;
     }
-  }
 
-   abstract public Vector<String> getOptions();
-   abstract public Vector<String> getOptionDescriptions();
-   abstract public boolean isValidOption(String option);
-   abstract public boolean isRestrictedOption(String option);
-   abstract public int getNumberOfRestrictedOptions();
-   abstract public void reload();
+    private static final void setFactory() {
+        if (factory == null) {
+            try {
+                String className = System.getProperty(OptionAccessFactory.class.getName());
+                if (className != null) {
+                    Class<?> classObject = Class.forName(className);
+                    Object object = classObject.newInstance();
+                    if (object instanceof OptionAccessFactory) {
+                        OptionAccessFactory.factory = (OptionAccessFactory) object;
+                    }
+                }
+            } catch (Exception ex) {
+                ;
+            }
+            if (OptionAccessFactory.factory == null) { //take the default
+                OptionAccessFactory.factory = new org.tn5250j.OptionAccess();
+            }
+        }
+    }
+
+    abstract public Vector<String> getOptions();
+
+    abstract public Vector<String> getOptionDescriptions();
+
+    abstract public boolean isValidOption(String option);
+
+    abstract public boolean isRestrictedOption(String option);
+
+    abstract public int getNumberOfRestrictedOptions();
+
+    abstract public void reload();
 
 }

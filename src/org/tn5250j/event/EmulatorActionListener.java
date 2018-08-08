@@ -22,5 +22,5 @@ package org.tn5250j.event;
 
 public interface EmulatorActionListener {
 
-   public void onEmulatorAction(EmulatorActionEvent actionEvent);
+    public void onEmulatorAction(EmulatorActionEvent actionEvent);
 }

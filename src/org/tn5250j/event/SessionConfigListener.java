@@ -23,5 +23,5 @@ package org.tn5250j.event;
 
 public interface SessionConfigListener {
 
-   public void onConfigChanged(SessionConfigEvent changeEvent);
+    public void onConfigChanged(SessionConfigEvent changeEvent);
 }

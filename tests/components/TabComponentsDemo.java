@@ -36,86 +36,70 @@ package components;
  *   ButtonTabComponent.java
  */
 
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ContainerAdapter;
-import java.awt.event.ContainerEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
 /*
- * Creating and using TabComponentsDemo example  
+ * Creating and using TabComponentsDemo example
  */
 public class TabComponentsDemo extends JFrame {
 
-   private static final long serialVersionUID = 1L;
-   
-   private final int tabNumber = 5;
-   private final JTabbedPane tabbedPane = new JTabbedPane();
-   private JMenuItem tabComponentsItem;
-   private JMenuItem scrollLayoutItem;
+    private static final long serialVersionUID = 1L;
 
-   public static void main(String[] args) {
-      // Schedule a job for the event dispatch thread:
-      // creating and showing this application's GUI.
-      SwingUtilities.invokeLater(new Runnable() {
-         public void run() {
-            // Turn off metal's use of bold fonts
-            UIManager.put("swing.boldMetal", Boolean.FALSE);
-            new TabComponentsDemo("TabComponentsDemo").runTest();
-         }
-      });
-   }
+    private final int tabNumber = 5;
+    private final JTabbedPane tabbedPane = new JTabbedPane();
+    private JMenuItem tabComponentsItem;
+    private JMenuItem scrollLayoutItem;
 
-   public TabComponentsDemo(String title) {
-      super(title);
-      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      initMenu();
-      add(tabbedPane);
-   }
+    public TabComponentsDemo(String title) {
+        super(title);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initMenu();
+        add(tabbedPane);
+    }
 
-   public void runTest() {
-      tabbedPane.removeAll();
-      for (int i = 0; i < tabNumber; i++) {
-         String title = "Tab " + i;
-         JLabel label = new JLabel(title);
-         label.setForeground(Color.RED);
-         tabbedPane.addTab(title, getIcon(), label);
-         initTabComponent(i);
-      }
-      tabComponentsItem.setSelected(true);
-      tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-      tabbedPane.setTabPlacement(JTabbedPane.TOP);
-      scrollLayoutItem.setSelected(false);
-      setSize(new Dimension(400, 200));
-      setLocationRelativeTo(null);
-      setVisible(true);
-   }
+    public static void main(String[] args) {
+        // Schedule a job for the event dispatch thread:
+        // creating and showing this application's GUI.
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                // Turn off metal's use of bold fonts
+                UIManager.put("swing.boldMetal", Boolean.FALSE);
+                new TabComponentsDemo("TabComponentsDemo").runTest();
+            }
+        });
+    }
 
-   private void initTabComponent(int i) {
-      ButtonTabComponent tabComp = new ButtonTabComponent(tabbedPane);
-      tabbedPane.setTabComponentAt(i, tabComp);
+    public void runTest() {
+        tabbedPane.removeAll();
+        for (int i = 0; i < tabNumber; i++) {
+            String title = "Tab " + i;
+            JLabel label = new JLabel(title);
+            label.setForeground(Color.RED);
+            tabbedPane.addTab(title, getIcon(), label);
+            initTabComponent(i);
+        }
+        tabComponentsItem.setSelected(true);
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+        tabbedPane.setTabPlacement(JTabbedPane.TOP);
+        scrollLayoutItem.setSelected(false);
+        setSize(new Dimension(400, 200));
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void initTabComponent(int i) {
+        ButtonTabComponent tabComp = new ButtonTabComponent(tabbedPane);
+        tabbedPane.setTabComponentAt(i, tabComp);
 //      tabbedPane.addContainerListener(getListener(tabComp));
-   }
-   
+    }
+
 //   private ContainerAdapter getListener(ButtonTabComponent tabComp) {
 //      ContainerAdapter x = new ContainerAdapter() {
 //         @Override
@@ -136,64 +120,64 @@ public class TabComponentsDemo extends JFrame {
 //      return x;
 //   }
 
-   /**
-    * @return
-    */
-   private Icon getIcon() {
-      File f  = new File("resources/lock-open.png");
-      if (f.exists()) {
-         ImageIcon imageIcon = new ImageIcon(f.getAbsolutePath());
-         return imageIcon;
-      } else {
-         throw new RuntimeException(new FileNotFoundException(f.getName()));
-      }
-   }
+    /**
+     * @return
+     */
+    private Icon getIcon() {
+        File f = new File("resources/lock-open.png");
+        if (f.exists()) {
+            ImageIcon imageIcon = new ImageIcon(f.getAbsolutePath());
+            return imageIcon;
+        } else {
+            throw new RuntimeException(new FileNotFoundException(f.getName()));
+        }
+    }
 
-   // Setting menu
+    // Setting menu
 
-   private void initMenu() {
-      JMenuBar menuBar = new JMenuBar();
-      // create Options menu
-      tabComponentsItem = new JCheckBoxMenuItem("Use TabComponents", true);
-      tabComponentsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
-            InputEvent.ALT_MASK));
-      tabComponentsItem.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-               if (tabComponentsItem.isSelected()) {
-                  initTabComponent(i);
-               } else {
-                  tabbedPane.setTabComponentAt(i, null);
-               }
+    private void initMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        // create Options menu
+        tabComponentsItem = new JCheckBoxMenuItem("Use TabComponents", true);
+        tabComponentsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+                InputEvent.ALT_MASK));
+        tabComponentsItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+                    if (tabComponentsItem.isSelected()) {
+                        initTabComponent(i);
+                    } else {
+                        tabbedPane.setTabComponentAt(i, null);
+                    }
+                }
             }
-         }
-      });
-      scrollLayoutItem = new JCheckBoxMenuItem("Set ScrollLayout");
-      scrollLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-            InputEvent.ALT_MASK));
-      scrollLayoutItem.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            if (tabbedPane.getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT) {
-               tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-            } else {
-               tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+        });
+        scrollLayoutItem = new JCheckBoxMenuItem("Set ScrollLayout");
+        scrollLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                InputEvent.ALT_MASK));
+        scrollLayoutItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (tabbedPane.getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT) {
+                    tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+                } else {
+                    tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+                }
             }
-         }
-      });
-      JMenuItem resetItem = new JMenuItem("Reset JTabbedPane");
-      resetItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
-            InputEvent.ALT_MASK));
-      resetItem.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-            runTest();
-         }
-      });
+        });
+        JMenuItem resetItem = new JMenuItem("Reset JTabbedPane");
+        resetItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
+                InputEvent.ALT_MASK));
+        resetItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                runTest();
+            }
+        });
 
-      JMenu optionsMenu = new JMenu("Options");
-      optionsMenu.add(tabComponentsItem);
-      optionsMenu.add(scrollLayoutItem);
-      optionsMenu.add(resetItem);
-      menuBar.add(optionsMenu);
-      setJMenuBar(menuBar);
-   }
+        JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.add(tabComponentsItem);
+        optionsMenu.add(scrollLayoutItem);
+        optionsMenu.add(resetItem);
+        menuBar.add(optionsMenu);
+        setJMenuBar(menuBar);
+    }
 }

@@ -23,6 +23,6 @@ package org.tn5250j.spoolfile;
 
 public interface QueueFilterInterface {
 
-   public abstract void reset();
+    public abstract void reset();
 
 }

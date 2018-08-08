@@ -4,23 +4,23 @@
         <appversion>0.7.6</appversion>
         <authors>
             <author email="kjp1@users.sourceforge.net" name="Kenneth J. Pouncey"/>
-			<author email="master_jaf@users.sourceforge.net" name="Martin Kirst"/>
-			<author email="pbielen@users.sourceforge.net" name="Patrick Bielen"/>
-			<author email="phelgren@users.sourceforge.net" name="Pete Helgren"/>
-			<author email="chrisgt@users.sourceforge.net" name="Christian Geisert"/>
-			<author email="jnorthr@users.sourceforge.net" name="jim"/>
-			<author email="joep_beckeringh@users.sourceforge.net" name="Joep Beckeringh"/>
-			<author email="joepbeckeringh@users.sourceforge.net" name="Joep Beckeringh"/>
-			<author email="jorjun@users.sourceforge.net" name="Peter Moore"/>
-			<author email="kennedyz@users.sourceforge.net" name="Steve Kennedy"/>
-			<author email="glen33@users.sourceforge.net" name="Glen Marchesani"/>
-			<author email="mbrilli@users.sourceforge.net" name="Maurizio Brilli"/>
-			<author email="nicolaken@users.sourceforge.net" name="Nicola Ken Barozzi"/>
-			<author email="ozgunm@users.sourceforge.net" name="Mehmet Ozgun"/>
-			<author email="rupshall@users.sourceforge.net" name="Robert Upshall"/>
-			<author email="tacticaljack@users.sourceforge.net" name="R.D.Ginsburg"/>
-			<author email="wvl@users.sourceforge.net" name="Wim Van Leuven"/>
-			<author email="yebob@users.sourceforge.net" name="yebob"/>
+            <author email="master_jaf@users.sourceforge.net" name="Martin Kirst"/>
+            <author email="pbielen@users.sourceforge.net" name="Patrick Bielen"/>
+            <author email="phelgren@users.sourceforge.net" name="Pete Helgren"/>
+            <author email="chrisgt@users.sourceforge.net" name="Christian Geisert"/>
+            <author email="jnorthr@users.sourceforge.net" name="jim"/>
+            <author email="joep_beckeringh@users.sourceforge.net" name="Joep Beckeringh"/>
+            <author email="joepbeckeringh@users.sourceforge.net" name="Joep Beckeringh"/>
+            <author email="jorjun@users.sourceforge.net" name="Peter Moore"/>
+            <author email="kennedyz@users.sourceforge.net" name="Steve Kennedy"/>
+            <author email="glen33@users.sourceforge.net" name="Glen Marchesani"/>
+            <author email="mbrilli@users.sourceforge.net" name="Maurizio Brilli"/>
+            <author email="nicolaken@users.sourceforge.net" name="Nicola Ken Barozzi"/>
+            <author email="ozgunm@users.sourceforge.net" name="Mehmet Ozgun"/>
+            <author email="rupshall@users.sourceforge.net" name="Robert Upshall"/>
+            <author email="tacticaljack@users.sourceforge.net" name="R.D.Ginsburg"/>
+            <author email="wvl@users.sourceforge.net" name="Wim Van Leuven"/>
+            <author email="yebob@users.sourceforge.net" name="yebob"/>
         </authors>
         <url>http://tn5250j.sourceforge.net</url>
     </info>
@@ -35,7 +35,7 @@
         <res src="installer/COPYING" id="LicencePanel.licence"/>
         <res src="installer/installShortcutSpec.xml" id="shortcutSpec.xml"/>
         <res src="installer/NativeLAF" id="useNativeLAF"/>
-		<res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>        
+        <res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>
     </resources>
     <panels>
         <panel classname="HelloPanel"/>
@@ -75,15 +75,21 @@
             <file targetdir="$INSTALL_PATH/lib" src="installer/itext.jar"/>
         </pack>
         <pack name="Logging with Log4j" required="no">
-            <description>Enables the use of Log4j for logging instead of terminal - http://logging.apache.org/log4j/docs/</description>
+            <description>Enables the use of Log4j for logging instead of terminal -
+                http://logging.apache.org/log4j/docs/
+            </description>
             <file targetdir="$INSTALL_PATH/lib" src="installer/log4j-1.2.15.jar"/>
         </pack>
         <pack name="JTOpen IBM Toolbox for Java" required="no">
-            <description>The IBM Toolbox for Java is a library of Java classes supporting the client/server and internet programming models to a system running IBM i (or i5/OS or OS/400). - http://jt400.sourceforge.net/</description>
+            <description>The IBM Toolbox for Java is a library of Java classes supporting the client/server and internet
+                programming models to a system running IBM i (or i5/OS or OS/400). - http://jt400.sourceforge.net/
+            </description>
             <file targetdir="$INSTALL_PATH/lib" src="installer/jt400.jar"/>
         </pack>
         <pack name="E-Mail Support" required="no">
-             <description>Enables the E-Mail Screenshot feature. - http://java.sun.com/products/javamail/ http://java.sun.com/products/javabeans/glasgow/jaf.html</description>
+            <description>Enables the E-Mail Screenshot feature. - http://java.sun.com/products/javamail/
+                http://java.sun.com/products/javabeans/glasgow/jaf.html
+            </description>
             <file targetdir="$INSTALL_PATH/lib" src="installer/activation.jar"/>
             <file targetdir="$INSTALL_PATH/lib" src="installer/mailapi.jar"/>
             <file targetdir="$INSTALL_PATH/lib" src="installer/smtp.jar"/>

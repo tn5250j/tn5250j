@@ -21,18 +21,23 @@ package org.tn5250j.tools.filters;
  *
  */
 
-import java.io.*;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public interface OutputFilterInterface {
 
 
-   public void createFileInstance(String fileName) throws
-                              FileNotFoundException;
-   public abstract void writeHeader(String fileName, String host,
-                                       ArrayList ffd, char decSep);
-   public abstract void writeFooter(ArrayList ffd);
-   public abstract void parseFields(byte[] cByte, ArrayList ffd,StringBuffer rb);
-   public abstract boolean isCustomizable();
-   public abstract void setCustomProperties();
+    public void createFileInstance(String fileName) throws
+            FileNotFoundException;
+
+    public abstract void writeHeader(String fileName, String host,
+                                     ArrayList ffd, char decSep);
+
+    public abstract void writeFooter(ArrayList ffd);
+
+    public abstract void parseFields(byte[] cByte, ArrayList ffd, StringBuffer rb);
+
+    public abstract boolean isCustomizable();
+
+    public abstract void setCustomProperties();
 }

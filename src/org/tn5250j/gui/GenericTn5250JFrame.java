@@ -21,12 +21,10 @@
 
 package org.tn5250j.gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
-import javax.swing.JFrame;
-
 import org.tn5250j.tools.GUIGraphicsUtils;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Convenient base class for all TN5250j windows/frames.
@@ -39,38 +37,38 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  * <li>{@link org.tn5250j.spoolfile.SpoolExporter}</li>
  * <li>{@link org.tn5250j.spoolfile.SpoolExportWizard}</li>
  * <li>{@link org.tn5250j.tools.XTFRFile}</li>
- * </ul> 
+ * </ul>
  */
 public class GenericTn5250JFrame extends JFrame {
 
-	private static final long serialVersionUID = 7349671770294342782L;
-	
-	protected boolean packFrame = false;
+    private static final long serialVersionUID = 7349671770294342782L;
 
-   public GenericTn5250JFrame() {
-      super();
-      setIconImages(GUIGraphicsUtils.getApplicationIcons());
-   }
+    protected boolean packFrame = false;
 
-   public void centerFrame() {
+    public GenericTn5250JFrame() {
+        super();
+        setIconImages(GUIGraphicsUtils.getApplicationIcons());
+    }
 
-      if (packFrame)
-         pack();
-      else
-         validate();
+    public void centerFrame() {
 
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
+        if (packFrame)
+            pack();
+        else
+            validate();
 
-      setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
+        //Center the window
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = getSize();
+        if (frameSize.height > screenSize.height)
+            frameSize.height = screenSize.height;
+        if (frameSize.width > screenSize.width)
+            frameSize.width = screenSize.width;
+
+        setLocation((screenSize.width - frameSize.width) / 2,
+                (screenSize.height - frameSize.height) / 2);
 
 
-   }
+    }
 
 }

@@ -21,26 +21,25 @@
 
 package org.tn5250j.gui;
 
-import javax.swing.JOptionPane;
-
 import org.tn5250j.tools.LangTool;
-import org.tn5250j.gui.GenericTn5250JFrame;
+
+import javax.swing.*;
 
 public class TN5250jSecurityAccessDialog {
 
-   // set so outsiders can not initialize the dialog.
-   private TN5250jSecurityAccessDialog() {
+    // set so outsiders can not initialize the dialog.
+    private TN5250jSecurityAccessDialog() {
 
-   }
+    }
 
-   static public void showErrorMessage(SecurityException se) {
+    static public void showErrorMessage(SecurityException se) {
 
-      GenericTn5250JFrame parent = new GenericTn5250JFrame();
-      JOptionPane.showMessageDialog(parent,LangTool.getString("messages.SADMessage")
-                                    + se.getMessage()
-                                    ,LangTool.getString("messages.SADTitle"),
-                                    JOptionPane.ERROR_MESSAGE);
+        GenericTn5250JFrame parent = new GenericTn5250JFrame();
+        JOptionPane.showMessageDialog(parent, LangTool.getString("messages.SADMessage")
+                        + se.getMessage()
+                , LangTool.getString("messages.SADTitle"),
+                JOptionPane.ERROR_MESSAGE);
 
 
-   }
+    }
 }
