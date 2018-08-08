@@ -45,16 +45,15 @@ import static org.tn5250j.TN5250jConstants.*;
 
 public final class tnvt implements Runnable {
 
-
     // negotiating commands
     private static final byte IAC = (byte) -1; // 255 FF
-    private static final byte DONT = (byte) -2; //254 FE
-    private static final byte DO = (byte) -3; //253 FD
-    private static final byte WONT = (byte) -4; //252 FC
-    private static final byte WILL = (byte) -5; //251 FB
-    private static final byte SB = (byte) -6; //250 Sub Begin FA
-    private static final byte SE = (byte) -16; //240 Sub End F0
-    private static final byte EOR = (byte) -17; //239 End of Record EF
+    private static final byte DONT = (byte) -2; // 254 FE
+    private static final byte DO = (byte) -3; // 253 FD
+    private static final byte WONT = (byte) -4; // 252 FC
+    private static final byte WILL = (byte) -5; // 251 FB
+    private static final byte SB = (byte) -6; // 250 Sub Begin FA
+    private static final byte SE = (byte) -16; // 240 Sub End F0
+    private static final byte EOR = (byte) -17; // 239 End of Record EF
     private static final byte TERMINAL_TYPE = (byte) 24; // 18
     private static final byte OPT_END_OF_RECORD = (byte) 25; // 19
     private static final byte TRANSMIT_BINARY = (byte) 0; // 0
@@ -159,7 +158,6 @@ public final class tnvt implements Runnable {
 
         return session;
     }
-
 
     public void setSSLType(String type) {
         sslType = type;
@@ -276,7 +274,9 @@ public final class tnvt implements Runnable {
             bout = new BufferedOutputStream(out);
 
             byte abyte0[];
-            while (negotiate(abyte0 = readNegotiations())) ;
+            while (negotiate(abyte0 = readNegotiations())) {
+                // do nothing
+            }
             negotiated = true;
             try {
                 screen52.setCursorActive(false);
@@ -468,10 +468,10 @@ public final class tnvt implements Runnable {
         baosp.write(screen52.getCurrentCol());
         baosp.write(aid);
 
-        if (dataIncluded(aid))
-
+        if (dataIncluded(aid)) {
             screen52.getScreenFields().readFormatTable(baosp, readType,
                     codePage);
+        }
 
         try {
 
@@ -549,8 +549,8 @@ public final class tnvt implements Runnable {
 
     /**
      * Help request -
-     *
-     *
+     * <p>
+     * <p>
      * See notes inside method
      */
     public final void sendHelpRequest() {
@@ -575,8 +575,8 @@ public final class tnvt implements Runnable {
 
     /**
      * Attention Key -
-     *
-     *
+     * <p>
+     * <p>
      * See notes inside method
      */
     public final void sendAttentionKey() {
@@ -648,7 +648,7 @@ public final class tnvt implements Runnable {
     /**
      * Cancel Invite - taken from the rfc1205 - 5250 Telnet interface section
      * 4.3
-     *
+     * <p>
      * See notes inside method
      */
     public final void cancelInvite() {
@@ -873,9 +873,7 @@ public final class tnvt implements Runnable {
     /**
      * Activate or deactivate the command scanning behaviour.
      *
-     * @param scan
-     *            if true, scanning is enabled; disabled otherwise.
-     *
+     * @param scan if true, scanning is enabled; disabled otherwise.
      * @see #scan()
      */
     public void setScanningEnabled(boolean scan) {
@@ -917,7 +915,7 @@ public final class tnvt implements Runnable {
      * called with the parsed string. The position immediately following the
      * encountered white space, separating the command from the rest of the
      * screen, is passed as starting index.
-     *
+     * <p>
      * Note that the character at the starting position can potentially be a
      * white space itself. The starting position in <code>execCommand</code>
      * provided to make the scanning sequence more flexible. We'd like for
@@ -1272,7 +1270,6 @@ public final class tnvt implements Runnable {
     }
 
     /**
-     *
      * @throws IOException
      */
     public final void restoreScreen() throws IOException {
@@ -1584,17 +1581,15 @@ public final class tnvt implements Runnable {
 
     /**
      * This routine handles sending negative responses back to the host.
-     *
+     * <p>
      * You can find a description of the types of responses to be sent back by
      * looking at section 12.4 of the 5250 Functions Reference manual
-     *
      *
      * @param cat
      * @param modifier
      * @param uByte1
      * @param uByte2
      * @param from
-     *
      */
     protected void sendNegResponse(int cat, int modifier, int uByte1,
                                    int uByte2, String from) {
@@ -2148,7 +2143,6 @@ public final class tnvt implements Runnable {
         int byte1 = byte0 & 0xff;
         // here it should always be less than 255
         if (byte1 >= 64 && byte1 < 255)
-
             return true;
         else
             return false;
@@ -2220,13 +2214,13 @@ public final class tnvt implements Runnable {
 
     /**
      * Method sendQueryResponse
-     *
+     * <p>
      * The query command is used to obtain information about the capabilities of
      * the 5250 display.
-     *
+     * <p>
      * The Query command must follow an Escape (0x04) and Write Structured Field
      * command (0xF3).
-     *
+     * <p>
      * This section is modeled after the rfc1205 - 5250 Telnet Interface section
      * 5.3
      *
@@ -2586,20 +2580,7 @@ public final class tnvt implements Runnable {
      * @return String
      */
     private String negDeviceName() {
-        if (devSeq++ == -1) {
-            devNameUsed = devName;
-            return devName;
-        } else {
-            StringBuilder sb = new StringBuilder(devName + devSeq);
-            int ei = 1;
-            while (sb.length() > 10) {
-                sb.setLength(0);
-                sb.append(devName.substring(0, devName.length() - ei++));
-                sb.append(devSeq);
-            }
-            devNameUsed = sb.toString();
-            return devNameUsed;
-        }
+        return devName;
     }
 
     public final ICodePage getCodePage() {
