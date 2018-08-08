@@ -29,7 +29,6 @@ import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javax.net.ssl.*;
-import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -153,45 +152,16 @@ public class SSLImplementation implements SSLInterface, X509TrustManager {
             return;
         } catch (CertificateException ce) {
             X509Certificate cert = chain[0];
-            String certInfo = "Version: " + cert.getVersion() + "\n";
-            certInfo = certInfo.concat("Serial Number: "
-                    + cert.getSerialNumber() + "\n");
-            certInfo = certInfo.concat("Signature Algorithm: "
-                    + cert.getSigAlgName() + "\n");
-            certInfo = certInfo.concat("Issuer: "
-                    + cert.getIssuerDN().getName() + "\n");
-            certInfo = certInfo.concat("Valid From: " + cert.getNotBefore()
-                    + "\n");
-            certInfo = certInfo
-                    .concat("Valid To: " + cert.getNotAfter() + "\n");
-            certInfo = certInfo.concat("Subject DN: "
-                    + cert.getSubjectDN().getName() + "\n");
-            certInfo = certInfo.concat("Public Key: "
-                    + cert.getPublicKey().getFormat() + "\n");
 
-            int accept = JOptionPane
-                    .showConfirmDialog(null, certInfo, "Unknown Certificate - Do you accept it?",
-                            javax.swing.JOptionPane.YES_NO_OPTION);
-            if (accept != JOptionPane.YES_OPTION) {
-                throw new java.security.cert.CertificateException(
-                        "Certificate Rejected");
-            }
-
-            int save = JOptionPane.showConfirmDialog(null,
-                    "Remember this certificate?", "Save Certificate",
-                    javax.swing.JOptionPane.YES_NO_OPTION);
-
-            if (save == JOptionPane.YES_OPTION) {
-                try {
-                    userks.setCertificateEntry(cert.getSubjectDN().getName(),
-                            cert);
-                    userks.store(new FileOutputStream(userKsPath),
-                            userksPassword);
-                } catch (Exception e) {
-                    logger.error("Error saving certificate [" + e.getMessage()
-                            + "]");
-                    e.printStackTrace();
-                }
+            try {
+                userks.setCertificateEntry(cert.getSubjectDN().getName(),
+                        cert);
+                userks.store(new FileOutputStream(userKsPath),
+                        userksPassword);
+            } catch (Exception e) {
+                logger.error("Error saving certificate [" + e.getMessage()
+                        + "]");
+                e.printStackTrace();
             }
         }
 
