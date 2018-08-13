@@ -1,0 +1,18 @@
+language: java
+jdk:
+- openjdk8
+
+cache:
+  directories:
+  - "$HOME/.m2"
+
+stages:
+- install
+- test
+
+matrix:
+  include:
+  - stage: install
+    script: mvn -B clean source:jar install -DskipTests
+  - stage: test
+    script: mvn -B clean test
