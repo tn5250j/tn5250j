@@ -9,6 +9,22 @@
     <artifactId>tn5250j</artifactId>
     <version>0.7.6.1</version>
 
+    <repositories>
+        <!-- JCenter -->
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <!-- JCenter -->
+        <pluginRepository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <properties>
         <java.version>1.8</java.version>
     </properties>
