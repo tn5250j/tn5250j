@@ -57,7 +57,7 @@ public final class TN5250jLogFactory {
          level = Integer.parseInt(props.getProperty("emul.logLevel",
                            Integer.toString(TN5250jLogger.INFO)));
 
-         String  customLogger = System.getProperty(TN5250jLogFactory.class.getName());
+         customLogger = System.getProperty(TN5250jLogFactory.class.getName());
          if (customLogger == null) {
             try {
                Class.forName("org.apache.log4j.Logger");
