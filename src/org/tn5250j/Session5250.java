@@ -74,25 +74,15 @@ public class Session5250 implements SessionInterface {
 			heartBeat = true;
 
 		screen = new Screen5250();
-
-		//screen.setVT(vt);
-
 	}
 
 	@Override
 	public String getConfigurationResource() {
-
 		return configurationResource;
-
 	}
 
 	public SessionConfig getConfiguration() {
-
 		return sesConfig;
-	}
-
-	public SessionManager getSessionManager() {
-		return SessionManager.instance();
 	}
 
 	@Override
@@ -166,9 +156,7 @@ public class Session5250 implements SessionInterface {
 
 	@Override
 	public int getSessionType() {
-
 		return sessionType;
-
 	}
 
 	public String getHostName() {

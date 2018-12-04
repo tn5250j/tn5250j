@@ -46,10 +46,7 @@ class PrinterThread extends Thread implements Printable {
   private SessionPanel session;
   private SessionConfig config;
 
-  PrinterThread(Screen5250 scr, Font font, int cols, int rows,
-                Color colorBg, boolean toDefaultPrinter, SessionPanel ses) {
-
-
+  PrinterThread(Screen5250 scr, Font font, int cols, int rows, SessionPanel ses) {
     setPriority(1);
     session = ses;
     session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -59,9 +56,9 @@ class PrinterThread extends Thread implements Printable {
     screen = new char[len];
     screenExtendedAttr = new char[len];
     screenAttrPlace = new char[len];
-    scr.GetScreen(screen, len, TN5250jConstants.PLANE_TEXT);
-    scr.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
-    scr.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
+    scr.getScreen(screen, len, TN5250jConstants.PLANE_TEXT);
+    scr.getScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
+    scr.getScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
 
     numCols = cols;
     numRows = rows;
@@ -69,14 +66,6 @@ class PrinterThread extends Thread implements Printable {
   }
 
   public void run() {
-// Toolkit tk = Toolkit.getDefaultToolkit();
-//int [][] range = new int[][] {
-//new int[] { 1, 1 }
-//};
-// JobAttributes jobAttributes = new JobAttributes(1, JobAttributes.DefaultSelectionType.ALL, JobAttributes.DestinationType.PRINTER, JobAttributes.DialogType.NONE, "file", 1, 1, JobAttributes.MultipleDocumentHandlingType.SEPARATE_DOCUMENTS_COLLATED_COPIES, range, "HP LaserJet", JobAttributes.SidesType.ONE_SIDED);
-//PrintJob job = tk.getPrintJob(null, "Print", jobAttributes, null);
-//if (job != null) {
-    //--- Create a printerJob object
     PrinterJob printJob = PrinterJob.getPrinterJob();
     printJob.setJobName("tn5250j");
 
@@ -239,8 +228,6 @@ class PrinterThread extends Thread implements Printable {
       int x;
       int y;
 
-//         int pos = 0;
-
       // loop through all the screen characters and print them out.
       for (int m = 0; m < numRows; m++)
         for (int i = 0; i < numCols; i++) {
@@ -254,8 +241,6 @@ class PrinterThread extends Thread implements Printable {
 
           }
 
-          // if it is underlined then underline the character
-//               if (screen[getPos(m,i)].underLine && !screen[getPos(m,i)].attributePlace)
           if ((screenExtendedAttr[getPos(m, i)] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0 &&
               screenAttrPlace[getPos(m, i)] != 1)
             g.drawLine(x, (int) (y + (h1 - l.getLeading() - 3)), (x + w1), (int) (y + (h1 - l.getLeading()) - 3));
