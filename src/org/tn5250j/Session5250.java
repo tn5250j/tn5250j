@@ -57,10 +57,13 @@ public class Session5250 implements SessionInterface {
     private boolean scan; // = false;
     private List<ScanListener> scanListeners = null;
 
-    public Session5250(Properties props, String configurationResource,
+    // flag that decides if to add sequence to device name
+    private Boolean enableSequentialDevice = false;
+
+    public Session5250(Properties props,
+                       String configurationResource,
                        String sessionName,
                        SessionConfig config) {
-
         propFileName = config.getConfigurationResource();
 
         sesConfig = config;
@@ -74,7 +77,10 @@ public class Session5250 implements SessionInterface {
         screen = new Screen5250();
 
         //screen.setVT(vt);
+    }
 
+    public void setEnableSequentialDevice(Boolean enableSequentialDevice) {
+        this.enableSequentialDevice = enableSequentialDevice;
     }
 
     @Override
@@ -196,7 +202,6 @@ public class Session5250 implements SessionInterface {
 
     @Override
     public void connect() {
-
         String proxyPort = "1080"; // default socks proxy port
         boolean enhanced = false;
         boolean support132 = false;
@@ -208,7 +213,7 @@ public class Session5250 implements SessionInterface {
             if ((sesProps.getProperty(TN5250jConstants.SESSION_SCREEN_SIZE)).equals(TN5250jConstants.SCREEN_SIZE_27X132_STR))
                 support132 = true;
 
-        final tnvt vt = new tnvt(this, screen, enhanced, support132);
+        final tnvt vt = new tnvt(this, screen, enhanced, support132, enableSequentialDevice);
         setVT(vt);
 
         //      vt.setController(this);
