@@ -19,4 +19,7 @@ public interface ICodePage {
 	 */
 	public abstract byte uni2ebcdic(char index);
 
+    boolean isDoubleByteActive();
+
+	boolean secondByteNeeded();
 }

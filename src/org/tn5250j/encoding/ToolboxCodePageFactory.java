@@ -151,6 +151,16 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 
 			return ((byte[]) result)[0];
 		}
+
+		@Override
+		public boolean isDoubleByteActive() {
+			return false;
+		}
+
+		@Override
+		public boolean secondByteNeeded() {
+			return false;
+		}
 	}
 
 }

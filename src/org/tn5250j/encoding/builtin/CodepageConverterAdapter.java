@@ -45,8 +45,8 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
 		codepage = getCodePage();
 
 		int size = 0;
-		for (int i=0; i<codepage.length; i++) {
-			size = Math.max(size, codepage[i]);
+		for (char c : codepage) {
+			size = Math.max(size, c);
 		}
 		assert (size + 1) < 1024*1024; // some kind of maximum size limiter.
 		reverse_codepage = new int[size+1];
@@ -79,4 +79,13 @@ public abstract class CodepageConverterAdapter implements ICodepageConverter {
 	 */
 	protected abstract char[] getCodePage();
 
+	@Override
+	public boolean isDoubleByteActive() {
+		return false;
+	}
+
+	@Override
+	public boolean secondByteNeeded() {
+		return false;
+	}
 }

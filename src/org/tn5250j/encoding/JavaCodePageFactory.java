@@ -70,6 +70,16 @@ import java.nio.charset.CharsetEncoder;
 		}
 	}
 
+	@Override
+	public boolean isDoubleByteActive() {
+		return false;
+	}
+
+	@Override
+	public boolean secondByteNeeded() {
+		return false;
+	}
+
 	/**
 	 * @param encoding
 	 * @return A new {@link CodePage} object OR null, if not available.

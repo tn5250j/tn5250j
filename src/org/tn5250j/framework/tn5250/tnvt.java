@@ -23,67 +23,6 @@
  */
 package org.tn5250j.framework.tn5250;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static org.tn5250j.TN5250jConstants.AID_HELP;
-import static org.tn5250j.TN5250jConstants.AID_PRINT;
-import static org.tn5250j.TN5250jConstants.CMD_CLEAR_FORMAT_TABLE;
-import static org.tn5250j.TN5250jConstants.CMD_CLEAR_UNIT;
-import static org.tn5250j.TN5250jConstants.CMD_CLEAR_UNIT_ALTERNATE;
-import static org.tn5250j.TN5250jConstants.CMD_READ_INPUT_FIELDS;
-import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_FIELDS;
-import static org.tn5250j.TN5250jConstants.CMD_READ_MDT_IMMEDIATE_ALT;
-import static org.tn5250j.TN5250jConstants.CMD_READ_SCREEN_IMMEDIATE;
-import static org.tn5250j.TN5250jConstants.CMD_READ_SCREEN_TO_PRINT;
-import static org.tn5250j.TN5250jConstants.CMD_RESTORE_SCREEN;
-import static org.tn5250j.TN5250jConstants.CMD_ROLL;
-import static org.tn5250j.TN5250jConstants.CMD_SAVE_SCREEN;
-import static org.tn5250j.TN5250jConstants.CMD_WRITE_ERROR_CODE;
-import static org.tn5250j.TN5250jConstants.CMD_WRITE_ERROR_CODE_TO_WINDOW;
-import static org.tn5250j.TN5250jConstants.CMD_WRITE_STRUCTURED_FIELD;
-import static org.tn5250j.TN5250jConstants.CMD_WRITE_TO_DISPLAY;
-import static org.tn5250j.TN5250jConstants.NR_REQUEST_ERROR;
-import static org.tn5250j.TN5250jConstants.PF1;
-import static org.tn5250j.TN5250jConstants.PF10;
-import static org.tn5250j.TN5250jConstants.PF11;
-import static org.tn5250j.TN5250jConstants.PF12;
-import static org.tn5250j.TN5250jConstants.PF13;
-import static org.tn5250j.TN5250jConstants.PF14;
-import static org.tn5250j.TN5250jConstants.PF15;
-import static org.tn5250j.TN5250jConstants.PF16;
-import static org.tn5250j.TN5250jConstants.PF17;
-import static org.tn5250j.TN5250jConstants.PF18;
-import static org.tn5250j.TN5250jConstants.PF19;
-import static org.tn5250j.TN5250jConstants.PF2;
-import static org.tn5250j.TN5250jConstants.PF20;
-import static org.tn5250j.TN5250jConstants.PF21;
-import static org.tn5250j.TN5250jConstants.PF22;
-import static org.tn5250j.TN5250jConstants.PF23;
-import static org.tn5250j.TN5250jConstants.PF24;
-import static org.tn5250j.TN5250jConstants.PF3;
-import static org.tn5250j.TN5250jConstants.PF4;
-import static org.tn5250j.TN5250jConstants.PF5;
-import static org.tn5250j.TN5250jConstants.PF6;
-import static org.tn5250j.TN5250jConstants.PF7;
-import static org.tn5250j.TN5250jConstants.PF8;
-import static org.tn5250j.TN5250jConstants.PF9;
-import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
-import javax.net.ssl.SSLSocket;
-import javax.swing.SwingUtilities;
-
 import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
@@ -91,6 +30,21 @@ import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javax.net.ssl.SSLSocket;
+import javax.swing.*;
+import java.io.*;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static org.tn5250j.TN5250jConstants.*;
+import static org.tn5250j.framework.tn5250.ByteExplainer.*;
+import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 
 public final class tnvt implements Runnable {
 
@@ -1680,6 +1634,7 @@ public final class tnvt implements Runnable {
 		byte control1 = 0;
 		int saRows = screen52.getRows();
 		int saCols = screen52.getColumns();
+		DbcsRecorder dbcsRecorder = new DbcsRecorder();
 
 		try {
 			if (controlsExist) {
@@ -1688,85 +1643,22 @@ public final class tnvt implements Runnable {
 				processCC0(control0);
 			}
 			while (bk.hasNext() && !done) {
-				//            pos = bk.getCurrentPos();
-
-				//            int rowc = screen52.getCurrentRow();
-				//            int colc = screen52.getCurrentCol();
-
 				byte bytebk = bk.getNextByte();
 
 				switch (bytebk) {
 
 				case 1: // SOH - Start of Header Order
-					log.debug("SOH - Start of Header Order");
-					error = processSOH();
-
+					error = processStartOfHeaderOrder();
 					break;
+					
 				case 2: // RA - Repeat to address
-					log.debug("RA - Repeat to address");
-					int row = screen52.getCurrentRow();
-					int col = screen52.getCurrentCol();
-
-					int toRow = bk.getNextByte();
-					int toCol = bk.getNextByte() & 0xff;
-					if (toRow >= row) {
-						int repeat = bk.getNextByte();
-
-						// a little intelligence here I hope
-						if (row == 1 && col == 2 && toRow == screen52.getRows()
-								&& toCol == screen52.getColumns())
-
-							screen52.clearScreen();
-						else {
-							if (repeat != 0) {
-								//LDC - 13/02/2003 - convert it to unicode
-								repeat = codePage.ebcdic2uni(repeat);
-								//repeat = getASCIIChar(repeat);
-							}
-
-							int times = ((toRow * screen52.getColumns()) + toCol)
-							- ((row * screen52.getColumns()) + col);
-							while (times-- >= 0) {
-								screen52.setChar(repeat);
-							}
-
-						}
-					} else {
-						sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x23,
-						" RA invalid");
-						error = true;
-					}
+					error = processRepeatToAddress();
 					break;
-
+						
 				case 3: // EA - Erase to address
-					log.debug("EA - Erase to address");
-					int EArow = screen52.getCurrentRow();
-					int EAcol = screen52.getCurrentCol();
-
-					int toEARow = bk.getNextByte();
-					int toEACol = bk.getNextByte() & 0xff;
-					int EALength = bk.getNextByte() & 0xff;
-					while (--EALength > 0) {
-
-						bk.getNextByte();
-
-					}
-					char EAAttr = (char) 0;
-
-					// a little intelligence here I hope
-					if (EArow == 1 && EAcol == 2
-							&& toEARow == screen52.getRows()
-							&& toEACol == screen52.getColumns())
-
-						screen52.clearScreen();
-					else {
-						int times = ((toEARow * screen52.getColumns()) + toEACol)
-						- ((EArow * screen52.getColumns()) + EAcol);
-						while (times-- >= 0) {
-							screen52.setChar(EAAttr);
-						}
-					}
+					processEraseToAddress();
 					break;
+					
 				case 4: // Command - Escape
 					log.debug("Command - Escape");
 					done = true;
@@ -1779,25 +1671,7 @@ public final class tnvt implements Runnable {
 					break;
 
 				case 17: // SBA - set buffer address order (row column)
-					log.debug("SBA - set buffer address order (row column)");
-					int saRow = bk.getNextByte();
-					int saCol = bk.getNextByte() & 0xff;
-					// make sure it is in bounds
-					if (saRow <= screen52.getRows()
-							&& saCol <= screen52.getColumns()) {
-						screen52.setCursor(saRow, saCol); // now set screen
-						// position for output
-
-					} else {
-
-						sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x22,
-								"invalid row/col order" + " saRow = " + saRow
-								+ " saRows = " + screen52.getRows()
-								+ " saCol = " + saCol);
-
-						error = true;
-
-					}
+					error = processSetBufferAddressOrder();
 					break;
 
 				case 18: // WEA - Extended Attribute
@@ -1899,7 +1773,7 @@ public final class tnvt implements Runnable {
 					screen52.addField(attr, fLength, ffw0, ffw1, fcw1, fcw2);
 
 					break;
-					// WVL - LDC : 05/08/2005 : TFX.006253 - Support STRPCCMD
+
 				case -128: //STRPCCMD
 					//          if (screen52.getCurrentPos() == 82) {
 					log.debug("STRPCCMD got a -128 command at " + screen52.getCurrentPos());
@@ -1929,33 +1803,7 @@ public final class tnvt implements Runnable {
 					//break;
 
 				default:
-					byte byte0 = bk.getByteOffset(-1);
-					if (isAttribute(byte0)) {
-						screen52.setAttr(byte0);
-					} else {
-						if (!screen52.isStatusErrorCode()) {
-							if (!isDataEBCDIC(byte0)) {
-								//                           if (byte0 == 255) {
-								//                              sendNegResponse(NR_REQUEST_ERROR,0x05,0x01,0x42,
-								//                              " Attempt to send FF to screen");
-								//                           }
-								//                           else
-
-								screen52.setChar(byte0);
-							} else
-								//LDC - 13/02/2003 - Convert it to unicode
-								//screen52.setChar(getASCIIChar(byte0));
-								screen52.setChar(codePage.ebcdic2uni(byte0));
-						} else {
-							if (byte0 == 0)
-								screen52.setChar(byte0);
-							else
-								//LDC - 13/02/2003 - Convert it to unicode
-								//screen52.setChar(getASCIIChar(byte0));
-								screen52.setChar(codePage.ebcdic2uni(byte0));
-						}
-					}
-
+					processAppendByteToScreen();
 					break;
 				}
 
@@ -1974,8 +1822,71 @@ public final class tnvt implements Runnable {
 
 	}
 
-	private boolean processSOH() throws Exception {
+	private void processAppendByteToScreen() throws Exception {
+		byte byte0 = bk.getByteOffset(-1);
+		if (isAttribute(byte0)) {
+			screen52.setAttr(byte0);
+		} else {
+			if (!screen52.isStatusErrorCode()) {
+				if (!isDataEBCDIC(byte0)) {
+					//                           if (byte0 == 255) {
+					//                              sendNegResponse(NR_REQUEST_ERROR,0x05,0x01,0x42,
+					//                              " Attempt to send FF to screen");
+					//                           }
+					//                           else
+					screen52.setChar(byte0);
+				} else
+					//LDC - 13/02/2003 - Convert it to unicode
+					//screen52.setChar(getASCIIChar(byte0));
+					setCharFromBuffer(byte0);
+			} else {
+				if (byte0 == 0)
+					screen52.setChar(byte0);
+				else
+					//LDC - 13/02/2003 - Convert it to unicode
+					//screen52.setChar(getASCIIChar(byte0));
+					setCharFromBuffer(byte0);
+			}
+		}
+	}
 
+	private void setCharFromBuffer(byte byte0) {
+        char c = codePage.ebcdic2uni(byte0);
+        if (isShiftIn(byte0)) {
+			codePage.ebcdic2uni(bk.getNextByte());
+		} 
+        if (codePage.isDoubleByteActive() && codePage.secondByteNeeded()) {
+			c = codePage.ebcdic2uni(bk.getNextByte());
+		}
+		screen52.setChar(c);
+	}
+
+	private boolean processSetBufferAddressOrder() throws Exception {
+		log.debug("SBA - set buffer address order (row column)");
+		int saRow = bk.getNextByte();
+		int saCol = bk.getNextByte() & 0xff;
+		// make sure it is in bounds
+		if (saRow <= screen52.getRows()
+				&& saCol <= screen52.getColumns()) {
+			screen52.setCursor(saRow, saCol); // now set screen
+			// position for output
+
+		} else {
+
+			sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x22,
+					"invalid row/col order" + " saRow = " + saRow
+					+ " saRows = " + screen52.getRows()
+					+ " saCol = " + saCol);
+
+			return true;
+
+		}
+		return false;
+	}
+
+	private boolean processStartOfHeaderOrder() throws Exception {
+		log.debug("SOH - Start of Header Order");
+		
 		int l = bk.getNextByte(); // length
 		log.debug(" byte 0 " + l);
 
@@ -2032,11 +1943,76 @@ public final class tnvt implements Runnable {
 			}
 			return false;
 		} else {
-			sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x2B,
-			"invalid SOH length");
+			sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x2B, "invalid SOH length");
 			return true;
 		}
 
+	}
+
+	private boolean processRepeatToAddress() throws Exception {
+		log.debug("RA - Repeat to address");
+		int row = screen52.getCurrentRow();
+		int col = screen52.getCurrentCol();
+
+		int toRow = bk.getNextByte();
+		int toCol = bk.getNextByte() & 0xff;
+		if (toRow >= row) {
+			int repeat = bk.getNextByte();
+
+			// a little intelligence here I hope
+			if (row == 1 && col == 2 && toRow == screen52.getRows()
+					&& toCol == screen52.getColumns())
+
+				screen52.clearScreen();
+			else {
+				if (repeat != 0) {
+					//LDC - 13/02/2003 - convert it to unicode
+					repeat = codePage.ebcdic2uni(repeat);
+					//repeat = getASCIIChar(repeat);
+				}
+
+				int times = ((toRow * screen52.getColumns()) + toCol)
+						- ((row * screen52.getColumns()) + col);
+				while (times-- >= 0) {
+					screen52.setChar(repeat);
+				}
+
+			}
+		} else {
+			sendNegResponse(NR_REQUEST_ERROR, 0x05, 0x01, 0x23, " RA invalid");
+			return true;
+		}
+		return false;
+	}
+
+	private void processEraseToAddress() throws Exception {
+		log.debug("EA - Erase to address");
+		int EArow = screen52.getCurrentRow();
+		int EAcol = screen52.getCurrentCol();
+
+		int toEARow = bk.getNextByte();
+		int toEACol = bk.getNextByte() & 0xff;
+		int EALength = bk.getNextByte() & 0xff;
+		while (--EALength > 0) {
+
+			bk.getNextByte();
+
+		}
+		char EAAttr = (char) 0;
+
+		// a little intelligence here I hope
+		if (EArow == 1 && EAcol == 2
+				&& toEARow == screen52.getRows()
+				&& toEACol == screen52.getColumns())
+
+			screen52.clearScreen();
+		else {
+			int times = ((toEARow * screen52.getColumns()) + toEACol)
+			- ((EArow * screen52.getColumns()) + EAcol);
+			while (times-- >= 0) {
+				screen52.setChar(EAAttr);
+			}
+		}
 	}
 
 	private void processCC0(byte byte0) {
@@ -2166,32 +2142,6 @@ public final class tnvt implements Runnable {
 			screen52.setPendingInsert(false, 1, 1);
 		}
 
-	}
-
-	private boolean isAttribute(int byte0) {
-		int byte1 = byte0 & 0xff;
-		return (byte1 & 0xe0) == 0x20;
-	}
-
-	//LDC - 12/02/2003 - Function name changed from isData to isDataEBCDIC
-	private boolean isDataEBCDIC(int byte0) {
-		int byte1 = byte0 & 0xff;
-		// here it should always be less than 255
-		if (byte1 >= 64 && byte1 < 255)
-
-			return true;
-		else
-			return false;
-
-	}
-
-	//LDC - 12/02/2003 - Test if the unicode character is a displayable
-	// character.
-	//  The first 32 characters are non displayable characters
-	//  This is normally the inverse of isDataEBCDIC (That's why there is a
-	//  check on 255 -> 0xFFFF
-	private boolean isDataUnicode(int data) {
-		return (((data < 0) || (data >= 32)) && (data != 0xFFFF));
 	}
 
 	private void writeStructuredField() {
