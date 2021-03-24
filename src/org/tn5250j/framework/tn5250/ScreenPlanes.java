@@ -477,12 +477,9 @@ public class ScreenPlanes {
 	 *
 	 * @param pos The position to be converted
 	 * @return The row which corresponds to the position given
-	 * @throws OhioException
 	 */
 	private int convertPosToRow(int pos) {
-
 		return (pos / numCols) + 1;
-
 	}
 
 	/**
@@ -490,12 +487,9 @@ public class ScreenPlanes {
 	 *
 	 * @param pos The position to be converted
 	 * @return The column which corresponds to the position given
-	 * @throws OhioException
 	 */
 	private int convertPosToColumn(int pos) {
-
 		return (pos % numCols) + 1;
-
 	}
 
 	/**
@@ -505,13 +499,9 @@ public class ScreenPlanes {
 	 * @param row - The row of the coordinate
 	 * @param col - The column of the coordinate
 	 * @return The linear position which corresponds to the coordinate given.
-	 * @throws OhioException
 	 */
 	private int convertRowColToPos(int row, int col) {
-
-
 		return (row - 1) * numCols + col -1;
-
 	}
 
 
@@ -535,12 +525,9 @@ public class ScreenPlanes {
 	 * @param bufferLength
 	 * @param plane
 	 * @return The number of characters copied to the buffer
-	 * @throws OhioException
 	 */
 	public synchronized int GetScreen(char buffer[], int bufferLength, int plane) {
-
 		return GetScreen(buffer,bufferLength,0,screenSize,plane);
-
 	}
 
 	/**

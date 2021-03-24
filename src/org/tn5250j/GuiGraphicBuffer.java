@@ -1790,35 +1790,20 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 	}
 
 	public void onScreenChanged(int which, int sr, int sc, int er, int ec) {
-
-
 		if (which == 3 || which == 4) {
-			//         log.info("cursor updated -> " +  sr + ", " + sc + "-> active " +
-			//                        screen.cursorActive + " -> shown " + screen.cursorShown);
 			drawCursor(sr,sc);
 			return;
 		}
 
-		if (hotSpots)
-			screen.checkHotSpots();
-
-		//      log.info("screen updated -> " +  sr + ", " + sc + ", " + er + ", " + ec);
-
-		int cols = 0;
-		int lc = 0;
-
+		if (hotSpots) screen.checkHotSpots();
 
 		updateRect = new Data (sr,sc,er,ec);
 
 		Rectangle clipper = new Rectangle();
-
-		int pos = 0;
-
-		lc = ec;
-		clipper.x      =   sc * columnWidth;
-		clipper.y      =   sr * rowHeight;
+		clipper.x      = sc * columnWidth;
+		clipper.y      = sr * rowHeight;
 		clipper.width  = ((ec - sc) + 1) * columnWidth;
-		clipper.height =  ((er - sr ) + 1) * rowHeight;
+		clipper.height = ((er - sr ) + 1) * rowHeight;
 
 		gg2d.setClip(clipper.getBounds());
 
@@ -1826,9 +1811,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 		gg2d.fillRect(clipper.x, clipper.y, clipper.width, clipper.height);
 
+		int pos = 0;
 		while (sr <= er) {
-			cols = ec - sc;
-			lc = sc;
+			int cols = ec - sc;
+			int lc = sc;
 			while (cols-- >= 0) {
 				if (sc + cols <= ec) {
 					drawChar(gg2d,pos++,sr,lc);
@@ -1837,12 +1823,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 			}
 			sr++;
 		}
-
-		//      System.out.println(" clipping from screen change " + clipper
-		//                        + " clipping region of paint " + gg2d.getClipBounds());
-
 		updateImage(clipper);
-
 	}
 
 	public void onOIAChanged(ScreenOIA changedOIA, int change) {
@@ -1861,15 +1842,11 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 				g2d.dispose();
 			}
 			else {
-
 				Graphics2D g2d = getWritingArea(font);
-
 				g2d.setColor(colorBg);
 				g2d.fill(kbArea);
 				updateImage(kbArea.getBounds());
 				g2d.dispose();
-
-
 			}
 			break;
 		case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_OFF:
@@ -2016,7 +1993,14 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
 	protected class Data {
 
-
+		public char[] text;
+		public char[] attr;
+		public char[] isAttr;
+		public char[] color;
+		public char[] extended;
+		public final char[] graphic;
+		public final char[] field;
+		
 		public Data(char[] text, char[] attr, char[] color, char[] extended, char[] graphic) {
 			this.text = text;
 			this.color = color;
@@ -2061,13 +2045,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 			}
 		}
 
-		public char[] text;
-		public char[] attr;
-		public char[] isAttr;
-		public char[] color;
-		public char[] extended;
-		public final char[] graphic;
-		public final char[] field;
 	}
 
 	public final Rectangle modelToView(int row, int col)

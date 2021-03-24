@@ -2807,15 +2807,11 @@ public class Screen5250 {
 	 * @param fcw1 - Field control word 1
 	 * @param fcw2 - Field control word 2
 	 */
-	protected void addField(int attr, int len, int ffw1, int ffw2, int fcw1,
-			int fcw2) {
+	protected void addField(int attr, int len, int ffw1, int ffw2, int fcw1, int fcw2) {
 
 		lastAttr = attr;
-
 		planes.setScreenCharAndAttr(lastPos, initChar, lastAttr, true);
-
 		setDirty(lastPos);
-
 		advancePos();
 
 		ScreenField sf = null;
@@ -3003,16 +2999,14 @@ public class Screen5250 {
 		}
 		if (cByte > 0 && (char)cByte < ' ') {
 			planes.setScreenCharAndAttr(lastPos, (char) 0x00, 33, false);
-			setDirty(lastPos);
-			advancePos();
 		} else {
 			planes.setScreenCharAndAttr(lastPos, (char) cByte, lastAttr, false);
-			setDirty(lastPos);
 			if (guiInterface && !isInField(lastPos, false)) {
 				planes.setUseGUI(lastPos, NO_GUI);
 			}
-			advancePos();
 		}
+		setDirty(lastPos);
+		advancePos();
 	}
 
 	protected void setEndingAttr(int cByte) {
