@@ -73,10 +73,13 @@ public class Stream5250 {
         return opCode;
     }
 
-    public final byte getNextByte()
-        throws Exception  {
+    /**
+     * @throws IllegalStateException 
+     * @return
+     */
+    public final byte getNextByte() {
         if(buffer == null || pos > buffer.length)
-            throw new Exception("Buffer length exceeded: " + pos);
+            throw new IllegalStateException("Buffer length exceeded: " + pos);
         else
             return buffer[pos++];
     }
