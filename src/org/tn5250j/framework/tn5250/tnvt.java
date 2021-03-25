@@ -1634,7 +1634,6 @@ public final class tnvt implements Runnable {
 		byte control1 = 0;
 		int saRows = screen52.getRows();
 		int saCols = screen52.getColumns();
-		DbcsRecorder dbcsRecorder = new DbcsRecorder();
 
 		try {
 			if (controlsExist) {
