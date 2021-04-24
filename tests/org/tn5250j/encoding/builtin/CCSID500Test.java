@@ -86,25 +86,4 @@ public class CCSID500Test {
         }
     }
 
-    /**
-     * Testing for Correctness both implementations ...
-     */
-    @Test
-    public void testBoth() {
-        final ICodePage cp = CharMappings.getCodePage("500-ch");
-        final CCSID500 cpex = new CCSID500();
-        cpex.init();
-        assertNotNull("At least an ASCII Codepage should be available.", cpex);
-
-        for (int i = 0; i < TESTSTRING.length; i++) {
-
-            final char beginvalue = TESTSTRING[i];
-            assertEquals("Testing to EBCDIC item #" + i, cp.uni2ebcdic(beginvalue), cpex.uni2ebcdic(beginvalue));
-            final byte converted = cp.uni2ebcdic(beginvalue);
-            assertEquals("Testing to UNICODE item #" + i, cp.ebcdic2uni(converted & 0xFF), cpex.ebcdic2uni(converted & 0xFF));
-            final char afterall = cp.ebcdic2uni(converted & 0xFF);
-            assertEquals("Testing before and after item #" + i, beginvalue, afterall);
-        }
-    }
-
 }

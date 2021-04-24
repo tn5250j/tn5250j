@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
@@ -83,27 +84,6 @@ public class CCSID277Test {
             final byte converted = cp.uni2ebcdic(beginvalue);
             final char afterall = cp.ebcdic2uni(converted & 0xFF);
             assertEquals("Testing item #" + i, beginvalue, afterall);
-        }
-    }
-
-    /**
-     * Testing for Correctness both implementations ...
-     */
-    @Test
-    public void testBoth() {
-        final ICodePage cp = CharMappings.getCodePage("277-no");
-        final CCSID277 cpex = new CCSID277();
-        cpex.init();
-        assertNotNull("At least an ASCII Codepage should be available.", cpex);
-
-        for (int i = 0; i < TESTSTRING.length; i++) {
-
-            final char beginvalue = TESTSTRING[i];
-            assertEquals("Testing to EBCDIC item #" + i, cp.uni2ebcdic(beginvalue), cpex.uni2ebcdic(beginvalue));
-            final byte converted = cp.uni2ebcdic(beginvalue);
-            assertEquals("Testing to UNICODE item #" + i, cp.ebcdic2uni(converted & 0xFF), cpex.ebcdic2uni(converted & 0xFF));
-            final char afterall = cp.ebcdic2uni(converted & 0xFF);
-            assertEquals("Testing before and after item #" + i, beginvalue, afterall);
         }
     }
 

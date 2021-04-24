@@ -30,7 +30,7 @@ import org.tn5250j.tools.LangTool;
 import javax.swing.*;
 import java.awt.*;
 
-public class KeypadAttributesPanelLearningTest {
+public class KeypadAttributesPanelLearningProgram {
 
     public static void main(String[] args) {
         LangTool.init();

@@ -78,25 +78,4 @@ public class CCSID870skTest {
         }
     }
 
-    /**
-     * Testing for Correctness both implementations ...
-     * Testing byte -> Unicode -> byte
-     */
-    @Test
-    public void testBoth() {
-        final ICodePage cp = CharMappings.getCodePage("870-sk");
-        final CCSID870 cpex = new CCSID870();
-        cpex.init();
-        assertNotNull("At least an ASCII Codepage should be available.", cpex);
-
-        for (int i = 0; i < 256; i++) {
-            final byte beginvalue = (byte) i;
-            assertEquals("Testing to EBCDIC item #" + i, cp.ebcdic2uni(beginvalue), cpex.ebcdic2uni(beginvalue));
-            final char converted = cp.ebcdic2uni(beginvalue);
-            assertEquals("Testing to UNICODE item #" + i, cp.uni2ebcdic(converted), cpex.uni2ebcdic(converted));
-            final byte afterall = cp.uni2ebcdic(converted);
-            assertEquals("Testing before and after item #" + i, beginvalue, afterall);
-        }
-    }
-
 }

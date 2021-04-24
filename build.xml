@@ -15,8 +15,8 @@
 	<property name="build.classes.dir" value="${build.dir}"/>
 	<property name="dist.dir" value="${basedir}/dist" />
 	<property name="javadoc.dir" value="${build.dir}/javadoc" />
-	<property name="rtm.lib.dir" value="${basedir}/lib/runtime" /> <!-- runtime libs -->
-	<property name="dev.lib.dir" value="${basedir}/lib/development" /> <!-- development libs -->
+	<property name="runtime.lib.dir" value="${basedir}/lib/runtime" />
+	<property name="development.lib.dir" value="${basedir}/lib/development" />
 
 	<property name="compile.source" value="1.8" />
 	<property name="compile.target" value="1.8" />
@@ -31,10 +31,17 @@
     <!-- classpath -->
     <path id="classpath">
        <pathelement path="${build.classes.dir}" />
-       <fileset dir="${rtm.lib.dir}" >
+       <fileset dir="${runtime.lib.dir}" >
           <include name="*.jar" />
           <include name="*.zip" />
        </fileset>
+    </path>
+    <path id="tests-classpath">
+        <path refid="classpath"/>
+        <fileset dir="${development.lib.dir}" >
+            <include name="*.jar" />
+            <include name="*.zip" />
+        </fileset>
     </path>
 
     <!-- files for binary distribution -->
@@ -143,6 +150,32 @@
         </javac>
     </target>
 
+    <target name="compile-tests" depends="prepare" description="Compile your TEST source-files">
+        <javac srcdir="${tests.dir}" target="${compile.target}" source="${compile.source}"
+               debug="${debug}"
+               destdir="${build.classes.dir}"
+               excludes="**/Cvs/**,**/*.ini"
+               includeantruntime="false" >
+            <classpath>
+                <path refid="tests-classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="run-tests" depends="compile, compile-tests">
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath>
+                <path refid="tests-classpath" />
+            </classpath>
+            <batchtest fork="no" todir="${build.dir}">
+                <fileset dir="${tests.dir}">
+                    <include name="**/*Test*.java"/>
+                    <exclude name="**/AllTests.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
     <!-- =================================================================== -->
     <!-- Runs the compiled program                                           -->
     <!-- =================================================================== -->
@@ -201,7 +234,7 @@
     </target>
 
 
-    <target name="all" depends="clean, compile, package"   description="Clean, Compile, Jar">
+    <target name="all" depends="clean, compile, run-tests, package"   description="Clean, Compile, Jar">
     </target>
 
     <!-- =================================================================== -->
@@ -217,7 +250,7 @@
           <fileset dir="${build.dir}">
             <include name="${jarname}"/>
           </fileset>
-          <fileset dir="${rtm.lib.dir}">
+          <fileset dir="${runtime.lib.dir}">
             <include name="**.jar"/>
             <include name="**.JAR"/>
             <include name="**.zip"/>
@@ -244,7 +277,7 @@
         <mkdir dir="${dist.dir}/${dist.base.name}"/>
         <copy todir="${dist.dir}/${dist.base.name}">
             <fileset refid="dist.bin"/>
-        	<fileset dir="${rtm.lib.dir}">
+        	<fileset dir="${runtime.lib.dir}">
         		<include name="*.jar"/>
         	</fileset>
         	<fileset dir="${build.dir}">
@@ -317,7 +350,7 @@
        </fileset>
       <fileset dir="${dist.dir}/${dist.base.name}/installer" excludes="**/_svn/**, **/.svn/**" />
       <fileset refid="resources.fileset" />
-      <fileset dir="${rtm.lib.dir}" excludes="**/_svn/**, **/.svn/**" />
+      <fileset dir="${runtime.lib.dir}" excludes="**/_svn/**, **/.svn/**" />
     </copy>
 
     <!-- We call IzPack -->
@@ -332,7 +365,7 @@
 
 <!-- start jar bundler task -->
 	<taskdef name="jarbundler"
-	                  classpath="${dev.lib.dir}/jarbundler-2.4.0.jar"
+	                  classpath="${development.lib.dir}/jarbundler-2.4.0.jar"
 	                  classname="net.sourceforge.jarbundler.JarBundler" />
 
     <target name="dist-bin-jarbundle" depends="dist-bin-prepare"  description="Creates Mac OS Application Bundle">
