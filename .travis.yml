@@ -1,5 +1,8 @@
 language: java
 
+before_install:
+    - sudo apt-get install ant-optional
+
 script:
   - ant all
 
