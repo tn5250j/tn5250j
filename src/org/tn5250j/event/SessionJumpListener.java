@@ -23,5 +23,5 @@ package org.tn5250j.event;
 
 public interface SessionJumpListener {
 
-   public void onSessionJump(SessionJumpEvent changeEvent);
+    public void onSessionJump(SessionJumpEvent changeEvent);
 }

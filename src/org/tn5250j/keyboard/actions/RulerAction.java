@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.CURSOR;
  */
 public class RulerAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public RulerAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        CURSOR.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public RulerAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                CURSOR.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.crossHair();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.crossHair();
+    }
 }

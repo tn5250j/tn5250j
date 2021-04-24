@@ -41,17 +41,17 @@ import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
  */
 public class TransferAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public TransferAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        FILE_TRANSFER.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public TransferAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                FILE_TRANSFER.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    new XTFRFile((Frame) SwingUtilities.getRoot(session),
-        session.getVT(), session);
-  }
+    public void actionPerformed(ActionEvent e) {
+        new XTFRFile((Frame) SwingUtilities.getRoot(session),
+                session.getVT(), session);
+    }
 }

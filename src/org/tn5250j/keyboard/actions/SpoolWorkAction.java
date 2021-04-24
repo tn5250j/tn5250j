@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.SPOOL_FILE;
  */
 public class SpoolWorkAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public SpoolWorkAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        SPOOL_FILE.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public SpoolWorkAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                SPOOL_FILE.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.actionSpool();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.actionSpool();
+    }
 }

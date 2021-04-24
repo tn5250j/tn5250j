@@ -37,133 +37,116 @@ import org.tn5250j.swing.JTerminal;
  * For testing purpose
  */
 public class BasicTerminalUI {
-   boolean graphicsDebugMode = false;
+    boolean graphicsDebugMode = false;
 
-  public static void paintSubComponent(Graphics g, BasicSubUI component)
-  {
-    Rectangle  tr = new Rectangle();
-    component.getBounds(tr);
-    if (g.hitClip(tr.x, tr.y, tr.width, tr.height))
-    {
-      Graphics tg = g.create(tr.x, tr.y, tr.width, tr.height);
-      try
-      {
-        component.paint(tg);
-      }
-      finally
-      {
-        tg.dispose();
-      }
+    public static void paintSubComponent(Graphics g, BasicSubUI component) {
+        Rectangle tr = new Rectangle();
+        component.getBounds(tr);
+        if (g.hitClip(tr.x, tr.y, tr.width, tr.height)) {
+            Graphics tg = g.create(tr.x, tr.y, tr.width, tr.height);
+            try {
+                component.paint(tg);
+            } finally {
+                tg.dispose();
+            }
+        }
     }
-  }
 
-  public static ComponentUI createUI(JComponent c)
-  {
-    return new ComponentUI() {};
-  }
+    public static ComponentUI createUI(JComponent c) {
+        return new ComponentUI() {
+        };
+    }
 
-  public BasicTerminalUI()
-  {
-    super();
-  }
+    public BasicTerminalUI() {
+        super();
+    }
 
-  public void paint(Graphics g, JComponent c)
-  {
-    if (session.isConnected())
-      paintSubComponent(g, screen);
+    public void paint(Graphics g, JComponent c) {
+        if (session.isConnected())
+            paintSubComponent(g, screen);
 
-    paintSubComponent(g, oia);
-  }
+        paintSubComponent(g, oia);
+    }
 
-  //============================================================================
-  //                     I n s t a l l   U I   b i t s
-  //============================================================================
-  public void installUI(JComponent c)
-  {
-    if (c instanceof JTerminal)
-    {
-      this.terminal = (JTerminal)c;
-      if (graphicsDebugMode)
-      {
-        javax.swing.RepaintManager repaintManager = javax.swing.RepaintManager.currentManager(terminal);
-        repaintManager.setDoubleBufferingEnabled(false);
-        terminal.setDebugGraphicsOptions(javax.swing.DebugGraphics.FLASH_OPTION);
-      }
+    //============================================================================
+    //                     I n s t a l l   U I   b i t s
+    //============================================================================
+    public void installUI(JComponent c) {
+        if (c instanceof JTerminal) {
+            this.terminal = (JTerminal) c;
+            if (graphicsDebugMode) {
+                javax.swing.RepaintManager repaintManager = javax.swing.RepaintManager.currentManager(terminal);
+                repaintManager.setDoubleBufferingEnabled(false);
+                terminal.setDebugGraphicsOptions(javax.swing.DebugGraphics.FLASH_OPTION);
+            }
 
-      this.session  = terminal.getSession();
+            this.session = terminal.getSession();
 //      session.setRunningHeadless(true);
-      installComponents();
-      installListeners();
-      installDefaults();
-      installKeyboardActions();
+            installComponents();
+            installListeners();
+            installDefaults();
+            installKeyboardActions();
+        } else
+            throw new Error("TerminalUI needs JTerminal");
     }
-    else
-      throw new Error("TerminalUI needs JTerminal");
-  }
 
-  public void uninstallUI(JComponent c)
-  {
-    uninstallKeyboardActions();
-    uninstallListeners();
-    uninstallDefaults();
-    uninstallComponents();
-  }
+    public void uninstallUI(JComponent c) {
+        uninstallKeyboardActions();
+        uninstallListeners();
+        uninstallDefaults();
+        uninstallComponents();
+    }
 
 
+    protected void installComponents() {
+        Screen5250 screen = this.session.getScreen();
 
-  protected void installComponents()
-  {
-    Screen5250 screen = this.session.getScreen();
+        this.screen = new BasicScreen(screen);
+        this.screen.setRepainter(this.repainter);
+        this.screen.install();
 
-    this.screen = new BasicScreen(screen);
-    this.screen.setRepainter(this.repainter);
-    this.screen.install();
+        this.oia = new BasicOIA(screen.getOIA());
+        this.oia.setRepainter(this.repainter);
+        this.oia.install();
 
-    this.oia    = new BasicOIA(screen.getOIA());
-    this.oia.setRepainter(this.repainter);
-    this.oia.install();
+        this.terminal.setLayout(new TerminalLayoutManager());
+    }
 
-    this.terminal.setLayout(new TerminalLayoutManager());
-  }
+    protected void installDefaults() {
+        // common case is background painted... this can
+        // easily be changed by subclasses or from outside
+        // of the component.
+        this.terminal.setOpaque(true);
+        this.terminal.setFocusable(true);
+        this.terminal.setFocusTraversalKeysEnabled(false);
 
-  protected void installDefaults()
-  {
-    // common case is background painted... this can
-    // easily be changed by subclasses or from outside
-    // of the component.
-    this.terminal.setOpaque(true);
-    this.terminal.setFocusable(true);
-    this.terminal.setFocusTraversalKeysEnabled(false);
+        Color bg = terminal.getBackground();
+        if ((bg == null) || (bg instanceof UIResource))
+            terminal.setBackground(DFT_BACKGROUND);
 
-    Color bg = terminal.getBackground();
-    if ( (bg == null) || (bg instanceof UIResource) )
-      terminal.setBackground(DFT_BACKGROUND);
+        Color fg = terminal.getForeground();
+        if ((fg == null) || (fg instanceof UIResource))
+            terminal.setForeground(DFT_FOREGROUND);
 
-    Color fg = terminal.getForeground();
-    if ( (fg == null) || (fg instanceof UIResource) )
-      terminal.setForeground(DFT_FOREGROUND);
+        Font f = terminal.getFont();
+        if ((f == null) || (f instanceof UIResource))
+            terminal.setFont(DFT_FONT);
 
-    Font f = terminal.getFont();
-    if ( (f == null) || (f instanceof UIResource) )
-      terminal.setFont(DFT_FONT);
+        String sizePolicy = (String) terminal.getClientProperty("size-policy");
+        if (sizePolicy == null)
+            terminal.putClientProperty("size-policy", "fixed");
+    }
 
-    String sizePolicy = (String)terminal.getClientProperty("size-policy");
-    if (sizePolicy == null)
-      terminal.putClientProperty("size-policy", "fixed");
-  }
-
-  protected void installListeners()
-  {
-     terminal.addPropertyChangeListener(this.propListener);
-     terminal.addFocusListener(this.focusListener);
+    protected void installListeners() {
+        terminal.addPropertyChangeListener(this.propListener);
+        terminal.addFocusListener(this.focusListener);
 //     terminal.addMouseListener(this.mouselistener);
-     //terminal.addMouseMotionListener(defaultDragRecognizer);
+        //terminal.addMouseMotionListener(defaultDragRecognizer);
 
-     session.addSessionListener(this.sessListener);
-  }
+        session.addSessionListener(this.sessListener);
+    }
 
-  protected void installKeyboardActions()
-  {
+    protected void installKeyboardActions() {
 //    InputMap km = getInputMap();
 //    if (km != null) {
 //      SwingUtilities.replaceUIInputMap(terminal, JComponent.WHEN_FOCUSED, km);
@@ -175,57 +158,51 @@ public class BasicTerminalUI {
 //    }
 //      keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
-  }
+    }
 
-  protected void uninstallComponents()
-  {
-    this.terminal.setLayout(null);
+    protected void uninstallComponents() {
+        this.terminal.setLayout(null);
 
-    this.screen.setRepainter(null);
-    this.screen.uninstall();
-    this.oia.setRepainter(null);
-    this.oia.uninstall();
-  }
+        this.screen.setRepainter(null);
+        this.screen.uninstall();
+        this.oia.setRepainter(null);
+        this.oia.uninstall();
+    }
 
-  protected void uninstallDefaults()
-  {
-    if (terminal.getBackground() instanceof UIResource)
-      terminal.setBackground(null);
+    protected void uninstallDefaults() {
+        if (terminal.getBackground() instanceof UIResource)
+            terminal.setBackground(null);
 
-    if (terminal.getForeground() instanceof UIResource)
-      terminal.setForeground(null);
+        if (terminal.getForeground() instanceof UIResource)
+            terminal.setForeground(null);
 
-    if (terminal.getFont() instanceof UIResource)
-      terminal.setFont(null);
-  }
+        if (terminal.getFont() instanceof UIResource)
+            terminal.setFont(null);
+    }
 
-  protected void uninstallListeners()
-  {
-     terminal.removePropertyChangeListener(this.propListener);
-     terminal.removeFocusListener(this.focusListener);
+    protected void uninstallListeners() {
+        terminal.removePropertyChangeListener(this.propListener);
+        terminal.removeFocusListener(this.focusListener);
 //     terminal.removeMouseListener(this.mouselistener);
-     //terminal.removeMouseMotionListener(defaultDragRecognizer);
+        //terminal.removeMouseMotionListener(defaultDragRecognizer);
 
-     session.removeSessionListener(this.sessListener);
-  }
+        session.removeSessionListener(this.sessListener);
+    }
 
-  protected void uninstallKeyboardActions()
-  {
-    SwingUtilities.replaceUIInputMap(terminal, JComponent.WHEN_FOCUSED, null);
-    SwingUtilities.replaceUIActionMap(terminal, null);
-  }
+    protected void uninstallKeyboardActions() {
+        SwingUtilities.replaceUIInputMap(terminal, JComponent.WHEN_FOCUSED, null);
+        SwingUtilities.replaceUIActionMap(terminal, null);
+    }
 
-  protected InputMap getInputMap()
-  {
-    InputMap map = new InputMapUIResource();
+    protected InputMap getInputMap() {
+        InputMap map = new InputMapUIResource();
 
-    return map;
-  }
+        return map;
+    }
 
 
-  protected ActionMap getActionMap()
-  {
-    ActionMap componentMap = new ActionMapUIResource();
+    protected ActionMap getActionMap() {
+        ActionMap componentMap = new ActionMapUIResource();
 //
 //    if (KEY_POL_AID.equals(terminal.getClientProperty("key-policy")))
 //    {
@@ -302,53 +279,50 @@ public class BasicTerminalUI {
 //      componentMap.put(OS_OHIO_MNEMONIC_UP, new SendStringAction(OS_OHIO_MNEMONIC_UP));
 //    }
 //
-    return componentMap;
+        return componentMap;
 
-  }
-
-  //============================================================================
-  //                      P r i v a t e   M e t h o d s
-  //============================================================================
-  private void initFontMap(Font f)
-  {
-    if (f == null)
-    {
-      this.widthMap = null;
-      this.heightMap = null;
-      return;
     }
 
-    this.widthMap  = new int[MAX_POINT*2];
-    this.heightMap = new int[MAX_POINT*2];
+    //============================================================================
+    //                      P r i v a t e   M e t h o d s
+    //============================================================================
+    private void initFontMap(Font f) {
+        if (f == null) {
+            this.widthMap = null;
+            this.heightMap = null;
+            return;
+        }
 
-    this.fontName  = f.getName();
-    this.fontStyle = f.getStyle();
+        this.widthMap = new int[MAX_POINT * 2];
+        this.heightMap = new int[MAX_POINT * 2];
 
-    for (int i = 4, j = 0, tw = 0, th = 0; i < MAX_POINT; i++)
-    {
-      //Font        workFont = f.deriveFont((float)i);
-      Font        workFont = new Font(this.fontName, this.fontStyle, i);
-      FontMetrics metrics  = terminal.getFontMetrics(workFont);
+        this.fontName = f.getName();
+        this.fontStyle = f.getStyle();
 
-      int         w        = metrics.charWidth('W');
-      int         h        = metrics.getHeight();
-      //int         h        = metrics.getAscent() + metrics.getDescent();
+        for (int i = 4, j = 0, tw = 0, th = 0; i < MAX_POINT; i++) {
+            //Font        workFont = f.deriveFont((float)i);
+            Font workFont = new Font(this.fontName, this.fontStyle, i);
+            FontMetrics metrics = terminal.getFontMetrics(workFont);
 
-      this.widthMap[j] = w;
-      this.widthMap[j+1] = i;
-      this.heightMap[j] = h;
-      this.heightMap[j+1] = i;
+            int w = metrics.charWidth('W');
+            int h = metrics.getHeight();
+            //int         h        = metrics.getAscent() + metrics.getDescent();
 
-      if ( (tw == w) && (th == h) )
-        break;
+            this.widthMap[j] = w;
+            this.widthMap[j + 1] = i;
+            this.heightMap[j] = h;
+            this.heightMap[j + 1] = i;
 
-      tw = w;
-      th = h;
-      j += 2;
+            if ((tw == w) && (th == h))
+                break;
+
+            tw = w;
+            th = h;
+            j += 2;
+        }
     }
-  }
 
-/* *** NEVER USED LOCALLY ************************************************ */
+    /* *** NEVER USED LOCALLY ************************************************ */
 //  private int deriveFontSize(int width, int height)
 //  {
 //    int index = this.deriveScaleIndex(width, height);
@@ -356,156 +330,139 @@ public class BasicTerminalUI {
 //    return this.widthMap[index + 1];
 //  }
 
-  private int deriveScaleIndex(int width, int height)
-  {
-    int w = width/screen.columns;
-    int h = height/screen.rows;
+    private int deriveScaleIndex(int width, int height) {
+        int w = width / screen.columns;
+        int h = height / screen.rows;
 
-    int i;
-    for (i = (widthMap.length - 2); (i > 0) && (this.widthMap[i] == 0); i -= 2);
+        int i;
+        for (i = (widthMap.length - 2); (i > 0) && (this.widthMap[i] == 0); i -= 2) ;
 
-    for(; (i != 0) && (widthMap[i] > w); i -= 2);
-    for(; (i != 0) && (heightMap[i] > h); i -= 2);
+        for (; (i != 0) && (widthMap[i] > w); i -= 2) ;
+        for (; (i != 0) && (heightMap[i] > h); i -= 2) ;
 
-    return i;
-  }
-
-  //============================================================================
-  //                             L a y o u t
-  //============================================================================
-  public class TerminalLayoutManager implements LayoutManager
-  {
-    public void addLayoutComponent(String name, Component comp) {}
-    public void removeLayoutComponent(Component comp)           {}
-
-    public Dimension preferredLayoutSize(Container parent)
-    {
-      Dimension oiaD = oia.getPreferredSize();
-      Dimension scrD = screen.getPreferredSize();
-
-      return new Dimension(Math.max(oiaD.width, scrD.width), oiaD.height + scrD.height);
+        return i;
     }
 
-    public Dimension minimumLayoutSize(Container parent)
-    {
-      return oia.getPreferredSize();
-    }
+    //============================================================================
+    //                             L a y o u t
+    //============================================================================
+    public class TerminalLayoutManager implements LayoutManager {
+        public void addLayoutComponent(String name, Component comp) {
+        }
 
-    public Dimension maximumLayoutSize(Container parent)
-    {
-      return new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
-    }
+        public void removeLayoutComponent(Component comp) {
+        }
 
-    public void layoutContainer(Container parent)
-    {
-      if (parent != terminal)
-         return;
+        public Dimension preferredLayoutSize(Container parent) {
+            Dimension oiaD = oia.getPreferredSize();
+            Dimension scrD = screen.getPreferredSize();
 
-      JTerminal target = (JTerminal) parent;
-      Rectangle bounds = target.getBounds();
-      Insets    insets = target.getInsets();
-      int       top    = insets.top;
-      int       bottom = bounds.height - insets.bottom;
-      int       left   = insets.left;
-      int       right  = bounds.width - insets.right;
+            return new Dimension(Math.max(oiaD.width, scrD.width), oiaD.height + scrD.height);
+        }
+
+        public Dimension minimumLayoutSize(Container parent) {
+            return oia.getPreferredSize();
+        }
+
+        public Dimension maximumLayoutSize(Container parent) {
+            return new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
+        }
+
+        public void layoutContainer(Container parent) {
+            if (parent != terminal)
+                return;
+
+            JTerminal target = (JTerminal) parent;
+            Rectangle bounds = target.getBounds();
+            Insets insets = target.getInsets();
+            int top = insets.top;
+            int bottom = bounds.height - insets.bottom;
+            int left = insets.left;
+            int right = bounds.width - insets.right;
 
 //      boolean   ltr    = target.getComponentOrientation().isLeftToRight();
-      Dimension d      = null;
+            Dimension d = null;
 
-      if (oia != null)
-      {
-        d = oia.getPreferredSize();
-        oia.setBounds(left, bottom - d.height, right - left, d.height);
-        bottom -= d.height;
-      }
+            if (oia != null) {
+                d = oia.getPreferredSize();
+                oia.setBounds(left, bottom - d.height, right - left, d.height);
+                bottom -= d.height;
+            }
 
-      if (screen != null)
-      {
-        int  width  = right - left;
-        int  height = bottom - top;
-        adjustScreen(left, top, width, height);
-      }
+            if (screen != null) {
+                int width = right - left;
+                int height = bottom - top;
+                adjustScreen(left, top, width, height);
+            }
+        }
     }
-  }
 
-  private void adjustScreen(int x, int y, int width, int height)
-  {
-    int  index  = deriveScaleIndex(width, height);
-    Font font   = new Font(fontName, fontStyle, widthMap[index+1]);
+    private void adjustScreen(int x, int y, int width, int height) {
+        int index = deriveScaleIndex(width, height);
+        Font font = new Font(fontName, fontStyle, widthMap[index + 1]);
 
-    if (SIZE_POL_FIXED.equals(sizePolicy ))
-    {
-      int  cW     = widthMap[index];
-      int  cH     = heightMap[index];
+        if (SIZE_POL_FIXED.equals(sizePolicy)) {
+            int cW = widthMap[index];
+            int cH = heightMap[index];
 
-      screen.setFont(font, cW, cH);
+            screen.setFont(font, cW, cH);
 
-      cW = cW * screen.columns;
-      cH = cH * screen.rows;
+            cW = cW * screen.columns;
+            cH = cH * screen.rows;
 
-      width = width - cW;
-      height = height - cH;
-      x += width / 2;
-      y += height / 2;
+            width = width - cW;
+            height = height - cH;
+            x += width / 2;
+            y += height / 2;
 
-      screen.setBounds(x, y, cW, cH);
+            screen.setBounds(x, y, cW, cH);
+        } else {
+            int cW = width / screen.columns;
+            int cH = height / screen.rows;
+
+            screen.setFont(font, cW, cH);
+            screen.setBounds(x, y, width, height);
+        }
     }
-    else
-    {
-      int  cW     = width / screen.columns;
-      int  cH     = height / screen.rows;
 
-      screen.setFont(font, cW, cH);
-      screen.setBounds(x, y, width, height);
+
+    //============================================================================
+    //                             L i s t e n e r s
+    //============================================================================
+    public class PropertyChangeHandler implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent evt) {
+            String name = evt.getPropertyName();
+            if ("font".equals(name)) {
+                Font font = (Font) evt.getNewValue();
+                initFontMap(font);
+
+                int index = (font.getSize() - 4) * 2;
+                screen.setFont(font, widthMap[index], heightMap[index]);
+                oia.setFont(font, widthMap[index], heightMap[index]);
+            } else if ("size-policy".equals(name)) {
+                String val = (String) evt.getNewValue();
+                if (SIZE_POL_FIXED.equals(val))
+                    sizePolicy = SIZE_POL_FIXED;
+                else
+                    sizePolicy = SIZE_POL_DYNAMIC;
+
+                terminal.invalidate();
+                terminal.repaint();
+            }
+        }
     }
-  }
 
-
-  //============================================================================
-  //                             L i s t e n e r s
-  //============================================================================
-  public class PropertyChangeHandler implements PropertyChangeListener
-  {
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-      String name = evt.getPropertyName();
-      if ("font".equals(name))
-      {
-        Font font = (Font)evt.getNewValue();
-        initFontMap(font);
-
-        int index  = (font.getSize() - 4)*2;
-        screen.setFont(font, widthMap[index], heightMap[index]);
-        oia.setFont(font, widthMap[index], heightMap[index]);
-      }
-      else if ("size-policy".equals(name))
-      {
-        String val = (String)evt.getNewValue();
-        if (SIZE_POL_FIXED.equals(val))
-          sizePolicy = SIZE_POL_FIXED;
-        else
-          sizePolicy = SIZE_POL_DYNAMIC;
-
-        terminal.invalidate();
-        terminal.repaint();
-      }
-    }
-  }
-
-  public class FocusHandler implements FocusListener
-  {
-    public void focusGained(FocusEvent e)
-    {
+    public class FocusHandler implements FocusListener {
+        public void focusGained(FocusEvent e) {
 //      System.out.println("Focus gained");
-      screen.setCursorEnabled(true);
-    }
+            screen.setCursorEnabled(true);
+        }
 
-    public void focusLost(FocusEvent e)
-    {
+        public void focusLost(FocusEvent e) {
 //      System.out.println("Focus gained");
-      screen.setCursorEnabled(false);
+            screen.setCursorEnabled(false);
+        }
     }
-  }
 
 //     public class MouseHandler implements MouseListener
 //     {
@@ -533,23 +490,19 @@ public class BasicTerminalUI {
 //       public void mouseExited(MouseEvent e) {};
 //     }
 
-  public class RepaintHandler implements BasicSubUI.Repainter
-  {
-    public void addDirtyRectangle(BasicSubUI origin, int x, int y, int width, int height)
-    {
-      RepaintManager.currentManager(terminal).addDirtyRegion(terminal, x, y, width, height);
+    public class RepaintHandler implements BasicSubUI.Repainter {
+        public void addDirtyRectangle(BasicSubUI origin, int x, int y, int width, int height) {
+            RepaintManager.currentManager(terminal).addDirtyRegion(terminal, x, y, width, height);
 //      terminal.repaint();
+        }
     }
-  }
 
-  public class SessionHandler implements SessionListener
-  {
-   public void onSessionChanged(SessionChangeEvent event)
-    {
-      //terminal.invalidate();
-      terminal.repaint();
+    public class SessionHandler implements SessionListener {
+        public void onSessionChanged(SessionChangeEvent event) {
+            //terminal.invalidate();
+            terminal.repaint();
+        }
     }
-  }
 
 //     //============================================================================
 //     //                               A c t i o n s
@@ -594,43 +547,43 @@ public class BasicTerminalUI {
 //       private String stringKey;
 //     }
 
-  //============================================================================
-  //                             V a r i a b l e s
-  //============================================================================
-  transient JTerminal              terminal;
-  transient Session5250            session;
+    //============================================================================
+    //                             V a r i a b l e s
+    //============================================================================
+    transient JTerminal terminal;
+    transient Session5250 session;
 
-  transient BasicScreen            screen;
-  transient BasicOIA               oia;
+    transient BasicScreen screen;
+    transient BasicOIA oia;
 
-  transient String                 fontName;
-  transient int                    fontStyle;
-  transient int[]                  widthMap;
-  transient int[]                  heightMap;
+    transient String fontName;
+    transient int fontStyle;
+    transient int[] widthMap;
+    transient int[] heightMap;
 
-  transient String                 sizePolicy;
+    transient String sizePolicy;
 
-  public static final int MAX_POINT = 36;
+    public static final int MAX_POINT = 36;
 
-  //============================================================================
-  //                             L i s t e n e r s
-  //============================================================================
-  transient PropertyChangeListener propListener = new PropertyChangeHandler();
-  transient FocusListener          focusListener= new FocusHandler();
-  transient SessionListener   sessListener = new SessionHandler();
-  transient RepaintHandler         repainter    = new RepaintHandler();
+    //============================================================================
+    //                             L i s t e n e r s
+    //============================================================================
+    transient PropertyChangeListener propListener = new PropertyChangeHandler();
+    transient FocusListener focusListener = new FocusHandler();
+    transient SessionListener sessListener = new SessionHandler();
+    transient RepaintHandler repainter = new RepaintHandler();
 //  transient MouseHandler           mouselistener= new MouseHandler();
 
-  //============================================================================
-  //                              C o n s a n t s
-  //============================================================================
-  private static final String          SIZE_POL_FIXED   = "fixed";
-  private static final String          SIZE_POL_DYNAMIC = "dynamic";
+    //============================================================================
+    //                              C o n s a n t s
+    //============================================================================
+    private static final String SIZE_POL_FIXED = "fixed";
+    private static final String SIZE_POL_DYNAMIC = "dynamic";
 
 //  private static final String          KEY_POL_STRING   = "string";
 //  private static final String          KEY_POL_AID      = "aid";
 
-  public  static final ColorUIResource DFT_BACKGROUND   = new ColorUIResource(Color.black);
-  public  static final ColorUIResource DFT_FOREGROUND   = new ColorUIResource(Color.green);
-  public  static final Font            DFT_FONT         = new FontUIResource("Monospaced", Font.BOLD, 12);
+    public static final ColorUIResource DFT_BACKGROUND = new ColorUIResource(Color.black);
+    public static final ColorUIResource DFT_FOREGROUND = new ColorUIResource(Color.green);
+    public static final Font DFT_FONT = new FontUIResource("Monospaced", Font.BOLD, 12);
 }

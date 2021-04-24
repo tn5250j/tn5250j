@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.OPEN_NEW;
  */
 public class NewSessionAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public NewSessionAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        OPEN_NEW.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public NewSessionAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                OPEN_NEW.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.startNewSession();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.startNewSession();
+    }
 }

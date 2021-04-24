@@ -41,17 +41,17 @@ import static org.tn5250j.keyboard.KeyMnemonic.CLOSE;
  */
 public class CloseAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public CloseAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        CLOSE.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.ALT_MASK),
-        keyMap);
-  }
+    public CloseAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                CLOSE.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.ALT_MASK),
+                keyMap);
+    }
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    session.confirmCloseSession(true);
-  }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        session.confirmCloseSession(true);
+    }
 }

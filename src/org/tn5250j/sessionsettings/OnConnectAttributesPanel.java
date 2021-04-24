@@ -33,42 +33,44 @@ import java.awt.*;
 
 class OnConnectAttributesPanel extends AttributesPanel {
 
-  private static final long serialVersionUID = 1L;
-  private JTextField connectMacro;
+    private static final long serialVersionUID = 1L;
+    private JTextField connectMacro;
 
-  OnConnectAttributesPanel(SessionConfig config) {
-    super(config, "OnConnect");
-  }
+    OnConnectAttributesPanel(SessionConfig config) {
+        super(config, "OnConnect");
+    }
 
-  /**Component initialization*/
-  public void initPanel() throws Exception {
+    /**
+     * Component initialization
+     */
+    public void initPanel() throws Exception {
 
-    setLayout(new BorderLayout());
-    contentPane = new JPanel();
-    contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-    add(contentPane, BorderLayout.NORTH);
+        setLayout(new BorderLayout());
+        contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        add(contentPane, BorderLayout.NORTH);
 
-    // define onConnect macro to run
-    JPanel ocMacrop = new JPanel();
-    ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
+        // define onConnect macro to run
+        JPanel ocMacrop = new JPanel();
+        ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
 
-    connectMacro = new JTextField();
-    connectMacro.setColumns(30);
+        connectMacro = new JTextField();
+        connectMacro.setColumns(30);
 
-    // sets the connect macro
-    connectMacro.setText(getStringProperty("connectMacro"));
+        // sets the connect macro
+        connectMacro.setText(getStringProperty("connectMacro"));
 
-    ocMacrop.add(connectMacro);
-    contentPane.add(ocMacrop);
+        ocMacrop.add(connectMacro);
+        contentPane.add(ocMacrop);
 
-  }
+    }
 
-  public void applyAttributes() {
+    public void applyAttributes() {
 
-    changes.firePropertyChange(this, "connectMacro",
-        getStringProperty("connectMacro"),
-        connectMacro.getText());
-    setProperty("connectMacro", connectMacro.getText());
+        changes.firePropertyChange(this, "connectMacro",
+                getStringProperty("connectMacro"),
+                connectMacro.getText());
+        setProperty("connectMacro", connectMacro.getText());
 
-  }
+    }
 }

@@ -22,55 +22,55 @@ import java.awt.event.MouseListener;
 
 public class JSortTable extends JTable implements MouseListener {
 
-  private static final long serialVersionUID = 1L;
-  private int sortedColumnIndex = -1;
-  private boolean sortedColumnAscending = true;
+    private static final long serialVersionUID = 1L;
+    private int sortedColumnIndex = -1;
+    private boolean sortedColumnAscending = true;
 
-  public JSortTable(SortTableModel model) {
-    super(model);
-    initSortHeader();
-  }
-
-  private void initSortHeader() {
-    JTableHeader header = getTableHeader();
-    header.setDefaultRenderer(new SortHeaderRenderer());
-    header.addMouseListener(this);
-  }
-
-  int getSortedColumnIndex() {
-    return sortedColumnIndex;
-  }
-
-  boolean isSortedColumnAscending() {
-    return sortedColumnAscending;
-  }
-
-  public void mouseReleased(MouseEvent event) {
-    TableColumnModel colModel = getColumnModel();
-    int index = colModel.getColumnIndexAtX(event.getX());
-    int modelIndex = colModel.getColumn(index).getModelIndex();
-
-    SortTableModel model = (SortTableModel) getModel();
-    if (model.isSortable(modelIndex)) {
-      // toggle ascension, if already sorted
-      if (sortedColumnIndex == index) {
-        sortedColumnAscending = !sortedColumnAscending;
-      }
-      sortedColumnIndex = index;
-
-      model.sortColumn(modelIndex, sortedColumnAscending);
+    public JSortTable(SortTableModel model) {
+        super(model);
+        initSortHeader();
     }
-  }
 
-  public void mousePressed(MouseEvent event) {
-  }
+    private void initSortHeader() {
+        JTableHeader header = getTableHeader();
+        header.setDefaultRenderer(new SortHeaderRenderer());
+        header.addMouseListener(this);
+    }
 
-  public void mouseClicked(MouseEvent event) {
-  }
+    int getSortedColumnIndex() {
+        return sortedColumnIndex;
+    }
 
-  public void mouseEntered(MouseEvent event) {
-  }
+    boolean isSortedColumnAscending() {
+        return sortedColumnAscending;
+    }
 
-  public void mouseExited(MouseEvent event) {
-  }
+    public void mouseReleased(MouseEvent event) {
+        TableColumnModel colModel = getColumnModel();
+        int index = colModel.getColumnIndexAtX(event.getX());
+        int modelIndex = colModel.getColumn(index).getModelIndex();
+
+        SortTableModel model = (SortTableModel) getModel();
+        if (model.isSortable(modelIndex)) {
+            // toggle ascension, if already sorted
+            if (sortedColumnIndex == index) {
+                sortedColumnAscending = !sortedColumnAscending;
+            }
+            sortedColumnIndex = index;
+
+            model.sortColumn(modelIndex, sortedColumnAscending);
+        }
+    }
+
+    public void mousePressed(MouseEvent event) {
+    }
+
+    public void mouseClicked(MouseEvent event) {
+    }
+
+    public void mouseEntered(MouseEvent event) {
+    }
+
+    public void mouseExited(MouseEvent event) {
+    }
 }

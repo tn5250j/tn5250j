@@ -23,5 +23,5 @@ package org.tn5250j.event;
 
 public interface KeyChangeListener {
 
-   public void onKeyChanged();
+    public void onKeyChanged();
 }

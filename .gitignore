@@ -8,4 +8,4 @@ build.*.properties
 .classpath
 .project
 .pydevproject
-
+.DS_Store

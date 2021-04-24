@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.JUMP_PREV;
  */
 public class JumpPrevAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public JumpPrevAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        JUMP_PREV.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public JumpPrevAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                JUMP_PREV.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.prevSession();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.prevSession();
+    }
 }

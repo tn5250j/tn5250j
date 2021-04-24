@@ -4,35 +4,36 @@ import java.util.EventObject;
 
 public class BootEvent extends EventObject {
 
-   private static final long serialVersionUID = 1L;
-public BootEvent(Object obj){
-      super(obj);
+    private static final long serialVersionUID = 1L;
 
-   }
+    public BootEvent(Object obj) {
+        super(obj);
 
-   public BootEvent(Object obj, String s) {
-      super(obj);
-      bootOptions = s;
-   }
+    }
 
-   public String getMessage() {
-      return message;
-   }
+    public BootEvent(Object obj, String s) {
+        super(obj);
+        bootOptions = s;
+    }
 
-   public void setMessage(String s) {
-      message = s;
-   }
+    public String getMessage() {
+        return message;
+    }
 
-   public String getNewSessionOptions() {
+    public void setMessage(String s) {
+        message = s;
+    }
 
-      return bootOptions;
-   }
+    public String getNewSessionOptions() {
 
-   public void setNewSessionOptions(String s) {
+        return bootOptions;
+    }
 
-      bootOptions = s;
-   }
+    public void setNewSessionOptions(String s) {
 
-   private String message;
-   private String bootOptions;
+        bootOptions = s;
+    }
+
+    private String message;
+    private String bootOptions;
 }
