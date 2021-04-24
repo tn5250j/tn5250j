@@ -42,36 +42,36 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  */
 public class GenericTn5250JFrame extends JFrame {
 
-	private static final long serialVersionUID = 7349671770294342782L;
+    private static final long serialVersionUID = 7349671770294342782L;
 
-	protected boolean packFrame = false;
+    protected boolean packFrame = false;
 
-   public GenericTn5250JFrame() {
-      super();
-      java.util.List<Image> icons = GUIGraphicsUtils.getApplicationIcons();
-      setIconImages(icons);
-      new AppleApplicationTools().tryToSetDockIconImages(icons);
-   }
+    public GenericTn5250JFrame() {
+        super();
+        java.util.List<Image> icons = GUIGraphicsUtils.getApplicationIcons();
+        setIconImages(icons);
+        new AppleApplicationTools().tryToSetDockIconImages(icons);
+    }
 
-   public void centerFrame() {
+    public void centerFrame() {
 
-      if (packFrame)
-         pack();
-      else
-         validate();
+        if (packFrame)
+            pack();
+        else
+            validate();
 
-      //Center the window
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = getSize();
-      if (frameSize.height > screenSize.height)
-         frameSize.height = screenSize.height;
-      if (frameSize.width > screenSize.width)
-         frameSize.width = screenSize.width;
+        //Center the window
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = getSize();
+        if (frameSize.height > screenSize.height)
+            frameSize.height = screenSize.height;
+        if (frameSize.width > screenSize.width)
+            frameSize.width = screenSize.width;
 
-      setLocation((screenSize.width - frameSize.width) / 2,
-                     (screenSize.height - frameSize.height) / 2);
+        setLocation((screenSize.width - frameSize.width) / 2,
+                (screenSize.height - frameSize.height) / 2);
 
 
-   }
+    }
 
 }

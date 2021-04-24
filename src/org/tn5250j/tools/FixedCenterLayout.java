@@ -2,26 +2,26 @@
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
- * @author  Kenneth J. Pouncey
+ *
+ * @author Kenneth J. Pouncey
  * @version 0.5
- *
+ * <p>
  * Description:
- *
+ * <p>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
- *
  */
 
 package org.tn5250j.tools;
@@ -40,7 +40,7 @@ import java.awt.Insets;
 public class FixedCenterLayout implements LayoutManager2, Serializable {
 
     private static final long serialVersionUID = 1L;
-	protected int hgap;
+    protected int hgap;
     protected Component west;
     protected Component east;
     protected Component center;
@@ -79,7 +79,7 @@ public class FixedCenterLayout implements LayoutManager2, Serializable {
     public void addLayoutComponent(Component comp, Object constraints) {
         synchronized (comp.getTreeLock()) {
             if ((constraints == null) || (constraints instanceof String)) {
-                addLayoutComponent((String)constraints, comp);
+                addLayoutComponent((String) constraints, comp);
             } else {
                 throw new IllegalArgumentException("Cannot add to layout: constraint must be a string or null");
             }
@@ -197,20 +197,20 @@ public class FixedCenterLayout implements LayoutManager2, Serializable {
             //	int right = target.getWidth() - insets.right;
             int right = target.getBounds().width - insets.right;
 
-            int leftCenter = (right-left)/2;
+            int leftCenter = (right - left) / 2;
             int rightCenter = leftCenter;
 
             if (center != null) {
                 Dimension d = center.getPreferredSize();
-                leftCenter = (right-left-d.width)/2;
-                rightCenter = leftCenter+d.width;
-                center.setBounds(leftCenter, top, d.width, bottom-top);
+                leftCenter = (right - left - d.width) / 2;
+                rightCenter = leftCenter + d.width;
+                center.setBounds(leftCenter, top, d.width, bottom - top);
             }
             if (west != null) {
-                west.setBounds(left, top, leftCenter-left-hgap, bottom-top);
+                west.setBounds(left, top, leftCenter - left - hgap, bottom - top);
             }
             if (east != null) {
-                east.setBounds(rightCenter+hgap, top, right-rightCenter-2*hgap, bottom-top);
+                east.setBounds(rightCenter + hgap, top, right - rightCenter - 2 * hgap, bottom - top);
             }
         }
     }

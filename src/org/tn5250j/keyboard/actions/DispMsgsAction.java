@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.DISP_MESSAGES;
  */
 public class DispMsgsAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public DispMsgsAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        DISP_MESSAGES.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public DispMsgsAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                DISP_MESSAGES.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.getVT().systemRequest('4');
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.getVT().systemRequest('4');
+    }
 }

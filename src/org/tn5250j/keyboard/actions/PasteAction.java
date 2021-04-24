@@ -47,32 +47,32 @@ import static org.tn5250j.keyboard.KeyMnemonic.PASTE;
  */
 public class PasteAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
+    private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-  public PasteAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        PASTE.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.ALT_MASK),
-        keyMap);
-  }
-
-  public void actionPerformed(ActionEvent event) {
-    try {
-      Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-      final Transferable transferable = cb.getContents(this);
-      if (transferable != null) {
-        final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
-        session.getScreen().pasteText(content, false);
-      }
-    } catch (HeadlessException e1) {
-      log.debug("HeadlessException", e1);
-    } catch (UnsupportedFlavorException e1) {
-      log.debug("the requested data flavor is not supported", e1);
-    } catch (IOException e1) {
-      log.debug("data is no longer available in the requested flavor", e1);
+    public PasteAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                PASTE.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.ALT_MASK),
+                keyMap);
     }
-  }
+
+    public void actionPerformed(ActionEvent event) {
+        try {
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            final Transferable transferable = cb.getContents(this);
+            if (transferable != null) {
+                final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+                session.getScreen().pasteText(content, false);
+            }
+        } catch (HeadlessException e1) {
+            log.debug("HeadlessException", e1);
+        } catch (UnsupportedFlavorException e1) {
+            log.debug("the requested data flavor is not supported", e1);
+        } catch (IOException e1) {
+            log.debug("data is no longer available in the requested flavor", e1);
+        }
+    }
 
 }

@@ -40,16 +40,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.GUI;
  */
 public class GuiAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public GuiAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        GUI.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public GuiAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                GUI.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.getScreen().toggleGUIInterface();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.getScreen().toggleGUIInterface();
+    }
 }

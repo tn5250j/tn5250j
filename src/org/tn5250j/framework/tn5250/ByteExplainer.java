@@ -1,7 +1,7 @@
 package org.tn5250j.framework.tn5250;
 
 public class ByteExplainer {
-    
+
     public static final byte SHIFT_IN = 0x0e;
     public static final byte SHIFT_OUT = 0x0f;
 
@@ -27,6 +27,7 @@ public class ByteExplainer {
      * Test if the unicode character is a displayable character.
      * The first 32 characters are non displayable characters
      * This is normally the inverse of isDataEBCDIC (That's why there is a check on 255 -> 0xFFFF)
+     *
      * @param data data
      * @return true|false
      */

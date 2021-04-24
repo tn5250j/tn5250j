@@ -13,48 +13,41 @@ import org.tn5250j.keyboard.KeyboardHandler;
  */
 public class JTerminal extends JComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private KeyboardHandler keyHandler;
+    private KeyboardHandler keyHandler;
 
-  public JTerminal(Session5250 session)
-  {
-    super();
-    this.session = session;
+    public JTerminal(Session5250 session) {
+        super();
+        this.session = session;
 
-    updateUI();
-    installInputMap();
-  }
+        updateUI();
+        installInputMap();
+    }
 
-  public void updateUI()
-  {
-     this.setUI(org.tn5250j.swing.ui.BasicTerminalUI.createUI(this));
-  }
+    public void updateUI() {
+        this.setUI(org.tn5250j.swing.ui.BasicTerminalUI.createUI(this));
+    }
 
-  public Session5250 getSession()
-  {
-    return this.session;
-  }
+    public Session5250 getSession() {
+        return this.session;
+    }
 
-  public boolean isFocusCycleRoot()
-  {
-    return true;
-  }
+    public boolean isFocusCycleRoot() {
+        return true;
+    }
 
-  public boolean isFocusTraversable()
-  {
-    return true;
-  }
+    public boolean isFocusTraversable() {
+        return true;
+    }
 
-  public boolean isFocusable()
-  {
-    return true;
-  }
+    public boolean isFocusable() {
+        return true;
+    }
 
-  public boolean isFocusTraversalKeysEnabled()
-  {
-    return false;
-  }
+    public boolean isFocusTraversalKeysEnabled() {
+        return false;
+    }
 
 //  protected void processComponentKeyEvent(KeyEvent e)
 //  {
@@ -69,18 +62,17 @@ public class JTerminal extends JComponent {
 //    }
 //  }
 
-   public void processKeyEvent(KeyEvent evt) {
+    public void processKeyEvent(KeyEvent evt) {
 
-      keyHandler.processKeyEvent(evt);
+        keyHandler.processKeyEvent(evt);
 
-      if(!evt.isConsumed())
-         super.processKeyEvent(evt);
-   }
+        if (!evt.isConsumed())
+            super.processKeyEvent(evt);
+    }
 
-  protected void installInputMap()
-  {
-      enableEvents(AWTEvent.KEY_EVENT_MASK);
-      keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
+    protected void installInputMap() {
+        enableEvents(AWTEvent.KEY_EVENT_MASK);
+        keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 //    InputMap map = this.getInputMap(JComponent.WHEN_FOCUSED);
 //    map.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), OhioConstants.OS_OHIO_MNEMONIC_ENTER);
 //
@@ -119,7 +111,7 @@ public class JTerminal extends JComponent {
 //    map.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false), OS_OHIO_MNEMONIC_LEFT);
 //    map.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false), OS_OHIO_MNEMONIC_RIGHT);
 //    map.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false), OS_OHIO_MNEMONIC_UP);
-  }
+    }
 
-  private Session5250 session;
+    private Session5250 session;
 }

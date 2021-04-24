@@ -39,17 +39,17 @@ import static org.tn5250j.keyboard.KeyMnemonic.DEBUG;
  */
 public class DebugAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public DebugAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        DEBUG.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.ALT_MASK),
-        keyMap);
+    public DebugAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                DEBUG.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.ALT_MASK),
+                keyMap);
 
-  }
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.toggleDebug();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.toggleDebug();
+    }
 }

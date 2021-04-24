@@ -40,18 +40,18 @@ import static org.tn5250j.keyboard.KeyMnemonic.RUN_SCRIPT;
  */
 public class RunScriptAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public RunScriptAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        RUN_SCRIPT.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK),
-        keyMap);
+    public RunScriptAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                RUN_SCRIPT.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK),
+                keyMap);
 
-  }
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    Macronizer.showRunScriptDialog(session);
-    session.getFocusForMe();
-  }
+    public void actionPerformed(ActionEvent e) {
+        Macronizer.showRunScriptDialog(session);
+        session.getFocusForMe();
+    }
 }

@@ -39,17 +39,17 @@ import static org.tn5250j.keyboard.KeyMnemonic.PRINT_SCREEN;
  */
 public class PrintAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public PrintAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        PRINT_SCREEN.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK),
-        keyMap);
+    public PrintAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                PRINT_SCREEN.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK),
+                keyMap);
 
-  }
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.printMe();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.printMe();
+    }
 }

@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.DISP_ATTRIBUTES;
  */
 public class AttributesAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public AttributesAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        DISP_ATTRIBUTES.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public AttributesAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                DISP_ATTRIBUTES.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.actionAttributes();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.actionAttributes();
+    }
 }

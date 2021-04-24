@@ -39,16 +39,16 @@ import static org.tn5250j.keyboard.KeyMnemonic.JUMP_NEXT;
  */
 public class JumpNextAction extends EmulatorAction {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public JumpNextAction(SessionPanel session, KeyMapper keyMap) {
-    super(session,
-        JUMP_NEXT.mnemonic,
-        KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.ALT_MASK),
-        keyMap);
-  }
+    public JumpNextAction(SessionPanel session, KeyMapper keyMap) {
+        super(session,
+                JUMP_NEXT.mnemonic,
+                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.ALT_MASK),
+                keyMap);
+    }
 
-  public void actionPerformed(ActionEvent e) {
-    session.nextSession();
-  }
+    public void actionPerformed(ActionEvent e) {
+        session.nextSession();
+    }
 }

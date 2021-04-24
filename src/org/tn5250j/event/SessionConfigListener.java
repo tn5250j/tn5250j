@@ -23,10 +23,10 @@ package org.tn5250j.event;
 
 public interface SessionConfigListener {
 
-  /**
-   * Update the configuration settings
-   *
-   * @param sessionConfigEvent sessionConfigEvent
-   */
-  public void onConfigChanged(SessionConfigEvent sessionConfigEvent);
+    /**
+     * Update the configuration settings
+     *
+     * @param sessionConfigEvent sessionConfigEvent
+     */
+    public void onConfigChanged(SessionConfigEvent sessionConfigEvent);
 }
