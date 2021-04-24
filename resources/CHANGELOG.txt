@@ -2,10 +2,11 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
---- v0.8.0 ----------------------------------------------------- ??/??/20?? ---
+--- v0.8.0 beta2 ----------------------------------------------------- 24/04/2021 ---
 
 A Java Runtime v1.8 or newer is required from now on!
 
+ADD: double byte DBCS support for CCSID 930, EXPERIMENTAL!
 ADD: font size of keypad is configurable
 ADD: buttons to be shown in keypad are configurable
 ADD: izpack 5.x update and now create start menu shortcuts - Thanks to Justin Dearing (https://sourceforge.net/p/tn5250j/patches/11/)
