@@ -1,0 +1,43 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: tn5250j
+Source: <http://tn5250j.org>
+
+Files: *
+Copyright: [[year]] Barry van Someren <golthar@users.sourceforge.net>
+Joep Beckeringh <joep_beckeringh@users.sourceforge.net>
+Peter Moore <jorjun@users.sourceforge.net>
+Steve Kennedy <kennedyz@users.sourceforge.net>
+Maurizio Brilli <mbrilli@users.sourceforge.net>
+Nicola Ken Barozzi <nicolaken@users.sourceforge.net>
+Mehmet Ozgun <ozgunm@users.sourceforge.net>
+Patrick Bielen <pbielen@users.sourceforge.net>
+Robert Upshall <rupshall@users.sourceforge.net>
+Christian Geisert <christian.geisert@isu-gmbh.de>
+Martin W. Kirst <maki@bitkings.de>
+Pete Helgren <pete@valadd.com>
+Kenneth J. Pouncey <kjp1@users.sourceforge.net>
+Craig Duncan
+Ryan Eberly (?)
+Roberto Bizzozero <zenovalle@gmail.com>
+License: GPL-2.0+
+
+Files: debian/*
+Copyright: 2016 [[maintainer]]
+License: GPL-2.0+
+
+License: GPL-2.0+
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".

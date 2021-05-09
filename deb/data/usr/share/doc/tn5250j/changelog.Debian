@@ -1,0 +1,20 @@
+tn5250j (0.8.0) unknown; urgency=low
+
+  * ADD: font size of keypad is configurable
+  * ADD: buttons to be shown in keypad are configurable
+  * ADD: izpack 5.x update and now create start menu shortcuts
+         Thanks to Justin Dearing
+         (https://sourceforge.net/p/tn5250j/patches/11/)
+  * ADD: set Dock icon on Mac OSX
+  * FIX: STRPCMD was cut to 120 chars, instead of 123 allowed
+         Thanks to Roberto Bizzozero
+         (https://github.com/tn5250j/tn5250j/pull/7)
+  * CHG: rename PF1..PF24 button names to F1..F24,
+         because this reflects keyboard layout ;)
+  * CHG: upgraded to use IzPack 5.x packager
+  * CHG: update JTOpen 8.7
+  * CHG: many refactorings of internal classes and code,
+         which improved readability and reduced complexity but might lead
+         to broken API. If so, please fill an issue on GitHub.
+
+ -- [[maintainer]]  [[timestamp]]
