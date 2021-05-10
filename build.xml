@@ -164,6 +164,7 @@
 
     <target name="run-tests" depends="compile, compile-tests">
         <junit printsummary="yes" haltonfailure="yes">
+            <formatter type="brief" usefile="false"/>
             <classpath>
                 <path refid="tests-classpath"/>
             </classpath>
