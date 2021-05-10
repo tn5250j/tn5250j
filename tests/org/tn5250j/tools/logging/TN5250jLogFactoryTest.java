@@ -1,8 +1,7 @@
 /**
- * $Id$
  * <p>
  * Title: tn5250J
- * Copyright:   Copyright (c) 2001,2018
+ * Copyright: SaschaS93 Copyright (c) 2001,2018
  * Company:
  * <p>
  * Description:
@@ -24,9 +23,10 @@
  */
 package org.tn5250j.tools.logging;
 
-import static org.junit.Assert.*;
-
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author SaschaS93
@@ -35,12 +35,18 @@ public class TN5250jLogFactoryTest {
 
     private static final String LOGGER_MOCK_CLASS_NAME = "org.tn5250j.tools.logging.CustomTN5250jLoggerMock";
 
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty(TN5250jLogFactory.class.getName(), LOGGER_MOCK_CLASS_NAME);
+        TN5250jLogFactory.initOrResetLogger();
+    }
+
     @Test
     public void testCustomLogger() {
-        System.setProperty(TN5250jLogFactory.class.getName(), LOGGER_MOCK_CLASS_NAME);
         TN5250jLogger logger = TN5250jLogFactory.getLogger(this.getClass());
 
         String msg = "The loaded logger must be an instance of " + LOGGER_MOCK_CLASS_NAME;
+        System.out.println(logger.getClass());
         assertTrue(msg, logger instanceof CustomTN5250jLoggerMock);
     }
 
