@@ -1,0 +1,10 @@
+Package: [[name]]
+Version: [[version]]
+Depends: default-jre | java6-runtime
+Architecture: all
+Section: net
+Maintainer: [[maintainer]]
+Homepage: http://tn5250j.org/
+Priority: optional
+Description: 5250 terminal emulator for the IBM i written in Java.
+ Tn5250j is a 5250 terminal emulator for the IBM i written in Java.

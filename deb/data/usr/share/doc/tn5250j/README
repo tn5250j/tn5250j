@@ -1,0 +1,17 @@
+tn5250j README
+------------------------------------------------------------------------------
+This is an implementation of the 5250 telnet protocol in java.  I started it
+because I could not find a 5250 emulator of Linux with the enhanced functions
+like graphical windows, cursor progression, continued edit fields, masked edit
+fields etc.....
+
+Socket Security
+---------------
+TN5250J supports SSL socket connections using SSL version 1, SSL version 2, or
+TLS.  Right now, the SSL type is configured on the client, but automatic type
+discovery will be supported in a future version.
+
+During SSL handshaking, a custom Trust Manager is used to validate the server's
+certificate.  If the certificate can not be trusted by default Trust Managers,
+(typically when keys have not been signed by a proper CA), then the user will
+be prompted to accept the certificate.

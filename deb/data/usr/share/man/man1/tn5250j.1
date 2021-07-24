@@ -1,0 +1,76 @@
+.TH Tn5250j 1 "December 16 2016"
+.SH NAME
+tn5250j \- 5250 terminal emulator written in Java.
+.SH SYNOPSIS
+.B tn5250j
+.RI [ options ]
+.SH DESCRIPTION
+The command
+.B tn5250j
+is used to start a new 5250 connection to a IBM i system.
+.PP
+.SH OPTIONS
+.TP
+.B \<none>
+Starting the command without option will presents a Connections screen for defining sessions. Select the configure button to define sessions when the session selection window is displayed.
+.TP
+.B \<host>
+The first parameter must be the IP or host name to connect with.
+.TP
+.B \-p <port>
+Port to be used. Default is port 23 if not specified.
+.TP
+.B \-f <file>
+Configuration file. This is defined on the Session Configuration
+.BR
+screen under Options Tab - Configuration File Name.
+.TP
+.B \-t
+Use system name instead of system id Host IP Address/DNS Host name.
+.TP
+.B \-cp <codepage>
+Code Page. 37 - US default. 37PT - Portuguese. 273 - German. 280 - Italian. 284 - Spanish. 297 - French. 500-ch - Switzerland. 870-pl - Poland.
+.TP
+.B \-e
+Enhanced 5250 option. This gives graphical windows, edit masked fields, continued edit fields, etc.
+.TP
+.B \-L <locale>
+Specify the locale/language to be used for literals. The default is the locale of the system if it is supported.
+.TP
+.B \-132
+Change to 27*132 column.
+.TP
+.B \-s <session>
+Start up emulator using an existing configured session you can specify multiple of these as in -s xxxx -s yyyy and at startup the emulator will start up session xxxx and yyyy. This does not use the sessions file but the entries that are defined inside for PRE-EXISTIING session definitions.
+.TP
+.B \-width <width>
+Start up emulator using the width specified.
+.TP
+.B \-height <height>
+Start up emulator using the height specified.
+.TP
+.B \-d
+If no other instances are running and the -nc options is not specified then start up the bootstrap monitoring thread.
+.TP
+.B \-nc
+no check for other tn5250j instances that are running. A new frame will be created within another instance of JVM.
+.TP
+.B \-noembed
+Do not add a new session tab but open in new frame. Default is embed so add a new session tab in the visible frame.
+.TP
+.B \-usp
+Use Socks Proxy.
+.TP
+.B \-sph <host>
+Socks Proxy Host.
+.TP
+.B \-spp <port>
+Socks Proxy Port.
+.TP
+.B \-dn <device>
+This option takes a device name parameter to be used by the Host. The device name is 10 characters in length and follows rfc2877.
+.TP
+.B \-MDI
+Use the MDI interface represented by JInternalFrames instead of tabs.
+.SH "SEE ALSO"
+.BR tn5250 (1)

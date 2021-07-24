@@ -28,6 +28,12 @@
     <property name="dist-run.name" value="${dist.base.name}-run"/>
     <property name="dist-run.dir" value="${dist.dir}/${dist-run.name}"/>
 
+	<!-- deb properties -->
+	<property name="deb.dir" value="${dist.dir}/deb" />
+	<property name="deb-resource.dir" value="${basedir}/deb" />
+	<property name="deb-control.dir" value="${deb.dir}/control" />
+	<property name="deb-data.dir" value="${deb.dir}/data" />
+	
     <!-- classpath -->
     <path id="classpath">
         <pathelement path="${build.classes.dir}"/>
@@ -409,5 +415,71 @@
              includes="${Name}.app/**">
         </zip>
     </target>
+
+<!-- start deb packaging task -->
+	<taskdef name="deb"
+	                  classpath="${dev.lib.dir}/jdeb-1.5.jar"
+	                  classname="org.vafer.jdeb.ant.DebAntTask" />
+
+	<tstamp>
+	    <format property="deb.timestamp" pattern="EEE, dd MMM yyyy HH:mm:ss Z" locale="en,US"/>
+	</tstamp>
+	
+    <target name="dist-bin-deb" depends="dist-bin-prepare"  description="Creates Debian Package">
+    	
+    	<!-- Prepare the structure -->
+    	<echo message="Copies the image of the distribution to ${dist.dir}"/>
+    	<delete dir="${deb.dir}"/>
+    	
+    	<!-- Copy the files -->
+    	<copy todir="${deb.dir}">
+    		<fileset dir="${deb-resource.dir}"/>
+    	    <filterset begintoken="[[" endtoken="]]">
+    			<filter token="version" value="${version}"/>
+    			<filter token="name" value="${name}"/>
+    	    	<filter token="year" value="${year}"/>
+    	    	<filter token="maintainer" value="${deb.maintainer}"/>
+    	    	<filter token="timestamp" value="${deb.timestamp}"/>
+    		</filterset>
+    	</copy>
+    	
+    	<copy file="${resource.dir}/tn5250j-16x16.png" 
+    	    tofile="${deb-data.dir}/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-16x16.png" 
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/16x16/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-32x32.png" 
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/32x32/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-48x48.png" 
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/48x48/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-128.png" 
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/128x128/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-256.png" 
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/256x256/apps/tn5250j.png"/>
+    	<copy file="${resource.dir}/tn5250j-512.png" 
+    		tofile="${deb-data.dir}/usr/share/icons/hicolor/512x512/apps/tn5250j.png"/>
+    	<copy file="${build.dir}/tn5250j.jar" 
+    	    tofile="${deb-data.dir}/usr/share/tn5250j/lib/tn5250j.jar"/>
+    	
+    	<gzip src="${deb-data.dir}/usr/share/man/man1/tn5250j.1" 
+    	    destfile="${deb-data.dir}/usr/share/man/man1/tn5250j.1.gz"/>
+    	<delete file="${deb-data.dir}/usr/share/man/man1/tn5250j.1" />
+    	<gzip src="${deb-data.dir}/usr/share/doc/tn5250j/changelog.Debian" 
+    	    destfile="${deb-data.dir}/usr/share/doc/tn5250j/changelog.Debian.gz"/>
+    	<delete file="${deb-data.dir}/usr/share/doc/tn5250j/changelog.Debian" />
+   	
+    	<!-- Create deb -->
+    	<deb destfile="${dist.dir}/${dist.base.name}.deb" control="${deb-control.dir}" verbose="true">
+    		<data src="${deb-data.dir}/" type="directory">
+    			<mapper type="perm" user="root" group="root" fileMode="644"/>
+    			<exclude name="${deb-data.dir}/usr/bin/tn5250j"/>
+    		</data>
+    		<data src="${deb-data.dir}/usr/bin/tn5250j" type="file">
+    		    <mapper type="perm" user="root" group="root" fileMode="755" prefix="/usr/bin"/>
+    		</data>
+    	</deb>
+
+    	<!-- Clean -->
+    	<delete dir="${deb.dir}"/>
+	</target>
 
 </project>
