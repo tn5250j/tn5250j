@@ -1,260 +1,167 @@
 package org.tn5250j;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.net.URL;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
-
+import org.tn5250j.connectdialog.ExternalProgram;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.tools.AlignLayout;
-import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class ExternalProgramConfig {
 
+    protected static final String UNIX_SUFFIX = ".command.unix";
+    protected static final String WINDOW_SUFFIX = ".command.window";
+    protected static final String NAME_SUFFIX = ".command.name";
+    protected static final String PREFIX = "etn.pgm.";
+
     private static TN5250jLogger log =
-            TN5250jLogFactory.getLogger("org.tn5250j.ExternalProgramConfig");
+        TN5250jLogFactory.getLogger("org.tn5250j.ExternalProgramConfig");
 
-    private static ExternalProgramConfig etnConfig;
-    public static final String EXTERNAL_PROGRAM_REGISTRY_KEY = "etnPgmProps";
-    public static final String EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME = "tn5250jExternalProgram.properties";
-    public static final String EXTERNAL_PROGRAM_HEADER = "External Program Settings";
-    private Properties etnPgmProps;
+	private static ExternalProgramConfig etnConfig;
+	private static final String EXTERNAL_PROGRAM_REGISTRY_KEY = "etnPgmProps";
+	private static final String EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME = "tn5250jExternalProgram.properties";
+	private static final String EXTERNAL_PROGRAM_HEADER = "External Program Settings";
 
-    private static Properties props = null;
-    private static JTextField name = null;
-    private static JTextField wCommand = null;
-    private static JTextField uCommand = null;
-    private static JDialog dialog = null;
-    private static Object[] options;
-    private static String num = "1";
+	protected final Properties etnPgmProps;
+    private final List<ExternalProgram> programs = new LinkedList<>();
 
-    public static ExternalProgramConfig getInstance() {
-        if (etnConfig == null) {
-            etnConfig = new ExternalProgramConfig();
-        }
-        return etnConfig;
-    }
+	public static ExternalProgramConfig getInstance(){
+		if(etnConfig == null){
+			etnConfig = new ExternalProgramConfig();
+		}
+		return etnConfig;
+	}
 
-    private ExternalProgramConfig() {
-        etnPgmProps = loadExternalProgramSettings();
-    }
+	protected ExternalProgramConfig(){
+		etnPgmProps = loadExternalProgramSettings();
+		settingsToPrograms();
+		sort();
+	}
 
-    public Properties getEtnPgmProps() {
-        return this.etnPgmProps;
-    }
-
-    private final Properties loadExternalProgramSettings() {
+    protected Properties loadExternalProgramSettings() {
         Properties etnProps = null;
         try {
-            etnProps = ConfigureFactory.getInstance().getProperties(
-                    EXTERNAL_PROGRAM_REGISTRY_KEY,
-                    EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME, false,
-                    "Default Settings");
+            etnProps = ConfigureFactory.getInstance().getProperties(EXTERNAL_PROGRAM_REGISTRY_KEY,
+                    EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME, false, "Default Settings");
+
             log.info("begin loading external program settings");
-            if (etnProps.size() == 0) {
-                Properties defaultProps = new Properties();
-                java.net.URL file = null;
-                ClassLoader cl = this.getClass().getClassLoader();
-                if (cl == null)
-                    cl = ClassLoader.getSystemClassLoader();
-                file = cl.getResource(EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME);
-                defaultProps.load(file.openStream());
 
-                // we will now load the default settings
-                for (Enumeration e = defaultProps.keys(); e.hasMoreElements(); ) {
-                    String key = (String) e.nextElement();
-                    etnProps.setProperty(key, defaultProps.getProperty(key));
+            if (etnProps.isEmpty()) {
+                final URL file = getClass().getClassLoader().getResource(EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME);
+                etnProps.load(file.openStream());
 
-                }
                 ConfigureFactory.getInstance().saveSettings(EXTERNAL_PROGRAM_REGISTRY_KEY,
-                        EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME,
-                        EXTERNAL_PROGRAM_HEADER);
+                        EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME, EXTERNAL_PROGRAM_HEADER);
             }
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             log.error(ioe.getMessage());
-        } catch (SecurityException se) {
+        } catch (final SecurityException se) {
             log.error(se.getMessage());
         }
 
         return etnProps;
     }
 
-    public static String doEntry(Frame parent, String propKey, Properties props2) {
-        props = props2;
-        name = new JTextField(20);
-        wCommand = new JTextField(40);
-        uCommand = new JTextField(40);
-        if (propKey != null) {
-            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
-                String key = (String) e.nextElement();
-                if (propKey.equals(props.getProperty(key))) {
-                    String subKey = key.substring(8);
-                    int index = subKey.indexOf(".");
-                    num = subKey.substring(0, index);
-                    name.setText(props.getProperty("etn.pgm." + num + ".command.name"));
-                    wCommand.setText(props.getProperty("etn.pgm." + num + ".command.window"));
-                    uCommand.setText(props.getProperty("etn.pgm." + num + ".command.unix"));
-                }
-
-            }
-
+    /**
+     * @param program external program
+     */
+    public synchronized void programUpdated(final ExternalProgram program) {
+        final ExternalProgram existing = valueOf(program.getName());
+        if (existing != null) {
+            programs.remove(existing);
         }
-
-        //External Program settings panel
-        JPanel etnp = new JPanel();
-        AlignLayout snpLayout = new AlignLayout(2, 5, 5);
-        etnp.setLayout(snpLayout);
-        etnp.setBorder(BorderFactory.createEtchedBorder());
-
-        addLabelComponent(LangTool.getString("customized.name"),
-                name,
-                etnp);
-
-        addLabelComponent(LangTool.getString("customized.window"),
-                wCommand,
-                etnp);
-        addLabelComponent(LangTool.getString("customized.unix"),
-                uCommand,
-                etnp);
-
-
-        name.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-        Object[] message = new Object[1];
-        message[0] = etnp;
-
-        options = new JButton[2];
-        String title;
-
-        final String propKey2 = propKey;
-
-        if (propKey2 == null) {
-            Action add = new AbstractAction(LangTool.getString("conf.optAdd")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                    doConfigureAction(propKey2);
-                }
-            };
-            options[0] = new JButton(add);
-            ((JButton) options[0]).setEnabled(false);
-            title = LangTool.getString("customized.addEntryTitle");
-            name.setDocument(new SomethingEnteredDocument());
-        } else {
-            Action edit = new AbstractAction(LangTool.getString("conf.optEdit")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                    doConfigureAction(propKey2);
-                }
-            };
-            options[0] = new JButton(edit);
-            title = LangTool.getString("customized.editEntryTitle");
-            name.setEditable(false);
-        }
-
-        Action cancel = new AbstractAction(LangTool.getString("conf.optCancel")) {
-            private static final long serialVersionUID = 1L;
-
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
-            }
-        };
-        options[1] = new JButton(cancel);
-
-        JOptionPane pane = new JOptionPane(message, JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.DEFAULT_OPTION, null,
-                options, options[0]);
-
-        Component parentComponent = parent;
-        pane.setInitialValue(options[0]);
-        pane.setComponentOrientation(parentComponent.getComponentOrientation());
-        dialog = pane.createDialog(parentComponent, title); //, JRootPane.PLAIN_DIALOG);
-
-        dialog.setVisible(true);
-
-        return name.getText();
-
+        programs.add(program);
+        sort();
+        programsToProperties();
     }
 
-    private static void addLabelComponent(String text, Component comp, Container container) {
-
-        JLabel label = new JLabel(text);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        label.setHorizontalTextPosition(JLabel.LEFT);
-        container.add(label);
-        container.add(comp);
-
+    public synchronized void remove(final String name) {
+        final ExternalProgram existing = valueOf(name);
+        if (existing != null) {
+            programs.remove(existing);
+        }
+        sort();
+        programsToProperties();
     }
 
     /**
-     * React to the configuration action button to perform to Add or Edit the
-     * entry
-     *
-     * @param e - key to act upon
+     * @param name program command name.
+     * @return external program if found or null;
      */
-    private static void doConfigureAction(String propKey) {
-
-        if (propKey == null) {
-            String count = props.getProperty("etn.pgm.support.total.num");
-            int maxNum = Integer.parseInt(count) + 1;
-            props.setProperty("etn.pgm.support.total.num", String.valueOf(maxNum));
-            props.setProperty("etn.pgm." + maxNum + ".command.name", name.getText());
-            props.setProperty("etn.pgm." + maxNum + ".command.window", wCommand.getText());
-            props.setProperty("etn.pgm." + maxNum + ".command.unix", uCommand.getText());
-        } else {
-            props.setProperty("etn.pgm." + num + ".command.name", name.getText());
-            props.setProperty("etn.pgm." + num + ".command.window", wCommand.getText());
-            props.setProperty("etn.pgm." + num + ".command.unix", uCommand.getText());
+    public synchronized ExternalProgram valueOf(final String name) {
+        if (name == null) {
+            return null;
         }
-        dialog.dispose();
 
+        for (final ExternalProgram p : programs) {
+            if (name.equals(p.getName())) {
+                return p;
+            }
+        }
+
+        return null;
     }
 
-    private static class SomethingEnteredDocument extends PlainDocument {
+    private void programsToProperties() {
+        etnPgmProps.clear();
 
-        private static final long serialVersionUID = 1L;
+        int order = 0;
+        for (final ExternalProgram p : programs) {
+            etnPgmProps.setProperty(PREFIX + order + NAME_SUFFIX, p.getName());
+            etnPgmProps.setProperty(PREFIX + order + WINDOW_SUFFIX, p.getWCommand());
+            etnPgmProps.setProperty(PREFIX + order + UNIX_SUFFIX, p.getUCommand());
 
-        public void insertString(int offs, String str, AttributeSet a)
-                throws BadLocationException {
-
-            super.insertString(offs, str, a);
-            if (getText(0, getLength()).length() > 0)
-                doSomethingEntered();
-        }
-
-        public void remove(int offs, int len) throws BadLocationException {
-            super.remove(offs, len);
-            if (getText(0, getLength()).length() == 0)
-                doNothingEntered();
+            order++;
         }
     }
 
-    private static void doSomethingEntered() {
-        ((JButton) options[0]).setEnabled(true);
+    private void settingsToPrograms() {
+        final List<Integer> nums = getExternalProgramNumbers();
+        nums.sort(Comparator.naturalOrder());
+
+        for (final Integer num : nums) {
+            final String program = etnPgmProps.getProperty(PREFIX + num + NAME_SUFFIX);
+            final String wCommand = etnPgmProps.getProperty(PREFIX + num + WINDOW_SUFFIX);
+            final String uCommand = etnPgmProps.getProperty(PREFIX + num + UNIX_SUFFIX);
+            programs.add(new ExternalProgram(program, wCommand, uCommand));
+        }
     }
 
-    private static void doNothingEntered() {
-        ((JButton) options[0]).setEnabled(false);
+    private List<Integer> getExternalProgramNumbers() {
+        final int offset = PREFIX.length();
+        final int reminder = NAME_SUFFIX.length();
+        return etnPgmProps.keySet().stream()
+                .map(Object::toString)
+                .filter(this::isCommandName)
+                .map(k -> k.substring(offset, k.length() - reminder))
+                .map(Integer::valueOf)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isCommandName(final String k) {
+        return k.startsWith(PREFIX) && k.endsWith(NAME_SUFFIX);
+    }
+
+    private void sort() {
+        programs.sort(Comparator.naturalOrder());
+    }
+
+    public synchronized List<ExternalProgram> getPrograms() {
+        return new LinkedList<>(programs);
+    }
+
+    public synchronized void save() {
+        programsToProperties();
+        ConfigureFactory.getInstance().saveSettings(
+                EXTERNAL_PROGRAM_REGISTRY_KEY,
+                EXTERNAL_PROGRAM_PROPERTIES_FILE_NAME,
+                EXTERNAL_PROGRAM_HEADER);
     }
 }

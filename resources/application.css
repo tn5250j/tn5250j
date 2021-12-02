@@ -1,0 +1,47 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.bordered-titled-title {
+  -fx-background-color: -fx-background;
+  -fx-translate-y: -0.7em;
+   /* play around with this value when changing the title font to get a vertically centered title */
+}
+
+.bordered-titled-border {
+  -fx-content-display: top;
+  -fx-border-insets: 1em 0 0 0;
+  -fx-border-color: black;
+  -fx-border-width: 1;
+}
+
+.bordered-titled-content {
+  -fx-padding: 1em 1em 1em 1em;
+}
+
+.empty-border {
+	-fx-border-color: transparent;
+}
+
+.mnemonic-button {
+	-fx-min-width: 4em;
+	-fx-max-width: 4em;
+	-fx-pref-width: 4em;
+	-fx-width: 4em;
+}
+
+.etched-border, .system-dialog-tab-content {
+    -fx-border-base: gray;
+    -fx-border-shadow: white;
+    -fx-light-border: derive(-fx-border-base, 25%);
+    -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border;
+    -fx-border-insets: 0 1 1 0;
+    -fx-background-color: -fx-border-shadow, -fx-background;
+    -fx-background-insets: 1 0 0 1, 2;
+    -fx-padding: 2;
+}
+
+.system-dialog-tab-content {
+    -fx-padding: 0.5em 0.5em 0.5em 0.5em;
+}
+
+.system-dialog-tab {
+    -fx-padding: 0.5em 0.5em 0.5em 0.5em;
+}

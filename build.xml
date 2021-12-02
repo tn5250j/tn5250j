@@ -68,6 +68,8 @@
         <include name="tn5250j*.png"/>
         <include name="tn5250j*.ico"/>
         <include name="tn5250j*.icns"/>
+        <include name="fxml/**"/>
+        <include name="*.css"/>
     </fileset>
 
     <!-- files for source distribution -->

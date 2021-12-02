@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Cell?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Node?>
+<?import javafx.scene.control.RadioButton?>
+
+<BorderPane
+	fx:controller="org.tn5250j.connectdialog.EditSessionDialogController"
+	fx:id="view"
+	stylesheets="application.css"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+
+	<style>
+	  -fx-padding: 1em 1em 1em 1em;
+	</style>
+
+	<center>
+		<TabPane>
+			<style>
+			  -fx-border-color: black;
+			  -fx-border-width: 1;
+			</style>
+		    <tabs>
+		        <Tab fx:id="tabGeneral" closable="false">
+		        	<BorderPane styleClass="system-dialog-tab" >
+		        		<center>
+				         	<GridPane styleClass="system-dialog-tab-content" hgap="10" vgap="10">
+								<!-- first row -->
+								<Label text="systemNameLabel"
+									GridPane.columnIndex="0"
+									GridPane.rowIndex="0"
+									GridPane.halignment="LEFT"
+									fx:id="systemNameLabel"/>
+								<TextField
+									GridPane.columnIndex="1"
+									GridPane.rowIndex="0"
+									GridPane.hgrow="ALWAYS"
+									GridPane.halignment="LEFT"
+									prefColumnCount="20"
+									fx:id="systemName"/>
+				         	
+								<!-- second row -->
+								<Label text=" "
+									GridPane.columnIndex="0"
+									GridPane.rowIndex="1"
+									GridPane.halignment="LEFT"/>
+								<CheckBox
+									GridPane.columnIndex="1"
+									GridPane.rowIndex="1"
+									GridPane.hgrow="ALWAYS"
+									GridPane.halignment="LEFT"
+									fx:id="noEmbed"/>
+				         	
+								<!-- third row -->
+								<Label text=" "
+									GridPane.columnIndex="0"
+									GridPane.rowIndex="2"
+									GridPane.halignment="LEFT"/>
+								<CheckBox
+									GridPane.columnIndex="1"
+									GridPane.rowIndex="2"
+									GridPane.hgrow="ALWAYS"
+									GridPane.halignment="LEFT"
+									fx:id="deamon"/>
+				         	
+								<!-- fourth row -->
+								<Label text=" "
+									GridPane.columnIndex="0"
+									GridPane.rowIndex="3"
+									GridPane.halignment="LEFT"/>
+								<CheckBox
+									GridPane.columnIndex="1"
+									GridPane.rowIndex="3"
+									GridPane.hgrow="ALWAYS"
+									GridPane.halignment="LEFT"
+									fx:id="newJVM"/>
+				         	</GridPane>
+		        		</center>
+		        	</BorderPane>
+		        </Tab>
+		        <Tab fx:id="tabTCP" closable="false">
+		        	<TitledBorderedPane fx:id="sip">
+		        		<content>
+		        			<VBox>
+				         		<GridPane styleClass="system-dialog-tab-content" hgap="10" vgap="10">
+									<!-- System ID -->
+									<Label text="systemIdLabel"
+										GridPane.columnIndex="0"
+										GridPane.rowIndex="0"
+										GridPane.halignment="LEFT"
+										fx:id="systemIdLabel"/>
+									<TextField
+										GridPane.columnIndex="1"
+										GridPane.rowIndex="0"
+										GridPane.hgrow="ALWAYS"
+										GridPane.halignment="LEFT"
+										prefColumnCount="20"
+										fx:id="systemId"/>
+		
+									<!-- Port -->
+									<Label text="portLabel"
+										GridPane.columnIndex="0"
+										GridPane.rowIndex="1"
+										GridPane.halignment="LEFT"
+										fx:id="portLabel"/>
+									<TextField
+										GridPane.columnIndex="1"
+										GridPane.rowIndex="1"
+										GridPane.hgrow="ALWAYS"
+										GridPane.halignment="LEFT"
+										prefColumnCount="5"
+										fx:id="port"/>
+		
+									<!-- Device Name -->
+									<Label text="deviceNameLabel"
+										GridPane.columnIndex="0"
+										GridPane.rowIndex="2"
+										GridPane.halignment="LEFT"
+										fx:id="deviceNameLabel"/>
+									<TextField
+										GridPane.columnIndex="1"
+										GridPane.rowIndex="2"
+										GridPane.hgrow="ALWAYS"
+										GridPane.halignment="LEFT"
+										prefColumnCount="20"
+										fx:id="deviceName"/>
+		
+									<!-- Use PC name as device -->
+									<Label text=" "
+										GridPane.columnIndex="0"
+										GridPane.rowIndex="3"
+										GridPane.halignment="LEFT"/>
+									<CheckBox
+										GridPane.columnIndex="1"
+										GridPane.rowIndex="3"
+										GridPane.hgrow="ALWAYS"
+										GridPane.halignment="LEFT"
+										fx:id="sdn"/>
+		
+									<!-- SSL type -->
+									<Label text="sslTypeLabel"
+										GridPane.columnIndex="0"
+										GridPane.rowIndex="4"
+										GridPane.halignment="LEFT"
+										fx:id="sslTypeLabel"/>
+									<ComboBox 
+										GridPane.columnIndex="1"
+										GridPane.rowIndex="4"
+										GridPane.hgrow="ALWAYS"
+										GridPane.halignment="LEFT"
+										fx:id="sslType">
+										
+									</ComboBox>
+		
+									<!-- Send keep alive every 15 second -->
+									<Label text=" "
+										GridPane.columnIndex="0"
+										GridPane.rowIndex="5"
+										GridPane.halignment="LEFT"
+										fx:id="sslTypeLabel"/>
+									<CheckBox
+										GridPane.columnIndex="1"
+										GridPane.rowIndex="5"
+										GridPane.hgrow="ALWAYS"
+										GridPane.halignment="LEFT"
+										fx:id="heartBeat"/>
+				         		</GridPane>
+		        			</VBox>
+		        		</content>
+		        	</TitledBorderedPane>
+		        </Tab>
+		        <Tab fx:id="tabOptions" closable="false">
+		        	<TitledBorderedPane fx:id="op">
+		        		<content>
+		        			<VBox spacing="10">
+					        	<TitledBorderedPane fx:id="fp">
+					        		<content>
+						        		<VBox>
+							        		<TextField fx:id="fpn"/>
+						        		</VBox>
+					        		</content>
+					        	</TitledBorderedPane>
+					        	<!-- Schreen dimension -->
+					        	<TitledBorderedPane fx:id="sdp">
+					        		<content>
+									 	<VBox>
+									 		<HBox spacing="10" alignment="CENTER">
+									 			<RadioButton fx:id="sdNormal"></RadioButton>
+									 			<RadioButton fx:id="sdBig"></RadioButton>
+									 		</HBox>
+									 	</VBox>
+					        		</content>
+					        	</TitledBorderedPane>
+					        	<!-- Code page -->
+					        	<TitledBorderedPane fx:id="cp">
+					        		<content>
+					        		 	<HBox spacing="10" alignment="CENTER">
+					        		 		<ComboBox fx:id="cpb"/>
+					        		 		<CheckBox fx:id="jtb"/>
+					        		 	</HBox>
+					        		</content>
+					        	</TitledBorderedPane>
+					        	<!-- Mode -->
+					        	<TitledBorderedPane fx:id="ep">
+					        		<content>
+						        		<HBox>
+						        			<CheckBox fx:id="ec"/>
+						        		</HBox>
+					        		</content>
+					        	</TitledBorderedPane>
+					        	<!-- Use system name as description -->
+					        	<TitledBorderedPane fx:id="tp">
+					        		<content>
+						        		<HBox>
+						        		 	<CheckBox fx:id="tc"/>
+						        		</HBox>
+					        		</content>
+					        	</TitledBorderedPane>
+		        			</VBox>
+		        		</content>
+		        	</TitledBorderedPane>
+		        </Tab>
+		        <Tab fx:id="tabProxy" closable="false">
+		        	<!-- Proxy -->
+		         	<GridPane styleClass="system-dialog-tab-content" hgap="10" vgap="10">
+						<!-- Use Proxy -->
+						<Label text=" "
+							GridPane.columnIndex="0"
+							GridPane.rowIndex="0"
+							GridPane.halignment="LEFT"/>
+						<CheckBox
+							GridPane.columnIndex="1"
+							GridPane.rowIndex="0"
+							GridPane.halignment="LEFT"
+							fx:id="useProxy"/>
+
+						<!-- Proxy Host -->
+						<Label text="proxyHostLabel"
+							GridPane.columnIndex="0"
+							GridPane.rowIndex="1"
+							GridPane.halignment="LEFT"
+							fx:id="proxyHostLabel"/>
+						<TextField
+							GridPane.columnIndex="1"
+							GridPane.rowIndex="1"
+							GridPane.hgrow="ALWAYS"
+							GridPane.halignment="LEFT"
+							prefColumnCount="20"
+							fx:id="proxyHost"/>
+
+						<!-- Proxy port -->
+						<Label text="proxyPortLabel"
+							GridPane.columnIndex="0"
+							GridPane.rowIndex="2"
+							GridPane.halignment="LEFT"
+							fx:id="proxyPortLabel"/>
+						<TextField
+							GridPane.columnIndex="1"
+							GridPane.rowIndex="2"
+							GridPane.hgrow="ALWAYS"
+							GridPane.halignment="LEFT"
+							prefColumnCount="5"
+							fx:id="proxyPort"/>
+		         	</GridPane>
+				</Tab>
+		    </tabs>	
+		</TabPane >
+	</center>
+	<bottom>
+		<HBox alignment="TOP_CENTER" spacing="10">
+			<style>
+			  -fx-border-color: transparent;
+			  -fx-border-width: 0.5em 0 0.5em 0;
+			</style>
+			<children>
+				<Button fx:id="ok"/>
+				<Button fx:id="cancel"/>
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>

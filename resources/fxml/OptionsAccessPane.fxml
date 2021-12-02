@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.shape.Box?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.GridPane?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.connectdialog.OptionsAccessPaneController"
+	stylesheets="application.css"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<style>
+	  -fx-padding: 1em 0.5em 1em 0.5em;
+	</style>
+	<top>
+		<HBox alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 0 0 1em 0;
+			</style>
+			<Button fx:id="setPassButton"></Button>
+			<PasswordField fx:id="password" ></PasswordField>
+		</HBox>
+	</top>
+	<center>
+		<GridPane vgap="10" hgap="10">
+			<!-- first row -->
+			<Label text="??source??"
+				GridPane.columnIndex="0"
+				GridPane.rowIndex="0"
+				GridPane.halignment="CENTER"
+				fx:id="sourceListTitle"/>
+			<Label text="  " GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+			<Label text="??restricted??"
+				GridPane.columnIndex="2"
+				GridPane.rowIndex="0"
+				GridPane.halignment="CENTER"
+				fx:id="restrictedListTitle"/>
+
+			<!-- second row -->
+			<ListView fx:id="sourceList"
+				GridPane.columnIndex="0"
+				GridPane.rowIndex="1"
+				GridPane.hgrow="ALWAYS"
+				GridPane.vgrow="ALWAYS"
+				></ListView>
+			<VBox alignment="TOP_CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1" >
+				<Button fx:id="selectItemButton" styleClass="mnemonic-button"></Button>
+				<Button fx:id="selectAllButton" styleClass="mnemonic-button"></Button>
+				<Button fx:id="deselectItemButton" styleClass="mnemonic-button"></Button>
+				<Button fx:id="deselectAllButton" styleClass="mnemonic-button"></Button>
+			</VBox>
+			<ListView fx:id="restrictedList"
+				GridPane.columnIndex="2"
+				GridPane.rowIndex="1"
+				GridPane.hgrow="ALWAYS"
+				GridPane.vgrow="ALWAYS"
+				></ListView>
+		</GridPane>
+	</center>
+</BorderPane>

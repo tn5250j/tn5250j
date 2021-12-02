@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.connectdialog.ExternalProgramsController"
+	stylesheets="application.css"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+
+	<style>
+	  -fx-padding: 1em 1em 1em 1em;
+	</style>
+
+	<top>
+       	<TitledBorderedPane title="About" fx:id="externalPrograms" labelPosition="TOP_LEFT">
+       		<content>
+       			<GridPane hgap="10" vgap="10">
+					<!-- first row -->
+					<Label text="browserLabel"
+						GridPane.columnIndex="0"
+						GridPane.rowIndex="0"
+						GridPane.halignment="LEFT"
+						fx:id="browserLabel"/>
+					<TextField
+						GridPane.columnIndex="1"
+						GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS"
+						GridPane.halignment="LEFT"
+						fx:id="browser"/>
+					<Button text="..."
+						GridPane.columnIndex="2"
+						GridPane.rowIndex="0"
+						GridPane.hgrow="NEVER"
+						GridPane.halignment="LEFT"
+						fx:id="selectBrowser"/>
+
+					<!-- second row -->
+					<Label text="mailerLabel"
+						GridPane.columnIndex="0"
+						GridPane.rowIndex="1"
+						GridPane.halignment="LEFT"
+						fx:id="mailerLabel"/>
+					<TextField
+						GridPane.columnIndex="1"
+						GridPane.rowIndex="1"
+						GridPane.hgrow="NEVER"
+						GridPane.halignment="RIGHT"
+						fx:id="mailer"/>
+					<Button text="..."
+						GridPane.columnIndex="2"
+						GridPane.rowIndex="1"
+						GridPane.hgrow="ALWAYS"
+						GridPane.halignment="LEFT"
+						fx:id="selectMailer"/>
+       			</GridPane>
+       		</content>
+       	</TitledBorderedPane>
+	</top>
+	<center>
+       	<TitledBorderedPane title="About" fx:id="cExternalPrograms" labelPosition="TOP_LEFT">
+       		<content>
+       			<BorderPane>
+					<style>
+						-fx-padding: 1em 1em 1em 1em;
+					</style>
+       				<center>
+						<TableView fx:id="externals"/>
+       				</center>
+       			</BorderPane>
+       		</content>
+       	</TitledBorderedPane>
+	</center>
+	<bottom>
+		<HBox alignment="TOP_CENTER" spacing="10">
+			<style>
+			  -fx-border-color: transparent;
+			  -fx-border-width: 0.5em 0 0.5em 0;
+			</style>
+			<children>
+				<Button fx:id="cAddButton">
+				</Button>
+				<Button fx:id="cRemoveButton">
+				</Button>
+				<Button fx:id="cEditButton">
+				</Button>
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>

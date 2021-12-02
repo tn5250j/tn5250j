@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane
+	fx:controller="org.tn5250j.connectdialog.ConnectionDialogController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<center>
+		<TabPane>
+			<style>
+			  -fx-border-color: black;
+			  -fx-border-width: 1;
+			</style>
+		    <tabs>
+		        <Tab fx:id="connectionsTab" closable="false">
+		        	<fx:include source="ConnectionsPane.fxml" fx:id="connectionsPane"/>
+		        </Tab>
+		        <Tab fx:id="optionsTab" closable="false">
+		        	<fx:include source="OptionsPane.fxml" fx:id="optionsPane"/>
+		        </Tab>
+		        <Tab fx:id="loggingTab" closable="false">
+		        	<fx:include source="LoggingPane.fxml" fx:id="loggingPane"/>
+		        </Tab>
+		        <Tab fx:id="optionsAccessTab" closable="false">
+		        	<fx:include source="OptionsAccessPane.fxml" fx:id="optionsAccessPane"/>
+		        </Tab>
+		        <Tab fx:id="externalTab" closable="false">
+		        	<fx:include source="ExternalProgramsPane.fxml" fx:id="externalProgramsPane"/>
+		        </Tab>
+		        <Tab fx:id="aboutTab" closable="false" text="About">
+		        	<BorderPane>
+						<style>
+						  -fx-padding: 1em 1em 1em 1em;
+						</style>
+						<center>
+				        	<TitledBorderedPane title="About" labelPosition="TOP_CENTER">
+				        		<content>
+				        			<BorderPane>
+				        				<top>
+				        					<HBox alignment="TOP_CENTER">
+				        						<children>
+				        							<VBox >
+				        								<children>
+										        			<Label text="TN5250j"></Label>
+										        			<Label fx:id="versionLabel" text="Version:"></Label>
+				        								</children>
+				        							</VBox>
+				        						</children>
+				        					</HBox>
+				        				</top>
+				        			</BorderPane>
+				        		</content>
+				        	</TitledBorderedPane>
+						</center>
+		        	</BorderPane>
+		        </Tab>
+		    </tabs>	
+		</TabPane >
+	</center>
+	<bottom>
+		<HBox alignment="TOP_CENTER" spacing="10">
+			<style>
+			  -fx-border-color: transparent;
+			  -fx-border-width: 0.5em 0 0.5em 0;
+			</style>
+			<children>
+				<Button fx:id="connectButton">
+				</Button>
+				<Button fx:id="applyButton">
+				</Button>
+				<Button fx:id="cancelButton">
+				</Button>
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>

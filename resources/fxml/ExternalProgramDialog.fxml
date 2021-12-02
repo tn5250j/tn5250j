@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.connectdialog.ExternalProgramDialogController"
+	stylesheets="application.css"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<style>
+	  -fx-padding: 1em 1em 1em 1em;
+	</style>
+	<center>
+		<GridPane hgap="10" vgap="10" styleClass="etched-border">
+			<!-- first row -->
+			<style>
+			    -fx-padding: 0.5em 0.5em 0.5em 0.5em;
+			</style>
+			<Label text="nameLabel"
+				GridPane.columnIndex="0"
+				GridPane.rowIndex="0"
+				GridPane.halignment="LEFT"
+				fx:id="nameLabel"/>
+			<TextField
+				GridPane.columnIndex="1"
+				GridPane.rowIndex="0"
+				GridPane.halignment="LEFT"
+				prefColumnCount = "20"
+				fx:id="name"/>
+	
+			<!-- second row -->
+			<Label text="wCommandLabel"
+				GridPane.columnIndex="0"
+				GridPane.rowIndex="1"
+				GridPane.halignment="LEFT"
+				fx:id="wCommandLabel"/>
+			<TextField
+				GridPane.columnIndex="1"
+				GridPane.rowIndex="1"
+				GridPane.halignment="LEFT"
+				prefColumnCount = "40"
+				fx:id="wCommand"/>
+	
+			<!-- third row -->
+			<Label text="uCommandLabel"
+				GridPane.columnIndex="0"
+				GridPane.rowIndex="2"
+				GridPane.halignment="LEFT"
+				fx:id="uCommandLabel"/>
+			<TextField
+				GridPane.columnIndex="1"
+				GridPane.rowIndex="2"
+				GridPane.halignment="LEFT"
+				GridPane.fillWidth="false"
+				GridPane.hgrow="NEVER"
+				prefColumnCount = "40"
+				fx:id="uCommand"/>
+		</GridPane>
+	</center>
+	<bottom>
+		<HBox alignment="TOP_CENTER" spacing="10">
+			<style>
+			  -fx-border-color: transparent;
+			  -fx-border-width: 0.5em 0 0.5em 0;
+			</style>
+			<children>
+				<Button fx:id="ok"/>
+				<Button fx:id="cancel"/>
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>

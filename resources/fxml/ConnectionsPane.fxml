@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.connectdialog.ConnectionsPaneController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<center>
+		<VBox alignment="CENTER" spacing="10">
+			<HBox alignment="CENTER">
+				<TableView fx:id="table"></TableView>
+			</HBox>
+		</VBox>
+	</center>
+	<bottom>
+		<HBox alignment="TOP_CENTER" spacing="10">
+			<style>
+			  -fx-border-color: transparent;
+			  -fx-border-width: 0.5em 0 0.5em 0;
+			</style>
+			<children>
+				<Button fx:id="addButton">
+				</Button>
+				<Button fx:id="removeButton">
+				</Button>
+				<Button fx:id="editButton">
+				</Button>
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>

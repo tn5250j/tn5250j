@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 
 import org.tn5250j.ExternalProgramConfig;
+import org.tn5250j.connectdialog.ExternalProgram;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -203,25 +204,20 @@ public class OperatingSystem {
     private static boolean launchExternalProgram(String url) {
         // first let's check if we have an external protocol program defined
         try {
-            Properties properties = ExternalProgramConfig.getInstance().getEtnPgmProps();
-            String count = properties.getProperty("etn.pgm.support.total.num");
-            if (count != null && count.length() > 0) {
-                int total = Integer.parseInt(count);
-                for (int i = 1; i <= total; i++) {
-                    String program = properties.getProperty("etn.pgm." + i + ".command.name");
-                    if (url.toLowerCase().startsWith(program.toLowerCase())) {
-                        String params = url.substring(program.length() + 1);
-                        params = params.replace(',', ' ');
-                        String command;
-                        if (isWindows()) {
-                            command = properties.getProperty("etn.pgm." + i + ".command.window") + " " + params;
-                        } else {
-                            command = properties.getProperty("etn.pgm." + i + ".command.unix") + " " + params;
-                        }
-                        LOG.info("Execute External Program: " + command);
-                        execute(command);
-                        return true;
+            for (ExternalProgram p : ExternalProgramConfig.getInstance().getPrograms()) {
+                String program = p.getName();
+                if (url.toLowerCase().startsWith(program.toLowerCase())) {
+                    String params = url.substring(program.length() + 1);
+                    params = params.replace(',', ' ');
+                    String command;
+                    if (isWindows()) {
+                        command = p.getWCommand() + " " + params;
+                    } else {
+                        command = p.getUCommand() + " " + params;
                     }
+                    LOG.info("Execute External Program: " + command);
+                    execute(command);
+                    return true;
                 }
             }
         } catch (Exception exx) {

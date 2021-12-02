@@ -44,7 +44,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.tn5250j.connectdialog.ConnectDialog;
+import org.tn5250j.connectdialog.ConnectionDialogController;
 import org.tn5250j.event.BootEvent;
 import org.tn5250j.event.BootListener;
 import org.tn5250j.event.EmulatorActionEvent;
@@ -54,6 +54,7 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.Tn5250jController;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.TN5250jSplashScreen;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.interfaces.GUIViewInterface;
@@ -232,6 +233,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     }
 
     static public void main(String[] args) {
+        SwingToFxUtils.initFx();
 
         if (!isSpecified("-nc", args)) {
 
@@ -506,11 +508,12 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     private String openConnectSessionDialog() {
 
         splash.setVisible(false);
-        ConnectDialog sc = new ConnectDialog(frame1, LangTool.getString("ss.title"), sessions);
+        final ConnectionDialogController controller = SwingToFxUtils.initAndShowGUI(
+                frame1, LangTool.getString("ss.title"), "/fxml/ConnectionDialog.fxml");
 
         // load the new session information from the session property file
         loadSessions();
-        return sc.getConnectKey();
+        return controller.getConnectKey();
     }
 
     private synchronized void newSession(String sel, String[] args) {

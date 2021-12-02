@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.connectdialog.LoggingPaneController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<center>
+		<VBox alignment="CENTER" spacing="10">
+			<HBox alignment="CENTER" spacing="10">
+	        	<TitledBorderedPane fx:id="logLevelPanel" title="??Log level??" labelPosition="TOP_CENTER">
+	        		<content>
+						<VBox alignment="CENTER_LEFT" spacing="10">
+							<RadioButton fx:id="intOFF" text="?? OFF ??"></RadioButton>
+							<RadioButton fx:id="intDEBUG" text="?? DEBUG ??"></RadioButton>
+							<RadioButton fx:id="intINFO" text="?? INFO ??"></RadioButton>
+							<RadioButton fx:id="intWARN" text="?? WARN ??"></RadioButton>
+							<RadioButton fx:id="intERROR" text="?? ERROR ??"></RadioButton>
+							<RadioButton fx:id="intFATAL" text="?? FATAL ??"></RadioButton>
+						</VBox>
+	        		</content>
+	        	</TitledBorderedPane>
+	        	<TitledBorderedPane fx:id="logAppenderPanel" title="??Log appender??" labelPosition="TOP_CENTER">
+	        		<content>
+						<VBox alignment="CENTER_LEFT" spacing="10">
+							<RadioButton fx:id="intConsole" text="?? Console ??"></RadioButton>
+							<RadioButton fx:id="intFile" text="?? File ??"></RadioButton>
+							<RadioButton fx:id="intBoth" text="?? Both ??"></RadioButton>
+						</VBox>
+	        		</content>
+	        	</TitledBorderedPane>
+			</HBox>
+		</VBox>
+	</center>
+</BorderPane>

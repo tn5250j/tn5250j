@@ -30,6 +30,7 @@ import static org.tn5250j.TN5250jConstants.*;
 import java.util.Properties;
 
 import org.tn5250j.ExternalProgramConfig;
+import org.tn5250j.connectdialog.ExternalProgram;
 
 public class ScreenPlanes {
 
@@ -1062,26 +1063,21 @@ public class ScreenPlanes {
                     screenGUI[x] == NO_GUI &&
                     (screenExtended[x] & EXTENDED_5250_NON_DSP) == 0
             ) {
-                Properties etnProps = ExternalProgramConfig.getInstance().getEtnPgmProps();
-                String count = etnProps.getProperty("etn.pgm.support.total.num");
-                if (count != null && count.length() > 0) {
-                    int total = Integer.parseInt(count);
-                    for (int i = 1; i <= total; i++) {
-                        String program = etnProps.getProperty("etn.pgm." + i + ".command.name");
-                        String key = "";
-                        if (x + program.length() >= screen.length) break;
-                        for (int j = 0; j <= program.length(); j++) {
-                            key += screen[x + j];
+                for (ExternalProgram p : ExternalProgramConfig.getInstance().getPrograms()) {
+                    String program = p.getName();
+                    String key = "";
+                    if (x + program.length() >= screen.length) break;
+                    for (int j = 0; j <= program.length(); j++) {
+                        key += screen[x + j];
+                    }
+                    if (key.toLowerCase().equals(program.toLowerCase() + ":")) {
+                        hs = true;
+                        screenGUI[x] = BUTTON_LEFT_EB;
+                        while (screen[++x] > ' ') {
+                            screenGUI[x] = BUTTON_MIDDLE_EB;
                         }
-                        if (key.toLowerCase().equals(program.toLowerCase() + ":")) {
-                            hs = true;
-                            screenGUI[x] = BUTTON_LEFT_EB;
-                            while (screen[++x] > ' ') {
-                                screenGUI[x] = BUTTON_MIDDLE_EB;
-                            }
-                            screenGUI[--x] = BUTTON_RIGHT_EB;
-                            break;
-                        }
+                        screenGUI[--x] = BUTTON_RIGHT_EB;
+                        break;
                     }
                 }
             }
