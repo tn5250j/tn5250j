@@ -62,6 +62,12 @@ class KeypadPanel extends BorderPane {
         final ChangeListener<Number> sizeListener = (src, old, value) -> sizeChanged();
         this.widthProperty().addListener(sizeListener);
         this.heightProperty().addListener(sizeListener);
+
+        //set font from config
+        final Button b = buttons[0];
+        final int size = Math.max(Math.round(configuration.getKeypadFontSize()), MIN_FONT_SIZE);
+
+        setButtonsFont(new Font(b.getFont().getName(), size));
     }
 
     private void sizeChanged() {
