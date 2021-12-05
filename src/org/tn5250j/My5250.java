@@ -508,7 +508,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     private String openConnectSessionDialog() {
 
         splash.setVisible(false);
-        final ConnectionDialogController controller = SwingToFxUtils.initAndShowGUI(
+        final ConnectionDialogController controller = SwingToFxUtils.showFxTemplate(
                 frame1, LangTool.getString("ss.title"), "/fxml/ConnectionDialog.fxml");
 
         // load the new session information from the session property file

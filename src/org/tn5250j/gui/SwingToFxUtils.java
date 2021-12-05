@@ -45,7 +45,7 @@ public class SwingToFxUtils {
         Platform.setImplicitExit(false);
     }
 
-    public static <T> T initAndShowGUI(final JFrame parent, final String title, final String fxml) {
+    public static <T> T showFxTemplate(final JFrame parent, final String title, final String fxml) {
         // This method is invoked on the EDT thread
         final JDialog frame = new JDialog(parent == null ? SHARED_FRAME : parent, title);
         frame.setIconImages(GUIGraphicsUtils.getApplicationIcons());
