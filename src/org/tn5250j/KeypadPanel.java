@@ -37,11 +37,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 class KeypadPanel extends BorderPane {
 
@@ -120,40 +122,42 @@ class KeypadPanel extends BorderPane {
         return grid;
     }
 
-    //TODO very complex implementation. Possible latter
     void updateButtonFontSize(final float fontSize) {
         final Button b = buttons[0];
         final String fontName = b.getFont().getName();
         final int size = Math.max(Math.round(fontSize), MIN_FONT_SIZE);
 
         setButtonsFont(new Font(fontName, size));
-//
-//        while (true) {
-//            setButtonsFont(new Font(fontName, size));
-//
-//            if (!isTruncated()) {
-//                break;
-//            }
-//            System.out.println(">>>>>");
-//
-//            size--;
-//            if (size < MIN_FONT_SIZE) {
-//                break;
-//            }
-//
-//        }
+        for (final Button button : buttons) {
+            final double scale = computeScale(button);
+            button.setScaleX(scale);
+            button.setScaleY(scale);
+        }
     }
 
-//    private boolean isTruncated() {
-//        for (final Button button : buttons) {
-//            for (final Node n : button.getChildrenUnmodifiable()) {
-//                if (n instanceof Text && ((Text) n).getText().endsWith("...")) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
+    private double computeScale(final Button button) {
+        double scale = 1.;
+        final double w = button.getWidth();
+        final double h = button.getHeight();
+
+        if (w > 0 && h > 0) {
+            double scaleX = 1;
+            final double prefWidth = button.prefWidth(-1);
+            if (w < prefWidth) {
+                scaleX = w / prefWidth;
+            }
+
+            final double prefHeight = button.prefHeight(-1);
+            double scaleY = 1;
+            if (h < prefHeight) {
+                scaleY = h / prefHeight;
+            }
+
+            scale = Math.min(scale, Math.min(scaleX, scaleY));
+        }
+
+        return scale;
+    }
 
     private void setButtonsFont(final Font font) {
         for (final Button b : buttons) {
@@ -169,8 +173,10 @@ class KeypadPanel extends BorderPane {
     private static Button createButton(final String text, final String mnemonic) {
         final Button b = new Button(text);
         b.setMaxSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        b.setScaleShape(true);
         b.setUserData(mnemonic);
+        b.setTextOverrun(OverrunStyle.CLIP);
+        b.setTextAlignment(TextAlignment.CENTER);
+        b.setPadding(Insets.EMPTY);
         return b;
     }
 
