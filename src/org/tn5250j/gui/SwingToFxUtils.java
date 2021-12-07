@@ -88,4 +88,11 @@ public class SwingToFxUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static JFXPanel createSwingPanel(final Parent node) {
+        final JFXPanel fxPane = new JFXPanel();
+        final Scene scene = new Scene(node);
+        fxPane.setScene(scene);
+        return fxPane;
+    }
 }

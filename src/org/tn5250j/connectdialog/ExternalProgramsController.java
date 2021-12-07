@@ -173,7 +173,7 @@ public class ExternalProgramsController implements Initializable {
         final String title = LangTool.getString(p == null ? "customized.addEntryTitle" : "customized.editEntryTitle");
         UiUtils.showDialog(
                 view.getScene().getWindow(),
-                UiUtils.withSharedControllers(EXTERNAL_PROGRAM_FXML),
+                UiUtils.createLoader(EXTERNAL_PROGRAM_FXML),
                 title,
                 c -> ((ExternalProgramDialogController) c).setProgram(p));
     }

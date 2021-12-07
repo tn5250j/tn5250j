@@ -26,6 +26,8 @@ import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_FONT_SIZE;
 import static org.tn5250j.SessionConfig.CONFIG_KEYPAD_MNEMONICS;
 import static org.tn5250j.SessionConfig.YES;
 import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
+import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
+import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,8 +46,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Vector;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -63,6 +68,7 @@ import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
@@ -87,7 +93,8 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
     protected Session5250 session;
     private GuiGraphicBuffer guiGraBuf;
     protected TNRubberBand rubberband;
-    private KeypadPanelSwing keypadPanel;
+    private KeypadPanel keypadPanel;
+    private JComponent keypadPanelContainer;
     private String newMacName;
     private Vector<SessionJumpListener> sessionJumpListeners = null;
     private Vector<EmulatorActionListener> actionListeners = null;
@@ -96,12 +103,13 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
     private boolean doubleClick;
     protected SessionConfig sesConfig;
     protected KeyboardHandler keyHandler;
-    private final SessionScroller scroller = new SessionScroller();
+
+    private final MouseWheelListener scroller = this::sessionPanelScrolled;
 
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public SessionPanel(final Session5250 session) {
-        this.keypadPanel = new KeypadPanelSwing(session.getConfiguration().getConfig());
+        this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
         this.session = session;
 
         sesConfig = session.getConfiguration();
@@ -191,7 +199,8 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
         });
 
         if (YES.equals(sesConfig.getStringProperty("mouseWheel"))) {
-            scroller.addMouseWheelListener(this);
+            removeMouseWheelListener(scroller);
+            addMouseWheelListener(scroller);
         }
 
         log.debug("Initializing macros");
@@ -202,8 +211,9 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
             getFocusForMe();
         });
 
-        keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
-        this.add(keypadPanel, BorderLayout.SOUTH);
+        keypadPanelContainer = SwingToFxUtils.createSwingPanel(keypadPanel);
+        keypadPanelContainer.setVisible(sesConfig.getConfig().isKeypadEnabled());
+        this.add(keypadPanelContainer, BorderLayout.SOUTH);
 
         this.requestFocus();
 
@@ -227,6 +237,15 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 
         if (!evt.isConsumed())
             super.processKeyEvent(evt);
+    }
+
+    public void sessionPanelScrolled(final MouseWheelEvent e) {
+        final int notches = e.getWheelRotation();
+        if (notches < 0) {
+            screen.sendKeys(PAGE_UP);
+        } else {
+            screen.sendKeys(PAGE_DOWN);
+        }
     }
 
     public void sendScreenEMail() {
@@ -387,7 +406,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
         final String configName = configEvent.getPropertyName();
 
         if (CONFIG_KEYPAD_ENABLED.equals(configName)) {
-            keypadPanel.setVisible(YES.equals(configEvent.getNewValue()));
+            keypadPanelContainer.setVisible(YES.equals(configEvent.getNewValue()));
             this.validate();
         }
 
@@ -404,10 +423,10 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
         }
 
         if ("mouseWheel".equals(configName)) {
+            removeMouseWheelListener(scroller);
+
             if (YES.equals(configEvent.getNewValue())) {
-                scroller.addMouseWheelListener(this);
-            } else {
-                scroller.removeMouseWheelListener(this);
+                addMouseWheelListener(scroller);
             }
         }
 
@@ -626,9 +645,9 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
     public Rectangle getDrawingBounds() {
 
         final Rectangle r = this.getBounds();
-        if (keypadPanel != null && keypadPanel.isVisible())
+        if (keypadPanelContainer != null && keypadPanelContainer.isVisible())
             //	         r.height -= (int)(keyPad.getHeight() * 1.25);
-            r.height -= (keypadPanel.getHeight());
+            r.height -= (keypadPanelContainer.getHeight());
 
         r.setSize(r.width, r.height);
 

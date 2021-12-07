@@ -1,3 +1,4 @@
+package org.tn5250j;
 /**
  * $Id$
  * <p>
@@ -33,41 +34,45 @@ import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.tn5250j.SessionBean;
-import org.tn5250j.SessionPanel;
-import org.tn5250j.TestUtils;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 
 
-public class ExampleEmbeddedMinimalBootstrap {
+public class SessionPanelDemo {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
+        SwingToFxUtils.initFx();
 
         try {
             System.setProperty("emulator.settingsDirectory", File.createTempFile("tn5250j", "settings").getAbsolutePath());
             ConfigureFactory.getInstance();
             org.tn5250j.tools.LangTool.init();
+
+            final Session5250 session = TestUtils.createSession();
+            session.getConfiguration().setProperty("keypad", "Yes");
+
             final SessionBean sb = TestUtils.createSessionBean();
 
-            JFrame frame = new JFrame("TN5250j");
+            final JFrame frame = new JFrame("TN5250j");
             frame.setSize(1024, 768);
             frame.addWindowListener(
                     new WindowAdapter() {
-                        public void windowClosing(WindowEvent e) {
+                        @Override
+                        public void windowClosing(final WindowEvent e) {
                             sb.signoff();
                             sb.disconnect();
                         }
                     }
             );
 
-            SessionPanel sessgui = new SessionPanel(sb.getSession());
-            JPanel main = new JPanel(new BorderLayout());
+            final SessionPanel sessgui = new SessionPanel(sb.getSession());
+            final JPanel main = new JPanel(new BorderLayout());
             main.add(sessgui, BorderLayout.CENTER);
             frame.setContentPane(main);
             frame.setVisible(true);
             sb.connect();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

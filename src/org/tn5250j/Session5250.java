@@ -20,7 +20,6 @@
  */
 package org.tn5250j;
 
-import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -33,6 +32,7 @@ import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.SystemRequestDialog;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ScanListener;
 import org.tn5250j.interfaces.SessionInterface;
 
@@ -59,9 +59,9 @@ public class Session5250 implements SessionInterface {
     private List<ScanListener> scanListeners = null;
     private final ReadWriteLock scanListenerLock = new ReentrantReadWriteLock();
 
-    public Session5250(Properties props, String configurationResource,
-                       String sessionName,
-                       SessionConfig config) {
+    public Session5250(final Properties props, final String configurationResource,
+                       final String sessionName,
+                       final SessionConfig config) {
 
         propFileName = config.getConfigurationResource();
 
@@ -145,7 +145,7 @@ public class Session5250 implements SessionInterface {
         return sesProps;
     }
 
-    public void setGUI(SessionPanel gui) {
+    public void setGUI(final SessionPanel gui) {
         guiComponent = gui;
     }
 
@@ -184,7 +184,7 @@ public class Session5250 implements SessionInterface {
 
     @Override
     public void signalBell() {
-        Toolkit.getDefaultToolkit().beep();
+        UiUtils.beep();
     }
 
     /* (non-Javadoc)
@@ -248,7 +248,7 @@ public class Session5250 implements SessionInterface {
         final int portp = port;
 
         // lets set this puppy up to connect within its own thread
-        Runnable connectIt = new Runnable() {
+        final Runnable connectIt = new Runnable() {
             @Override
             public void run() {
                 vt.connect(ses, portp);
@@ -259,7 +259,7 @@ public class Session5250 implements SessionInterface {
         // now lets set it to connect within its own daemon thread
         //    this seems to work better and is more responsive than using
         //    swingutilities's invokelater
-        Thread ct = new Thread(connectIt);
+        final Thread ct = new Thread(connectIt);
         ct.setDaemon(true);
         ct.start();
 
@@ -271,7 +271,7 @@ public class Session5250 implements SessionInterface {
     }
 
     // WVL - LDC : TR.000300 : Callback scenario from 5250
-    protected void setVT(tnvt v) {
+    protected void setVT(final tnvt v) {
         vt = v;
         screen.setVT(vt);
         if (vt != null)
@@ -294,7 +294,7 @@ public class Session5250 implements SessionInterface {
      * @see tnvt#parseCommand();
      * @see scanned(String,String)
      */
-    public void setScanningEnabled(boolean scan) {
+    public void setScanningEnabled(final boolean scan) {
         this.scan = scan;
 
         if (this.vt != null)
@@ -337,11 +337,11 @@ public class Session5250 implements SessionInterface {
      * @see tnvt#parseCommand();
      * @see scanned(String,String)
      */
-    public final void fireScanned(String command, String remainder) {
+    public final void fireScanned(final String command, final String remainder) {
         scanListenerLock.readLock().lock();
         try {
             if (this.scanListeners != null) {
-                for (ScanListener listener : this.scanListeners) {
+                for (final ScanListener listener : this.scanListeners) {
                     listener.scanned(command, remainder);
                 }
             }
@@ -353,7 +353,7 @@ public class Session5250 implements SessionInterface {
     /**
      * @param listener
      */
-    public final void addScanListener(ScanListener listener) {
+    public final void addScanListener(final ScanListener listener) {
         scanListenerLock.writeLock().lock();
         try {
             if (scanListeners == null) {
@@ -368,7 +368,7 @@ public class Session5250 implements SessionInterface {
     /**
      * @param listener
      */
-    public final void removeScanListener(ScanListener listener) {
+    public final void removeScanListener(final ScanListener listener) {
         scanListenerLock.writeLock().lock();
         try {
             if (scanListeners != null) {
@@ -384,12 +384,12 @@ public class Session5250 implements SessionInterface {
      *
      * @param state The state change property object.
      */
-    public final void fireSessionChanged(int state) {
+    public final void fireSessionChanged(final int state) {
         sessionListenerLock.readLock().lock();
         try {
             if (this.sessionListeners != null) {
-                for (SessionListener listener : this.sessionListeners) {
-                    SessionChangeEvent sce = new SessionChangeEvent(this);
+                for (final SessionListener listener : this.sessionListeners) {
+                    final SessionChangeEvent sce = new SessionChangeEvent(this);
                     sce.setState(state);
                     listener.onSessionChanged(sce);
                 }
@@ -405,7 +405,7 @@ public class Session5250 implements SessionInterface {
      * @param listener The SessionListener to be added
      */
     @Override
-    public final void addSessionListener(SessionListener listener) {
+    public final void addSessionListener(final SessionListener listener) {
         sessionListenerLock.writeLock().lock();
         try {
             if (sessionListeners == null) {
@@ -423,7 +423,7 @@ public class Session5250 implements SessionInterface {
      * @param listener The SessionListener to be removed
      */
     @Override
-    public final void removeSessionListener(SessionListener listener) {
+    public final void removeSessionListener(final SessionListener listener) {
         sessionListenerLock.writeLock().lock();
         try {
             if (sessionListeners != null) {

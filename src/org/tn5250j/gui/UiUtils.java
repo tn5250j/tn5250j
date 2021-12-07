@@ -5,8 +5,6 @@ package org.tn5250j.gui;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
@@ -22,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -137,31 +136,9 @@ public final class UiUtils {
         }
     }
 
-    /**
-     * @param fxml root FXML template
-     * @return loader with controllers shared between loaded templates.
-     */
-    public static FXMLLoader withSharedControllers(final String fxml) {
-        final Map<Class<?>, Object> singletons = new ConcurrentHashMap<>();
-
-        final FXMLLoader loader = createLoader(fxml);
-        loader.setControllerFactory(cls -> {
-            Object obj = singletons.get(cls);
-            if (obj == null) {
-                obj = newInstance(cls);
-                singletons.put(cls, obj);
-            }
-            return obj;
-        });
-
-        return loader;
-    }
-
-    private static Object newInstance(final Class<?> cls) {
-        try {
-            return cls.getConstructor().newInstance();
-        } catch (final Exception e) {
-            throw new RuntimeException("Failed to instanciate class: " + cls.getName(), e);
-        }
+    public static void beep() {
+        final AudioClip audio = new AudioClip(UiUtils.class.getClassLoader().getResource(
+                "beep.wav").toExternalForm());
+        audio.play();
     }
 }
