@@ -48,10 +48,10 @@ public class SessionPanelDemo {
             ConfigureFactory.getInstance();
             org.tn5250j.tools.LangTool.init();
 
-            final Session5250 session = TestUtils.createSession();
+            final Session5250 session = DevTools.createSession();
             session.getConfiguration().setProperty("keypad", "Yes");
 
-            final SessionBean sb = TestUtils.createSessionBean();
+            final SessionBean sb = DevTools.createSessionBean();
 
             final JFrame frame = new JFrame("TN5250j");
             frame.setSize(1024, 768);

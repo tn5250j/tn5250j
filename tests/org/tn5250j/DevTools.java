@@ -10,7 +10,7 @@ import java.util.Properties;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class TestUtils {
+public class DevTools {
     public static SessionBean createSessionBean() throws Exception {
         final Session5250 session = createSession();
         return createSessionBean(session);

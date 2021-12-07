@@ -22,7 +22,7 @@ public class KeypadPanelDemo extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final SessionBean sessionBean = TestUtils.createSessionBean();
+        final SessionBean sessionBean = DevTools.createSessionBean();
         final KeypadPanel pane = new KeypadPanel(sessionBean.getSession().getConfiguration().getConfig());
         pane.addActionListener(str -> System.out.println(str));
 
