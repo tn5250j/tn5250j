@@ -70,6 +70,7 @@
         <include name="tn5250j*.icns"/>
         <include name="fxml/**"/>
         <include name="*.css"/>
+        <include name="*.wav"/>
     </fileset>
 
     <!-- files for source distribution -->
@@ -226,7 +227,7 @@
             <fileset dir="${source.dir}"
                      includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
             <fileset dir="${resource.dir}"
-                     includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico"/>
+                     includes="*.properties,*.props,*.gif,*.jpg,*.png,*.ico,fxml/**,*.css,*.wav"/>
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
                 <attribute name="Class-Path" value="${runtime.classpath}"/>
