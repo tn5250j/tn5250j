@@ -31,9 +31,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 
@@ -49,9 +51,16 @@ public class SessionPanelDemo {
             org.tn5250j.tools.LangTool.init();
 
             final Session5250 session = DevTools.createSession();
-            session.getConfiguration().setProperty("keypad", "Yes");
+            final SessionBean sessgui = DevTools.createSessionBean(session);
 
-            final SessionBean sb = DevTools.createSessionBean();
+            final JCheckBox checkBox = new JCheckBox("Set keyboard visible");
+            checkBox.addActionListener(e -> {
+                final String value = checkBox.isSelected() ?  SessionConfig.YES : SessionConfig.NO;
+                session.getConfiguration().setProperty("keypad", value);
+                final SessionConfigEvent event = new SessionConfigEvent(e,
+                        SessionConfig.CONFIG_KEYPAD_ENABLED, null, value);
+                sessgui.onConfigChanged(event);
+            });
 
             final JFrame frame = new JFrame("TN5250j");
             frame.setSize(1024, 768);
@@ -59,18 +68,18 @@ public class SessionPanelDemo {
                     new WindowAdapter() {
                         @Override
                         public void windowClosing(final WindowEvent e) {
-                            sb.signoff();
-                            sb.disconnect();
+                            sessgui.signoff();
+                            sessgui.disconnect();
                         }
                     }
             );
 
-            final SessionPanel sessgui = new SessionPanel(sb.getSession());
             final JPanel main = new JPanel(new BorderLayout());
             main.add(sessgui, BorderLayout.CENTER);
+            main.add(checkBox, BorderLayout.NORTH);
             frame.setContentPane(main);
             frame.setVisible(true);
-            sb.connect();
+            sessgui.connect();
 
         } catch (final Exception e) {
             e.printStackTrace();
