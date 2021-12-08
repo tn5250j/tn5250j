@@ -27,13 +27,17 @@ package org.tn5250j;
  */
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
-import javax.swing.JCheckBox;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.gui.SwingToFxUtils;
@@ -56,15 +60,6 @@ public class SessionPanelDemo {
             final Session5250 session = DevTools.createSession();
             final SessionBean sessgui = DevTools.createSessionBean(session);
 
-            final JCheckBox checkBox = new JCheckBox("Set keyboard visible");
-            checkBox.addActionListener(e -> {
-                final String value = checkBox.isSelected() ?  SessionConfig.YES : SessionConfig.NO;
-                session.getConfiguration().setProperty("keypad", value);
-                final SessionConfigEvent event = new SessionConfigEvent(e,
-                        SessionConfig.CONFIG_KEYPAD_ENABLED, null, value);
-                sessgui.onConfigChanged(event);
-            });
-
             final JFrame frame = new JFrame("TN5250j");
             frame.setSize(1024, 768);
             frame.addWindowListener(
@@ -79,7 +74,7 @@ public class SessionPanelDemo {
 
             final JPanel main = new JPanel(new BorderLayout());
             main.add(sessgui, BorderLayout.CENTER);
-            main.add(checkBox, BorderLayout.NORTH);
+            main.add(createChangeConfigPanel(sessgui, session), BorderLayout.NORTH);
             frame.setContentPane(main);
             frame.setVisible(true);
             sessgui.connect();
@@ -87,5 +82,47 @@ public class SessionPanelDemo {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static JPanel createChangeConfigPanel(final SessionBean sessgui, final Session5250 session) {
+        final JTextField keyField = new JTextField(10);
+        final JTextField valueField = new JTextField(20);
+
+//        final JPanel keyValue = new JPanel(new GridLayout(1, 2, 10, 10));
+        final JPanel keyValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        keyValue.add(createLabeledPanel("Key: ", keyField));
+        keyValue.add(createLabeledPanel("Value: ", valueField));
+
+        final JButton button = new JButton(" Set ");
+        button.addActionListener(e -> {
+            final String key = getText(keyField);
+            final String value = getText(valueField);
+
+            if (key != null && value != null) {
+                session.getConfiguration().setProperty(key, value);
+                final SessionConfigEvent event = new SessionConfigEvent(e,
+                        key, null, value);
+                sessgui.onConfigChanged(event);
+            }
+        });
+
+        keyValue.add(button);
+
+        final JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel.add(keyValue, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private static JPanel createLabeledPanel(final String label, final JTextField textField) {
+        final JPanel pane = new JPanel(new BorderLayout(5, 5));
+        pane.add(new JLabel(label), BorderLayout.WEST);
+        pane.add(textField, BorderLayout.CENTER);
+        return pane;
+    }
+
+    private static String getText(final JTextField textField) {
+        final String text = textField.getText();
+        return (text == null || text.trim().isEmpty()) ? null : text;
     }
 }
