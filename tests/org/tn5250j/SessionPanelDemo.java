@@ -39,11 +39,14 @@ import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 
+import javafx.application.Application;
+
 
 public class SessionPanelDemo {
 
     public static void main(final String[] args) {
         SwingToFxUtils.initFx();
+        Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         try {
             System.setProperty("emulator.settingsDirectory", File.createTempFile("tn5250j", "settings").getAbsolutePath());

@@ -27,13 +27,14 @@ package org.tn5250j;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.SwingUtilities;
 
-public abstract class RubberBand {
+public class RubberBand {
     private volatile RubberBandCanvasIF canvas;
     protected volatile Point startPoint;
     protected volatile Point endPoint;
@@ -43,7 +44,7 @@ public abstract class RubberBand {
 
     private class MouseHandler extends MouseAdapter {
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(final MouseEvent e) {
             if (!SwingUtilities.isRightMouseButton(e)) {
                 if (!isSomethingBounded)
                     start(canvas.translateStart(e.getPoint()));
@@ -59,7 +60,7 @@ public abstract class RubberBand {
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(final MouseEvent e) {
             isDragging = false;
         }
 
@@ -68,7 +69,7 @@ public abstract class RubberBand {
     private class MouseMotionHandler extends MouseMotionAdapter {
 
         @Override
-        public void mouseDragged(MouseEvent e) {
+        public void mouseDragged(final MouseEvent e) {
 
             if (!SwingUtilities.isRightMouseButton(e) && getCanvas().canDrawRubberBand(RubberBand.this)) {
                 erase();
@@ -90,21 +91,35 @@ public abstract class RubberBand {
         return isDragging;
     }
 
-    public RubberBand(RubberBandCanvasIF c) {
+    public RubberBand(final RubberBandCanvasIF c) {
         super();
         setCanvas(c);
         getCanvas().addMouseListener(new MouseHandler());
         getCanvas().addMouseMotionListener(new MouseMotionHandler());
     }
 
-    protected void draw() {
-        Graphics g = getCanvas().getDrawingGraphics();
+    public void draw() {
+        final Graphics g = getCanvas().getDrawingGraphics();
 
         if (g != null) {
             try {
                 if (getCanvas().canDrawRubberBand(this)) {
                     g.setXORMode(canvas.getBackground());
-                    drawRubberBand(g);
+
+                    final Point start = getStartPoint();
+                    final Point end = getEndPoint();
+
+                    if ((end.x > start.x) && (end.y > start.y)) {
+                        g.drawRect(start.x, start.y, end.x - start.x, end.y - start.y);
+                    } else if ((end.x < start.x) && (end.y < start.y)) {
+                        g.drawRect(end.x, end.y, start.x - end.x, start.y - end.y);
+                    } else if ((end.x > start.x) && (end.y < start.y)) {
+                        g.drawRect(start.x, end.y, end.x - start.x, start.y - end.y);
+                    } else if ((end.x < start.x) && (end.y > start.y)) {
+                        g.drawRect(end.x, start.y, start.x - end.x, end.y - start.y);
+                    }
+
+                    isSomethingBounded = true;
                     // we have drawn something, set the flag to indicate this
                     setEraseSomething(true);
                 }
@@ -112,23 +127,6 @@ public abstract class RubberBand {
                 g.dispose();
             }
         }
-    }
-
-    protected abstract void drawBoundingShape(Graphics g, int startx, int starty, int width, int height);
-
-    protected void drawRubberBand(Graphics g) {
-
-        if ((getEndPoint().x > getStartPoint().x) && (getEndPoint().y > getStartPoint().y)) {
-            drawBoundingShape(g, getStartPoint().x, getStartPoint().y, getEndPoint().x - getStartPoint().x, getEndPoint().y - getStartPoint().y);
-        } else if ((getEndPoint().x < getStartPoint().x) && (getEndPoint().y < getStartPoint().y)) {
-            drawBoundingShape(g, getEndPoint().x, getEndPoint().y, getStartPoint().x - getEndPoint().x, getStartPoint().y - getEndPoint().y);
-        } else if ((getEndPoint().x > getStartPoint().x) && (getEndPoint().y < getStartPoint().y)) {
-            drawBoundingShape(g, getStartPoint().x, getEndPoint().y, getEndPoint().x - getStartPoint().x, getStartPoint().y - getEndPoint().y);
-        } else if ((getEndPoint().x < getStartPoint().x) && (getEndPoint().y > getStartPoint().y)) {
-            drawBoundingShape(g, getEndPoint().x, getStartPoint().y, getStartPoint().x - getEndPoint().x, getEndPoint().y - getStartPoint().y);
-        }
-        isSomethingBounded = true;
-
     }
 
     protected void erase() {
@@ -145,8 +143,10 @@ public abstract class RubberBand {
     }
 
     protected Point getEndPoint() {
+
         if (this.endPoint == null) {
-            setEndPoint(new Point(0, 0));
+            final Point p = canvas.getInitialPoint();
+            setEndPoint(p);
         }
         return this.endPoint;
     }
@@ -154,7 +154,8 @@ public abstract class RubberBand {
     protected Point getStartPoint() {
 
         if (this.startPoint == null) {
-            setStartPoint(new Point(0, 0));
+            final Point p = canvas.getInitialPoint();
+            setStartPoint(p);
         }
         return this.startPoint;
 
@@ -187,31 +188,31 @@ public abstract class RubberBand {
 
     }
 
-    public final void setCanvas(RubberBandCanvasIF c) {
+    public final void setCanvas(final RubberBandCanvasIF c) {
         this.canvas = c;
     }
 
-    protected final void setEndPoint(Point newValue) {
+    protected final void setEndPoint(final Point newValue) {
         this.endPoint = newValue;
     }
 
-    protected final void setEraseSomething(boolean newValue) {
+    protected final void setEraseSomething(final boolean newValue) {
         this.eraseSomething = newValue;
     }
 
-    protected final void setStartPoint(Point newValue) {
+    protected final void setStartPoint(final Point newValue) {
         this.startPoint = newValue;
         if (startPoint == null)
             endPoint = null;
 
     }
 
-    protected void start(Point p) {
+    protected void start(final Point p) {
         setEndPoint(p);
         setStartPoint(p);
     }
 
-    protected void stop(Point p) {
+    protected void stop(final Point p) {
 
         if (p.x < 0) {
             p.x = 0;
@@ -222,6 +223,18 @@ public abstract class RubberBand {
         }
 
         setEndPoint(p);
+    }
+
+    public void getBoundingArea(final Rectangle r) {
+        if ((getEndPoint().x > getStartPoint().x) && (getEndPoint().y > getStartPoint().y)) {
+            r.setBounds(getStartPoint().x, getStartPoint().y, getEndPoint().x - getStartPoint().x, getEndPoint().y - getStartPoint().y);
+        } else if ((getEndPoint().x < getStartPoint().x) && (getEndPoint().y < getStartPoint().y)) {
+            r.setBounds(getEndPoint().x, getEndPoint().y, getStartPoint().x - getEndPoint().x, getStartPoint().y - getEndPoint().y);
+        } else if ((getEndPoint().x > getStartPoint().x) && (getEndPoint().y < getStartPoint().y)) {
+            r.setBounds(getStartPoint().x, getEndPoint().y, getEndPoint().x - getStartPoint().x, getStartPoint().y - getEndPoint().y);
+        } else if ((getEndPoint().x < getStartPoint().x) && (getEndPoint().y > getStartPoint().y)) {
+            r.setBounds(getEndPoint().x, getStartPoint().y, getStartPoint().x - getEndPoint().x, getEndPoint().y - getStartPoint().y);
+        }
     }
 
     protected void reset() {

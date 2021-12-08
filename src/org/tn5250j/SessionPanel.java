@@ -92,7 +92,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
     private Screen5250 screen;
     protected Session5250 session;
     private GuiGraphicBuffer guiGraBuf;
-    protected TNRubberBand rubberband;
+    protected RubberBand rubberband;
     private KeypadPanel keypadPanel;
     private JComponent keypadPanelContainer;
     private String newMacName;
@@ -139,7 +139,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 
         ensureGuiGraphicBufferInitialized();
 
-        setRubberBand(new TNRubberBand(this));
+        setRubberBand(new RubberBand(this));
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
         if (!sesConfig.isPropertyExists("width") ||
@@ -823,7 +823,7 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
         return guiGraBuf.getDrawingArea();
     }
 
-    protected final void setRubberBand(final TNRubberBand newValue) {
+    protected final void setRubberBand(final RubberBand newValue) {
         rubberband = newValue;
     }
 
@@ -875,67 +875,12 @@ public class SessionPanel extends JPanel implements RubberBandCanvasIF, SessionC
 
     }
 
-    /**
-     * RubberBanding end code
-     */
-
-    public class TNRubberBand extends RubberBand {
-
-        public TNRubberBand(final RubberBandCanvasIF c) {
-            super(c);
-        }
-
-        @Override
-        protected void drawBoundingShape(final Graphics g, final int startX, final int startY, final int width, final int height) {
-            g.drawRect(startX, startY, width, height);
-        }
-
-        protected Rectangle getBoundingArea() {
-
-            final Rectangle r = new Rectangle();
-            getBoundingArea(r);
-            return r;
-        }
-
-        protected void getBoundingArea(final Rectangle r) {
-
-            if ((getEndPoint().x > getStartPoint().x) && (getEndPoint().y > getStartPoint().y)) {
-                r.setBounds(getStartPoint().x, getStartPoint().y, getEndPoint().x - getStartPoint().x, getEndPoint().y - getStartPoint().y);
-            } else if ((getEndPoint().x < getStartPoint().x) && (getEndPoint().y < getStartPoint().y)) {
-                r.setBounds(getEndPoint().x, getEndPoint().y, getStartPoint().x - getEndPoint().x, getStartPoint().y - getEndPoint().y);
-            } else if ((getEndPoint().x > getStartPoint().x) && (getEndPoint().y < getStartPoint().y)) {
-                r.setBounds(getStartPoint().x, getEndPoint().y, getEndPoint().x - getStartPoint().x, getStartPoint().y - getEndPoint().y);
-            } else if ((getEndPoint().x < getStartPoint().x) && (getEndPoint().y > getStartPoint().y)) {
-                r.setBounds(getEndPoint().x, getStartPoint().y, getStartPoint().x - getEndPoint().x, getEndPoint().y - getStartPoint().y);
-            }
-
-            //	         return r;
-        }
-
-        @Override
-        protected Point getEndPoint() {
-
-            if (this.endPoint == null) {
-                final Point p = new Point(0, 0);
-                guiGraBuf.getPointFromRowCol(0, 0, p);
-                setEndPoint(p);
-            }
-            return this.endPoint;
-        }
-
-        @Override
-        protected Point getStartPoint() {
-
-            if (this.startPoint == null) {
-                final Point p = new Point(0, 0);
-                guiGraBuf.getPointFromRowCol(0, 0, p);
-                setStartPoint(p);
-            }
-            return this.startPoint;
-
-        }
+    @Override
+    public Point getInitialPoint() {
+        final Point p = new Point(0, 0);
+        guiGraBuf.getPointFromRowCol(0, 0, p);
+        return p;
     }
-
 
     public Session5250 getSession() {
         return this.session;

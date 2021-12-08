@@ -904,6 +904,9 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
      * @param height
      */
     protected final void resizeScreenArea(final int width, final int height) {
+        if (bi == null) {
+            return;
+        }
 
         Font k = null;
         k = GUIGraphicsUtils.getDerivedFont(font, width, height, screen.getRows(),

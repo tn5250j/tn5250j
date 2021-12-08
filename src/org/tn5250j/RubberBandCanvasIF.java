@@ -25,8 +25,11 @@ package org.tn5250j;
  * Boston, MA 02111-1307 USA
  */
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 public interface RubberBandCanvasIF {
     void addMouseListener(MouseListener l);
@@ -40,6 +43,8 @@ public interface RubberBandCanvasIF {
     Point translateStart(Point startPoint);
 
     Point translateEnd(Point endPoint);
+
+    Point getInitialPoint();
 
     Color getBackground();
 
