@@ -26,12 +26,32 @@
 
 package org.tn5250j.keyboard;
 
-import org.tn5250j.Session5250;
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.actions.*;
-
-import javax.swing.*;
 import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import org.tn5250j.Session5250;
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.actions.AttributesAction;
+import org.tn5250j.keyboard.actions.CloseAction;
+import org.tn5250j.keyboard.actions.CopyAction;
+import org.tn5250j.keyboard.actions.DebugAction;
+import org.tn5250j.keyboard.actions.DispMsgsAction;
+import org.tn5250j.keyboard.actions.EmailAction;
+import org.tn5250j.keyboard.actions.GuiAction;
+import org.tn5250j.keyboard.actions.HotspotsAction;
+import org.tn5250j.keyboard.actions.JumpNextAction;
+import org.tn5250j.keyboard.actions.JumpPrevAction;
+import org.tn5250j.keyboard.actions.NewSessionAction;
+import org.tn5250j.keyboard.actions.OpenSameAction;
+import org.tn5250j.keyboard.actions.PasteAction;
+import org.tn5250j.keyboard.actions.PrintAction;
+import org.tn5250j.keyboard.actions.QuickEmailAction;
+import org.tn5250j.keyboard.actions.RulerAction;
+import org.tn5250j.keyboard.actions.RunScriptAction;
+import org.tn5250j.keyboard.actions.SpoolWorkAction;
+import org.tn5250j.keyboard.actions.ToggleConnectionAction;
+import org.tn5250j.keyboard.actions.TransferAction;
 
 /**
  * The default keyboard input handler.
@@ -43,16 +63,18 @@ class DefaultKeyboardHandler extends KeyboardHandler {
      *
      * @param session The session to which the keys should be sent
      */
-    DefaultKeyboardHandler(Session5250 session) {
+    DefaultKeyboardHandler(final Session5250 session) {
         super(session);
     }
 
-    public boolean isKeyStrokeDefined(String accelKey) {
+    @Override
+    public boolean isKeyStrokeDefined(final String accelKey) {
 
         return KeyMapper.isKeyStrokeDefined(accelKey);
     }
 
-    public KeyStroke getKeyStroke(String accelKey) {
+    @Override
+    public KeyStroke getKeyStroke(final String accelKey) {
         return KeyMapper.getKeyStroke(accelKey);
     }
 
@@ -63,12 +85,12 @@ class DefaultKeyboardHandler extends KeyboardHandler {
      * but if you put them in a String, the characters
      * afterward won't show up in the text area.)
      */
-    protected void displayInfo(KeyEvent e, String s) {
+    protected void displayInfo(final KeyEvent e, final String s) {
         String charString, keyCodeString, modString, tmpString, isString;
 
-        char c = e.getKeyChar();
-        int keyCode = e.getKeyCode();
-        int modifiers = e.getModifiers();
+        final char c = e.getKeyChar();
+        final int keyCode = e.getKeyCode();
+        final int modifiers = e.getModifiers();
 
         if (Character.isISOControl(c)) {
             charString = "key character = "
@@ -117,7 +139,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
                 " isShiftDown (" + e.isShiftDown() + ")";
 
 
-        String newline = "\n";
+        final String newline = "\n";
         System.out.println(s + newline
                 + "    " + charString + newline
                 + "    " + keyCodeString + newline
@@ -130,12 +152,13 @@ class DefaultKeyboardHandler extends KeyboardHandler {
      * This is here for keybindings using the swing input map - the preferred
      * way to use the keyboard.
      */
+    @Override
     void initKeyBindings() {
 
         if (session.getGUI() == null)
             return;
 
-        SessionPanel sessionGui = session.getGUI();
+        final SessionGui sessionGui = session.getGUI();
 
         new NewSessionAction(sessionGui, keyMap);
         new ToggleConnectionAction(sessionGui, keyMap);
@@ -165,7 +188,8 @@ class DefaultKeyboardHandler extends KeyboardHandler {
      * This is slightly faster than using a KeyListener
      * because some Swing overhead is avoided.
      */
-    public void processKeyEvent(KeyEvent evt) {
+    @Override
+    public void processKeyEvent(final KeyEvent evt) {
 
         if (evt.isConsumed())
             return;
@@ -184,11 +208,11 @@ class DefaultKeyboardHandler extends KeyboardHandler {
 
     }
 
-    private void processVTKeyPressed(KeyEvent e) {
+    private void processVTKeyPressed(final KeyEvent e) {
 
 
         keyProcessed = true;
-        int keyCode = e.getKeyCode();
+        final int keyCode = e.getKeyCode();
 
         if (isLinux && keyCode == KeyEvent.VK_ALT_GRAPH) {
 
@@ -204,7 +228,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
             return;
         }
 
-        KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(), e.getModifiers(), false);
+        final KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(), e.getModifiers(), false);
 
         if (emulatorAction(ks, e)) {
 
@@ -242,9 +266,9 @@ class DefaultKeyboardHandler extends KeyboardHandler {
 
     }
 
-    private void processVTKeyTyped(KeyEvent e) {
+    private void processVTKeyTyped(final KeyEvent e) {
 
-        char kc = e.getKeyChar();
+        final char kc = e.getKeyChar();
 //      displayInfo(e,"Typed processed " + keyProcessed);
         // Hack to make german umlauts work under Linux
         // The problem is that these umlauts don't generate a keyPressed event
@@ -273,7 +297,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
         e.consume();
     }
 
-    private void processVTKeyReleased(KeyEvent e) {
+    private void processVTKeyReleased(final KeyEvent e) {
 
 
         if (isLinux && e.getKeyCode() == KeyEvent.VK_ALT_GRAPH) {
@@ -284,7 +308,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
         if (Character.isISOControl(e.getKeyChar()) || keyProcessed || e.isConsumed())
             return;
 
-        String s = KeyMapper.getKeyStrokeText(e);
+        final String s = KeyMapper.getKeyStrokeText(e);
 
         if (s != null) {
 

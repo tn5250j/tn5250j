@@ -25,14 +25,15 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.keyboard.KeyMnemonic.CURSOR;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.CURSOR;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Display session attributes
@@ -41,14 +42,15 @@ public class RulerAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public RulerAction(SessionPanel session, KeyMapper keyMap) {
-        super(session,
+    public RulerAction(final SessionGui sessionGui, final KeyMapper keyMap) {
+        super(sessionGui,
                 CURSOR.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK),
                 keyMap);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
         session.crossHair();
     }
 }

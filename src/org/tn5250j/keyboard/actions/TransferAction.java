@@ -25,16 +25,19 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.tools.XTFRFile;
+import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
+import org.tn5250j.tools.XTFRFile;
 
 /**
  * Display session attributes
@@ -43,15 +46,16 @@ public class TransferAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public TransferAction(SessionPanel session, KeyMapper keyMap) {
-        super(session,
+    public TransferAction(final SessionGui sessionGui, final KeyMapper keyMap) {
+        super(sessionGui,
                 FILE_TRANSFER.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK),
                 keyMap);
     }
 
-    public void actionPerformed(ActionEvent e) {
-        new XTFRFile((Frame) SwingUtilities.getRoot(session),
+    @Override
+    public void actionPerformed(final ActionEvent e) {
+        new XTFRFile((Frame) SwingUtilities.getRoot((Component) session),
                 session.getVT(), session);
     }
 }

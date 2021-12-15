@@ -46,11 +46,10 @@ public class Session5250 implements SessionInterface {
     private int sessionType;
     protected Properties sesProps;
     private boolean heartBeat;
-    private final String propFileName;
     private final SessionConfig sesConfig;
     private tnvt vt;
     private final Screen5250 screen;
-    private SessionPanel guiComponent;
+    private SessionGui guiComponent;
 
     private List<SessionListener> sessionListeners = null;
     private final ReadWriteLock sessionListenerLock = new ReentrantReadWriteLock();
@@ -62,8 +61,6 @@ public class Session5250 implements SessionInterface {
     public Session5250(final Properties props, final String configurationResource,
                        final String sessionName,
                        final SessionConfig config) {
-
-        propFileName = config.getConfigurationResource();
 
         sesConfig = config;
         this.configurationResource = configurationResource;
@@ -145,11 +142,11 @@ public class Session5250 implements SessionInterface {
         return sesProps;
     }
 
-    public void setGUI(final SessionPanel gui) {
+    public void setGUI(final SessionGui gui) {
         guiComponent = gui;
     }
 
-    public SessionPanel getGUI() {
+    public SessionGui getGUI() {
         return guiComponent;
     }
 

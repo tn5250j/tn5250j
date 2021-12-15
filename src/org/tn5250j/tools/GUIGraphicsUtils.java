@@ -49,6 +49,9 @@ import javax.swing.SwingUtilities;
 
 import org.tn5250j.tools.system.OperatingSystem;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
+
 public class GUIGraphicsUtils {
 
     private static final Insets GROOVE_INSETS = new Insets(2, 2, 2, 2);
@@ -63,11 +66,11 @@ public class GUIGraphicsUtils {
     private static ImageIcon lockImgClose;
     private static List<Image> tnicon;
 
-    public static void draw3DLeft(Graphics g, int which,
-                                  int x, int y,
-                                  int fmWidth, int fmHeight) {
+    public static void draw3DLeft(final Graphics g, final int which,
+                                  final int x, final int y,
+                                  final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
 
         if (which == RAISED) {
@@ -160,11 +163,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void draw3DMiddle(Graphics g, int which,
-                                    int x, int y,
-                                    int fmWidth, int fmHeight) {
+    public static void draw3DMiddle(final Graphics g, final int which,
+                                    final int x, final int y,
+                                    final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
 
         if (which == RAISED) {
@@ -234,11 +237,11 @@ public class GUIGraphicsUtils {
 
     }
 
-    public static void draw3DRight(Graphics g, int which,
-                                   int x, int y,
-                                   int fmWidth, int fmHeight) {
+    public static void draw3DRight(final Graphics g, final int which,
+                                   final int x, final int y,
+                                   final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
 
         if (which == RAISED) {
@@ -333,11 +336,11 @@ public class GUIGraphicsUtils {
 
     }
 
-    public static void draw3DOne(Graphics g, int which,
-                                 int x, int y,
-                                 int fmWidth, int fmHeight) {
+    public static void draw3DOne(final Graphics g, final int which,
+                                 final int x, final int y,
+                                 final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
 
         if (which == INSET) {
@@ -459,12 +462,12 @@ public class GUIGraphicsUtils {
     }
 
     // draw scroll bar top
-    public static void drawScrollBar(Graphics g, int which, int direction,
-                                     int x, int y,
-                                     int fmWidth, int fmHeight,
-                                     Color fg, Color bg) {
+    public static void drawScrollBar(final Graphics g, final int which, final int direction,
+                                     final int x, final int y,
+                                     final int fmWidth, final int fmHeight,
+                                     final Color fg, final Color bg) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
 
         if (which == INSET) {
@@ -686,11 +689,11 @@ public class GUIGraphicsUtils {
 
     }
 
-    public static void drawWinUpperLeft(Graphics g, int which, Color fill,
-                                        int x, int y,
-                                        int fmWidth, int fmHeight) {
+    public static void drawWinUpperLeft(final Graphics g, final int which, final Color fill,
+                                        final int x, final int y,
+                                        final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -727,11 +730,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinUpper(Graphics g, int which, Color fill,
-                                    int x, int y,
-                                    int fmWidth, int fmHeight) {
+    public static void drawWinUpper(final Graphics g, final int which, final Color fill,
+                                    final int x, final int y,
+                                    final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -773,11 +776,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinUpperRight(Graphics g, int which, Color fill,
-                                         int x, int y,
-                                         int fmWidth, int fmHeight) {
+    public static void drawWinUpperRight(final Graphics g, final int which, final Color fill,
+                                         final int x, final int y,
+                                         final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -831,11 +834,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinLeft(Graphics g, int which, Color fill,
-                                   int x, int y,
-                                   int fmWidth, int fmHeight) {
+    public static void drawWinLeft(final Graphics g, final int which, final Color fill,
+                                   final int x, final int y,
+                                   final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -878,11 +881,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinRight(Graphics g, int which, Color fill,
-                                    int x, int y,
-                                    int fmWidth, int fmHeight) {
+    public static void drawWinRight(final Graphics g, final int which, final Color fill,
+                                    final int x, final int y,
+                                    final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -933,11 +936,67 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinLowerLeft(Graphics g, int which, Color fill,
-                                        int x, int y,
-                                        int fmWidth, int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+    public static void drawWinRight(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+                                    final int x, final int y,
+                                    final int fmWidth, final int fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        //      g.translate(x, y);
+        g.setFill(fill);
+
+        if (which == WINDOW_GRAPHIC) {
+
+            g.fillRect(x, y, fmWidth, fmHeight);
+
+            g.setFill(javafx.scene.paint.Color.BLACK);
+
+            // | vertical
+            g.strokeLine(x + fmWidth,
+                    y,
+                    x + fmWidth,
+                    y + fmHeight);
+
+            g.setFill(javafx.scene.paint.Color.WHITE);
+
+            // | vertical
+            g.strokeLine(x,
+                    y,
+                    x,
+                    y + fmHeight);
+
+            g.setFill(javafx.scene.paint.Color.BLACK);
+
+            // | vertical
+            g.strokeLine(x + 1,
+                    y,
+                    x + 1,
+                    y + fmHeight);
+
+        }
+        if (which == WINDOW_NORMAL) {
+
+            g.strokeLine(x + fmWidth / 2,
+                    y,
+                    x + fmWidth / 2,
+                    y + fmHeight);
+
+            g.setFill(fill.darker());
+            g.fillRect((x + fmWidth / 2) + 3,
+                    y,
+                    3,
+                    fmHeight);
+
+        }
+        //      g.translate(-x, -y);
+        g.setFill(oldColor);
+    }
+
+    public static void drawWinLowerLeft(final Graphics g, final int which, final Color fill,
+                                        final int x, final int y,
+                                        final int fmWidth, final int fmHeight) {
+
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -991,11 +1050,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinBottom(Graphics g, int which, Color fill,
-                                     int x, int y,
-                                     int fmWidth, int fmHeight) {
+    public static void drawWinBottom(final Graphics g, final int which, final Color fill,
+                                     final int x, final int y,
+                                     final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -1046,11 +1105,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawWinLowerRight(Graphics g, int which, Color fill,
-                                         int x, int y,
-                                         int fmWidth, int fmHeight) {
+    public static void drawWinLowerRight(final Graphics g, final int which, final Color fill,
+                                         final int x, final int y,
+                                         final int fmWidth, final int fmHeight) {
 
-        Color oldColor = g.getColor(); // make sure we leave it as we found it
+        final Color oldColor = g.getColor(); // make sure we leave it as we found it
         //      g.translate(x, y);
         g.setColor(fill);
 
@@ -1104,11 +1163,11 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
-    public static void drawEtchedRect(Graphics g, int x, int y, int w, int h,
-                                      Color shadow, Color darkShadow,
-                                      Color highlight, Color lightHighlight) {
+    public static void drawEtchedRect(final Graphics g, final int x, final int y, final int w, final int h,
+                                      final Color shadow, final Color darkShadow,
+                                      final Color highlight, final Color lightHighlight) {
 
-        Color oldColor = g.getColor();  // Make no net change to g
+        final Color oldColor = g.getColor();  // Make no net change to g
         //       g.translate(x, y);
 
         g.setColor(shadow);
@@ -1142,10 +1201,10 @@ public class GUIGraphicsUtils {
     }
 
 
-    public static void drawGroove(Graphics g, int x, int y, int w, int h,
-                                  Color shadow, Color highlight) {
+    public static void drawGroove(final Graphics g, final int x, final int y, final int w, final int h,
+                                  final Color shadow, final Color highlight) {
 
-        Color oldColor = g.getColor();  // Make no net change to g
+        final Color oldColor = g.getColor();  // Make no net change to g
         //      g.translate(x, y);
 
         g.setColor(shadow);
@@ -1173,12 +1232,12 @@ public class GUIGraphicsUtils {
     }
 
 
-    public static void drawBezel(Graphics g, int x, int y, int w, int h,
-                                 boolean isPressed, boolean isDefault,
-                                 Color shadow, Color darkShadow,
-                                 Color highlight, Color lightHighlight) {
+    public static void drawBezel(final Graphics g, final int x, final int y, final int w, final int h,
+                                 final boolean isPressed, final boolean isDefault,
+                                 final Color shadow, final Color darkShadow,
+                                 final Color highlight, final Color lightHighlight) {
 
-        Color oldColor = g.getColor();  // Make no net change to g
+        final Color oldColor = g.getColor();  // Make no net change to g
         //     g.translate(x, y);
 
         if (isPressed) {
@@ -1233,9 +1292,9 @@ public class GUIGraphicsUtils {
         }
     }
 
-    public static void drawLoweredBezel(Graphics g, int x, int y, int w, int h,
-                                        Color shadow, Color darkShadow,
-                                        Color highlight, Color lightHighlight) {
+    public static void drawLoweredBezel(final Graphics g, final int x, final int y, final int w, final int h,
+                                        final Color shadow, final Color darkShadow,
+                                        final Color highlight, final Color lightHighlight) {
         g.setColor(darkShadow);
         g.drawLine(0, 0, 0, h - 1);
         g.drawLine(1, 0, w - 2, 0);
@@ -1258,7 +1317,7 @@ public class GUIGraphicsUtils {
      *  The first occurence of underlineChar in text will be underlined. The matching is
      *  not case sensitive.
      */
-    public static void drawString(Graphics g, String text, int underlinedChar, int x, int y) {
+    public static void drawString(final Graphics g, final String text, final int underlinedChar, final int x, final int y) {
 
         //        char b[] = new char[1];
         //      String s;
@@ -1287,20 +1346,20 @@ public class GUIGraphicsUtils {
 
         g.drawString(text, x, y);
         if (index != -1) {
-            FontMetrics fm = g.getFontMetrics();
+            final FontMetrics fm = g.getFontMetrics();
             //            Rectangle underlineRect = new Rectangle();
 
-            int underlineRectX = x + fm.stringWidth(text.substring(0, index));
-            int underlineRectY = y;
-            int underlineRectWidth = fm.charWidth(text.charAt(index));
-            int underlineRectHeight = 1;
+            final int underlineRectX = x + fm.stringWidth(text.substring(0, index));
+            final int underlineRectY = y;
+            final int underlineRectWidth = fm.charWidth(text.charAt(index));
+            final int underlineRectHeight = 1;
             g.fillRect(underlineRectX, underlineRectY + fm.getDescent() - 1,
                     underlineRectWidth, underlineRectHeight);
         }
     }
 
 
-    public static void drawDashedRect(Graphics g, int x, int y, int width, int height) {
+    public static void drawDashedRect(final Graphics g, final int x, final int y, final int width, final int height) {
 
         int vx, vy;
 
@@ -1317,16 +1376,16 @@ public class GUIGraphicsUtils {
         }
     }
 
-    public static Font getDerivedFont(Font font, int width, int height,
-                                      int numRows, int numCols,
-                                      float scaleHeight,
-                                      float scaleWidth,
+    public static Font getDerivedFont(final Font font, final int width, final int height,
+                                      final int numRows, final int numCols,
+                                      final float scaleHeight,
+                                      final float scaleWidth,
                                       float pointSize) {
 
         // get the new proposed width and height of the screen that we
         // are suppose to fit within
-        int w = width / numCols;     // proposed width
-        int h = height / (numRows + 2);     // proposed height
+        final int w = width / numCols;     // proposed width
+        final int h = height / (numRows + 2);     // proposed height
 
         int sw = 0;
         int sh = 0;
@@ -1334,7 +1393,7 @@ public class GUIGraphicsUtils {
         Font k = null;
         LineMetrics l;
         FontRenderContext f = null;
-        AffineTransform at = new AffineTransform();
+        final AffineTransform at = new AffineTransform();
         if (numCols == 132) {
 
             // width, height
@@ -1426,15 +1485,15 @@ public class GUIGraphicsUtils {
         return k;
     }
 
-    public static void positionPopup(Component component, JPopupMenu jpm,
-                                     int xCoord, int yCoord) {
+    public static void positionPopup(final Component component, final JPopupMenu jpm,
+                                     final int xCoord, final int yCoord) {
 
         Dimension popupSize = jpm.getSize();
         if (popupSize.width == 0)
             popupSize = jpm.getPreferredSize();
-        Point point = new Point(xCoord + popupSize.width, yCoord + popupSize.height);
+        final Point point = new Point(xCoord + popupSize.width, yCoord + popupSize.height);
         SwingUtilities.convertPointToScreen(point, component);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int x = 0;
         int y = 0;
         if (point.y > screenSize.height - 25)
@@ -1503,10 +1562,10 @@ public class GUIGraphicsUtils {
      *
      * @return whether the font passed exists or not.
      */
-    public static boolean isFontNameExists(String fontString) {
+    public static boolean isFontNameExists(final String fontString) {
 
         // fonts from the environment
-        Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        final Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 
         for (int x = 0; x < fonts.length; x++) {
             if (fonts[x].getFontName().indexOf('.') < 0)
@@ -1521,7 +1580,7 @@ public class GUIGraphicsUtils {
      * This routine will extract image resources from jar file and create
      * an ImageIcon
      */
-    public static ImageIcon createImageIcon(String image) {
+    public static ImageIcon createImageIcon(final String image) {
         URL file = null;
 
         ClassLoader classLoader = GUIGraphicsUtils.class.getClassLoader();
@@ -1531,7 +1590,7 @@ public class GUIGraphicsUtils {
         try {
             file = classLoader.getResource(image);
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println(e);
         }
         return new ImageIcon(file);

@@ -133,7 +133,7 @@ public class My5250Applet extends JApplet {
 
         manager = SessionManager.instance();
         final Session5250 s = manager.openSession(sesProps, "", "Test Applet");
-        final SessionPanel gui = new SessionPanel(s);
+        final SessionPanelSwing gui = new SessionPanelSwing(s);
 //      final JTerminal jt = new JTerminal(s);
 
         this.getContentPane().add(gui);

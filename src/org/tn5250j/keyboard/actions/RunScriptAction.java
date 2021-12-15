@@ -25,15 +25,16 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.tools.Macronizer;
+import static org.tn5250j.keyboard.KeyMnemonic.RUN_SCRIPT;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.RUN_SCRIPT;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
+import org.tn5250j.tools.Macronizer;
 
 /**
  * Display session attributes
@@ -42,15 +43,16 @@ public class RunScriptAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public RunScriptAction(SessionPanel session, KeyMapper keyMap) {
-        super(session,
+    public RunScriptAction(final SessionGui sessionGui, final KeyMapper keyMap) {
+        super(sessionGui,
                 RUN_SCRIPT.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK),
                 keyMap);
 
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
         Macronizer.showRunScriptDialog(session);
         session.getFocusForMe();
     }

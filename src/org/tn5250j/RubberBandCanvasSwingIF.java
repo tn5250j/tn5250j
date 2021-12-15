@@ -31,14 +31,14 @@ import java.awt.Point;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public interface RubberBandCanvasIF {
+public interface RubberBandCanvasSwingIF {
     void addMouseListener(MouseListener l);
 
     void addMouseMotionListener(MouseMotionListener l);
 
-    void areaBounded(RubberBand b, int startX, int startY, int endX, int endY);
+    void areaBounded(RubberBandSwing b, int startX, int startY, int endX, int endY);
 
-    boolean canDrawRubberBand(RubberBand band);
+    boolean canDrawRubberBand(RubberBandSwing band);
 
     Point translateStart(Point startPoint);
 
@@ -49,6 +49,6 @@ public interface RubberBandCanvasIF {
     Color getBackground();
 
     //   Graphics getGraphics();
-    Graphics getDrawingGraphics();
+    Graphics createDrawingGraphics();
 
 }

@@ -26,6 +26,7 @@
  */
 package org.tn5250j.mailtools;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -49,7 +50,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.GenericTn5250JFrame;
@@ -69,7 +70,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
     JTextArea bodyText;
     JTextField attachmentName;
     SessionConfig config;
-    SessionPanel session;
+    SessionGui session;
     String fileName;
     JRadioButton text;
     JRadioButton graphic;
@@ -88,7 +89,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * @param session
      * @param sendScreen
      */
-    public SendEMailDialog(Frame parent, SessionPanel session) {
+    public SendEMailDialog(final Frame parent, final SessionGui session) {
         this(parent, session, true);
     }
 
@@ -98,7 +99,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * @param parent
      * @param session
      */
-    public SendEMailDialog(Frame parent, SessionPanel session, boolean sendScreen) {
+    public SendEMailDialog(final Frame parent, final SessionGui session, final boolean sendScreen) {
         super();
         if (!isEMailAvailable()) {
 
@@ -112,13 +113,13 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
         } else {
 
             this.session = session;
-            Screen5250 screen = session.getScreen();
+            final Screen5250 screen = session.getScreen();
             this.sendScreen = sendScreen;
 
-            Object[] message = new Object[1];
+            final Object[] message = new Object[1];
             message[0] = setupMailPanel("tn5250j.txt");
 
-            String[] options = new String[3];
+            final String[] options = new String[3];
 
             int result = 0;
             while (result == 0 || result == 2) {
@@ -159,7 +160,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
                             char[] screenExtendedAttr;
                             char[] screenAttrPlace;
 
-                            int len = screen.getScreenLength();
+                            final int len = screen.getScreenLength();
                             screenTxt = new char[len];
                             screenExtendedAttr = new char[len];
                             screenAttrPlace = new char[len];
@@ -167,10 +168,10 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
                             screen.GetScreen(screenExtendedAttr, len, TN5250jConstants.PLANE_EXTENDED);
                             screen.GetScreen(screenAttrPlace, len, TN5250jConstants.PLANE_IS_ATTR_PLACE);
 
-                            StringBuffer sb = new StringBuffer();
+                            final StringBuffer sb = new StringBuffer();
 //							char[] s = screen.getScreenAsChars();
-                            int c = screen.getColumns();
-                            int l = screen.getRows() * c;
+                            final int c = screen.getColumns();
+                            final int l = screen.getRows() * c;
 
                             int col = 0;
                             for (int x = 0; x < l; x++, col++) {
@@ -207,14 +208,14 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
                             sendEMail.setAttachment(sb.toString());
                         } else if (graphic.isSelected()) {
 
-                            File dir = new File(System.getProperty("user.dir"));
+                            final File dir = new File(System.getProperty("user.dir"));
 
                             //  setup the temp file name
-                            String tempFile = "tn5250jTemp";
+                            final String tempFile = "tn5250jTemp";
 
                             try {
                                 // create the temporary file
-                                File f =
+                                final File f =
                                         File.createTempFile(tempFile, ".png", dir);
 
                                 System.out.println(f.getName());
@@ -225,15 +226,15 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
 
                                 EncodeComponent.encode(
                                         EncodeComponent.PNG,
-                                        session,
+                                        (Component) session,
                                         f);
                                 sendEMail.setFileName(f.getName());
-                            } catch (Exception ex) {
+                            } catch (final Exception ex) {
                                 System.out.println(ex.getMessage());
                             }
 
                         } else if (attachmentName.getText().length() > 0) {
-                            File f = new File(attachmentName.getText());
+                            final File f = new File(attachmentName.getText());
                             sendEMail.setFileName(f.toString());
                         }
 
@@ -264,7 +265,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * @param parent
      * @param session
      */
-    public SendEMailDialog(Frame parent, SessionPanel session, String fileName) {
+    public SendEMailDialog(final Frame parent, final SessionGui session, final String fileName) {
 
         if (!isEMailAvailable()) {
 
@@ -278,9 +279,9 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
 
             this.session = session;
 
-            Object[] message = new Object[1];
+            final Object[] message = new Object[1];
             message[0] = setupMailPanel(fileName);
-            String[] options = new String[3];
+            final String[] options = new String[3];
 
             int result = 0;
             while (result == 0 || result == 2) {
@@ -341,7 +342,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * Send the e-mail on its way.
      * @param sem
      */
-    private void sendIt(Frame parent, SendEMail sem) {
+    private void sendIt(final Frame parent, final SendEMail sem) {
 
 //      setSendEMail(sem);
 
@@ -378,10 +379,11 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
 //		}
     }
 
-    public void setSendEMail(SendEMail sem) {
+    public void setSendEMail(final SendEMail sem) {
         sendEMail = sem;
     }
 
+    @Override
     public void run() {
 
 //		if (parent == null)
@@ -414,7 +416,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
 
 //		} catch (IOException ioe) {
 //			System.out.println(ioe.getMessage());
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
@@ -429,7 +431,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
         if (parent == null)
             parent = new JFrame();
 
-        SMTPConfig smtp = new SMTPConfig(parent, "", true);
+        final SMTPConfig smtp = new SMTPConfig(parent, "", true);
         smtp.setVisible(true);
         smtp.dispose();
 
@@ -441,9 +443,9 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * @param fileName
      * @return
      */
-    private JPanel setupMailPanel(String fileName) {
+    private JPanel setupMailPanel(final String fileName) {
 
-        JPanel semp = new JPanel();
+        final JPanel semp = new JPanel();
         semp.setLayout(new GridBagLayout());
 
         text = new JRadioButton(LangTool.getString("em.text"));
@@ -452,10 +454,10 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
         screenshot = new JRadioButton(LangTool.getString("em.screenshot"));
 
         // Group the radio buttons.
-        ButtonGroup tGroup = new ButtonGroup();
+        final ButtonGroup tGroup = new ButtonGroup();
         tGroup.add(text);
         tGroup.add(graphic);
-        ButtonGroup mGroup = new ButtonGroup();
+        final ButtonGroup mGroup = new ButtonGroup();
         mGroup.add(normal);
         mGroup.add(screenshot);
 
@@ -463,16 +465,17 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
         text.setEnabled(false);
         graphic.setEnabled(false);
 
-        JLabel screenDump = new JLabel(LangTool.getString("em.screendump"));
-        JLabel tol = new JLabel(LangTool.getString("em.to"));
-        JLabel subl = new JLabel(LangTool.getString("em.subject"));
-        JLabel bodyl = new JLabel(LangTool.getString("em.body"));
-        JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
-        JLabel tom = new JLabel(LangTool.getString("em.typeofmail"));
+        final JLabel screenDump = new JLabel(LangTool.getString("em.screendump"));
+        final JLabel tol = new JLabel(LangTool.getString("em.to"));
+        final JLabel subl = new JLabel(LangTool.getString("em.subject"));
+        final JLabel bodyl = new JLabel(LangTool.getString("em.body"));
+        final JLabel fnl = new JLabel(LangTool.getString("em.fileName"));
+        final JLabel tom = new JLabel(LangTool.getString("em.typeofmail"));
 
         browse = new JButton(LangTool.getString("em.choosefile"));
         browse.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 browse_actionPerformed(e);
             }
         });
@@ -483,7 +486,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
 
         subject = new JTextField(30);
         bodyText = new JTextArea(6, 30);
-        JScrollPane bodyScrollPane = new JScrollPane(bodyText);
+        final JScrollPane bodyScrollPane = new JScrollPane(bodyText);
         bodyScrollPane.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         bodyScrollPane.setVerticalScrollBarPolicy(
@@ -495,12 +498,14 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
             attachmentName.setText("");
 
         text.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent e) {
+            @Override
+            public void itemStateChanged(final java.awt.event.ItemEvent e) {
                 setAttachmentName();
             }
         });
         normal.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent e) {
+            @Override
+            public void itemStateChanged(final java.awt.event.ItemEvent e) {
                 setTypeOfMail();
             }
         });
@@ -628,15 +633,15 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
 
     }
 
-    private void browse_actionPerformed(ActionEvent e) {
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+    private void browse_actionPerformed(final ActionEvent e) {
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
-        int ret = pcFileChooser.showOpenDialog(new JFrame());
+        final int ret = pcFileChooser.showOpenDialog(new JFrame());
 
         // check to see if something was actually chosen
         if (ret == TN5250jFileChooser.APPROVE_OPTION) {
-            File file = pcFileChooser.getSelectedFile();
+            final File file = pcFileChooser.getSelectedFile();
             fileName = file.getName();
             attachmentName.setText(file.toString());
         }
@@ -670,12 +675,12 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
         }
     }
 
-    private void setOptions(String[] options) {
+    private void setOptions(final String[] options) {
 
         options[0] = LangTool.getString("em.optSendLabel");
         options[1] = LangTool.getString("em.optCancelLabel");
 
-        File smtp = new File("SMTPProperties.cfg");
+        final File smtp = new File("SMTPProperties.cfg");
 
         if (smtp.exists())
             options[2] = LangTool.getString("em.optEditLabel");
@@ -691,9 +696,9 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * @param to
      * @param boxen
      */
-    private void setToCombo(String to, JComboBox boxen) {
+    private void setToCombo(final String to, final JComboBox boxen) {
 
-        StringTokenizer tokenizer = new StringTokenizer(to, "|");
+        final StringTokenizer tokenizer = new StringTokenizer(to, "|");
 
         boxen.removeAllItems();
 
@@ -710,14 +715,14 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
      * @param boxen
      * @return
      */
-    private String getToTokens(String to, JComboBox boxen) {
+    private String getToTokens(final String to, final JComboBox boxen) {
 
-        StringBuffer sb = new StringBuffer();
-        String selected = (String) boxen.getSelectedItem();
+        final StringBuffer sb = new StringBuffer();
+        final String selected = (String) boxen.getSelectedItem();
 
         sb.append(selected + '|');
 
-        int c = boxen.getItemCount();
+        final int c = boxen.getItemCount();
 
         for (int x = 0; x < c; x++) {
             if (!selected.equals(boxen.getItemAt(x)))
@@ -736,7 +741,7 @@ public class SendEMailDialog extends GenericTn5250JFrame implements Runnable {
         try {
             Class.forName("javax.mail.Message");
             return true;
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.out.println(" not there " + ex.getMessage());
             return false;
         }

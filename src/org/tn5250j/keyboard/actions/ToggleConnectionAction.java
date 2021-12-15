@@ -25,15 +25,16 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.keyboard.KeyMnemonic.TOGGLE_CONNECTION;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.TOGGLE_CONNECTION;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Toggle connection from/to connected
@@ -42,7 +43,7 @@ public class ToggleConnectionAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public ToggleConnectionAction(SessionPanel session, KeyMapper keyMap) {
+    public ToggleConnectionAction(final SessionGui session, final KeyMapper keyMap) {
         super(session,
                 TOGGLE_CONNECTION.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK),
@@ -50,7 +51,7 @@ public class ToggleConnectionAction extends EmulatorAction {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(final ActionEvent e) {
         session.toggleConnection();
     }
 }

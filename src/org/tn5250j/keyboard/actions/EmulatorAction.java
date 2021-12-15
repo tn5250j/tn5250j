@@ -25,13 +25,15 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Base class for all emulator actions
@@ -40,22 +42,22 @@ public abstract class EmulatorAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
     // content pane to be used if needed by subclasses
-    protected SessionPanel session;
+    protected SessionGui session;
 
-    public EmulatorAction(SessionPanel session, String name) {
+    public EmulatorAction(final SessionGui session, final String name) {
 
         super(name);
         this.session = session;
     }
 
-    public EmulatorAction(SessionPanel session, String name, KeyStroke ks, KeyMapper keyMap) {
+    public EmulatorAction(final SessionGui session, final String name, final KeyStroke ks, final KeyMapper keyMap) {
 
         this(session, name);
 
         setKeyStroke(name, ks, keyMap);
     }
 
-    protected void setKeyStroke(String action, KeyStroke ks, KeyMapper keyMap) {
+    protected void setKeyStroke(final String action, KeyStroke ks, final KeyMapper keyMap) {
 
         if (OptionAccessFactory.getInstance().isRestrictedOption(action))
             return;
@@ -64,6 +66,7 @@ public abstract class EmulatorAction extends AbstractAction {
             ks = KeyMapper.getKeyStroke(action);
         }
 
+        final JComponent session = (JComponent) this.session;
         session.getInputMap().put(ks, action);
         session.getActionMap().put(action, this);
 
@@ -76,5 +79,6 @@ public abstract class EmulatorAction extends AbstractAction {
 
     }
 
+    @Override
     abstract public void actionPerformed(ActionEvent e);
 }

@@ -37,6 +37,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.tn5250j.SessionGui;
+
 /**
  * Small dialog asking the user to enter a value for doing a system request.
  *
@@ -56,20 +58,20 @@ public class SystemRequestDialog {
     /**
      * @param parent
      */
-    public SystemRequestDialog(Component parent) {
+    public SystemRequestDialog(final SessionGui parent) {
         super();
-        this.parent = parent;
+        this.parent = (Component) parent;
         initLayout();
     }
 
     private void initLayout() {
-        JPanel srp = new JPanel();
+        final JPanel srp = new JPanel();
         srp.setLayout(new BorderLayout());
-        JLabel jl = new JLabel("Enter alternate job");
+        final JLabel jl = new JLabel("Enter alternate job");
         text = new JTextField();
         srp.add(jl, BorderLayout.NORTH);
         srp.add(text, BorderLayout.CENTER);
-        Object[] message = new Object[1];
+        final Object[] message = new Object[1];
         message[0] = srp;
 
         pane = new JOptionPane(message, // the dialog message array
@@ -83,7 +85,8 @@ public class SystemRequestDialog {
 
         // add the listener that will set the focus to the desired option
         dialog.addWindowListener(new WindowAdapter() {
-            public void windowOpened(WindowEvent e) {
+            @Override
+            public void windowOpened(final WindowEvent e) {
                 text.requestFocus();
             }
         });

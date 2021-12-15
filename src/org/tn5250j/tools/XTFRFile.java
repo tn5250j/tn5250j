@@ -25,31 +25,74 @@
  */
 package org.tn5250j.tools;
 
-import org.tn5250j.event.*;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.border.*;
-import java.awt.event.*;
-import java.io.*;
-import java.beans.*;
-import java.util.*;
-import java.text.MessageFormat;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Properties;
 
-import org.tn5250j.sql.AS400Xtfr;
-import org.tn5250j.sql.SqlWizard;
-import org.tn5250j.tools.filters.*;
-import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.SessionPanel;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.table.AbstractTableModel;
+
 import org.tn5250j.SessionConfig;
+import org.tn5250j.SessionGui;
+import org.tn5250j.event.FTPStatusEvent;
+import org.tn5250j.event.FTPStatusListener;
+import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.GenericTn5250JFrame;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.TN5250jFileFilter;
-import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.sql.AS400Xtfr;
+import org.tn5250j.sql.SqlWizard;
+import org.tn5250j.tools.filters.XTFRFileFilter;
 
 public class XTFRFile
         extends GenericTn5250JFrame
@@ -106,11 +149,11 @@ public class XTFRFile
     ProgressOptionPane monitor;
     JDialog dialog;
     XTFRFileFilter filter;
-    SessionPanel session;
+    SessionGui session;
 
     static String messageProgress;
 
-    public XTFRFile(Frame parent, tnvt pvt, SessionPanel session) {
+    public XTFRFile(final Frame parent, final tnvt pvt, final SessionGui session) {
 
         this(parent, pvt, session, null);
 //		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -137,7 +180,7 @@ public class XTFRFile
 //		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
-    public XTFRFile(Frame parent, tnvt pvt, SessionPanel session, Properties XTFRProps) {
+    public XTFRFile(final Frame parent, final tnvt pvt, final SessionGui session, final Properties XTFRProps) {
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         this.session = session;
@@ -152,7 +195,8 @@ public class XTFRFile
 
         addWindowListener(new WindowAdapter() {
 
-            public void windowClosing(WindowEvent we) {
+            @Override
+            public void windowClosing(final WindowEvent we) {
                 if (ftpProtocol != null && ftpProtocol.isConnected())
                     ftpProtocol.disconnect();
             }
@@ -190,14 +234,16 @@ public class XTFRFile
         //      ExcelWorkbookFilter.setOutputFilterName("org.tn5250j.tools.filters.ExcelWorkbookOutputFilter");
     }
 
-    public void statusReceived(FTPStatusEvent statusevent) {
+    @Override
+    public void statusReceived(final FTPStatusEvent statusevent) {
 
         if (monitor.isCanceled()) {
             ftpProtocol.setAborted();
         } else {
             final int prog = statusevent.getCurrentRecord();
             final int len = statusevent.getFileLength();
-            Runnable udp = new Runnable() {
+            final Runnable udp = new Runnable() {
+                @Override
                 public void run() {
 
                     if (prog >= len) {
@@ -219,13 +265,13 @@ public class XTFRFile
         }
     }
 
-    private String getProgressNote(int prog, int len) {
+    private String getProgressNote(final int prog, final int len) {
 
-        Object[] args = {Integer.toString(prog), Integer.toString(len)};
+        final Object[] args = {Integer.toString(prog), Integer.toString(len)};
 
         try {
             return MessageFormat.format(messageProgress, args);
-        } catch (Exception exc) {
+        } catch (final Exception exc) {
             System.out.println(" getProgressNote: " + exc.getMessage());
             return "Record " + prog + " of " + len;
         }
@@ -233,7 +279,7 @@ public class XTFRFile
 
     private void emailMe() {
 
-        SendEMailDialog semd =
+        final SendEMailDialog semd =
                 new SendEMailDialog(
                         (Frame) (this.getParent()),
                         session,
@@ -241,23 +287,25 @@ public class XTFRFile
 
     }
 
-    private String getTransferredNote(int len) {
+    private String getTransferredNote(final int len) {
 
-        Object[] args = {Integer.toString(len)};
+        final Object[] args = {Integer.toString(len)};
 
         try {
             return MessageFormat.format(
                     LangTool.getString("xtfr.messageTransferred"),
                     args);
-        } catch (Exception exc) {
+        } catch (final Exception exc) {
             System.out.println(" getTransferredNote: " + exc.getMessage());
             return len + " records transferred!";
         }
     }
 
-    public void commandStatusReceived(FTPStatusEvent statusevent) {
+    @Override
+    public void commandStatusReceived(final FTPStatusEvent statusevent) {
         final String message = statusevent.getMessage() + '\n';
-        Runnable cdp = new Runnable() {
+        final Runnable cdp = new Runnable() {
+            @Override
             public void run() {
                 taskOutput.setText(taskOutput.getText() + message);
             }
@@ -266,7 +314,8 @@ public class XTFRFile
 
     }
 
-    public void fileInfoReceived(FTPStatusEvent statusevent) {
+    @Override
+    public void fileInfoReceived(final FTPStatusEvent statusevent) {
 
         hostFile.setText(ftpProtocol.getFullFileName(hostFile.getText()));
 
@@ -277,7 +326,8 @@ public class XTFRFile
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
 
         // process the save transfer information button
         if (e.getActionCommand().equals("SAVE")) {
@@ -352,7 +402,7 @@ public class XTFRFile
     }
 
     private char getDecimalChar() {
-        String ds = (String) decimalSeparator.getSelectedItem();
+        final String ds = (String) decimalSeparator.getSelectedItem();
         return ds.charAt(1);
     }
 
@@ -425,7 +475,7 @@ public class XTFRFile
 
     private XTFRFileFilter getFilterByDescription() {
 
-        String desc = (String) fileFormat.getSelectedItem();
+        final String desc = (String) fileFormat.getSelectedItem();
 
         //      if (filter.getDescription().equals(desc))
         //         return filter;
@@ -455,7 +505,7 @@ public class XTFRFile
         taskOutput.setMargin(new Insets(5, 5, 5, 5));
         taskOutput.setEditable(false);
 
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         note = new JLabel();
         note.setForeground(Color.blue);
         label = new JLabel();
@@ -465,7 +515,7 @@ public class XTFRFile
         panel.add(note, BorderLayout.CENTER);
         panel.add(progressBar, BorderLayout.SOUTH);
 
-        JPanel contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout());
         contentPane.add(panel, BorderLayout.NORTH);
         contentPane.add(new JScrollPane(taskOutput), BorderLayout.CENTER);
@@ -484,21 +534,21 @@ public class XTFRFile
     private void startWizard() {
 
         try {
-            SqlWizard wizard =
+            final SqlWizard wizard =
                     new SqlWizard(
                             systemName.getText().trim(),
                             user.getText(),
                             new String(password.getPassword()));
 
             wizard.setQueryTextArea(queryStatement);
-        } catch (NoClassDefFoundError ncdfe) {
+        } catch (final NoClassDefFoundError ncdfe) {
             JOptionPane.showMessageDialog(
                     this,
                     LangTool.getString("messages.noAS400Toolbox"),
                     "Error",
                     JOptionPane.ERROR_MESSAGE,
                     null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
         }
     }
@@ -508,19 +558,19 @@ public class XTFRFile
      */
     private void getPCFile() {
 
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
         // set the file filters for the file chooser
         filter = getFilterByDescription();
 
         pcFileChooser.addChoosableFileFilter(filter);
 
-        int ret = pcFileChooser.showSaveDialog(this);
+        final int ret = pcFileChooser.showSaveDialog(this);
 
         // check to see if something was actually chosen
         if (ret == JFileChooser.APPROVE_OPTION) {
-            File file = pcFileChooser.getSelectedFile();
+            final File file = pcFileChooser.getSelectedFile();
             filter = null;
             if (pcFileChooser.getFileFilter() instanceof XTFRFileFilter)
                 filter = (XTFRFileFilter) pcFileChooser.getFileFilter();
@@ -537,18 +587,18 @@ public class XTFRFile
      * Creates the dialog components for prompting the user for the information
      * of the transfer
      */
-    private void initXTFRInfo(Properties XTFRProps) {
+    private void initXTFRInfo(final Properties XTFRProps) {
 
         // create some reusable borders and layouts
-        BorderLayout borderLayout = new BorderLayout();
-        Border emptyBorder = BorderFactory.createEmptyBorder(10, 10, 0, 10);
+        final BorderLayout borderLayout = new BorderLayout();
+        final Border emptyBorder = BorderFactory.createEmptyBorder(10, 10, 0, 10);
 
         // main panel
-        JPanel mp = new JPanel();
+        final JPanel mp = new JPanel();
         mp.setLayout(borderLayout);
 
         // system panel
-        JPanel sp = new JPanel();
+        final JPanel sp = new JPanel();
         sp.setLayout(new BorderLayout());
         sp.setBorder(emptyBorder);
 
@@ -560,7 +610,7 @@ public class XTFRFile
 
         as400p.setLayout(new GridBagLayout());
 
-        JLabel snpLabel =
+        final JLabel snpLabel =
                 new JLabel(LangTool.getString("xtfr.labelSystemName"));
 
         systemName = new JTextField(vt.getHostName());
@@ -579,7 +629,7 @@ public class XTFRFile
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 5, 5, 10);
         as400p.add(systemName, gbc);
-        JLabel hfnpLabel = new JLabel(LangTool.getString("xtfr.labelHostFile"));
+        final JLabel hfnpLabel = new JLabel(LangTool.getString("xtfr.labelHostFile"));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -595,7 +645,7 @@ public class XTFRFile
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 5, 5, 10);
         as400p.add(hostFile, gbc);
-        JLabel idpLabel = new JLabel(LangTool.getString("xtfr.labelUserId"));
+        final JLabel idpLabel = new JLabel(LangTool.getString("xtfr.labelUserId"));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -611,7 +661,7 @@ public class XTFRFile
         gbc.insets = new Insets(5, 5, 5, 5);
         as400p.add(user, gbc);
         // password panel
-        JLabel pwpLabel = new JLabel(LangTool.getString("xtfr.labelPassword"));
+        final JLabel pwpLabel = new JLabel(LangTool.getString("xtfr.labelPassword"));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 3;
@@ -621,7 +671,8 @@ public class XTFRFile
         password = new JPasswordField();
         password.setColumns(15);
         password.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
+            @Override
+            public void keyPressed(final java.awt.event.KeyEvent evt) {
                 txtONKeyPressed(evt);
             }
         });
@@ -644,7 +695,8 @@ public class XTFRFile
         //query button
         queryWizard = new JButton(LangTool.getString("xtfr.labelQueryWizard"));
         queryWizard.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 startWizard();
             }
         });
@@ -680,7 +732,7 @@ public class XTFRFile
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 5, 0, 10);
         as400p.add(selectedFields, gbc);
-        ButtonGroup fieldGroup = new ButtonGroup();
+        final ButtonGroup fieldGroup = new ButtonGroup();
         fieldGroup.add(allFields);
         fieldGroup.add(selectedFields);
         // Field Text Description panel
@@ -707,17 +759,17 @@ public class XTFRFile
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 5, 5, 10);
         as400p.add(intDesc, gbc);
-        ButtonGroup txtDescGroup = new ButtonGroup();
+        final ButtonGroup txtDescGroup = new ButtonGroup();
         txtDescGroup.add(txtDesc);
         txtDescGroup.add(intDesc);
 
         // pc panel for pc information
-        JPanel pcp = new JPanel(new GridBagLayout());
+        final JPanel pcp = new JPanel(new GridBagLayout());
         pcp.setBorder(
                 BorderFactory.createTitledBorder(
                         LangTool.getString("xtfr.labelpc")));
 
-        JLabel pffLabel =
+        final JLabel pffLabel =
                 new JLabel(LangTool.getString("xtfr.labelFileFormat"));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -734,7 +786,8 @@ public class XTFRFile
         fileFormat.addItem(DelimitedFilter.getDescription());
         fileFormat.addItem(FixedWidthFilter.getDescription());
         fileFormat.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 filter = getFilterByDescription();
                 if (filter.getOutputFilterInstance().isCustomizable())
                     customize.setEnabled(true);
@@ -762,7 +815,7 @@ public class XTFRFile
         // depending on the filter.
         fileFormat.setSelectedIndex(0);
 
-        JLabel pcpLabel = new JLabel(LangTool.getString("xtfr.labelPCFile"));
+        final JLabel pcpLabel = new JLabel(LangTool.getString("xtfr.labelPCFile"));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -778,7 +831,7 @@ public class XTFRFile
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 5, 0, 5);
         pcp.add(localFile, gbc);
-        JButton browsePC =
+        final JButton browsePC =
                 new JButton(LangTool.getString("xtfr.labelPCBrowse"));
         browsePC.setActionCommand("BROWSEPC");
         browsePC.addActionListener(this);
@@ -797,7 +850,7 @@ public class XTFRFile
         decimalSeparator.addItem(LangTool.getString("xtfr.comma"));
 
         // obtain the decimal separator for the machine locale
-        DecimalFormat formatter =
+        final DecimalFormat formatter =
                 (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 
         if (formatter.getDecimalFormatSymbols().getDecimalSeparator() == '.')
@@ -822,27 +875,27 @@ public class XTFRFile
         sp.add(pcp, BorderLayout.SOUTH);
 
         // options panel
-        JPanel op = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        final JPanel op = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         xtfrButton = new JButton(LangTool.getString("xtfr.labelXTFR"));
         xtfrButton.addActionListener(this);
         xtfrButton.setActionCommand("XTFR");
         op.add(xtfrButton);
 
-        JButton emailButton =
+        final JButton emailButton =
                 new JButton(LangTool.getString("xtfr.labelXTFREmail"));
         emailButton.addActionListener(this);
         emailButton.setActionCommand("EMAIL");
         op.add(emailButton);
 
         // add transfer save information button
-        JButton saveButton =
+        final JButton saveButton =
                 new JButton(LangTool.getString("xtfr.labelXTFRSave"));
         saveButton.addActionListener(this);
         saveButton.setActionCommand("SAVE");
         op.add(saveButton);
 
         // add transfer load information button
-        JButton loadButton =
+        final JButton loadButton =
                 new JButton(LangTool.getString("xtfr.labelXTFRLoad"));
         loadButton.addActionListener(this);
         loadButton.setActionCommand("LOAD");
@@ -862,7 +915,7 @@ public class XTFRFile
         as400QueryP.setLayout(new BorderLayout());
 
         queryStatement = new JTextArea(2, 40);
-        JScrollPane scrollPane = new JScrollPane(queryStatement);
+        final JScrollPane scrollPane = new JScrollPane(queryStatement);
         queryStatement.setLineWrap(true);
         as400QueryP.add(scrollPane, BorderLayout.CENTER);
 
@@ -870,8 +923,8 @@ public class XTFRFile
 
         // pack it and center it on the screen
         pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = getSize();
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Dimension frameSize = getSize();
         if (frameSize.height > screenSize.height)
             frameSize.height = screenSize.height;
         if (frameSize.width > screenSize.width)
@@ -885,7 +938,7 @@ public class XTFRFile
 
     }
 
-    private void txtONKeyPressed(java.awt.event.KeyEvent evt) {
+    private void txtONKeyPressed(final java.awt.event.KeyEvent evt) {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             xtfrButton.doClick();
         }
@@ -894,7 +947,7 @@ public class XTFRFile
     private void initXTFRFields(Properties props) {
 
         if (props == null) {
-            SessionConfig config = session.getSession().getConfiguration();
+            final SessionConfig config = session.getSession().getConfiguration();
             props = config.getProperties();
         }
 
@@ -951,8 +1004,8 @@ public class XTFRFile
 
     private void saveXTFRFields() {
 
-        SessionConfig config = session.getSession().getConfiguration();
-        Properties props = config.getProperties();
+        final SessionConfig config = session.getSession().getConfiguration();
+        final Properties props = config.getProperties();
 
         saveXTFRFields(props);
 
@@ -960,7 +1013,7 @@ public class XTFRFile
 
     }
 
-    private void saveXTFRFields(Properties props) {
+    private void saveXTFRFields(final Properties props) {
 
         if (hostFile.getText().trim().length() > 0)
             props.setProperty("xtfr.fileName", hostFile.getText().trim());
@@ -1016,18 +1069,18 @@ public class XTFRFile
 
     private void saveXTFRInfo() {
 
-        Properties xtfrProps = new Properties();
+        final Properties xtfrProps = new Properties();
         xtfrProps.setProperty("xtfr.destination", "FROM");
         this.saveXTFRFields(xtfrProps);
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
         // set the file filters for the file chooser
-        TN5250jFileFilter filter = new TN5250jFileFilter("dtf", "Transfer from AS/400");
+        final TN5250jFileFilter filter = new TN5250jFileFilter("dtf", "Transfer from AS/400");
 
         pcFileChooser.addChoosableFileFilter(filter);
 
-        int ret = pcFileChooser.showSaveDialog(this);
+        final int ret = pcFileChooser.showSaveDialog(this);
 
         // check to see if something was actually chosen
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -1037,14 +1090,14 @@ public class XTFRFile
             file = new File(filter.setExtension(file));
 
             try {
-                FileOutputStream out = new FileOutputStream(file);
+                final FileOutputStream out = new FileOutputStream(file);
                 // save off the width and height to be restored later
                 xtfrProps.store(out, "------ Transfer Details --------");
 
                 out.flush();
                 out.close();
-            } catch (FileNotFoundException fnfe) {
-            } catch (IOException ioe) {
+            } catch (final FileNotFoundException fnfe) {
+            } catch (final IOException ioe) {
             }
 
 
@@ -1054,32 +1107,32 @@ public class XTFRFile
 
     private void loadXTFRInfo() {
 
-        Properties xtfrProps = new Properties();
+        final Properties xtfrProps = new Properties();
 //      xtfrProps.setProperty("xtfr.destination","FROM");
 //      this.saveXTFRFields(xtfrProps);
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
         // set the file filters for the file chooser
-        TN5250jFileFilter filter = new TN5250jFileFilter("dtf", "Transfer from AS/400");
+        final TN5250jFileFilter filter = new TN5250jFileFilter("dtf", "Transfer from AS/400");
 
         pcFileChooser.addChoosableFileFilter(filter);
 
-        int ret = pcFileChooser.showOpenDialog(this);
+        final int ret = pcFileChooser.showOpenDialog(this);
 
         // check to see if something was actually chosen
         if (ret == JFileChooser.APPROVE_OPTION) {
 
-            File file = pcFileChooser.getSelectedFile();
+            final File file = pcFileChooser.getSelectedFile();
 
             try {
-                FileInputStream in = new FileInputStream(file);
+                final FileInputStream in = new FileInputStream(file);
                 // save off the width and height to be restored later
                 xtfrProps.load(in);
 
                 in.close();
-            } catch (FileNotFoundException fnfe) {
-            } catch (IOException ioe) {
+            } catch (final FileNotFoundException fnfe) {
+            } catch (final IOException ioe) {
             }
 
 
@@ -1094,8 +1147,9 @@ public class XTFRFile
     }
 
     /** Listens to the use query check boxe */
-    public void itemStateChanged(ItemEvent e) {
-        Object source = e.getItemSelectable();
+    @Override
+    public void itemStateChanged(final ItemEvent e) {
+        final Object source = e.getItemSelectable();
         if (source == useQuery) {
             if (useQuery.isSelected()) {
                 queryWizard.setEnabled(true);
@@ -1164,26 +1218,26 @@ public class XTFRFile
 
     private void selectFields() {
 
-        FFDTableModel ffdtm = new FFDTableModel();
+        final FFDTableModel ffdtm = new FFDTableModel();
 
         //Create table to hold field data
-        JTable fields = new JTable(ffdtm);
+        final JTable fields = new JTable(ffdtm);
         fields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fields.setPreferredScrollableViewportSize(new Dimension(500, 200));
 
         //Create the scroll pane and add the table to it.
-        JScrollPane scrollPane = new JScrollPane(fields);
+        final JScrollPane scrollPane = new JScrollPane(fields);
         scrollPane.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        JPanel jpm = new JPanel();
+        final JPanel jpm = new JPanel();
         jpm.add(scrollPane);
 
-        Object[] message = new Object[1];
+        final Object[] message = new Object[1];
         message[0] = jpm;
-        String[] options =
+        final String[] options =
                 {
                         LangTool.getString("xtfr.tableSelectAll"),
                         LangTool.getString("xtfr.tableSelectNone"),
@@ -1236,21 +1290,25 @@ public class XTFRFile
 
         }
 
+        @Override
         public int getColumnCount() {
 
             return cols.length;
         }
 
-        public String getColumnName(int col) {
+        @Override
+        public String getColumnName(final int col) {
             return cols[col];
         }
 
+        @Override
         public int getRowCount() {
 
             return ftpProtocol.getNumberOfFields();
         }
 
-        public Object getValueAt(int row, int col) {
+        @Override
+        public Object getValueAt(final int row, final int col) {
 
             if (col == 0) {
 
@@ -1264,12 +1322,14 @@ public class XTFRFile
 
         }
 
-        public Class<?> getColumnClass(int col) {
+        @Override
+        public Class<?> getColumnClass(final int col) {
             return getValueAt(0, col).getClass();
 
         }
 
-        public boolean isCellEditable(int row, int col) {
+        @Override
+        public boolean isCellEditable(final int row, final int col) {
             if (col == 0)
                 return true;
             else
@@ -1277,7 +1337,8 @@ public class XTFRFile
 
         }
 
-        public void setValueAt(Object value, int row, int col) {
+        @Override
+        public void setValueAt(final Object value, final int row, final int col) {
 
             fireTableCellUpdated(row, col);
             ftpProtocol.setFieldSelected(row, ((Boolean) value).booleanValue());
@@ -1292,7 +1353,7 @@ public class XTFRFile
 
         private static final long serialVersionUID = 1L;
 
-        ProgressOptionPane(Object messageList) {
+        ProgressOptionPane(final Object messageList) {
 
             super(
                     messageList,
@@ -1307,7 +1368,7 @@ public class XTFRFile
         }
 
         public void setDone() {
-            Object[] option = this.getOptions();
+            final Object[] option = this.getOptions();
             option[0] = LangTool.getString("xtfr.tableDone");
             this.setOptions(option);
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1315,13 +1376,14 @@ public class XTFRFile
 
         public void reset() {
 
-            Object[] option = this.getOptions();
+            final Object[] option = this.getOptions();
             option[0] = UIManager.getString("OptionPane.cancelButtonText");
             this.setOptions(option);
             monitor.setValue(null);
 
         }
 
+        @Override
         public int getMaxCharactersPerLineCount() {
             return 60;
         }
@@ -1334,7 +1396,7 @@ public class XTFRFile
         public boolean isCanceled() {
             if (this == null)
                 return false;
-            Object v = this.getValue();
+            final Object v = this.getValue();
             return (v != null);
         }
 
@@ -1342,11 +1404,12 @@ public class XTFRFile
         // but create a modeless dialog.
         // This is necessary because the Solaris implementation doesn't
         // support Dialog.setModal yet.
-        public JDialog createDialog(Component parentComponent, String title) {
+        @Override
+        public JDialog createDialog(final Component parentComponent, final String title) {
 
-            Frame frame = JOptionPane.getFrameForComponent(parentComponent);
+            final Frame frame = JOptionPane.getFrameForComponent(parentComponent);
             final JDialog dialog = new JDialog(frame, title, false);
-            Container contentPane = dialog.getContentPane();
+            final Container contentPane = dialog.getContentPane();
 
             contentPane.setLayout(new BorderLayout());
             contentPane.add(this, BorderLayout.CENTER);
@@ -1355,11 +1418,13 @@ public class XTFRFile
             dialog.addWindowListener(new WindowAdapter() {
                 boolean gotFocus = false;
 
-                public void windowClosing(WindowEvent we) {
+                @Override
+                public void windowClosing(final WindowEvent we) {
                     setValue(null);
                 }
 
-                public void windowActivated(WindowEvent we) {
+                @Override
+                public void windowActivated(final WindowEvent we) {
                     // Once window gets focus, set initial focus
                     if (!gotFocus) {
                         selectInitialValue();
@@ -1369,7 +1434,8 @@ public class XTFRFile
             });
 
             addPropertyChangeListener(new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent event) {
+                @Override
+                public void propertyChange(final PropertyChangeEvent event) {
                     if (dialog.isVisible()
                             && event.getSource() == ProgressOptionPane.this
                             && (event.getPropertyName().equals(VALUE_PROPERTY)

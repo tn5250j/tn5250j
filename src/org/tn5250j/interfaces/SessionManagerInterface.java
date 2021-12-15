@@ -23,7 +23,7 @@ package org.tn5250j.interfaces;
 import java.util.Properties;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 import org.tn5250j.framework.common.Sessions;
 
 public interface SessionManagerInterface {
@@ -36,7 +36,7 @@ public interface SessionManagerInterface {
     /**
      * @param sessionObject
      */
-    public abstract void closeSession(SessionPanel sessionObject);
+    public abstract void closeSession(SessionGui sessionObject);
 
     /**
      * @param props

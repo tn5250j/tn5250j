@@ -25,13 +25,10 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
+import static org.tn5250j.keyboard.KeyMnemonic.PASTE;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -40,7 +37,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-import static org.tn5250j.keyboard.KeyMnemonic.PASTE;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Paste from the clipboard
@@ -51,26 +53,27 @@ public class PasteAction extends EmulatorAction {
 
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public PasteAction(SessionPanel session, KeyMapper keyMap) {
-        super(session,
+    public PasteAction(final SessionGui sessionGui, final KeyMapper keyMap) {
+        super(sessionGui,
                 PASTE.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.ALT_MASK),
                 keyMap);
     }
 
-    public void actionPerformed(ActionEvent event) {
+    @Override
+    public void actionPerformed(final ActionEvent event) {
         try {
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
             final Transferable transferable = cb.getContents(this);
             if (transferable != null) {
                 final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
                 session.getScreen().pasteText(content, false);
             }
-        } catch (HeadlessException e1) {
+        } catch (final HeadlessException e1) {
             log.debug("HeadlessException", e1);
-        } catch (UnsupportedFlavorException e1) {
+        } catch (final UnsupportedFlavorException e1) {
             log.debug("the requested data flavor is not supported", e1);
-        } catch (IOException e1) {
+        } catch (final IOException e1) {
             log.debug("data is no longer available in the requested flavor", e1);
         }
     }

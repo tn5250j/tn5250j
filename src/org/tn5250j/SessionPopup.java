@@ -56,11 +56,11 @@ import static org.tn5250j.keyboard.KeyMnemonic.*;
 public class SessionPopup {
 
     private final Screen5250 screen;
-    private final SessionPanel sessiongui;
+    private final SessionPanelSwing sessiongui;
     private final tnvt vt;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public SessionPopup(SessionPanel ses, MouseEvent me) {
+    public SessionPopup(SessionPanelSwing ses, MouseEvent me) {
 
         JMenuItem menuItem;
         Action action;

@@ -52,7 +52,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 
 
-public class SessionBean extends SessionPanel {
+public class SessionBean extends SessionPanelSwing {
 
     private static final long serialVersionUID = 1L;
 

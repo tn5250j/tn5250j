@@ -25,14 +25,15 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.keyboard.KeyMnemonic.OPEN_SAME;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.OPEN_SAME;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Open Same Session emulator action to open a duplicate session
@@ -41,13 +42,14 @@ public class OpenSameAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public OpenSameAction(SessionPanel session, KeyMapper keyMap) {
-        super(session, OPEN_SAME.mnemonic,
+    public OpenSameAction(final SessionGui sessionGui, final KeyMapper keyMap) {
+        super(sessionGui, OPEN_SAME.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.ALT_MASK),
                 keyMap);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
         session.startDuplicateSession();
     }
 }

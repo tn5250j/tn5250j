@@ -11,6 +11,7 @@
 
 package org.tn5250j.scripting;
 
+import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JOptionPane;
@@ -18,7 +19,7 @@ import javax.swing.JOptionPane;
 import org.python.core.PyException;
 import org.python.util.PythonInterpreter;
 import org.tn5250j.GlobalConfigure;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -39,7 +40,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
 
         try {
             _instance = new JPythonInterpreterDriver();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
 
 
         }
@@ -50,43 +51,46 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
 
         try {
             _interpreter = new PythonInterpreter();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
 
         }
 
     }
 
-    public void executeScript(SessionPanel session, String script)
+    @Override
+    public void executeScript(final SessionGui session, final String script)
             throws InterpreterDriver.InterpreterException {
         try {
             session.setMacroRunning(true);
             _interpreter.set("_session", session);
             _interpreter.exec(script);
             session.setMacroRunning(false);
-        } catch (PyException ex) {
+        } catch (final PyException ex) {
             throw new InterpreterDriver.InterpreterException(ex);
         }
     }
 
-    public void executeScript(String script)
+    public void executeScript(final String script)
             throws InterpreterDriver.InterpreterException {
         try {
             _interpreter = new PythonInterpreter();
             _interpreter.exec(script);
-        } catch (PyException ex) {
+        } catch (final PyException ex) {
             throw new InterpreterDriver.InterpreterException(ex);
         }
     }
 
-    public void executeScriptFile(SessionPanel session, String scriptFile)
+    @Override
+    public void executeScriptFile(final SessionGui session, final String scriptFile)
             throws InterpreterDriver.InterpreterException {
 
         try {
-            final SessionPanel s1 = session;
+            final Component s1 = (Component) session;
             final String s2 = scriptFile;
 
-            s1.setMacroRunning(true);
-            Runnable interpretIt = new Runnable() {
+            session.setMacroRunning(true);
+            final Runnable interpretIt = new Runnable() {
+                @Override
                 public void run() {
 //               PySystemState.initialize(System.getProperties(),null, new String[] {""},this.getClass().getClassLoader());
 
@@ -94,52 +98,55 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
                     _interpreter.set("_session", s1);
                     try {
                         _interpreter.execfile(s2);
-                    } catch (org.python.core.PySyntaxError pse) {
+                    } catch (final org.python.core.PySyntaxError pse) {
                         JOptionPane.showMessageDialog(s1, pse, "Error in script " + s2, JOptionPane.ERROR_MESSAGE);
-                    } catch (org.python.core.PyException pse) {
+                    } catch (final org.python.core.PyException pse) {
                         JOptionPane.showMessageDialog(s1, pse, "Error in script " + s2, JOptionPane.ERROR_MESSAGE);
                     } finally {
-                        s1.setMacroRunning(false);
+                        session.setMacroRunning(false);
                     }
                 }
 
             };
 
             // lets start interpreting it.
-            Thread interpThread = new Thread(interpretIt);
+            final Thread interpThread = new Thread(interpretIt);
             interpThread.setDaemon(true);
             interpThread.start();
 
-        } catch (PyException ex) {
+        } catch (final PyException ex) {
             throw new InterpreterDriver.InterpreterException(ex);
-        } catch (Exception ex2) {
+        } catch (final Exception ex2) {
             throw new InterpreterDriver.InterpreterException(ex2);
         }
     }
 
-    public void executeScriptFile(String scriptFile)
+    @Override
+    public void executeScriptFile(final String scriptFile)
             throws InterpreterDriver.InterpreterException {
 
         try {
             _interpreter.execfile(scriptFile);
-        } catch (PyException ex) {
+        } catch (final PyException ex) {
             throw new InterpreterDriver.InterpreterException(ex);
         }
     }
 
+    @Override
     public String[] getSupportedExtensions() {
         return new String[]{"py"};
     }
 
+    @Override
     public String[] getSupportedLanguages() {
         return new String[]{"Python", "JPython"};
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
             _instance.executeScript("print \"Hello\"");
             _instance.executeScriptFile("test.py");
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.out.println(ex);
         }
     }

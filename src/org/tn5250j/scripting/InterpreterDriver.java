@@ -1,7 +1,7 @@
 // InterpreterDriver.java
 package org.tn5250j.scripting;
 
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 
 /**
  * Driver interface for scripting interpreter.
@@ -22,7 +22,7 @@ public interface InterpreterDriver {
      *               which wraps the exception throw by underlying
      *               interpreter
      */
-    public void executeScript(SessionPanel session, String script)
+    public void executeScript(SessionGui session, String script)
             throws InterpreterDriver.InterpreterException;
 
     /**
@@ -33,7 +33,7 @@ public interface InterpreterDriver {
      *               which wraps the exception throw by underlying
      *               interpreter
      */
-    public void executeScriptFile(SessionPanel session, String scriptFile)
+    public void executeScriptFile(SessionGui session, String scriptFile)
             throws InterpreterDriver.InterpreterException;
 
     /**

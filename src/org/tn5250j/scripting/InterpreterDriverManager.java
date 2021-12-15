@@ -4,7 +4,8 @@ package org.tn5250j.scripting;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
+import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -38,12 +39,12 @@ public class InterpreterDriverManager {
      *
      * @param driver the driver to be registered
      */
-    public static void registerDriver(InterpreterDriver driver) {
-        String[] extensions = driver.getSupportedExtensions();
+    public static void registerDriver(final InterpreterDriver driver) {
+        final String[] extensions = driver.getSupportedExtensions();
         for (int size = extensions.length, i = 0; i < size; i++) {
             _extensionDriverMap.put(extensions[i], driver);
         }
-        String[] languages = driver.getSupportedLanguages();
+        final String[] languages = driver.getSupportedLanguages();
         for (int size = languages.length, i = 0; i < size; i++) {
             _languageDriverMap.put(languages[i], driver);
         }
@@ -56,9 +57,9 @@ public class InterpreterDriverManager {
      * @param script   script to be executed
      * @param language language for interpreting the script string
      */
-    public static void executeScript(SessionPanel session, String script, String language)
+    public static void executeScript(final SessionPanelSwing session, final String script, final String language)
             throws InterpreterDriver.InterpreterException {
-        InterpreterDriver driver
+        final InterpreterDriver driver
                 = _languageDriverMap.get(language);
         if (driver == null) {
             LOG.warn("No driver installed to handle language "
@@ -76,12 +77,12 @@ public class InterpreterDriverManager {
      *
      * @param scriptFile file name containing script
      */
-    public static void executeScriptFile(SessionPanel session, String scriptFile)
+    public static void executeScriptFile(final SessionGui session, final String scriptFile)
             throws InterpreterDriver.InterpreterException {
-        String extension
+        final String extension
                 = scriptFile.substring(scriptFile
                 .lastIndexOf(EXTENSION_SEPARATOR) + 1);
-        InterpreterDriver driver
+        final InterpreterDriver driver
                 = _extensionDriverMap.get(extension);
         if (driver == null) {
             LOG.warn("No driver installed to handle extension "
@@ -98,12 +99,12 @@ public class InterpreterDriverManager {
      *
      * @param scriptFile file name containing script
      */
-    public static void executeScriptFile(String scriptFile)
+    public static void executeScriptFile(final String scriptFile)
             throws InterpreterDriver.InterpreterException {
-        String extension
+        final String extension
                 = scriptFile.substring(scriptFile
                 .lastIndexOf(EXTENSION_SEPARATOR) + 1);
-        InterpreterDriver driver
+        final InterpreterDriver driver
                 = _extensionDriverMap.get(extension);
         if (driver == null) {
             LOG.warn("No driver installed to handle extension "
@@ -119,8 +120,8 @@ public class InterpreterDriverManager {
      *
      * @param scriptFile file name containing script
      */
-    public static boolean isScriptSupported(String scriptFile) {
-        String extension
+    public static boolean isScriptSupported(final String scriptFile) {
+        final String extension
                 = scriptFile.substring(scriptFile
                 .lastIndexOf(EXTENSION_SEPARATOR) + 1);
 

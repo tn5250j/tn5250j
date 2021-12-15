@@ -21,7 +21,7 @@
 package org.tn5250j.interfaces;
 
 import org.tn5250j.My5250;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionJumpEvent;
 import org.tn5250j.gui.GenericTn5250JFrame;
@@ -41,7 +41,7 @@ public abstract class GUIViewInterface extends GenericTn5250JFrame {
     protected static int sequence;
     protected int frameSeq;
 
-    public GUIViewInterface(My5250 m) {
+    public GUIViewInterface(final My5250 m) {
         super();
         me = m;
     }
@@ -50,15 +50,15 @@ public abstract class GUIViewInterface extends GenericTn5250JFrame {
         return frameSeq;
     }
 
-    public abstract void addSessionView(String descText, SessionPanel session);
+    public abstract void addSessionView(String descText, SessionGui session);
 
-    public abstract void removeSessionView(SessionPanel targetSession);
+    public abstract void removeSessionView(SessionGui targetSession);
 
-    public abstract boolean containsSession(SessionPanel session);
+    public abstract boolean containsSession(SessionGui session);
 
     public abstract int getSessionViewCount();
 
-    public abstract SessionPanel getSessionAt(int index);
+    public abstract SessionGui getSessionAt(int index);
 
     public abstract void onSessionJump(SessionJumpEvent jumpEvent);
 

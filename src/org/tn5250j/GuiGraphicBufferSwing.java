@@ -26,6 +26,7 @@
 package org.tn5250j;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -56,7 +57,7 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class GuiGraphicBuffer implements ScreenOIAListener,
+public class GuiGraphicBufferSwing implements ScreenOIAListener,
         ScreenListener,
         PropertyChangeListener,
         SessionConfigListener,
@@ -90,7 +91,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
     private Data updateRect;
     protected int columnWidth;
     protected int rowHeight;
-    private SessionPanel gui;
+    private SessionGui gui;
 
     private LineMetrics lm;
     /*default*/ Font font;
@@ -137,7 +138,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
 
-    public GuiGraphicBuffer(final Screen5250 screen, final SessionPanel gui, final SessionConfig config) {
+    public GuiGraphicBufferSwing(final Screen5250 screen, final SessionGui gui, final SessionConfig config) {
 
         this.screen = screen;
         this.config = config;
@@ -167,8 +168,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
             font = new Font(fontName, Font.PLAIN, 14);
         }
 
-        gui.setFont(font);
-
         getSettings();
         final FontRenderContext frc = new FontRenderContext(font.getTransform(),
                 true, true);
@@ -189,6 +188,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         kbArea = new Rectangle2D.Float();
         scriptArea = new Rectangle2D.Float();
 
+    }
+
+    public Font getFont() {
+        return font;
     }
 
     /**
@@ -263,7 +266,6 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         else {
             colorBg = getColorProperty("colorBg");
         }
-        gui.setBackground(colorBg);
 
         if (!config.isPropertyExists("colorBlue"))
             setProperty("colorBlue", Integer.toString(colorBlue.getRGB()));
@@ -323,6 +325,10 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         } else
             colorHexAttr = getColorProperty("colorHexAttr");
 
+    }
+
+    public Color getBackground() {
+        return colorBg;
     }
 
     public void loadProps() {
@@ -437,7 +443,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
         }
 
-        if (config.getStringProperty("cursorBlink").equals("Yes")) {
+        if (getStringProperty("cursorBlink").equals("Yes")) {
             blinker = new javax.swing.Timer(500, this);
             blinker.start();
         }
@@ -450,24 +456,26 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         }
     }
 
+    @SuppressWarnings("deprecation")
     protected final String getStringProperty(final String prop) {
-
         return config.getStringProperty(prop);
-
     }
 
+    @SuppressWarnings("deprecation")
     protected final Color getColorProperty(final String prop) {
 
         return config.getColorProperty(prop);
 
     }
 
+    @SuppressWarnings("deprecation")
     protected final float getFloatProperty(final String prop) {
 
         return config.getFloatProperty(prop);
 
     }
 
+    @SuppressWarnings("deprecation")
     protected final int getIntProperty(final String prop) {
 
         return config.getIntegerProperty(prop);
@@ -707,8 +715,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (updateFont) {
-            final Rectangle r = gui.getDrawingBounds();
-            resizeScreenArea(r.width, r.height);
+            final javafx.geometry.Rectangle2D r = gui.getDrawingBounds();
+            resizeScreenArea((int) r.getWidth(), (int) r.getHeight());
             updateFont = false;
         }
 
@@ -719,8 +727,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
             drawOIA();
         }
 
-        gui.validate();
-        gui.repaint();
+        ((Component) gui).validate();
+        ((Component) gui).repaint();
     }
 
     /**
@@ -876,13 +884,17 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
 
         // check to see if there is an area selected. If not then return all
         //    screen area.
-        if (!gui.rubberband.isAreaSelected()) {
+        if (!gui.getRubberband().isAreaSelected()) {
 
             bounds.setBounds(1, 1, screen.getColumns(), screen.getRows());
         } else {
             // lets get the bounding area using a rectangle that we have already
             // allocated
-            gui.rubberband.getBoundingArea(workR);
+            final javafx.geometry.Rectangle2D rect = gui.getRubberband().getBoundingArea();
+            bounds.x = (int) Math.round(rect.getMinX());
+            bounds.y = (int) Math.round(rect.getMinY());
+            bounds.width = (int) Math.round(rect.getWidth());
+            bounds.height = (int) Math.round(rect.getHeight());
 
             // get starting row and column
             final int sPos = getRowColFromPoint(workR.x, workR.y);
@@ -1199,32 +1211,13 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         //      }
     }
 
-    public synchronized void drawImageBuffer(final Graphics2D gg2d, final int x, final int y, final int width, final int height) {
-
-        /**
-         * @todo this is a hack and should be fixed at the root of the problem
-         */
-        if (gg2d == null) {
-            log.debug(" we got a null graphic object ");
-            return;
-        }
-
-        //      synchronized (lock) {
-        gg2d.drawImage(bi.getSubimage(x, y, width, height), null, x + offLeft, y + offTop);
-        // tell waiting threads to wake up
-        //         lock.notifyAll();
-        //      }
-
-    }
-
     protected void updateImage(int x, int y, int width, int height) {
 
 
         // check for selected area and erase it before updating screen
-        if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-            gui.rubberband.erase();
+        if (gui.getRubberband() != null && gui.getRubberband().isAreaSelected()) {
+            gui.getRubberband().erase();
         }
-
 
         gg2d.setClip(x, y, width, height);
         //		if (!cursorActive && x + width <= bi.getWidth(null)
@@ -1258,8 +1251,8 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
         //            if (height > 0 && width > 0) {
 
         // We now redraw the selected area rectangle.
-        if (gui.rubberband != null && gui.rubberband.isAreaSelected()) {
-            gui.rubberband.draw();
+        if (gui.getRubberband() != null && gui.getRubberband().isAreaSelected()) {
+            gui.getRubberband().draw();
         }
 
         if (x == 0)
@@ -1279,7 +1272,7 @@ public class GuiGraphicBuffer implements ScreenOIAListener,
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    gui.repaint(xf, yf, widthf, heightf);
+                    ((Component) gui).repaint(xf, yf, widthf, heightf);
                 }
             });
 

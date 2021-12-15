@@ -26,6 +26,7 @@
 package org.tn5250j.tools;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -39,7 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.InterpreterDriverManager;
 
@@ -84,25 +85,25 @@ public class Macronizer {
 
     public final static String[] getMacroList() {
 
-        String[] macroList = new String[macros.size()];
-        Set<Object> macroSet = macros.keySet();
-        Iterator<Object> macroIterator = macroSet.iterator();
+        final String[] macroList = new String[macros.size()];
+        final Set<Object> macroSet = macros.keySet();
+        final Iterator<Object> macroIterator = macroSet.iterator();
         String byName = null;
         int x = 0;
         while (macroIterator.hasNext()) {
             byName = (String) macroIterator.next();
-            int period = byName.indexOf(".");
+            final int period = byName.indexOf(".");
             macroList[x++] = byName.substring(period + 1);
         }
 
         return macroList;
     }
 
-    public final static String getMacroByNumber(int num) {
-        String mac = "macro" + num + ".";
+    public final static String getMacroByNumber(final int num) {
+        final String mac = "macro" + num + ".";
 
-        Set<Object> macroSet = macros.keySet();
-        Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<Object> macroSet = macros.keySet();
+        final Iterator<Object> macroIterator = macroSet.iterator();
         String byNum = null;
         while (macroIterator.hasNext()) {
             byNum = (String) macroIterator.next();
@@ -113,10 +114,10 @@ public class Macronizer {
         return null;
     }
 
-    public final static String getMacroByName(String name) {
+    public final static String getMacroByName(final String name) {
 
-        Set<Object> macroSet = macros.keySet();
-        Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<Object> macroSet = macros.keySet();
+        final Iterator<Object> macroIterator = macroSet.iterator();
         String byName = null;
         while (macroIterator.hasNext()) {
             byName = (String) macroIterator.next();
@@ -127,10 +128,10 @@ public class Macronizer {
         return null;
     }
 
-    public final static void removeMacroByName(String name) {
+    public final static void removeMacroByName(final String name) {
 
-        Set<Object> macroSet = macros.keySet();
-        Iterator<Object> macroIterator = macroSet.iterator();
+        final Set<Object> macroSet = macros.keySet();
+        final Iterator<Object> macroIterator = macroSet.iterator();
         String byName = null;
         while (macroIterator.hasNext()) {
             byName = (String) macroIterator.next();
@@ -151,15 +152,15 @@ public class Macronizer {
      * @param name
      * @param keyStrokes
      */
-    public final static void setMacro(String name, String keyStrokes) {
+    public final static void setMacro(final String name, final String keyStrokes) {
 
         int x = 0;
 
         // first let's go through all the macros and replace the macro entry if it
         //   already exists.
         if (macrosExist && getMacroByName(name) != null) {
-            Set<Object> macroSet = macros.keySet();
-            Iterator<Object> macroIterator = macroSet.iterator();
+            final Set<Object> macroSet = macros.keySet();
+            final Iterator<Object> macroIterator = macroSet.iterator();
             String byName = null;
             String prefix = null;
             while (macroIterator.hasNext()) {
@@ -185,17 +186,17 @@ public class Macronizer {
 
     }
 
-    public static void showRunScriptDialog(SessionPanel session) {
+    public static void showRunScriptDialog(final SessionGui session) {
 
-        JPanel rsp = new JPanel();
+        final JPanel rsp = new JPanel();
         rsp.setLayout(new BorderLayout());
-        JLabel jl = new JLabel("Enter script to run");
+        final JLabel jl = new JLabel("Enter script to run");
         final JTextField rst = new JTextField();
         rsp.add(jl, BorderLayout.NORTH);
         rsp.add(rst, BorderLayout.CENTER);
-        Object[] message = new Object[1];
+        final Object[] message = new Object[1];
         message[0] = rsp;
-        String[] options = {"Run", "Cancel"};
+        final String[] options = {"Run", "Cancel"};
 
         final JOptionPane pane = new JOptionPane(
                 message,                           // the dialog message array
@@ -207,14 +208,15 @@ public class Macronizer {
 
 
         // create a dialog wrapping the pane
-        final JDialog dialog = pane.createDialog(session, // parent frame
+        final JDialog dialog = pane.createDialog((Component) session, // parent frame
                 "Run Script"  // dialog title
         );
 
         // add the listener that will set the focus to
         // the desired option
         dialog.addWindowListener(new WindowAdapter() {
-            public void windowOpened(WindowEvent e) {
+            @Override
+            public void windowOpened(final WindowEvent e) {
                 super.windowOpened(e);
 
                 // now we're setting the focus to the desired component
@@ -232,9 +234,9 @@ public class Macronizer {
         // now we can process the value selected
         // now we can process the value selected
         // if its Integer, the user most likely hit escape
-        Object myValue = pane.getValue();
+        final Object myValue = pane.getValue();
         if (!(myValue instanceof Integer)) {
-            String value = (String) myValue;
+            final String value = (String) myValue;
 
             if (value.equals(options[0])) {
                 // send option along with system request
@@ -247,9 +249,9 @@ public class Macronizer {
 
     }
 
-    public final static void invoke(String macro, SessionPanel session) {
+    public final static void invoke(String macro, final SessionGui session) {
 
-        String keys = getMacroByName(macro);
+        final String keys = getMacroByName(macro);
         if (keys != null)
             session.getScreen().sendKeys(keys);
         else {
@@ -258,7 +260,7 @@ public class Macronizer {
                     macro = macro + ".py";
                 InterpreterDriverManager.executeScriptFile(session, "scripts" +
                         File.separatorChar + macro);
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 System.err.println(ex);
             }
         }
@@ -266,9 +268,9 @@ public class Macronizer {
 
     private static boolean checkScripts() {
 
-        File directory = new File("scripts");
+        final File directory = new File("scripts");
 
-        File directory2 = new File(ConfigureFactory.getInstance().getProperty(
+        final File directory2 = new File(ConfigureFactory.getInstance().getProperty(
                 "emulator.settingsDirectory") +
                 "scripts");
 

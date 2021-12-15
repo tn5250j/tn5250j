@@ -25,14 +25,15 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.keyboard.KeyMnemonic.HOTSPOTS;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.HOTSPOTS;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Toggle Hot spots
@@ -41,14 +42,15 @@ public class HotspotsAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public HotspotsAction(SessionPanel session, KeyMapper keyMap) {
+    public HotspotsAction(final SessionGui session, final KeyMapper keyMap) {
         super(session,
                 HOTSPOTS.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
                 keyMap);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
         session.toggleHotSpots();
     }
 }

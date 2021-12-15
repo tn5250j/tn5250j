@@ -32,10 +32,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
+import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.tools.system.OperatingSystem;
@@ -46,7 +48,7 @@ import org.tn5250j.tools.system.OperatingSystem;
 public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeListener {
 
     protected Session5250 session;
-    protected SessionPanel sessionGui;
+    protected SessionGui sessionGui;
     protected Screen5250 screen;
     protected boolean isLinux;
     protected boolean isAltGr;
@@ -60,7 +62,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
      * Creates a new keyboard handler.
      * @param session The session that will be sent the keys
      */
-    public KeyboardHandler(Session5250 session) {
+    public KeyboardHandler(final Session5250 session) {
 
         this.session = session;
         this.screen = session.getScreen();
@@ -85,7 +87,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
 
     }
 
-    public static KeyboardHandler getKeyboardHandlerInstance(Session5250 session) {
+    public static KeyboardHandler getKeyboardHandlerInstance(final Session5250 session) {
 
         return new DefaultKeyboardHandler(session);
     }
@@ -94,14 +96,15 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
 
     protected InputMap getInputMap() {
 
-        return sessionGui.getInputMap();
+        return ((JComponent) sessionGui).getInputMap();
     }
 
     protected ActionMap getActionMap() {
 
-        return sessionGui.getActionMap();
+        return ((JComponent) sessionGui).getActionMap();
     }
 
+    @Override
     public void onKeyChanged() {
 
         getInputMap().clear();
@@ -141,21 +144,21 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
      *
      *  Added by Luc to fix a memory leak.
      */
-    public void sessionClosed(SessionPanel session) {
+    public void sessionClosed(final SessionPanelSwing session) {
         keyMap.removeKeyChangeListener(this);
     }
 
-    protected boolean emulatorAction(KeyStroke ks, KeyEvent e) {
+    protected boolean emulatorAction(final KeyStroke ks, final KeyEvent e) {
 
         if (sessionGui == null)
             return false;
 
-        InputMap map = getInputMap();
-        ActionMap am = getActionMap();
+        final InputMap map = getInputMap();
+        final ActionMap am = getActionMap();
 
         if (map != null && am != null && sessionGui.isEnabled()) {
-            Object binding = map.get(ks);
-            Action action = (binding == null) ? null : am.get(binding);
+            final Object binding = map.get(ks);
+            final Action action = (binding == null) ? null : am.get(binding);
             if (action != null) {
                 return true;
             }
@@ -168,7 +171,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
      * Utility method, calls one of <code>keyPressed()</code>,
      * <code>keyReleased()</code>, or <code>keyTyped()</code>.
      */
-    public void processKeyEvent(KeyEvent evt) {
+    public void processKeyEvent(final KeyEvent evt) {
         switch (evt.getID()) {
             case KeyEvent.KEY_TYPED:
                 keyTyped(evt);

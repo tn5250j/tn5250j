@@ -21,6 +21,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.media.AudioClip;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -140,5 +142,36 @@ public final class UiUtils {
         final AudioClip audio = new AudioClip(UiUtils.class.getClassLoader().getResource(
                 "beep.wav").toExternalForm());
         audio.play();
+    }
+
+    public static int toRgb(final int r, final int g, final int b) {
+        return toRgb(r, g, b, 255);
+    }
+
+    public static int toRgb(final int r, final int g, final int b, final int a) {
+        return ((a & 0xFF) << 24) |
+                ((r & 0xFF) << 16) |
+                ((g & 0xFF) << 8)  |
+                ((b & 0xFF) << 0);
+    }
+
+    public static int toRgb(final Color c) {
+        return toRgb(
+                (int) Math.round(c.getRed() * 255.),
+                (int) Math.round(c.getGreen() * 255.),
+                (int) Math.round(c.getGreen() * 255.),
+                (int) Math.round(c.getBlue() * 255.));
+    }
+
+    public static Color fromAwtColor(final java.awt.Color c) {
+        return Color.rgb(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha() / 255.);
+    }
+
+    public static java.awt.Color toAwtColor(final Color colorBg) {
+        return new java.awt.Color(toRgb(colorBg));
+    }
+
+    public static java.awt.Font toAwtFont(final Font font) {
+        return new java.awt.Font(font.getName(), java.awt.Font.PLAIN, (int) Math.round(font.getSize()));
     }
 }

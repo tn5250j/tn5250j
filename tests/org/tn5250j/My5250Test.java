@@ -1,8 +1,8 @@
 package org.tn5250j;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,14 +12,14 @@ public class My5250Test {
 
     @Test
     public void loadLastSessionViewNamesFrom_loads_session_names_from_command_line() {
-        String[] commandlineArgs = new String[]{
+        final String[] commandlineArgs = new String[]{
                 "-s", "foo 1",
                 "-h",
                 "-s", "-s",
                 "-s", "foobar"};
-        List<String> sessionNames = My5250.loadLastSessionViewNamesFrom(commandlineArgs);
+        final List<String> sessionNames = My5250.loadLastSessionViewNamesFrom(commandlineArgs);
 
-        String[] expected = new String[]{"foo 1", "foobar"};
+        final String[] expected = new String[]{"foo 1", "foobar"};
         assertArrayEquals(expected, sessionNames.toArray());
     }
 
@@ -28,9 +28,9 @@ public class My5250Test {
         My5250.getSessions().setProperty("emul.startLastView", "");
         My5250.getSessions().setProperty("emul.view", "-s foo 1  -s foo bar -s lastone ");
 
-        List<String> sessionNames = My5250.loadLastSessionViewNames();
+        final List<String> sessionNames = My5250.loadLastSessionViewNames();
 
-        String[] expected = new String[]{"foo 1", "foo bar", "lastone"};
+        final String[] expected = new String[]{"foo 1", "foo bar", "lastone"};
         assertArrayEquals(expected, sessionNames.toArray());
     }
 
@@ -39,7 +39,7 @@ public class My5250Test {
         My5250.getSessions().remove("emul.startLastView");
         My5250.getSessions().setProperty("emul.view", "-s foo 1  -s foo bar -s lastone ");
 
-        List<String> sessionNames = My5250.loadLastSessionViewNames();
+        final List<String> sessionNames = My5250.loadLastSessionViewNames();
 
         assertEquals(0, sessionNames.size());
     }
@@ -49,7 +49,7 @@ public class My5250Test {
         My5250.getSessions().setProperty("emul.startLastView", "");
         My5250.getSessions().setProperty("emul.view", "");
 
-        List<String> sessionNames = My5250.loadLastSessionViewNames();
+        final List<String> sessionNames = My5250.loadLastSessionViewNames();
 
         assertEquals(0, sessionNames.size());
     }
@@ -59,11 +59,11 @@ public class My5250Test {
         My5250.getSessions().setProperty("Session1", "as400.local");
         My5250.getSessions().setProperty("Session3", "other.server.com");
 
-        List<String> lastViewNames = Arrays.asList("Session1", "Session2", "Session3");
+        final List<String> lastViewNames = Arrays.asList("Session1", "Session2", "Session3");
 
-        List<String> sessionNames = My5250.filterExistingViewNames(lastViewNames);
+        final List<String> sessionNames = My5250.filterExistingViewNames(lastViewNames);
 
-        String[] expected = new String[]{"Session1", "Session3"};
+        final String[] expected = new String[]{"Session1", "Session3"};
         assertArrayEquals(expected, sessionNames.toArray());
     }
 

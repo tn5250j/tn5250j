@@ -28,9 +28,8 @@ package org.tn5250j;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -57,20 +56,14 @@ public class SessionPanelDemo {
             ConfigureFactory.getInstance();
             org.tn5250j.tools.LangTool.init();
 
-            final Session5250 session = DevTools.createSession();
+            final Session5250 session = createSession();
             final SessionBean sessgui = DevTools.createSessionBean(session);
 
-            final JFrame frame = new JFrame("TN5250j");
-            frame.setSize(1024, 768);
-            frame.addWindowListener(
-                    new WindowAdapter() {
-                        @Override
-                        public void windowClosing(final WindowEvent e) {
-                            sessgui.signoff();
-                            sessgui.disconnect();
-                        }
-                    }
-            );
+            final JFrame frame = DevTools.createClosableFrame("tn5250j", () -> {
+                sessgui.signoff();
+                sessgui.disconnect();
+                System.exit(0);
+            });
 
             final JPanel main = new JPanel(new BorderLayout());
             main.add(sessgui, BorderLayout.CENTER);
@@ -82,6 +75,15 @@ public class SessionPanelDemo {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static Session5250 createSession() {
+        final String system = "213.41.75.182"; // TODO: your IP/hostname
+
+        final SessionConfig config = new SessionConfig(system, system);
+        config.setProperty("font", "Lucida Sans Typewriter Regular"); // example config
+
+        return new Session5250(new Properties(), system, system, config);
     }
 
     private static JPanel createChangeConfigPanel(final SessionBean sessgui, final Session5250 session) {

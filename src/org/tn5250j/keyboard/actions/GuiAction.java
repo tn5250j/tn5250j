@@ -26,14 +26,15 @@
 package org.tn5250j.keyboard.actions;
 
 
-import org.tn5250j.SessionPanel;
-import org.tn5250j.keyboard.KeyMapper;
+import static org.tn5250j.keyboard.KeyMnemonic.GUI;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import static org.tn5250j.keyboard.KeyMnemonic.GUI;
+import javax.swing.KeyStroke;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.keyboard.KeyMapper;
 
 /**
  * Toggle gui
@@ -42,14 +43,15 @@ public class GuiAction extends EmulatorAction {
 
     private static final long serialVersionUID = 1L;
 
-    public GuiAction(SessionPanel session, KeyMapper keyMap) {
-        super(session,
+    public GuiAction(final SessionGui sessionGui, final KeyMapper keyMap) {
+        super(sessionGui,
                 GUI.mnemonic,
                 KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.ALT_MASK),
                 keyMap);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
         session.getScreen().toggleGUIInterface();
     }
 }

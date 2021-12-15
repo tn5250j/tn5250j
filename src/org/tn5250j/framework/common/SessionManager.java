@@ -26,7 +26,7 @@ import java.util.Properties;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionConfig;
-import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.interfaces.SessionManagerInterface;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -85,16 +85,16 @@ public class SessionManager implements SessionManagerInterface {
     }
 
     @Override
-    public void closeSession(SessionPanel sesspanel) {
+    public void closeSession(final SessionGui sesspanel) {
 
         sesspanel.closeDown();
-        sessions.removeSession((sesspanel).getSession());
+        sessions.removeSession(sesspanel.getSession());
 
     }
 
     @Override
-    public synchronized Session5250 openSession(Properties sesProps, String configurationResource
-            , String sessionName) {
+    public synchronized Session5250 openSession(final Properties sesProps, String configurationResource
+            , final String sessionName) {
 
         if (sessionName == null)
             sesProps.put(TN5250jConstants.SESSION_TERM_NAME, sesProps.getProperty(TN5250jConstants.SESSION_HOST));
@@ -106,7 +106,7 @@ public class SessionManager implements SessionManagerInterface {
         sesProps.put(TN5250jConstants.SESSION_CONFIG_RESOURCE, configurationResource);
 
         SessionConfig useConfig = null;
-        for (SessionConfig conf : configs) {
+        for (final SessionConfig conf : configs) {
             if (conf.getSessionName().equals(sessionName)) {
                 useConfig = conf;
             }
@@ -118,7 +118,7 @@ public class SessionManager implements SessionManagerInterface {
             configs.add(useConfig);
         }
 
-        Session5250 newSession = new Session5250(sesProps, configurationResource,
+        final Session5250 newSession = new Session5250(sesProps, configurationResource,
                 sessionName, useConfig);
         sessions.addSession(newSession);
         return newSession;
