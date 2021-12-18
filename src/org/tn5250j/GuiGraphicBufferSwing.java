@@ -147,27 +147,6 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         config.addSessionConfigListener(this);
         // load the session properties from it's profile.
         loadProps();
-
-        // change by Luc - LDC If the font from the properties file does not
-        // exist
-        //    select the default font
-        String fontName = null;
-        if (config.isPropertyExists("font")) {
-            fontName = getStringProperty("font");
-            if (GUIGraphicsUtils.isFontNameExists(fontName) == false)
-                fontName = null;
-        }
-
-        //      if (!config.isPropertyExists("font")) {
-        if (fontName == null) {
-            font = new Font(GUIGraphicsUtils.getDefaultFont(), Font.PLAIN, 14);
-            //         font = new Font("Courier New",Font.PLAIN,14);
-            config.setProperty("font", font.getFontName());
-        } else {
-            //font = new Font(getStringProperty("font"),Font.PLAIN,14);
-            font = new Font(fontName, Font.PLAIN, 14);
-        }
-
         getSettings();
         final FontRenderContext frc = new FontRenderContext(font.getTransform(),
                 true, true);
@@ -332,6 +311,25 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
     }
 
     public void loadProps() {
+        // change by Luc - LDC If the font from the properties file does not
+        // exist
+        //    select the default font
+        String fontName = null;
+        if (config.isPropertyExists("font")) {
+            fontName = getStringProperty("font");
+            if (GUIGraphicsUtils.isFontNameExists(fontName) == false)
+                fontName = null;
+        }
+
+        //      if (!config.isPropertyExists("font")) {
+        if (fontName == null) {
+            font = new Font(GUIGraphicsUtils.getDefaultFont(), Font.PLAIN, 14);
+            //         font = new Font("Courier New",Font.PLAIN,14);
+            config.setProperty("font", font.getFontName());
+        } else {
+            //font = new Font(getStringProperty("font"),Font.PLAIN,14);
+            font = new Font(fontName, Font.PLAIN, 14);
+        }
 
         loadColors();
 
