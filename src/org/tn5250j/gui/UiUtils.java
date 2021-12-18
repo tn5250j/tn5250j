@@ -3,6 +3,7 @@
  */
 package org.tn5250j.gui;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
@@ -17,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -173,5 +175,14 @@ public final class UiUtils {
 
     public static java.awt.Font toAwtFont(final Font font) {
         return new java.awt.Font(font.getName(), java.awt.Font.PLAIN, (int) Math.round(font.getSize()));
+    }
+
+    public static Rectangle toAwtRectangle(final Rectangle2D bounds) {
+        return new Rectangle(
+            (int) bounds.getMinX(),
+            (int) bounds.getMinY(),
+            (int) bounds.getWidth(),
+            (int) bounds.getHeight()
+        );
     }
 }

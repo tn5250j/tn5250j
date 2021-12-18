@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import javafx.geometry.Rectangle2D;
 
 public class RubberBandSwing implements RubberBand {
-    private volatile RubberBandCanvasSwingIF canvas;
+    private volatile SessionPanelSwing canvas;
     protected volatile Point startPoint;
     protected volatile Point endPoint;
     private volatile boolean eraseSomething = false;
@@ -56,7 +56,7 @@ public class RubberBandSwing implements RubberBand {
         @Override
         public void mouseDragged(final MouseEvent e) {
 
-            if (!SwingUtilities.isRightMouseButton(e) && getCanvas().canDrawRubberBand(RubberBandSwing.this)) {
+            if (!SwingUtilities.isRightMouseButton(e) && canvas.canDrawRubberBand(RubberBandSwing.this)) {
                 erase();
                 if (!isDragging) {
                     reset();
@@ -76,20 +76,20 @@ public class RubberBandSwing implements RubberBand {
         return isDragging;
     }
 
-    public RubberBandSwing(final RubberBandCanvasSwingIF c) {
+    public RubberBandSwing(final SessionPanelSwing c) {
         super();
         setCanvas(c);
-        getCanvas().addMouseListener(new MouseHandler());
-        getCanvas().addMouseMotionListener(new MouseMotionHandler());
+        canvas.addMouseListener(new MouseHandler());
+        canvas.addMouseMotionListener(new MouseMotionHandler());
     }
 
     @Override
     public void draw() {
-        final Graphics g = getCanvas().createDrawingGraphics();
+        final Graphics g = canvas.createDrawingGraphics();
 
         if (g != null) {
             try {
-                if (getCanvas().canDrawRubberBand(this)) {
+                if (canvas.canDrawRubberBand(this)) {
                     g.setXORMode(canvas.getBackground());
 
                     final Point start = getStartPoint();
@@ -124,10 +124,6 @@ public class RubberBandSwing implements RubberBand {
             setEraseSomething(false);
         }
 
-    }
-
-    public final RubberBandCanvasSwingIF getCanvas() {
-        return this.canvas;
     }
 
     public Point getEndPoint() {
@@ -172,11 +168,11 @@ public class RubberBandSwing implements RubberBand {
             endY = getStartPoint().y;
         }
 
-        getCanvas().areaBounded(this, startX, startY, endX, endY);
+        canvas.areaBounded(this, startX, startY, endX, endY);
 
     }
 
-    public final void setCanvas(final RubberBandCanvasSwingIF c) {
+    public final void setCanvas(final SessionPanelSwing c) {
         this.canvas = c;
     }
 

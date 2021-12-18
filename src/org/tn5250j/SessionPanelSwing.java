@@ -84,7 +84,7 @@ import javafx.geometry.Rectangle2D;
  * A host GUI session
  * (Hint: old name was SessionGUI)
  */
-public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF,
+public class SessionPanelSwing extends JPanel implements
         SessionGui, SessionConfigListener, SessionListener {
 
     private static final long serialVersionUID = 1L;
@@ -662,7 +662,7 @@ public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF
     public void resizeMe() {
         final Rectangle2D r = getDrawingBounds();
         if (guiGraBuf != null) {
-            guiGraBuf.resizeScreenArea((int) r.getWidth(), (int) r.getHeight());
+            guiGraBuf.resizeScreenArea((int) r.getWidth(), (int) r.getHeight(), false);
         }
         screen.repaintScreen();
         final Graphics g = getGraphics();
@@ -853,7 +853,6 @@ public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF
     /**
      * Returns a pointer to the graphics area that we can draw on
      */
-    @Override
     public Graphics createDrawingGraphics() {
         return guiGraBuf.getDrawingArea();
     }
@@ -870,12 +869,10 @@ public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF
         return result;
     }
 
-    @Override
     public Point translateStart(final Point start) {
         return guiGraBuf.translateStart(start);
     }
 
-    @Override
     public Point translateEnd(final Point end) {
         return guiGraBuf.translateEnd(end);
     }
@@ -888,7 +885,6 @@ public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF
         guiGraBuf.getBoundingArea(bounds);
     }
 
-    @Override
     public void areaBounded(final RubberBandSwing band, final int x1, final int y1, final int x2, final int y2) {
 
 
@@ -899,7 +895,6 @@ public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF
         }
     }
 
-    @Override
     public boolean canDrawRubberBand(final RubberBandSwing b) {
 
         // before we get the row col we first have to translate the x,y point
@@ -910,7 +905,6 @@ public class SessionPanelSwing extends JPanel implements RubberBandCanvasSwingIF
 
     }
 
-    @Override
     public Point getInitialPoint() {
         final Point p = new Point(0, 0);
         guiGraBuf.getPointFromRowCol(0, 0, p);

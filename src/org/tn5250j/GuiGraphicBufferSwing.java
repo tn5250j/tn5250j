@@ -57,6 +57,8 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.geometry.Dimension2D;
+
 public class GuiGraphicBufferSwing implements ScreenOIAListener,
         ScreenListener,
         PropertyChangeListener,
@@ -93,9 +95,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
     protected int rowHeight;
     private SessionGui gui;
 
-    private LineMetrics lm;
     /*default*/ Font font;
-    private int lenScreen;
     private boolean showHex;
     private Color colorBlue;
     private Color colorWhite;
@@ -110,7 +110,6 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
     private Color colorSep;
     private Color colorHexAttr;
     protected int crossHair = 0;
-    private boolean updateFont;
     private int cursorSize = 0;
     protected boolean hotSpots = false;
     private float sfh = 1.2f; // font scale height
@@ -147,16 +146,14 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         config.addSessionConfigListener(this);
         // load the session properties from it's profile.
         loadProps();
-        getSettings();
-        final FontRenderContext frc = new FontRenderContext(font.getTransform(),
-                true, true);
-        lm = font.getLineMetrics("Wy", frc);
-        columnWidth = (int) font.getStringBounds("W", frc).getWidth() + 1;
-        rowHeight = (int) (font.getStringBounds("g", frc).getHeight()
-                + lm.getDescent() + lm.getLeading());
+
+        final Dimension2D cellBounds = getCellBounds();
+        columnWidth = (int) Math.ceil(cellBounds.getWidth());
+        rowHeight = (int) Math.ceil(cellBounds.getHeight());
 
         screen.getOIA().addOIAListener(this);
         screen.addScreenListener(this);
+
         tArea = new Rectangle2D.Float();
         cArea = new Rectangle2D.Float();
         aArea = new Rectangle2D.Float();
@@ -167,6 +164,16 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         kbArea = new Rectangle2D.Float();
         scriptArea = new Rectangle2D.Float();
 
+    }
+
+    protected Dimension2D getCellBounds() {
+        final FontRenderContext frc = new FontRenderContext(getFont().getTransform(),
+                true, true);
+        final LineMetrics lm = getFont().getLineMetrics("Wy", frc);
+        final double w = getFont().getStringBounds("W", frc).getWidth() + 1;
+        final double h = (getFont().getStringBounds("g", frc).getHeight()
+                + lm.getDescent() + lm.getLeading());
+        return new Dimension2D(w, h);
     }
 
     public Font getFont() {
@@ -206,17 +213,10 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
             //         synchronized (lock) {
             bi = null;
             bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            getSettings();
             // tell waiting threads to wake up
             //            lock.notifyAll();
             //         }
         }
-
-    }
-
-    private void getSettings() {
-
-        lenScreen = screen.getScreenLength();
 
     }
 
@@ -642,6 +642,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
         }
 
+        boolean updateFont = false;
         if (pn.equals("font")) {
             font = new Font((String) pce.getNewValue(), Font.PLAIN, 14);
             updateFont = true;
@@ -649,9 +650,9 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
         if (pn.equals("useAntialias")) {
             if (pce.getNewValue().equals("Yes"))
-                setUseAntialias(true);
-            else
-                setUseAntialias(false);
+                this.antialiased = true;
+           else
+               this.antialiased = false;
             updateFont = true;
         }
 
@@ -689,20 +690,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         if (pn.equals("cursorBlink")) {
 
             log.debug(getStringProperty("cursorBlink"));
-            if (pce.getNewValue().equals("Yes")) {
-
-                if (blinker == null) {
-
-                    blinker = new javax.swing.Timer(500, this);
-                    blinker.start();
-                }
-            } else {
-
-                if (blinker != null) {
-                    blinker.stop();
-                    blinker = null;
-                }
-            }
+            setCursorBlinking(pce.getNewValue().equals("Yes"));
         }
 
         if (pn.equals("backspaceError")) {
@@ -714,19 +702,37 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
         if (updateFont) {
             final javafx.geometry.Rectangle2D r = gui.getDrawingBounds();
-            resizeScreenArea((int) r.getWidth(), (int) r.getHeight());
-            updateFont = false;
+            resizeScreenArea((int) r.getWidth(), (int) r.getHeight(), updateFont);
         }
 
         if (resetAttr) {
             //			for (int y = 0; y < lenScreen; y++) {
             //				screen[y].setAttribute(screen[y].getCharAttr());
             //			}
+            recalculateOIASizes();
             drawOIA();
         }
 
+        refreshView();
+    }
+
+    protected void refreshView() {
         ((Component) gui).validate();
         ((Component) gui).repaint();
+    }
+
+    protected void setCursorBlinking(final boolean blinking) {
+        if (blinking) {
+            if (blinker == null) {
+                blinker = new javax.swing.Timer(500, this);
+                blinker.start();
+            }
+        } else {
+            if (blinker != null) {
+                blinker.stop();
+                blinker = null;
+            }
+        }
     }
 
     /**
@@ -857,8 +863,8 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         // to translate as offset 0,0
         int pos = getPosFromView(end.x, end.y);
 
-        if (pos >= lenScreen) {
-            pos = lenScreen - 1;
+        if (pos >= screen.getScreenLength()) {
+            pos = screen.getScreenLength() - 1;
         }
         final int x = ((columnWidth * screen.getCol(pos)) + columnWidth) - 1;
         final int y = ((rowHeight * screen.getRow(pos)) + rowHeight) - 1;
@@ -910,10 +916,11 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
      * Convinience method to resize the screen area such as when the parent
      * frame is resized.
      *
-     * @param width
-     * @param height
+     * @param width screen width.
+     * @param height screen height.
+     * @param updateFont font is updated.
      */
-    protected final void resizeScreenArea(final int width, final int height) {
+    protected void resizeScreenArea(final int width, final int height, final boolean updateFont) {
         if (bi == null) {
             return;
         }
@@ -929,14 +936,10 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
             // set up all the variables that are used in calculating the new
             // size
             font = k;
-            final FontRenderContext frc = new FontRenderContext(font.getTransform(),
-                    true, true);
-            lm = font.getLineMetrics("Wy", frc);
-            columnWidth = (int) font.getStringBounds("W", frc).getWidth() + 2;
-            rowHeight = (int) (font.getStringBounds("g", frc).getHeight()
-                    + lm.getDescent() + lm.getLeading());
 
-            resize(columnWidth * screen.getColumns(), rowHeight * (screen.getRows() + 2));
+            final Dimension2D cellBounds = getCellBounds();
+            columnWidth = (int) Math.ceil(cellBounds.getWidth());
+            rowHeight = (int) Math.ceil(cellBounds.getHeight());
 
             // set the offsets for the screen centering.
             offLeft = (width - getWidth()) / 2;
@@ -946,11 +949,14 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
             if (offTop < 0)
                 offTop = 0;
 
-            drawOIA();
-
-            updateFont = false;
+            redrawResized(columnWidth * screen.getColumns(), rowHeight * (screen.getRows() + 2));
         }
+    }
 
+    protected void redrawResized(final int w, final int h) {
+        resize(w, h);
+        recalculateOIASizes();
+        drawOIA();
     }
 
     public final Dimension getPreferredSize() {
@@ -972,6 +978,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         //         // tell waiting threads to wake up
         //         lock.notifyAll();
         //      }
+        recalculateOIASizes();
         drawOIA();
         return bi;
     }
@@ -979,14 +986,8 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
     /**
      * Draw the operator information area
      */
-    private Graphics2D drawOIA() {
-
-        final int numRows = screen.getRows();
-
-        Graphics2D g2d;
-
-        // get ourselves a global pointer to the graphics
-        g2d = getDrawingArea();
+    protected Graphics2D drawOIA() {
+        final Graphics2D g2d = getDrawingArea();
 
         if (antialiased)
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -1000,6 +1001,16 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
         g2d.setColor(colorBg);
         g2d.fillRect(0, 0, bi.getWidth(null), bi.getHeight(null));
+
+        g2d.setColor(colorBlue);
+        g2d.draw(separatorLine);
+        gg2d = g2d;
+        return g2d;
+    }
+
+    private void recalculateOIASizes() {
+        final int numRows = screen.getRows();
+
         tArea.setRect(0, 0, bi.getWidth(null), (rowHeight * (numRows)));
         cArea.setRect(0, rowHeight * (numRows + 1), bi.getWidth(null), rowHeight * (numRows + 1));
         aArea.setRect(0, 0, bi.getWidth(null), bi.getHeight(null));
@@ -1026,76 +1037,16 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
                 (rowHeight * (numRows + 1)) - (rowHeight / 2),
                 bi.getWidth(null),
                 (rowHeight * (numRows + 1)) - (rowHeight / 2));
-
-        g2d.setColor(colorBlue);
-        g2d.draw(separatorLine);
-        gg2d = g2d;
-        return g2d;
     }
 
-
-    public void drawCursor(final int row, final int col) {
-
-        final int botOffset = cursorBottOffset;
-        final boolean insertMode = screen.getOIA().isInsertMode();
-
+    protected void drawCursor(final int row, final int col, final int botOffset) {
         Graphics2D g2 = getDrawingArea();
-
-        switch (cursorSize) {
-            case 0:
-                cursor.setRect(
-                        columnWidth * (col),
-                        (rowHeight * (row + 1)) - botOffset,
-                        columnWidth,
-                        1
-                );
-                break;
-            case 1:
-                cursor.setRect(
-                        columnWidth * (col),
-                        (rowHeight * (row + 1) - rowHeight / 2),
-                        columnWidth,
-                        (rowHeight / 2) - botOffset
-                );
-                break;
-            case 2:
-                cursor.setRect(
-                        columnWidth * (col),
-                        (rowHeight * row),
-                        columnWidth,
-                        rowHeight - botOffset
-                );
-                break;
-        }
-
-        if (insertMode && cursorSize != 1) {
-            cursor.setRect(
-                    columnWidth * (col),
-                    (rowHeight * (row + 1) - rowHeight / 2),
-                    columnWidth,
-                    (rowHeight / 2) - botOffset
-            );
-        }
-
-        final Rectangle r = cursor.getBounds();
-        r.setSize(r.width, r.height);
-
         g2.setColor(colorCursor);
         g2.setXORMode(colorBg);
 
         g2.fill(cursor);
 
-        updateImage(r);
-
-        if (!rulerFixed) {
-            crossRow = row;
-            crossRect.setBounds(r);
-        } else {
-            if (crossHair == 0) {
-                crossRow = row;
-                crossRect.setBounds(r);
-            }
-        }
+        updateImage(cursor.getBounds());
 
         switch (crossHair) {
             case 1:  // horizontal
@@ -1136,7 +1087,60 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
     }
 
-    private void drawScriptRunning(final Color color) {
+    protected int recalculateCursorSizes(final int row, final int col) {
+        final int botOffset = cursorBottOffset;
+        final boolean insertMode = screen.getOIA().isInsertMode();
+
+        switch (cursorSize) {
+            case 0:
+                cursor.setRect(
+                        columnWidth * (col),
+                        (rowHeight * (row + 1)) - botOffset,
+                        columnWidth,
+                        1
+                );
+                break;
+            case 1:
+                cursor.setRect(
+                        columnWidth * (col),
+                        (rowHeight * (row + 1) - rowHeight / 2),
+                        columnWidth,
+                        (rowHeight / 2) - botOffset
+                );
+                break;
+            case 2:
+                cursor.setRect(
+                        columnWidth * (col),
+                        (rowHeight * row),
+                        columnWidth,
+                        rowHeight - botOffset
+                );
+                break;
+        }
+
+        if (insertMode && cursorSize != 1) {
+            cursor.setRect(
+                    columnWidth * (col),
+                    (rowHeight * (row + 1) - rowHeight / 2),
+                    columnWidth,
+                    (rowHeight / 2) - botOffset
+            );
+        }
+
+        if (!rulerFixed) {
+            crossRow = row;
+            crossRect.setBounds(cursor.getBounds());
+        } else {
+            if (crossHair == 0) {
+                crossRow = row;
+                crossRect.setBounds(cursor.getBounds());
+            }
+        }
+
+        return botOffset;
+    }
+
+    protected void drawScriptRunning(final Color color) {
 
         Graphics2D g2d;
 
@@ -1159,11 +1163,9 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
         // get rid of the pointers
         g2d.dispose();
-
-
     }
 
-    private void eraseScriptRunning(final Color color) {
+    protected void eraseScriptRunning(final Color color) {
 
         Graphics2D g2d;
 
@@ -1173,8 +1175,6 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         g2d.setColor(color);
         g2d.fill(scriptArea);
         g2d.dispose();
-
-
     }
 
     /**
@@ -1349,8 +1349,10 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
         //      }
     }
 
-    public void setUseAntialias(final boolean antialiased) {
-        this.antialiased = antialiased;
+    private LineMetrics getLineMetrics() {
+        final FontRenderContext frc = new FontRenderContext(getFont().getTransform(),
+                true, true);
+        return getFont().getLineMetrics("Wy", frc);
     }
 
     private void setStatus(final ScreenOIA oia) {
@@ -1367,6 +1369,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
             g2d.setColor(colorBg);
             g2d.fill(sArea);
 
+            final LineMetrics lm = getLineMetrics();
             final float Y = ((int) sArea.getY() + rowHeight) - (lm.getLeading() + lm.getDescent());
 
             switch (attr) {
@@ -1415,6 +1418,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
         csArea = modelToView(row, col, csArea);
 
+        final LineMetrics lm = getLineMetrics();
         final int x = csArea.x;
         final int y = csArea.y;
         final int cy = (int) (y + rowHeight - (lm.getDescent() + lm.getLeading()));
@@ -1774,7 +1778,8 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
     @Override
     public void onScreenChanged(final int which, int sr, final int sc, final int er, final int ec) {
         if (which == 3 || which == 4) {
-            drawCursor(sr, sc);
+            final int botOffset = recalculateCursorSizes(sr, sc);
+            drawCursor(sr, sc, botOffset);
             return;
         }
 
@@ -1811,6 +1816,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
 
     @Override
     public void onOIAChanged(final ScreenOIA changedOIA, final int change) {
+        final LineMetrics lm = getLineMetrics();
 
         switch (changedOIA.getLevel()) {
 
@@ -2008,7 +2014,7 @@ public class GuiGraphicBufferSwing implements ScreenOIAListener,
             graphic = new char[size];
             field = new char[size];
 
-            if (size == lenScreen) {
+            if (size == screen.getScreenLength()) {
                 screen.GetScreen(text, size, TN5250jConstants.PLANE_TEXT);
                 screen.GetScreen(attr, size, TN5250jConstants.PLANE_ATTR);
                 screen.GetScreen(isAttr, size, TN5250jConstants.PLANE_IS_ATTR_PLACE);
