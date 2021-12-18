@@ -25,13 +25,21 @@
  */
 package org.tn5250j.sessionsettings;
 
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
 
 class SignoffAttributesPanel extends AttributesPanel {
 
@@ -42,13 +50,14 @@ class SignoffAttributesPanel extends AttributesPanel {
     private JTextField toRow;
     private JTextField toCol;
 
-    SignoffAttributesPanel(SessionConfig config) {
+    SignoffAttributesPanel(final SessionConfig config) {
         super(config, "Signoff");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
@@ -57,7 +66,7 @@ class SignoffAttributesPanel extends AttributesPanel {
         add(contentPane, BorderLayout.NORTH);
 
         // define signoff confirmation panel
-        JPanel soConfirm = new JPanel();
+        final JPanel soConfirm = new JPanel();
         soConfirm.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("sa.titleSignoff")));
 
@@ -67,7 +76,8 @@ class SignoffAttributesPanel extends AttributesPanel {
         signoffCheck.setSelected(getStringProperty("confirmSignoff").equals("Yes"));
 
         signoffCheck.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
                 doItemStateChanged(e);
             }
         });
@@ -75,11 +85,11 @@ class SignoffAttributesPanel extends AttributesPanel {
         soConfirm.add(signoffCheck);
 
         // define signoff confirmation screen region
-        JPanel soRegion = new JPanel();
+        final JPanel soRegion = new JPanel();
         soRegion.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("sa.titleSignoffRegion")));
 
-        AlignLayout rowcol = new AlignLayout(4, 5, 5);
+        final AlignLayout rowcol = new AlignLayout(4, 5, 5);
         soRegion.setLayout(rowcol);
 
         soRegion.add(new JLabel(LangTool.getString("sa.fromRow")));
@@ -106,7 +116,7 @@ class SignoffAttributesPanel extends AttributesPanel {
 
     private void loadRegion() {
 
-        Rectangle region = getRectangleProperty("signOnRegion");
+        final Rectangle region = UiUtils.toAwtRectangle(getRectangleProperty("signOnRegion"));
 
         if (region.x == 0)
             fromRow.setText("1");
@@ -135,7 +145,7 @@ class SignoffAttributesPanel extends AttributesPanel {
      *
      * @param e Item event to react to
      */
-    private void doItemStateChanged(ItemEvent e) {
+    private void doItemStateChanged(final ItemEvent e) {
 
         toggleRegion(false);
 
@@ -146,7 +156,7 @@ class SignoffAttributesPanel extends AttributesPanel {
         }
     }
 
-    private void toggleRegion(boolean state) {
+    private void toggleRegion(final boolean state) {
 
         fromRow.setEnabled(state);
         fromCol.setEnabled(state);
@@ -155,6 +165,7 @@ class SignoffAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         if (signoffCheck.isSelected()) {
@@ -169,7 +180,7 @@ class SignoffAttributesPanel extends AttributesPanel {
             setProperty("confirmSignoff", "No");
         }
 
-        Rectangle region = new Rectangle(Integer.parseInt(fromRow.getText()),
+        final Rectangle region = new Rectangle(Integer.parseInt(fromRow.getText()),
                 Integer.parseInt(fromCol.getText()),
                 Integer.parseInt(toRow.getText()),
                 Integer.parseInt(toCol.getText()));

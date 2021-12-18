@@ -20,16 +20,37 @@
  */
 package org.tn5250j;
 
-import org.tn5250j.event.SessionConfigEvent;
-import org.tn5250j.event.SessionConfigListener;
-import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.keyboard.KeyMnemonic;
-import org.tn5250j.keyboard.KeyMnemonicSerializer;
-import org.tn5250j.tools.GUIGraphicsUtils;
-import org.tn5250j.tools.LangTool;
+import static java.lang.Float.parseFloat;
+import static org.tn5250j.keyboard.KeyMnemonic.CLEAR;
+import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
+import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
+import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
+import static org.tn5250j.keyboard.KeyMnemonic.PF1;
+import static org.tn5250j.keyboard.KeyMnemonic.PF10;
+import static org.tn5250j.keyboard.KeyMnemonic.PF11;
+import static org.tn5250j.keyboard.KeyMnemonic.PF12;
+import static org.tn5250j.keyboard.KeyMnemonic.PF13;
+import static org.tn5250j.keyboard.KeyMnemonic.PF14;
+import static org.tn5250j.keyboard.KeyMnemonic.PF15;
+import static org.tn5250j.keyboard.KeyMnemonic.PF16;
+import static org.tn5250j.keyboard.KeyMnemonic.PF17;
+import static org.tn5250j.keyboard.KeyMnemonic.PF18;
+import static org.tn5250j.keyboard.KeyMnemonic.PF19;
+import static org.tn5250j.keyboard.KeyMnemonic.PF2;
+import static org.tn5250j.keyboard.KeyMnemonic.PF20;
+import static org.tn5250j.keyboard.KeyMnemonic.PF21;
+import static org.tn5250j.keyboard.KeyMnemonic.PF22;
+import static org.tn5250j.keyboard.KeyMnemonic.PF23;
+import static org.tn5250j.keyboard.KeyMnemonic.PF24;
+import static org.tn5250j.keyboard.KeyMnemonic.PF3;
+import static org.tn5250j.keyboard.KeyMnemonic.PF4;
+import static org.tn5250j.keyboard.KeyMnemonic.PF5;
+import static org.tn5250j.keyboard.KeyMnemonic.PF6;
+import static org.tn5250j.keyboard.KeyMnemonic.PF7;
+import static org.tn5250j.keyboard.KeyMnemonic.PF8;
+import static org.tn5250j.keyboard.KeyMnemonic.PF9;
+import static org.tn5250j.keyboard.KeyMnemonic.SYSREQ;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,8 +64,19 @@ import java.util.StringTokenizer;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static java.lang.Float.parseFloat;
-import static org.tn5250j.keyboard.KeyMnemonic.*;
+import javax.swing.JOptionPane;
+
+import org.tn5250j.event.SessionConfigEvent;
+import org.tn5250j.event.SessionConfigListener;
+import org.tn5250j.gui.UiUtils;
+import org.tn5250j.interfaces.ConfigureFactory;
+import org.tn5250j.keyboard.KeyMnemonic;
+import org.tn5250j.keyboard.KeyMnemonicSerializer;
+import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.tools.LangTool;
+
+import javafx.geometry.Rectangle2D;
+import javafx.scene.paint.Color;
 
 /**
  * A host session configuration object
@@ -69,7 +101,7 @@ public class SessionConfig {
     private List<SessionConfigListener> sessionCfglisteners = null;
     private final ReadWriteLock sessionCfglistenersLock = new ReentrantReadWriteLock();
 
-    public SessionConfig(String configurationResource, String sessionName) {
+    public SessionConfig(final String configurationResource, final String sessionName) {
         this.configurationResource = configurationResource;
         this.sessionName = sessionName;
         loadConfigurationResource();
@@ -90,7 +122,7 @@ public class SessionConfig {
         return sessionName;
     }
 
-    public final void firePropertyChange(Object source, String propertyName, Object oldValue, Object newValue) {
+    public final void firePropertyChange(final Object source, final String propertyName, final Object oldValue, final Object newValue) {
 
         if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
             return;
@@ -100,7 +132,7 @@ public class SessionConfig {
         try {
             if (this.sessionCfglisteners != null) {
                 final SessionConfigEvent sce = new SessionConfigEvent(source, propertyName, oldValue, newValue);
-                for (SessionConfigListener target : this.sessionCfglisteners) {
+                for (final SessionConfigListener target : this.sessionCfglisteners) {
                     target.onConfigChanged(sce);
                 }
             }
@@ -124,18 +156,18 @@ public class SessionConfig {
         sesProps.setProperty("saveme", "");
     }
 
-    public void saveSessionProps(java.awt.Container parent) {
+    public void saveSessionProps(final java.awt.Container parent) {
 
         if (sesProps.containsKey("saveme")) {
 
             sesProps.remove("saveme");
 
-            Object[] args = {getConfigurationResource()};
-            String message = MessageFormat.format(
+            final Object[] args = {getConfigurationResource()};
+            final String message = MessageFormat.format(
                     LangTool.getString("messages.saveSettings"),
                     args);
 
-            int result = JOptionPane.showConfirmDialog(parent, message);
+            final int result = JOptionPane.showConfirmDialog(parent, message);
 
             if (result == JOptionPane.OK_OPTION) {
                 saveSessionProps();
@@ -153,12 +185,12 @@ public class SessionConfig {
 
         } else {
             try {
-                FileOutputStream out = new FileOutputStream(settingsDirectory() + getConfigurationResource());
+                final FileOutputStream out = new FileOutputStream(settingsDirectory() + getConfigurationResource());
                 // save off the width and height to be restored later
                 sesProps.store(out, "------ Defaults --------");
-            } catch (FileNotFoundException ignore) {
+            } catch (final FileNotFoundException ignore) {
                 // ignore
-            } catch (IOException ignore) {
+            } catch (final IOException ignore) {
                 // ignore
             }
         }
@@ -174,16 +206,16 @@ public class SessionConfig {
             loadDefaults();
         } else {
             try {
-                FileInputStream in = new FileInputStream(settingsDirectory() + getConfigurationResource());
+                final FileInputStream in = new FileInputStream(settingsDirectory() + getConfigurationResource());
                 sesProps.load(in);
                 if (sesProps.size() == 0)
                     loadDefaults();
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 System.out.println("Information Message: Properties file is being "
                         + "created for first time use:  File name "
                         + getConfigurationResource());
                 loadDefaults();
-            } catch (SecurityException se) {
+            } catch (final SecurityException se) {
                 System.out.println(se.getMessage());
             }
         }
@@ -201,8 +233,8 @@ public class SessionConfig {
             if (sesProps.size() == 0) {
                 sesProps.putAll(loadPropertiesFromResource(getConfigurationResource()));
 
-                Properties colorSchemaDefaults = loadPropertiesFromResource("tn5250jSchemas.properties");
-                String prefix = colorSchemaDefaults.getProperty("schemaDefault");
+                final Properties colorSchemaDefaults = loadPropertiesFromResource("tn5250jSchemas.properties");
+                final String prefix = colorSchemaDefaults.getProperty("schemaDefault");
                 sesProps.setProperty("colorBg", colorSchemaDefaults.getProperty(prefix + ".colorBg"));
                 sesProps.setProperty("colorRed", colorSchemaDefaults.getProperty(prefix + ".colorRed"));
                 sesProps.setProperty("colorTurq", colorSchemaDefaults.getProperty(prefix + ".colorTurq"));
@@ -219,25 +251,25 @@ public class SessionConfig {
 
                 configureFactory.saveSettings("dfltSessionProps", getConfigurationResource(), "");
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.out.println("Information Message: Properties file is being "
                     + "created for first time use:  File name "
                     + getConfigurationResource());
-        } catch (SecurityException se) {
+        } catch (final SecurityException se) {
             System.out.println(se.getMessage());
         }
     }
 
-    private Properties loadPropertiesFromResource(String resourceName) throws IOException {
-        Properties properties = new Properties();
-        URL url = getClass().getClassLoader().getResource(resourceName);
+    private Properties loadPropertiesFromResource(final String resourceName) throws IOException {
+        final Properties properties = new Properties();
+        final URL url = getClass().getClassLoader().getResource(resourceName);
         if (url != null) {
             properties.load(url.openStream());
         }
         return properties;
     }
 
-    public boolean isPropertyExists(String prop) {
+    public boolean isPropertyExists(final String prop) {
         return sesProps.containsKey(prop);
     }
 
@@ -246,7 +278,7 @@ public class SessionConfig {
      * @deprecated see {@link SessionConfiguration}
      */
     @Deprecated
-    public String getStringProperty(String prop) {
+    public String getStringProperty(final String prop) {
 
         if (sesProps.containsKey(prop)) {
             return (String) sesProps.get(prop);
@@ -260,12 +292,12 @@ public class SessionConfig {
      * @deprecated see {@link SessionConfiguration}
      */
     @Deprecated
-    public int getIntegerProperty(String prop) {
+    public int getIntegerProperty(final String prop) {
 
         if (sesProps.containsKey(prop)) {
             try {
                 return Integer.parseInt((String) sesProps.get(prop));
-            } catch (NumberFormatException ne) {
+            } catch (final NumberFormatException ne) {
                 return 0;
             }
         }
@@ -278,44 +310,48 @@ public class SessionConfig {
      * @deprecated see {@link SessionConfiguration}
      */
     @Deprecated
-    public Color getColorProperty(String prop) {
+    public Color getColorProperty(final String prop) {
 
         if (sesProps.containsKey(prop)) {
-            return new Color(getIntegerProperty(prop));
+            return UiUtils.rgb(getIntegerProperty(prop));
         }
         return null;
 
     }
 
-    public Rectangle getRectangleProperty(String key) {
-
-        Rectangle rectProp = new Rectangle();
+    public Rectangle2D getRectangleProperty(final String key) {
+        int x = 0;
+        int y = 0;
+        int width = 0;
+        int height = 0;
 
         if (sesProps.containsKey(key)) {
-            String rect = sesProps.getProperty(key);
-            StringTokenizer stringtokenizer = new StringTokenizer(rect, ",");
+            final String rect = sesProps.getProperty(key);
+            final StringTokenizer stringtokenizer = new StringTokenizer(rect, ",");
             if (stringtokenizer.hasMoreTokens())
-                rectProp.x = Integer.parseInt(stringtokenizer.nextToken());
+                x = Integer.parseInt(stringtokenizer.nextToken());
             if (stringtokenizer.hasMoreTokens())
-                rectProp.y = Integer.parseInt(stringtokenizer.nextToken());
+                y = Integer.parseInt(stringtokenizer.nextToken());
             if (stringtokenizer.hasMoreTokens())
-                rectProp.width = Integer.parseInt(stringtokenizer.nextToken());
+                width = Integer.parseInt(stringtokenizer.nextToken());
             if (stringtokenizer.hasMoreTokens())
-                rectProp.height = Integer.parseInt(stringtokenizer.nextToken());
-
+                height = Integer.parseInt(stringtokenizer.nextToken());
         }
 
-        return rectProp;
-
+        return new Rectangle2D(x, y, width, height);
     }
 
-    public void setRectangleProperty(String key, Rectangle rect) {
+    public void setRectangleProperty(final String key, final Rectangle2D rect) {
 
-        String rectStr = rect.x + "," +
-                rect.y + "," +
-                rect.width + "," +
-                rect.height;
+        final String rectStr = round(rect.getMinX()) + "," +
+                round(rect.getMinY()) + "," +
+                round(rect.getWidth()) + "," +
+                round(rect.getHeight());
         sesProps.setProperty(key, rectStr);
+    }
+
+    private int round(final double value) {
+        return (int) Math.ceil(value);
     }
 
     /**
@@ -323,7 +359,7 @@ public class SessionConfig {
      * @deprecated see {@link SessionConfiguration}
      */
     @Deprecated
-    public float getFloatProperty(String prop) {
+    public float getFloatProperty(final String prop) {
         return getFloatProperty(prop, 0.0f);
     }
 
@@ -332,18 +368,18 @@ public class SessionConfig {
      * @deprecated see {@link SessionConfiguration}
      */
     @Deprecated
-    public float getFloatProperty(String propertyName, float defaultValue) {
+    public float getFloatProperty(final String propertyName, final float defaultValue) {
         if (sesProps.containsKey(propertyName)) {
             return parseFloat((String) sesProps.get(propertyName));
         }
         return defaultValue;
     }
 
-    public Object setProperty(String key, String value) {
+    public Object setProperty(final String key, final String value) {
         return sesProps.setProperty(key, value);
     }
 
-    public Object removeProperty(String key) {
+    public Object removeProperty(final String key) {
         return sesProps.remove(key);
     }
 
@@ -352,7 +388,7 @@ public class SessionConfig {
      *
      * @param listener The SessionListener to be added
      */
-    public final void addSessionConfigListener(SessionConfigListener listener) {
+    public final void addSessionConfigListener(final SessionConfigListener listener) {
         sessionCfglistenersLock.writeLock().lock();
         try {
             if (sessionCfglisteners == null) {
@@ -369,7 +405,7 @@ public class SessionConfig {
      *
      * @param listener The SessionListener to be removed
      */
-    public final void removeSessionConfigListener(SessionConfigListener listener) {
+    public final void removeSessionConfigListener(final SessionConfigListener listener) {
         sessionCfglistenersLock.writeLock().lock();
         try {
             if (sessionCfglisteners != null) {
@@ -384,8 +420,8 @@ public class SessionConfig {
         return sessionConfiguration;
     }
 
-    public void setKeypadMnemonicsAndFireChangeEvent(KeyMnemonic[] keyMnemonics) {
-        String newValue = keyMnemonicSerializer.serialize(keyMnemonics);
+    public void setKeypadMnemonicsAndFireChangeEvent(final KeyMnemonic[] keyMnemonics) {
+        final String newValue = keyMnemonicSerializer.serialize(keyMnemonics);
         firePropertyChange(this, CONFIG_KEYPAD_MNEMONICS, getStringProperty(CONFIG_KEYPAD_MNEMONICS), newValue);
         setProperty(CONFIG_KEYPAD_MNEMONICS, newValue);
     }
@@ -406,8 +442,8 @@ public class SessionConfig {
         }
 
         public KeyMnemonic[] getKeypadMnemonics() {
-            String s = getStringProperty(CONFIG_KEYPAD_MNEMONICS);
-            KeyMnemonic[] result = keyMnemonicSerializer.deserialize(s);
+            final String s = getStringProperty(CONFIG_KEYPAD_MNEMONICS);
+            final KeyMnemonic[] result = keyMnemonicSerializer.deserialize(s);
             if (result.length == 0) {
                 return getDefaultKeypadMnemonics();
             }

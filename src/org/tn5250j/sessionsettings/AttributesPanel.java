@@ -25,14 +25,19 @@
  */
 package org.tn5250j.sessionsettings;
 
+import java.awt.Color;
+import java.awt.Rectangle;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Properties;
+import javafx.geometry.Rectangle2D;
 
 /**
  * Base class for all attribute panels
@@ -49,15 +54,15 @@ abstract class AttributesPanel extends JPanel {
     // content pane to be used if needed by subclasses
     JPanel contentPane;
 
-    public AttributesPanel(SessionConfig config) {
+    public AttributesPanel(final SessionConfig config) {
         this(config, "", nodePrefix);
     }
 
-    public AttributesPanel(SessionConfig config, String name) {
+    public AttributesPanel(final SessionConfig config, final String name) {
         this(config, name, nodePrefix);
     }
 
-    public AttributesPanel(SessionConfig config, String name, String prefix) {
+    public AttributesPanel(final SessionConfig config, final String name, final String prefix) {
         super();
         changes = config;
         this.name = LangTool.getString(prefix + name);
@@ -65,7 +70,7 @@ abstract class AttributesPanel extends JPanel {
 
         try {
             initPanel();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error(e);
         }
     }
@@ -74,7 +79,7 @@ abstract class AttributesPanel extends JPanel {
 
     public abstract void applyAttributes();
 
-    protected final String getStringProperty(String prop) {
+    protected final String getStringProperty(final String prop) {
 
         if (changes.isPropertyExists(prop))
             return changes.getStringProperty(prop);
@@ -83,10 +88,10 @@ abstract class AttributesPanel extends JPanel {
 
     }
 
-    protected final String getStringProperty(String prop, String defaultValue) {
+    protected final String getStringProperty(final String prop, final String defaultValue) {
 
         if (changes.isPropertyExists(prop)) {
-            String p = changes.getStringProperty(prop);
+            final String p = changes.getStringProperty(prop);
             if (p.length() > 0)
                 return p;
             else
@@ -96,30 +101,30 @@ abstract class AttributesPanel extends JPanel {
 
     }
 
-    protected final Color getColorProperty(String prop) {
+    protected final Color getColorProperty(final String prop) {
 
         if (changes.isPropertyExists(prop)) {
-            Color c = new Color(changes.getIntegerProperty(prop));
+            final Color c = new Color(changes.getIntegerProperty(prop));
             return c;
         } else
             return null;
 
     }
 
-    protected Color getColorProperty(String prop, Color defColor) {
+    protected Color getColorProperty(final String prop, final Color defColor) {
 
         if (changes.isPropertyExists(prop)) {
-            Color c = new Color(changes.getIntegerProperty(prop));
+            final Color c = new Color(changes.getIntegerProperty(prop));
             return c;
         } else
             return defColor;
 
     }
 
-    protected final boolean getBooleanProperty(String prop, boolean dflt) {
+    protected final boolean getBooleanProperty(final String prop, final boolean dflt) {
 
         if (changes.isPropertyExists(prop)) {
-            String b = changes.getStringProperty(prop).toLowerCase();
+            final String b = changes.getStringProperty(prop).toLowerCase();
             if (b.equals("yes") || b.equals("true"))
                 return true;
             else
@@ -129,18 +134,19 @@ abstract class AttributesPanel extends JPanel {
 
     }
 
-    protected Rectangle getRectangleProperty(String key) {
+    protected Rectangle2D getRectangleProperty(final String key) {
         return changes.getRectangleProperty(key);
     }
 
-    protected void setRectangleProperty(String key, Rectangle rect) {
-        changes.setRectangleProperty(key, rect);
+    protected void setRectangleProperty(final String key, final Rectangle rect) {
+        changes.setRectangleProperty(key, UiUtils.fromAwtRect(rect));
     }
 
-    protected final void setProperty(String key, String val) {
+    protected final void setProperty(final String key, final String val) {
         changes.setProperty(key, val);
     }
 
+    @Override
     public String toString() {
         return name;
     }

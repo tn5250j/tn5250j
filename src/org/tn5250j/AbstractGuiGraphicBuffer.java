@@ -25,14 +25,11 @@
  */
 package org.tn5250j;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -43,10 +40,12 @@ import org.tn5250j.event.ScreenOIAListener;
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.sessionsettings.ColumnSeparator;
 import org.tn5250j.tools.GUIGraphicsUtils;
 
 import javafx.geometry.Dimension2D;
+import javafx.scene.paint.Color;
 
 public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         ScreenListener,
@@ -148,15 +147,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
 
     }
 
-    protected Dimension2D getCellBounds() {
-        final FontRenderContext frc = new FontRenderContext(getFont().getTransform(),
-                true, true);
-        final LineMetrics lm = getFont().getLineMetrics("Wy", frc);
-        final double w = getFont().getStringBounds("W", frc).getWidth() + 1;
-        final double h = (getFont().getStringBounds("g", frc).getHeight()
-                + lm.getDescent() + lm.getLeading());
-        return new Dimension2D(w, h);
-    }
+    protected abstract Dimension2D getCellBounds();
 
     public Font getFont() {
         return font;
@@ -166,85 +157,84 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
 
     protected final void loadColors() {
 
-        colorBlue = new Color(140, 120, 255);
-        colorTurq = new Color(0, 240, 255);
-        colorRed = Color.red;
-        colorWhite = Color.white;
-        colorYellow = Color.yellow;
-        colorGreen = Color.green;
-        colorPink = Color.magenta;
-        colorGUIField = Color.white;
-        colorSep = Color.white;
-        colorHexAttr = Color.white;
+        colorBlue = Color.rgb(140, 120, 255);
+        colorTurq = Color.rgb(0, 240, 255);
+        colorRed = Color.RED;
+        colorWhite = Color.WHITE;
+        colorYellow = Color.YELLOW;
+        colorGreen = Color.GREEN;
+        colorPink = Color.MAGENTA;
+        colorGUIField = Color.WHITE;
+        colorSep = Color.WHITE;
+        colorHexAttr = Color.WHITE;
 
         if (cfg_guiInterface)
-            colorBg = Color.lightGray;
+            colorBg = Color.LIGHTGRAY;
         else
-            colorBg = Color.black;
+            colorBg = Color.BLACK;
 
-        colorCursor = Color.white;
+        colorCursor = Color.WHITE;
 
         if (!config.isPropertyExists("colorBg"))
-            setProperty("colorBg", Integer.toString(colorBg.getRGB()));
+            setProperty("colorBg", Integer.toString(UiUtils.toRgb(colorBg)));
         else {
             colorBg = getColorProperty("colorBg");
         }
 
         if (!config.isPropertyExists("colorBlue"))
-            setProperty("colorBlue", Integer.toString(colorBlue.getRGB()));
+            setProperty("colorBlue", Integer.toString(UiUtils.toRgb(colorBlue)));
         else
             colorBlue = getColorProperty("colorBlue");
 
         if (!config.isPropertyExists("colorTurq"))
-            setProperty("colorTurq", Integer.toString(colorTurq.getRGB()));
+            setProperty("colorTurq", Integer.toString(UiUtils.toRgb(colorTurq)));
         else
             colorTurq = getColorProperty("colorTurq");
 
         if (!config.isPropertyExists("colorRed"))
-            setProperty("colorRed", Integer.toString(colorRed.getRGB()));
+            setProperty("colorRed", Integer.toString(UiUtils.toRgb(colorRed)));
         else
             colorRed = getColorProperty("colorRed");
 
         if (!config.isPropertyExists("colorWhite"))
-            setProperty("colorWhite", Integer.toString(colorWhite.getRGB()));
+            setProperty("colorWhite", Integer.toString(UiUtils.toRgb(colorWhite)));
         else
             colorWhite = getColorProperty("colorWhite");
 
         if (!config.isPropertyExists("colorYellow"))
-            setProperty("colorYellow", Integer.toString(colorYellow.getRGB()));
+            setProperty("colorYellow", Integer.toString(UiUtils.toRgb(colorYellow)));
         else
             colorYellow = getColorProperty("colorYellow");
 
         if (!config.isPropertyExists("colorGreen"))
-            setProperty("colorGreen", Integer.toString(colorGreen.getRGB()));
+            setProperty("colorGreen", Integer.toString(UiUtils.toRgb(colorGreen)));
         else
             colorGreen = getColorProperty("colorGreen");
 
         if (!config.isPropertyExists("colorPink"))
-            setProperty("colorPink", Integer.toString(colorPink.getRGB()));
+            setProperty("colorPink", Integer.toString(UiUtils.toRgb(colorPink)));
         else
             colorPink = getColorProperty("colorPink");
 
         if (!config.isPropertyExists("colorGUIField"))
-            setProperty("colorGUIField", Integer.toString(colorGUIField
-                    .getRGB()));
+            setProperty("colorGUIField", Integer.toString(UiUtils.toRgb(colorGUIField)));
         else
             colorGUIField = getColorProperty("colorGUIField");
 
         if (!config.isPropertyExists("colorCursor"))
-            setProperty("colorCursor", Integer.toString(colorCursor.getRGB()));
+            setProperty("colorCursor", Integer.toString(UiUtils.toRgb(colorCursor)));
         else
             colorCursor = getColorProperty("colorCursor");
 
         if (!config.isPropertyExists("colorSep")) {
             colorSep = colorWhite;
-            setProperty("colorSep", Integer.toString(colorSep.getRGB()));
+            setProperty("colorSep", Integer.toString(UiUtils.toRgb(colorSep)));
         } else
             colorSep = getColorProperty("colorSep");
 
         if (!config.isPropertyExists("colorHexAttr")) {
             colorHexAttr = colorWhite;
-            setProperty("colorHexAttr", Integer.toString(colorHexAttr.getRGB()));
+            setProperty("colorHexAttr", Integer.toString(UiUtils.toRgb(colorHexAttr)));
         } else
             colorHexAttr = getColorProperty("colorHexAttr");
 
@@ -1064,7 +1054,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
                 screen.GetScreenRect(field, size, startRow, startCol, endRow, endCol, TN5250jConstants.PLANE_FIELD);
             }
         }
-
     }
 
     public final Rectangle modelToView(final int row, final int col) {
@@ -1112,7 +1101,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             case TN5250jConstants.COLOR_FG_MAGENTA:
                 return colorPink;
             default:
-                return Color.orange;
+                return Color.ORANGE;
         }
     }
 
@@ -1126,6 +1115,5 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         underLine = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_UNDERLINE) != 0;
         colSep = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_COL_SEP) != 0;
         nonDisplay = (updateRect.extended[pos] & TN5250jConstants.EXTENDED_5250_NON_DSP) != 0;
-
     }
 }

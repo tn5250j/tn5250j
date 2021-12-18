@@ -69,6 +69,7 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.mailtools.SendEMailDialog;
@@ -699,7 +700,7 @@ public class SessionPanelSwing extends JPanel implements
 
         //Rectangle r = g.getClipBounds();
 
-        g2.setColor(guiGraBuf.colorBg);
+        g2.setColor(UiUtils.toAwtColor(guiGraBuf.colorBg));
         g2.fillRect(0, 0, getWidth(), getHeight());
 
         guiGraBuf.drawImageBuffer(g2);
@@ -743,7 +744,7 @@ public class SessionPanelSwing extends JPanel implements
         if (guiGraBuf == null) {
             guiGraBuf = new GuiGraphicBufferSwing(screen, this, sesConfig);
             setFont(guiGraBuf.getFont());
-            setBackground(guiGraBuf.getBackground());
+            setBackground(UiUtils.toAwtColor(guiGraBuf.getBackground()));
 
             guiGraBuf.getImageBuffer(0, 0);
         }
@@ -935,7 +936,7 @@ public class SessionPanelSwing extends JPanel implements
 
             final char[] so = screen.getScreenAsChars();
 
-            final Rectangle region = this.sesConfig.getRectangleProperty("signOnRegion");
+            final Rectangle region = UiUtils.toAwtRectangle(this.sesConfig.getRectangleProperty("signOnRegion"));
 
             int fromRow = region.x;
             int fromCol = region.y;

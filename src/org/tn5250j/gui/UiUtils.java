@@ -159,10 +159,14 @@ public final class UiUtils {
 
     public static int toRgb(final Color c) {
         return toRgb(
-                (int) Math.round(c.getRed() * 255.),
-                (int) Math.round(c.getGreen() * 255.),
-                (int) Math.round(c.getGreen() * 255.),
-                (int) Math.round(c.getBlue() * 255.));
+                round(c.getRed() * 255.),
+                round(c.getGreen() * 255.),
+                round(c.getBlue() * 255.),
+                round(c.getOpacity() * 255.));
+    }
+
+    private static int round(final double d) {
+        return (int) Math.ceil(d);
     }
 
     public static Color fromAwtColor(final java.awt.Color c) {
@@ -179,10 +183,22 @@ public final class UiUtils {
 
     public static Rectangle toAwtRectangle(final Rectangle2D bounds) {
         return new Rectangle(
-            (int) bounds.getMinX(),
-            (int) bounds.getMinY(),
-            (int) bounds.getWidth(),
-            (int) bounds.getHeight()
+            round(bounds.getMinX()),
+            round(bounds.getMinY()),
+            round(bounds.getWidth()),
+            round(bounds.getHeight())
         );
+    }
+
+    public static Rectangle2D fromAwtRect(final Rectangle rect) {
+        return new Rectangle2D(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    public static Color rgb(final int rgb) {
+        final int red = (rgb >> 16) & 0xFF;
+        final int green =  (rgb >> 8) & 0xFF;
+        final int blue = (rgb >> 0) & 0xFF;
+        final int alpha = (rgb >> 24) & 0xff;
+        return Color.rgb(red, green, blue, alpha / 255.) ;
     }
 }

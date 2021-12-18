@@ -41,6 +41,7 @@ import javax.swing.SwingUtilities;
 
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -186,10 +187,10 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         g2d.setFont(font);
 
 
-        g2d.setColor(colorBg);
+        g2d.setColor(UiUtils.toAwtColor(colorBg));
         g2d.fillRect(0, 0, bi.getWidth(null), bi.getHeight(null));
 
-        g2d.setColor(colorBlue);
+        g2d.setColor(UiUtils.toAwtColor(colorBlue));
         g2d.draw(separatorLine);
         gg2d = g2d;
     }
@@ -197,8 +198,8 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     @Override
     protected void drawCursor(final int row, final int col, final int botOffset) {
         Graphics2D g2 = getDrawingArea();
-        g2.setColor(colorCursor);
-        g2.setXORMode(colorBg);
+        g2.setColor(UiUtils.toAwtColor(colorCursor));
+        g2.setXORMode(UiUtils.toAwtColor(colorBg));
 
         g2.fill(cursor);
 
@@ -230,10 +231,10 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
         g2.dispose();
         g2 = getWritingArea(font);
-        g2.setPaint(colorBg);
+        g2.setPaint(UiUtils.toAwtColor(colorBg));
 
         g2.fill(pArea);
-        g2.setColor(colorWhite);
+        g2.setColor(UiUtils.toAwtColor(colorWhite));
 
         g2.drawString((row + 1) + "/" + (col + 1)
                 , (float) pArea.getX(),
@@ -469,7 +470,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
             return;
 
         try {
-            g2d.setColor(colorBg);
+            g2d.setColor(UiUtils.toAwtColor(colorBg));
             g2d.fill(sArea);
 
             final LineMetrics lm = getLineMetrics();
@@ -479,7 +480,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                 case ScreenOIA.OIA_LEVEL_INPUT_INHIBITED:
                     if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
-                        g2d.setColor(colorWhite);
+                        g2d.setColor(UiUtils.toAwtColor(colorWhite));
 
                         if (s != null)
                             g2d.drawString(s, (float) sArea.getX(), Y);
@@ -489,7 +490,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                     break;
                 case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
                     if (value == ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT) {
-                        g2d.setColor(colorRed);
+                        g2d.setColor(UiUtils.toAwtColor(colorRed));
 
                         if (s != null)
                             g2d.drawString(s, (float) sArea.getX(), Y);
@@ -530,7 +531,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
             final Font k = f.deriveFont(f.getSize2D() / 2);
             g.setFont(k);
-            g.setColor(colorHexAttr);
+            g.setColor(UiUtils.toAwtColor(colorHexAttr));
             final char[] a = Integer.toHexString(attr).toCharArray();
             g.drawChars(a, 0, 1, x, y + (rowHeight / 2));
             g.drawChars(a, 1, 1, x + (columnWidth / 2),
@@ -541,14 +542,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         if (!nonDisplay && !attributePlace) {
 
             if (!useGui) {
-                g.setColor(bg);
+                g.setColor(UiUtils.toAwtColor(bg));
                 g.fill(csArea);
             } else {
 
                 if (bg == colorBg && whichGui >= TN5250jConstants.FIELD_LEFT && whichGui <= TN5250jConstants.FIELD_ONE)
-                    g.setColor(colorGUIField);
+                    g.setColor(UiUtils.toAwtColor(colorGUIField));
                 else
-                    g.setColor(bg);
+                    g.setColor(UiUtils.toAwtColor(bg));
 
                 g.fill(csArea);
 
@@ -556,7 +557,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
             if (useGui && (whichGui < TN5250jConstants.FIELD_LEFT)) {
 
-                g.setColor(fg);
+                g.setColor(UiUtils.toAwtColor(fg));
 
                 switch (whichGui) {
 
@@ -565,14 +566,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinUpperLeft(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        colorBlue,
+                                        UiUtils.toAwtColor(colorBlue),
                                         x, y, columnWidth, rowHeight);
 
                             } else {
 
                                 GUIGraphicsUtils.drawWinUpperLeft(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
 
                             }
@@ -584,7 +585,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinUpper(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        colorBlue,
+                                        UiUtils.toAwtColor(colorBlue),
                                         x, y, columnWidth, rowHeight);
 
 
@@ -592,7 +593,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinUpper(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
                             }
                         }
@@ -603,7 +604,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinUpperRight(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        colorBlue,
+                                        UiUtils.toAwtColor(colorBlue),
                                         x, y, columnWidth, rowHeight);
 
 
@@ -611,7 +612,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinUpperRight(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
 
                             }
@@ -622,7 +623,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinLeft(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        bg,
+                                        UiUtils.toAwtColor(bg),
                                         x, y, columnWidth, rowHeight);
 
 
@@ -630,7 +631,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinLeft(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
 
                                 g.drawLine(x + columnWidth / 2,
@@ -645,14 +646,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinRight(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        bg,
+                                        UiUtils.toAwtColor(bg),
                                         x, y, columnWidth, rowHeight);
 
 
                             } else {
                                 GUIGraphicsUtils.drawWinRight(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
 
                             }
@@ -665,7 +666,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinLowerLeft(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        bg,
+                                        UiUtils.toAwtColor(bg),
                                         x, y, columnWidth, rowHeight);
 
 
@@ -673,7 +674,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinLowerLeft(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
                             }
                         }
@@ -686,7 +687,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinBottom(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        bg,
+                                        UiUtils.toAwtColor(bg),
                                         x, y, columnWidth, rowHeight);
 
 
@@ -694,7 +695,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinBottom(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
                             }
                         }
@@ -706,14 +707,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                                 GUIGraphicsUtils.drawWinLowerRight(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
-                                        bg,
+                                        UiUtils.toAwtColor(bg),
                                         x, y, columnWidth, rowHeight);
 
                             } else {
 
                                 GUIGraphicsUtils.drawWinLowerRight(g,
                                         GUIGraphicsUtils.WINDOW_NORMAL,
-                                        fg,
+                                        UiUtils.toAwtColor(fg),
                                         x, y, columnWidth, rowHeight);
 
                             }
@@ -728,7 +729,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                         g.setColor(Color.black);
                     else
-                        g.setColor(fg);
+                        g.setColor(UiUtils.toAwtColor(fg));
 
                     try {
                         if (useGui)
@@ -749,14 +750,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                 if (underLine) {
 
                     if (!useGui || cfg_guiShowUnderline) {
-                        g.setColor(fg);
+                        g.setColor(UiUtils.toAwtColor(fg));
                         g.drawLine(x, (int) (y + (rowHeight - (lm.getLeading() + lm.getDescent()))), (x + columnWidth), (int) (y + (rowHeight - (lm.getLeading() + lm.getDescent()))));
 
                     }
                 }
 
                 if (colSep) {
-                    g.setColor(colorSep);
+                    g.setColor(UiUtils.toAwtColor(colorSep));
                     switch (colSepLine) {
                         case Line:  // line
                             g.drawLine(x, y, x, y + rowHeight - 1);
@@ -834,7 +835,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                 case TN5250jConstants.BUTTON_SB_UP:
                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 1, x, y,
                             columnWidth, rowHeight,
-                            colorWhite, colorBg);
+                            UiUtils.toAwtColor(colorWhite), UiUtils.toAwtColor(colorBg));
                     break;
 
                 // scroll bar
@@ -842,7 +843,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.RAISED, 2, x, y,
                             columnWidth, rowHeight,
-                            colorWhite, colorBg);
+                            UiUtils.toAwtColor(colorWhite), UiUtils.toAwtColor(colorBg));
 
 
                     break;
@@ -851,7 +852,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 0, x, y,
                             columnWidth, rowHeight,
-                            colorWhite, colorBg);
+                            UiUtils.toAwtColor(colorWhite), UiUtils.toAwtColor(colorBg));
 
 
                     break;
@@ -861,7 +862,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                     GUIGraphicsUtils.drawScrollBar(g, GUIGraphicsUtils.INSET, 3, x, y,
                             columnWidth, rowHeight,
-                            colorWhite, colorBg);
+                            UiUtils.toAwtColor(colorWhite), UiUtils.toAwtColor(colorBg));
 
 
                     break;
@@ -901,7 +902,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
         gg2d.setClip(clipper.getBounds());
 
-        gg2d.setColor(colorBg);
+        gg2d.setColor(UiUtils.toAwtColor(colorBg));
 
         gg2d.fillRect(clipper.x, clipper.y, clipper.width, clipper.height);
 
@@ -933,14 +934,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                     final Graphics2D g2d = getWritingArea(font);
                     final float Y = (rowHeight * (screen.getRows() + 2))
                             - (lm.getLeading() + lm.getDescent());
-                    g2d.setColor(colorYellow);
+                    g2d.setColor(UiUtils.toAwtColor(colorYellow));
                     g2d.drawString("KB", (float) kbArea.getX(), Y);
 
                     updateImage(kbArea.getBounds());
                     g2d.dispose();
                 } else {
                     final Graphics2D g2d = getWritingArea(font);
-                    g2d.setColor(colorBg);
+                    g2d.setColor(UiUtils.toAwtColor(colorBg));
                     g2d.fill(kbArea);
                     updateImage(kbArea.getBounds());
                     g2d.dispose();
@@ -949,7 +950,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
             case ScreenOIA.OIA_LEVEL_MESSAGE_LIGHT_OFF:
                 Graphics2D g2d = getWritingArea(font);
 
-                g2d.setColor(colorBg);
+                g2d.setColor(UiUtils.toAwtColor(colorBg));
                 g2d.fill(mArea);
                 updateImage(mArea.getBounds());
                 g2d.dispose();
@@ -958,17 +959,17 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                 g2d = getWritingArea(font);
                 float Y = (rowHeight * (screen.getRows() + 2))
                         - (lm.getLeading() + lm.getDescent());
-                g2d.setColor(colorBlue);
+                g2d.setColor(UiUtils.toAwtColor(colorBlue));
                 g2d.drawString("MW", (float) mArea.getX(), Y);
                 updateImage(mArea.getBounds());
                 g2d.dispose();
                 break;
             case ScreenOIA.OIA_LEVEL_SCRIPT:
                 if (changedOIA.isScriptActive()) {
-                    drawScriptRunning(colorGreen);
+                    drawScriptRunning(UiUtils.toAwtColor(colorGreen));
                     updateImage(scriptArea.getBounds());
                 } else {
-                    eraseScriptRunning(colorBg);
+                    eraseScriptRunning(UiUtils.toAwtColor(colorBg));
                     updateImage(scriptArea.getBounds());
 
                 }
@@ -983,7 +984,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                     g2d = getWritingArea(font);
                     Y = (rowHeight * (screen.getRows() + 2))
                             - (lm.getLeading() + lm.getDescent());
-                    g2d.setColor(colorBlue);
+                    g2d.setColor(UiUtils.toAwtColor(colorBlue));
                     g2d.drawLine((int) iArea.getX(), (int) Y, (int) (iArea.getX() + ((iArea.getWidth() / 2) - 1)), (int) (Y - (rowHeight / 2)));
                     g2d.drawLine((int) (iArea.getX() + iArea.getWidth() - 1), (int) Y, (int) (iArea.getX() + (iArea.getWidth() / 2)), (int) (Y - (rowHeight / 2)));
                     //g2d.drawString("I", (float) iArea.getX(), Y);
@@ -994,7 +995,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
                     g2d = getWritingArea(font);
 
-                    g2d.setColor(colorBg);
+                    g2d.setColor(UiUtils.toAwtColor(colorBg));
                     g2d.fill(iArea);
                     updateImage(iArea.getBounds());
                     g2d.dispose();
