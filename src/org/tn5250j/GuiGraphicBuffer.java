@@ -125,6 +125,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     private GraphicsContext getContext() {
         final GraphicsContext context = bi.getGraphicsContext2D();
         context.setFont(getFont());
+        context.setLineWidth(2);
+        fontMetrics = FontMetrics.deriveFrom(getFont());
         return context;
     }
 
@@ -197,7 +199,6 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         final int value = oia.getInputInhibited();
         final String s = oia.getInhibitedText();
         final GraphicsContext g2d = getContext();
-        g2d.setFont(getFont());
 
         try {
             g2d.setFill(colorBg);

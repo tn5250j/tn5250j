@@ -3,6 +3,7 @@
  */
 package org.tn5250j.gui;
 
+import javafx.geometry.Bounds;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -42,14 +43,17 @@ public class FontMetrics {
     }
 
     public static FontMetrics deriveFrom(final Font font) {
-        final Text text = new Text("W");
+        final Text text = new Text();
         text.setFont(font);
-        final double ascent = text.getBoundsInLocal().getHeight();
 
-        text.setText("Wg");
-        final double descent = text.getBoundsInLocal().getHeight() - ascent;
+        final Bounds b = text.getLayoutBounds();
+        final double lineHeight = b.getHeight();
+
+        final double ascent = -b.getMinY();
+        final double descent = b.getMaxY();
+
         //for English is zero
-        final double leading = 0.;
+        final double leading = lineHeight - ascent - descent;
 
         return new FontMetrics(ascent, descent, leading);
     }
