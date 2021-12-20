@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.tn5250j.SessionGui;
-import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -57,7 +56,7 @@ public class InterpreterDriverManager {
      * @param script   script to be executed
      * @param language language for interpreting the script string
      */
-    public static void executeScript(final SessionPanelSwing session, final String script, final String language)
+    public static void executeScript(final SessionGui session, final String script, final String language)
             throws InterpreterDriver.InterpreterException {
         final InterpreterDriver driver
                 = _languageDriverMap.get(language);

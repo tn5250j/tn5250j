@@ -46,6 +46,7 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.ConfirmTabCloseDialog;
+import org.tn5250j.gui.ResizablePane;
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonicSerializer;
@@ -63,7 +64,6 @@ import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Bounds;
 import javafx.geometry.Dimension2D;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -75,10 +75,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -116,17 +113,19 @@ public class SessionPanel extends JFXPanel implements
     private BorderPane root;
 
     private final Canvas canvas = new Canvas();
-    private final Pane cursor = new Pane();
+    private final ResizablePane cursor = new ResizablePane();
 
     public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
         this.session = session;
+        this.keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
         sesConfig = session.getConfiguration();
 
         try {
             jbInit();
         } catch (final Exception e) {
+            e.printStackTrace();
             log.warn("Error in constructor: " + e.getMessage());
         }
 
@@ -153,9 +152,8 @@ public class SessionPanel extends JFXPanel implements
         hbox.setAlignment(Pos.CENTER);
         root.getChildren().add(hbox);
 
-        setBackground(guiGraBuf.getBackground());
-
         guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
+//        setBackground(guiGraBuf.getBackground());
 
         final Pane container = createContainer(canvas);
         container.getChildren().add(rubberband.getSelectionComponent());
@@ -184,8 +182,7 @@ public class SessionPanel extends JFXPanel implements
             height = getIntegerProperty("height");
         }
 
-        setWidth(width);
-        setHeight(height);
+        guiGraBuf.resize(width, height);
 
         root.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -237,27 +234,15 @@ public class SessionPanel extends JFXPanel implements
         this.requestFocus();
 
         doubleClick = YES.equals(getStringProperty("doubleClick"));
+        resizeMe();
     }
 
     private Pane createContainer(final Canvas canvas) {
-        final Pane pane = new Pane() {
-            {
-                canvas.widthProperty().addListener(e -> setWidth(canvas.getWidth()));
-                canvas.heightProperty().addListener(e -> setHeight(canvas.getHeight()));
-            }
-        };
+        final ResizablePane pane = new ResizablePane();
+        canvas.widthProperty().addListener(e -> pane.setWidth(canvas.getWidth()));
+        canvas.heightProperty().addListener(e -> pane.setHeight(canvas.getHeight()));
         pane.getChildren().add(canvas);
         return pane;
-    }
-
-    @Temporary
-    private void setHeight(final double height) {
-        super.setSize(getWidth(), (int) height);
-    }
-
-    @Temporary
-    private void setWidth(final double width) {
-        super.setSize((int) width, getHeight());
     }
 
     @SuppressWarnings("deprecation")
@@ -707,14 +692,6 @@ public class SessionPanel extends JFXPanel implements
     }
 
     /**
-     * @param background background to set.
-     */
-    private void setBackground(final Color background) {
-        root.setBackground(new Background(new BackgroundFill(
-                guiGraBuf.getBackground(), CornerRadii.EMPTY, Insets.EMPTY)));
-    }
-
-    /**
      * Copy & Paste start code
      */
     @Override
@@ -790,6 +767,7 @@ public class SessionPanel extends JFXPanel implements
      *
      * @param listener The EmulatorActionListener to be added
      */
+    @Override
     public synchronized void addEmulatorActionListener(final EmulatorActionListener listener) {
 
         if (actionListeners == null) {
@@ -828,22 +806,6 @@ public class SessionPanel extends JFXPanel implements
     @Override
     public int getPosFromView(final double x, final double y) {
         return guiGraBuf.getPosFromView(x, y);
-    }
-
-    public void areaBounded(final RubberBandSwing band, final int x1, final int y1, final int x2, final int y2) {
-        if (log.isDebugEnabled()) {
-            log.debug(" bound " + band.getEndPoint());
-        }
-    }
-
-    public boolean canDrawRubberBand(final RubberBandSwing b) {
-
-        // before we get the row col we first have to translate the x,y point
-        //   back to screen coordinates because we are translating the starting
-        //   point to the 5250 screen coordinates
-        //	      return !screen.isKeyboardLocked() && (screen.isWithinScreenArea(b.getStartPoint().x,b.getStartPoint().y));
-        return guiGraBuf.isWithinScreenArea(b.getStartPoint().x, b.getStartPoint().y);
-
     }
 
     public Point2D getInitialPoint() {
@@ -934,6 +896,7 @@ public class SessionPanel extends JFXPanel implements
     }
 
 
+    @Override
     public void connect() {
 
         session.connect();

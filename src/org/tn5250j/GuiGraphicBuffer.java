@@ -28,6 +28,7 @@ package org.tn5250j;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.gui.FontMetrics;
+import org.tn5250j.gui.ResizablePane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.CursorService;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -39,7 +40,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -47,13 +47,13 @@ import javafx.scene.text.Text;
 public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     private final Canvas bi;
-    private final Pane cursor;
+    private final ResizablePane cursor;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
     private final Runnable blinkListener = this::nextBlink;
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
-            final SessionConfig config, final Canvas canvas, final Pane cursor) {
+            final SessionConfig config, final Canvas canvas, final ResizablePane cursor) {
         super(screen, gui, config);
         this.bi = canvas;
         this.cursor = cursor;
@@ -74,7 +74,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     @Override
     public void resize(final double width, final double height) {
-        bi.resize(width, height);
+        bi.setWidth(width);
+        bi.setHeight(height);
     }
 
     @Override
@@ -102,13 +103,12 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
      */
     @Override
     protected void drawOIA() {
-        final GraphicsContext g2d = bi.getGraphicsContext2D();
+        final GraphicsContext g2d = getContext();
 
-        g2d.setFont(getFont());
         g2d.setFill(colorBg);
         g2d.fillRect(0, 0, bi.getWidth(), bi.getHeight());
 
-        g2d.setFill(colorBlue);
+        setForeground(colorBlue);
         g2d.strokeLine(
                 separatorLine.getStart().getX(),
                 separatorLine.getStart().getY(),
@@ -116,15 +116,30 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                 separatorLine.getEnd().getY());
     }
 
+    private void setForeground(final Color color) {
+        final GraphicsContext g = getContext();
+        g.setFill(color);
+        g.setStroke(color);
+    }
+
+    private GraphicsContext getContext() {
+        final GraphicsContext context = bi.getGraphicsContext2D();
+        context.setFont(getFont());
+        return context;
+    }
+
     @Override
     protected void drawCursor(final int row, final int col, final int botOffset) {
-        final GraphicsContext g2 = bi.getGraphicsContext2D();
+        final GraphicsContext g2 = getContext();
 
         cursor.relocate(cursorArea.getMinX(), cursorArea.getMinY());
-        cursor.resize(cursorArea.getWidth(), cursorArea.getHeight());
-        //TODO set background use CSS
 
-        switch (crossHair) {
+        cursor.setWidth(cursorArea.getWidth());
+        cursor.setHeight(cursorArea.getHeight());
+        UiUtils.setBackground(cursor, colorCursor);
+        setForeground(colorCursor);
+
+        switch (crossHair) { //TODO move to cursor panel
             case 1:  // horizontal
                 g2.strokeLine(0, (rowHeight * (crossRow + 1)) - botOffset,
                         bi.getWidth(),
@@ -150,12 +165,11 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         g2.fillRect(pArea.getMinX(), pArea.getMinY(), pArea.getWidth(), pArea.getHeight());
         g2.setFill(colorWhite);
 
-        g2.strokeText((row + 1) + "/" + (col + 1), pArea.getMinX(), pArea.getMinY() + rowHeight);
+        g2.fillText((row + 1) + "/" + (col + 1), pArea.getMinX(), pArea.getMinY() + rowHeight);
     }
 
     private void drawScriptRunning(final Color color) {
-        final GraphicsContext g2d = bi.getGraphicsContext2D();
-        g2d.setFill(color);
+        final GraphicsContext g2d = getContext();
 
         // set the points for the polygon
         final double[] xs = {scriptArea.getMinX(),
@@ -170,7 +184,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     }
 
     private void eraseScriptRunning(final Color color) {
-        final GraphicsContext g2d = bi.getGraphicsContext2D();
+        final GraphicsContext g2d = getContext();
 
         // get ourselves a global pointer to the graphics
         g2d.setFill(color);
@@ -182,7 +196,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         final int attr = oia.getLevel();
         final int value = oia.getInputInhibited();
         final String s = oia.getInhibitedText();
-        final GraphicsContext g2d = bi.getGraphicsContext2D();
+        final GraphicsContext g2d = getContext();
         g2d.setFont(getFont());
 
         try {
@@ -199,9 +213,9 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         g2d.setFill(colorWhite);
 
                         if (s != null)
-                            g2d.strokeText(s, sArea.getMinX(), Y);
+                            g2d.fillText(s, sArea.getMinX(), Y);
                         else
-                            g2d.strokeText(xSystem, sArea.getMinX(), Y);
+                            g2d.fillText(xSystem, sArea.getMinX(), Y);
                     }
                     break;
                 case ScreenOIA.OIA_LEVEL_INPUT_ERROR:
@@ -209,9 +223,9 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         g2d.setFill(colorRed);
 
                         if (s != null)
-                            g2d.strokeText(s, sArea.getMinX(), Y);
+                            g2d.fillText(s, sArea.getMinX(), Y);
                         else
-                            g2d.strokeText(xError, sArea.getMinX(), Y);
+                            g2d.fillText(xError, sArea.getMinX(), Y);
 
                     }
                     break;
@@ -223,9 +237,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     }
 
     protected final void drawChar(final int pos, final int row, final int col) {
-        final char sChar[] = new char[1];
-        final int attr = updateRect.attr[pos];
-        sChar[0] = updateRect.text[pos];
+        final char sChar = updateRect.text[pos];
+
         final boolean attributePlace = updateRect.isAttr[pos] == 0 ? false : true;
         final int whichGui = updateRect.graphic[pos];
         final boolean useGui = whichGui == 0 ? false : true;
@@ -236,16 +249,16 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         final double y = csArea.getMinY();
         final double cy = y + rowHeight - (fontMetrics.getDescent() + fontMetrics.getLeading());
 
-        final GraphicsContext g = bi.getGraphicsContext2D();
+        final GraphicsContext g = getContext();
         if (showHex && attributePlace) {
             final Font f = g.getFont();
             try {
                 final Font k = UiUtils.deriveFont(f, f.getSize() / 2);
                 g.setFont(k);
                 g.setFill(colorHexAttr);
-                final char[] a = toTwoHexChars(attr);
-                g.strokeText(new String(a, 0, 1), x, y + (rowHeight / 2));
-                g.strokeText(new String(a, 1, 1), x + (columnWidth / 2),
+                final char[] a = toTwoHexChars(sChar);
+                g.fillText(new String(a, 0, 1), x, y + (rowHeight / 2));
+                g.fillText(new String(a, 1, 1), x + (columnWidth / 2),
                         y + rowHeight - (fontMetrics.getDescent() + fontMetrics.getLeading()) - 2);
             } finally {
                 g.setFont(f);
@@ -274,7 +287,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                 switch (whichGui) {
 
                     case TN5250jConstants.UPPER_LEFT:
-                        if (sChar[0] == '.') {
+                        if (sChar == '.') {
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinUpperLeft(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
@@ -292,7 +305,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         }
                         break;
                     case TN5250jConstants.UPPER:
-                        if (sChar[0] == '.') {
+                        if (sChar == '.') {
 
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinUpper(g,
@@ -311,7 +324,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         }
                         break;
                     case TN5250jConstants.UPPER_RIGHT:
-                        if (sChar[0] == '.') {
+                        if (sChar == '.') {
                             if (screen.isUsingGuiInterface()) {
 
                                 GUIGraphicsUtils.drawWinUpperRight(g,
@@ -331,7 +344,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         }
                         break;
                     case TN5250jConstants.GUI_LEFT:
-                        if (sChar[0] == ':') {
+                        if (sChar == ':') {
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinLeft(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
@@ -354,7 +367,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         }
                         break;
                     case TN5250jConstants.GUI_RIGHT:
-                        if (sChar[0] == ':') {
+                        if (sChar == ':') {
                             if (screen.isUsingGuiInterface()) {
                                 GUIGraphicsUtils.drawWinRight(g,
                                         GUIGraphicsUtils.WINDOW_GRAPHIC,
@@ -372,7 +385,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         }
                         break;
                     case TN5250jConstants.LOWER_LEFT:
-                        if (sChar[0] == ':') {
+                        if (sChar == ':') {
 
                             if (screen.isUsingGuiInterface()) {
 
@@ -392,7 +405,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         }
                         break;
                     case TN5250jConstants.BOTTOM:
-                        if (sChar[0] == '.') {
+                        if (sChar == '.') {
 
                             if (screen.isUsingGuiInterface()) {
 
@@ -414,7 +427,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                         break;
 
                     case TN5250jConstants.LOWER_RIGHT:
-                        if (sChar[0] == ':') {
+                        if (sChar == ':') {
                             if (screen.isUsingGuiInterface()) {
 
                                 GUIGraphicsUtils.drawWinLowerRight(g,
@@ -435,7 +448,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
                 }
             } else {
-                if (sChar[0] != 0x0) {
+                if (sChar != 0x0) {
                     // use this until we define colors for gui stuff
                     if ((useGui && whichGui < TN5250jConstants.BUTTON_LEFT) && (fg == colorGUIField))
 
@@ -446,14 +459,14 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                     try {
                         if (useGui)
 
-                            if (sChar[0] == 0x1C)
-                                g.strokeText(new String(dupChar), x + 1, cy - 2);
+                            if (sChar == 0x1C)
+                                g.fillText(new String(dupChar), x + 1, cy - 2);
                             else
-                                g.strokeText(new String(sChar), x + 1, cy - 2);
-                        else if (sChar[0] == 0x1C)
-                            g.strokeText(new String(dupChar), x, cy - 2);
+                                g.fillText(new String(new char[] {sChar}), x + 1, cy - 2);
+                        else if (sChar == 0x1C)
+                            g.fillText(new String(dupChar), x, cy - 2);
                         else
-                            g.strokeText(new String(sChar), x, cy - 2);
+                            g.fillText(new String(new char[] {sChar}), x, cy - 2);
                     } catch (final IllegalArgumentException iae) {
                         System.out.println(" drawChar iae " + iae.getMessage());
 
@@ -462,7 +475,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                 if (underLine) {
 
                     if (!useGui || cfg_guiShowUnderline) {
-                        g.setFill(fg);
+                        setForeground(fg);
                         g.strokeLine(x, y + (rowHeight - (fontMetrics.getLeading() + fontMetrics.getDescent())), (x + columnWidth),
                             y + (rowHeight - (fontMetrics.getLeading() + fontMetrics.getDescent())));
                     }
@@ -619,7 +632,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         final double width = ((ec - sc) + 1) * columnWidth;
         final double height = ((er - sr) + 1) * rowHeight;
 
-        final GraphicsContext gg2d = bi.getGraphicsContext2D();
+        final GraphicsContext gg2d = getContext();
 
         gg2d.setFill(colorBg);
         gg2d.fillRect(x, y, width, height);
@@ -642,8 +655,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     @Override
     public void onOIAChanged(final ScreenOIA changedOIA, final int change) {
-        final GraphicsContext g2d = bi.getGraphicsContext2D();
-        g2d.setFont(getFont());
+        final GraphicsContext g2d = getContext();
 
         switch (changedOIA.getLevel()) {
             case ScreenOIA.OIA_LEVEL_KEYS_BUFFERED:
@@ -651,7 +663,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                     final double Y = (rowHeight * (screen.getRows() + 2))
                             - (fontMetrics.getLeading() + fontMetrics.getDescent());
                     g2d.setFill(colorYellow);
-                    g2d.strokeText("KB", kbArea.getMinX(), Y);
+                    g2d.fillText("KB", kbArea.getMinX(), Y);
                 } else {
                     g2d.setFill(colorBg);
                     UiUtils.fill(g2d, kbArea);
@@ -665,7 +677,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                 double Y = (rowHeight * (screen.getRows() + 2))
                         - (fontMetrics.getLeading() + fontMetrics.getDescent());
                 g2d.setFill(colorBlue);
-                g2d.strokeText("MW", mArea.getMinX(), Y);
+                g2d.fillText("MW", mArea.getMinX(), Y);
                 break;
             case ScreenOIA.OIA_LEVEL_SCRIPT:
                 if (changedOIA.isScriptActive()) {
@@ -684,7 +696,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                 if (changedOIA.isInsertMode()) {
                     Y = (rowHeight * (screen.getRows() + 2))
                             - (fontMetrics.getLeading() + fontMetrics.getDescent());
-                    g2d.setFill(colorBlue);
+                    setForeground(colorBlue);
                     g2d.strokeLine(iArea.getMinX(), Y, (iArea.getMinX() + ((iArea.getWidth() / 2) - 1)), (Y - (rowHeight / 2)));
                     g2d.strokeLine((iArea.getMinX() + iArea.getWidth() - 1), Y, (iArea.getMinX() + (iArea.getWidth() / 2)), (Y - (rowHeight / 2)));
                     //g2d.drawString("I", (float) iArea.getX(), Y);

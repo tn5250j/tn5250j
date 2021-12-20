@@ -42,13 +42,12 @@ import javax.swing.JFrame;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
-import org.tn5250j.SessionPanel;
-import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -212,7 +211,7 @@ public class Tn5250jController extends Thread {
         return current;
     }
 
-    public void createSession(final Screen5250 screen, final tnvt vt, final SessionPanelSwing ses) {
+    public void createSession(final Screen5250 screen, final tnvt vt, final SessionGui ses) {
         final Tn5250jSession session = new Tn5250jSession(screen, vt, ses);
         final Iterator<Tn5250jListener> listenerIt = listeners.iterator();
         log.info("New session created and received");
@@ -261,7 +260,7 @@ public class Tn5250jController extends Thread {
         parseArgs((String) sesprops.get(name), args);
         final Properties fin = convertToProps(args);
         final Session5250 newses = manager.openSession(fin, null, name);
-        final SessionGui newGui = new SessionPanel(newses);
+        final SessionGui newGui = SwingToFxUtils.createSessionPanel(newses);
         frame.getContentPane().add((Component) newGui);
         frame.setBounds(50, 50, 960, 700);
         frame.setVisible(true);

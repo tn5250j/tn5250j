@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -29,6 +30,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -252,5 +257,10 @@ public final class UiUtils {
             return (Frame) SwingUtilities.getRoot((Component) object);
         }
         return SwingToFxUtils.SHARED_FRAME;
+    }
+
+    public static void setBackground(final Pane node, final Color bg) {
+        node.setBackground(new Background(new BackgroundFill(
+                bg, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 }

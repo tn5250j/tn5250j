@@ -1,14 +1,17 @@
 package org.tn5250j;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.swing.JApplet;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.TN5250jSecurityAccessDialog;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -28,7 +31,7 @@ public class My5250Applet extends JApplet {
     /**
      * Get a parameter value
      */
-    public String getParameter(String key, String def) {
+    public String getParameter(final String key, final String def) {
 
         return isStandalone ? System.getProperty(key, def) :
                 (getParameter(key) != null ? getParameter(key) : def);
@@ -44,10 +47,11 @@ public class My5250Applet extends JApplet {
     /**
      * Initialize the applet
      */
+    @Override
     public void init() {
         try {
             jbInit();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             if (log == null)
                 System.out.println(e.getMessage());
             else
@@ -69,14 +73,14 @@ public class My5250Applet extends JApplet {
         //Let's check some permissions
         try {
             System.getProperty(".java.policy");
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             e.printStackTrace();
             TN5250jSecurityAccessDialog.showErrorMessage(e);
             return;
         }
         log = TN5250jLogFactory.getLogger(this.getClass());
 
-        Properties sesProps = new Properties();
+        final Properties sesProps = new Properties();
         log.info(" We have loaded a new one");
 
         // Start loading properties - Host must exist
@@ -133,22 +137,23 @@ public class My5250Applet extends JApplet {
 
         manager = SessionManager.instance();
         final Session5250 s = manager.openSession(sesProps, "", "Test Applet");
-        final SessionPanelSwing gui = new SessionPanelSwing(s);
+        final SessionGui gui = SwingToFxUtils.createSessionPanel(s);
 //      final JTerminal jt = new JTerminal(s);
 
-        this.getContentPane().add(gui);
+        this.getContentPane().add((Component) gui);
 
         s.connect();
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
 //            jt.grabFocus();
-                gui.grabFocus();
+                ((JComponent) gui).grabFocus();
             }
         });
 
     }
 
-    private void loadSystemProperty(String param) {
+    private void loadSystemProperty(final String param) {
 
         if (isSpecified(param))
             System.getProperties().put(param, getParameter(param));
@@ -158,6 +163,7 @@ public class My5250Applet extends JApplet {
     /**
      * Get Applet information
      */
+    @Override
     public String getAppletInfo() {
         return "tn5250j - " + TN5250jConstants.VERSION_INFO + " - Java tn5250 Client";
     }
@@ -165,6 +171,7 @@ public class My5250Applet extends JApplet {
     /**
      * Get parameter info
      */
+    @Override
     public String[][] getParameterInfo() {
         return null;
     }
@@ -172,7 +179,7 @@ public class My5250Applet extends JApplet {
     /**
      * Tests if a parameter was specified or not.
      */
-    private boolean isSpecified(String parm) {
+    private boolean isSpecified(final String parm) {
 
         if (getParameter(parm) != null) {
             log.info("Parameter " + parm + " is specified as: " + getParameter(parm));
@@ -184,10 +191,10 @@ public class My5250Applet extends JApplet {
     /**
      * Returns a local specified by the string localString
      */
-    protected static Locale parseLocale(String localString) {
+    protected static Locale parseLocale(final String localString) {
         int x = 0;
-        String[] s = {"", "", ""};
-        StringTokenizer tokenizer = new StringTokenizer(localString, "_");
+        final String[] s = {"", "", ""};
+        final StringTokenizer tokenizer = new StringTokenizer(localString, "_");
         while (tokenizer.hasMoreTokens()) {
             s[x++] = tokenizer.nextToken();
         }
@@ -199,7 +206,7 @@ public class My5250Applet extends JApplet {
         try {
             //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
     }
 }

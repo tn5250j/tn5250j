@@ -598,7 +598,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         final int sessionCount = manager.getSessions().getCount();
 
         final Session5250 s2 = manager.openSession(sesProps, propFileName, sel);
-        final SessionGui s = new SessionPanel(s2);
+        final SessionGui s = SwingToFxUtils.createSessionPanel(s2);
 
         if (!frame1.isVisible()) {
             splash.updateProgress(++step);
@@ -796,7 +796,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     @Override
     public void onEmulatorAction(final EmulatorActionEvent actionEvent) {
 
-        final SessionPanelSwing ses = (SessionPanelSwing) actionEvent.getSource();
+        final SessionGui ses = (SessionGui) actionEvent.getSource();
 
         switch (actionEvent.getAction()) {
             case EmulatorActionEvent.CLOSE_SESSION:

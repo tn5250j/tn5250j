@@ -96,6 +96,8 @@ import org.tn5250j.tools.XTFRFile;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.application.Platform;
+
 /**
  * Custom
  */
@@ -175,8 +177,10 @@ public class SessionPopup {
 
                 @Override
                 public void actionPerformed(final ActionEvent e) {
-                    sessiongui.actionCopy();
-                    sessiongui.getFocusForMe();
+                    Platform.runLater(() -> {
+                        sessiongui.actionCopy();
+                        sessiongui.getFocusForMe();
+                    });
                 }
             };
 
@@ -627,10 +631,12 @@ public class SessionPopup {
         } else {
             final InputMap map = ((JComponent) sessiongui).getInputMap();
             final KeyStroke[] allKeys = map.allKeys();
-            for (final KeyStroke keyStroke : allKeys) {
-                if (map.get(keyStroke).equals(accelKey)) {
-                    mi.setAccelerator(keyStroke);
-                    break;
+            if (allKeys != null) {
+                for (final KeyStroke keyStroke : allKeys) {
+                    if (map.get(keyStroke).equals(accelKey)) {
+                        mi.setAccelerator(keyStroke);
+                        break;
+                    }
                 }
             }
         }
@@ -647,13 +653,15 @@ public class SessionPopup {
         final KeyStroke[] allKeys = map.allKeys();
         final ActionMap aMap = ((JComponent) sessiongui).getActionMap();
 
-        for (final KeyStroke allKey : allKeys) {
-            final Action a = aMap.get(map.get(allKey));
-            final JMenuItem mi = new JMenuItem();
-            mi.setAction(a);
-            mi.setText(LangTool.getString("key." + map.get(allKey)));
-            mi.setAccelerator(allKey);
-            sm.add(mi);
+        if (allKeys != null) {
+            for (final KeyStroke allKey : allKeys) {
+                final Action a = aMap.get(map.get(allKey));
+                final JMenuItem mi = new JMenuItem();
+                mi.setAction(a);
+                mi.setText(LangTool.getString("key." + map.get(allKey)));
+                mi.setAccelerator(allKey);
+                sm.add(mi);
+            }
         }
     }
 

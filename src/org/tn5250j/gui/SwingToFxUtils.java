@@ -15,6 +15,8 @@ import java.util.function.Consumer;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import org.tn5250j.Session5250;
+import org.tn5250j.SessionPanel;
 import org.tn5250j.tools.GUIGraphicsUtils;
 
 import javafx.application.Application;
@@ -116,5 +118,9 @@ public class SwingToFxUtils {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static SessionPanel createSessionPanel(final Session5250 session) {
+        return runInFxAndWait(() -> new SessionPanel(session));
     }
 }
