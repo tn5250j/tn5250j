@@ -37,7 +37,6 @@ import javax.swing.KeyStroke;
 
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
-import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.tools.system.OperatingSystem;
@@ -144,7 +143,7 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
      *
      *  Added by Luc to fix a memory leak.
      */
-    public void sessionClosed(final SessionPanelSwing session) {
+    public void sessionClosed() {
         keyMap.removeKeyChangeListener(this);
     }
 

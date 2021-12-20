@@ -52,6 +52,7 @@ public class RubberBandFX implements RubberBand {
     private void mouseDraged(final MouseEvent e) {
         if (e.getButton() != MouseButton.PRIMARY) {
             ensureRubberBandStopped();
+            return;
         }
 
         final double x = e.getX();
@@ -81,14 +82,13 @@ public class RubberBandFX implements RubberBand {
         }
     }
 
-    private void ensureRubberBandStopped() {
+    protected void ensureRubberBandStopped() {
         if (start != null) {
             start = null;
-
-            //TODO notify listeners
         }
     }
 
+    @Override
     public void reset() {
         start = null;
         selection.setVisible(false);
@@ -114,5 +114,9 @@ public class RubberBandFX implements RubberBand {
 
     @Override
     public void draw() {
+    }
+
+    public Node getSelectionComponent() {
+        return selection;
     }
 }

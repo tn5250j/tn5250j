@@ -52,7 +52,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 
 
-public class SessionBean extends SessionPanelSwing {
+public class SessionBean extends SessionPanel {
 
     private static final long serialVersionUID = 1L;
 
@@ -237,7 +237,7 @@ public class SessionBean extends SessionPanelSwing {
                 public void run() {
                     if ((tryConnection++ < 30) &&     //If it is still not connected after 3 seconds,
                             //stop with trying
-                            (isConnected() == false)) {
+                            (isVtConnected() == false)) {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException ex) {
@@ -257,7 +257,7 @@ public class SessionBean extends SessionPanelSwing {
 
     public void signoff() {
         if (session.getVT() != null) {
-            if (this.isConnected())
+            if (this.isVtConnected())
                 this.session.getVT().systemRequest("90");
         }
     }
@@ -427,7 +427,7 @@ public class SessionBean extends SessionPanelSwing {
     }
 
     private void failIfConnected() {
-        if ((session.getVT() != null) && (isConnected()))
+        if ((session.getVT() != null) && (isVtConnected()))
             throw new IllegalStateException("Cannot change property after being connected!");
     }
 

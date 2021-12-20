@@ -10,10 +10,11 @@
 
 package org.tn5250j.scripting;
 
-import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 
-import org.tn5250j.SessionPanelSwing;
+import javax.swing.AbstractAction;
+
+import org.tn5250j.SessionGui;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
@@ -23,22 +24,23 @@ public class ExecuteScriptAction extends AbstractAction {
     private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(ExecuteScriptAction.class);
 
     private String _scriptFile;
-    private SessionPanelSwing ses;
+    private SessionGui ses;
 
-    public ExecuteScriptAction(String name, String scriptFile, SessionPanelSwing session) {
+    public ExecuteScriptAction(final String name, final String scriptFile, final SessionGui session) {
         super(name);
         _scriptFile = scriptFile;
         ses = session;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Invoking " + _scriptFile);
         }
 
         try {
             InterpreterDriverManager.executeScriptFile(ses, _scriptFile);
-        } catch (InterpreterDriver.InterpreterException ex) {
+        } catch (final InterpreterDriver.InterpreterException ex) {
             ses.setMacroRunning(false);
             System.out.println(ex);
             ex.printStackTrace();

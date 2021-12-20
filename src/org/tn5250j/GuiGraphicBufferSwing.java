@@ -64,13 +64,19 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
     @Override
     protected Dimension2D getCellBounds() {
-        final FontRenderContext frc = new FontRenderContext(getFont().getTransform(),
+        final Font f = getAwtFont();
+        final FontRenderContext frc = new FontRenderContext(f.getTransform(),
                 true, true);
-        final LineMetrics lm = getFont().getLineMetrics("Wy", frc);
-        final double w = getFont().getStringBounds("W", frc).getWidth() + 1;
-        final double h = (getFont().getStringBounds("g", frc).getHeight()
+        final LineMetrics lm = f.getLineMetrics("Wy", frc);
+        final double w = f.getStringBounds("W", frc).getWidth() + 1;
+        final double h = (f.getStringBounds("g", frc).getHeight()
                 + lm.getDescent() + lm.getLeading());
         return new Dimension2D(w, h);
+    }
+
+    private Font getAwtFont() {
+        final javafx.scene.text.Font font = getFont();
+        return new Font(font.getName(), Font.PLAIN, (int) Math.ceil(font.getSize()));
     }
 
     /**
@@ -101,12 +107,15 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     }
 
     @Override
-    public void resize(final int width, final int height) {
+    public void resize(final double width, final double height) {
 
         if (bi == null || bi.getWidth() != width || bi.getHeight() != height) {
             //         synchronized (lock) {
             bi = null;
-            bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            bi = new BufferedImage(
+                    (int) Math.ceil(width),
+                    (int) Math.ceil(height),
+                    BufferedImage.TYPE_INT_RGB);
             // tell waiting threads to wake up
             //            lock.notifyAll();
             //         }
@@ -144,7 +153,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
      * @param updateFont font is updated.
      */
     @Override
-    protected void resizeScreenArea(final int width, final int height, final boolean updateFont) {
+    protected void resizeScreenArea(final double width, final double height, final boolean updateFont) {
         if (bi == null) {
             return;
         }
@@ -184,14 +193,15 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                 RenderingHints.VALUE_COLOR_RENDER_SPEED);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_SPEED);
-        g2d.setFont(font);
+        g2d.setFont(getAwtFont());
 
 
         g2d.setColor(UiUtils.toAwtColor(colorBg));
         g2d.fillRect(0, 0, bi.getWidth(null), bi.getHeight(null));
 
         g2d.setColor(UiUtils.toAwtColor(colorBlue));
-        g2d.draw(separatorLine);
+
+        g2d.draw(UiUtils.toAwtLine(separatorLine));
         gg2d = g2d;
     }
 
@@ -201,10 +211,11 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         g2.setColor(UiUtils.toAwtColor(colorCursor));
         g2.setXORMode(UiUtils.toAwtColor(colorBg));
 
-        g2.fill(cursor);
+        g2.fill(UiUtils.toAwtRectangle(cursorArea));
 
-        updateImage(cursor.getBounds());
+        updateImage(UiUtils.toAwtRectangle(cursorArea));
 
+        final Rectangle crossRect = UiUtils.toAwtRectangle(this.crossRect);
         switch (crossHair) {
             case 1:  // horizontal
                 g2.drawLine(0, (rowHeight * (crossRow + 1)) - botOffset,
@@ -230,9 +241,10 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         }
 
         g2.dispose();
-        g2 = getWritingArea(font);
+        g2 = getWritingArea(getAwtFont());
         g2.setPaint(UiUtils.toAwtColor(colorBg));
 
+        final Rectangle pArea = UiUtils.toAwtRectangle(this.pArea);
         g2.fill(pArea);
         g2.setColor(UiUtils.toAwtColor(colorWhite));
 
@@ -254,6 +266,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         g2d.setColor(color);
 
         // set the points for the polygon
+        final Rectangle scriptArea = UiUtils.toAwtRectangle(this.scriptArea);
         final int[] xs = {(int) scriptArea.getX(),
                 (int) scriptArea.getX(),
                 (int) scriptArea.getX() + (int) (scriptArea.getWidth())};
@@ -277,7 +290,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         g2d = (Graphics2D) bi.getGraphics();
 
         g2d.setColor(color);
-        g2d.fill(scriptArea);
+        g2d.fill(UiUtils.toAwtRectangle(scriptArea));
         g2d.dispose();
     }
 
@@ -401,7 +414,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
 
         //      synchronized (lock) {
 
-        gg2d.drawImage(bi, null, offLeft, offTop);
+        gg2d.drawImage(bi, null, (int) Math.ceil(offLeft), (int) Math.ceil(offTop));
         // tell waiting threads to wake up
         //         lock.notifyAll();
         //      }
@@ -454,9 +467,10 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     }
 
     private LineMetrics getLineMetrics() {
-        final FontRenderContext frc = new FontRenderContext(getFont().getTransform(),
+        final Font f = getAwtFont();
+        final FontRenderContext frc = new FontRenderContext(f.getTransform(),
                 true, true);
-        return getFont().getLineMetrics("Wy", frc);
+        return f.getLineMetrics("Wy", frc);
     }
 
     private void setStatus(final ScreenOIA oia) {
@@ -464,13 +478,14 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         final int attr = oia.getLevel();
         final int value = oia.getInputInhibited();
         final String s = oia.getInhibitedText();
-        final Graphics2D g2d = getWritingArea(font);
+        final Graphics2D g2d = getWritingArea(getAwtFont());
         //      log.info(attr + ", " + value + ", " + s);
         if (g2d == null)
             return;
 
         try {
             g2d.setColor(UiUtils.toAwtColor(colorBg));
+            final Rectangle sArea = UiUtils.toAwtRectangle(this.sArea);
             g2d.fill(sArea);
 
             final LineMetrics lm = getLineMetrics();
@@ -511,7 +526,6 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     }
 
     protected final void drawChar(final Graphics2D g, final int pos, final int row, final int col) {
-        Rectangle csArea = new Rectangle();
         final char sChar[] = new char[1];
         final int attr = updateRect.attr[pos];
         sChar[0] = updateRect.text[pos];
@@ -519,7 +533,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
         final int whichGui = updateRect.graphic[pos];
         final boolean useGui = whichGui == 0 ? false : true;
 
-        csArea = modelToView(row, col, csArea);
+        final Rectangle csArea = UiUtils.toAwtRectangle(modelToView(row, col));
 
         final LineMetrics lm = getLineMetrics();
         final int x = csArea.x;
@@ -926,6 +940,9 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     @Override
     public void onOIAChanged(final ScreenOIA changedOIA, final int change) {
         final LineMetrics lm = getLineMetrics();
+        final Font font = getAwtFont();
+        final Rectangle kbArea = UiUtils.toAwtRectangle(this.kbArea);
+        final Rectangle mArea = UiUtils.toAwtRectangle(this.mArea);
 
         switch (changedOIA.getLevel()) {
 
@@ -965,6 +982,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                 g2d.dispose();
                 break;
             case ScreenOIA.OIA_LEVEL_SCRIPT:
+                final Rectangle scriptArea = UiUtils.toAwtRectangle(this.scriptArea);
                 if (changedOIA.isScriptActive()) {
                     drawScriptRunning(UiUtils.toAwtColor(colorGreen));
                     updateImage(scriptArea.getBounds());
@@ -980,6 +998,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
                 setStatus(changedOIA);
                 break;
             case ScreenOIA.OIA_LEVEL_INSERT_MODE:
+                final Rectangle iArea = UiUtils.toAwtRectangle(this.iArea);
                 if (changedOIA.isInsertMode()) {
                     g2d = getWritingArea(font);
                     Y = (rowHeight * (screen.getRows() + 2))
@@ -1007,7 +1026,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     }
 
     @Override
-    protected int getWidth() {
+    protected double getWidth() {
         synchronized (lock) {
             // tell waiting threads to wake up
             lock.notifyAll();
@@ -1017,7 +1036,7 @@ public class GuiGraphicBufferSwing extends AbstractGuiGraphicBuffer implements A
     }
 
     @Override
-    protected int getHeight() {
+    protected double getHeight() {
         synchronized (lock) {
             // tell waiting threads to wake up
             lock.notifyAll();

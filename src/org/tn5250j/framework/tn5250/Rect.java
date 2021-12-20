@@ -26,6 +26,7 @@
  */
 package org.tn5250j.framework.tn5250;
 
+import java.awt.Rectangle;
 
 /**
  * Simplified rectangle class. Very much similar like java.awt.Rectangle,
@@ -41,7 +42,11 @@ public class Rect {
     /**
      * @param rect
      */
-    public void setBounds(Rect rect) {
+    public void setBounds(final Rect rect) {
+        setBounds(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    public void setBounds(final Rectangle rect) {
         setBounds(rect.x, rect.y, rect.width, rect.height);
     }
 
@@ -51,7 +56,7 @@ public class Rect {
      * @param width the new width for this rectangle
      * @param height the new height for this rectangle
      */
-    public void setBounds(int x, int y, int width, int height) {
+    public void setBounds(final int x, final int y, final int width, final int height) {
         this.x = x;
         this.y = y;
         this.width = width;

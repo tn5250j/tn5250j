@@ -50,7 +50,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.SessionPanelSwing;
+import org.tn5250j.SessionGui;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
 import org.tn5250j.gui.GenericTn5250JFrame;
@@ -133,7 +133,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
     SpooledFile splfile;
 
     // Session object
-    SessionPanelSwing session;
+    SessionGui session;
 
     JPanel twoPDF;
     JPanel twoText;
@@ -161,7 +161,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
     private Thread workingThread;
 
     //Construct the frame
-    public SpoolExportWizard(SpooledFile splfile, SessionPanelSwing session) {
+    public SpoolExportWizard(final SpooledFile splfile, final SessionGui session) {
 
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         this.splfile = splfile;
@@ -169,7 +169,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         try {
             jbInit();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
@@ -225,8 +225,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         pack();
 
         //Center the window
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = getSize();
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Dimension frameSize = getSize();
         if (frameSize.height > screenSize.height)
             frameSize.height = screenSize.height;
         if (frameSize.width > screenSize.width)
@@ -248,7 +248,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         twoPDF.setLayout(new BorderLayout());
 
-        JPanel docProps = new JPanel();
+        final JPanel docProps = new JPanel();
 
         docProps.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("spool.labelProps")));
@@ -262,7 +262,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         docProps.add(new JLabel(LangTool.getString("spool.labelPropsAuthor")));
         docProps.add(author = new JTextField(40));
 
-        JPanel options = new JPanel();
+        final JPanel options = new JPanel();
 
         options.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("spool.labelOpts")));
@@ -286,7 +286,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         options.add(landscape =
                 new JRadioButton(LangTool.getString("spool.labelOptsLandscape")));
 
-        ButtonGroup orientation = new ButtonGroup();
+        final ButtonGroup orientation = new ButtonGroup();
         orientation.add(portrait);
         orientation.add(landscape);
 
@@ -309,7 +309,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         twoText.setLayout(new BorderLayout());
 
-        JPanel textProps = new JPanel();
+        final JPanel textProps = new JPanel();
 
         textProps.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("spool.labelTextProps")));
@@ -323,7 +323,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         getEditor = new JButton("Browse");
 
         getEditor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 getEditor();
             }
         });
@@ -404,9 +405,9 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         spoolOptions.setLayout(new BorderLayout());
 
-        JPanel spoolInfo = new JPanel();
+        final JPanel spoolInfo = new JPanel();
 
-        AlignLayout alignMe2 = new AlignLayout(3, 5, 5);
+        final AlignLayout alignMe2 = new AlignLayout(3, 5, 5);
         spoolInfo.setLayout(alignMe2);
         spoolInfo.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("spool.labelExportInfo")));
@@ -440,7 +441,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         pcSave = new JButton("...");
 
         pcSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 getPCFile();
             }
         });
@@ -455,7 +457,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         ifsSave = new JButton("...");
 
         ifsSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 getIFSFile();
             }
         });
@@ -470,25 +473,28 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         spoolInfo.add(new JLabel(""));
         spoolInfo.add(new JLabel(""));
 
-        ButtonGroup bg = new ButtonGroup();
+        final ButtonGroup bg = new ButtonGroup();
         bg.add(pc);
         bg.add(ifs);
         bg.add(email);
 
         pc.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
                 doItemStateChanged(e);
             }
         });
 
         ifs.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
                 doItemStateChanged(e);
             }
         });
 
         email.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+            @Override
+            public void itemStateChanged(final ItemEvent e) {
                 doItemStateChanged(e);
             }
         });
@@ -505,7 +511,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      *
      * @param e Item event to react to
      */
-    private void doItemStateChanged(ItemEvent e) {
+    private void doItemStateChanged(final ItemEvent e) {
 
         pcPathInfo.setEnabled(false);
         ifsPathInfo.setEnabled(false);
@@ -544,8 +550,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      */
     private void getPCFile() {
 
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
         // set the file filters for the file chooser
         ExportFileFilter filter;
@@ -557,11 +563,11 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         pcFileChooser.addChoosableFileFilter(filter);
 
-        int ret = pcFileChooser.showSaveDialog(this);
+        final int ret = pcFileChooser.showSaveDialog(this);
 
         // check to see if something was actually chosen
         if (ret == JFileChooser.APPROVE_OPTION) {
-            File file = pcFileChooser.getSelectedFile();
+            final File file = pcFileChooser.getSelectedFile();
             pcPathInfo.setText(filter.setExtension(file));
 
         }
@@ -573,8 +579,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      */
     private void getIFSFile() {
 
-        IFSFileDialog fd = new IFSFileDialog(this, "Save As", splfile.getSystem());
-        com.ibm.as400.vaccess.FileFilter[] filterList =
+        final IFSFileDialog fd = new IFSFileDialog(this, "Save As", splfile.getSystem());
+        final com.ibm.as400.vaccess.FileFilter[] filterList =
                 new com.ibm.as400.vaccess.FileFilter[2];
         filterList[0] = new com.ibm.as400.vaccess.FileFilter("All files (*.*)",
                 "*.*");
@@ -601,17 +607,17 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      */
     private void getEditor() {
 
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
-        int ret = pcFileChooser.showOpenDialog(this);
+        final int ret = pcFileChooser.showOpenDialog(this);
 
         // check to see if something was actually chosen
         if (ret == JFileChooser.APPROVE_OPTION) {
-            File file = pcFileChooser.getSelectedFile();
+            final File file = pcFileChooser.getSelectedFile();
             try {
                 editor.setText(file.getCanonicalPath());
-            } catch (IOException e) {
+            } catch (final IOException e) {
 
             }
         }
@@ -620,7 +626,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
     /**
      * Overridden so we can exit when window is closed
      */
-    protected void processWindowEvent(WindowEvent e) {
+    @Override
+    protected void processWindowEvent(final WindowEvent e) {
         super.processWindowEvent(e);
         if (e.getID() == WindowEvent.WINDOW_CLOSING) {
             this.setVisible(false);
@@ -640,12 +647,14 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         if (cvtType.getSelectedIndex() == 0)
             workingThread = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     cvtToPDF();
                 }
             });
         else
             workingThread = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     cvtToText();
                 }
@@ -659,7 +668,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      */
     private void emailMe() {
 
-        SendEMailDialog semd = new SendEMailDialog(this,
+        final SendEMailDialog semd = new SendEMailDialog(this,
                 session, conicalPath);
 
     }
@@ -682,28 +691,28 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
             // Create an AS400 object.  The system name was passed
             // as the first command line argument.
-            AS400 system = new AS400(systemName.getText());
+            final AS400 system = new AS400(systemName.getText());
 
-            String splfName = spooledFile.getText();
-            int splfNumber = Integer.parseInt(spooledFileNumber.getText());
-            String _jobName = jobName.getText();
-            String _jobUser = user.getText();
-            String _jobNumber = number.getText();
+            final String splfName = spooledFile.getText();
+            final int splfNumber = Integer.parseInt(spooledFileNumber.getText());
+            final String _jobName = jobName.getText();
+            final String _jobUser = user.getText();
+            final String _jobNumber = number.getText();
 
-            SpooledFile splF = new SpooledFile(system,
+            final SpooledFile splF = new SpooledFile(system,
                     splfName,
                     splfNumber,
                     _jobName,
                     _jobUser,
                     _jobNumber);
 
-            PrintParameterList printParms = new PrintParameterList();
+            final PrintParameterList printParms = new PrintParameterList();
             printParms.setParameter(PrintObject.ATTR_WORKSTATION_CUST_OBJECT,
                     "/QSYS.LIB/QWPDEFAULT.WSCST");
             printParms.setParameter(PrintObject.ATTR_MFGTYPE, "*WSCST");
 
             // get the text (via a transformed input stream) from the spooled file
-            PrintObjectTransformedInputStream inStream = splF.getTransformedInputStream(printParms);
+            final PrintObjectTransformedInputStream inStream = splF.getTransformedInputStream(printParms);
             //            DataInputStream dis = new DataInputStream(inStream);
 
             // get the number of available bytes
@@ -712,7 +721,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
             int read = 0;
             int totBytes = 0;
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
 
             updateStatus("Starting Output");
 
@@ -774,8 +783,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
                 // not sure if this works on linux yet but here we go.
                 try {
-                    Runtime rt = Runtime.getRuntime();
-                    String[] cmdArray = {editor.getText(), pcPathInfo.getText()};
+                    final Runtime rt = Runtime.getRuntime();
+                    final String[] cmdArray = {editor.getText(), pcPathInfo.getText()};
                     // We need to probably do some checking here in the future
                     // Process proc = rt.exec(cmdArray);
                     rt.exec(cmdArray);
@@ -791,7 +800,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
                             editor.getText());
                     // save it off
                     session.getSession().getConfiguration().saveSessionProps();
-                } catch (Throwable t) {
+                } catch (final Throwable t) {
                     // print a stack trace
                     t.printStackTrace();
                     // throw up the message error
@@ -803,7 +812,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
             if (email.isSelected())
                 emailMe();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             updateStatus("Error: " + e.getMessage());
             System.out.println("Error: " + e.getMessage());
         }
@@ -821,13 +830,13 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
             // Create the printparameters to be used in the transform of the
             //    input stream
-            PrintParameterList printParms = new PrintParameterList();
+            final PrintParameterList printParms = new PrintParameterList();
             printParms.setParameter(PrintObject.ATTR_WORKSTATION_CUST_OBJECT,
                     "/QSYS.LIB/QWPDEFAULT.WSCST");
             printParms.setParameter(PrintObject.ATTR_MFGTYPE, "*WSCST");
 
             // get the text (via a transformed input stream) from the spooled file
-            PrintObjectTransformedInputStream inStream = splfile.getTransformedInputStream(printParms);
+            final PrintObjectTransformedInputStream inStream = splfile.getTransformedInputStream(printParms);
 
             // get the number of available bytes
             int avail = inStream.available();
@@ -836,7 +845,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
             int read = 0;
             int totBytes = 0;
 
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
 
             updateStatus("Starting Output");
 
@@ -890,7 +899,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
             if (email.isSelected())
                 emailMe();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             updateStatus("Error: " + e.getMessage());
             System.out.println("Error: " + e.getMessage());
         }
@@ -900,14 +909,14 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      *
      * @param s
      */
-    private void writeBuffer(String s) {
+    private void writeBuffer(final String s) {
 
         if (!document.isOpen())
             document.open();
 
         try {
             document.add(new Paragraph(s, font));
-        } catch (com.lowagie.text.DocumentException de) {
+        } catch (final com.lowagie.text.DocumentException de) {
             System.out.println(de);
         }
     }
@@ -933,17 +942,17 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
             // for e-mailing setup a temporary file
             if (email.isSelected()) {
-                File dir = new File(System.getProperty("user.dir"));
+                final File dir = new File(System.getProperty("user.dir"));
 
                 //  setup the temp file name
-                String tempFile = spooledFile.getText().trim() + '_' +
+                final String tempFile = spooledFile.getText().trim() + '_' +
                         jobName.getText().trim() + '_' +
                         user.getText().trim() + '_' +
                         spooledFileNumber.getText().trim() + '_' +
                         number.getText().trim();
 
                 // create the temporary file
-                File f = File.createTempFile(tempFile, suffix, dir);
+                final File f = File.createTempFile(tempFile, suffix, dir);
 
                 System.out.println(f.getName());
                 System.out.println(f.getCanonicalPath());
@@ -980,7 +989,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
                 }
 
                 // create the base font
-                BaseFont bf = BaseFont.createFont("Courier", "Cp1252", false);
+                final BaseFont bf = BaseFont.createFont("Courier", "Cp1252", false);
 
                 // set the default size of the font to 9.0
                 float fontsize = 9.0f;
@@ -1002,7 +1011,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
                     document.addSubject(subject.getText());
 
                 // set the page sizes and the page orientation
-                String ps = (String) pageSize.getSelectedItem();
+                final String ps = (String) pageSize.getSelectedItem();
 
                 if (ps.equals("A3")) {
                     if (portrait.isSelected())
@@ -1044,10 +1053,10 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
                         document.setPageSize(PageSize.LEDGER.rotate());
                 }
             }
-        } catch (IOException _ex) {
+        } catch (final IOException _ex) {
             System.out.println("Cannot open 1 " + _ex.getMessage());
 
-        } catch (Exception _ex2) {
+        } catch (final Exception _ex2) {
             System.out.println("Cannot open 2 " + _ex2.getMessage());
         }
 
@@ -1064,6 +1073,7 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
         SwingUtilities.invokeLater(
                 new Runnable() {
+                    @Override
                     public void run() {
                         statusBar.setText(stat);
                     }
@@ -1072,7 +1082,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
     }
 
-    public void nextBegin(WizardEvent e) {
+    @Override
+    public void nextBegin(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Next Begin");
         if (((String) cvtType.getSelectedItem()).equals(
                 LangTool.getString("spool.toText"))) {
@@ -1086,27 +1097,32 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
 
     }
 
-    public void nextComplete(WizardEvent e) {
+    @Override
+    public void nextComplete(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Next Complete");
         setTitle(e.getNewPage().getName());
     }
 
-    public void previousBegin(WizardEvent e) {
+    @Override
+    public void previousBegin(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Prev Begin");
         e.setNewPage(page);
         contentPane.add(statusBar, BorderLayout.SOUTH);
     }
 
-    public void previousComplete(WizardEvent e) {
+    @Override
+    public void previousComplete(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Prev Complete");
         setTitle(e.getNewPage().getName());
     }
 
-    public void finished(WizardEvent e) {
+    @Override
+    public void finished(final WizardEvent e) {
         doExport();
     }
 
-    public void canceled(WizardEvent e) {
+    @Override
+    public void canceled(final WizardEvent e) {
 //      System.out.println("It is canceled!");
         if (workingThread != null) {
             workingThread.interrupt();
@@ -1116,7 +1132,8 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
         this.dispose();
     }
 
-    public void help(WizardEvent e) {
+    @Override
+    public void help(final WizardEvent e) {
         System.out.println(e.getCurrentPage().getName());
     }
 
@@ -1127,12 +1144,12 @@ public class SpoolExportWizard extends GenericTn5250JFrame implements WizardList
      * @param charsetName the name of a charset in the which the byte is encoded
      * @return the converted char
      */
-    public static char byte2char(byte b, String charsetName) {
+    public static char byte2char(final byte b, final String charsetName) {
         char c = ' ';
         try {
-            byte[] bytes = {b};
+            final byte[] bytes = {b};
             c = (new String(bytes, charsetName)).charAt(0);
-        } catch (java.io.UnsupportedEncodingException uee) {
+        } catch (final java.io.UnsupportedEncodingException uee) {
             System.err.println(uee);
             System.err.println("Error while converting byte to char, returning blank...");
         }

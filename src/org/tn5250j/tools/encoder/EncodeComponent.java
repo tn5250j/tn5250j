@@ -25,10 +25,9 @@
  */
 package org.tn5250j.tools.encoder;
 
-import java.awt.Component;
-import java.io.OutputStream;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Used to encode components into different image file formats. ie .GIF and .PNG
@@ -52,8 +51,8 @@ public class EncodeComponent {
      * @param encoding type of encoding to use (Currently GIF or PNG)
      * @param output stream to which to write the encoding
      */
-    public static void encode(Encoding encoding, Component component, OutputStream output) throws IOException, EncoderException {
-        Encoder encoder = encoding.getEncoder();
+    public static void encode(final Encoding encoding, final Object component, final OutputStream output) throws IOException, EncoderException {
+        final Encoder encoder = encoding.getEncoder();
         if (encoder == null) {
             throw new EncoderException("Graphics Encoder could not be loaded.");
         }
@@ -68,8 +67,8 @@ public class EncodeComponent {
      * or PCL)
      * @param file file to which to write the encoding
      */
-    public static void encode(Encoding encoding, Component component, File file) throws IOException, EncoderException {
-        OutputStream os = new java.io.FileOutputStream(file);
+    public static void encode(final Encoding encoding, final Object component, final File file) throws IOException, EncoderException {
+        final OutputStream os = new java.io.FileOutputStream(file);
         encode(encoding, component, os);
         os.close();
     }
@@ -88,8 +87,8 @@ public class EncodeComponent {
         /**
          * Constructs and new image encoder.
          */
-        public Encoding(String short_name, String long_name,
-                        String encoder_class, String failure_message) {
+        public Encoding(final String short_name, final String long_name,
+                        final String encoder_class, final String failure_message) {
             this.shortName = short_name;
             this.longName = long_name;
             this.encoderClass = encoder_class;
@@ -114,6 +113,7 @@ public class EncodeComponent {
          * Returns a string representation bassed on the long and short name of the
          * Encoder.
          */
+        @Override
         public String toString() {
             return getLongName() + " (" + getShortName() + ")";
         }
@@ -136,14 +136,14 @@ public class EncodeComponent {
                 Class<?> encoder_class = null;
                 try {
                     encoder_class = Class.forName(encoderClass);
-                } catch (ClassNotFoundException cnfe) {
+                } catch (final ClassNotFoundException cnfe) {
                 }
 
                 if (encoder_class != null) {
                     try {
                         encoder = (Encoder) encoder_class.newInstance();
-                    } catch (InstantiationException ie) {
-                    } catch (IllegalAccessException iae) {
+                    } catch (final InstantiationException ie) {
+                    } catch (final IllegalAccessException iae) {
                     }
                 }
             }

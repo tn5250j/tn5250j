@@ -222,7 +222,8 @@ public class RubberBandSwing implements RubberBand {
         }
     }
 
-    protected void reset() {
+    @Override
+    public void reset() {
         setStartPoint(null);
         setEndPoint(null);
         isSomethingBounded = false;

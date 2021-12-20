@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.im.InputMethodRequests;
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -94,5 +96,25 @@ public class SwingToFxUtils {
         final Scene scene = new Scene(node);
         fxPane.setScene(scene);
         return fxPane;
+    }
+
+    public static <T> T runInFxAndWait(final Callable<T> call) {
+        try {
+            if (Platform.isFxApplicationThread()) {
+                return call.call();
+            }
+
+            final CompletableFuture<T> feature = new CompletableFuture<>();
+            Platform.runLater(() -> {
+                try {
+                    feature.complete(call.call());
+                } catch (final Throwable e) {
+                    feature.completeExceptionally(e);
+                }
+            });
+            return feature.get();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

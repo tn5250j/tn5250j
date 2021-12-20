@@ -43,16 +43,16 @@ class PrinterThread extends Thread implements Printable {
     private int numCols;
     private int numRows;
     private Font font;
-    private SessionPanelSwing session;
+    private SessionGui session;
     private SessionConfig config;
 
     PrinterThread(Screen5250 scr, Font font, int cols, int rows,
-                  Color colorBg, boolean toDefaultPrinter, SessionPanelSwing ses) {
+                  Color colorBg, boolean toDefaultPrinter, SessionGui ses) {
 
 
         setPriority(1);
         session = ses;
-        session.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        session.setWaitCursor();
         config = ses.getSession().getConfiguration();
 
         int len = scr.getScreenLength();
@@ -145,7 +145,7 @@ class PrinterThread extends Thread implements Printable {
         printJob.setPrintable(this, pf);
 
         // set the cursor back
-        session.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        session.setDefaultCursor();
 
 
         //--- Show a print dialog to the user. If the user

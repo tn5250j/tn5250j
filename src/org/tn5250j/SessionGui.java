@@ -3,13 +3,16 @@
  */
 package org.tn5250j;
 
-import java.awt.event.KeyEvent;
+import java.util.List;
 
+import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.keyboard.KeyboardHandler;
 
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 
 /**
@@ -68,7 +71,7 @@ public interface SessionGui {
     /**
      * @return true if is connected
      */
-    boolean isConnected();
+    boolean isVtConnected();
     void actionAttributes();
     boolean confirmCloseSession(boolean b);
     void actionCopy();
@@ -88,7 +91,21 @@ public interface SessionGui {
     void startDuplicateSession();
     void executeMacro(String lastKeyStroke);
     void actionSpool();
-    void doKeyBoundArea(KeyEvent e, String lastKeyStroke);
-    Rectangle2D getDrawingBounds();
+    void doKeyBoundArea(String lastKeyStroke);
+    Dimension2D getDrawingSize();
     RubberBand getRubberband();
+    void setDefaultCursor();
+    void setWaitCursor();
+    void requestFocus();
+    boolean isSessionRecording();
+    void stopRecordingMe();
+    int getPosFromView(double x, double y);
+    Rectangle2D getBoundingArea();
+    boolean isMacroRunning();
+    void setStopMacroRequested();
+    void startRecordingMe();
+    KeyboardHandler getKeyHandler();
+    List<Double> sumThem(boolean which);
+    void connect();
+    void addEmulatorActionListener(EmulatorActionListener listener);
 }

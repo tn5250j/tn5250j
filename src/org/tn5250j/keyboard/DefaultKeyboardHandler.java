@@ -255,7 +255,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
                         lastKeyStroke.equals("[markright]") ||
                         lastKeyStroke.equals("[markup]") ||
                         lastKeyStroke.equals("[markdown]")) {
-                    session.getGUI().doKeyBoundArea(e, lastKeyStroke);
+                    session.getGUI().doKeyBoundArea(lastKeyStroke);
                 }
             }
         } else

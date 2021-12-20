@@ -19,6 +19,7 @@
  */
 package org.tn5250j.framework;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,16 +40,18 @@ import java.util.jar.JarFile;
 import javax.swing.JFrame;
 
 import org.tn5250j.GlobalConfigure;
-import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.Session5250;
-import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.SessionGui;
+import org.tn5250j.SessionPanel;
+import org.tn5250j.SessionPanelSwing;
 import org.tn5250j.TN5250jConstants;
+import org.tn5250j.framework.common.SessionManager;
+import org.tn5250j.framework.common.Sessions;
+import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
-import org.tn5250j.framework.common.Sessions;
 
 
 public class Tn5250jController extends Thread {
@@ -62,7 +65,7 @@ public class Tn5250jController extends Thread {
     private static Tn5250jController current;
 
     private Tn5250jController() {
-        String maindir = System.getProperty("user.dir");
+        final String maindir = System.getProperty("user.dir");
         extensionDir = new File(maindir + File.separatorChar + "ext");
         log.info("plugin directory is: " + extensionDir.getAbsolutePath());
         if (!extensionDir.exists()) {
@@ -74,7 +77,7 @@ public class Tn5250jController extends Thread {
         Tn5250jController.current = this;
         log.info("Tn5250j plugin manager created");
         manager = SessionManager.instance();
-        Sessions ses = manager.getSessions();
+        final Sessions ses = manager.getSessions();
         log.debug("Sessions:" + ses.getCount());
         sesprops =
                 ((GlobalConfigure) ConfigureFactory.getInstance()).getProperties(
@@ -85,17 +88,17 @@ public class Tn5250jController extends Thread {
 
     private void loadExt() {
         if (this.extensionDir.exists()) {
-            File[] exts = extensionDir.listFiles();
+            final File[] exts = extensionDir.listFiles();
             for (int x = 0; x < exts.length; x++) {
                 if (exts[x].isDirectory()) {
-                    String jarName =
+                    final String jarName =
                             exts[x].getAbsolutePath()
                                     + File.separatorChar
                                     + exts[x].getName()
                                     + ".jar";
-                    File jarFile = new File(jarName);
+                    final File jarFile = new File(jarName);
                     if (jarFile.exists()) {
-                        Properties config = loadConfig(jarFile);
+                        final Properties config = loadConfig(jarFile);
                         load(jarFile, config.getProperty("mainentry"), config);
                     } else {
                         log.warn(
@@ -107,53 +110,53 @@ public class Tn5250jController extends Thread {
         }
     }
 
-    private void load(File jar, String name, Properties config) {
-        URL[] urls = new URL[1];
+    private void load(final File jar, final String name, final Properties config) {
+        final URL[] urls = new URL[1];
 
         try {
             urls[0] = jar.toURI().toURL();
             log.info("Loading jar: " + jar.toURI().toURL());
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             log.warn("The URL was malformed");
         }
-        URLClassLoader loader = new URLClassLoader(urls);
+        final URLClassLoader loader = new URLClassLoader(urls);
         try {
-            Class<?> ext = loader.loadClass(name);
+            final Class<?> ext = loader.loadClass(name);
             try {
-                Tn5250jListener module = (Tn5250jListener) ext.newInstance();
+                final Tn5250jListener module = (Tn5250jListener) ext.newInstance();
                 listeners.add(module);
-                ModuleThread thrd =
+                final ModuleThread thrd =
                         new ModuleThread(jar.getParentFile(), module, config);
                 thrd.start();
 
-            } catch (InstantiationException e2) {
+            } catch (final InstantiationException e2) {
                 log.warn("Error instantiating class " + name);
-            } catch (IllegalAccessException e2) {
+            } catch (final IllegalAccessException e2) {
                 log.warn(
                         "The class "
                                 + name
                                 + " gives no access to the constructor");
-            } catch (ClassCastException e2) {
+            } catch (final ClassCastException e2) {
                 log.warn(
                         "Main module class does not derive from Tn5250jListener");
             }
 
-        } catch (ClassNotFoundException e1) {
+        } catch (final ClassNotFoundException e1) {
             log.warn(
                     "Extension could not be loaded, class: " + name + " not found");
         }
     }
 
-    private Properties loadConfig(File jar) {
+    private Properties loadConfig(final File jar) {
         JarFile jarfile = null;
         Properties config = null;
         try {
             jarfile = new JarFile(jar);
-            JarEntry configfile = jarfile.getJarEntry("config.properties");
-            InputStream stream = jarfile.getInputStream(configfile);
+            final JarEntry configfile = jarfile.getJarEntry("config.properties");
+            final InputStream stream = jarfile.getInputStream(configfile);
             config = new Properties();
             config.load(stream);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.warn("Failure trying to load configuration");
         }
         return config;
@@ -162,6 +165,7 @@ public class Tn5250jController extends Thread {
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
+    @Override
     public void run() {
         log.info("Tn5250j plugin manager started");
         loadExt();
@@ -174,7 +178,7 @@ public class Tn5250jController extends Thread {
                 }
                 try {
                     eventList.wait();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     log.debug("Intertupted exception");
                 }
             }
@@ -183,14 +187,14 @@ public class Tn5250jController extends Thread {
     }
 
     private void broadcastEvent(final Tn5250jEvent event) {
-        Iterator<Tn5250jListener> listenerIt = listeners.iterator();
+        final Iterator<Tn5250jListener> listenerIt = listeners.iterator();
         while (listenerIt.hasNext()) {
-            Tn5250jListener listener = listenerIt.next();
+            final Tn5250jListener listener = listenerIt.next();
             listener.actionPerformed(event);
         }
     }
 
-    public void handleEvent(Tn5250jEvent e) {
+    public void handleEvent(final Tn5250jEvent e) {
         log.debug("Received event: " + e.getClass().toString());
         if (e instanceof Tn5250jKeyEvents) {
             log.debug("Keys: " + ((Tn5250jKeyEvents) e).getKeystrokes());
@@ -208,12 +212,12 @@ public class Tn5250jController extends Thread {
         return current;
     }
 
-    public void createSession(Screen5250 screen, tnvt vt, SessionPanelSwing ses) {
+    public void createSession(final Screen5250 screen, final tnvt vt, final SessionPanelSwing ses) {
         final Tn5250jSession session = new Tn5250jSession(screen, vt, ses);
-        Iterator<Tn5250jListener> listenerIt = listeners.iterator();
+        final Iterator<Tn5250jListener> listenerIt = listeners.iterator();
         log.info("New session created and received");
         while (listenerIt.hasNext()) {
-            Tn5250jListener listener = listenerIt.next();
+            final Tn5250jListener listener = listenerIt.next();
             listener.sessionCreated(session);
         }
     }
@@ -224,9 +228,9 @@ public class Tn5250jController extends Thread {
         Properties config;
 
         public ModuleThread(
-                File directory,
-                Tn5250jListener module,
-                Properties config) {
+                final File directory,
+                final Tn5250jListener module,
+                final Properties config) {
             dir = directory;
             mod = module;
             this.config = config;
@@ -234,6 +238,7 @@ public class Tn5250jController extends Thread {
             this.setName(module.getName());
         }
 
+        @Override
         public void run() {
             mod.init(dir, config);
             mod.setController(Tn5250jController.getCurrent());
@@ -246,18 +251,18 @@ public class Tn5250jController extends Thread {
 
     }
 
-    protected Properties getPropertiesForSession(String session) {
+    protected Properties getPropertiesForSession(final String session) {
         return null;
     }
 
-    public Screen5250 startSession(String name) {
-        JFrame frame = new JFrame();
-        String args[] = new String[15];
+    public Screen5250 startSession(final String name) {
+        final JFrame frame = new JFrame();
+        final String args[] = new String[15];
         parseArgs((String) sesprops.get(name), args);
-        Properties fin = convertToProps(args);
-        Session5250 newses = manager.openSession(fin, null, name);
-        SessionPanelSwing newGui = new SessionPanelSwing(newses);
-        frame.getContentPane().add(newGui);
+        final Properties fin = convertToProps(args);
+        final Session5250 newses = manager.openSession(fin, null, name);
+        final SessionGui newGui = new SessionPanel(newses);
+        frame.getContentPane().add((Component) newGui);
         frame.setBounds(50, 50, 960, 700);
         frame.setVisible(true);
         newses.connect();
@@ -265,8 +270,8 @@ public class Tn5250jController extends Thread {
     }
 
     public List<String> getSessions() {
-        Enumeration<Object> e = sesprops.keys();
-        ArrayList<String> list = new ArrayList<String>();
+        final Enumeration<Object> e = sesprops.keys();
+        final ArrayList<String> list = new ArrayList<String>();
         String ses = null;
         //This has the nasty tendency to grab data it isn't suposed to grab.
         //please fix
@@ -280,18 +285,18 @@ public class Tn5250jController extends Thread {
         return list;
     }
 
-    protected void parseArgs(String theStringList, String[] s) {
+    protected void parseArgs(final String theStringList, final String[] s) {
         int x = 0;
-        StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
+        final StringTokenizer tokenizer = new StringTokenizer(theStringList, " ");
         while (tokenizer.hasMoreTokens()) {
             s[x++] = tokenizer.nextToken();
         }
     }
 
-    protected Properties convertToProps(String args[]) {
-        Properties sesProps = new Properties();
+    protected Properties convertToProps(final String args[]) {
+        final Properties sesProps = new Properties();
 
-        String session = args[0];
+        final String session = args[0];
 
         // Start loading properties
         sesProps.put(TN5250jConstants.SESSION_HOST, session);
@@ -347,7 +352,7 @@ public class Tn5250jController extends Thread {
             // use IP address as device name
             try {
                 dnParam = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException uhe) {
+            } catch (final UnknownHostException uhe) {
                 dnParam = "UNKNOWN_HOST";
             }
 
@@ -363,7 +368,7 @@ public class Tn5250jController extends Thread {
         return sesProps;
     }
 
-    boolean isSpecified(String parm, String[] args) {
+    boolean isSpecified(final String parm, final String[] args) {
 
         if (args == null)
             return false;
@@ -377,7 +382,7 @@ public class Tn5250jController extends Thread {
         return false;
     }
 
-    private String getParm(String parm, String[] args) {
+    private String getParm(final String parm, final String[] args) {
 
         for (int x = 0; x < args.length; x++) {
 

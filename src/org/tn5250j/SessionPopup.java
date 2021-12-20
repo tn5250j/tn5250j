@@ -25,22 +25,40 @@
  */
 package org.tn5250j;
 
-import org.tn5250j.framework.tn5250.Screen5250;
-import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.HexCharMapDialog;
-import org.tn5250j.interfaces.OptionAccessFactory;
-import org.tn5250j.keyboard.configure.KeyConfigure;
-import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.keyboard.KeyMnemonic;
-import org.tn5250j.tools.*;
-import org.tn5250j.tools.logging.TN5250jLogFactory;
-import org.tn5250j.tools.logging.TN5250jLogger;
+import static org.tn5250j.keyboard.KeyMnemonic.ATTN;
+import static org.tn5250j.keyboard.KeyMnemonic.CLOSE;
+import static org.tn5250j.keyboard.KeyMnemonic.COPY;
+import static org.tn5250j.keyboard.KeyMnemonic.DISP_ATTRIBUTES;
+import static org.tn5250j.keyboard.KeyMnemonic.DISP_MESSAGES;
+import static org.tn5250j.keyboard.KeyMnemonic.DUP_FIELD;
+import static org.tn5250j.keyboard.KeyMnemonic.ERASE_EOF;
+import static org.tn5250j.keyboard.KeyMnemonic.E_MAIL;
+import static org.tn5250j.keyboard.KeyMnemonic.FIELD_MINUS;
+import static org.tn5250j.keyboard.KeyMnemonic.FIELD_PLUS;
+import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
+import static org.tn5250j.keyboard.KeyMnemonic.HELP;
+import static org.tn5250j.keyboard.KeyMnemonic.NEW_LINE;
+import static org.tn5250j.keyboard.KeyMnemonic.OPEN_NEW;
+import static org.tn5250j.keyboard.KeyMnemonic.PASTE;
+import static org.tn5250j.keyboard.KeyMnemonic.PRINT;
+import static org.tn5250j.keyboard.KeyMnemonic.PRINT_SCREEN;
+import static org.tn5250j.keyboard.KeyMnemonic.QUICK_MAIL;
+import static org.tn5250j.keyboard.KeyMnemonic.RESET;
+import static org.tn5250j.keyboard.KeyMnemonic.SPOOL_FILE;
+import static org.tn5250j.keyboard.KeyMnemonic.SYSREQ;
+import static org.tn5250j.keyboard.KeyMnemonic.TOGGLE_CONNECTION;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -48,7 +66,35 @@ import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.tn5250j.keyboard.KeyMnemonic.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+
+import org.tn5250j.framework.tn5250.Screen5250;
+import org.tn5250j.framework.tn5250.tnvt;
+import org.tn5250j.gui.HexCharMapDialog;
+import org.tn5250j.gui.UiUtils;
+import org.tn5250j.interfaces.OptionAccessFactory;
+import org.tn5250j.keyboard.KeyMnemonic;
+import org.tn5250j.keyboard.configure.KeyConfigure;
+import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.tools.GUIGraphicsUtils;
+import org.tn5250j.tools.LangTool;
+import org.tn5250j.tools.LoadMacroMenu;
+import org.tn5250j.tools.Macronizer;
+import org.tn5250j.tools.SendScreenImageToFile;
+import org.tn5250j.tools.SendScreenToFile;
+import org.tn5250j.tools.XTFRFile;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 /**
  * Custom
@@ -56,30 +102,30 @@ import static org.tn5250j.keyboard.KeyMnemonic.*;
 public class SessionPopup {
 
     private final Screen5250 screen;
-    private final SessionPanelSwing sessiongui;
+    private final SessionGui sessiongui;
     private final tnvt vt;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public SessionPopup(SessionPanelSwing ses, MouseEvent me) {
+    public SessionPopup(final SessionGui ses, final int x, final int y) {
 
         JMenuItem menuItem;
         Action action;
-        JPopupMenu popup = new JPopupMenu();
+        final JPopupMenu popup = new JPopupMenu();
         this.sessiongui = ses;
         vt = sessiongui.getSession().getVT();
         screen = sessiongui.getScreen();
 
-        final int pos = sessiongui.getPosFromView(me.getX(), me.getY());
+        final int pos = sessiongui.getPosFromView(x, y);
 
-        if (!sessiongui.rubberband.isAreaSelected() && screen.isInField(pos, false)) {
+        if (!sessiongui.getRubberband().isAreaSelected() && screen.isInField(pos, false)) {
             action = new AbstractAction(LangTool.getString("popup.copy")) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                    String fcontent = screen.copyTextField(pos);
-                    StringSelection contents = new StringSelection(fcontent);
-                    Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+                public void actionPerformed(final ActionEvent e) {
+                    final String fcontent = screen.copyTextField(pos);
+                    final StringSelection contents = new StringSelection(fcontent);
+                    final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
                     cb.setContents(contents, null);
                     sessiongui.getFocusForMe();
                 }
@@ -92,7 +138,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     paste(false);
                 }
             };
@@ -102,7 +148,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     paste(true);
                 }
             };
@@ -114,7 +160,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     showHexMap();
                     sessiongui.getFocusForMe();
                 }
@@ -128,7 +174,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     sessiongui.actionCopy();
                     sessiongui.getFocusForMe();
                 }
@@ -140,7 +186,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     paste(false);
                 }
             };
@@ -150,17 +196,17 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     paste(true);
                 }
             };
             popup.add(action);
 
             Rectangle workR = new Rectangle();
-            if (sessiongui.rubberband.isAreaSelected()) {
+            if (sessiongui.getRubberband().isAreaSelected()) {
 
                 // get the bounded area of the selection
-                sessiongui.getBoundingArea(workR);
+                workR = UiUtils.toAwtRectangle(sessiongui.getBoundingArea());
 
                 popup.addSeparator();
 
@@ -174,14 +220,14 @@ public class SessionPopup {
                 menuItem.setArmed(false);
                 popup.add(menuItem);
 
-                JMenu sumMenu = new JMenu(LangTool.getString("popup.calc"));
+                final JMenu sumMenu = new JMenu(LangTool.getString("popup.calc"));
                 popup.add(sumMenu);
 
                 action = new AbstractAction(LangTool.getString("popup.calcGroupCD")) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sumArea(true);
                     }
                 };
@@ -191,7 +237,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sumArea(false);
                     }
                 };
@@ -205,7 +251,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     sessiongui.printMe();
                     sessiongui.getFocusForMe();
                 }
@@ -214,7 +260,7 @@ public class SessionPopup {
 
             popup.addSeparator();
 
-            JMenu kbMenu = new JMenu(LangTool.getString("popup.keyboard"));
+            final JMenu kbMenu = new JMenu(LangTool.getString("popup.keyboard"));
 
             popup.add(kbMenu);
 
@@ -222,7 +268,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
 
                     mapMeKeys();
                 }
@@ -245,7 +291,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         vt.systemRequest('4');
                     }
                 };
@@ -272,7 +318,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         vt.hostPrint(1);
                     }
                 };
@@ -288,7 +334,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         vt.systemRequest('4');
                     }
                 };
@@ -301,7 +347,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     showHexMap();
                     sessiongui.getFocusForMe();
                 }
@@ -312,7 +358,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
 
                     mapMeKeys();
                     sessiongui.getFocusForMe();
@@ -326,7 +372,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sessiongui.actionAttributes();
                         sessiongui.getFocusForMe();
                     }
@@ -342,21 +388,21 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sessiongui.setStopMacroRequested();
                     }
                 };
                 popup.add(action);
             } else {
 
-                JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
+                final JMenu macMenu = new JMenu(LangTool.getString("popup.macros"));
 
                 if (sessiongui.isSessionRecording()) {
                     action = new AbstractAction(LangTool.getString("popup.stop")) {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(final ActionEvent e) {
                             sessiongui.stopRecordingMe();
                             sessiongui.getFocusForMe();
                         }
@@ -367,7 +413,7 @@ public class SessionPopup {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(final ActionEvent e) {
                             sessiongui.startRecordingMe();
                             sessiongui.getFocusForMe();
 
@@ -384,7 +430,7 @@ public class SessionPopup {
 
             popup.addSeparator();
 
-            JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
+            final JMenu xtfrMenu = new JMenu(LangTool.getString("popup.export"));
 
             if (OptionAccessFactory.getInstance().isValidOption(FILE_TRANSFER.mnemonic)) {
 
@@ -392,7 +438,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         doMeTransfer();
                         sessiongui.getFocusForMe();
                     }
@@ -407,7 +453,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         doMeSpool();
                         sessiongui.getFocusForMe();
                     }
@@ -418,7 +464,7 @@ public class SessionPopup {
 
             popup.add(xtfrMenu);
 
-            JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
+            final JMenu sendMenu = new JMenu(LangTool.getString("popup.send"));
             popup.add(sendMenu);
 
             if (OptionAccessFactory.getInstance().isValidOption(QUICK_MAIL.mnemonic)) {
@@ -427,7 +473,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sendQuickEMail();
                         sessiongui.getFocusForMe();
                     }
@@ -441,7 +487,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sendScreenEMail();
                         sessiongui.getFocusForMe();
                     }
@@ -454,7 +500,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     sendMeToFile();
                 }
             };
@@ -465,7 +511,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     sendMeToImageFile();
                 }
             };
@@ -482,7 +528,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     sessiongui.startNewSession();
                 }
             };
@@ -499,7 +545,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sessiongui.toggleConnection();
                         sessiongui.getFocusForMe();
                     }
@@ -510,7 +556,7 @@ public class SessionPopup {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         sessiongui.toggleConnection();
                         sessiongui.getFocusForMe();
                     }
@@ -528,7 +574,7 @@ public class SessionPopup {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     sessiongui.confirmCloseSession(true);
                 }
             };
@@ -537,24 +583,24 @@ public class SessionPopup {
 
         }
 
-        GUIGraphicsUtils.positionPopup(me.getComponent(), popup,
-                me.getX(), me.getY());
+        GUIGraphicsUtils.positionPopup((Component) ses, popup,
+                x, y);
 
     }
 
-    private void createKeyboardItem(JMenu menu, KeyMnemonic keyMnemonic) {
+    private void createKeyboardItem(final JMenu menu, final KeyMnemonic keyMnemonic) {
         createKeyboardItem(menu, keyMnemonic.mnemonic);
     }
 
-    private void createKeyboardItem(JMenu menu, String key) {
+    private void createKeyboardItem(final JMenu menu, final String key) {
 
         if (OptionAccessFactory.getInstance().isValidOption(key)) {
             final String key2 = key;
-            Action action = new AbstractAction(LangTool.getString("key." + key)) {
+            final Action action = new AbstractAction(LangTool.getString("key." + key)) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     screen.sendKeys(key2);
                 }
             };
@@ -564,24 +610,24 @@ public class SessionPopup {
 
     }
 
-    private void addMacros(JMenu menu) {
+    private void addMacros(final JMenu menu) {
 
         LoadMacroMenu.loadMacros(sessiongui, menu);
     }
 
-    private JMenuItem createMenuItem(Action action, KeyMnemonic keyMnemonic) {
+    private JMenuItem createMenuItem(final Action action, final KeyMnemonic keyMnemonic) {
         return createMenuItem(action, keyMnemonic.mnemonic);
     }
 
-    private JMenuItem createMenuItem(Action action, String accelKey) {
-        JMenuItem mi = new JMenuItem();
+    private JMenuItem createMenuItem(final Action action, final String accelKey) {
+        final JMenuItem mi = new JMenuItem();
         mi.setAction(action);
-        if (sessiongui.keyHandler.isKeyStrokeDefined(accelKey)) {
-            mi.setAccelerator(sessiongui.keyHandler.getKeyStroke(accelKey));
+        if (sessiongui.getKeyHandler().isKeyStrokeDefined(accelKey)) {
+            mi.setAccelerator(sessiongui.getKeyHandler().getKeyStroke(accelKey));
         } else {
-            InputMap map = sessiongui.getInputMap();
-            KeyStroke[] allKeys = map.allKeys();
-            for (KeyStroke keyStroke : allKeys) {
+            final InputMap map = ((JComponent) sessiongui).getInputMap();
+            final KeyStroke[] allKeys = map.allKeys();
+            for (final KeyStroke keyStroke : allKeys) {
                 if (map.get(keyStroke).equals(accelKey)) {
                     mi.setAccelerator(keyStroke);
                     break;
@@ -591,19 +637,19 @@ public class SessionPopup {
         return mi;
     }
 
-    private void createShortCutItems(JMenu menu) {
+    private void createShortCutItems(final JMenu menu) {
 
-        JMenu sm = new JMenu(LangTool.getString("popup.shortCuts"));
+        final JMenu sm = new JMenu(LangTool.getString("popup.shortCuts"));
         menu.addSeparator();
         menu.add(sm);
 
-        InputMap map = sessiongui.getInputMap();
-        KeyStroke[] allKeys = map.allKeys();
-        ActionMap aMap = sessiongui.getActionMap();
+        final InputMap map = ((JComponent) sessiongui).getInputMap();
+        final KeyStroke[] allKeys = map.allKeys();
+        final ActionMap aMap = ((JComponent) sessiongui).getActionMap();
 
-        for (KeyStroke allKey : allKeys) {
-            Action a = aMap.get(map.get(allKey));
-            JMenuItem mi = new JMenuItem();
+        for (final KeyStroke allKey : allKeys) {
+            final Action a = aMap.get(map.get(allKey));
+            final JMenuItem mi = new JMenuItem();
             mi.setAction(a);
             mi.setText(LangTool.getString("key." + map.get(allKey)));
             mi.setAccelerator(allKey);
@@ -611,11 +657,11 @@ public class SessionPopup {
         }
     }
 
-    private void sumArea(boolean which) {
+    private void sumArea(final boolean which) {
 
 
-        List<Double> sumVector = sessiongui.sumThem(which);
-        Iterator<Double> l = sumVector.iterator();
+        final List<Double> sumVector = sessiongui.sumThem(which);
+        final Iterator<Double> l = sumVector.iterator();
         double sum = 0.0;
         double inter;
         while (l.hasNext()) {
@@ -623,7 +669,7 @@ public class SessionPopup {
             inter = 0.0;
             try {
                 inter = l.next();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.warn(e);
             }
 
@@ -635,9 +681,9 @@ public class SessionPopup {
         }
 
         // obtain the decimal format for parsing
-        DecimalFormat df = (DecimalFormat) NumberFormat.getInstance();
+        final DecimalFormat df = (DecimalFormat) NumberFormat.getInstance();
 
-        DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
+        final DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
 
         if (which) {
             dfs.setDecimalSeparator('.');
@@ -658,8 +704,8 @@ public class SessionPopup {
     }
 
     private void showHexMap() {
-        final HexCharMapDialog dlg = new HexCharMapDialog(sessiongui, vt.getCodePage());
-        String key = dlg.showModal();
+        final HexCharMapDialog dlg = new HexCharMapDialog(((JComponent) sessiongui), vt.getCodePage());
+        final String key = dlg.showModal();
         if (key != null) {
             screen.sendKeys(key);
         }
@@ -667,10 +713,10 @@ public class SessionPopup {
 
     private void mapMeKeys() {
 
-        Frame parent = (Frame) SwingUtilities.getRoot(sessiongui);
+        final Frame parent = (Frame) SwingUtilities.getRoot(((JComponent) sessiongui));
 
         if (Macronizer.isMacrosExist()) {
-            String[] macrosList = Macronizer.getMacroList();
+            final String[] macrosList = Macronizer.getMacroList();
             new KeyConfigure(parent, macrosList, vt.getCodePage());
         } else {
             new KeyConfigure(parent, null, vt.getCodePage());
@@ -680,18 +726,18 @@ public class SessionPopup {
 
     private void doMeTransfer() {
 
-        new XTFRFile((Frame) SwingUtilities.getRoot(sessiongui), vt, sessiongui);
+        new XTFRFile((Frame) SwingUtilities.getRoot(((JComponent) sessiongui)), vt, sessiongui);
 
     }
 
     private void doMeSpool() {
 
         try {
-            org.tn5250j.spoolfile.SpoolExporter spooler =
+            final org.tn5250j.spoolfile.SpoolExporter spooler =
                     new org.tn5250j.spoolfile.SpoolExporter(vt, sessiongui);
             spooler.setVisible(true);
-        } catch (NoClassDefFoundError ncdfe) {
-            JOptionPane.showMessageDialog(sessiongui,
+        } catch (final NoClassDefFoundError ncdfe) {
+            JOptionPane.showMessageDialog(((JComponent) sessiongui),
                     LangTool.getString("messages.noAS400Toolbox"),
                     "Error",
                     JOptionPane.ERROR_MESSAGE, null);
@@ -701,38 +747,38 @@ public class SessionPopup {
 
     private void sendScreenEMail() {
 
-        new SendEMailDialog((Frame) SwingUtilities.getRoot(sessiongui), sessiongui);
+        new SendEMailDialog((Frame) SwingUtilities.getRoot(((JComponent) sessiongui)), sessiongui);
     }
 
     private void sendQuickEMail() {
 
-        new SendEMailDialog((Frame) SwingUtilities.getRoot(sessiongui), sessiongui, false);
+        new SendEMailDialog((Frame) SwingUtilities.getRoot(((JComponent) sessiongui)), sessiongui, false);
     }
 
     private void sendMeToFile() {
 
-        SendScreenToFile.showDialog(SwingUtilities.getRoot(sessiongui), screen);
+        SendScreenToFile.showDialog(SwingUtilities.getRoot(((JComponent) sessiongui)), screen);
     }
 
     private void sendMeToImageFile() {
         // Change sent by LUC - LDC to add a parent frame to be passed
-        new SendScreenImageToFile((Frame) SwingUtilities.getRoot(sessiongui), sessiongui);
+        new SendScreenImageToFile((Frame) SwingUtilities.getRoot(((JComponent) sessiongui)), sessiongui);
     }
 
-    private void paste(boolean special) {
+    private void paste(final boolean special) {
         try {
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
             final Transferable transferable = cb.getContents(this);
             if (transferable != null) {
                 final String content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
                 screen.pasteText(content, special);
                 sessiongui.getFocusForMe();
             }
-        } catch (HeadlessException e1) {
+        } catch (final HeadlessException e1) {
             log.debug("HeadlessException", e1);
-        } catch (UnsupportedFlavorException e1) {
+        } catch (final UnsupportedFlavorException e1) {
             log.debug("the requested data flavor is not supported", e1);
-        } catch (IOException e1) {
+        } catch (final IOException e1) {
             log.debug("data is no longer available in the requested flavor", e1);
         }
 

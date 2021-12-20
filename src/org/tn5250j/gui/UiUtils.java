@@ -3,6 +3,10 @@
  */
 package org.tn5250j.gui;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
@@ -17,10 +21,13 @@ import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Dimension2D;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
@@ -165,7 +172,7 @@ public final class UiUtils {
                 round(c.getOpacity() * 255.));
     }
 
-    private static int round(final double d) {
+    public static int round(final double d) {
         return (int) Math.ceil(d);
     }
 
@@ -179,6 +186,10 @@ public final class UiUtils {
 
     public static java.awt.Font toAwtFont(final Font font) {
         return new java.awt.Font(font.getName(), java.awt.Font.PLAIN, (int) Math.round(font.getSize()));
+    }
+
+    public static Font fromAwtFont(final java.awt.Font font) {
+        return new Font(font.getName(), font.getSize());
     }
 
     public static Rectangle toAwtRectangle(final Rectangle2D bounds) {
@@ -200,5 +211,46 @@ public final class UiUtils {
         final int blue = (rgb >> 0) & 0xFF;
         final int alpha = (rgb >> 24) & 0xff;
         return Color.rgb(red, green, blue, alpha / 255.) ;
+    }
+
+    public static java.awt.geom.Line2D toAwtLine(final Line2D origin) {
+        final java.awt.geom.Line2D line = new java.awt.geom.Line2D.Double(
+                origin.getStart().getX(),
+                origin.getStart().getY(),
+                origin.getEnd().getX(),
+                origin.getEnd().getY()
+        );
+        return line ;
+    }
+
+    public static Point toAwtPoint(final Point2D p) {
+        return new Point(round(p.getX()), round(p.getY()));
+    }
+
+    public static Font deriveFont(final Font f, final double size) {
+        return new Font(f.getName(), size);
+    }
+
+    /**
+     * @param g graphics context.
+     * @param rect rectangle to fill.
+     */
+    public static void fill(final GraphicsContext g, final Rectangle2D rect) {
+        g.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+    }
+
+    /**
+     * @param dim dimension.
+     * @return int dimension.
+     */
+    public static Dimension toAwtDimension(final Dimension2D dim) {
+        return new Dimension(round(dim.getWidth()), round(dim.getHeight()));
+    }
+
+    public static Frame getRoot(final Object object) {
+        if (object instanceof Component) {
+            return (Frame) SwingUtilities.getRoot((Component) object);
+        }
+        return SwingToFxUtils.SHARED_FRAME;
     }
 }

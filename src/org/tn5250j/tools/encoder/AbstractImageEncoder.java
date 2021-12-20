@@ -31,6 +31,13 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.tn5250j.gui.SwingToFxUtils;
+
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
+
 /**
  * This is the base class for encoding a component to a stream file.
  */
@@ -39,21 +46,35 @@ public abstract class AbstractImageEncoder implements Encoder {
     protected Image img = null;
     protected OutputStream ofile = null;
 
-    public void encode(Image image, OutputStream os) throws IOException, EncoderException {
+    public void encode(final Image image, final OutputStream os) throws IOException, EncoderException {
         img = image;
         ofile = os;
         saveImage();
     }
 
-    public void encode(Component component, OutputStream os) throws IOException, EncoderException {
+    public void encode(final Object component, final OutputStream os) throws IOException, EncoderException {
+        if (component instanceof  Component) {
+            encodeComponent((Component) component, os);
+        } else if (component instanceof Node) {
+            encodeNode((Node) component, os);
+        } else {
+            throw new EncoderException("Usupported component type: " + component.getClass().getName());
+        }
+    }
+    public void encodeComponent(final Component component, final OutputStream os) throws IOException, EncoderException {
         encode(snapshot(component), os);
     }
+    public void encodeNode(final Node node, final OutputStream os) throws IOException, EncoderException {
+        final WritableImage image = SwingToFxUtils.runInFxAndWait(
+                () -> node.snapshot(new SnapshotParameters(), null));
+        encode(SwingFXUtils.fromFXImage(image, null), os);
+    }
 
-    public static Image snapshot(Component component) {
-        Image img = component.createImage(component.getSize().width,
+    public static Image snapshot(final Component component) {
+        final Image img = component.createImage(component.getSize().width,
                 component.getSize().height);
         if (img != null) {
-            Graphics igc = img.getGraphics();
+            final Graphics igc = img.getGraphics();
             //Gotta set the clip, or else paint throws an exception
             igc.setClip(0, 0, component.getSize().width,
                     component.getSize().height);
@@ -64,7 +85,7 @@ public abstract class AbstractImageEncoder implements Encoder {
 
     public abstract void saveImage() throws IOException, EncoderException;
 
-    public byte createByte(int b7, int b6, int b5, int b4, int b3, int b2, int b1, int b0) {
+    public byte createByte(final int b7, final int b6, final int b5, final int b4, final int b3, final int b2, final int b1, final int b0) {
         byte bits = 0;
         if (b0 == 1) bits = (byte) (bits | 1);
         if (b1 == 1) bits = (byte) (bits | 2);
@@ -77,12 +98,12 @@ public abstract class AbstractImageEncoder implements Encoder {
         return bits;
     }
 
-    public static byte byteFromInt(int value) {
+    public static byte byteFromInt(final int value) {
         return ((byte) (value & 255));
     }
 
-    public static byte[] bytesFromLong(long value) {
-        byte[] buf = new byte[4];
+    public static byte[] bytesFromLong(final long value) {
+        final byte[] buf = new byte[4];
         buf[0] = ((byte) ((value >> 24) & 255));
         buf[1] = ((byte) ((value >> 16) & 255));
         buf[2] = ((byte) ((value >> 8) & 255));
@@ -90,11 +111,11 @@ public abstract class AbstractImageEncoder implements Encoder {
         return buf;
     }
 
-    public static byte byteFromChar(char ochar) {
-        int temp = ochar;
+    public static byte byteFromChar(final char ochar) {
+        final int temp = ochar;
         byte bits = 0;
 
-        int curpos = 0;
+        final int curpos = 0;
         for (int i = 0; i <= 7; i++) {
             if ((temp & ((byte) Math.pow(2, i))) != 0) {
                 bits = (byte) (bits | ((byte) Math.pow(2, i)));
@@ -109,7 +130,7 @@ public abstract class AbstractImageEncoder implements Encoder {
      *            second lowest byte is green, third lowest byte is red)
      * @return color compressed into 8-bit representation
      */
-    public byte compressColor(int clr) {
+    public byte compressColor(final int clr) {
         return compressColor((clr >> 16) & 255, (clr >> 8) & 255, clr & 255);
     }
 
@@ -120,7 +141,7 @@ public abstract class AbstractImageEncoder implements Encoder {
      * @param blue value of the blue portion of the color
      * @return color compressed into 8-bit representation
      */
-    public byte compressColor(int red, int green, int blue) {
+    public byte compressColor(final int red, final int green, final int blue) {
         // take 3 most significatnt bits of red, 3 most significant bits of
         // green and 2 most significant bits of blue to form 8-bit compression
         // of color values
@@ -128,7 +149,7 @@ public abstract class AbstractImageEncoder implements Encoder {
         return (byte) ((red & 224) | ((green >> 3) & 28) | ((blue >> 6) & 3));
     }
 
-    protected void error(String msg) throws EncoderException {
+    protected void error(final String msg) throws EncoderException {
         throw new EncoderException(msg);
     }
 

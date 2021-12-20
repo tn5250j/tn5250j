@@ -598,8 +598,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         final int sessionCount = manager.getSessions().getCount();
 
         final Session5250 s2 = manager.openSession(sesProps, propFileName, sel);
-        final SessionPanelSwing s = new SessionPanelSwing(s2);
-
+        final SessionGui s = new SessionPanel(s2);
 
         if (!frame1.isVisible()) {
             splash.updateProgress(++step);

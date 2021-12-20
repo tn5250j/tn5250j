@@ -16,4 +16,5 @@ public interface RubberBand {
     void erase();
     Rectangle2D getBoundingArea();
     void draw();
+    void reset();
 }

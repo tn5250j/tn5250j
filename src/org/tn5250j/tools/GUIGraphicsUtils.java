@@ -47,6 +47,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.system.OperatingSystem;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -162,6 +163,105 @@ public class GUIGraphicsUtils {
         //      g.translate(-x, -y);
         g.setColor(oldColor);
     }
+    public static void draw3DLeft(final GraphicsContext g, final int which,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+
+            //      g.translate(x, y);
+
+            if (which == RAISED) {
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth,
+                        y + 1);
+
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight - 2);
+
+                // | vertical
+                g.strokeLine(x + 1,
+                        y,
+                        x + 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // --  horizontal bottom
+                g.strokeLine(x + 1,
+                        y + fmHeight - 3,
+                        x + fmWidth,
+                        y + fmHeight - 3);
+            }
+            if (which == INSET) {
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth,
+                        y + 1);
+
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight - 2);
+
+                // | vertical
+                g.strokeLine(x + 1,
+                        y,
+                        x + 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // --  horizontal bottom
+                g.strokeLine(x + 1,
+                        y + fmHeight - 3,
+                        x + fmWidth,
+                        y + fmHeight - 3);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
+    }
 
     public static void draw3DMiddle(final Graphics g, final int which,
                                     final int x, final int y,
@@ -235,6 +335,79 @@ public class GUIGraphicsUtils {
         //      g.translate(-x, -y);
         g.setColor(oldColor);
 
+    }
+    public static void draw3DMiddle(final GraphicsContext g, final int which,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+
+        try {
+            //      g.translate(x, y);
+            if (which == RAISED) {
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth,
+                        y + 1);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 3,
+                        x + fmWidth,
+                        y + fmHeight - 3);
+            }
+            if (which == INSET) {
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth,
+                        y + 1);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 3,
+                        x + fmWidth,
+                        y + fmHeight - 3);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     public static void draw3DRight(final Graphics g, final int which,
@@ -334,6 +507,105 @@ public class GUIGraphicsUtils {
         //      g.translate(-x, -y);
         g.setColor(oldColor);
 
+    }
+    public static void draw3DRight(final GraphicsContext g, final int which,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+
+            //      g.translate(x, y);
+            if (which == RAISED) {
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth - 2,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth - 3,
+                        y + 1);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth - 2,
+                        y + fmHeight - 2);
+
+                // | vertical
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // | vertical
+                g.strokeLine(x + fmWidth - 2,
+                        y + 1,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 3,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+            }
+            if (which == INSET) {
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth - 2,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth - 3,
+                        y + 1);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth - 2,
+                        y + fmHeight - 2);
+
+                // | vertical
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // | vertical
+                g.strokeLine(x + fmWidth - 2,
+                        y + 1,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 3,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     public static void draw3DOne(final Graphics g, final int which,
@@ -459,6 +731,129 @@ public class GUIGraphicsUtils {
         //      g.translate(-x, -y);
         g.setColor(oldColor);
 
+    }
+    public static void draw3DOne(final GraphicsContext g, final double which,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+
+        try {
+            //      g.translate(x, y);
+            if (which == INSET) {
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth - 2,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth - 3,
+                        y + 1);
+
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight - 2);
+
+                // | vertical
+                g.strokeLine(x + 1,
+                        y,
+                        x + 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth - 2,
+                        y + fmHeight - 2);
+
+                // | vertical right
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // | vertical right
+                g.strokeLine(x + fmWidth - 2,
+                        y + 1,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+                // --  horizontal bottom
+                g.strokeLine(x + 1,
+                        y + fmHeight - 3,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+            }
+            if (which == RAISED) {
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal top
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth - 2,
+                        y);
+
+                // --  horizontal top
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth - 3,
+                        y + 1);
+
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight - 2);
+
+                // | vertical
+                g.strokeLine(x + 1,
+                        y,
+                        x + 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.DARKGRAY);
+
+                // --  horizontal bottom
+                g.strokeLine(x,
+                        y + fmHeight - 2,
+                        x + fmWidth - 2,
+                        y + fmHeight - 2);
+
+                // | vertical right
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight - 2);
+
+                g.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+
+                // | vertical right
+                g.strokeLine(x + fmWidth - 2,
+                        y + 1,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+                // --  horizontal bottom
+                g.strokeLine(x + 1,
+                        y + fmHeight - 3,
+                        x + fmWidth - 2,
+                        y + fmHeight - 3);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     // draw scroll bar top
@@ -688,6 +1083,118 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
 
     }
+    public static void drawScrollBar(final GraphicsContext g, final int which, final int direction,
+            final double x, final double y, final int fmWidth, final int fmHeight,
+            final javafx.scene.paint.Color fg, final javafx.scene.paint.Color bg) {
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+
+        //      g.translate(x, y);
+        try {
+            if (which == INSET) {
+                g.setFill(bg);
+                g.fillRect(x, y, fmWidth, fmHeight);
+                g.setFill(fg);
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight);
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight);
+
+                //            g.drawRect(x,y,fmWidth-2,fmHeight);
+            }
+            if (which == RAISED) {
+                g.setFill(bg);
+                g.fillRect(x, y, fmWidth, fmHeight);
+                g.setFill(fg);
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight);
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight);
+
+                //            g.drawRect(x,y,fmWidth-2,fmHeight);
+
+            }
+
+            if (direction == 1) {
+                g.setFill(fg.brighter());
+                g.strokeLine(x + (fmWidth / 2),
+                        y + 2,
+                        x + 2,
+                        y + fmHeight - 4);
+
+                g.setFill(fg.darker());
+
+                g.strokeLine(x + (fmWidth / 2),
+                        y + 2,
+                        x + fmWidth - 2,
+                        y + fmHeight - 4);
+
+                g.strokeLine(x + 2,
+                        y + fmHeight - 4,
+                        x + fmWidth - 2,
+                        y + fmHeight - 4);
+
+                g.setFill(fg);
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth - 1,
+                        y);
+
+                g.strokeLine(x,
+                        y + fmHeight - 1,
+                        x + fmWidth - 1,
+                        y + fmHeight - 1);
+
+            }
+
+            if (direction == 2) {
+                g.setFill(fg.brighter());
+                g.strokeLine(x + (fmWidth / 2),
+                        y + fmHeight - 4,
+                        x + 2,
+                        y + 2);
+                g.strokeLine(x + 2,
+                        y + 2,
+                        x + fmWidth - 2,
+                        y + 2);
+
+
+                g.setFill(fg.darker());
+
+                g.strokeLine(x + (fmWidth / 2),
+                        y + fmHeight - 4,
+                        x + fmWidth - 2,
+                        y + 2);
+
+                g.setFill(fg);
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                g.strokeLine(x,
+                        y + fmHeight - 1,
+                        x + fmWidth,
+                        y + fmHeight - 1);
+
+            }
+
+            if (direction == 3) {
+                g.setFill(fg);
+                g.fillRect(x + 2, y, fmWidth - 4, fmHeight);
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
+    }
 
     public static void drawWinUpperLeft(final Graphics g, final int which, final Color fill,
                                         final int x, final int y,
@@ -728,6 +1235,37 @@ public class GUIGraphicsUtils {
         }
         //      g.translate(-x, -y);
         g.setColor(oldColor);
+    }
+
+    public static void drawWinUpperLeft(final GraphicsContext g, final double which,
+            final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal
+                g.strokeLine(x, y, x + fmWidth, y);
+                // | vertical
+                g.strokeLine(x, y, x, y + fmHeight);
+
+            }
+            if (which == WINDOW_NORMAL) {
+                // --  horizontal
+                g.strokeLine(x + fmWidth / 2, y + fmHeight / 2, x + fmWidth, y + fmHeight / 2);
+                // | vertical
+                g.strokeLine(x + fmWidth / 2, y + fmHeight / 2, x + fmWidth / 2, y + fmHeight);
+
+            }
+        } finally {
+            g.setFill(oldColor);
+        }
     }
 
     public static void drawWinUpper(final Graphics g, final int which, final Color fill,
@@ -774,6 +1312,52 @@ public class GUIGraphicsUtils {
         }
         //      g.translate(-x, -y);
         g.setColor(oldColor);
+    }
+    public static void drawWinUpper(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        //      g.translate(x, y);
+        try {
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal
+                g.strokeLine(x,
+                        y + fmHeight - 1,
+                        x + fmWidth,
+                        y + fmHeight - 1);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal
+                g.strokeLine(x,
+                        y + fmHeight,
+                        x + fmWidth,
+                        y + fmHeight);
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+                g.strokeLine(x,
+                        y + fmHeight / 2,
+                        x + fmWidth,
+                        y + fmHeight / 2);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     public static void drawWinUpperRight(final Graphics g, final int which, final Color fill,
@@ -833,6 +1417,64 @@ public class GUIGraphicsUtils {
         //      g.translate(-x, -y);
         g.setColor(oldColor);
     }
+    public static void drawWinUpperRight(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // | vertical
+                g.strokeLine(x + fmWidth,
+                        y,
+                        x + fmWidth,
+                        y + fmHeight);
+
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+                // | vertical
+                g.strokeLine(x + fmWidth / 2,
+                        y + fmHeight / 2,
+                        x + fmWidth / 2,
+                        y + fmHeight);
+                // -- horizontal
+                g.strokeLine(x,
+                        y + fmHeight / 2,
+                        x + fmWidth / 2,
+                        y + fmHeight / 2);
+
+                g.setFill(fill.darker());
+
+                int w = 0;
+
+                while (w < 3) {
+                    g.fillRect((x + fmWidth / 2) + (3 + w),
+                            y + (++w) + fmHeight / 2,
+                            1,
+                            (fmHeight / 2));
+                }
+
+            }
+        } finally {
+            g.setFill(oldColor);
+        }
+    }
 
     public static void drawWinLeft(final Graphics g, final int which, final Color fill,
                                    final int x, final int y,
@@ -879,6 +1521,55 @@ public class GUIGraphicsUtils {
         }
         //      g.translate(-x, -y);
         g.setColor(oldColor);
+    }
+    public static void drawWinLeft(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  vertical
+                g.strokeLine(x + fmWidth - 1,
+                        y,
+                        x + fmWidth - 1,
+                        y + fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  vertical
+                g.strokeLine(x + fmWidth,
+                        y,
+                        x + fmWidth,
+                        y + fmHeight);
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+                g.strokeLine(x + fmWidth / 2,
+                        y,
+                        x + fmWidth / 2,
+                        y + fmHeight);
+
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     public static void drawWinRight(final Graphics g, final int which, final Color fill,
@@ -936,6 +1627,62 @@ public class GUIGraphicsUtils {
         g.setColor(oldColor);
     }
 
+    public static void drawWinRight(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // | vertical
+                g.strokeLine(x + fmWidth,
+                        y,
+                        x + fmWidth,
+                        y + fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // | vertical
+                g.strokeLine(x + 1,
+                        y,
+                        x + 1,
+                        y + fmHeight);
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+                g.strokeLine(x + fmWidth / 2,
+                        y,
+                        x + fmWidth / 2,
+                        y + fmHeight);
+
+                g.setFill(fill.darker());
+                g.fillRect((x + fmWidth / 2) + 3,
+                        y,
+                        3,
+                        fmHeight);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
+    }
 
     public static void drawWinRight(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
                                     final int x, final int y,
@@ -1049,6 +1796,65 @@ public class GUIGraphicsUtils {
         //      g.translate(-x, -y);
         g.setColor(oldColor);
     }
+    public static void drawWinLowerLeft(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal
+                g.strokeLine(x,
+                        y + fmHeight - 1,
+                        x + fmWidth,
+                        y + fmHeight - 1);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+
+                // | vertical
+                g.strokeLine(x,
+                        y,
+                        x,
+                        y + fmHeight - 1);
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+
+                // | horizontal
+                g.strokeLine(x + fmWidth / 2,
+                        y + fmHeight / 2,
+                        x + fmWidth / 2,
+                        y);
+
+                // -- vertical
+                g.strokeLine(x + fmWidth / 2,
+                        y + fmHeight / 2,
+                        x + fmWidth,
+                        y + fmHeight / 2);
+
+                g.setFill(fill.darker());
+                int w = 0;
+
+                while (w < 3) {
+                    g.fillRect((x + fmWidth / 2) + ++w,
+                            y + fmHeight / 2 + (2 + w),
+                            fmWidth / 2,
+                            1);
+                }
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
+    }
 
     public static void drawWinBottom(final Graphics g, final int which, final Color fill,
                                      final int x, final int y,
@@ -1103,6 +1909,63 @@ public class GUIGraphicsUtils {
         }
         //      g.translate(-x, -y);
         g.setColor(oldColor);
+    }
+
+    public static void drawWinBottom(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final double fmWidth, final double fmHeight) {
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+
+        try {
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+
+                // | horizontal
+                g.strokeLine(x,
+                        y + fmHeight - 1,
+                        x + fmWidth,
+                        y + fmHeight - 1);
+
+                g.setFill(javafx.scene.paint.Color.WHITE);
+                // --  horizontal
+                g.strokeLine(x,
+                        y,
+                        x + fmWidth,
+                        y);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal
+                g.strokeLine(x,
+                        y + 1,
+                        x + fmWidth,
+                        y + 1);
+
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+                g.strokeLine(x,
+                        y + fmHeight / 2,
+                        x + fmWidth,
+                        y + fmHeight / 2);
+
+                // bottom
+                g.setFill(fill.darker());
+                g.fillRect(x,
+                        (y + fmHeight / 2) + 3,
+                        fmWidth,
+                        3);
+
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     public static void drawWinLowerRight(final Graphics g, final int which, final Color fill,
@@ -1161,6 +2024,63 @@ public class GUIGraphicsUtils {
         }
         //      g.translate(-x, -y);
         g.setColor(oldColor);
+    }
+
+    public static void drawWinLowerRight(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
+            final double x, final double y, final int fmWidth, final int fmHeight) {
+        final Paint oldColor = g.getFill(); // make sure we leave it as we found it
+        try {
+            //      g.translate(x, y);
+            g.setFill(fill);
+
+            if (which == WINDOW_GRAPHIC) {
+
+                g.fillRect(x, y, fmWidth, fmHeight);
+
+                g.setFill(javafx.scene.paint.Color.BLACK);
+                // --  horizontal
+                g.strokeLine(x,
+                        y + fmHeight - 1,
+                        x + fmWidth,
+                        y + fmHeight - 1);
+
+                // | vertical
+                g.strokeLine(x + fmWidth,
+                        y,
+                        x + fmWidth,
+                        y + fmHeight - 1);
+
+
+            }
+            if (which == WINDOW_NORMAL) {
+
+                // vertical
+                g.strokeLine(x + fmWidth / 2,
+                        y,
+                        x + fmWidth / 2,
+                        y + fmHeight / 2);
+                // horizontal
+                g.strokeLine(x + fmWidth / 2,
+                        y + fmHeight / 2,
+                        x,
+                        y + fmHeight / 2);
+
+                g.setFill(fill.darker());
+                // right part
+                g.fillRect((x + fmWidth / 2) + 3,
+                        y,
+                        3,
+                        (fmHeight / 2) + 3);
+                // bottom part
+                g.fillRect(x,
+                        (y + fmHeight / 2) + 3,
+                        (fmWidth / 2) + 6,
+                        3);
+            }
+        } finally {
+            //      g.translate(-x, -y);
+            g.setFill(oldColor);
+        }
     }
 
     public static void drawEtchedRect(final Graphics g, final int x, final int y, final int w, final int h,
@@ -1374,6 +2294,16 @@ public class GUIGraphicsUtils {
             g.drawLine(x, vy, x, vy);
             g.drawLine(x + width - 1, vy, x + width - 1, vy);
         }
+    }
+
+    public static javafx.scene.text.Font getDerivedFont(final javafx.scene.text.Font font,
+            final double width, final double height,
+            final int numRows, final int numCols,
+            final float scaleHeight,
+            final float scaleWidth,
+            final float pointSize) {
+        return UiUtils.fromAwtFont(getDerivedFont(UiUtils.toAwtFont(font),
+                round(width), round(height), numRows, numCols, scaleHeight, scaleWidth, pointSize));
     }
 
     public static Font getDerivedFont(final Font font, final int width, final int height,
@@ -1630,4 +2560,7 @@ public class GUIGraphicsUtils {
         return tnicon;
     }
 
+    private static int round(final double width) {
+        return (int) Math.ceil(width);
+    }
 }

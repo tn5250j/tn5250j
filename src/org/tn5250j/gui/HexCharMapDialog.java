@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
+import org.tn5250j.SessionGui;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.LangTool;
 

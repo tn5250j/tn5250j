@@ -30,31 +30,10 @@ import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.util.Vector;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
@@ -78,17 +57,39 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.embed.swing.JFXPanel;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.geometry.Bounds;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 /**
  * A host GUI session
  * (Hint: old name was SessionGUI)
  */
-public class SessionPanelSwing extends JPanel implements
+public class SessionPanel extends JFXPanel implements
         SessionGui, SessionConfigListener, SessionListener {
-
     private static final long serialVersionUID = 1L;
 
     private boolean firstScreen;
@@ -96,10 +97,9 @@ public class SessionPanelSwing extends JPanel implements
 
     private Screen5250 screen;
     protected Session5250 session;
-    private GuiGraphicBufferSwing guiGraBuf;
-    protected RubberBandSwing rubberband;
+    private GuiGraphicBuffer guiGraBuf;
+    private final RubberBandFX rubberband = new RubberBandFX();
     private KeypadPanel keypadPanel;
-    private JComponent keypadPanelContainer;
     private String newMacName;
     private Vector<SessionJumpListener> sessionJumpListeners = null;
     private Vector<EmulatorActionListener> actionListeners = null;
@@ -109,11 +109,16 @@ public class SessionPanelSwing extends JPanel implements
     protected SessionConfig sesConfig;
     protected KeyboardHandler keyHandler;
 
-    private final MouseWheelListener scroller = this::sessionPanelScrolled;
+    private final EventHandler<ScrollEvent> scroller = this::sessionPanelScrolled;
 
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public SessionPanelSwing(final Session5250 session) {
+    private BorderPane root;
+
+    private final Canvas canvas = new Canvas();
+    private final Pane cursor = new Pane();
+
+    public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
         this.session = session;
 
@@ -131,53 +136,64 @@ public class SessionPanelSwing extends JPanel implements
 
     //Component initialization
     private void jbInit() throws Exception {
-        this.setLayout(new BorderLayout());
         session.setGUI(this);
         screen = session.getScreen();
 
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(final ComponentEvent e) {
-                resizeMe();
-            }
-        });
+        setLayout(new BorderLayout(0, 0));
 
-        ensureGuiGraphicBufferInitialized();
+        root = new BorderPane();
+        final Scene sc = new Scene(root);
+        setScene(sc);
 
-        setRubberBand(new RubberBandSwing(this));
+        final VBox vbox = new VBox();
+        vbox.setAlignment(Pos.CENTER);
+        root.setCenter(vbox);
+
+        final HBox hbox = new HBox();
+        hbox.setAlignment(Pos.CENTER);
+        root.getChildren().add(hbox);
+
+        setBackground(guiGraBuf.getBackground());
+
+        guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
+
+        final Pane container = createContainer(canvas);
+        container.getChildren().add(rubberband.getSelectionComponent());
+        container.getChildren().add(cursor);
+
+        hbox.getChildren().add(container);
+
+        root.widthProperty().addListener((src, old, value) -> resizeMe());
+        root.heightProperty().addListener((src, old, value) -> resizeMe());
+
+        rubberband.startListen(root);
+
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
+        final double width;
+        final double height;
         if (!sesConfig.isPropertyExists("width") ||
-                !sesConfig.isPropertyExists("height"))
+                !sesConfig.isPropertyExists("height")) {
             // set the initialize size
-            this.setSize(UiUtils.toAwtDimension(guiGraBuf.getPreferredSize()));
-        else {
+            final Dimension2D buffPrefSize = guiGraBuf.getPreferredSize();
+            width = buffPrefSize.getWidth();
+            height = buffPrefSize.getHeight();
+        } else {
 
-            this.setSize(getIntegerProperty("width"),
-                    getIntegerProperty("height"));
+            width = getIntegerProperty("width");
+            height = getIntegerProperty("height");
         }
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(final MouseEvent e) {
-                /** @todo check for popup trigger on linux
-                 *
-                 */
-                //	            if (e.isPopupTrigger()) {
-                // using SwingUtilities because popuptrigger does not work on linux
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    actionPopup(e);
-                }
+        setWidth(width);
+        setHeight(height);
 
+        root.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                actionPopup(e.getX(), e.getY());
             }
-
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    return;
-                }
-
+        });
+        root.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
                 if (e.getClickCount() == 2 & doubleClick) {
                     screen.sendKeys(ENTER);
                 } else {
@@ -200,12 +216,11 @@ public class SessionPanelSwing extends JPanel implements
                     getFocusForMe();
                 }
             }
-
         });
 
         if (YES.equals(getStringProperty("mouseWheel"))) {
-            removeMouseWheelListener(scroller);
-            addMouseWheelListener(scroller);
+            root.setOnScroll(null);
+            root.setOnScroll(scroller);
         }
 
         log.debug("Initializing macros");
@@ -216,13 +231,33 @@ public class SessionPanelSwing extends JPanel implements
             getFocusForMe();
         });
 
-        keypadPanelContainer = SwingToFxUtils.createSwingPanel(keypadPanel);
-        keypadPanelContainer.setVisible(sesConfig.getConfig().isKeypadEnabled());
-        this.add(keypadPanelContainer, BorderLayout.SOUTH);
+        keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
+        root.setBottom(keypadPanel);
 
         this.requestFocus();
 
         doubleClick = YES.equals(getStringProperty("doubleClick"));
+    }
+
+    private Pane createContainer(final Canvas canvas) {
+        final Pane pane = new Pane() {
+            {
+                canvas.widthProperty().addListener(e -> setWidth(canvas.getWidth()));
+                canvas.heightProperty().addListener(e -> setHeight(canvas.getHeight()));
+            }
+        };
+        pane.getChildren().add(canvas);
+        return pane;
+    }
+
+    @Temporary
+    private void setHeight(final double height) {
+        super.setSize(getWidth(), (int) height);
+    }
+
+    @Temporary
+    private void setWidth(final double width) {
+        super.setSize((int) width, getHeight());
     }
 
     @SuppressWarnings("deprecation")
@@ -254,18 +289,18 @@ public class SessionPanelSwing extends JPanel implements
             super.processKeyEvent(evt);
     }
 
-    public void sessionPanelScrolled(final MouseWheelEvent e) {
-        final int notches = e.getWheelRotation();
+    public void sessionPanelScrolled(final ScrollEvent e) {
+        final double notches = e.getTotalDeltaY();
         if (notches < 0) {
             screen.sendKeys(PAGE_UP);
-        } else {
+        } else if (notches > 0) {
             screen.sendKeys(PAGE_DOWN);
         }
     }
 
     @Override
     public void sendScreenEMail() {
-        new SendEMailDialog((JFrame) SwingUtilities.getRoot(this), this);
+        new SendEMailDialog(SwingToFxUtils.SHARED_FRAME, this);
     }
 
     /**
@@ -297,7 +332,6 @@ public class SessionPanelSwing extends JPanel implements
                 p = guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 1,
                         screen.getCurrentCol() - 2);
 
-
             if (last.equals("[markup]"))
                 p = guiGraBuf.getPointFromRowCol(screen.getCurrentRow() + 1,
                         screen.getCurrentCol() - 1);
@@ -306,31 +340,22 @@ public class SessionPanelSwing extends JPanel implements
             if (last.equals("[markdown]"))
                 p = guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 2,
                         screen.getCurrentCol() - 1);
-            final MouseEvent me = new MouseEvent(this,
-                    MouseEvent.MOUSE_PRESSED,
-                    System.currentTimeMillis(),
-                    InputEvent.BUTTON1_MASK,
-                    (int) Math.ceil(p.getX()),
-                    (int) Math.ceil(p.getY()),
-                    1, false);
-            dispatchEvent(me);
 
+            dispatchEvent(MouseEvent.MOUSE_PRESSED, p.getX(), p.getY());
         }
 
         p = guiGraBuf.getPointFromRowCol(screen.getCurrentRow() - 1,
                 screen.getCurrentCol() - 1);
-        //	      rubberband.getCanvas().translateEnd(p);
-        final MouseEvent me = new MouseEvent(this,
-                MouseEvent.MOUSE_DRAGGED,
-                System.currentTimeMillis(),
-                InputEvent.BUTTON1_MASK,
-                (int) Math.ceil(p.getX()),
-                (int) Math.ceil(p.getY()),
-                1, false);
-        dispatchEvent(me);
 
+        //	      rubberband.getCanvas().translateEnd(p);
+        dispatchEvent(MouseEvent.MOUSE_DRAGGED, p.getX(), p.getY());
     }
 
+    private void dispatchEvent(final EventType<MouseEvent> type, final double x, final double y) {
+        final MouseEvent e = new MouseEvent(root, root, type, x, y, x, y, MouseButton.PRIMARY,
+                1, false, false, false, false, true, false, false, true, false, false, null);
+        Event.fireEvent(root, e);
+    }
 
     /**
      * @param reallyclose TRUE if session/tab should be closed;
@@ -402,19 +427,7 @@ public class SessionPanelSwing extends JPanel implements
 
     @Override
     public void getFocusForMe() {
-        this.grabFocus();
-    }
-
-    @Override
-    public boolean isFocusTraversable() {
-        return true;
-    }
-
-    // Override to inform focus manager that component is managing focus changes.
-    //    This is to capture the tab and shift+tab keys.
-    @Override
-    public boolean isManagingFocus() {
-        return true;
+        this.requestFocus();
     }
 
     @Override
@@ -422,8 +435,7 @@ public class SessionPanelSwing extends JPanel implements
         final String configName = configEvent.getPropertyName();
 
         if (CONFIG_KEYPAD_ENABLED.equals(configName)) {
-            keypadPanelContainer.setVisible(YES.equals(configEvent.getNewValue()));
-            this.validate();
+            keypadPanel.setVisible(YES.equals(configEvent.getNewValue()));
         }
 
         if (CONFIG_KEYPAD_MNEMONICS.equals(configName)) {
@@ -439,15 +451,14 @@ public class SessionPanelSwing extends JPanel implements
         }
 
         if ("mouseWheel".equals(configName)) {
-            removeMouseWheelListener(scroller);
+            root.removeEventHandler(ScrollEvent.SCROLL, scroller);
 
             if (YES.equals(configEvent.getNewValue())) {
-                addMouseWheelListener(scroller);
+                root.addEventHandler(ScrollEvent.SCROLL, scroller);
             }
         }
 
         resizeMe();
-        repaint();
     }
 
     @Override
@@ -601,12 +612,12 @@ public class SessionPanelSwing extends JPanel implements
      */
     @Override
     public void actionAttributes() {
-        new SessionSettings((Frame) SwingUtilities.getRoot(this), sesConfig).showIt();
+        new SessionSettings(SwingToFxUtils.SHARED_FRAME, sesConfig).showIt();
         getFocusForMe();
     }
 
-    private void actionPopup(final MouseEvent me) {
-        new SessionPopup(this, me.getX(), me.getY());
+    private void actionPopup(final double x, final double y) {
+        new SessionPopup(this, (int) x, (int) y);
     }
 
     @Override
@@ -617,7 +628,7 @@ public class SessionPanelSwing extends JPanel implements
                     new org.tn5250j.spoolfile.SpoolExporter(session.getVT(), this);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(SwingToFxUtils.SHARED_FRAME,
                     LangTool.getString("messages.noAS400Toolbox"),
                     "Error",
                     JOptionPane.ERROR_MESSAGE, null);
@@ -661,62 +672,21 @@ public class SessionPanelSwing extends JPanel implements
     public void resizeMe() {
         final Dimension2D r = getDrawingSize();
         if (guiGraBuf != null) {
-            guiGraBuf.resizeScreenArea(UiUtils.round(r.getWidth()), UiUtils.round(r.getHeight()), false);
+            guiGraBuf.resizeScreenArea((int) r.getWidth(), (int) r.getHeight(), false);
         }
         screen.repaintScreen();
-        final Graphics g = getGraphics();
-        if (g != null) {
-            g.setClip(0, 0, this.getWidth(), this.getHeight());
-        }
-        repaint(0, 0, getWidth(), getHeight());
     }
 
     @Override
     public Dimension2D getDrawingSize() {
 
-        final Rectangle r = this.getBounds();
-        if (keypadPanelContainer != null && keypadPanelContainer.isVisible())
+        final Bounds r = root.getBoundsInLocal();
+        double height = r.getHeight();
+        if (keypadPanel.isVisible())
             //	         r.height -= (int)(keyPad.getHeight() * 1.25);
-            r.height -= (keypadPanelContainer.getHeight());
+            height -= (keypadPanel.getHeight());
 
-        r.setSize(r.width, r.height);
-
-        return new Dimension2D(r.width, r.height);
-    }
-
-    @Override
-    protected void paintComponent(final Graphics g) {
-        log.debug("paint from screen");
-
-        ensureGuiGraphicBufferInitialized();
-
-        final Graphics2D g2 = (Graphics2D) g;
-        if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
-            rubberband.erase();
-            //   //         rubberband.draw();
-        }
-
-        //Rectangle r = g.getClipBounds();
-
-        g2.setColor(UiUtils.toAwtColor(guiGraBuf.colorBg));
-        g2.fillRect(0, 0, getWidth(), getHeight());
-
-        guiGraBuf.drawImageBuffer(g2);
-
-        if (rubberband.isAreaSelected() && !rubberband.isDragging()) {
-            //	         rubberband.erase();
-            rubberband.draw();
-        }
-
-        //	      keyPad.repaint();
-
-    }
-
-    @Override
-    public void update(final Graphics g) {
-        log.info("update paint from gui");
-        paint(g);
-
+        return new Dimension2D(r.getWidth(), height);
     }
 
     @Override
@@ -731,21 +701,17 @@ public class SessionPanelSwing extends JPanel implements
      */
     @Override
     public void crossHair() {
-        screen.setCursorActive(false);
         guiGraBuf.crossHair++;
         if (guiGraBuf.crossHair > 3)
             guiGraBuf.crossHair = 0;
-        screen.setCursorActive(true);
     }
 
-    private void ensureGuiGraphicBufferInitialized() {
-        if (guiGraBuf == null) {
-            guiGraBuf = new GuiGraphicBufferSwing(screen, this, sesConfig);
-            setFont(UiUtils.toAwtFont(guiGraBuf.getFont()));
-            setBackground(UiUtils.toAwtColor(guiGraBuf.getBackground()));
-
-            guiGraBuf.getImageBuffer(0, 0);
-        }
+    /**
+     * @param background background to set.
+     */
+    private void setBackground(final Color background) {
+        root.setBackground(new Background(new BackgroundFill(
+                guiGraBuf.getBackground(), CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     /**
@@ -757,9 +723,11 @@ public class SessionPanelSwing extends JPanel implements
         rubberband.reset();
         screen.repaintScreen();
         final String textcontent = screen.copyText(area);
-        final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-        final StringSelection contents = new StringSelection(textcontent);
-        cb.setContents(contents, null);
+
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(textcontent);
+        clipboard.setContent(content);
     }
 
     /**
@@ -782,7 +750,7 @@ public class SessionPanelSwing extends JPanel implements
     public final void printMe() {
 
         final Thread printerThread = new PrinterThread(screen, UiUtils.toAwtFont(guiGraBuf.font),
-                screen.getColumns(), screen.getRows(), Color.black, true, this);
+                screen.getColumns(), screen.getRows(), UiUtils.toAwtColor(Color.BLACK), true, this);
 
         printerThread.start();
 
@@ -844,29 +812,17 @@ public class SessionPanelSwing extends JPanel implements
 
     }
 
-    /**
-     *
-     * RubberBanding start code
-     *
-     */
-
-    /**
-     * Returns a pointer to the graphics area that we can draw on
-     */
-    public Graphics createDrawingGraphics() {
-        return guiGraBuf.getDrawingArea();
+    @Override
+    public Rectangle2D getBoundingArea() {
+        return guiGraBuf.getBoundingArea();
     }
 
-    protected final void setRubberBand(final RubberBandSwing newValue) {
-        rubberband = newValue;
+    public Point2D translateStart(final Point2D start) {
+        return guiGraBuf.translateStart(start.getX(), start.getY());
     }
 
-    public Point translateStart(final Point start) {
-        return UiUtils.toAwtPoint(guiGraBuf.translateStart(start.x, start.y));
-    }
-
-    public Point translateEnd(final Point end) {
-        return UiUtils.toAwtPoint(guiGraBuf.translateStart(end.x, end.y));
+    public Point2D translateEnd(final Point2D end) {
+        return guiGraBuf.translateEnd(end.getX(), end.getY());
     }
 
     @Override
@@ -874,16 +830,7 @@ public class SessionPanelSwing extends JPanel implements
         return guiGraBuf.getPosFromView(x, y);
     }
 
-    @Override
-    public Rectangle2D getBoundingArea() {
-        return guiGraBuf.getBoundingArea();
-    }
-
     public void areaBounded(final RubberBandSwing band, final int x1, final int y1, final int x2, final int y2) {
-
-
-        //	      repaint(x1,y1,x2-1,y2-1);
-        repaint();
         if (log.isDebugEnabled()) {
             log.debug(" bound " + band.getEndPoint());
         }
@@ -899,8 +846,8 @@ public class SessionPanelSwing extends JPanel implements
 
     }
 
-    public Point getInitialPoint() {
-        return UiUtils.toAwtPoint(guiGraBuf.getPointFromRowCol(0, 0));
+    public Point2D getInitialPoint() {
+        return guiGraBuf.getPointFromRowCol(0, 0);
     }
 
     @Override
@@ -912,27 +859,23 @@ public class SessionPanelSwing extends JPanel implements
         this.session = session;
     }
 
-
     @Override
     public boolean isVtConnected() {
-
         return session.getVT() != null && session.getVT().isConnected();
-
     }
 
     public boolean isOnSignOnScreen() {
-
         // check to see if we should check.
         if (firstScreen) {
 
             final char[] so = screen.getScreenAsChars();
 
-            final Rectangle region = UiUtils.toAwtRectangle(this.sesConfig.getRectangleProperty("signOnRegion"));
+            final Rectangle2D region = this.sesConfig.getRectangleProperty("signOnRegion");
 
-            int fromRow = region.x;
-            int fromCol = region.y;
-            int toRow = region.width;
-            int toCol = region.height;
+            int fromRow = UiUtils.round(region.getMinX());
+            int fromCol = UiUtils.round(region.getMinY());
+            int toRow = UiUtils.round(region.getWidth());
+            int toCol = UiUtils.round(region.getHeight());
 
             // make sure we are within range.
             if (fromRow == 0)
@@ -1053,13 +996,19 @@ public class SessionPanelSwing extends JPanel implements
     }
 
     @Override
+    public boolean isEnabled() {
+//        return !isDisable();
+        return super.isEnabled();
+    }
+
+    @Override
     public void setDefaultCursor() {
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        root.setCursor(Cursor.DEFAULT);
     }
 
     @Override
     public void setWaitCursor() {
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        root.setCursor(Cursor.WAIT);
     }
 
     @Override

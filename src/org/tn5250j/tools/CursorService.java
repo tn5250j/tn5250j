@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.tn5250j.Gui5250Cursor;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -19,36 +17,46 @@ import javafx.util.Duration;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class TimerService {
-    private final CopyOnWriteArrayList<WeakReference<Gui5250Cursor>> cursors = new CopyOnWriteArrayList<>();
-    private static final TimerService instance = new TimerService();
+public class CursorService {
+    private final CopyOnWriteArrayList<WeakReference<Runnable>> cursors = new CopyOnWriteArrayList<>();
+    private static final CursorService instance = new CursorService();
 
     private final Timeline timer = new Timeline(new KeyFrame(
         Duration.millis(500l),
         this::processTimeAction
     ));
 
-    private TimerService() {
+    private CursorService() {
         timer.play();
     }
 
-    public static TimerService getInstance() {
+    public static CursorService getInstance() {
         return instance;
     }
 
-    public void addCursor(final Gui5250Cursor cursor) {
+    public void addCursor(final Runnable cursor) {
         cursors.add(new WeakReference<>(cursor));
     }
 
+    public void removeCursor(final Runnable cursor) {
+        for (final WeakReference<Runnable> ref : cursors) {
+            if (ref.get() == cursor) {
+                cursors.remove(ref);
+                break;
+            }
+        }
+    }
+
     private void processTimeAction(final ActionEvent e) {
-        final List<WeakReference<Gui5250Cursor>> cursors = new ArrayList<>(this.cursors);
-        for (final WeakReference<Gui5250Cursor> ref : cursors) {
-            final Gui5250Cursor cursor = ref.get();
+        final List<WeakReference<Runnable>> cursors = new ArrayList<>(this.cursors);
+        for (final WeakReference<Runnable> ref : cursors) {
+            final Runnable cursor = ref.get();
             if (cursor == null) {
                 this.cursors.remove(ref);
             }
 
-            cursor.doBlink();
+            //next blink
+            cursor.run();
         }
     }
 

@@ -37,12 +37,13 @@ import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.SessionPanelSwing;
+import org.tn5250j.SessionGui;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.ExecuteScriptAction;
 import org.tn5250j.scripting.InterpreterDriverManager;
@@ -55,16 +56,16 @@ public final class LoadMacroMenu {
 
     private static final TN5250jLogger log = TN5250jLogFactory.getLogger(LoadMacroMenu.class);
 
-    public static void loadMacros(SessionPanelSwing session, JMenu menu) {
+    public static void loadMacros(final SessionGui session, final JMenu menu) {
 
-        final SessionPanelSwing ses = session;
-        Vector mv = new Vector();
+        final SessionGui ses = session;
+        final Vector mv = new Vector();
         Action action;
 
         menu.addSeparator();
 
 
-        String[] macrosList = Macronizer.getMacroList();
+        final String[] macrosList = Macronizer.getMacroList();
 
 
         for (int x = 0; x < macrosList.length; x++) {
@@ -78,28 +79,32 @@ public final class LoadMacroMenu {
             action = new AbstractAction((String) mv.get(x)) {
                 private static final long serialVersionUID = 1L;
 
-                public void actionPerformed(ActionEvent e) {
-                    ses.executeMacro(e);
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    ses.executeMacro(e.getActionCommand());
                 }
             };
 
-            JMenuItem mi = menu.add(action);
+            final JMenuItem mi = menu.add(action);
 
             mi.addMouseListener(new MouseAdapter() {
 
-                public void mouseReleased(MouseEvent e) {
+                @Override
+                public void mouseReleased(final MouseEvent e) {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         doOptionsPopup(e, ses);
                     }
                 }
 
-                public void mousePressed(MouseEvent e) {
+                @Override
+                public void mousePressed(final MouseEvent e) {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         doOptionsPopup(e, ses);
                     }
                 }
 
-                public void mouseClicked(MouseEvent e) {
+                @Override
+                public void mouseClicked(final MouseEvent e) {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         doOptionsPopup(e, ses);
                     }
@@ -118,7 +123,7 @@ public final class LoadMacroMenu {
             conPath2 = new File(ConfigureFactory.getInstance().getProperty(
                     "emulator.settingsDirectory") +
                     "scripts").getCanonicalPath();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
 
         }
 
@@ -129,17 +134,18 @@ public final class LoadMacroMenu {
                     "scripts", menu, session);
     }
 
-    private static void doOptionsPopup(MouseEvent e, SessionPanelSwing session) {
+    private static void doOptionsPopup(final MouseEvent e, final SessionGui session) {
 
         Action action;
 
-        JPopupMenu j = new JPopupMenu("Macro Options");
+        final JPopupMenu j = new JPopupMenu("Macro Options");
         action = new AbstractAction(LangTool.getString("popup.delete")
                 + " " + ((JMenuItem) e.getSource()).getText()) {
             private static final long serialVersionUID = 1L;
 
-            public void actionPerformed(ActionEvent e) {
-                StringBuffer macro = new StringBuffer(((JMenuItem) e.getSource()).getText());
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final StringBuffer macro = new StringBuffer(((JMenuItem) e.getSource()).getText());
                 macro.delete(0, LangTool.getString("popup.delete").length() + 1);
                 Macronizer.removeMacroByName(macro.toString());
             }
@@ -147,27 +153,28 @@ public final class LoadMacroMenu {
 
         j.add(action);
 
-        final SessionPanelSwing ses = session;
+        final SessionGui ses = session;
         action = new AbstractAction(LangTool.getString("popup.execute")
                 + " " + ((JMenuItem) e.getSource()).getText()) {
             private static final long serialVersionUID = 1L;
 
-            public void actionPerformed(ActionEvent e) {
-                StringBuffer macro = new StringBuffer(((JMenuItem) e.getSource()).getText());
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                final StringBuffer macro = new StringBuffer(((JMenuItem) e.getSource()).getText());
                 macro.delete(0, LangTool.getString("popup.execute").length() + 1);
                 Macronizer.invoke(macro.toString(), ses);
             }
         };
 
         j.add(action);
-        MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem) e.getSource(), e, session);
-        GUIGraphicsUtils.positionPopup(session, j, et.getX(), et.getY());
+        final MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem) e.getSource(), e, (JComponent) session);
+        GUIGraphicsUtils.positionPopup((JComponent) session, j, et.getX(), et.getY());
 
     }
 
-    public static void scriptDir(String pathName, JMenu menu, SessionPanelSwing session) {
+    public static void scriptDir(final String pathName, final JMenu menu, final SessionGui session) {
 
-        File root = new File(pathName);
+        final File root = new File(pathName);
 
         try {
 
@@ -176,7 +183,7 @@ public final class LoadMacroMenu {
             loadScripts(macroVector, root.getCanonicalPath(), root, session);
             createScriptsMenu(menu, macroVector, 0);
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.out.println(ioe.getMessage());
 
         }
@@ -192,12 +199,12 @@ public final class LoadMacroMenu {
      * @param directory
      * @param session
      */
-    private static void loadScripts(Vector vector, String path, File directory,
-                                    SessionPanelSwing session) {
+    private static void loadScripts(final Vector vector, final String path, final File directory,
+                                    final SessionGui session) {
 
         ExecuteScriptAction action;
 
-        File[] macroFiles = directory.listFiles();
+        final File[] macroFiles = directory.listFiles();
         if (macroFiles == null || macroFiles.length == 0)
             return;
 
@@ -207,13 +214,13 @@ public final class LoadMacroMenu {
         // exceptions
         for (int i = 0; i < macroFiles.length; i++) {
             try {
-                File file = macroFiles[i];
-                String fileName = file.getName();
+                final File file = macroFiles[i];
+                final String fileName = file.getName();
                 if (file.isHidden()) {
                     /* do nothing! */
                     continue;
                 } else if (file.isDirectory()) {
-                    Vector submenu = new Vector();
+                    final Vector submenu = new Vector();
                     submenu.addElement(fileName.replace('_', ' '));
                     loadScripts(submenu, path + fileName + '/', file, session);
                     // if we do not want empty directories to show up uncomment
@@ -223,7 +230,7 @@ public final class LoadMacroMenu {
                 } else {
                     if (InterpreterDriverManager.isScriptSupported(fileName)) {
                         String fn = fileName.replace('_', ' ');
-                        int index = fn.lastIndexOf('.');
+                        final int index = fn.lastIndexOf('.');
                         if (index > 0) {
                             fn = fn.substring(0, index);
                         }
@@ -235,7 +242,7 @@ public final class LoadMacroMenu {
                         vector.addElement(action);
                     }
                 }
-            } catch (SecurityException se) {
+            } catch (final SecurityException se) {
                 log.warn(se.getMessage());
             }
         }
@@ -248,19 +255,19 @@ public final class LoadMacroMenu {
      * @param vector
      * @param start
      */
-    private static void createScriptsMenu(JMenu menu, Vector vector, int start) {
+    private static void createScriptsMenu(final JMenu menu, final Vector vector, final int start) {
 
-        JPopupMenu jpop = new JPopupMenu();
+        final JPopupMenu jpop = new JPopupMenu();
         jpop.add("Delete");
 
         for (int i = start; i < vector.size(); i++) {
-            Object obj = vector.elementAt(i);
+            final Object obj = vector.elementAt(i);
             if (obj instanceof ExecuteScriptAction) {
                 menu.add((ExecuteScriptAction) obj);
             } else if (obj instanceof Vector) {
-                Vector subvector = (Vector) obj;
-                String name = (String) subvector.elementAt(0);
-                JMenu submenu = new JMenu(name);
+                final Vector subvector = (Vector) obj;
+                final String name = (String) subvector.elementAt(0);
+                final JMenu submenu = new JMenu(name);
                 createScriptsMenu(submenu, subvector, 1);
                 if (submenu.getMenuComponentCount() == 0) {
                     submenu.add(LangTool.getString("popup.noScripts"));
@@ -271,9 +278,10 @@ public final class LoadMacroMenu {
     }
 
     public static class MacroCompare implements Comparator {
-        public int compare(Object one, Object two) {
-            String s1 = one.toString();
-            String s2 = two.toString();
+        @Override
+        public int compare(final Object one, final Object two) {
+            final String s1 = one.toString();
+            final String s2 = two.toString();
             return s1.compareToIgnoreCase(s2);
         }
 

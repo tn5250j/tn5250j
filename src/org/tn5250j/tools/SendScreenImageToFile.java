@@ -26,24 +26,26 @@
 
 package org.tn5250j.tools;
 
-import java.io.*;
-import javax.swing.*;
 import java.awt.Frame;
+import java.io.File;
 
-import org.tn5250j.tools.logging.*;
-import org.tn5250j.SessionPanelSwing;
+import javax.swing.JFileChooser;
+
+import org.tn5250j.SessionGui;
+import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.encoder.EncodeComponent;
 import org.tn5250j.tools.filters.XTFRFileFilter;
-import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 public class SendScreenImageToFile {
 
-    SessionPanelSwing session;
+    SessionGui session;
     //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
     Frame parent;
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public SendScreenImageToFile(Frame parent, SessionPanelSwing ses) {
+    public SendScreenImageToFile(final Frame parent, final SessionGui ses) {
 
         session = ses;
         this.parent = parent;
@@ -51,7 +53,7 @@ public class SendScreenImageToFile {
 
         try {
             jbInit();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             log.warn("Error in constructor: " + ex.getMessage());
         }
     }
@@ -66,14 +68,14 @@ public class SendScreenImageToFile {
      */
     private void getPCFile() {
 
-        String workingDir = System.getProperty("user.dir");
-        TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final String workingDir = System.getProperty("user.dir");
+        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
 
-        XTFRFileFilter pngFilter = new XTFRFileFilter("png", "Portable Network Graphics");
+        final XTFRFileFilter pngFilter = new XTFRFileFilter("png", "Portable Network Graphics");
 
         pcFileChooser.setFileFilter(pngFilter);
 
-        int ret = pcFileChooser.showSaveDialog(parent);
+        final int ret = pcFileChooser.showSaveDialog(parent);
 
         // check to see if something was actually chosen
         if (ret == JFileChooser.APPROVE_OPTION) {
@@ -89,7 +91,7 @@ public class SendScreenImageToFile {
 
 
                 EncodeComponent.encode(EncodeComponent.PNG, session, file);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.warn("Error generating PNG exception caught: " + e.getMessage());
 
             }

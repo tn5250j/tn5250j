@@ -136,7 +136,7 @@ public class Gui5250Frame extends GUIViewInterface implements
             for (int i = 0, len = sessTabbedPane.getTabCount(); i < len && close; i++) {
                 sessTabbedPane.setSelectedIndex(i);
                 updateSessionTitle();
-                final SessionPanelSwing sesspanel = (SessionPanelSwing) sessTabbedPane.getSelectedComponent();
+                final SessionGui sesspanel = (SessionGui) sessTabbedPane.getSelectedComponent();
                 close &= sesspanel.confirmCloseSession(false);
             }
             if (!close) {
@@ -214,7 +214,7 @@ public class Gui5250Frame extends GUIViewInterface implements
     @Override
     public void stateChanged(final ChangeEvent e) {
         final JTabbedPane p = (JTabbedPane) e.getSource();
-        setSessionTitle((SessionPanelSwing) p.getSelectedComponent());
+        setSessionTitle((SessionGui) p.getSelectedComponent());
     }
 
     /**
@@ -223,7 +223,7 @@ public class Gui5250Frame extends GUIViewInterface implements
      * @param session can be null, but then nothing happens ;-)
      */
     private void setSessionTitle(final SessionGui session) {
-        if (session != null && session.isConnected()) {
+        if (session != null && session.isVtConnected()) {
             final String name = determineTabName(session);
             if (sequence - 1 > 0)
                 setTitle(name + " - tn5250j <" + sequence + ">");
@@ -264,7 +264,7 @@ public class Gui5250Frame extends GUIViewInterface implements
      * @see {@link #setSessionTitle(SessionPanelSwing)}
      */
     private void updateSessionTitle() {
-        final SessionPanelSwing selectedComponent = (SessionPanelSwing) this.sessTabbedPane.getSelectedComponent();
+        final SessionGui selectedComponent = (SessionGui) this.sessTabbedPane.getSelectedComponent();
         setSessionTitle(selectedComponent);
     }
 
