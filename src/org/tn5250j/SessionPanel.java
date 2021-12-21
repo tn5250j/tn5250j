@@ -96,7 +96,7 @@ public class SessionPanel extends JFXPanel implements
     private Screen5250 screen;
     protected Session5250 session;
     private GuiGraphicBuffer guiGraBuf;
-    private final RubberBandFX rubberband = new RubberBandFX();
+    private final RubberBand rubberband = new RubberBand(this);
     private KeypadPanel keypadPanel;
     private String newMacName;
     private Vector<SessionJumpListener> sessionJumpListeners = null;
@@ -165,6 +165,7 @@ public class SessionPanel extends JFXPanel implements
         root.heightProperty().addListener((src, old, value) -> resizeMe());
         UiUtils.setBackground(root, guiGraBuf.getBackground());
 
+        installMouseListeners(container);
         rubberband.startListen(container);
 
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
@@ -185,13 +186,31 @@ public class SessionPanel extends JFXPanel implements
 
         guiGraBuf.resize(width, height);
 
+        log.debug("Initializing macros");
+        Macronizer.init();
+
+        keypadPanel.addActionListener(txt -> {
+            screen.sendKeys(txt);
+            getFocusForMe();
+        });
+
+        keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
+        root.setBottom(keypadPanel);
+
+        this.requestFocus();
+
+        doubleClick = YES.equals(getStringProperty("doubleClick"));
+        resizeMe();
+    }
+
+    private void installMouseListeners(final Pane container) {
         container.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 actionPopup(e.getX(), e.getY());
             }
         });
         container.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (e.getButton() == MouseButton.PRIMARY) {
+            if (!rubberband.isAreaSelected() && e.getButton() == MouseButton.PRIMARY) {
                 if (e.getClickCount() == 2 & doubleClick) {
                     screen.sendKeys(ENTER);
                 } else {
@@ -209,25 +228,9 @@ public class SessionPanel extends JFXPanel implements
         });
 
         if (YES.equals(getStringProperty("mouseWheel"))) {
-            root.setOnScroll(null);
-            root.setOnScroll(scroller);
+            container.setOnScroll(null);
+            container.setOnScroll(scroller);
         }
-
-        log.debug("Initializing macros");
-        Macronizer.init();
-
-        keypadPanel.addActionListener(txt -> {
-            screen.sendKeys(txt);
-            getFocusForMe();
-        });
-
-        keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
-        root.setBottom(keypadPanel);
-
-        this.requestFocus();
-
-        doubleClick = YES.equals(getStringProperty("doubleClick"));
-        resizeMe();
     }
 
     private Pane createContainer(final Canvas canvas) {
@@ -789,10 +792,12 @@ public class SessionPanel extends JFXPanel implements
         return guiGraBuf.getBoundingArea();
     }
 
+    @Override
     public Point2D translateStart(final Point2D start) {
         return guiGraBuf.translateStart(start.getX(), start.getY());
     }
 
+    @Override
     public Point2D translateEnd(final Point2D end) {
         return guiGraBuf.translateEnd(end.getX(), end.getY());
     }
