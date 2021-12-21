@@ -25,6 +25,7 @@
  */
 package org.tn5250j;
 
+import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.gui.FontMetrics;
@@ -718,6 +719,29 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
                 break;
 
         }
+    }
+    /**
+     * Fills the passed Rectangle with the starting row and column and width and
+     * height of the selected area.
+     *
+     * 1 BASED so column 1 row one is returned 1,1
+     *
+     * If there is no area bounded then the full screen area is returned.
+     *
+     * @param bounds
+     */
+    public Rect getBoundingArea(final Rectangle2D workR) {
+        // get starting row and column
+        final int sPos = getRowColFromPoint(workR.getMinX(), workR.getMinY());
+        // get the ending row and column
+        final int ePos = getRowColFromPoint(workR.getMaxX(), workR.getMaxY());
+
+        final int x1 = screen.getCol(sPos);
+        final int y1 = screen.getRow(sPos);
+        final int x2 = screen.getCol(ePos);
+        final int y2 = screen.getRow(ePos);
+
+        return new Rect(x1, y1, x2 - x1, y2 - y1);
     }
 
     @Override

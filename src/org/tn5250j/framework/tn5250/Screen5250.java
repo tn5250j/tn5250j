@@ -200,34 +200,34 @@ public class Screen5250 {
      * @see {@link #pasteText(String, boolean)}
      * @see {@link #copyTextField(int)}
      */
-    public final String copyText(final Rectangle2D area) {
+    public final String copyText(final Rect workR) {
         final StringBuilder sb = new StringBuilder();
-        final Rect workR = new Rect();
-        workR.setBounds(UiUtils.toAwtRectangle(area));
         log.debug("Copying " + workR);
 
-        // loop through all the screen characters to send them to the clip board
-        int m = workR.x;
-        int i = 0;
-        int t = 0;
+        if (workR.width > 0 && workR.height > 0) {
+            // loop through all the screen characters to send them to the clip board
+            final int maxX = workR.x + workR.width;
+            final int maxY = workR.y + workR.height;
 
-        while (workR.height-- > 0) {
-            t = workR.width;
-            i = workR.y;
-            while (t-- > 0) {
-                // only copy printable characters (in this case >= ' ')
-                final char c = planes.getChar(getPos(m - 1, i - 1));
-                if (c >= ' ' && (planes.screenExtended[getPos(m - 1, i - 1)] & EXTENDED_5250_NON_DSP)
-                        == 0)
-                    sb.append(c);
-                else
-                    sb.append(' ');
+            boolean firstLine = true;
+            for (int row = workR.y; row <= maxY; row++) {
+                if (!firstLine) {
+                    sb.append('\n');
+                } else {
+                    firstLine = false;
+                }
 
-                i++;
+                for (int col = workR.x; col <= maxX; col++) {
+                    final char c = planes.getChar(getPos(row, col));
+                    if (c >= ' ' && (planes.screenExtended[getPos(row, col)] & EXTENDED_5250_NON_DSP)
+                            == 0)
+                        sb.append(c);
+                    else
+                        sb.append(' ');
+                }
             }
-            sb.append('\n');
-            m++;
         }
+
         return sb.toString();
     }
 

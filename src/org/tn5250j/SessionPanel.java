@@ -693,10 +693,15 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public final void actionCopy() {
-        final Rectangle2D area = getBoundingArea();
+        final Rectangle2D area;
+        if (rubberband.isAreaSelected()) {
+            area = rubberband.getBoundingArea();
+        } else {
+            area = new Rectangle2D(0, 0, canvas.getWidth(),  canvas.getHeight());
+        }
+
         rubberband.reset();
-        screen.repaintScreen();
-        final String textcontent = screen.copyText(area);
+        final String textcontent = screen.copyText(this.guiGraBuf.getBoundingArea(area));
 
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent content = new ClipboardContent();

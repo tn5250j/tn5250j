@@ -39,6 +39,13 @@ public class Rect {
     /* default */ int height;
     /* default */ int width;
 
+    public Rect() {
+    }
+
+    public Rect(final int x, final int y, final int w, final int h) {
+        setBounds(x, y, w, h);
+    }
+
     /**
      * @param rect
      */
