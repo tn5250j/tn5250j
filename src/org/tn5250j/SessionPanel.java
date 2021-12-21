@@ -80,6 +80,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 /**
  * A host GUI session
@@ -113,7 +114,7 @@ public class SessionPanel extends JFXPanel implements
     private BorderPane root;
 
     private final Canvas canvas = new Canvas();
-    private final ResizablePane cursor = new ResizablePane();
+    private final Rectangle cursor = new Rectangle();
 
     public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
@@ -150,21 +151,22 @@ public class SessionPanel extends JFXPanel implements
 
         final HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER);
-        root.getChildren().add(hbox);
+        vbox.getChildren().add(hbox);
 
         guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
-//        setBackground(guiGraBuf.getBackground());
 
         final Pane container = createContainer(canvas);
         container.getChildren().add(rubberband.getSelectionComponent());
         container.getChildren().add(cursor);
+        UiUtils.setBackground(container, Color.RED);
 
         hbox.getChildren().add(container);
 
         root.widthProperty().addListener((src, old, value) -> resizeMe());
         root.heightProperty().addListener((src, old, value) -> resizeMe());
+        UiUtils.setBackground(root, guiGraBuf.getBackground());
 
-        rubberband.startListen(root);
+        rubberband.startListen(container);
 
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
@@ -184,12 +186,12 @@ public class SessionPanel extends JFXPanel implements
 
         guiGraBuf.resize(width, height);
 
-        root.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
+        container.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
                 actionPopup(e.getX(), e.getY());
             }
         });
-        root.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+        container.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (e.getClickCount() == 2 & doubleClick) {
                     screen.sendKeys(ENTER);
@@ -202,14 +204,6 @@ public class SessionPanel extends JFXPanel implements
                     }
 
                     final boolean moved = screen.moveCursor(pos);
-                    // this is a note to not execute this code here when we
-                    // implement the remain after edit function option.
-                    if (moved) {
-                        if (rubberband.isAreaSelected()) {
-                            rubberband.reset();
-                        }
-                        screen.repaintScreen();
-                    }
                     getFocusForMe();
                 }
             }
@@ -239,6 +233,7 @@ public class SessionPanel extends JFXPanel implements
 
     private Pane createContainer(final Canvas canvas) {
         final ResizablePane pane = new ResizablePane();
+
         canvas.widthProperty().addListener(e -> pane.setWidth(canvas.getWidth()));
         canvas.heightProperty().addListener(e -> pane.setHeight(canvas.getHeight()));
         pane.getChildren().add(canvas);

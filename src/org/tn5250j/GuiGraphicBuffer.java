@@ -28,7 +28,6 @@ package org.tn5250j;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.gui.FontMetrics;
-import org.tn5250j.gui.ResizablePane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.CursorService;
 import org.tn5250j.tools.GUIGraphicsUtils;
@@ -41,23 +40,27 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     private final Canvas bi;
-    private final ResizablePane cursor;
+    private final Rectangle cursor;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
     private final Runnable blinkListener = this::nextBlink;
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
-            final SessionConfig config, final Canvas canvas, final ResizablePane cursor) {
+            final SessionConfig config, final Canvas canvas, final Rectangle cursor) {
         super(screen, gui, config);
         this.bi = canvas;
         this.cursor = cursor;
+
         cursor.setBlendMode(BlendMode.DIFFERENCE);
+        cursor.setVisible(true);
+
         fontMetrics = FontMetrics.deriveFrom(font);
     }
 
@@ -133,13 +136,12 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     @Override
     protected void drawCursor(final int row, final int col, final int botOffset) {
         final GraphicsContext g2 = getContext();
+        setForeground(colorCursor);
 
         cursor.relocate(cursorArea.getMinX(), cursorArea.getMinY());
-
         cursor.setWidth(cursorArea.getWidth());
         cursor.setHeight(cursorArea.getHeight());
-        UiUtils.setBackground(cursor, colorCursor);
-        setForeground(colorCursor);
+        cursor.setFill(colorCursor);
 
         switch (crossHair) { //TODO move to cursor panel
             case 1:  // horizontal

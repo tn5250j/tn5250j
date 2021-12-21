@@ -2320,10 +2320,7 @@ public class Screen5250 {
 
     // this routine is based on offset 0,0 not 1,1
     protected void goto_XY(final int pos) {
-        //      setCursorOff();
-        updateCursorLoc();
         lastPos = pos;
-        //      setCursorOn();
         updateCursorLoc();
     }
 
