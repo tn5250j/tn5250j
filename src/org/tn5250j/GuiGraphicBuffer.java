@@ -49,7 +49,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     private final Canvas bi;
     private final Rectangle cursor;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
-    private final Runnable blinkListener = this::nextBlink;
+    private Runnable blinkListener;
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
@@ -91,6 +91,9 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     @Override
     protected void setCursorBlinking(final boolean blinking) {
+        if (blinkListener == null) {
+            blinkListener = this::nextBlink;
+        }
         CursorService.getInstance().removeCursor(blinkListener);
         if (blinking) {
             CursorService.getInstance().addCursor(blinkListener);
@@ -626,6 +629,11 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
         updateRect = new Data(sr, sc, er, ec);
         drawScreen(sr, sc, er, ec);
+    }
+
+    @Override
+    protected Dimension2D getTextArea() {
+        return new Dimension2D(bi.getWidth(), bi.getHeight());
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -27,6 +28,7 @@ public class CursorService {
     ));
 
     private CursorService() {
+        timer.setCycleCount(Animation.INDEFINITE);
         timer.play();
     }
 
@@ -53,10 +55,10 @@ public class CursorService {
             final Runnable cursor = ref.get();
             if (cursor == null) {
                 this.cursors.remove(ref);
+            } else {
+                //next blink
+                cursor.run();
             }
-
-            //next blink
-            cursor.run();
         }
     }
 

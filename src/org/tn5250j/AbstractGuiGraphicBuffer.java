@@ -54,7 +54,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected static final char[] dupChar = {'*'};
 
     protected Line2D separatorLine = new Line2D();
-    protected Rectangle2D tArea = Rectangle2D.EMPTY; // text area
     protected Rectangle2D aArea = Rectangle2D.EMPTY; // all screen area
     protected Rectangle2D cArea = Rectangle2D.EMPTY; // command line area
     protected Rectangle2D sArea = Rectangle2D.EMPTY; // status area
@@ -68,8 +67,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected final static String xError = "X - II";
     protected int crossRow;
     protected Rectangle2D crossRect = Rectangle2D.EMPTY;
-    protected double offTop = 0;   // offset from top
-    protected double offLeft = 0;  // offset from left
     protected boolean antialiased = true;
     protected Screen5250 screen;
     protected Data updateRect;
@@ -640,36 +637,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected abstract void setCursorBlinking(final boolean blinking);
 
     /**
-     *
-     *
-     * @param x
-     * @param y
-     * @return
+     * @return text area size.
      */
-    public int getPosFromView(double x, double y) {
-
-        // we have to translate the point into a an upper left 0,0 based format
-        // to get the position into the character array which is 0,0 based.
-        // we take the point of x,y and subtract the screen offsets.
-
-        x -= offLeft;
-        y -= offTop;
-
-        if (x > tArea.getMaxX())
-            x = (int) tArea.getMaxX() - 1;
-        if (y > tArea.getMaxY())
-            y = (int) tArea.getMaxY() - 1;
-        if (x < tArea.getMinX())
-            x = 0;
-        if (y < tArea.getMinY())
-            y = 0;
-
-        final int s0 = (int) Math.ceil(y / rowHeight);
-        final int s1 = (int) Math.ceil(x / columnWidth);
-
-        return screen.getPos(s0, s1);
-
-    }
+    protected abstract Dimension2D getTextArea();
 
     /**
      * Return the row column based on the screen x,y position coordinates
@@ -677,30 +647,33 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
      * It will calculate a 0,0 based row and column based on the screen point
      * coordinate.
      *
-     * @param x
+     * @param x0
      *            screen x position
-     * @param y
+     * @param y0
      *            screen y position
      *
      * @return screen array position based 0,0 so position row 1 col 3 would be
      *         2
      */
-    public int getRowColFromPoint(double x, double y) {
+    public int getRowColFromPoint(final double x0, final double y0) {
+        final Dimension2D tArea = getTextArea();
 
-        if (x > tArea.getMaxX())
-            x = (int) tArea.getMaxX() - 1;
-        if (y > tArea.getMaxY())
-            y = (int) tArea.getMaxY() - 1;
-        if (x < tArea.getMinX())
+        double x = x0;
+        double y = y0;
+
+        if (x > tArea.getWidth())
+            x = tArea.getWidth() - 1;
+        if (y > tArea.getHeight())
+            y = (int) tArea.getHeight() - 1;
+        if (x < 0)
             x = 0;
-        if (y < tArea.getMinY())
+        if (y < 0)
             y = 0;
 
-        final int s0 = (int) Math.ceil(y / rowHeight);
-        final int s1 = (int) Math.ceil(x / columnWidth);
+        final int s0 = (int) (y / rowHeight);
+        final int s1 = (int) (x / columnWidth);
 
         return screen.getPos(s0, s1);
-
     }
 
 
@@ -718,15 +691,12 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         //  we will then add to that the offsets to get the screen position point
         //  x,y coordinates. Maybe change this to a translate routine method or
         //  something.
-        return new Point2D(
-            (columnWidth * c) + offLeft,
-            (rowHeight * r) + offTop
-        );
+        return new Point2D(columnWidth * c, rowHeight * r);
     }
 
     public boolean isWithinScreenArea(final int x, final int y) {
-
-        return tArea.contains(x, y);
+        final Dimension2D ta = getTextArea();
+        return x >= 0 && x <= ta.getWidth() && y >= 0 && y >= ta.getWidth();
 
     }
 
@@ -747,11 +717,8 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
 
         // because getRowColFromPoint returns position offset as 1,1 we need
         // to translate as offset 0,0
-        final int pos = getPosFromView(px, py);
-        return new Point2D(
-            columnWidth * screen.getCol(pos),
-            rowHeight * screen.getRow(pos)
-        );
+        final int pos = getRowColFromPoint(px, py);
+        return new Point2D(columnWidth * screen.getCol(pos), rowHeight * screen.getRow(pos));
     }
 
     /**
@@ -765,7 +732,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
 
         // because getRowColFromPoint returns position offset as 1,1 we need
         // to translate as offset 0,0
-        int pos = getPosFromView(px, py);
+        int pos = getRowColFromPoint(px, py);
 
         if (pos >= screen.getScreenLength()) {
             pos = screen.getScreenLength() - 1;
@@ -799,9 +766,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             // allocated
 
             // get starting row and column
-            final double sPos = getRowColFromPoint(workR.getMinX(), workR.getMinY());
+            final int sPos = getRowColFromPoint(workR.getMinX(), workR.getMinY());
             // get the width and height
-            final double ePos = getRowColFromPoint(workR.getWidth(), workR.getHeight());
+            final int ePos = getRowColFromPoint(workR.getWidth(), workR.getHeight());
 
             final double row = screen.getRow(sPos) + 1;
             final double col = screen.getCol(sPos) + 1;
@@ -822,9 +789,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         final Font k = GUIGraphicsUtils.getDerivedFont(font, width, height,
                 screen.getRows(), screen.getColumns(), sfh, sfw, ps132);
 
-        if (font.getSize() != k.getSize() || updateFont
-                || (offLeft != (width - getWidth()) / 2)
-                || (offTop != (height - getHeight()) / 2)) {
+        if (font.getSize() != k.getSize() || updateFont) {
 
             // set up all the variables that are used in calculating the new
             // size
@@ -835,13 +800,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             rowHeight = (int) Math.ceil(cellBounds.getHeight());
 
             // set the offsets for the screen centering.
-            offLeft = (width - getWidth()) / 2;
-            offTop = (height - getHeight()) / 2;
-            if (offLeft < 0)
-                offLeft = 0;
-            if (offTop < 0)
-                offTop = 0;
-
             redrawResized(columnWidth * screen.getColumns(), rowHeight * (screen.getRows() + 2));
         }
     }
@@ -866,7 +824,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected void recalculateOIASizes() {
         final int numRows = screen.getRows();
 
-        tArea = new Rectangle2D(0, 0, getWidth(), (rowHeight * (numRows)));
         cArea = new Rectangle2D(0, rowHeight * (numRows + 1), getWidth(), rowHeight * (numRows + 1));
         aArea = new Rectangle2D(0, 0, getWidth(), getHeight());
         sArea = new Rectangle2D(columnWidth * 9, rowHeight * (numRows + 1), columnWidth * 20, rowHeight);

@@ -158,7 +158,6 @@ public class SessionPanel extends JFXPanel implements
         final Pane container = createContainer(canvas);
         container.getChildren().add(rubberband.getSelectionComponent());
         container.getChildren().add(cursor);
-        UiUtils.setBackground(container, Color.RED);
 
         hbox.getChildren().add(container);
 
@@ -196,14 +195,14 @@ public class SessionPanel extends JFXPanel implements
                 if (e.getClickCount() == 2 & doubleClick) {
                     screen.sendKeys(ENTER);
                 } else {
-                    final int pos = guiGraBuf.getPosFromView(e.getX(), e.getY());
+                    final int pos = guiGraBuf.getRowColFromPoint(e.getX(), e.getY());
                     if (log.isDebugEnabled()) {
                         log.debug((screen.getRow(pos)) + "," + (screen.getCol(pos)));
                         log.debug(e.getX() + "," + e.getY() + "," + guiGraBuf.columnWidth + ","
                                 + guiGraBuf.rowHeight);
                     }
 
-                    final boolean moved = screen.moveCursor(pos);
+                    screen.moveCursor(pos);
                     getFocusForMe();
                 }
             }
@@ -800,7 +799,7 @@ public class SessionPanel extends JFXPanel implements
 
     @Override
     public int getPosFromView(final double x, final double y) {
-        return guiGraBuf.getPosFromView(x, y);
+        return guiGraBuf.getRowColFromPoint(x, y);
     }
 
     public Point2D getInitialPoint() {

@@ -1718,12 +1718,12 @@ public class Screen5250 {
         }
     }
 
-    public int getRow(final double pos) {
+    public int getRow(final int pos) {
 
         //      if (pos == 0)
         //         return 1;
 
-        int row = (int) Math.ceil(pos / numCols);
+        int row = pos / numCols;
 
         if (row < 0) {
 
@@ -2736,7 +2736,6 @@ public class Screen5250 {
         // calculate the reference points for the move.
         final int start = this.getPos(topLine - 1, 0);
         final int end = this.getPos(bottomLine - 1, numCols - 1);
-        final int len = end - start;
 
         //      System.out.println(" starting roll");
         //      dumpScreen();
