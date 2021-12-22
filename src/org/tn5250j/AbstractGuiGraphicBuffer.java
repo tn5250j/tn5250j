@@ -62,7 +62,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected Rectangle2D iArea = Rectangle2D.EMPTY; // insert indicator
     protected Rectangle2D kbArea = Rectangle2D.EMPTY; // keybuffer indicator
     protected Rectangle2D scriptArea = Rectangle2D.EMPTY; // script indicator
-    protected Rectangle2D cursorArea = Rectangle2D.EMPTY;
     protected final static String xSystem = "X - System";
     protected final static String xError = "X - II";
     protected boolean antialiased = true;
@@ -83,17 +82,14 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     /*default*/ Color colorBg;
     protected Color colorTurq;
     protected Color colorGUIField;
-    protected Color colorCursor;
     protected Color colorSep;
     protected Color colorHexAttr;
-    protected int cursorSize = 0;
     protected boolean hotSpots = false;
     protected float sfh = 1.2f; // font scale height
     protected float sfw = 1.0f; // font scale height
     protected float ps132 = 0; // Font point size
     protected boolean cfg_guiInterface = false;
     protected boolean cfg_guiShowUnderline = true;
-    protected int cursorBottOffset;
     protected ColumnSeparator colSepLine;
     protected final StringBuffer hsMore = new StringBuffer("More...");
     protected final StringBuffer hsBottom = new StringBuffer("Bottom");
@@ -105,11 +101,14 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected Color fg;
     protected Color bg;
 
-    protected SessionConfig config;
+    protected final SessionConfig config;
+    protected final CompoundCursor cursor;
 
-    public AbstractGuiGraphicBuffer(final Screen5250 screen, final SessionGui gui, final SessionConfig config) {
+    public AbstractGuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
+            final CompoundCursor cursor, final SessionConfig config) {
 
         this.screen = screen;
+        this.cursor = cursor;
         this.config = config;
         this.gui = gui;
 
@@ -151,7 +150,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         else
             colorBg = Color.BLACK;
 
-        colorCursor = Color.WHITE;
+        cursor.setColor(Color.WHITE);
 
         if (!config.isPropertyExists("colorBg"))
             setProperty("colorBg", Integer.toString(UiUtils.toRgb(colorBg)));
@@ -200,9 +199,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             colorGUIField = getColorProperty("colorGUIField");
 
         if (!config.isPropertyExists("colorCursor"))
-            setProperty("colorCursor", Integer.toString(UiUtils.toRgb(colorCursor)));
+            setProperty("colorCursor", Integer.toString(UiUtils.toRgb(cursor.getColor())));
         else
-            colorCursor = getColorProperty("colorCursor");
+            cursor.setColor(getColorProperty("colorCursor"));
 
         if (!config.isPropertyExists("colorSep")) {
             colorSep = colorWhite;
@@ -291,13 +290,8 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (config.isPropertyExists("cursorSize")) {
-            if (getStringProperty("cursorSize").equals("Full"))
-                cursorSize = 2;
-            if (getStringProperty("cursorSize").equals("Half"))
-                cursorSize = 1;
-            if (getStringProperty("cursorSize").equals("Line"))
-                cursorSize = 0;
-
+            final String cursorSizeProperty = getStringProperty("cursorSize");
+            setCursorSize(cursorSizeProperty);
         }
 
         if (config.isPropertyExists("crossHair")) {
@@ -322,7 +316,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (config.isPropertyExists("cursorBottOffset")) {
-            cursorBottOffset = getIntProperty("cursorBottOffset");
+            cursor.setBottomOffset(getIntProperty("cursorBottOffset"));;
         }
 
         if (config.isPropertyExists("resetRequired")) {
@@ -353,11 +347,25 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
     }
 
+    /**
+     * @param cursorSizeProperty
+     */
+    private void setCursorSize(final String cursorSizeProperty) {
+        if (cursorSizeProperty.equals("Full"))
+            cursor.setSize(2);
+        if (cursorSizeProperty.equals("Half"))
+            cursor.setSize(1);
+        if (cursorSizeProperty.equals("Line"))
+            cursor.setSize(0);
+    }
+
     private void setRullerFixed(final String rullerFixedProperty) {
         setRullerFixed(rullerFixedProperty.equals("Yes"));
     }
 
-    protected abstract void setRullerFixed(boolean equals);
+    protected void setRullerFixed(final boolean rullerFixed) {
+        cursor.setRullerFixed(rullerFixed);
+    }
 
     private void configureCrossHair(final String crossHairProperty) {
         if (crossHairProperty.equals("None"))
@@ -373,7 +381,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     /**
      * @param crossHair crosshair.
      */
-    protected abstract void setCrossHair(int crossHair);
+    private void setCrossHair(final int crossHair) {
+        this.cursor.setCrossHair(crossHair);
+    }
 
     @SuppressWarnings("deprecation")
     protected final String getStringProperty(final String prop) {
@@ -469,7 +479,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (pn.equals("colorCursor")) {
-            colorCursor = (Color) pce.getNewValue();
+            cursor.setColor((Color) pce.getNewValue());
             resetAttr = true;
         }
 
@@ -484,13 +494,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (pn.equals("cursorSize")) {
-            if (pce.getNewValue().equals("Full"))
-                cursorSize = 2;
-            if (pce.getNewValue().equals("Half"))
-                cursorSize = 1;
-            if (pce.getNewValue().equals("Line"))
-                cursorSize = 0;
-
+            setCursorSize((String) pce.getNewValue());
         }
 
         if (pn.equals("crossHair")) {
@@ -595,7 +599,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (pn.equals("cursorBottOffset")) {
-            cursorBottOffset = getIntProperty("cursorBottOffset");
+            cursor.setBottomOffset(getIntProperty("cursorBottOffset"));
         }
 
         if (pn.equals("cursorBlink")) {
@@ -630,7 +634,9 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         ((Component) gui).repaint();
     }
 
-    protected abstract void setCursorBlinking(final boolean blinking);
+    private void setCursorBlinking(final boolean blinking) {
+        cursor.setBlinking(blinking);
+    }
 
     /**
      * @return text area size.
@@ -847,54 +853,15 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
                 (rowHeight * (numRows + 1)) - (rowHeight / 2));
     }
 
-    protected abstract void drawCursor(final int row, final int col, final int botOffset);
+    protected abstract void drawFutter(final int row, final int col, final int botOffset);
 
     protected int recalculateCursorSizes(final int row, final int col) {
-        final int botOffset = cursorBottOffset;
-        final boolean insertMode = screen.getOIA().isInsertMode();
-
-        switch (cursorSize) {
-            case 0:
-                cursorArea = new Rectangle2D(
-                        columnWidth * (col),
-                        (rowHeight * (row + 1)) - botOffset,
-                        columnWidth,
-                        1
-                );
-                break;
-            case 1:
-                cursorArea = new Rectangle2D(
-                        columnWidth * (col),
-                        (rowHeight * (row + 1) - rowHeight / 2),
-                        columnWidth,
-                        (rowHeight / 2) - botOffset
-                );
-                break;
-            case 2:
-                cursorArea = new Rectangle2D(
-                        columnWidth * (col),
-                        (rowHeight * row),
-                        columnWidth,
-                        rowHeight - botOffset
-                );
-                break;
-        }
-
-        if (insertMode && cursorSize != 1) {
-            cursorArea = new Rectangle2D(
-                    columnWidth * (col),
-                    (rowHeight * (row + 1) - rowHeight / 2),
-                    columnWidth,
-                    (rowHeight / 2) - botOffset
-            );
-        }
-
-        setCrossRect(cursorArea, row);
-
-        return botOffset;
+        cursor.setInsertMode(screen.getOIA().isInsertMode());
+        cursor.setScreenSize(getWidth(), getHeight());
+        cursor.setColumnBounds(columnWidth, rowHeight);
+        cursor.recalculateSizes(row, col);
+        return cursor.getBottomOffset();
     }
-
-    protected abstract void setCrossRect(Rectangle2D rect, int row);
 
     @Override
     public void onScreenSizeChanged(final int rows, final int cols) {
@@ -905,7 +872,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     public void onScreenChanged(final int which, final int sr, final int sc, final int er, final int ec) {
         if (which == 3 || which == 4) {
             final int botOffset = recalculateCursorSizes(sr, sc);
-            drawCursor(sr, sc, botOffset);
+            drawFutter(sr, sc, botOffset);
             return;
         }
 

@@ -30,7 +30,6 @@ import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.ScreenOIA;
 import org.tn5250j.gui.FontMetrics;
 import org.tn5250j.gui.UiUtils;
-import org.tn5250j.tools.CursorService;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -39,30 +38,20 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     private final Canvas bi;
-    private final Rectangle cursor;
-    private final CrossHairGroup crossHair;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
-    private Runnable blinkListener;
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
-            final SessionConfig config, final Canvas canvas,
-            final Rectangle cursor, final CrossHairGroup crossHair) {
-        super(screen, gui, config);
+            final SessionConfig config, final Canvas canvas, final CompoundCursor cursor) {
+        super(screen, gui, cursor, config);
         this.bi = canvas;
-        this.cursor = cursor;
-        this.crossHair = crossHair;
-
-        cursor.setBlendMode(BlendMode.DIFFERENCE);
         fontMetrics = FontMetrics.deriveFrom(font);
     }
 
@@ -89,21 +78,6 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
             fontMetrics = FontMetrics.deriveFrom(getFont());
         }
         super.resizeScreenArea(width, height, updateFont);
-    }
-
-    @Override
-    protected void setCursorBlinking(final boolean blinking) {
-        if (blinkListener == null) {
-            blinkListener = this::nextBlink;
-        }
-        CursorService.getInstance().removeCursor(blinkListener);
-        if (blinking) {
-            CursorService.getInstance().addCursor(blinkListener);
-        }
-    }
-
-    private void nextBlink() {
-        cursor.setVisible(!cursor.isVisible());
     }
 
     /**
@@ -139,17 +113,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     }
 
     @Override
-    protected void drawCursor(final int row, final int col, final int botOffset) {
+    protected void drawFutter(final int row, final int col, final int botOffset) {
         final GraphicsContext g2 = getContext();
-        setForeground(colorCursor);
-
-        cursor.relocate(cursorArea.getMinX(), cursorArea.getMinY());
-        cursor.setWidth(cursorArea.getWidth());
-        cursor.setHeight(cursorArea.getHeight());
-        cursor.setFill(colorCursor);
-
-        crossHair.updateSizes(botOffset, bi.getWidth(), bi.getHeight(), columnWidth, rowHeight);
-        crossHair.setColor(colorCursor);
 
         g2.setFont(getFont());
         g2.setFill(colorBg);
@@ -606,7 +571,7 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     public void onScreenChanged(final int which, final int sr, final int sc, final int er, final int ec) {
         if (which == 3 || which == 4) {
             final int botOffset = recalculateCursorSizes(sr, sc);
-            drawCursor(sr, sc, botOffset);
+            drawFutter(sr, sc, botOffset);
             return;
         }
 
@@ -736,20 +701,5 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     @Override
     protected double getHeight() {
         return bi.getHeight();
-    }
-
-    @Override
-    protected void setCrossHair(final int crossHair) {
-        this.crossHair.setCrossHair(crossHair);
-    }
-
-    @Override
-    protected void setCrossRect(final Rectangle2D rect, final int row) {
-        this.crossHair.setCrossRect(rect, row);
-    }
-
-    @Override
-    protected void setRullerFixed(final boolean rullerFixed) {
-        crossHair.setRullerFixed(rullerFixed);
     }
 }

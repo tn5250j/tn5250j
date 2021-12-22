@@ -80,8 +80,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 /**
  * A host GUI session
@@ -115,8 +114,7 @@ public class SessionPanel extends JFXPanel implements
     private BorderPane root;
 
     private final Canvas canvas = new Canvas();
-    private final Rectangle cursor = new Rectangle();
-    private final CrossHairGroup crossHair = new CrossHairGroup();
+    private final CompoundCursor cursor = new CompoundCursor();
 
     public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
@@ -157,8 +155,7 @@ public class SessionPanel extends JFXPanel implements
 
         final Pane container = createContainer(canvas);
         container.getChildren().add(rubberband.getSelectionComponent());
-        container.getChildren().add(cursor);
-        for (final Line comp : this.crossHair.getComponents()) {
+        for (final Shape comp : this.cursor.getComponents()) {
             container.getChildren().add(comp);
         }
 
@@ -172,7 +169,7 @@ public class SessionPanel extends JFXPanel implements
 
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
 
-        guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor, crossHair);
+        guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
         UiUtils.setBackground(root, guiGraBuf.getBackground());
 
         final double width;
@@ -687,7 +684,7 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public void crossHair() {
-        crossHair.shift();
+        cursor.shift();
     }
 
     /**
