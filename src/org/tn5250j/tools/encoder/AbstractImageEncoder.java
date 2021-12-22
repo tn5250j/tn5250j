@@ -31,7 +31,7 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.UiUtils;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
@@ -52,6 +52,7 @@ public abstract class AbstractImageEncoder implements Encoder {
         saveImage();
     }
 
+    @Override
     public void encode(final Object component, final OutputStream os) throws IOException, EncoderException {
         if (component instanceof  Component) {
             encodeComponent((Component) component, os);
@@ -65,7 +66,7 @@ public abstract class AbstractImageEncoder implements Encoder {
         encode(snapshot(component), os);
     }
     public void encodeNode(final Node node, final OutputStream os) throws IOException, EncoderException {
-        final WritableImage image = SwingToFxUtils.runInFxAndWait(
+        final WritableImage image = UiUtils.runInFxAndWait(
                 () -> node.snapshot(new SnapshotParameters(), null));
         encode(SwingFXUtils.fromFXImage(image, null), os);
     }

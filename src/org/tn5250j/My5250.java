@@ -40,7 +40,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -61,6 +60,8 @@ import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javafx.application.Platform;
 
 public class My5250 implements BootListener, SessionListener, EmulatorActionListener {
 
@@ -188,52 +189,20 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
                     parseArgs(sessions.getProperty(sd), args);
                     final String[] args2 = args;
                     final String sd2 = sd;
-                    SwingUtilities.invokeLater(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    newSession(sd2, args2);
-
-                                }
-                            }
-                    );
+                    Platform.runLater(() -> newSession(sd2, args2));
                 }
             } else {
 
                 if (args[0].startsWith("-")) {
-                    SwingUtilities.invokeLater(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    startNewSession();
-
-                                }
-                            }
-                    );
+                    Platform.runLater(() -> startNewSession());
                 } else {
                     final String[] args2 = args;
                     final String sd2 = args[0];
-                    SwingUtilities.invokeLater(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    newSession(sd2, args2);
-
-                                }
-                            }
-                    );
+                    Platform.runLater(() -> newSession(sd2, args2));
                 }
             }
         } else {
-            SwingUtilities.invokeLater(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            startNewSession();
-
-                        }
-                    }
-            );
+            Platform.runLater(() -> startNewSession());
         }
     }
 

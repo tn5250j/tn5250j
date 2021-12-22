@@ -92,9 +92,11 @@ import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.framework.transport.SocketConnector;
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javafx.application.Platform;
 
 public final class tnvt implements Runnable {
 
@@ -300,7 +302,7 @@ public final class tnvt implements Runnable {
             session = s;
             this.port = port;
 
-            SwingToFxUtils.runInFxAndWait(() -> {
+            UiUtils.runInFxAndWait(() -> {
                 screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_SYSTEM_WAIT,
                         ScreenOIA.OIA_LEVEL_INPUT_INHIBITED, "X - Connecting");
                 return null;
@@ -333,7 +335,7 @@ public final class tnvt implements Runnable {
             byte abyte0[];
             while (negotiate(abyte0 = readNegotiations())) ;
             try {
-                screen52.setCursorActive(false);
+                Platform.runLater(() -> screen52.setCursorActive(false));
             } catch (final Exception excc) {
                 log.warn("setCursorOff " + excc.getMessage());
 
@@ -345,7 +347,7 @@ public final class tnvt implements Runnable {
             pthread.start();
 
             try {
-                SwingToFxUtils.runInFxAndWait(() -> {
+                UiUtils.runInFxAndWait(() -> {
                     screen52.getOIA().setInputInhibited(ScreenOIA.INPUTINHIBITED_NOTINHIBITED,
                             ScreenOIA.OIA_LEVEL_INPUT_INHIBITED);
                     return null;

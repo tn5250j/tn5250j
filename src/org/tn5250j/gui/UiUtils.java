@@ -10,12 +10,15 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.tools.LangTool;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -262,5 +265,25 @@ public final class UiUtils {
     public static void setBackground(final Pane node, final Color bg) {
         node.setBackground(new Background(new BackgroundFill(
                 bg, CornerRadii.EMPTY, Insets.EMPTY)));
+    }
+
+    public static <T> T runInFxAndWait(final Callable<T> call) {
+        try {
+            if (Platform.isFxApplicationThread()) {
+                return call.call();
+            }
+
+            final CompletableFuture<T> feature = new CompletableFuture<>();
+            Platform.runLater(() -> {
+                try {
+                    feature.complete(call.call());
+                } catch (final Throwable e) {
+                    feature.completeExceptionally(e);
+                }
+            });
+            return feature.get();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
