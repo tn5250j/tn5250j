@@ -421,7 +421,7 @@ public class Screen5250 {
 
         if (!oia.isKeyBoardLocked()) {
 
-            if (pos < 0)
+            if (pos < 0 || pos >= planes.screen.length)
                 return false;
             // because getRowColFromPoint returns offset of 1,1 we need to
             //    translate to offset 0,0
