@@ -80,6 +80,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -115,6 +116,7 @@ public class SessionPanel extends JFXPanel implements
 
     private final Canvas canvas = new Canvas();
     private final Rectangle cursor = new Rectangle();
+    private final CrossHairGroup crossHair = new CrossHairGroup();
 
     public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
@@ -153,22 +155,25 @@ public class SessionPanel extends JFXPanel implements
         hbox.setAlignment(Pos.CENTER);
         vbox.getChildren().add(hbox);
 
-        guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
-
         final Pane container = createContainer(canvas);
         container.getChildren().add(rubberband.getSelectionComponent());
         container.getChildren().add(cursor);
+        for (final Line comp : this.crossHair.getComponents()) {
+            container.getChildren().add(comp);
+        }
 
         hbox.getChildren().add(container);
 
         root.widthProperty().addListener((src, old, value) -> resizeMe());
         root.heightProperty().addListener((src, old, value) -> resizeMe());
-        UiUtils.setBackground(root, guiGraBuf.getBackground());
 
         installMouseListeners(container);
         rubberband.startListen(container);
 
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
+
+        guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor, crossHair);
+        UiUtils.setBackground(root, guiGraBuf.getBackground());
 
         final double width;
         final double height;
@@ -183,7 +188,6 @@ public class SessionPanel extends JFXPanel implements
             width = getIntegerProperty("width");
             height = getIntegerProperty("height");
         }
-
         guiGraBuf.resize(width, height);
 
         log.debug("Initializing macros");
@@ -683,9 +687,7 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public void crossHair() {
-        guiGraBuf.crossHair++;
-        if (guiGraBuf.crossHair > 3)
-            guiGraBuf.crossHair = 0;
+        crossHair.shift();
     }
 
     /**

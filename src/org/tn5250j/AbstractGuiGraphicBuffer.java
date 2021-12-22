@@ -65,13 +65,11 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected Rectangle2D cursorArea = Rectangle2D.EMPTY;
     protected final static String xSystem = "X - System";
     protected final static String xError = "X - II";
-    protected int crossRow;
-    protected Rectangle2D crossRect = Rectangle2D.EMPTY;
     protected boolean antialiased = true;
     protected Screen5250 screen;
     protected Data updateRect;
-    protected int columnWidth;
-    protected int rowHeight;
+    protected double columnWidth;
+    protected double rowHeight;
     protected SessionGui gui;
 
     /*default*/ Font font;
@@ -88,7 +86,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected Color colorCursor;
     protected Color colorSep;
     protected Color colorHexAttr;
-    protected int crossHair = 0;
     protected int cursorSize = 0;
     protected boolean hotSpots = false;
     protected float sfh = 1.2f; // font scale height
@@ -97,7 +94,6 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
     protected boolean cfg_guiInterface = false;
     protected boolean cfg_guiShowUnderline = true;
     protected int cursorBottOffset;
-    protected boolean rulerFixed;
     protected ColumnSeparator colSepLine;
     protected final StringBuffer hsMore = new StringBuffer("More...");
     protected final StringBuffer hsBottom = new StringBuffer("Bottom");
@@ -305,24 +301,12 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (config.isPropertyExists("crossHair")) {
-            if (getStringProperty("crossHair").equals("None"))
-                crossHair = 0;
-            if (getStringProperty("crossHair").equals("Horz"))
-                crossHair = 1;
-            if (getStringProperty("crossHair").equals("Vert"))
-                crossHair = 2;
-            if (getStringProperty("crossHair").equals("Both"))
-                crossHair = 3;
-
+            configureCrossHair(getStringProperty("crossHair"));
         }
 
         if (config.isPropertyExists("rulerFixed")) {
-
-            if (getStringProperty("rulerFixed").equals("Yes"))
-                rulerFixed = true;
-            else
-                rulerFixed = false;
-
+            final String rullerFixedProperty = getStringProperty("rulerFixed");
+            setRullerFixed(rullerFixedProperty);
         }
 
         if (config.isPropertyExists("fontScaleHeight")) {
@@ -368,6 +352,28 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
                 screen.setBackspaceError(false);
         }
     }
+
+    private void setRullerFixed(final String rullerFixedProperty) {
+        setRullerFixed(rullerFixedProperty.equals("Yes"));
+    }
+
+    protected abstract void setRullerFixed(boolean equals);
+
+    private void configureCrossHair(final String crossHairProperty) {
+        if (crossHairProperty.equals("None"))
+            setCrossHair(0);
+        if (crossHairProperty.equals("Horz"))
+            setCrossHair(1);
+        if (crossHairProperty.equals("Vert"))
+            setCrossHair(2);
+        if (crossHairProperty.equals("Both"))
+            setCrossHair(3);
+    }
+
+    /**
+     * @param crossHair crosshair.
+     */
+    protected abstract void setCrossHair(int crossHair);
 
     @SuppressWarnings("deprecation")
     protected final String getStringProperty(final String prop) {
@@ -488,21 +494,11 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (pn.equals("crossHair")) {
-            if (pce.getNewValue().equals("None"))
-                crossHair = 0;
-            if (pce.getNewValue().equals("Horz"))
-                crossHair = 1;
-            if (pce.getNewValue().equals("Vert"))
-                crossHair = 2;
-            if (pce.getNewValue().equals("Both"))
-                crossHair = 3;
+            configureCrossHair((String) pce.getNewValue());
         }
 
         if (pn.equals("rulerFixed")) {
-            if (pce.getNewValue().equals("Yes"))
-                rulerFixed = true;
-            else
-                rulerFixed = false;
+            setRullerFixed((String) pce.getNewValue());
         }
 
         colSepLine = ColumnSeparator.getFromName(pce.getNewValue().toString());
@@ -893,18 +889,12 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
             );
         }
 
-        if (!rulerFixed) {
-            crossRow = row;
-            crossRect = cursorArea;
-        } else {
-            if (crossHair == 0) {
-                crossRow = row;
-                crossRect = cursorArea;
-            }
-        }
+        setCrossRect(cursorArea, row);
 
         return botOffset;
     }
+
+    protected abstract void setCrossRect(Rectangle2D rect, int row);
 
     @Override
     public void onScreenSizeChanged(final int rows, final int cols) {

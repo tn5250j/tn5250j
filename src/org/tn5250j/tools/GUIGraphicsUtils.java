@@ -1084,7 +1084,7 @@ public class GUIGraphicsUtils {
 
     }
     public static void drawScrollBar(final GraphicsContext g, final int which, final int direction,
-            final double x, final double y, final int fmWidth, final int fmHeight,
+            final double x, final double y, final double fmWidth, final double fmHeight,
             final javafx.scene.paint.Color fg, final javafx.scene.paint.Color bg) {
         final Paint oldColor = g.getFill(); // make sure we leave it as we found it
 
@@ -2027,7 +2027,7 @@ public class GUIGraphicsUtils {
     }
 
     public static void drawWinLowerRight(final GraphicsContext g, final int which, final javafx.scene.paint.Color fill,
-            final double x, final double y, final int fmWidth, final int fmHeight) {
+            final double x, final double y, final double fmWidth, final double fmHeight) {
         final Paint oldColor = g.getFill(); // make sure we leave it as we found it
         try {
             //      g.translate(x, y);

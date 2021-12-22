@@ -49,19 +49,20 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     private final Canvas bi;
     private final Rectangle cursor;
+    private final CrossHairGroup crossHair;
     private final TN5250jLogger log = TN5250jLogFactory.getLogger("GFX");
     private Runnable blinkListener;
     private FontMetrics fontMetrics;
 
     public GuiGraphicBuffer(final Screen5250 screen, final SessionGui gui,
-            final SessionConfig config, final Canvas canvas, final Rectangle cursor) {
+            final SessionConfig config, final Canvas canvas,
+            final Rectangle cursor, final CrossHairGroup crossHair) {
         super(screen, gui, config);
         this.bi = canvas;
         this.cursor = cursor;
+        this.crossHair = crossHair;
 
         cursor.setBlendMode(BlendMode.DIFFERENCE);
-        cursor.setVisible(true);
-
         fontMetrics = FontMetrics.deriveFrom(font);
     }
 
@@ -147,25 +148,8 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
         cursor.setHeight(cursorArea.getHeight());
         cursor.setFill(colorCursor);
 
-        switch (crossHair) { //TODO move to cursor panel
-            case 1:  // horizontal
-                g2.strokeLine(0, (rowHeight * (crossRow + 1)) - botOffset,
-                        bi.getWidth(),
-                        (rowHeight * (crossRow + 1)) - botOffset);
-                break;
-            case 2:  // vertical
-                g2.strokeLine(crossRect.getMinX(), 0, crossRect.getMinX(),
-                        bi.getHeight() - 2 * rowHeight);
-                break;
-
-            case 3:  // horizontal & vertical
-                g2.strokeLine(0, (rowHeight * (crossRow + 1)) - botOffset,
-                        bi.getWidth(),
-                        (rowHeight * (crossRow + 1)) - botOffset);
-                g2.strokeLine(crossRect.getMinX(), 0, crossRect.getMinX(),
-                        bi.getHeight() - 2 * rowHeight);
-                break;
-        }
+        crossHair.updateSizes(botOffset, bi.getWidth(), bi.getHeight(), columnWidth, rowHeight);
+        crossHair.setColor(colorCursor);
 
         g2.setFont(getFont());
         g2.setFill(colorBg);
@@ -752,5 +736,20 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
     @Override
     protected double getHeight() {
         return bi.getHeight();
+    }
+
+    @Override
+    protected void setCrossHair(final int crossHair) {
+        this.crossHair.setCrossHair(crossHair);
+    }
+
+    @Override
+    protected void setCrossRect(final Rectangle2D rect, final int row) {
+        this.crossHair.setCrossRect(rect, row);
+    }
+
+    @Override
+    protected void setRullerFixed(final boolean rullerFixed) {
+        crossHair.setRullerFixed(rullerFixed);
     }
 }
