@@ -727,8 +727,8 @@ public class SessionPanel extends JFXPanel implements
     @Override
     public final void printMe() {
 
-        final Thread printerThread = new PrinterThread(screen, UiUtils.toAwtFont(guiGraBuf.font),
-                screen.getColumns(), screen.getRows(), UiUtils.toAwtColor(Color.BLACK), true, this);
+        final Thread printerThread = new PrinterThread(screen, SwingToFxUtils.toAwtFont(guiGraBuf.font),
+                screen.getColumns(), screen.getRows(), SwingToFxUtils.toAwtColor(Color.BLACK), true, this);
 
         printerThread.start();
 

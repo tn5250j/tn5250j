@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.gui.UiUtils;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
@@ -116,7 +116,7 @@ class SignoffAttributesPanel extends AttributesPanel {
 
     private void loadRegion() {
 
-        final Rectangle region = UiUtils.toAwtRectangle(getRectangleProperty("signOnRegion"));
+        final Rectangle region = SwingToFxUtils.toAwtRectangle(getRectangleProperty("signOnRegion"));
 
         if (region.x == 0)
             fromRow.setText("1");

@@ -86,7 +86,7 @@ import org.tn5250j.SessionGui;
 import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250JFrameSwing;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.TN5250jFileFilter;
 import org.tn5250j.mailtools.SendEMailDialog;
@@ -95,7 +95,7 @@ import org.tn5250j.sql.SqlWizard;
 import org.tn5250j.tools.filters.XTFRFileFilter;
 
 public class XTFRFile
-        extends GenericTn5250JFrame
+        extends GenericTn5250JFrameSwing
         implements ActionListener, FTPStatusListener, ItemListener {
 
     private static final long serialVersionUID = 1L;

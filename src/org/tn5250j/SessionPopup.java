@@ -81,7 +81,7 @@ import javax.swing.SwingUtilities;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.HexCharMapDialog;
-import org.tn5250j.gui.UiUtils;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.configure.KeyConfigure;
@@ -210,7 +210,7 @@ public class SessionPopup {
             if (sessiongui.getRubberband().isAreaSelected()) {
 
                 // get the bounded area of the selection
-                workR = UiUtils.toAwtRectangle(sessiongui.getBoundingArea());
+                workR = SwingToFxUtils.toAwtRectangle(sessiongui.getBoundingArea());
 
                 popup.addSeparator();
 

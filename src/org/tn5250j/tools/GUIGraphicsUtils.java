@@ -47,7 +47,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.gui.UiUtils;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.system.OperatingSystem;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -2302,7 +2302,7 @@ public class GUIGraphicsUtils {
             final float scaleHeight,
             final float scaleWidth,
             final float pointSize) {
-        return UiUtils.fromAwtFont(getDerivedFont(UiUtils.toAwtFont(font),
+        return SwingToFxUtils.fromAwtFont(getDerivedFont(SwingToFxUtils.toAwtFont(font),
                 round(width), round(height), numRows, numCols, scaleHeight, scaleWidth, pointSize));
     }
 

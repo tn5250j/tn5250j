@@ -24,7 +24,7 @@ import org.tn5250j.My5250;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.SessionChangeEvent;
 import org.tn5250j.event.SessionJumpEvent;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250JFrameSwing;
 
 /**
  * Abstract class for all main GUI interfaces.<br>
@@ -34,7 +34,7 @@ import org.tn5250j.gui.GenericTn5250JFrame;
  * <li>{@link org.tn5250j.Gui5250MDIFrame}</li>
  * </ul>
  */
-public abstract class GUIViewInterface extends GenericTn5250JFrame {
+public abstract class GUIViewInterface extends GenericTn5250JFrameSwing {
 
     private static final long serialVersionUID = 1L;
     protected static My5250 me;

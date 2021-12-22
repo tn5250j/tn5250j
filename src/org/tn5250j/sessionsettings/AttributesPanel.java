@@ -32,7 +32,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.gui.UiUtils;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -139,7 +139,7 @@ abstract class AttributesPanel extends JPanel {
     }
 
     protected void setRectangleProperty(final String key, final Rectangle rect) {
-        changes.setRectangleProperty(key, UiUtils.fromAwtRect(rect));
+        changes.setRectangleProperty(key, SwingToFxUtils.fromAwtRect(rect));
     }
 
     protected final void setProperty(final String key, final String val) {

@@ -57,7 +57,7 @@ import javax.swing.table.TableColumn;
 import org.tn5250j.SessionGui;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.DefaultSortTableModel;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250JFrameSwing;
 import org.tn5250j.gui.JSortTable;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
@@ -70,7 +70,7 @@ import com.ibm.as400.access.SpooledFile;
 import com.ibm.as400.access.SpooledFileList;
 import com.ibm.as400.vaccess.SpooledFileViewer;
 
-public class SpoolExporter extends GenericTn5250JFrame {
+public class SpoolExporter extends GenericTn5250JFrameSwing {
 
     private static final long serialVersionUID = 1L;
     SpoolFilterPane filter;

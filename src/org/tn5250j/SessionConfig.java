@@ -235,7 +235,7 @@ public class SessionConfig {
 
                 final Properties colorSchemaDefaults = loadPropertiesFromResource("tn5250jSchemas.properties");
                 final String prefix = colorSchemaDefaults.getProperty("schemaDefault");
-                sesProps.setProperty("colorBg", colorSchemaDefaults.getProperty(prefix + ".colorBg"));
+                sesProps.setProperty("colo", colorSchemaDefaults.getProperty(prefix + ".colo"));
                 sesProps.setProperty("colorRed", colorSchemaDefaults.getProperty(prefix + ".colorRed"));
                 sesProps.setProperty("colorTurq", colorSchemaDefaults.getProperty(prefix + ".colorTurq"));
                 sesProps.setProperty("colorCursor", colorSchemaDefaults.getProperty(prefix + ".colorCursor"));

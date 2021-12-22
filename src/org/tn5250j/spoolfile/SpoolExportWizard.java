@@ -53,7 +53,7 @@ import javax.swing.SwingUtilities;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
-import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.GenericTn5250JFrameSwing;
 import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
@@ -77,7 +77,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /**
  *
  */
-public class SpoolExportWizard extends GenericTn5250JFrame implements WizardListener {
+public class SpoolExportWizard extends GenericTn5250JFrameSwing implements WizardListener {
 
     private static final long serialVersionUID = 1L;
     JPanel contentPane;
