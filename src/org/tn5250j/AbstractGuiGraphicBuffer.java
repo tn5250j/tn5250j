@@ -275,23 +275,18 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
                 hotSpots = false;
         }
 
-        if (config.isPropertyExists("hsMore")) {
-            if (getStringProperty("hsMore").length() > 0) {
-                hsMore.setLength(0);
-                hsMore.append(getStringProperty("hsMore"));
-            }
+        if (config.isPropertyExists("hsMore") && getStringProperty("hsMore").length() > 0) {
+            hsMore.setLength(0);
+            hsMore.append(getStringProperty("hsMore"));
         }
 
-        if (config.isPropertyExists("hsBottom")) {
-            if (getStringProperty("hsBottom").length() > 0) {
-                hsBottom.setLength(0);
-                hsBottom.append(getStringProperty("hsBottom"));
-            }
+        if (config.isPropertyExists("hsBottom") && getStringProperty("hsBottom").length() > 0) {
+            hsBottom.setLength(0);
+            hsBottom.append(getStringProperty("hsBottom"));
         }
 
         if (config.isPropertyExists("cursorSize")) {
-            final String cursorSizeProperty = getStringProperty("cursorSize");
-            setCursorSize(cursorSizeProperty);
+            setCursorSize(getStringProperty("cursorSize"));
         }
 
         if (config.isPropertyExists("crossHair")) {
@@ -299,8 +294,7 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (config.isPropertyExists("rulerFixed")) {
-            final String rullerFixedProperty = getStringProperty("rulerFixed");
-            setRullerFixed(rullerFixedProperty);
+            setRullerFixed(getStringProperty("rulerFixed"));
         }
 
         if (config.isPropertyExists("fontScaleHeight")) {
@@ -316,35 +310,12 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
         }
 
         if (config.isPropertyExists("cursorBottOffset")) {
-            cursor.setBottomOffset(getIntProperty("cursorBottOffset"));;
+            cursor.setBottomOffset(getIntProperty("cursorBottOffset"));
         }
 
-        if (config.isPropertyExists("resetRequired")) {
-            if (getStringProperty("resetRequired").equals("Yes"))
-                screen.setResetRequired(true);
-            else
-                screen.setResetRequired(false);
-        }
-
-        if (config.isPropertyExists("useAntialias")) {
-
-            if (getStringProperty("useAntialias").equals("Yes"))
-                antialiased = true;
-            else
-                antialiased = false;
-
-        }
-
-        if (getStringProperty("cursorBlink").equals("Yes")) {
-            setCursorBlinking(true);
-        }
-
-        if (config.isPropertyExists("backspaceError")) {
-            if (getStringProperty("backspaceError").equals("Yes"))
-                screen.setBackspaceError(true);
-            else
-                screen.setBackspaceError(false);
-        }
+        screen.setResetRequired("Yes".equals(getStringProperty("resetRequired")));
+        antialiased = "Yes".equals(getStringProperty("useAntialias"));
+        screen.setBackspaceError("Yes".equals(getStringProperty("backspaceError")));
     }
 
     /**
@@ -431,90 +402,56 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
 
         final String pn = pce.getPropertyName();
         boolean resetAttr = false;
+        boolean updateFont = false;
 
         if (pn.equals("colorBg")) {
             colorBg = (Color) pce.getNewValue();
             resetAttr = true;
-
-        }
-
-        if (pn.equals("colorBlue")) {
+        } else if (pn.equals("colorBlue")) {
             colorBlue = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorTurq")) {
+        } else if (pn.equals("colorTurq")) {
             colorTurq = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorRed")) {
+        } else if (pn.equals("colorRed")) {
             colorRed = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorWhite")) {
+        } else if (pn.equals("colorWhite")) {
             colorWhite = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorYellow")) {
+        } else if (pn.equals("colorYellow")) {
             colorYellow = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorGreen")) {
+        } else if (pn.equals("colorGreen")) {
             colorGreen = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorPink")) {
+        } else if (pn.equals("colorPink")) {
             colorPink = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorGUIField")) {
+        } else if (pn.equals("colorGUIField")) {
             colorGUIField = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorCursor")) {
+        } else if (pn.equals("colorCursor")) {
             cursor.setColor((Color) pce.getNewValue());
             resetAttr = true;
-        }
-
-        if (pn.equals("colorSep")) {
+        } else if (pn.equals("colorSep")) {
             colorSep = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("colorHexAttr")) {
+        } else if (pn.equals("colorHexAttr")) {
             colorHexAttr = (Color) pce.getNewValue();
             resetAttr = true;
-        }
-
-        if (pn.equals("cursorSize")) {
+        } else if (pn.equals("cursorSize")) {
             setCursorSize((String) pce.getNewValue());
-        }
-
-        if (pn.equals("crossHair")) {
+        } else if (pn.equals("crossHair")) {
             configureCrossHair((String) pce.getNewValue());
-        }
-
-        if (pn.equals("rulerFixed")) {
+        } else if (pn.equals("rulerFixed")) {
             setRullerFixed((String) pce.getNewValue());
-        }
-
-        colSepLine = ColumnSeparator.getFromName(pce.getNewValue().toString());
-
-        if (pn.equals("showAttr")) {
+        } else if (pn.equals("showAttr")) {
             if (pce.getNewValue().equals("Hex"))
                 showHex = true;
             else
                 showHex = false;
-        }
-
-        if (pn.equals("guiInterface")) {
+        } else if (pn.equals("guiInterface")) {
             if (pce.getNewValue().equals("Yes")) {
                 screen.setUseGUIInterface(true);
                 cfg_guiInterface = true;
@@ -522,96 +459,51 @@ public abstract class AbstractGuiGraphicBuffer implements ScreenOIAListener,
                 screen.setUseGUIInterface(true);
                 cfg_guiInterface = false;
             }
-        }
-
-        if (pn.equals("guiShowUnderline")) {
+        } else if (pn.equals("guiShowUnderline")) {
             if (pce.getNewValue().equals("Yes"))
                 cfg_guiShowUnderline = true;
             else
                 cfg_guiShowUnderline = false;
-        }
-
-        if (pn.equals("hotspots")) {
+        } else if (pn.equals("hotspots")) {
             if (pce.getNewValue().equals("Yes"))
                 hotSpots = true;
             else
                 hotSpots = false;
-        }
-
-        if (pn.equals("resetRequired")) {
+        } else if (pn.equals("resetRequired")) {
             if (pce.getNewValue().equals("Yes"))
                 screen.setResetRequired(true);
             else
                 screen.setResetRequired(false);
-        }
-
-        if (pn.equals("hsMore")) {
+        } else if (pn.equals("hsMore")) {
             hsMore.setLength(0);
             hsMore.append((String) pce.getNewValue());
-
-        }
-
-        if (pn.equals("hsBottom")) {
+        } else if (pn.equals("hsBottom")) {
             hsBottom.setLength(0);
             hsBottom.append((String) pce.getNewValue());
-
-        }
-
-        boolean updateFont = false;
-        if (pn.equals("font")) {
+        } else if (pn.equals("font")) {
             font = new Font((String) pce.getNewValue(), 14);
             updateFont = true;
-        }
-
-        if (pn.equals("useAntialias")) {
-            if (pce.getNewValue().equals("Yes"))
-                this.antialiased = true;
-           else
-               this.antialiased = false;
+        } else if (pn.equals("useAntialias")) {
+            this.antialiased = "Yes".equals(pce.getNewValue());
             updateFont = true;
-        }
-
-        if (pn.equals("fontScaleHeight")) {
-
-            //         try {
+        } else if (pn.equals("fontScaleHeight")) {
             sfh = Float.parseFloat((String) pce.getNewValue());
             updateFont = true;
-            //         }
-
-        }
-
-        if (pn.equals("fontScaleWidth")) {
-
-            //         try {
+        } else if (pn.equals("fontScaleWidth")) {
             sfw = Float.parseFloat((String) pce.getNewValue());
             updateFont = true;
-            //         }
-
-        }
-
-        if (pn.equals("fontPointSize")) {
-
-            //         try {
+        } else if (pn.equals("fontPointSize")) {
             ps132 = Float.parseFloat((String) pce.getNewValue());
             updateFont = true;
-            //         }
-
-        }
-
-        if (pn.equals("cursorBottOffset")) {
+        } else if (pn.equals("cursorBottOffset")) {
             cursor.setBottomOffset(getIntProperty("cursorBottOffset"));
-        }
-
-        if (pn.equals("cursorBlink")) {
+        } else if (pn.equals("cursorBlink")) {
             setCursorBlinking(pce.getNewValue().equals("Yes"));
+        } else if (pn.equals("backspaceError")) {
+            screen.setBackspaceError("Yes".equals(pce.getNewValue()));
         }
 
-        if (pn.equals("backspaceError")) {
-            if (pce.getNewValue().equals("Yes"))
-                screen.setBackspaceError(true);
-            else
-                screen.setBackspaceError(false);
-        }
+        colSepLine = ColumnSeparator.getFromName(pce.getNewValue().toString());
 
         if (updateFont) {
             final Dimension2D r = gui.getDrawingSize();
