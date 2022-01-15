@@ -41,6 +41,7 @@ import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -66,6 +67,7 @@ public class GUIGraphicsUtils {
     private static ImageIcon lockImgOpen;
     private static ImageIcon lockImgClose;
     private static List<Image> tnicon;
+    private static LinkedList<javafx.scene.image.Image> tniconFx;
 
     public static void draw3DLeft(final Graphics g, final int which,
                                   final int x, final int y,
@@ -2558,6 +2560,16 @@ public class GUIGraphicsUtils {
             tnicon.add(new ImageIcon(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png")).getImage());
         }
         return tnicon;
+    }
+
+    public static List<javafx.scene.image.Image> getApplicationIconsFx() {
+        if (tniconFx == null) {
+            tniconFx = new LinkedList<>();
+            tniconFx.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-16x16.png").toString()));
+            tniconFx.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-32x32.png").toString()));
+            tniconFx.add(new javafx.scene.image.Image(ClassLoader.getSystemClassLoader().getResource("tn5250j-48x48.png").toString()));
+        }
+        return tniconFx;
     }
 
     private static int round(final double width) {

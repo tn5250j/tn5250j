@@ -25,9 +25,6 @@
  */
 package org.tn5250j;
 
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,9 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.tn5250j.connectdialog.ConnectionDialogController;
 import org.tn5250j.event.BootEvent;
@@ -55,24 +50,28 @@ import org.tn5250j.framework.common.SessionManager;
 import org.tn5250j.framework.common.Sessions;
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.TN5250jSplashScreen;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
-import org.tn5250j.interfaces.GUIViewInterface;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
+import javafx.stage.Screen;
 
 public class My5250 implements BootListener, SessionListener, EmulatorActionListener {
 
     private static final String PARAM_START_SESSION = "-s";
 
-    private GUIViewInterface frame1;
+    private Gui5250Frame frame1;
     private String[] sessionArgs = null;
     private static Properties sessions = new Properties();
     private static BootStrapper strapper = null;
     private SessionManager manager;
-    private static List<GUIViewInterface> frames;
+    private static List<Gui5250Frame> frames;
     private TN5250jSplashScreen splash;
     private int step;
     private StringBuilder viewNamesForNextStartBuilder = null;
@@ -85,8 +84,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         splash.setSteps(5);
         splash.setVisible(true);
 
-        loadLookAndFeel();
-
+        Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
 
         loadSessions();
         splash.updateProgress(++step);
@@ -99,7 +97,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         //    default and Multiple Document Interface.
 //		startFrameType();
 
-        frames = new ArrayList<GUIViewInterface>();
+        frames = new ArrayList<Gui5250Frame>();
 
         newView();
 
@@ -107,28 +105,6 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         manager = SessionManager.instance();
         splash.updateProgress(++step);
         Tn5250jController.getCurrent();
-    }
-
-
-    /**
-     * we only want to try and load the Nimbus look and feel if it is not
-     * for the MAC operating system.
-     */
-    private void loadLookAndFeel() {
-        try {
-            for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (final Exception e) {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (final Exception ex) {
-                // we don't care. Cause this should always work.
-            }
-        }
     }
 
     /**
@@ -236,8 +212,8 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
             if (isSpecified("-width", args) ||
                     isSpecified("-height", args)) {
-                int width = m.frame1.getWidth();
-                int height = m.frame1.getHeight();
+                double width = m.frame1.getWidth();
+                double height = m.frame1.getHeight();
 
                 if (isSpecified("-width", args)) {
                     width = Integer.parseInt(My5250.getParm("-width", args));
@@ -247,9 +223,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
                 }
 
                 m.frame1.setSize(width, height);
-                m.frame1.centerFrame();
-
-
+                m.frame1.centerStage();
             }
 
             /**
@@ -305,7 +279,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
                 m.splash.updateProgress(++m.step);
                 m.splash.setVisible(false);
                 m.frame1.setVisible(true);
-                m.frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                m.frame1.setCursor(Cursor.DEFAULT);
             }
 
             m.sessionArgs = new String[TN5250jConstants.NUM_PARMS];
@@ -443,7 +417,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
 
 
     private void openConnectSessionDialogAndStartSelectedSession() {
-        final String sel = openConnectSessionDialog();
+        final String sel = UiUtils.runInFxAndWait(this:: openConnectSessionDialog);
         final Sessions sess = manager.getSessions();
         if (sel != null) {
             final String selArgs = sessions.getProperty(sel);
@@ -482,12 +456,14 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     private String openConnectSessionDialog() {
 
         splash.setVisible(false);
-        final ConnectionDialogController controller = SwingToFxUtils.showFxTemplate(
-                frame1, LangTool.getString("ss.title"), "/fxml/ConnectionDialog.fxml");
+
+        final AtomicReference<ConnectionDialogController> controller = new AtomicReference<>();
+        UiUtils.showDialog(frame1.getWindow(), "/fxml/ConnectionDialog.fxml", LangTool.getString("ss.title"),
+                c -> controller.set((ConnectionDialogController) c));
 
         // load the new session information from the session property file
         loadSessions();
-        return controller.getConnectKey();
+        return controller.get().getConnectKey();
     }
 
     private synchronized void newSession(final String sel, final String[] args) {
@@ -567,77 +543,78 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         final int sessionCount = manager.getSessions().getCount();
 
         final Session5250 s2 = manager.openSession(sesProps, propFileName, sel);
-        final SessionGui s = SwingToFxUtils.createSessionPanel(s2);
 
-        if (!frame1.isVisible()) {
-            splash.updateProgress(++step);
+        final SessionGui gui = UiUtils.runInFxAndWait(() -> {
+            final SessionGui s = new SessionPanel(s2);
 
-            // Here we check if this is the first session created in the system.
-            //  We have to create a frame on initialization for use in other scenarios
-            //  so if this is the first session being added in the system then we
-            //  use the frame that is created and skip the part of creating a new
-            //  view which would increment the count and leave us with an unused
-            //  frame.
-            if (isSpecified("-noembed", args) && sessionCount > 0) {
-                newView();
-            }
-            splash.setVisible(false);
-            frame1.setVisible(true);
-            frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        } else {
-            if (isSpecified("-noembed", args)) {
+            if (!frame1.isVisible()) {
                 splash.updateProgress(++step);
-                newView();
+
+                // Here we check if this is the first session created in the system.
+                //  We have to create a frame on initialization for use in other scenarios
+                //  so if this is the first session being added in the system then we
+                //  use the frame that is created and skip the part of creating a new
+                //  view which would increment the count and leave us with an unused
+                //  frame.
+                if (isSpecified("-noembed", args) && sessionCount > 0) {
+                    newView();
+                }
                 splash.setVisible(false);
                 frame1.setVisible(true);
-                frame1.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
+                frame1.setCursor(Cursor.DEFAULT);
+            } else {
+                if (isSpecified("-noembed", args)) {
+                    splash.updateProgress(++step);
+                    newView();
+                    splash.setVisible(false);
+                    frame1.setVisible(true);
+                    frame1.setCursor(Cursor.DEFAULT);
+                }
             }
-        }
 
-        if (isSpecified("-t", args))
-            frame1.addSessionView(sel, s);
-        else
-            frame1.addSessionView(session, s);
+            if (isSpecified("-t", args))
+                frame1.addSessionView(sel, s);
+            else
+                frame1.addSessionView(session, s);
+            return s;
+        });
 
-        s.connect();
-
-        s.addEmulatorActionListener(this);
+        gui.connect();
+        gui.addEmulatorActionListener(this);
     }
 
     private void newView() {
+        Platform.runLater(() -> {
+            frame1 = new Gui5250Frame(this);
+            frame1.setCursor(Cursor.WAIT);
 
-        // we will now to default the frame size to take over the whole screen
-        //    this is per unanimous vote of the user base
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            if (sessions.containsKey("emul.frame" + frame1.getFrameSequence())) {
+                final String location = sessions.getProperty("emul.frame" + frame1.getFrameSequence());
+                //         System.out.println(location + " seq > " + frame1.getFrameSequence() );
+                restoreFrame(frame1, location);
+            } else {
 
-        int width = screenSize.width;
-        int height = screenSize.height;
+                // we will now to default the frame size to take over the whole screen
+                //    this is per unanimous vote of the user base
+                final Rectangle2D bounds = Screen.getPrimary().getBounds();
 
-        if (sessions.containsKey("emul.width"))
-            width = Integer.parseInt(sessions.getProperty("emul.width"));
-        if (sessions.containsKey("emul.height"))
-            height = Integer.parseInt(sessions.getProperty("emul.height"));
+                double width = bounds.getWidth();
+                double height = bounds.getHeight();
 
-        frame1 = new Gui5250Frame(this);
+                if (sessions.containsKey("emul.width"))
+                    width = Integer.parseInt(sessions.getProperty("emul.width"));
+                if (sessions.containsKey("emul.height"))
+                    height = Integer.parseInt(sessions.getProperty("emul.height"));
 
-        frame1.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                frame1.setSize(width, height);
+                frame1.centerStage();
+            }
 
-        if (sessions.containsKey("emul.frame" + frame1.getFrameSequence())) {
-
-            final String location = sessions.getProperty("emul.frame" + frame1.getFrameSequence());
-            //         System.out.println(location + " seq > " + frame1.getFrameSequence() );
-            restoreFrame(frame1, location);
-        } else {
-            frame1.setSize(width, height);
-            frame1.centerFrame();
-        }
-
-        frames.add(frame1);
-
+            frames.add(frame1);
+        });
     }
 
-    private void restoreFrame(final GUIViewInterface frame, final String location) {
+    private void restoreFrame(final Gui5250Frame frame, final String location) {
 
         final StringTokenizer tokenizer = new StringTokenizer(location, ",");
         final int x = Integer.parseInt(tokenizer.nextToken());
@@ -652,7 +629,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
     /**
      * @param view
      */
-    protected void closingDown(final GUIViewInterface view) {
+    protected void closingDown(final Gui5250Frame view) {
 
         final Sessions sess = manager.getSessions();
 
@@ -673,10 +650,10 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         }
 
         sessions.setProperty("emul.frame" + view.getFrameSequence(),
-                view.getX() + "," +
-                        view.getY() + "," +
-                        view.getWidth() + "," +
-                        view.getHeight());
+                (int) view.getX() + "," +
+                        (int) view.getY() + "," +
+                        (int) view.getWidth() + "," +
+                        (int) view.getHeight());
 
         frames.remove(view);
         view.dispose();
@@ -688,8 +665,8 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         log.info("view settings " + viewNamesForNextStartBuilder);
         if (sess.getCount() == 0) {
 
-            sessions.setProperty("emul.width", Integer.toString(view.getWidth()));
-            sessions.setProperty("emul.height", Integer.toString(view.getHeight()));
+            sessions.setProperty("emul.width", Integer.toString((int) view.getWidth()));
+            sessions.setProperty("emul.height", Integer.toString((int) view.getHeight()));
 
             sessions.setProperty("emul.view", viewNamesForNextStartBuilder.toString());
 
@@ -711,7 +688,7 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
      * @param sesspanel
      */
     protected void closeSessionInternal(final SessionGui sesspanel) {
-        final GUIViewInterface f = getParentView(sesspanel);
+        final Gui5250Frame f = getParentView(sesspanel);
         if (f == null) {
             return;
         }
@@ -782,9 +759,9 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         }
     }
 
-    private GUIViewInterface getParentView(final SessionGui session) {
+    private Gui5250Frame getParentView(final SessionGui session) {
 
-        GUIViewInterface f = null;
+        Gui5250Frame f = null;
 
         for (int x = 0; x < frames.size(); x++) {
             f = frames.get(x);

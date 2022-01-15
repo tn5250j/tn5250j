@@ -27,30 +27,26 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.CURSOR;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Display session attributes
  */
 public class RulerAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public RulerAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 CURSOR.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.L, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.crossHair();
     }
 }

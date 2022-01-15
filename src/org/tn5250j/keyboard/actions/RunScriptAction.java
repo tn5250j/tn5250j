@@ -27,32 +27,28 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.RUN_SCRIPT;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.Macronizer;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Display session attributes
  */
 public class RunScriptAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public RunScriptAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 RUN_SCRIPT.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.R, KeyCombination.ALT_DOWN),
                 keyMap);
 
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         Macronizer.showRunScriptDialog(session);
         session.getFocusForMe();
     }

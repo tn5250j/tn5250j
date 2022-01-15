@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
 
+import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Platform;
@@ -134,6 +135,7 @@ public final class UiUtils {
             }
 
             final Stage stage = new Stage();
+            stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
             stage.setScene(new Scene(parent));
             stage.setTitle(title);
 
@@ -185,7 +187,6 @@ public final class UiUtils {
         return (int) Math.ceil(d);
     }
 
-
     public static Font deriveFont(final Font f, final double size) {
         return new Font(f.getName(), size);
     }
@@ -197,7 +198,6 @@ public final class UiUtils {
     public static void fill(final GraphicsContext g, final Rectangle2D rect) {
         g.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
     }
-
 
     public static void setBackground(final Pane node, final Color bg) {
         node.setBackground(new Background(new BackgroundFill(
@@ -219,6 +219,27 @@ public final class UiUtils {
                 }
             });
             return feature.get();
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @param call callable.
+     */
+    public static void runInFx(final Callable<?> call) {
+        try {
+            if (Platform.isFxApplicationThread()) {
+                call.call();
+            }
+
+            Platform.runLater(() -> {
+                try {
+                    call.call();
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

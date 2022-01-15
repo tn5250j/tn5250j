@@ -25,6 +25,7 @@
  */
 package org.tn5250j.tools;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -168,7 +169,7 @@ public final class LoadMacroMenu {
 
         j.add(action);
         final MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem) e.getSource(), e, (JComponent) session);
-        GUIGraphicsUtils.positionPopup((JComponent) session, j, et.getX(), et.getY());
+        GUIGraphicsUtils.positionPopup((Component) session, j, et.getX(), et.getY());
 
     }
 

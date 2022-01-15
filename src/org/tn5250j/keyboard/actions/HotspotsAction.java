@@ -27,30 +27,26 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.HOTSPOTS;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Toggle Hot spots
  */
 public class HotspotsAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public HotspotsAction(final SessionGui session, final KeyMapper keyMap) {
         super(session,
                 HOTSPOTS.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.toggleHotSpots();
     }
 }

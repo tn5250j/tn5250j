@@ -34,7 +34,6 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -71,12 +70,15 @@ import javax.swing.event.ListSelectionListener;
 
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.keyboard.KeyMapper;
-import org.tn5250j.keyboard.KeyStroker;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
+import org.tn5250j.keyboard.KeyStrokeHelper;
+import org.tn5250j.keyboard.KeyStroker;
 import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
+
+import javafx.scene.input.KeyEvent;
 
 public class KeyConfigure extends JDialog implements ActionListener {
 
@@ -136,7 +138,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         colorMap.put(0x3E, "Blue UL");
     }
 
-    public KeyConfigure(Frame parent, String[] macros, ICodePage cp) {
+    public KeyConfigure(final Frame parent, final String[] macros, final ICodePage cp) {
 
         super(parent);
 
@@ -150,7 +152,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         try {
             jbInit();
             pack();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -158,7 +160,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
     void jbInit() throws Exception {
 
         // create some reusable borders and layouts
-        BorderLayout borderLayout = new BorderLayout();
+        final BorderLayout borderLayout = new BorderLayout();
 
         KeyMapper.init();
 
@@ -181,8 +183,8 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
         // pack it and center it on the screen
         pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = getSize();
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Dimension frameSize = getSize();
         if (frameSize.height > screenSize.height)
             frameSize.height = screenSize.height;
         if (frameSize.width > screenSize.width)
@@ -202,7 +204,8 @@ public class KeyConfigure extends JDialog implements ActionListener {
         //   can display the mapped key(s) to the function when a new
         //   function is selected.
         functions.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent lse) {
+            @Override
+            public void valueChanged(final ListSelectionEvent lse) {
                 if (!lse.getValueIsAdjusting()) {
                     setKeyDescription(functions.getSelectedIndex());
                 }
@@ -212,19 +215,20 @@ public class KeyConfigure extends JDialog implements ActionListener {
         loadList(LangTool.getString("key.labelKeys"));
 
         functions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane functionsScroll = new JScrollPane(functions);
+        final JScrollPane functionsScroll = new JScrollPane(functions);
 
-        JPanel fp = new JPanel();
+        final JPanel fp = new JPanel();
 
-        JComboBox whichKeys = new JComboBox();
+        final JComboBox whichKeys = new JComboBox();
         whichKeys.addItem(LangTool.getString("key.labelKeys"));
         whichKeys.addItem(LangTool.getString("key.labelMacros"));
         whichKeys.addItem(LangTool.getString("key.labelSpecial"));
 
         whichKeys.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
 
-                JComboBox cb = (JComboBox) e.getSource();
+                final JComboBox cb = (JComboBox) e.getSource();
                 loadList((String) cb.getSelectedItem());
             }
         });
@@ -252,18 +256,18 @@ public class KeyConfigure extends JDialog implements ActionListener {
         strokeDescAlt.setEditable(false);
 
         // create main panel
-        JPanel dp = new JPanel();
+        final JPanel dp = new JPanel();
         dp.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("key.labelMapTo")));
 
         dp.setLayout(new BoxLayout(dp, BoxLayout.Y_AXIS));
 
         // create primary map panel
-        JPanel primeKeyMapPanel = new JPanel();
+        final JPanel primeKeyMapPanel = new JPanel();
         primeKeyMapPanel.setLayout(new BorderLayout());
 
         // create key description panel
-        JPanel primeKeyPanel = new JPanel();
+        final JPanel primeKeyPanel = new JPanel();
 
         primeKeyPanel.setLayout(new AlignLayout(3, 5, 5));
 
@@ -279,7 +283,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         primeKeyMapPanel.add(primeKeyPanel, BorderLayout.NORTH);
 
         // create the location description panel
-        JPanel loc1 = new JPanel();
+        final JPanel loc1 = new JPanel();
         loc1.setLayout(new BorderLayout());
         loc1.add(strokeLocation, BorderLayout.NORTH);
 
@@ -288,11 +292,11 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
 
         // create the alternate map panel
-        JPanel altKeyMapPanel = new JPanel();
+        final JPanel altKeyMapPanel = new JPanel();
         altKeyMapPanel.setLayout(new BorderLayout());
 
         // create the alternate description panel
-        JPanel altKeyPanel = new JPanel();
+        final JPanel altKeyPanel = new JPanel();
         altKeyPanel.setLayout(new AlignLayout(3, 5, 5));
 
         altKeyPanel.add(strokeDescAlt);
@@ -307,7 +311,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         altKeyMapPanel.add(altKeyPanel, BorderLayout.NORTH);
 
         // create the alternate location description panel
-        JPanel locAlt = new JPanel();
+        final JPanel locAlt = new JPanel();
         locAlt.setLayout(new BorderLayout());
         locAlt.add(strokeLocationAlt, BorderLayout.NORTH);
 
@@ -321,35 +325,35 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return dp;
     }
 
-    private void setKeyDescription(int index) {
+    private void setKeyDescription(final int index) {
 
         // This try and catch is to fix a problem in JDK1.4-betas
         try {
             if (!macros && !special) {
 
-                KeyDescription kd = (KeyDescription) lm.getElementAt(index);
+                final KeyDescription kd = (KeyDescription) lm.getElementAt(index);
 
                 setKeyInformation(keyMnemonicResolver.getMnemonics()[kd.getIndex()]);
             } else {
                 if (macros) {
-                    Object o = lm.getElementAt(index);
+                    final Object o = lm.getElementAt(index);
                     if (o instanceof String) {
                         System.out.println((String) o);
                         setKeyInformation((String) o);
                     } else if (o instanceof Macro) {
 
-                        Macro m = (Macro) o;
+                        final Macro m = (Macro) o;
                         setKeyInformation(m.getFullName());
                     }
                 }
 
                 if (special) {
                     System.out.println((String) lm.getElementAt(index));
-                    String k = parseSpecialCharacter((String) lm.getElementAt(index));
+                    final String k = parseSpecialCharacter((String) lm.getElementAt(index));
                     setKeyInformation(k);
                 }
             }
-        } catch (ArrayIndexOutOfBoundsException ar) {
+        } catch (final ArrayIndexOutOfBoundsException ar) {
             System.out.println("ar at index " + index + " - " + ar.getMessage());
         }
 
@@ -370,7 +374,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         strokeLocationAlt.setText(getLocationDesc(keyDesc + KeyStroker.altSuffix));
     }
 
-    private String getLocationDesc(String keyDesc) {
+    private String getLocationDesc(final String keyDesc) {
 
         String locStr = LangTool.getString("key.labelLocUnknown");
 
@@ -400,26 +404,26 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return locStr;
     }
 
-    private String parseSpecialCharacter(String value) {
+    private String parseSpecialCharacter(final String value) {
 
-        StringTokenizer tokenizer = new StringTokenizer(value, "-");
+        final StringTokenizer tokenizer = new StringTokenizer(value, "-");
 
         if (tokenizer.hasMoreTokens()) {
-            String first = tokenizer.nextToken();
+            final String first = tokenizer.nextToken();
             return String.valueOf(value.charAt(first.length() + 2));
         }
 
         return "";
     }
 
-    private void loadList(String which) {
+    private void loadList(final String which) {
 
         lm.clear();
         lm.removeAllElements();
 
 
         if (which.equals(LangTool.getString("key.labelKeys"))) {
-            Vector<KeyDescription> lk = new Vector<KeyDescription>(keyMnemonicResolver.getMnemonics().length);
+            final Vector<KeyDescription> lk = new Vector<KeyDescription>(keyMnemonicResolver.getMnemonics().length);
             for (int x = 0; x < keyMnemonicResolver.getMnemonics().length; x++) {
                 lk.addElement(new KeyDescription(LangTool.getString("key." + keyMnemonicResolver.getMnemonics()[x]), x));
             }
@@ -433,7 +437,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
             special = false;
         } else {
             if (which.equals(LangTool.getString("key.labelMacros"))) {
-                Vector<String> macrosVector = new Vector<String>();
+                final Vector<String> macrosVector = new Vector<String>();
                 if (macrosList != null)
                     for (int x = 0; x < macrosList.length; x++) {
                         macrosVector.add(macrosList[x]);
@@ -445,17 +449,17 @@ public class KeyConfigure extends JDialog implements ActionListener {
             } else {
 
                 // we will use a collator here so that we can take advantage of the locales
-                Collator collator = Collator.getInstance();
+                final Collator collator = Collator.getInstance();
                 CollationKey key = null;
-                StringBuffer sb = new StringBuffer();
+                final StringBuffer sb = new StringBuffer();
 
-                Set<CollationKey> set = new TreeSet<CollationKey>();
+                final Set<CollationKey> set = new TreeSet<CollationKey>();
 
                 supportAplColorCodesInSEU(collator, sb, set);
 
                 for (int x = 0; x < 256; x++) {
-                    char c = codePage.ebcdic2uni(x);
-                    char ac = codePage.ebcdic2uni(x);
+                    final char c = codePage.ebcdic2uni(x);
+                    final char ac = codePage.ebcdic2uni(x);
                     if (!Character.isISOControl(c)) {
                         sb.setLength(0);
                         if (Integer.toHexString(ac).length() == 1) {
@@ -471,9 +475,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
                     }
                 }
 
-                Iterator<CollationKey> iterator = set.iterator();
+                final Iterator<CollationKey> iterator = set.iterator();
                 while (iterator.hasNext()) {
-                    CollationKey keyc = iterator.next();
+                    final CollationKey keyc = iterator.next();
                     lm.addElement(keyc.getSourceString());
                 }
 
@@ -486,24 +490,24 @@ public class KeyConfigure extends JDialog implements ActionListener {
             functions.setSelectedIndex(0);
     }
 
-    private void supportAplColorCodesInSEU(Collator collator, StringBuffer sb, Set<CollationKey> set) {
-        for (Entry<Integer, String> color : colorMap.entrySet()) {
-            int keyVal = color.getKey().intValue();
-            char c = (char) ('\uff00' + keyVal);
+    private void supportAplColorCodesInSEU(final Collator collator, final StringBuffer sb, final Set<CollationKey> set) {
+        for (final Entry<Integer, String> color : colorMap.entrySet()) {
+            final int keyVal = color.getKey().intValue();
+            final char c = (char) ('\uff00' + keyVal);
 
             sb.setLength(0);
             sb.append("0FF" + Integer.toHexString(keyVal).toUpperCase());
             sb.append(" - " + c + " - " + color.getValue());
-            CollationKey key = collator.getCollationKey(sb.toString());
+            final CollationKey key = collator.getCollationKey(sb.toString());
 
             set.add(key);
         }
     }
 
-    private String getUnicodeString(char c) {
+    private String getUnicodeString(final char c) {
 
         String s = Integer.toHexString(c).toUpperCase();
-        int len = s.length();
+        final int len = s.length();
         switch (len) {
 
             case 2:
@@ -520,12 +524,12 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return s;
     }
 
-    private JButton addOptButton(String text,
-                                 String ac,
-                                 Container container,
-                                 boolean enabled) {
+    private JButton addOptButton(final String text,
+                                 final String ac,
+                                 final Container container,
+                                 final boolean enabled) {
 
-        JButton button = new JButton(text);
+        final JButton button = new JButton(text);
         button.setEnabled(enabled);
         button.setActionCommand(ac);
         button.addActionListener(this);
@@ -535,7 +539,8 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return button;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
 
         if (e.getActionCommand().equals("DONE")) {
             if (mods) {
@@ -574,9 +579,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
     private void mapIt() {
 
-        Object[] message = new Object[1];
+        final Object[] message = new Object[1];
 
-        JPanel kgp = new JPanel();
+        final JPanel kgp = new JPanel();
         final KeyGetterInterface kg = getMeAKeyProcessor();
         kg.setForeground(Color.blue);
         message[0] = kgp;
@@ -594,10 +599,10 @@ public class KeyConfigure extends JDialog implements ActionListener {
                 function);
         kgp.add(kg);
 
-        String[] options = new String[1];
+        final String[] options = new String[1];
         options[0] = LangTool.getString("key.labelClose");
 
-        JOptionPane opain = new JOptionPane(message,
+        final JOptionPane opain = new JOptionPane(message,
                 JOptionPane.PLAIN_MESSAGE,
                 JOptionPane.DEFAULT_OPTION,        // option type
                 null,
@@ -615,12 +620,15 @@ public class KeyConfigure extends JDialog implements ActionListener {
         dialog.addWindowListener(new WindowAdapter() {
             boolean gotFocus = false;
 
-            public void windowClosed(WindowEvent we) {
-                if (isAvailable(kg.keyevent))
-                    setNewKeyStrokes(kg.keyevent);
+            @Override
+            public void windowClosed(final WindowEvent we) {
+                final KeyEvent ke = KeyStrokeHelper.toFxKeyEvent(kg.keyevent, null);
+                if (isAvailable(ke))
+                    setNewKeyStrokes(ke);
             }
 
-            public void windowActivated(WindowEvent we) {
+            @Override
+            public void windowActivated(final WindowEvent we) {
                 // Once window gets focus, set initial focus to our KeyGetter
                 //    component
                 if (!gotFocus) {
@@ -634,7 +642,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
     }
 
-    private boolean isAvailable(KeyEvent ke) {
+    private boolean isAvailable(final KeyEvent ke) {
 
         boolean exists = true;
 
@@ -646,9 +654,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
         if (exists) {
 
-            Object[] args = {getKeyDescription(ke)};
+            final Object[] args = {getKeyDescription(ke)};
 
-            int result = JOptionPane.showConfirmDialog(this,
+            final int result = JOptionPane.showConfirmDialog(this,
                     LangTool.messageFormat("messages.mapKeyWarning", args),
                     LangTool.getString("key.labelKeyExists"),
                     JOptionPane.YES_NO_OPTION,
@@ -662,7 +670,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return !exists;
     }
 
-    private String getKeyDescription(KeyEvent ke) {
+    private String getKeyDescription(final KeyEvent ke) {
 
         String desc;
 
@@ -683,7 +691,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
     private void removeIt() {
         if (!macros && !special) {
-            int index = ((KeyDescription) functions.getSelectedValue()).getIndex();
+            final int index = ((KeyDescription) functions.getSelectedValue()).getIndex();
 
             String function = keyMnemonicResolver.getMnemonics()[index];
 
@@ -697,7 +705,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         } else {
 
             if (macros) {
-                Object o = functions.getSelectedValue();
+                final Object o = functions.getSelectedValue();
                 String name;
                 if (o instanceof Macro) {
                     name = ((Macro) o).getFullName();
@@ -725,10 +733,10 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
     }
 
-    private void setNewKeyStrokes(KeyEvent ke) {
+    private void setNewKeyStrokes(final KeyEvent ke) {
 
         if (!macros && !special) {
-            int index = ((KeyDescription) functions.getSelectedValue()).getIndex();
+            final int index = ((KeyDescription) functions.getSelectedValue()).getIndex();
             String stroke = keyMnemonicResolver.getMnemonics()[index];
 
             if (altKey)
@@ -744,7 +752,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
         } else {
             if (macros) {
-                Object o = functions.getSelectedValue();
+                final Object o = functions.getSelectedValue();
                 String macro;
                 if (o instanceof Macro)
                     macro = ((Macro) o).getFullName();
@@ -790,9 +798,10 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
     private static class KeyDescriptionCompare implements Comparator<KeyDescription> {
 
-        public int compare(KeyDescription one, KeyDescription two) {
-            String s1 = one.toString();
-            String s2 = two.toString();
+        @Override
+        public int compare(final KeyDescription one, final KeyDescription two) {
+            final String s1 = one.toString();
+            final String s2 = two.toString();
             return s1.compareToIgnoreCase(s2);
         }
 
@@ -803,13 +812,14 @@ public class KeyConfigure extends JDialog implements ActionListener {
         private int index;
         private String text;
 
-        public KeyDescription(String text, int index) {
+        public KeyDescription(final String text, final int index) {
 
             this.text = text;
             this.index = index;
 
         }
 
+        @Override
         public String toString() {
 
             return text;
@@ -821,15 +831,15 @@ public class KeyConfigure extends JDialog implements ActionListener {
     }
 
 
-    public static void scriptDir(String pathName, Vector scripts) {
+    public static void scriptDir(final String pathName, final Vector scripts) {
 
-        File root = new File(pathName);
+        final File root = new File(pathName);
 
         try {
 
             loadScripts(scripts, root.getCanonicalPath(), root);
 
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             System.out.println(ioe.getMessage());
 
         }
@@ -845,26 +855,26 @@ public class KeyConfigure extends JDialog implements ActionListener {
      * @param path
      * @param directory
      */
-    private static void loadScripts(Vector vector,
-                                    String path,
-                                    File directory) {
+    private static void loadScripts(final Vector vector,
+                                    final String path,
+                                    final File directory) {
 
         Macro macro;
 
-        File[] macroFiles = directory.listFiles();
+        final File[] macroFiles = directory.listFiles();
         if (macroFiles == null || macroFiles.length == 0)
             return;
 
         Arrays.sort(macroFiles, new MacroCompare());
 
         for (int i = 0; i < macroFiles.length; i++) {
-            File file = macroFiles[i];
-            String fileName = file.getName();
+            final File file = macroFiles[i];
+            final String fileName = file.getName();
             if (file.isHidden()) {
                 /* do nothing! */
                 continue;
             } else if (file.isDirectory()) {
-                Vector<String> subvector = new Vector<String>();
+                final Vector<String> subvector = new Vector<String>();
                 subvector.addElement(fileName.replace('_', ' '));
                 loadScripts(subvector, path + fileName + '/', file);
                 // if we do not want empty directories to show up uncomment this
@@ -874,7 +884,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
             } else {
                 if (InterpreterDriverManager.isScriptSupported(fileName)) {
                     String fn = fileName.replace('_', ' ');
-                    int index = fn.lastIndexOf('.');
+                    final int index = fn.lastIndexOf('.');
                     if (index > 0) {
                         fn = fn.substring(0, index);
                     }
@@ -894,20 +904,20 @@ public class KeyConfigure extends JDialog implements ActionListener {
      * @param vector
      * @param start
      */
-    private static void loadListModel(DefaultListModel lm,
-                                      Vector vector,
-                                      String prefix,
-                                      int start) {
+    private static void loadListModel(final DefaultListModel lm,
+                                      final Vector vector,
+                                      final String prefix,
+                                      final int start) {
 
         for (int i = start; i < vector.size(); i++) {
-            Object obj = vector.elementAt(i);
+            final Object obj = vector.elementAt(i);
             if (obj instanceof Macro) {
-                Macro m = (Macro) obj;
+                final Macro m = (Macro) obj;
                 m.setPrefix(prefix);
                 lm.addElement(m);
             } else if (obj instanceof Vector) {
-                Vector subvector = (Vector) obj;
-                String name = (String) subvector.elementAt(0);
+                final Vector subvector = (Vector) obj;
+                final String name = (String) subvector.elementAt(0);
                 if (prefix != null)
                     loadListModel(lm, subvector, prefix + '/' + name + '/', 1);
                 else
@@ -930,7 +940,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         String prefix;
         String fileName;
 
-        Macro(String name, String path, String fileName) {
+        Macro(final String name, final String path, final String fileName) {
 
             this.name = name;
             this.path = path;
@@ -942,7 +952,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
          *
          * @param prefix before the name
          */
-        public void setPrefix(String prefix) {
+        public void setPrefix(final String prefix) {
             this.prefix = prefix;
         }
 
@@ -963,6 +973,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
          *
          * @return pretty string
          */
+        @Override
         public String toString() {
 
             if (prefix != null)
@@ -973,9 +984,10 @@ public class KeyConfigure extends JDialog implements ActionListener {
     }
 
     public static class MacroCompare implements Comparator<File> {
-        public int compare(File one, File two) {
-            String s1 = one.toString();
-            String s2 = two.toString();
+        @Override
+        public int compare(final File one, final File two) {
+            final String s1 = one.toString();
+            final String s2 = two.toString();
             return s1.compareToIgnoreCase(s2);
         }
 
