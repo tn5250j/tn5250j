@@ -29,11 +29,9 @@ import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.JOptionPane;
 
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
@@ -72,6 +70,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCodeCombination;
@@ -101,8 +100,8 @@ public class SessionPanel extends BorderPane implements
     private final RubberBand rubberband = new RubberBand(this);
     private KeypadPanel keypadPanel;
     private String newMacName;
-    private Vector<SessionJumpListener> sessionJumpListeners = null;
-    private Vector<EmulatorActionListener> actionListeners = null;
+    private List<SessionJumpListener> sessionJumpListeners = null;
+    private List<EmulatorActionListener> actionListeners = null;
     private boolean macroRunning;
     private boolean stopMacro;
     private boolean doubleClick;
@@ -552,12 +551,11 @@ public class SessionPanel extends BorderPane implements
      */
     private void fireSessionJump(final int dir) {
         if (sessionJumpListeners != null) {
-            final int size = sessionJumpListeners.size();
             final SessionJumpEvent jumpEvent = new SessionJumpEvent(this);
             jumpEvent.setJumpDirection(dir);
-            for (int i = 0; i < size; i++) {
-                final SessionJumpListener target = sessionJumpListeners.elementAt(i);
-                target.onSessionJump(jumpEvent);
+
+            for (final SessionJumpListener l : sessionJumpListeners) {
+                l.onSessionJump(jumpEvent);
             }
         }
     }
@@ -570,9 +568,7 @@ public class SessionPanel extends BorderPane implements
     protected void fireEmulatorAction(final int action) {
 
         if (actionListeners != null) {
-            final int size = actionListeners.size();
-            for (int i = 0; i < size; i++) {
-                final EmulatorActionListener target = actionListeners.elementAt(i);
+            for (final EmulatorActionListener target : actionListeners) {
                 final EmulatorActionEvent sae = new EmulatorActionEvent(this);
                 sae.setAction(action);
                 target.onEmulatorAction(sae);
@@ -647,12 +643,10 @@ public class SessionPanel extends BorderPane implements
                     new org.tn5250j.spoolfile.SpoolExporter(session.getVT(), this);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
-            JOptionPane.showMessageDialog(SwingToFxUtils.SHARED_FRAME,
-                    LangTool.getString("messages.noAS400Toolbox"),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE, null);
+            final Alert tabclsdlg = new Alert(AlertType.ERROR);
+            tabclsdlg.setTitle(LangTool.getString("sa.confirmTabClose"));
+            tabclsdlg.setContentText(LangTool.getString("messages.noAS400Toolbox"));
         }
-
     }
 
     @Override
@@ -672,11 +666,11 @@ public class SessionPanel extends BorderPane implements
 
     @Override
     public void startRecordingMe() {
+        final TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(LangTool.getString("macro.title"));
+        dialog.setHeaderText(LangTool.getString("macro.message"));
 
-        String macName = JOptionPane.showInputDialog(null,
-                LangTool.getString("macro.message"),
-                LangTool.getString("macro.title"),
-                JOptionPane.PLAIN_MESSAGE);
+        String macName = dialog.showAndWait().orElse(null);
         if (macName != null) {
             macName = macName.trim();
             if (macName.length() > 0) {
@@ -750,7 +744,7 @@ public class SessionPanel extends BorderPane implements
      * @return vector string of numeric values
      */
     @Override
-    public final Vector<Double> sumThem(final boolean which) {
+    public final List<Double> sumThem(final boolean which) {
         log.debug("Summing");
         return screen.sumThem(which, getBoundingArea());
     }
@@ -780,7 +774,7 @@ public class SessionPanel extends BorderPane implements
         if (sessionJumpListeners == null) {
             sessionJumpListeners = new java.util.Vector<SessionJumpListener>(3);
         }
-        sessionJumpListeners.addElement(listener);
+        sessionJumpListeners.add(listener);
 
     }
 
@@ -794,7 +788,7 @@ public class SessionPanel extends BorderPane implements
         if (sessionJumpListeners == null) {
             return;
         }
-        sessionJumpListeners.removeElement(listener);
+        sessionJumpListeners.remove(listener);
 
     }
 
@@ -809,7 +803,7 @@ public class SessionPanel extends BorderPane implements
         if (actionListeners == null) {
             actionListeners = new java.util.Vector<EmulatorActionListener>(3);
         }
-        actionListeners.addElement(listener);
+        actionListeners.remove(listener);
 
     }
 
@@ -822,8 +816,7 @@ public class SessionPanel extends BorderPane implements
         if (actionListeners == null) {
             return;
         }
-        actionListeners.removeElement(listener);
-
+        actionListeners.add(listener);
     }
 
     @Override

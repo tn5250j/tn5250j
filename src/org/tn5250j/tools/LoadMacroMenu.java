@@ -25,24 +25,14 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 
 import org.tn5250j.SessionGui;
 import org.tn5250j.interfaces.ConfigureFactory;
@@ -51,70 +41,48 @@ import org.tn5250j.scripting.InterpreterDriverManager;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+
 public final class LoadMacroMenu {
 
-    private static Vector macroVector = new Vector();
+    private static List<Object> macroVector = new LinkedList<>();
 
     private static final TN5250jLogger log = TN5250jLogFactory.getLogger(LoadMacroMenu.class);
 
-    public static void loadMacros(final SessionGui session, final JMenu menu) {
+    public static void loadMacros(final SessionGui ses, final Menu menu) {
 
-        final SessionGui ses = session;
-        final Vector mv = new Vector();
-        Action action;
-
-        menu.addSeparator();
-
+        menu.getItems().add(new SeparatorMenuItem());
 
         final String[] macrosList = Macronizer.getMacroList();
+        Arrays.sort(macrosList);
 
+        for (final String macros : macrosList) {
+            final MenuItem mi = new MenuItem(macros);
+            mi.setOnAction(e -> ses.executeMacro(macros));
 
-        for (int x = 0; x < macrosList.length; x++) {
-            mv.add(macrosList[x]);
-        }
+            menu.getItems().add(mi);
 
-        Collections.sort(mv);
-
-
-        for (int x = 0; x < mv.size(); x++) {
-            action = new AbstractAction((String) mv.get(x)) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public void actionPerformed(final ActionEvent e) {
-                    ses.executeMacro(e.getActionCommand());
+            final EventHandler<MouseEvent> handler = e -> {
+                if (e.getButton() == MouseButton.SECONDARY) {
+                    doOptionsPopup(e, ses, macros);
                 }
             };
 
-            final JMenuItem mi = menu.add(action);
-
-            mi.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseReleased(final MouseEvent e) {
-                    if (SwingUtilities.isRightMouseButton(e)) {
-                        doOptionsPopup(e, ses);
-                    }
-                }
-
-                @Override
-                public void mousePressed(final MouseEvent e) {
-                    if (SwingUtilities.isRightMouseButton(e)) {
-                        doOptionsPopup(e, ses);
-                    }
-                }
-
-                @Override
-                public void mouseClicked(final MouseEvent e) {
-                    if (SwingUtilities.isRightMouseButton(e)) {
-                        doOptionsPopup(e, ses);
-                    }
-                }
-            });
-
+            mi.addEventHandler(MouseEvent.MOUSE_PRESSED, handler);
+            mi.addEventHandler(MouseEvent.MOUSE_RELEASED, handler);
+            mi.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
         }
 
-        scriptDir("scripts", menu, session);
+        scriptDir("scripts", menu, ses);
 
         String conPath = "";
         String conPath2 = "";
@@ -132,54 +100,33 @@ public final class LoadMacroMenu {
         if (!conPath.equals(conPath2))
             scriptDir(ConfigureFactory.getInstance().getProperty(
                     "emulator.settingsDirectory") +
-                    "scripts", menu, session);
+                    "scripts", menu, ses);
     }
 
-    private static void doOptionsPopup(final MouseEvent e, final SessionGui session) {
+    private static void doOptionsPopup(final MouseEvent e, final SessionGui ses, final String macro) {
+        final ContextMenu j = new ContextMenu();
+        j.getItems().add(new CustomMenuItem(new Label("Macro Options"), false));
 
-        Action action;
+        MenuItem item = new MenuItem(LangTool.getString("popup.delete") + " " + macro);
+        item.setOnAction(evt -> Macronizer.removeMacroByName(macro));
 
-        final JPopupMenu j = new JPopupMenu("Macro Options");
-        action = new AbstractAction(LangTool.getString("popup.delete")
-                + " " + ((JMenuItem) e.getSource()).getText()) {
-            private static final long serialVersionUID = 1L;
+        j.getItems().add(item);
 
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final StringBuffer macro = new StringBuffer(((JMenuItem) e.getSource()).getText());
-                macro.delete(0, LangTool.getString("popup.delete").length() + 1);
-                Macronizer.removeMacroByName(macro.toString());
-            }
-        };
+        item = new MenuItem(LangTool.getString("popup.execute") + " " + macro);
+        item.setOnAction(evt -> Macronizer.invoke(macro.toString(), ses));
 
-        j.add(action);
+        j.getItems().add(item);
 
-        final SessionGui ses = session;
-        action = new AbstractAction(LangTool.getString("popup.execute")
-                + " " + ((JMenuItem) e.getSource()).getText()) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final StringBuffer macro = new StringBuffer(((JMenuItem) e.getSource()).getText());
-                macro.delete(0, LangTool.getString("popup.execute").length() + 1);
-                Macronizer.invoke(macro.toString(), ses);
-            }
-        };
-
-        j.add(action);
-        final MouseEvent et = SwingUtilities.convertMouseEvent((JMenuItem) e.getSource(), e, (JComponent) session);
-        GUIGraphicsUtils.positionPopup((Component) session, j, et.getX(), et.getY());
-
+        j.show((Node) e.getSource(), e.getSceneX(), e.getScreenY());
     }
 
-    public static void scriptDir(final String pathName, final JMenu menu, final SessionGui session) {
+    public static void scriptDir(final String pathName, final Menu menu, final SessionGui session) {
 
         final File root = new File(pathName);
 
         try {
 
-            macroVector = new Vector();
+            macroVector = new LinkedList<>();
 
             loadScripts(macroVector, root.getCanonicalPath(), root, session);
             createScriptsMenu(menu, macroVector, 0);
@@ -200,7 +147,7 @@ public final class LoadMacroMenu {
      * @param directory
      * @param session
      */
-    private static void loadScripts(final Vector vector, final String path, final File directory,
+    private static void loadScripts(final List<Object> vector, final String path, final File directory,
                                     final SessionGui session) {
 
         ExecuteScriptAction action;
@@ -221,13 +168,13 @@ public final class LoadMacroMenu {
                     /* do nothing! */
                     continue;
                 } else if (file.isDirectory()) {
-                    final Vector submenu = new Vector();
-                    submenu.addElement(fileName.replace('_', ' '));
+                    final List<Object> submenu = new LinkedList<>();
+                    submenu.add(fileName.replace('_', ' '));
                     loadScripts(submenu, path + fileName + '/', file, session);
                     // if we do not want empty directories to show up uncomment
                     // this line.
                     // if(submenu.size() != 1)
-                    vector.addElement(submenu);
+                    vector.add(submenu);
                 } else {
                     if (InterpreterDriverManager.isScriptSupported(fileName)) {
                         String fn = fileName.replace('_', ' ');
@@ -236,11 +183,8 @@ public final class LoadMacroMenu {
                             fn = fn.substring(0, index);
                         }
                         action = new ExecuteScriptAction(fn, file
-                                .getAbsolutePath(), session) {
-
-                            private static final long serialVersionUID = 1L;
-                        };
-                        vector.addElement(action);
+                                .getAbsolutePath(), session);
+                        vector.add(action);
                     }
                 }
             } catch (final SecurityException se) {
@@ -256,36 +200,38 @@ public final class LoadMacroMenu {
      * @param vector
      * @param start
      */
-    private static void createScriptsMenu(final JMenu menu, final Vector vector, final int start) {
+    private static void createScriptsMenu(final Menu menu, final List<Object> vector, final int start) {
 
         final JPopupMenu jpop = new JPopupMenu();
         jpop.add("Delete");
 
-        for (int i = start; i < vector.size(); i++) {
-            final Object obj = vector.elementAt(i);
+        for (final Object obj : vector) {
             if (obj instanceof ExecuteScriptAction) {
-                menu.add((ExecuteScriptAction) obj);
-            } else if (obj instanceof Vector) {
-                final Vector subvector = (Vector) obj;
-                final String name = (String) subvector.elementAt(0);
-                final JMenu submenu = new JMenu(name);
-                createScriptsMenu(submenu, subvector, 1);
-                if (submenu.getMenuComponentCount() == 0) {
-                    submenu.add(LangTool.getString("popup.noScripts"));
+                final ExecuteScriptAction action = (ExecuteScriptAction) obj;
+                final MenuItem item = new MenuItem(action.getName());
+                item.setOnAction(action);
+
+                menu.getItems().add(item);
+            } else if (obj instanceof List) {
+                @SuppressWarnings("unchecked")
+                final List<Object> subvector = (List<Object>) obj;
+                if (!subvector.isEmpty()) {
+                    final String name = (String) subvector.get(0);
+                    final Menu submenu = new Menu(name);
+                    createScriptsMenu(submenu, subvector, 1);
+                    if (submenu.getItems().isEmpty()) {
+                        submenu.getItems().add(new CustomMenuItem(new Label(LangTool.getString("popup.noScripts"))));
+                    }
+                    menu.getItems().add(submenu);
                 }
-                menu.add(submenu);
             }
         }
     }
 
-    public static class MacroCompare implements Comparator {
+    public static class MacroCompare implements Comparator<File> {
         @Override
-        public int compare(final Object one, final Object two) {
-            final String s1 = one.toString();
-            final String s2 = two.toString();
-            return s1.compareToIgnoreCase(s2);
+        public int compare(final File s1, final File s2) {
+            return s1.getPath().compareToIgnoreCase(s2.getPath());
         }
-
     }
-
 }
