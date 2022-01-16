@@ -349,7 +349,10 @@ public class SessionGuiAdapter extends Pane implements SessionGui {
     }
 
     public static void showWindowWithMe(final SessionGuiAdapter gui) {
-        final Stage stage = new Stage();
+        showWindowWithMe(new Stage(), gui);
+    }
+
+    public static void showWindowWithMe(final Stage stage, final SessionGuiAdapter gui) {
         final Rectangle2D bounds = Screen.getPrimary().getBounds();
 
         final double w = bounds.getWidth() * 2 / 3;

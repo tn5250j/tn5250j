@@ -238,9 +238,7 @@ public class Macronizer {
                 "emulator.settingsDirectory") +
                 "scripts");
 
-
         return directory.isDirectory() || directory2.isDirectory();
 
     }
-
 }

@@ -263,4 +263,16 @@ public final class UiUtils {
         alert.setHeaderText("");
         return alert;
     }
+
+    public static void showError(final Node session, final Throwable exc, final String title) {
+        showError(session, exc.getMessage() == null ? exc.toString() : exc.getMessage(), title);
+    }
+
+    public static void showError(final Node session, final String message, final String title) {
+        final Alert alert = new Alert(AlertType.ERROR);
+        alert.setContentText(message);
+        alert.setTitle(title);
+        alert.setHeaderText("");
+        alert.showAndWait();
+    }
 }
