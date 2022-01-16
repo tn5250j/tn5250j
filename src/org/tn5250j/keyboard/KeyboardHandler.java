@@ -55,11 +55,11 @@ public abstract class KeyboardHandler implements KeyChangeListener {
      * Creates a new keyboard handler.
      * @param session The session that will be sent the keys
      */
-    public KeyboardHandler(final Session5250 session) {
+    public KeyboardHandler(final SessionGui gui) {
 
-        this.session = session;
-        this.screen = session.getScreen();
-        sessionGui = session.getGUI();
+        this.session = gui.getSession();
+        this.screen = gui.getScreen();
+        sessionGui = gui;
 
 //      String os = System.getProperty("os.name");
 //      if (os.toLowerCase().indexOf("linux") != -1) {
@@ -82,8 +82,7 @@ public abstract class KeyboardHandler implements KeyChangeListener {
 
     }
 
-    public static KeyboardHandler getKeyboardHandlerInstance(final Session5250 session) {
-
+    public static KeyboardHandler getKeyboardHandlerInstance(final SessionGui session) {
         return new DefaultKeyboardHandler(session);
     }
 

@@ -23,10 +23,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -243,5 +247,20 @@ public final class UiUtils {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Alert createInputDialog(final Node content, final String okButtonText, final String canceButtonText) {
+        final Alert alert = new Alert(AlertType.CONFIRMATION);
+
+        if (okButtonText != null) {
+            ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText(okButtonText);
+        }
+        if (canceButtonText != null) {
+            ((Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL)).setText(canceButtonText);
+        }
+
+        alert.getDialogPane().setContent(content);
+        alert.setHeaderText("");
+        return alert;
     }
 }

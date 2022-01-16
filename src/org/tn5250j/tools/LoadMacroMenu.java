@@ -78,8 +78,6 @@ public final class LoadMacroMenu {
             };
 
             mi.addEventHandler(MouseEvent.MOUSE_PRESSED, handler);
-            mi.addEventHandler(MouseEvent.MOUSE_RELEASED, handler);
-            mi.addEventHandler(MouseEvent.MOUSE_CLICKED, handler);
         }
 
         scriptDir("scripts", menu, ses);
@@ -117,7 +115,7 @@ public final class LoadMacroMenu {
 
         j.getItems().add(item);
 
-        j.show((Node) e.getSource(), e.getSceneX(), e.getScreenY());
+        j.show((Node) e.getSource(), e.getScreenX(), e.getScreenY());
     }
 
     public static void scriptDir(final String pathName, final Menu menu, final SessionGui session) {

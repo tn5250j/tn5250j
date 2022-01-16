@@ -28,8 +28,7 @@ public class DevTools {
         final SessionConfig config = new SessionConfig(system, system);
         config.setProperty("font", "Lucida Sans Typewriter Regular"); // example config
 
-        final Session5250 session = new Session5250(new Properties(), system, system, config);
-        return session;
+        return new Session5250(new Properties(), system, system, config);
     }
 
     public static SessionBean createSessionBean(final Session5250 session) throws UnknownHostException {

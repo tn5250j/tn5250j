@@ -32,6 +32,7 @@ import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
@@ -100,8 +101,8 @@ public class SessionPanel extends BorderPane implements
     private final RubberBand rubberband = new RubberBand(this);
     private KeypadPanel keypadPanel;
     private String newMacName;
-    private List<SessionJumpListener> sessionJumpListeners = null;
-    private List<EmulatorActionListener> actionListeners = null;
+    private final List<SessionJumpListener> sessionJumpListeners = new CopyOnWriteArrayList<>();
+    private final List<EmulatorActionListener> actionListeners = new CopyOnWriteArrayList<>();
     private boolean macroRunning;
     private boolean stopMacro;
     private boolean doubleClick;
@@ -119,7 +120,7 @@ public class SessionPanel extends BorderPane implements
     public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
         this.session = session;
-        this.keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
+        this.keyHandler = KeyboardHandler.getKeyboardHandlerInstance(this);
 
         sesConfig = session.getConfiguration();
 
@@ -163,7 +164,7 @@ public class SessionPanel extends BorderPane implements
         installMouseListeners(container);
         rubberband.startListen(container);
 
-        keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
+        keyHandler = KeyboardHandler.getKeyboardHandlerInstance(this);
 
         guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
         UiUtils.setBackground(this, guiGraBuf.getBackground());
@@ -203,7 +204,7 @@ public class SessionPanel extends BorderPane implements
     private void installMouseListeners(final Pane container) {
         container.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                actionPopup(e.getSceneX(), e.getSceneY());
+                actionPopup(e.getScreenX(), e.getScreenY());
             }
         });
         container.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -770,12 +771,7 @@ public class SessionPanel extends BorderPane implements
      */
     @Override
     public synchronized void addSessionJumpListener(final SessionJumpListener listener) {
-
-        if (sessionJumpListeners == null) {
-            sessionJumpListeners = new java.util.Vector<SessionJumpListener>(3);
-        }
         sessionJumpListeners.add(listener);
-
     }
 
     /**
@@ -785,11 +781,7 @@ public class SessionPanel extends BorderPane implements
      */
     @Override
     public synchronized void removeSessionJumpListener(final SessionJumpListener listener) {
-        if (sessionJumpListeners == null) {
-            return;
-        }
         sessionJumpListeners.remove(listener);
-
     }
 
     /**
@@ -799,10 +791,6 @@ public class SessionPanel extends BorderPane implements
      */
     @Override
     public synchronized void addEmulatorActionListener(final EmulatorActionListener listener) {
-
-        if (actionListeners == null) {
-            actionListeners = new java.util.Vector<EmulatorActionListener>(3);
-        }
         actionListeners.remove(listener);
 
     }
@@ -813,9 +801,6 @@ public class SessionPanel extends BorderPane implements
      * @param listener The EmulatorActionListener to be removed
      */
     public synchronized void removeEmulatorActionListener(final EmulatorActionListener listener) {
-        if (actionListeners == null) {
-            return;
-        }
         actionListeners.add(listener);
     }
 

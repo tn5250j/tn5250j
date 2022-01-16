@@ -55,8 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.HexCharMapDialog;
@@ -77,6 +75,8 @@ import org.tn5250j.tools.logging.TN5250jLogger;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
@@ -113,8 +113,6 @@ public class SessionPopup {
 
             popup.getItems().add(new SeparatorMenuItem()); // ------------------
             popup.getItems().add(createMenuItem(LangTool.getString("popup.hexMap"), this::showHexMap, ""));
-
-            popup.getItems().add(new SeparatorMenuItem()); // ------------------
         } else {
             popup.getItems().add(createMenuItem(LangTool.getString("popup.copy"), this::sessionGuiCopy, COPY));
             popup.getItems().add(createMenuItem(LangTool.getString("popup.paste"), () -> paste(false), PASTE));
@@ -245,9 +243,9 @@ public class SessionPopup {
 
             sendMenu.getItems().add(createMenuItem(LangTool.getString("popup.file"), this::sendMeToFile));
             sendMenu.getItems().add(createMenuItem(LangTool.getString("popup.toImage"), this::sendMeToImageFile));
-
-            popup.getItems().add(new SeparatorMenuItem());
         }
+
+        popup.getItems().add(new SeparatorMenuItem()); // ------------------
 
         if (OptionAccessFactory.getInstance().isValidOption(OPEN_NEW.mnemonic)) {
             popup.getItems().add(createMenuItem(LangTool.getString("popup.connections"), sessiongui::startNewSession, OPEN_NEW));
@@ -272,8 +270,8 @@ public class SessionPopup {
 
         }
 
-        popup.setX(x);
-        popup.setY(y);
+        popup.setAnchorX(x);
+        popup.setAnchorY(y);
 
         popup.show(((Node) sessiongui).getScene().getWindow());
     }
@@ -375,11 +373,10 @@ public class SessionPopup {
         df.setDecimalFormatSymbols(dfs);
         df.setMinimumFractionDigits(6);
 
-        JOptionPane.showMessageDialog(null,
-                df.format(sum),
-                LangTool.getString("popup.calc"),
-                JOptionPane.INFORMATION_MESSAGE);
-
+        final Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setContentText(df.format(sum));
+        alert.setTitle(LangTool.getString("popup.calc"));
+        alert.showAndWait();
     }
 
     private void printMe() {
@@ -432,16 +429,14 @@ public class SessionPopup {
     }
 
     private void doMeSpool() {
-
         try {
             final org.tn5250j.spoolfile.SpoolExporter spooler =
                     new org.tn5250j.spoolfile.SpoolExporter(vt, sessiongui);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
-            JOptionPane.showMessageDialog(SwingToFxUtils.SHARED_FRAME,
-                    LangTool.getString("messages.noAS400Toolbox"),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE, null);
+            final Alert alert = new Alert(AlertType.ERROR);
+            alert.setContentText(LangTool.getString("messages.noAS400Toolbox"));
+            alert.showAndWait();
         }
         sessiongui.getFocusForMe();
     }

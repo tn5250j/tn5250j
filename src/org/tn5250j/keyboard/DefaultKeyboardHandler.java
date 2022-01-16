@@ -26,7 +26,6 @@
 
 package org.tn5250j.keyboard;
 
-import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.actions.AttributesAction;
 import org.tn5250j.keyboard.actions.CloseAction;
@@ -64,7 +63,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
      *
      * @param session The session to which the keys should be sent
      */
-    DefaultKeyboardHandler(final Session5250 session) {
+    DefaultKeyboardHandler(final SessionGui session) {
         super(session);
     }
 
@@ -152,10 +151,8 @@ class DefaultKeyboardHandler extends KeyboardHandler {
     @Override
     void initKeyBindings() {
 
-        if (session.getGUI() == null)
+        if (sessionGui == null)
             return;
-
-        final SessionGui sessionGui = session.getGUI();
 
         new NewSessionAction(sessionGui, keyMap);
         new ToggleConnectionAction(sessionGui, keyMap);
