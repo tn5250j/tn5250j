@@ -25,23 +25,14 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.util.Enumeration;
 import java.util.Properties;
 
-import javax.swing.JPanel;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
-
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -49,22 +40,27 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SessionSettings extends DialogPane {
+    private static final String SWING_NODE = "SWING_NODE";
 
-    private final String fileName;
     private final Properties props;
-    private JPanel jpm = new JPanel(new BorderLayout());
+    private BorderPane jpm = new BorderPane();
 
     private final SessionConfig changes;
 
-    private JTree tree = new JTree();
-    private CardLayout cardLayout;
-    private JPanel jp;
+    private TreeView<AttributesPanel> tree = new TreeView<>();
     private final Stage parent;
 
+    @SuppressWarnings("deprecation")
     public SessionSettings(final Stage parent, final SessionConfig config) {
         super();
         this.parent = parent;
@@ -72,7 +68,6 @@ public class SessionSettings extends DialogPane {
 
         parent.getScene().getRoot().setCursor(Cursor.WAIT);
 
-        this.fileName = config.getConfigurationResource();
         this.props = config.getProperties();
         changes = config;
 
@@ -86,66 +81,34 @@ public class SessionSettings extends DialogPane {
     private void jbInit() {
 
         // define default
-        jp = new JPanel();
-        cardLayout = new CardLayout();
-        jp.setLayout(cardLayout);
-
-        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        final Enumeration<?> e = root.children();
-        Object child;
-        while (e.hasMoreElements()) {
-            child = e.nextElement();
-            final Object obj = ((DefaultMutableTreeNode) child).getUserObject();
-            if (obj instanceof AttributesPanel) {
-                jp.add((AttributesPanel) obj, obj.toString());
-            }
-        }
+        final StackPane jp = new StackPane();
 
         //Create the nodes.
-        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(fileName);
-        createNodes(top);
+        tree.setShowRoot(false);
+        tree.setRoot(new TreeItem<AttributesPanel>(null));
+        tree.getRoot().setExpanded(true);
+        createNodes(jp);
 
-        //Create a tree that allows one selection at a time.
-        tree = new JTree(top);
-
-        tree.getSelectionModel().setSelectionMode
-                (TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        //Listen for when the selection changes.
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(final TreeSelectionEvent e) {
-
-                final DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                        tree.getLastSelectedPathComponent();
-
-                if (node == null)
-                    return;
-                showPanel(node.getUserObject());
-            }
-        });
-
+        tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tree.getSelectionModel().selectedItemProperty().addListener((src, old, value) -> treeSelectionChanged(value));
 
         // define tree selection panel
-        final JPanel jsp = new JPanel();
-        jsp.setBackground(Color.white);
-        jsp.add(tree);
+        final BorderPane jsp = new BorderPane(tree);
+        UiUtils.setBackground(jsp, Color.WHITE);
 
-        jpm.add(jp, BorderLayout.EAST);
-        jpm.add(jsp, BorderLayout.WEST);
+        jpm.setLeft(jsp);
+        jpm.setRight(jp);
 
-        cardLayout.first(jp);
-
-        final SwingNode adapter = new SwingNode();
-        adapter.setContent(jpm);
-        setContent(adapter);
+        setContent(jpm);
+        tree.getSelectionModel().selectFirst();
     }
 
-    private void showPanel(final Object node) {
-        cardLayout.show(jp, node.toString());
+    private void treeSelectionChanged(final TreeItem<AttributesPanel> item) {
+        final Node node = (Node) item.getValue().getClientProperty(SWING_NODE);
+        node.toFront();
     }
 
-    private void createNodes(final DefaultMutableTreeNode top) {
+    private void createNodes(final StackPane top) {
         createNode(top, new ColorAttributesPanel(changes));
         createNode(top, new DisplayAttributesPanel(changes));
         createNode(top, new CursorAttributesPanel(changes));
@@ -160,11 +123,15 @@ public class SessionSettings extends DialogPane {
         createNode(top, new ErrorResetAttributesPanel(changes));
     }
 
-    private void createNode(final DefaultMutableTreeNode top, final AttributesPanel ap) {
+    private void createNode(final StackPane top, final AttributesPanel ap) {
+        final SwingNode swingNode = new SwingNode();
+        swingNode.setContent(ap);
+        ap.putClientProperty(SWING_NODE, swingNode);
 
-        top.add(new DefaultMutableTreeNode(ap));
-        jp.add(ap, ap.toString());
+        top.getChildren().add(swingNode);
 
+        final TreeItem<AttributesPanel> item = new TreeItem<>(ap);
+        tree.getRoot().getChildren().add(item);
     }
 
     protected final String getStringProperty(final String prop) {
@@ -230,7 +197,8 @@ public class SessionSettings extends DialogPane {
         });
 
         dialog.setDialogPane(this);
-        dialog.setResizable(true);
+        dialog.setResizable(true); //FIXME possible better to comment it
+
         Platform.runLater(dialog::show);
     }
 
@@ -246,20 +214,11 @@ public class SessionSettings extends DialogPane {
     }
 
     private void applyAttributes() {
-
-        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        final Enumeration<?> e = root.children();
-        Object child;
-        while (e.hasMoreElements()) {
-            child = e.nextElement();
-            final Object obj = ((DefaultMutableTreeNode) child).getUserObject();
-            if (obj instanceof AttributesPanel) {
-                ((AttributesPanel) obj).applyAttributes();
-            }
+        final ObservableList<TreeItem<AttributesPanel>> children = tree.getRoot().getChildren();
+        for (final TreeItem<AttributesPanel> item : children) {
+            item.getValue().applyAttributes();
         }
 
         setProperty("saveme", "yes");
-
     }
-
 }
