@@ -50,9 +50,7 @@ abstract class AttributesPanel extends JPanel {
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     private String name;
-    SessionConfig changes = null;
-    // content pane to be used if needed by subclasses
-    JPanel contentPane;
+    protected SessionConfig changes = null;
 
     public AttributesPanel(final SessionConfig config) {
         this(config, "", nodePrefix);

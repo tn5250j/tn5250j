@@ -25,16 +25,21 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
-import org.tn5250j.SessionConfig;
-import org.tn5250j.gui.TN5250jFontsSelection;
-import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.TN5250jFontsSelection;
+import org.tn5250j.tools.LangTool;
 
 class PrinterAttributesPanel extends AttributesPanel {
 
@@ -44,23 +49,24 @@ class PrinterAttributesPanel extends AttributesPanel {
     private Paper pappyLand;
     private TN5250jFontsSelection fs;
 
-    PrinterAttributesPanel(SessionConfig config) {
+    PrinterAttributesPanel(final SessionConfig config) {
         super(config, "Printer");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define ppPanel panel
-        JPanel ppp = new JPanel();
+        final JPanel ppp = new JPanel();
         ppp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.print")));
         defaultPrinter = new JCheckBox(LangTool.getString("sa.defaultPrinter"));
 
@@ -70,12 +76,12 @@ class PrinterAttributesPanel extends AttributesPanel {
         ppp.add(defaultPrinter);
 
         //--- Create a printerJob object
-        PrinterJob printJob = PrinterJob.getPrinterJob();
+        final PrinterJob printJob = PrinterJob.getPrinterJob();
 
         // will have to remember this for the next time.
         //   Always set a page format before call setPrintable to
         //   set the orientation.
-        PageFormat pf = printJob.defaultPage();
+        final PageFormat pf = printJob.defaultPage();
 
         pappyPort = pf.getPaper();
 
@@ -116,29 +122,31 @@ class PrinterAttributesPanel extends AttributesPanel {
         }
 
         // define page panel
-        JPanel page = new JPanel();
+        final JPanel page = new JPanel();
         page.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("sa.pageParameters")));
 
         page.setLayout(new BorderLayout());
-        JButton setPortAttributes = new JButton(LangTool.getString("sa.columns24"));
+        final JButton setPortAttributes = new JButton(LangTool.getString("sa.columns24"));
 
         setPortAttributes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 getPortraitAttributes();
             }
         });
 
-        JButton setLandAttributes = new JButton(LangTool.getString("sa.columns132"));
+        final JButton setLandAttributes = new JButton(LangTool.getString("sa.columns132"));
 
         setLandAttributes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 getLandscapeAttributes();
             }
         });
 
         // now create page dialog holder panel
-        JPanel pagePage = new JPanel();
+        final JPanel pagePage = new JPanel();
 
         pagePage.add(setPortAttributes);
         pagePage.add(setLandAttributes);
@@ -146,7 +154,7 @@ class PrinterAttributesPanel extends AttributesPanel {
         page.add(pagePage, BorderLayout.NORTH);
 
         // now create fonts selection
-        JPanel pageFont = new JPanel();
+        final JPanel pageFont = new JPanel();
         fs = new TN5250jFontsSelection();
 
         if (getStringProperty("print.font").length() != 0) {
@@ -163,7 +171,7 @@ class PrinterAttributesPanel extends AttributesPanel {
 
     private void getPortraitAttributes() {
 
-        PrinterJob printJob = PrinterJob.getPrinterJob();
+        final PrinterJob printJob = PrinterJob.getPrinterJob();
 
         PageFormat documentPageFormat = new PageFormat();
         documentPageFormat.setOrientation(PageFormat.PORTRAIT);
@@ -178,7 +186,7 @@ class PrinterAttributesPanel extends AttributesPanel {
 
     private void getLandscapeAttributes() {
 
-        PrinterJob printJob = PrinterJob.getPrinterJob();
+        final PrinterJob printJob = PrinterJob.getPrinterJob();
 
         PageFormat documentPageFormat = new PageFormat();
         documentPageFormat.setOrientation(PageFormat.LANDSCAPE);
@@ -191,6 +199,7 @@ class PrinterAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         if (defaultPrinter.isSelected()) {

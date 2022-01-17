@@ -25,11 +25,18 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
+import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 class CursorAttributesPanel extends AttributesPanel {
 
@@ -45,29 +52,30 @@ class CursorAttributesPanel extends AttributesPanel {
     private JTextField cursorBottOffset;
     private JRadioButton blink;
 
-    CursorAttributesPanel(SessionConfig config) {
+    CursorAttributesPanel(final SessionConfig config) {
         super(config, "Cursor");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define cursor size panel
-        JPanel crp = new JPanel();
+        final JPanel crp = new JPanel();
         crp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.crsSize")));
         cFull = new JRadioButton(LangTool.getString("sa.cFull"));
         cHalf = new JRadioButton(LangTool.getString("sa.cHalf"));
         cLine = new JRadioButton(LangTool.getString("sa.cLine"));
 
         // Group the radio buttons.
-        ButtonGroup cGroup = new ButtonGroup();
+        final ButtonGroup cGroup = new ButtonGroup();
         cGroup.add(cFull);
         cGroup.add(cHalf);
         cGroup.add(cLine);
@@ -98,7 +106,7 @@ class CursorAttributesPanel extends AttributesPanel {
         crp.add(cLine);
 
         // define cursor ruler panel
-        JPanel chp = new JPanel();
+        final JPanel chp = new JPanel();
         chp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.crossHair")));
         chNone = new JRadioButton(LangTool.getString("sa.chNone"));
         chHorz = new JRadioButton(LangTool.getString("sa.chHorz"));
@@ -106,7 +114,7 @@ class CursorAttributesPanel extends AttributesPanel {
         chCross = new JRadioButton(LangTool.getString("sa.chCross"));
 
         // Group the radio buttons.
-        ButtonGroup chGroup = new ButtonGroup();
+        final ButtonGroup chGroup = new ButtonGroup();
         chGroup.add(chNone);
         chGroup.add(chHorz);
         chGroup.add(chVert);
@@ -145,7 +153,7 @@ class CursorAttributesPanel extends AttributesPanel {
 
 
         // define double click as enter
-        JPanel rulerFPanel = new JPanel();
+        final JPanel rulerFPanel = new JPanel();
         rulerFPanel.setBorder(BorderFactory.createTitledBorder(""));
 
         rulerFixed = new JCheckBox(LangTool.getString("sa.rulerFixed"));
@@ -156,14 +164,14 @@ class CursorAttributesPanel extends AttributesPanel {
         rulerFPanel.add(rulerFixed);
 
         // define cursor ruler panel
-        JPanel blinkPanel = new JPanel();
+        final JPanel blinkPanel = new JPanel();
         blinkPanel.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.blinkCursor")));
 
         blink = new JRadioButton(LangTool.getString("sa.blinkYes"));
-        JRadioButton noBlink = new JRadioButton(LangTool.getString("sa.blinkNo"));
+        final JRadioButton noBlink = new JRadioButton(LangTool.getString("sa.blinkNo"));
 
         // Group the radio buttons.
-        ButtonGroup blinkGroup = new ButtonGroup();
+        final ButtonGroup blinkGroup = new ButtonGroup();
         blinkGroup.add(blink);
         blinkGroup.add(noBlink);
 
@@ -178,16 +186,16 @@ class CursorAttributesPanel extends AttributesPanel {
         blinkPanel.add(noBlink);
 
         // define bottom offset panel for cursor
-        JPanel bottOffPanel = new JPanel();
+        final JPanel bottOffPanel = new JPanel();
         bottOffPanel.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("sa.curBottOffset")));
 
         cursorBottOffset = new JTextField(5);
 
         try {
-            int i = Integer.parseInt(getStringProperty("cursorBottOffset", "0"));
+            final int i = Integer.parseInt(getStringProperty("cursorBottOffset", "0"));
             cursorBottOffset.setText(Integer.toString(i));
-        } catch (NumberFormatException ne) {
+        } catch (final NumberFormatException ne) {
             cursorBottOffset.setText("0");
         }
 
@@ -202,6 +210,7 @@ class CursorAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         if (cFull.isSelected()) {

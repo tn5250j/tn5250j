@@ -25,25 +25,35 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
-import org.tn5250j.SessionConfig;
-import org.tn5250j.tools.LangTool;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.util.Enumeration;
+import java.util.Properties;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Enumeration;
-import java.util.Properties;
 
-public class SessionSettings extends JDialog {
+import org.tn5250j.SessionConfig;
+import org.tn5250j.tools.LangTool;
 
-    private static final long serialVersionUID = 1L;
+import javafx.application.Platform;
+import javafx.embed.swing.SwingNode;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+public class SessionSettings extends DialogPane {
+
     private final String fileName;
     private final Properties props;
     private JPanel jpm = new JPanel(new BorderLayout());
@@ -53,47 +63,46 @@ public class SessionSettings extends JDialog {
     private JTree tree = new JTree();
     private CardLayout cardLayout;
     private JPanel jp;
+    private final Stage parent;
 
-    public SessionSettings(Frame parent, SessionConfig config) {
-        super(parent);
+    public SessionSettings(final Stage parent, final SessionConfig config) {
+        super();
+        this.parent = parent;
+        getButtonTypes().addAll(ButtonType.YES, ButtonType.APPLY, ButtonType.CANCEL);
 
-        parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        parent.getScene().getRoot().setCursor(Cursor.WAIT);
 
         this.fileName = config.getConfigurationResource();
         this.props = config.getProperties();
         changes = config;
 
-        try {
-            jbInit();
-            parent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        jbInit();
+        parent.getScene().getRoot().setCursor(Cursor.DEFAULT);
     }
 
     /**
      * Component initialization
      */
-    private void jbInit() throws Exception {
+    private void jbInit() {
 
         // define default
         jp = new JPanel();
         cardLayout = new CardLayout();
         jp.setLayout(cardLayout);
 
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        Enumeration<?> e = root.children();
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        final Enumeration<?> e = root.children();
         Object child;
         while (e.hasMoreElements()) {
             child = e.nextElement();
-            Object obj = ((DefaultMutableTreeNode) child).getUserObject();
+            final Object obj = ((DefaultMutableTreeNode) child).getUserObject();
             if (obj instanceof AttributesPanel) {
                 jp.add((AttributesPanel) obj, obj.toString());
             }
         }
 
         //Create the nodes.
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode(fileName);
+        final DefaultMutableTreeNode top = new DefaultMutableTreeNode(fileName);
         createNodes(top);
 
         //Create a tree that allows one selection at a time.
@@ -105,9 +114,9 @@ public class SessionSettings extends JDialog {
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
-            public void valueChanged(TreeSelectionEvent e) {
+            public void valueChanged(final TreeSelectionEvent e) {
 
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                final DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                         tree.getLastSelectedPathComponent();
 
                 if (node == null)
@@ -118,7 +127,7 @@ public class SessionSettings extends JDialog {
 
 
         // define tree selection panel
-        JPanel jsp = new JPanel();
+        final JPanel jsp = new JPanel();
         jsp.setBackground(Color.white);
         jsp.add(tree);
 
@@ -127,15 +136,16 @@ public class SessionSettings extends JDialog {
 
         cardLayout.first(jp);
 
-
+        final SwingNode adapter = new SwingNode();
+        adapter.setContent(jpm);
+        setContent(adapter);
     }
 
-    private void showPanel(Object node) {
-
+    private void showPanel(final Object node) {
         cardLayout.show(jp, node.toString());
     }
 
-    private void createNodes(DefaultMutableTreeNode top) {
+    private void createNodes(final DefaultMutableTreeNode top) {
         createNode(top, new ColorAttributesPanel(changes));
         createNode(top, new DisplayAttributesPanel(changes));
         createNode(top, new CursorAttributesPanel(changes));
@@ -148,17 +158,16 @@ public class SessionSettings extends JDialog {
         createNode(top, new KeypadAttributesPanel(changes));
         createNode(top, new PrinterAttributesPanel(changes));
         createNode(top, new ErrorResetAttributesPanel(changes));
-
     }
 
-    private void createNode(DefaultMutableTreeNode top, AttributesPanel ap) {
+    private void createNode(final DefaultMutableTreeNode top, final AttributesPanel ap) {
 
         top.add(new DefaultMutableTreeNode(ap));
         jp.add(ap, ap.toString());
 
     }
 
-    protected final String getStringProperty(String prop) {
+    protected final String getStringProperty(final String prop) {
 
         if (props.containsKey(prop))
             return (String) props.get(prop);
@@ -167,10 +176,10 @@ public class SessionSettings extends JDialog {
 
     }
 
-    protected final String getStringProperty(String prop, String defaultValue) {
+    protected final String getStringProperty(final String prop, final String defaultValue) {
 
         if (props.containsKey(prop)) {
-            String p = (String) props.get(prop);
+            final String p = (String) props.get(prop);
             if (p.length() > 0)
                 return p;
             else
@@ -180,112 +189,70 @@ public class SessionSettings extends JDialog {
 
     }
 
-    protected final void setProperty(String key, String val) {
+    protected final void setProperty(final String key, final String val) {
         props.setProperty(key, val);
     }
 
-    public Properties getProperties() {
-
+    public Properties getAllProperties() {
         return props;
     }
 
+    @Override
+    protected Node createButton(final ButtonType buttonType) {
+        Button button = (Button) super.createButton(buttonType);
+
+        if (buttonType == ButtonType.APPLY) {
+            //change returned button for remove closers
+            button = new Button();
+            button.setText(LangTool.getString("sa.optApply"));
+        } else if (buttonType == ButtonType.CANCEL) {
+            button.setText(LangTool.getString("sa.optCancel"));
+        } else if (buttonType == ButtonType.YES) {
+            button.setText(LangTool.getString("sa.optSave"));
+        }
+
+        return button;
+    }
+
     public void showIt() {
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(LangTool.getString("sa.title"));
+        dialog.initOwner(parent);
 
-        Object[] message = new Object[1];
-        message[0] = jpm;
-        String[] options = {LangTool.getString("sa.optApply"),
-                LangTool.getString("sa.optCancel"),
-                LangTool.getString("sa.optSave")
-        };
-
-        final JOptionPane saOptionPane = new JOptionPane(
-                message,                           // the dialog message array
-                JOptionPane.PLAIN_MESSAGE,   // message type
-                JOptionPane.YES_NO_CANCEL_OPTION,        // option type
-                null,                              // optional icon, use null to use the default icon
-                options,                           // options string array, will be made into buttons//
-                options[1]                         // option that should be made into a default button
-        );
-
-        setTitle(LangTool.getString("sa.title"));
-        setModal(true);
-        setContentPane(saOptionPane);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent we) {
-
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.resultProperty().addListener((src, old, value) -> {
+            SessionSettings.this.setCursor(Cursor.WAIT);
+            try {
+                doOptionStuff(value);
+            } finally {
+                SessionSettings.this.setCursor(Cursor.DEFAULT);
             }
         });
 
-        saOptionPane.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent e) {
-                        String prop = e.getPropertyName();
-                        if (isVisible()
-                                && (e.getSource() == saOptionPane)
-                                && (prop.equals(JOptionPane.VALUE_PROPERTY) ||
-                                prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
-
-                            saOptionPane.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-                            doOptionStuff(saOptionPane);
-
-                            saOptionPane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        }
-                    }
-                });
-
-        pack();
-
-        //Center the dialog
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension dialogSize = getSize();
-        if (dialogSize.height > screenSize.height)
-            dialogSize.height = screenSize.height;
-        if (dialogSize.width > screenSize.width)
-            dialogSize.width = screenSize.width;
-        setLocation((screenSize.width - dialogSize.width) / 2,
-                (screenSize.height - dialogSize.height) / 2);
-
-        setVisible(true);
-
+        dialog.setDialogPane(this);
+        dialog.setResizable(true);
+        Platform.runLater(dialog::show);
     }
 
-    private void doOptionStuff(JOptionPane optionPane) {
-        // Warning, do not cast to String, because it also can be Integer!
-        Object result = optionPane.getValue();
-
-        if (LangTool.getString("sa.optApply").equals(result)) {
-
+    private void doOptionStuff(final ButtonType result) {
+        if (result == ButtonType.APPLY) {
             applyAttributes();
-            optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-
-        }
-        if (LangTool.getString("sa.optCancel").equals(result)) {
-            setVisible(false);
-            dispose();
-        }
-        if (LangTool.getString("sa.optSave").equals(result)) {
-
+        } else if (result == ButtonType.OK) {
             if (props.containsKey("saveme")) {
                 props.remove("saveme");
             }
             changes.saveSessionProps();
-            setVisible(false);
-            dispose();
         }
     }
 
     private void applyAttributes() {
 
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        Enumeration<?> e = root.children();
+        final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        final Enumeration<?> e = root.children();
         Object child;
         while (e.hasMoreElements()) {
             child = e.nextElement();
-            Object obj = ((DefaultMutableTreeNode) child).getUserObject();
+            final Object obj = ((DefaultMutableTreeNode) child).getUserObject();
             if (obj instanceof AttributesPanel) {
                 ((AttributesPanel) obj).applyAttributes();
             }

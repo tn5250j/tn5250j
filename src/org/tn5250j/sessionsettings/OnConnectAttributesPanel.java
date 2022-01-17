@@ -25,33 +25,38 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
+import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 class OnConnectAttributesPanel extends AttributesPanel {
 
     private static final long serialVersionUID = 1L;
     private JTextField connectMacro;
 
-    OnConnectAttributesPanel(SessionConfig config) {
+    OnConnectAttributesPanel(final SessionConfig config) {
         super(config, "OnConnect");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define onConnect macro to run
-        JPanel ocMacrop = new JPanel();
+        final JPanel ocMacrop = new JPanel();
         ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
 
         connectMacro = new JTextField();
@@ -65,6 +70,7 @@ class OnConnectAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         changes.firePropertyChange(this, "connectMacro",

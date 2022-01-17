@@ -25,11 +25,15 @@
  */
 package org.tn5250j.sessionsettings;
 
+import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 class ErrorResetAttributesPanel extends AttributesPanel {
 
@@ -37,22 +41,23 @@ class ErrorResetAttributesPanel extends AttributesPanel {
     private JCheckBox resetRequired;
     private JCheckBox backspaceError;
 
-    ErrorResetAttributesPanel(SessionConfig config) {
+    ErrorResetAttributesPanel(final SessionConfig config) {
         super(config, "ErrorReset");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define error reset
-        JPanel reset = new JPanel();
+        final JPanel reset = new JPanel();
         reset.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("sa.titleErrorReset")));
 
@@ -64,7 +69,7 @@ class ErrorResetAttributesPanel extends AttributesPanel {
         reset.add(resetRequired);
 
         // define backspace error
-        JPanel backspace = new JPanel();
+        final JPanel backspace = new JPanel();
         backspace.setBorder(BorderFactory.createTitledBorder(
                 LangTool.getString("sa.titleBackspace")));
 
@@ -80,6 +85,7 @@ class ErrorResetAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         if (resetRequired.isSelected()) {

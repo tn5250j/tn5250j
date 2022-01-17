@@ -25,13 +25,22 @@
  */
 package org.tn5250j.sessionsettings;
 
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
 
 class FontAttributesPanel extends AttributesPanel {
 
@@ -42,31 +51,32 @@ class FontAttributesPanel extends AttributesPanel {
     private JTextField horizontalScale;
     private JTextField pointSize;
 
-    FontAttributesPanel(SessionConfig config) {
+    FontAttributesPanel(final SessionConfig config) {
         super(config, "Fonts");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // fonts
-        Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        final Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 
-        JPanel flp = new JPanel();
+        final JPanel flp = new JPanel();
         TitledBorder tb = BorderFactory.createTitledBorder(LangTool.getString("sa.font"));
         flp.setBorder(tb);
 
 
         fontsList = new JComboBox();
 
-        String font = getStringProperty("font");
+        final String font = getStringProperty("font");
 
         for (int x = 0; x < fonts.length; x++) {
             if (fonts[x].getFontName().indexOf('.') < 0)
@@ -81,7 +91,7 @@ class FontAttributesPanel extends AttributesPanel {
         flp.add(fontsList);
         flp.add(useAntialias);
 
-        JPanel fsp = new JPanel();
+        final JPanel fsp = new JPanel();
         fsp.setLayout(new AlignLayout(2, 5, 5));
         tb = BorderFactory.createTitledBorder(LangTool.getString("sa.scaleLabel"));
         fsp.setBorder(tb);
@@ -108,6 +118,7 @@ class FontAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         if (!getStringProperty("font").equals(

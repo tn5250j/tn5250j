@@ -343,17 +343,18 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
         return null;
     }
 
-    public static void showWindowWithMe(final SessionGuiAdapterSwing gui) {
-        final JFrame stage = new JFrame("Demo");
+    public static JFrame showWindowWithMe(final SessionGuiAdapterSwing gui) {
+        final JFrame frame = new JFrame("Demo");
         final Dimension bounds = Toolkit.getDefaultToolkit().getScreenSize();
 
         final int w = bounds.width * 2 / 3;
         final int h = bounds.height * 2 / 3;
 
-        stage.setBounds((bounds.width - w) / 2, (bounds.height - h) / 2, w, h);;
-        stage.setIconImages(GUIGraphicsUtils.getApplicationIcons());
+        frame.setBounds((bounds.width - w) / 2, (bounds.height - h) / 2, w, h);;
+        frame.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
-        stage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        stage.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        return frame;
     }
 }

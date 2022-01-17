@@ -25,11 +25,15 @@
  */
 package org.tn5250j.sessionsettings;
 
+import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 class MouseAttributesPanel extends AttributesPanel {
 
@@ -37,22 +41,23 @@ class MouseAttributesPanel extends AttributesPanel {
     private JCheckBox dceCheck;
     private JCheckBox mwCheck;
 
-    MouseAttributesPanel(SessionConfig config) {
+    MouseAttributesPanel(final SessionConfig config) {
         super(config, "Mouse");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define double click as enter
-        JPanel dcep = new JPanel();
+        final JPanel dcep = new JPanel();
         dcep.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.doubleClick")));
 
         dceCheck = new JCheckBox(LangTool.getString("sa.sendEnter"));
@@ -63,7 +68,7 @@ class MouseAttributesPanel extends AttributesPanel {
         dcep.add(dceCheck);
 
         // define double click as enter
-        JPanel mwp = new JPanel();
+        final JPanel mwp = new JPanel();
         mwp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.mouseWheel")));
 
         mwCheck = new JCheckBox(LangTool.getString("sa.activateMW"));
@@ -78,6 +83,7 @@ class MouseAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         //  double click enter

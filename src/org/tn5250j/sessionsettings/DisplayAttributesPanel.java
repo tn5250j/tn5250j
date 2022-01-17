@@ -25,15 +25,25 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
+import static org.tn5250j.sessionsettings.ColumnSeparator.Dot;
+import static org.tn5250j.sessionsettings.ColumnSeparator.Hide;
+import static org.tn5250j.sessionsettings.ColumnSeparator.Line;
+import static org.tn5250j.sessionsettings.ColumnSeparator.ShortLine;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.border.TitledBorder;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
-
-import static org.tn5250j.sessionsettings.ColumnSeparator.*;
 
 class DisplayAttributesPanel extends AttributesPanel {
 
@@ -48,7 +58,7 @@ class DisplayAttributesPanel extends AttributesPanel {
     private JCheckBox guiCheck;
     private JCheckBox guiShowUnderline;
 
-    DisplayAttributesPanel(SessionConfig config) {
+    DisplayAttributesPanel(final SessionConfig config) {
         super(config, "Display");
     }
 
@@ -59,13 +69,13 @@ class DisplayAttributesPanel extends AttributesPanel {
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define column separator panel
-        JPanel csp = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        TitledBorder tb =
+        final JPanel csp = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        final TitledBorder tb =
                 BorderFactory.createTitledBorder(LangTool.getString("sa.cs"));
         csp.setBorder(tb);
 
@@ -73,13 +83,13 @@ class DisplayAttributesPanel extends AttributesPanel {
         csHide.setActionCommand("Hide");
         csLine = new JRadioButton(LangTool.getString("sa.csLine"));
         csLine.setActionCommand("Line");
-        JRadioButton csDot = new JRadioButton(LangTool.getString("sa.csDot"));
+        final JRadioButton csDot = new JRadioButton(LangTool.getString("sa.csDot"));
         csDot.setActionCommand("Dot");
         csShortLine = new JRadioButton(LangTool.getString("sa.csShortLine"));
         csShortLine.setActionCommand("ShortLine");
 
         // Group the radio buttons.
-        ButtonGroup csGroup = new ButtonGroup();
+        final ButtonGroup csGroup = new ButtonGroup();
         csGroup.add(csHide);
         csGroup.add(csLine);
         csGroup.add(csDot);
@@ -96,18 +106,18 @@ class DisplayAttributesPanel extends AttributesPanel {
         csp.add(csShortLine);
 
         // define show attributs panel
-        JPanel sap = new JPanel();
+        final JPanel sap = new JPanel();
         sap.setBorder(
                 BorderFactory.createTitledBorder(
                         LangTool.getString("sa.showAttr")));
 
         saNormal = new JRadioButton(LangTool.getString("sa.showNormal"));
         saNormal.setActionCommand("Normal");
-        JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
+        final JRadioButton saHex = new JRadioButton(LangTool.getString("sa.showHex"));
         saHex.setActionCommand("Hex");
 
         // Group the radio buttons.
-        ButtonGroup saGroup = new ButtonGroup();
+        final ButtonGroup saGroup = new ButtonGroup();
         saGroup.add(saNormal);
         saGroup.add(saHex);
 
@@ -120,7 +130,7 @@ class DisplayAttributesPanel extends AttributesPanel {
         sap.add(saHex);
 
         // define gui panel
-        JPanel cgp = new JPanel();
+        final JPanel cgp = new JPanel();
         cgp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.cgp")));
         cgp.setLayout(new AlignLayout(1, 5, 5));
 

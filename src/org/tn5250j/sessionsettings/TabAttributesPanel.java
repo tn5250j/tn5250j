@@ -26,31 +26,36 @@
  */
 package org.tn5250j.sessionsettings;
 
+import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 class TabAttributesPanel extends AttributesPanel {
 
     private static final long serialVersionUID = 1L;
     private JCheckBox tabCloseCheck;
 
-    TabAttributesPanel(SessionConfig config) {
+    TabAttributesPanel(final SessionConfig config) {
         super(config, "Tabs");
     }
 
     // Component initialization
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // Define close tab confirmation panel
-        JPanel tabConfirm = new JPanel();
+        final JPanel tabConfirm = new JPanel();
         tabConfirm.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.titleTabOptions")));
 
         tabCloseCheck = new JCheckBox(LangTool.getString("sa.confirmTabClose"));
@@ -64,6 +69,7 @@ class TabAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         String value = "";

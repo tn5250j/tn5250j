@@ -25,12 +25,18 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
+import java.awt.BorderLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 class HotspotAttributesPanel extends AttributesPanel {
 
@@ -39,22 +45,23 @@ class HotspotAttributesPanel extends AttributesPanel {
     private JTextField hsMore;
     private JTextField hsBottom;
 
-    HotspotAttributesPanel(SessionConfig config) {
+    HotspotAttributesPanel(final SessionConfig config) {
         super(config, "HS");
     }
 
     /**
      * Component initialization
      */
+    @Override
     public void initPanel() throws Exception {
 
         setLayout(new BorderLayout());
-        contentPane = new JPanel();
+        final JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         add(contentPane, BorderLayout.NORTH);
 
         // define hsPanel panel
-        JPanel hsp = new JPanel();
+        final JPanel hsp = new JPanel();
         hsp.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.hsp")));
         hsCheck = new JCheckBox(LangTool.getString("sa.hsCheck"));
 
@@ -64,12 +71,12 @@ class HotspotAttributesPanel extends AttributesPanel {
         hsp.add(hsCheck);
 
         // define assignment panel
-        JPanel hsap = new JPanel();
+        final JPanel hsap = new JPanel();
         hsap.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.hsap")));
         hsap.setLayout(new AlignLayout(2, 5, 5));
 
-        JLabel moreLabel = new JLabel(LangTool.getString("sa.hsMore"));
-        JLabel bottomLabel = new JLabel(LangTool.getString("sa.hsBottom"));
+        final JLabel moreLabel = new JLabel(LangTool.getString("sa.hsMore"));
+        final JLabel bottomLabel = new JLabel(LangTool.getString("sa.hsBottom"));
         hsMore = new JTextField(getStringProperty("hsMore"), 20);
         hsBottom = new JTextField(getStringProperty("hsBottom"), 20);
 
@@ -83,6 +90,7 @@ class HotspotAttributesPanel extends AttributesPanel {
 
     }
 
+    @Override
     public void applyAttributes() {
 
         if (hsCheck.isSelected()) {

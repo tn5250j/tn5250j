@@ -85,6 +85,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 
 /**
  * A host GUI session
@@ -628,7 +629,7 @@ public class SessionPanel extends BorderPane implements
      */
     @Override
     public void actionAttributes() {
-        new SessionSettings(SwingToFxUtils.SHARED_FRAME, sesConfig).showIt();
+        new SessionSettings((Stage) getScene().getWindow(), sesConfig).showIt();
         getFocusForMe();
     }
 
