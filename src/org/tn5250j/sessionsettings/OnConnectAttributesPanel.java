@@ -35,7 +35,7 @@ import javax.swing.JTextField;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
 
-class OnConnectAttributesPanel extends AttributesPanel {
+class OnConnectAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private JTextField connectMacro;

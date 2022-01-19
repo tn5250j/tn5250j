@@ -67,7 +67,7 @@ import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.LangTool;
 
-class KeypadAttributesPanel extends AttributesPanel {
+class KeypadAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private static final int VISIBLE_ROW_COUNT = 15;

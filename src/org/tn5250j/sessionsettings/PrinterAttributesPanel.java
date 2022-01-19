@@ -41,7 +41,7 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.TN5250jFontsSelection;
 import org.tn5250j.tools.LangTool;
 
-class PrinterAttributesPanel extends AttributesPanel {
+class PrinterAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private JCheckBox defaultPrinter;

@@ -38,7 +38,7 @@ import javax.swing.JTextField;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
 
-class CursorAttributesPanel extends AttributesPanel {
+class CursorAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private JRadioButton cFull;

@@ -38,7 +38,7 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
-class HotspotAttributesPanel extends AttributesPanel {
+class HotspotAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private JCheckBox hsCheck;

@@ -25,6 +25,7 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
+import java.io.IOException;
 import java.util.Properties;
 
 import org.tn5250j.SessionConfig;
@@ -34,6 +35,7 @@ import org.tn5250j.tools.LangTool;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -104,12 +106,17 @@ public class SessionSettings extends DialogPane {
     }
 
     private void treeSelectionChanged(final TreeItem<AttributesPanel> item) {
-        final Node node = (Node) item.getValue().getClientProperty(SWING_NODE);
-        node.toFront();
+        final AttributesPanel value = item.getValue();
+        if (value instanceof AbstractAttributesPanelSwing) {
+            final Node node = (Node) ((AbstractAttributesPanelSwing) value).getClientProperty(SWING_NODE);
+            node.toFront();
+        } else if (value instanceof AbstractAttributesController) {
+            ((AbstractAttributesController) value).getView().toFront();
+        }
     }
 
     private void createNodes(final StackPane top) {
-        createNode(top, new ColorAttributesPanel(changes));
+        createNode(top, loadFromTemplate(new ColorAttributesController(changes), "/fxml/ColorAttributesPane.fxml"));
         createNode(top, new DisplayAttributesPanel(changes));
         createNode(top, new CursorAttributesPanel(changes));
         createNode(top, new FontAttributesPanel(changes));
@@ -123,7 +130,18 @@ public class SessionSettings extends DialogPane {
         createNode(top, new ErrorResetAttributesPanel(changes));
     }
 
-    private void createNode(final StackPane top, final AttributesPanel ap) {
+    private AbstractAttributesController loadFromTemplate(final AbstractAttributesController controller, final String tpl) {
+        try {
+            final FXMLLoader loader = UiUtils.createLoader(tpl);
+            loader.setControllerFactory(cls -> controller);
+            loader.load();
+            return controller;
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to load template: " + tpl, e);
+        }
+    }
+
+    private void createNode(final StackPane top, final AbstractAttributesPanelSwing ap) {
         final SwingNode swingNode = new SwingNode();
         swingNode.setContent(ap);
         ap.putClientProperty(SWING_NODE, swingNode);
@@ -131,6 +149,13 @@ public class SessionSettings extends DialogPane {
         top.getChildren().add(swingNode);
 
         final TreeItem<AttributesPanel> item = new TreeItem<>(ap);
+        tree.getRoot().getChildren().add(item);
+    }
+
+    private void createNode(final StackPane top, final AbstractAttributesController controller) {
+        top.getChildren().add(controller.getView());
+
+        final TreeItem<AttributesPanel> item = new TreeItem<>(controller);
         tree.getRoot().getChildren().add(item);
     }
 

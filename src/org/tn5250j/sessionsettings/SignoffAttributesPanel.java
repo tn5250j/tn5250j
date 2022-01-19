@@ -41,7 +41,7 @@ import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
-class SignoffAttributesPanel extends AttributesPanel {
+class SignoffAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private JCheckBox signoffCheck;

@@ -45,7 +45,7 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
-class DisplayAttributesPanel extends AttributesPanel {
+class DisplayAttributesPanel extends AbstractAttributesPanelSwing {
 
     private static final String NO = "No";
     private static final String YES = "Yes";

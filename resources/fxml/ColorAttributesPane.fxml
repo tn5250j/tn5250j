@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.shape.Shape?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.sessionsettings.ColorAttributesController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<VBox alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 1em 1em 1em 1em;
+			</style>
+        	<TitledBorderedPane fx:id="topPanel" title="??sa.colorSchema??" labelPosition="TOP_LEFT">
+        		<content>
+        			<HBox alignment="CENTER">
+						<VBox alignment="CENTER_LEFT">
+							<ComboBox fx:id = "colorSchemaList" />
+						</VBox>
+        			</HBox>
+        		</content>
+        	</TitledBorderedPane>
+        	<BorderPane>
+        		<top>
+		        	<TitledBorderedPane fx:id="colorListPanel" title="??ca.colors??" labelPosition="TOP_LEFT">
+		        		<content>
+		        			<HBox alignment="CENTER">
+								<VBox alignment="CENTER_LEFT" spacing="10">
+									<ComboBox fx:id="colorList"/>
+									<ColorPicker fx:id="colorPicker"/>
+								</VBox>
+		        			</HBox>
+		        		</content>
+		        	</TitledBorderedPane>
+        		</top>
+        		<center>
+		        	<TitledBorderedPane fx:id="previewPanel" title="??ca.preview??" labelPosition="TOP_LEFT">
+		        		<content>
+							<VBox alignment="CENTER">
+			        			<HBox alignment="CENTER" spacing="2">
+									<VBox spacing="2">
+										<AnchorPane>
+											<Rectangle fx:id = "previewRect11"/>
+											<Rectangle fx:id = "previewRect12"/>
+										    <Rectangle fx:id = "previewRect13"/>
+										</AnchorPane>
+	
+										<AnchorPane>
+										    <Rectangle fx:id = "previewRect14"/>
+										</AnchorPane>
+									</VBox>
+									<VBox spacing="2">
+										<StackPane>
+											<Rectangle fx:id = "previewRect21" style="-fx-background-color: black;"/>
+											<Rectangle fx:id = "previewRect22"/>
+										    <Rectangle fx:id = "previewRect23"/>
+										</StackPane>
+	
+										<StackPane>
+										    <Rectangle fx:id = "previewRect24"/>
+										    <Rectangle fx:id = "previewRect25"/>
+										</StackPane>
+									</VBox>
+									<VBox spacing="2">
+										<StackPane>
+											<Rectangle fx:id = "previewRect31"/>
+											<Rectangle fx:id = "previewRect32"/>
+										    <Rectangle fx:id = "previewRect33" style="-fx-background-color: black;"/>
+										</StackPane>
+	
+										<StackPane>
+										    <Rectangle fx:id = "previewRect34" style="-fx-background-color: black;"/>
+										    <Rectangle fx:id = "previewRect35"/>
+										</StackPane>
+									</VBox>
+									<VBox spacing="2">
+										<style>
+										  -fx-border-color: transparent;
+										  -fx-border-width: 0 0.5em 0 0.5em;
+										</style>
+									
+										<Label fx:id = "previewLabel1" text="Sample Text  Sample Text"/>
+										<Label fx:id = "previewLabel2" text="Sample Text  Sample Text" style="-fx-text-fill: black;"/>
+										<Label fx:id = "previewLabel3" text="Sample Text  Sample Text" style="-fx-background-color: white;"/>
+									</VBox>
+									<VBox spacing="2">
+										<Rectangle fx:id = "previewRect41"/>
+										<Rectangle fx:id = "previewRect42"/>
+									</VBox>
+			        			</HBox>
+							</VBox>
+		        		</content>
+		        	</TitledBorderedPane>
+        		</center>
+        	</BorderPane>
+		</VBox>
+	</top>
+</BorderPane>

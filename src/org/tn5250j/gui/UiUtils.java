@@ -34,7 +34,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -203,7 +203,7 @@ public final class UiUtils {
         g.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
     }
 
-    public static void setBackground(final Pane node, final Color bg) {
+    public static void setBackground(final Region node, final Color bg) {
         node.setBackground(new Background(new BackgroundFill(
                 bg, CornerRadii.EMPTY, Insets.EMPTY)));
     }
