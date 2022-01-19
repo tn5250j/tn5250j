@@ -36,10 +36,8 @@ import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -47,11 +45,12 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
-class ColorAttributesController extends AbstractAttributesController implements Initializable {
+class ColorAttributesController extends AbstractAttributesController {
     @FXML
     Pane view;
     @FXML
@@ -415,7 +414,7 @@ class ColorAttributesController extends AbstractAttributesController implements 
     }
 
     @Override
-    protected Parent getView() {
+    protected Region getView() {
         return view;
     }
 

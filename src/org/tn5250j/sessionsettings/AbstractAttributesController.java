@@ -29,14 +29,15 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
+import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 
 /**
  * Base class for all attribute panels
  */
-abstract class AbstractAttributesController implements AttributesPanel {
+abstract class AbstractAttributesController implements AttributesPanel, Initializable {
     private static final String nodePrefix = "sa.node";
 
     private String name;
@@ -126,5 +127,5 @@ abstract class AbstractAttributesController implements AttributesPanel {
     /**
      * @return view.
      */
-    protected abstract Parent getView();
+    protected abstract Region getView();
 }

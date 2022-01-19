@@ -46,6 +46,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -117,7 +118,7 @@ public class SessionSettings extends DialogPane {
 
     private void createNodes(final StackPane top) {
         createNode(top, loadFromTemplate(new ColorAttributesController(changes), "/fxml/ColorAttributesPane.fxml"));
-        createNode(top, new DisplayAttributesPanel(changes));
+        createNode(top, loadFromTemplate(new DisplayAttributesController(changes), "/fxml/DisplayAttributesPane.fxml"));
         createNode(top, new CursorAttributesPanel(changes));
         createNode(top, new FontAttributesPanel(changes));
         createNode(top, new TabAttributesPanel(changes));
@@ -153,7 +154,8 @@ public class SessionSettings extends DialogPane {
     }
 
     private void createNode(final StackPane top, final AbstractAttributesController controller) {
-        top.getChildren().add(controller.getView());
+        final Region view = controller.getView();
+        top.getChildren().add(view);
 
         final TreeItem<AttributesPanel> item = new TreeItem<>(controller);
         tree.getRoot().getChildren().add(item);

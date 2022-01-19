@@ -5,6 +5,10 @@
    /* play around with this value when changing the title font to get a vertically centered title */
 }
 
+.not-opaque {
+  -fx-background-color: -fx-background;
+}
+
 .bordered-titled-border {
   -fx-content-display: top;
   -fx-border-insets: 1em 0 0 0;

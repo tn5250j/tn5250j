@@ -14,12 +14,14 @@
 
 <BorderPane
     fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
 	fx:controller="org.tn5250j.sessionsettings.ColorAttributesController"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<VBox alignment="CENTER" spacing="10">
 			<style>
-			  -fx-padding: 1em 1em 1em 1em;
+			  -fx-padding: 0 1em 1em 1em;
 			</style>
         	<TitledBorderedPane fx:id="topPanel" title="??sa.colorSchema??" labelPosition="TOP_LEFT">
         		<content>

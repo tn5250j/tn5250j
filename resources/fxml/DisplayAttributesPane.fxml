@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.CheckBox?>
+
+<BorderPane
+    fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	fx:controller="org.tn5250j.sessionsettings.DisplayAttributesController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<VBox alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 0 1em 1em 1em;
+			</style>
+        	<TitledBorderedPane fx:id="columnSeparatorPanel" title="??columnSeparatorPanel??" labelPosition="TOP_LEFT">
+        		<content>
+					<VBox alignment="CENTER">
+	        			<HBox alignment="CENTER">
+	        				<RadioButton fx:id = "csHide"/>
+	        				<RadioButton fx:id = "csLine"/>
+	        				<RadioButton fx:id = "csShortLine"/>
+	        				<RadioButton fx:id = "csDot"/>
+	        			</HBox>
+					</VBox>
+        		</content>
+        	</TitledBorderedPane>
+        	<TitledBorderedPane fx:id="showAttributresPanel" title="??showAttributes??" labelPosition="TOP_LEFT">
+        		<content>
+        			<HBox alignment="CENTER">
+						<VBox alignment="CENTER_LEFT" spacing="10">
+	        				<RadioButton fx:id = "saNormal"/>
+	        				<RadioButton fx:id = "saHex"/>
+						</VBox>
+        			</HBox>
+        		</content>
+        	</TitledBorderedPane>
+        	<TitledBorderedPane fx:id="guiPanel" title="??GuiPanel??" labelPosition="TOP_LEFT">
+        		<content>
+					<VBox alignment="CENTER_LEFT" spacing = "10">
+						<CheckBox fx:id = "guiCheck"/>
+						<CheckBox fx:id = "guiShowUnderline"/>
+					</VBox>
+        		</content>
+        	</TitledBorderedPane>
+		</VBox>
+	</top>
+</BorderPane>

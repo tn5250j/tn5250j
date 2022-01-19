@@ -45,7 +45,7 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
-class DisplayAttributesPanel extends AbstractAttributesPanelSwing {
+class DisplayAttributesPanelSwing extends AbstractAttributesPanelSwing {
 
     private static final String NO = "No";
     private static final String YES = "Yes";
@@ -58,7 +58,7 @@ class DisplayAttributesPanel extends AbstractAttributesPanelSwing {
     private JCheckBox guiCheck;
     private JCheckBox guiShowUnderline;
 
-    DisplayAttributesPanel(final SessionConfig config) {
+    DisplayAttributesPanelSwing(final SessionConfig config) {
         super(config, "Display");
     }
 
