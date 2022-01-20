@@ -10,10 +10,10 @@ import org.tn5250j.tools.LangTool;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class OnConnectAttributesPanelSwingDemo {
+public class MouseAttributesPanelSwingDemo {
     public static void main(final String[] args) {
         LangTool.init();
-        final OnConnectAttributesPanel panel = new OnConnectAttributesPanel(DevTools.createSessionConfig());
+        final MouseAttributesPanel panel = new MouseAttributesPanel(DevTools.createSessionConfig());
         DevTools.showInFrame(panel);
     }
 }

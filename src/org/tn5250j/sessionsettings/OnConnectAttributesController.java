@@ -25,58 +25,45 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
-import java.awt.BorderLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import org.tn5250j.SessionConfig;
+import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
-class OnConnectAttributesPanel extends AbstractAttributesPanelSwing {
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 
-    private static final long serialVersionUID = 1L;
-    private JTextField connectMacro;
+class OnConnectAttributesController extends AbstractAttributesController {
+    @FXML
+    BorderPane view;
 
-    OnConnectAttributesPanel(final SessionConfig config) {
+    @FXML
+    TitledBorderedPane titledPane;
+    @FXML
+    TextField connectMacro;
+
+    OnConnectAttributesController(final SessionConfig config) {
         super(config, "OnConnect");
     }
 
-    /**
-     * Component initialization
-     */
     @Override
-    public void initPanel() throws Exception {
-
-        setLayout(new BorderLayout());
-        final JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-        add(contentPane, BorderLayout.NORTH);
-
+    public void initialize(final URL location, final ResourceBundle resources) {
         // define onConnect macro to run
-        final JPanel ocMacrop = new JPanel();
-        ocMacrop.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.connectMacro")));
-
-        connectMacro = new JTextField();
-        connectMacro.setColumns(30);
-
-        // sets the connect macro
+        titledPane.setTitle(LangTool.getString("sa.connectMacro"));
         connectMacro.setText(getStringProperty("connectMacro"));
-
-        ocMacrop.add(connectMacro);
-        contentPane.add(ocMacrop);
-
     }
 
     @Override
     public void applyAttributes() {
+        fireStringPropertyChanged("connectMacro", connectMacro.getText());
+    }
 
-        changes.firePropertyChange(this, "connectMacro",
-                getStringProperty("connectMacro"),
-                connectMacro.getText());
-        setProperty("connectMacro", connectMacro.getText());
-
+    @Override
+    public Region getView() {
+        return view;
     }
 }
