@@ -37,7 +37,7 @@ import javafx.scene.paint.Color;
 /**
  * Base class for all attribute panels
  */
-abstract class AbstractAttributesController implements AttributesPanel, Initializable {
+public abstract class AbstractAttributesController implements AttributesPanel, Initializable {
     private static final String nodePrefix = "sa.node";
 
     private String name;
@@ -127,5 +127,5 @@ abstract class AbstractAttributesController implements AttributesPanel, Initiali
     /**
      * @return view.
      */
-    protected abstract Region getView();
+    public abstract Region getView();
 }

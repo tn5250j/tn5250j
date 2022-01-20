@@ -8,14 +8,21 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.tn5250j.gui.UiUtils;
+import org.tn5250j.sessionsettings.AbstractAttributesController;
+
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.stage.Stage;
 
 /**
@@ -75,6 +82,28 @@ public class DevTools {
         );
 
         return frame;
+    }
+
+    public static ButtonType showInDialog(final AbstractAttributesController controller, final String template) {
+        final FXMLLoader loader = UiUtils.createLoader(template);
+        loader.setControllerFactory(cls -> {
+            return controller;
+        });
+
+        try {
+            loader.load();
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to load template", e);
+        }
+
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.setTitle("Demo");
+        dialog.getDialogPane().setContent(controller.getView());
+        dialog.setResizable(true);
+
+        final ButtonType result = dialog.showAndWait().orElse(null);
+        return result;
     }
 
     public static Stage createClosableFxFrame(final String title, final Parent node) {

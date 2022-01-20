@@ -345,8 +345,8 @@ class ColorAttributesController extends AbstractAttributesController {
                         nc);
 
                 setProperty(propertyName, Integer.toString(UiUtils.toRgb(nc)));
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -414,7 +414,7 @@ class ColorAttributesController extends AbstractAttributesController {
     }
 
     @Override
-    protected Region getView() {
+    public Region getView() {
         return view;
     }
 

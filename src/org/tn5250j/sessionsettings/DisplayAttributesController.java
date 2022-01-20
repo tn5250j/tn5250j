@@ -32,6 +32,7 @@ import org.tn5250j.SessionConfig;
 import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
@@ -120,12 +121,15 @@ class DisplayAttributesController extends AbstractAttributesController {
             return;
         }
 
-        for (final Toggle toggle : group.getToggles()) {
+        final ObservableList<Toggle> toggles = group.getToggles();
+        for (final Toggle toggle : toggles) {
             if (userData.equals(toggle.getUserData())) {
                 group.selectToggle(toggle);
-                break;
+                return;
             }
         }
+
+        group.selectToggle(toggles.get(0));
     }
 
     private void initRadioButton(final RadioButton button, final ToggleGroup group, final String langKey,
@@ -168,7 +172,7 @@ class DisplayAttributesController extends AbstractAttributesController {
     }
 
     @Override
-    protected Region getView() {
+    public Region getView() {
         return view;
     }
 }

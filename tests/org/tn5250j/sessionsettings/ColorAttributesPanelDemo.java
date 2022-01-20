@@ -3,15 +3,11 @@
  */
 package org.tn5250j.sessionsettings;
 
-import java.io.IOException;
-
 import org.tn5250j.DevTools;
-import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 /**
@@ -26,21 +22,11 @@ public class ColorAttributesPanelDemo extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        stage.setTitle("Color Attributres");
-
-        final FXMLLoader loader = UiUtils.createLoader("/fxml/ColorAttributesPane.fxml");
         final ColorAttributesController controller = new ColorAttributesController(DevTools.createSessionConfig());
-        loader.setControllerFactory(cls -> {
-            return controller;
-        });
-
-        try {
-            loader.load();
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to load template", e);
+        final String template = "/fxml/ColorAttributesPane.fxml";
+        final ButtonType result = DevTools.showInDialog(controller, template);
+        if (result == ButtonType.OK) {
+            controller.applyAttributes();
         }
-
-        stage.setScene(new Scene(controller.getView()));
-        stage.show();
     }
 }
