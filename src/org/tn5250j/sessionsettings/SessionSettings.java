@@ -121,7 +121,7 @@ public class SessionSettings extends DialogPane {
         createNode(top, loadFromTemplate(new DisplayAttributesController(changes), "/fxml/DisplayAttributesPane.fxml"));
         createNode(top, loadFromTemplate(new CursorAttributesController(changes), "/fxml/CursorAttributesPane.fxml"));
         createNode(top, loadFromTemplate(new FontAttributesController(changes), "/fxml/FontAttributesPane.fxml"));
-        createNode(top, new TabAttributesPanel(changes));
+        createNode(top, loadFromTemplate(new TabAttributesController(changes), "/fxml/TabAttributesPane.fxml"));
         createNode(top, new SignoffAttributesPanel(changes));
         createNode(top, new OnConnectAttributesPanel(changes));
         createNode(top, new MouseAttributesPanel(changes));

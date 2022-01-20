@@ -26,64 +26,52 @@
  */
 package org.tn5250j.sessionsettings;
 
-import java.awt.BorderLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import org.tn5250j.SessionConfig;
+import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
-class TabAttributesPanel extends AbstractAttributesPanelSwing {
+import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 
-    private static final long serialVersionUID = 1L;
-    private JCheckBox tabCloseCheck;
+class TabAttributesController extends AbstractAttributesController {
+    @FXML
+    BorderPane view;
 
-    TabAttributesPanel(final SessionConfig config) {
+    @FXML
+    TitledBorderedPane tabOptionsPane;
+
+    @FXML
+    CheckBox tabCloseCheck;
+
+    TabAttributesController(final SessionConfig config) {
         super(config, "Tabs");
     }
 
-    // Component initialization
     @Override
-    public void initPanel() throws Exception {
+    public void initialize(final URL location, final ResourceBundle resources) {
+        tabOptionsPane.setTitle(LangTool.getString("sa.titleTabOptions"));
 
-        setLayout(new BorderLayout());
-        final JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-        add(contentPane, BorderLayout.NORTH);
-
-        // Define close tab confirmation panel
-        final JPanel tabConfirm = new JPanel();
-        tabConfirm.setBorder(BorderFactory.createTitledBorder(LangTool.getString("sa.titleTabOptions")));
-
-        tabCloseCheck = new JCheckBox(LangTool.getString("sa.confirmTabClose"));
-
+        tabCloseCheck.setText(LangTool.getString("sa.confirmTabClose"));
         // Check if tab close confirmation is to be checked
         tabCloseCheck.setSelected(getStringProperty("confirmTabClose").equals("Yes"));
-
-        tabConfirm.add(tabCloseCheck);
-
-        contentPane.add(tabConfirm);
-
     }
 
     @Override
     public void applyAttributes() {
-
-        String value = "";
-
         if (tabCloseCheck.isSelected()) {
-            value = "Yes";
+            fireStringPropertyChanged("confirmTabClose", "Yes");
         } else {
-            value = "No";
+            fireStringPropertyChanged("confirmTabClose", "No");
         }
-
-        changes.firePropertyChange(this, "confirmTabClose", getStringProperty("confirmTabClose"), value);
-
-        setProperty("confirmTabClose", value);
-
     }
 
+    @Override
+    public Region getView() {
+        return view;
+    }
 }
