@@ -10,10 +10,10 @@ import org.tn5250j.tools.LangTool;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class CursorAttributesPanelSwingDemo {
+public class TabAttributesPanellSwingDemo {
     public static void main(final String[] args) {
         LangTool.init();
-        final CursorAttributesPanelSwing panel = new CursorAttributesPanelSwing(DevTools.createSessionConfig());
+        final TabAttributesPanel panel = new TabAttributesPanel(DevTools.createSessionConfig());
         DevTools.showInFrame(panel);
     }
 }
