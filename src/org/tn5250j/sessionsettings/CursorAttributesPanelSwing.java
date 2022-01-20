@@ -38,7 +38,7 @@ import javax.swing.JTextField;
 import org.tn5250j.SessionConfig;
 import org.tn5250j.tools.LangTool;
 
-class CursorAttributesPanel extends AbstractAttributesPanelSwing {
+class CursorAttributesPanelSwing extends AbstractAttributesPanelSwing {
 
     private static final long serialVersionUID = 1L;
     private JRadioButton cFull;
@@ -52,7 +52,7 @@ class CursorAttributesPanel extends AbstractAttributesPanelSwing {
     private JTextField cursorBottOffset;
     private JRadioButton blink;
 
-    CursorAttributesPanel(final SessionConfig config) {
+    CursorAttributesPanelSwing(final SessionConfig config) {
         super(config, "Cursor");
     }
 

@@ -124,6 +124,11 @@ public abstract class AbstractAttributesController implements AttributesPanel, I
         return name;
     }
 
+    protected void fireStringPropertyChanged(final String name, final String value) {
+        changes.firePropertyChange(this, name, getStringProperty(name), value);
+        setProperty(name, value);
+    }
+
     /**
      * @return view.
      */

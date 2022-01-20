@@ -119,7 +119,7 @@ public class SessionSettings extends DialogPane {
     private void createNodes(final StackPane top) {
         createNode(top, loadFromTemplate(new ColorAttributesController(changes), "/fxml/ColorAttributesPane.fxml"));
         createNode(top, loadFromTemplate(new DisplayAttributesController(changes), "/fxml/DisplayAttributesPane.fxml"));
-        createNode(top, new CursorAttributesPanel(changes));
+        createNode(top, loadFromTemplate(new CursorAttributesController(changes), "/fxml/CursorAttributesPane.fxml"));
         createNode(top, new FontAttributesPanel(changes));
         createNode(top, new TabAttributesPanel(changes));
         createNode(top, new SignoffAttributesPanel(changes));

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class ColorAttributesPanelDemo extends Application {
+public class CursorAttributesPaneDemo extends Application {
     public static void main(final String[] args) {
         LangTool.init();
         launch(args);
@@ -22,8 +22,8 @@ public class ColorAttributesPanelDemo extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final ColorAttributesController controller = new ColorAttributesController(DevTools.createSessionConfig());
-        final String template = "/fxml/ColorAttributesPane.fxml";
+        final CursorAttributesController controller = new CursorAttributesController(DevTools.createSessionConfig());
+        final String template = "/fxml/CursorAttributesPane.fxml";
         final ButtonType result = DevTools.showInDialog(controller, template);
         if (result == ButtonType.OK) {
             controller.applyAttributes();
