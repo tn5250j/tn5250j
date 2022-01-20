@@ -10,10 +10,10 @@ import org.tn5250j.tools.LangTool;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class SignoffAttributesPanelSwingDemo {
+public class OnConnectAttributesPanelSwingDemo {
     public static void main(final String[] args) {
         LangTool.init();
-        final SignoffAttributesPanel panel = new SignoffAttributesPanel(DevTools.createSessionConfig());
+        final OnConnectAttributesPanel panel = new OnConnectAttributesPanel(DevTools.createSessionConfig());
         DevTools.showInFrame(panel);
     }
 }
