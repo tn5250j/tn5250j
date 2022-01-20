@@ -10,10 +10,10 @@ import org.tn5250j.tools.LangTool;
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
-public class HotspotAttributesPanelSwingDemo {
+public class KeypadAttributesPanelSwingDemo {
     public static void main(final String[] args) {
         LangTool.init();
-        final HotspotAttributesPanel panel = new HotspotAttributesPanel(DevTools.createSessionConfig());
+        final KeypadAttributesPanel panel = new KeypadAttributesPanel(DevTools.createSessionConfig());
         DevTools.showInFrame(panel);
     }
 }
