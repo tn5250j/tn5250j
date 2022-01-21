@@ -100,11 +100,11 @@ class FontAttributesController extends AbstractAttributesController {
         horizontalScaleLabel.setText(LangTool.getString("sa.horScaleLabel"));
         verticalScaleLabel.setText(LangTool.getString("sa.vertScaleLabel"));
 
-        if (isPropertyExists("fontScaleWidth"))
+        if (hasProperty("fontScaleWidth"))
             horizontalScale.setText(getStringProperty("fontScaleWidth"));
-        if (isPropertyExists("fontScaleHeight"))
+        if (hasProperty("fontScaleHeight"))
             verticalScale.setText(getStringProperty("fontScaleHeight"));
-        if (isPropertyExists("fontPointSize"))
+        if (hasProperty("fontPointSize"))
             pointSize.setText(getStringProperty("fontPointSize"));
     }
 

@@ -63,7 +63,7 @@ public abstract class AbstractAttributesController implements AttributesPanel, I
     @SuppressWarnings("deprecation")
     protected final String getStringProperty(final String prop) {
 
-        if (isPropertyExists(prop))
+        if (hasProperty(prop))
             return changes.getStringProperty(prop);
         else
             return "";
@@ -74,13 +74,13 @@ public abstract class AbstractAttributesController implements AttributesPanel, I
      * @param prop property name.
      * @return true if exists property with given name, false otherwise
      */
-    protected boolean isPropertyExists(final String prop) {
+    protected boolean hasProperty(final String prop) {
         return changes.isPropertyExists(prop);
     }
 
     protected final String getStringProperty(final String prop, final String defaultValue) {
 
-        if (isPropertyExists(prop)) {
+        if (hasProperty(prop)) {
             final String p = changes.getStringProperty(prop);
             if (p.length() > 0)
                 return p;
@@ -96,7 +96,7 @@ public abstract class AbstractAttributesController implements AttributesPanel, I
     }
 
     protected Color getColorProperty(final String prop, final Color defColor) {
-        if (isPropertyExists(prop)) {
+        if (hasProperty(prop)) {
             return UiUtils.rgb(changes.getIntegerProperty(prop));
         } else
             return defColor;
@@ -104,7 +104,7 @@ public abstract class AbstractAttributesController implements AttributesPanel, I
 
     protected final boolean getBooleanProperty(final String prop, final boolean dflt) {
 
-        if (isPropertyExists(prop)) {
+        if (hasProperty(prop)) {
             final String b = changes.getStringProperty(prop).toLowerCase();
             if (b.equals("yes") || b.equals("true"))
                 return true;

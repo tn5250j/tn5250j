@@ -49,3 +49,23 @@
 .system-dialog-tab {
     -fx-padding: 0.5em 0.5em 0.5em 0.5em;
 }
+
+.arrow-down, .arrow-left, .arrow-right, .arrow-up {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    /*-fx-background-radius: 16px; */
+}
+
+.arrow-down {
+    -fx-graphic: url("arrow-down-24.png");
+}
+.arrow-left {
+    -fx-graphic: url("arrow-left-24.png");
+}
+.arrow-right {
+    -fx-graphic: url("arrow-right-24.png");
+}
+.arrow-up {
+    -fx-graphic: url("arrow-up-24.png");
+}
+

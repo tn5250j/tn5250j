@@ -85,6 +85,12 @@ public class DevTools {
     }
 
     public static ButtonType showInDialog(final AbstractAttributesController controller, final String template) {
+        final Dialog<ButtonType> dialog = createDialog(controller, template);
+        return dialog.showAndWait().orElse(null);
+    }
+
+    public static Dialog<ButtonType> createDialog(final AbstractAttributesController controller,
+            final String template) {
         final FXMLLoader loader = UiUtils.createLoader(template);
         loader.setControllerFactory(cls -> {
             return controller;
@@ -101,9 +107,7 @@ public class DevTools {
         dialog.setTitle("Demo");
         dialog.getDialogPane().setContent(controller.getView());
         dialog.setResizable(true);
-
-        final ButtonType result = dialog.showAndWait().orElse(null);
-        return result;
+        return dialog;
     }
 
     public static Stage createClosableFxFrame(final String title, final Parent node) {
