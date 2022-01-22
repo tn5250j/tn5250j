@@ -37,7 +37,7 @@ import javafx.scene.paint.Color;
 /**
  * Base class for all attribute panels
  */
-public abstract class AbstractAttributesController implements AttributesPanel, Initializable {
+public abstract class AbstractAttributesController implements Initializable {
     private static final String nodePrefix = "sa.node";
 
     private String name;
@@ -57,7 +57,6 @@ public abstract class AbstractAttributesController implements AttributesPanel, I
         this.name = LangTool.getString(prefix + name);
     }
 
-    @Override
     public abstract void applyAttributes();
 
     @SuppressWarnings("deprecation")

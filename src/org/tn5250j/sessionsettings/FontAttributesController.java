@@ -25,8 +25,6 @@
  */
 package org.tn5250j.sessionsettings;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.net.URL;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -42,6 +40,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
 
 class FontAttributesController extends AbstractAttributesController {
     @FXML
@@ -79,13 +78,12 @@ class FontAttributesController extends AbstractAttributesController {
 
         fontPanel.setTitle(LangTool.getString("sa.font"));
         // fonts
-        final Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 
         final String font = getStringProperty("font");
 
-        for (int x = 0; x < fonts.length; x++) {
-            if (fonts[x].getFontName().indexOf('.') < 0) {
-                fontsList.getItems().add(fonts[x].getFontName());
+        for (final String fontName: Font.getFontNames()) {
+            if (fontName.indexOf('.') < 0) {
+                fontsList.getItems().add(fontName);
             }
         }
 

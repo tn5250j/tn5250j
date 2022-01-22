@@ -34,7 +34,6 @@ import org.tn5250j.tools.LangTool;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -53,14 +52,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class SessionSettings extends DialogPane {
-    private static final String SWING_NODE = "SWING_NODE";
-
     private final Properties props;
     private BorderPane jpm = new BorderPane();
 
     private final SessionConfig changes;
 
-    private TreeView<AttributesPanel> tree = new TreeView<>();
+    private TreeView<AbstractAttributesController> tree = new TreeView<>();
     private final Stage parent;
 
     @SuppressWarnings("deprecation")
@@ -88,7 +85,7 @@ public class SessionSettings extends DialogPane {
 
         //Create the nodes.
         tree.setShowRoot(false);
-        tree.setRoot(new TreeItem<AttributesPanel>(null));
+        tree.setRoot(new TreeItem<AbstractAttributesController>(null));
         tree.getRoot().setExpanded(true);
         createNodes(jp);
 
@@ -106,14 +103,8 @@ public class SessionSettings extends DialogPane {
         tree.getSelectionModel().selectFirst();
     }
 
-    private void treeSelectionChanged(final TreeItem<AttributesPanel> item) {
-        final AttributesPanel value = item.getValue();
-        if (value instanceof AbstractAttributesPanelSwing) {
-            final Node node = (Node) ((AbstractAttributesPanelSwing) value).getClientProperty(SWING_NODE);
-            node.toFront();
-        } else if (value instanceof AbstractAttributesController) {
-            ((AbstractAttributesController) value).getView().toFront();
-        }
+    private void treeSelectionChanged(final TreeItem<AbstractAttributesController> item) {
+        item.getValue().getView().toFront();
     }
 
     private void createNodes(final StackPane top) {
@@ -127,8 +118,8 @@ public class SessionSettings extends DialogPane {
         createNode(top, loadFromTemplate(new MouseAttributesController(changes), "/fxml/MouseAttributesPane.fxml"));
         createNode(top, loadFromTemplate(new HotspotAttributesController(changes), "/fxml/HotspotAttributesPane.fxml"));
         createNode(top, loadFromTemplate(new KeypadAttributesController(changes), "/fxml/KeypadAttributesPane.fxml"));
-        createNode(top, new PrinterAttributesPanel(changes));
-        createNode(top, new ErrorResetAttributesPanel(changes));
+        createNode(top, loadFromTemplate(new PrinterAttributesController(changes), "/fxml/PrinterAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new ErrorResetAttributesController(changes), "/fxml/ErrorResetAttributesPane.fxml"));
     }
 
     private AbstractAttributesController loadFromTemplate(final AbstractAttributesController controller, final String tpl) {
@@ -142,22 +133,11 @@ public class SessionSettings extends DialogPane {
         }
     }
 
-    private void createNode(final StackPane top, final AbstractAttributesPanelSwing ap) {
-        final SwingNode swingNode = new SwingNode();
-        swingNode.setContent(ap);
-        ap.putClientProperty(SWING_NODE, swingNode);
-
-        top.getChildren().add(swingNode);
-
-        final TreeItem<AttributesPanel> item = new TreeItem<>(ap);
-        tree.getRoot().getChildren().add(item);
-    }
-
     private void createNode(final StackPane top, final AbstractAttributesController controller) {
         final Region view = controller.getView();
         top.getChildren().add(view);
 
-        final TreeItem<AttributesPanel> item = new TreeItem<>(controller);
+        final TreeItem<AbstractAttributesController> item = new TreeItem<>(controller);
         tree.getRoot().getChildren().add(item);
     }
 
@@ -225,7 +205,6 @@ public class SessionSettings extends DialogPane {
 
         dialog.setDialogPane(this);
         dialog.setResizable(true); //FIXME possible better to comment it
-
         Platform.runLater(dialog::show);
     }
 
@@ -241,8 +220,8 @@ public class SessionSettings extends DialogPane {
     }
 
     private void applyAttributes() {
-        final ObservableList<TreeItem<AttributesPanel>> children = tree.getRoot().getChildren();
-        for (final TreeItem<AttributesPanel> item : children) {
+        final ObservableList<TreeItem<AbstractAttributesController>> children = tree.getRoot().getChildren();
+        for (final TreeItem<AbstractAttributesController> item : children) {
             item.getValue().applyAttributes();
         }
 

@@ -21,7 +21,7 @@
 	styleClass="not-opaque"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 	<style>
-	  -fx-padding: 1em 0.5em 1em 0.5em;
+	  -fx-padding: 0 0.5em 1em 0.5em;
 	</style>
 	<top>
 		<TitledBorderedPane fx:id = "enableKeyPadPanel" labelPosition="TOP_LEFT">
