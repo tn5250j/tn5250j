@@ -86,6 +86,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * A host GUI session
@@ -309,7 +310,7 @@ public class SessionPanel extends BorderPane implements
 
     @Override
     public void sendScreenEMail() {
-        new SendEMailDialog(SwingToFxUtils.SHARED_FRAME, this);
+        new SendEMailDialog(this);
     }
 
     /**
@@ -993,5 +994,10 @@ public class SessionPanel extends BorderPane implements
     @Override
     public KeyboardHandler getKeyHandler() {
         return keyHandler;
+    }
+
+    @Override
+    public Window getWindow() {
+        return getScene().getWindow();
     }
 }

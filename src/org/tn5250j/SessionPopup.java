@@ -58,7 +58,6 @@ import java.util.Map;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.HexCharMapDialog;
-import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.actions.EmulatorAction;
@@ -385,7 +384,7 @@ public class SessionPopup {
     }
 
     private void showHexMap() {
-        final HexCharMapDialog dlg = new HexCharMapDialog(SwingToFxUtils.SHARED_FRAME, vt.getCodePage());
+        final HexCharMapDialog dlg = new HexCharMapDialog(sessiongui.getWindow(), vt.getCodePage());
         final String key = dlg.showModal();
         if (key != null) {
             screen.sendKeys(key);
@@ -401,9 +400,9 @@ public class SessionPopup {
     private void mapMeKeys() {
         if (Macronizer.isMacrosExist()) {
             final String[] macrosList = Macronizer.getMacroList();
-            new KeyConfigure(SwingToFxUtils.SHARED_FRAME, macrosList, vt.getCodePage());
+            new KeyConfigure(sessiongui.getWindow(), macrosList, vt.getCodePage());
         } else {
-            new KeyConfigure(SwingToFxUtils.SHARED_FRAME, null, vt.getCodePage());
+            new KeyConfigure(sessiongui.getWindow(), null, vt.getCodePage());
         }
         sessiongui.getFocusForMe();
     }
@@ -424,7 +423,7 @@ public class SessionPopup {
     }
 
     private void doMeTransfer() {
-        new XTFRFile(SwingToFxUtils.SHARED_FRAME, vt, sessiongui);
+        new XTFRFile(vt, sessiongui);
         sessiongui.getFocusForMe();
     }
 
@@ -442,23 +441,23 @@ public class SessionPopup {
     }
 
     private void sendScreenEMail() {
-        new SendEMailDialog(SwingToFxUtils.SHARED_FRAME, sessiongui);
+        new SendEMailDialog(sessiongui);
         sessiongui.getFocusForMe();
     }
 
     private void sendQuickEMail() {
-        new SendEMailDialog(SwingToFxUtils.SHARED_FRAME, sessiongui, false);
+        new SendEMailDialog(sessiongui, false);
         sessiongui.getFocusForMe();
     }
 
     private void sendMeToFile() {
 
-        SendScreenToFile.showDialog(SwingToFxUtils.SHARED_FRAME, screen);
+        SendScreenToFile.showDialog(sessiongui.getWindow(), screen);
     }
 
     private void sendMeToImageFile() {
         // Change sent by LUC - LDC to add a parent frame to be passed
-        new SendScreenImageToFile(SwingToFxUtils.SHARED_FRAME, sessiongui);
+        new SendScreenImageToFile(sessiongui.getWindow(), sessiongui);
     }
 
     private void copy(final int pos) {

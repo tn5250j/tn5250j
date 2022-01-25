@@ -27,9 +27,6 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.QUICK_MAIL;
 
-import java.awt.Component;
-
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.SessionGui;
@@ -56,8 +53,7 @@ public class QuickEmailAction extends EmulatorAction {
         final Runnable emailIt = new Runnable() {
             @Override
             public void run() {
-                new SendEMailDialog((JFrame) SwingUtilities.getRoot((Component) session),
-                        session, false);
+                new SendEMailDialog(session, false);
             }
 
         };

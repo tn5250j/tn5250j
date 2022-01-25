@@ -1,69 +1,35 @@
-package org.tn5250j.tools.filters;
-
 /**
- * Title: tn5250J
- * Copyright:   Copyright (c) 2001
- * Company:
- *
- * @author Kenneth J. Pouncey
- * @version 0.1
- * <p>
- * Description:
- * <p>
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA
- */
-
-import java.io.File;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import javax.swing.filechooser.*;
-
-/**
- *
- * This is taken from Sun's demo ExampleFileFiler.java
- *
  * A convenience implementation of FileFilter that filters out
  * all files except for those type extensions that it knows about.
- *
- * Extensions are of the type ".foo", which is typically found on
- * Windows and Unix boxes, but not on Macinthosh. Case is ignored.
- *
+ * <p>
  * Example - create a new filter that filerts out all files
  * but gif and jpg image files:
- *
- *     JFileChooser chooser = new JFileChooser();
- *     XTFRFileFilter filter = new XTFRFileFilter(
- *                   new String{"gif", "jpg"}, "JPEG & GIF Images")
- *     chooser.addChoosableFileFilter(filter);
- *     chooser.showOpenDialog(this);
- *
- * @version 1.10 05/17/01
- * @author Jeff Dinkins
+ * <p>
+ * JFileChooser chooser = new JFileChooser();
+ * TN5250jFileFilter filter = new TN5250jFileFilter(
+ * new String{"gif", "jpg"}, "JPEG & GIF Images")
+ * chooser.addChoosableFileFilter(filter);
+ * chooser.showOpenDialog(this);
  */
-public class XTFRFileFilter extends FileFilter {
+package org.tn5250j.gui;
 
-    private static String TYPE_UNKNOWN = "Type Unknown";
-    private static String HIDDEN_FILE = "Hidden File";
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-    private Hashtable filters = null;
+import javax.swing.filechooser.FileFilter;
+
+import javafx.stage.FileChooser.ExtensionFilter;
+
+public class TN5250jFileFilterBuilder {
+    private final Set<String> filters = new HashSet<>();
     private String description = null;
     private String fullDescription = null;
     private boolean useExtensionsInDescription = true;
-    private String outputFilterClassName;
-    private Object o;
 
     /**
      * Creates a file filter. If no filters are added, then all
@@ -71,30 +37,30 @@ public class XTFRFileFilter extends FileFilter {
      *
      * @see #addExtension
      */
-    public XTFRFileFilter() {
-        this.filters = new Hashtable();
+    public TN5250jFileFilterBuilder() {
+        super();
     }
 
     /**
      * Creates a file filter that accepts files with the given extension.
-     * Example: new XTFRFileFilter("jpg");
+     * Example: new TN5250jFileFilter("jpg");
      *
      * @see #addExtension
      */
-    public XTFRFileFilter(String extension) {
+    public TN5250jFileFilterBuilder(final String extension) {
         this(extension, null);
     }
 
     /**
      * Creates a file filter that accepts the given file type.
-     * Example: new XTFRFileFilter("jpg", "JPEG Image Images");
+     * Example: new TN5250jFileFilter("jpg", "JPEG Image Images");
      *
      * Note that the "." before the extension is not needed. If
      * provided, it will be ignored.
      *
      * @see #addExtension
      */
-    public XTFRFileFilter(String extension, String description) {
+    public TN5250jFileFilterBuilder(final String extension, final String description) {
         this();
         if (extension != null)
             addExtension(extension);
@@ -104,26 +70,26 @@ public class XTFRFileFilter extends FileFilter {
 
     /**
      * Creates a file filter from the given string array.
-     * Example: new XTFRFileFilter(String {"gif", "jpg"});
+     * Example: new TN5250jFileFilter(String {"gif", "jpg"});
      *
      * Note that the "." before the extension is not needed adn
      * will be ignored.
      *
      * @see #addExtension
      */
-    public XTFRFileFilter(String[] filters) {
+    public TN5250jFileFilterBuilder(final String[] filters) {
         this(filters, null);
     }
 
     /**
      * Creates a file filter from the given string array and description.
-     * Example: new XTFRFileFilter(String {"gif", "jpg"}, "Gif and JPG Images");
+     * Example: new TN5250jFileFilter(String {"gif", "jpg"}, "Gif and JPG Images");
      *
      * Note that the "." before the extension is not needed and will be ignored.
      *
      * @see #addExtension
      */
-    public XTFRFileFilter(String[] filters, String description) {
+    public TN5250jFileFilterBuilder(final String[] filters, final String description) {
         this();
         for (int i = 0; i < filters.length; i++) {
             // add filters one by one
@@ -134,44 +100,22 @@ public class XTFRFileFilter extends FileFilter {
     }
 
     /**
-     * Return true if this file should be shown in the directory pane,
-     * false if it shouldn't.
-     *
-     * Files that begin with "." are ignored.
-     *
-     * @see #getExtension
-     * @see FileFilter#accepts
-     */
-    public boolean accept(File f) {
-        if (f != null) {
-            if (f.isDirectory()) {
-                return true;
-            }
-            String extension = getExtension(f);
-            if (extension != null && filters.get(getExtension(f)) != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Return the extension portion of the file's name .
      *
      * @see #getExtension
      * @see FileFilter#accept
      */
-    public String getExtension(File f) {
+    public String getExtension(final File f) {
         if (f != null) {
             return getExtension(f.getName());
         }
         return null;
     }
 
-    public String getExtension(String filename) {
+    public String getExtension(final String filename) {
 
         if (filename != null) {
-            int i = filename.lastIndexOf('.');
+            final int i = filename.lastIndexOf('.');
             if (i > 0 && i < filename.length() - 1) {
                 return filename.substring(i + 1).toLowerCase();
             }
@@ -185,17 +129,14 @@ public class XTFRFileFilter extends FileFilter {
      * For example: the following code will create a filter that filters
      * out all files except those that end in ".jpg" and ".tif":
      *
-     *   XTFRFileFilter filter = new XTFRFileFilter();
+     *   TN5250jFileFilter filter = new TN5250jFileFilter();
      *   filter.addExtension("jpg");
      *   filter.addExtension("tif");
      *
      * Note that the "." before the extension is not needed and will be ignored.
      */
-    public void addExtension(String extension) {
-        if (filters == null) {
-            filters = new Hashtable(5);
-        }
-        filters.put(extension.toLowerCase(), this);
+    public void addExtension(final String extension) {
+        filters.add(extension.toLowerCase());
         fullDescription = null;
     }
 
@@ -212,15 +153,13 @@ public class XTFRFileFilter extends FileFilter {
     public String getDescription() {
         if (fullDescription == null) {
             if (description == null || isExtensionListInDescription()) {
-                fullDescription = description == null ? "(" : description + " (";
+                fullDescription = description == null ? "(" : description + " (.";
+
                 // build the description from the extension list
-                Enumeration extensions = filters.keys();
-                if (extensions != null) {
-                    fullDescription += "." + (String) extensions.nextElement();
-                    while (extensions.hasMoreElements()) {
-                        fullDescription += ", ." + (String) extensions.nextElement();
-                    }
-                }
+                final List<String> extensions = new LinkedList<>(filters);
+                Collections.sort(extensions);
+
+                fullDescription += String.join(", .", extensions);
                 fullDescription += ")";
             } else {
                 fullDescription = description;
@@ -237,7 +176,7 @@ public class XTFRFileFilter extends FileFilter {
      * @see setExtensionListInDescription
      * @see isExtensionListInDescription
      */
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
         fullDescription = null;
     }
@@ -253,7 +192,7 @@ public class XTFRFileFilter extends FileFilter {
      * @see setDescription
      * @see isExtensionListInDescription
      */
-    public void setExtensionListInDescription(boolean b) {
+    public void setExtensionListInDescription(final boolean b) {
         useExtensionsInDescription = b;
         fullDescription = null;
     }
@@ -277,7 +216,7 @@ public class XTFRFileFilter extends FileFilter {
      * Set the extension to be used for this type if one is not provided
      *    This will append the first key of the filter contained in the list
      */
-    public String setExtension(File f) {
+    public String setExtension(final File f) {
 
         return setExtension(f.getAbsolutePath());
     }
@@ -285,8 +224,7 @@ public class XTFRFileFilter extends FileFilter {
     public String setExtension(String f) {
 
         if (f != null & getExtension(f) == null) {
-            Enumeration e = filters.keys();
-            String ext = (String) e.nextElement();
+            String ext = filters.iterator().next();
             // just a little extra check for html documents
             if (ext.equals("htm"))
                 ext = "html";
@@ -295,41 +233,12 @@ public class XTFRFileFilter extends FileFilter {
         return f;
     }
 
-    /**
-     *
-     */
-    public boolean isExtensionInList(String filename) {
-
-        String ext = null;
-        if (filename == null)
-            return false;
-        int i = filename.lastIndexOf('.');
-        if (i > 0 && i < filename.length() - 1) {
-            ext = filename.substring(i + 1).toLowerCase();
-        }
-        if (ext == null)
-            return false;
-        else
-            // check if extension is within this filter list
-            return filters.containsKey(ext);
+    public ExtensionFilter buildFilter() {
+        final List<String> extensions = filters.stream().map(this::addStarPrefix).collect(Collectors.toList());
+        return new ExtensionFilter(getDescription(), extensions);
     }
 
-    public void setOutputFilterName(String className) {
-
-        outputFilterClassName = className;
-    }
-
-    public OutputFilterInterface getOutputFilterInstance() {
-
-        try {
-            if (o == null) {
-                Class c = Class.forName(outputFilterClassName);
-                o = c.newInstance();
-            }
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-
-        return (OutputFilterInterface) o;
+    private String addStarPrefix(final String str) {
+        return "*." + str;
     }
 }

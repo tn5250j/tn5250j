@@ -27,7 +27,6 @@
 package org.tn5250j.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.text.CollationKey;
 import java.text.Collator;
 import java.util.Iterator;
@@ -42,9 +41,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
-import org.tn5250j.SessionGui;
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.LangTool;
+
+import javafx.stage.Window;
 
 /**
  * Shows a dialog, containing all HEX values and their corresponding chars.
@@ -53,21 +53,21 @@ public class HexCharMapDialog {
 
     private final DefaultListModel hexListModel;
     private final JList hexList;
-    private final Component parent;
+    private final Window parent;
 
-    public HexCharMapDialog(Component parent, ICodePage codepage) {
+    public HexCharMapDialog(final Window parent, final ICodePage codepage) {
         assert codepage != null : new IllegalArgumentException("A codepage is needed!");
 
         this.parent = parent;
 
         // we will use a collator here so that we can take advantage of the locales
-        Collator collator = Collator.getInstance();
+        final Collator collator = Collator.getInstance();
         CollationKey key = null;
 
-        Set<CollationKey> set = new TreeSet<CollationKey>();
-        StringBuilder sb = new StringBuilder();
+        final Set<CollationKey> set = new TreeSet<CollationKey>();
+        final StringBuilder sb = new StringBuilder();
         for (int x = 0; x < 256; x++) {
-            char ac = codepage.ebcdic2uni(x);
+            final char ac = codepage.ebcdic2uni(x);
             if (!Character.isISOControl(ac)) {
                 sb.setLength(0);
                 if (Integer.toHexString(ac).length() == 1) {
@@ -83,10 +83,10 @@ public class HexCharMapDialog {
             }
         }
 
-        Iterator<?> iterator = set.iterator();
+        final Iterator<?> iterator = set.iterator();
         hexListModel = new DefaultListModel();
         while (iterator.hasNext()) {
-            CollationKey keyc = (CollationKey) iterator.next();
+            final CollationKey keyc = (CollationKey) iterator.next();
             hexListModel.addElement(keyc.getSourceString());
         }
 
@@ -114,8 +114,8 @@ public class HexCharMapDialog {
 
         final String[] options = {LangTool.getString("hm.optInsert"), LangTool.getString("hm.optCancel")};
 
-        int result = JOptionPane.showOptionDialog(
-                parent,   // the parent that the dialog blocks
+        final int result = JOptionPane.showOptionDialog(
+                SwingToFxUtils.SHARED_FRAME,   // the parent that the dialog blocks
                 new Object[]{srp},                // the dialog message array
                 LangTool.getString("hm.title"),    // the title of the dialog window
                 JOptionPane.DEFAULT_OPTION,        // option type

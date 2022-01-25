@@ -28,7 +28,6 @@ package org.tn5250j.keyboard.actions;
 import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
 
 import org.tn5250j.SessionGui;
-import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.XTFRFile;
 
@@ -49,6 +48,6 @@ public class TransferAction extends EmulatorAction {
 
     @Override
     public void handle() {
-        new XTFRFile(SwingToFxUtils.SHARED_FRAME, session.getVT(), session);
+        new XTFRFile(session.getVT(), session);
     }
 }

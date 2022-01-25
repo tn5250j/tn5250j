@@ -30,7 +30,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,6 +68,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.tn5250j.encoding.ICodePage;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.keyboard.KeyStrokeHelper;
@@ -79,6 +79,7 @@ import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
 
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Window;
 
 public class KeyConfigure extends JDialog implements ActionListener {
 
@@ -138,9 +139,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
         colorMap.put(0x3E, "Blue UL");
     }
 
-    public KeyConfigure(final Frame parent, final String[] macros, final ICodePage cp) {
+    public KeyConfigure(final Window parent, final String[] macros, final ICodePage cp) {
 
-        super(parent);
+        super(SwingToFxUtils.SHARED_FRAME);
 
         codePage = cp;
         macrosList = macros;

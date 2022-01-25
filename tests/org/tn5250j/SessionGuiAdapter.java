@@ -31,6 +31,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 /**
@@ -368,5 +369,9 @@ public class SessionGuiAdapter extends Pane implements SessionGui {
 
         stage.show();
         return stage;
+    }
+    @Override
+    public Window getWindow() {
+        return getScene().getWindow();
     }
 }

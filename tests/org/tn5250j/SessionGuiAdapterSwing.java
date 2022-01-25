@@ -31,6 +31,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Window;
 
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
@@ -356,5 +357,10 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         return frame;
+    }
+
+    @Override
+    public Window getWindow() {
+        return null;
     }
 }

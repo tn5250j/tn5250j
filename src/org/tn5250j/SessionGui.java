@@ -19,6 +19,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Window;
 
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
@@ -113,6 +114,7 @@ public interface SessionGui {
     void connect();
     Point2D translateStart(Point2D start);
     Point2D translateEnd(Point2D end);
+    Window getWindow();
 
     KeyboardHandler getKeyHandler();
     void addEmulatorActionListener(EmulatorActionListener listener);
