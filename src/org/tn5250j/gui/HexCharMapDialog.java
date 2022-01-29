@@ -26,39 +26,30 @@
  */
 package org.tn5250j.gui;
 
-import java.awt.BorderLayout;
 import java.text.CollationKey;
 import java.text.Collator;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
 
 import org.tn5250j.encoding.ICodePage;
 import org.tn5250j.tools.LangTool;
 
-import javafx.stage.Window;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 
 /**
  * Shows a dialog, containing all HEX values and their corresponding chars.
  */
 public class HexCharMapDialog {
 
-    private final DefaultListModel hexListModel;
-    private final JList hexList;
-    private final Window parent;
+    private final ListView<String> hexList = new ListView<>();
 
-    public HexCharMapDialog(final Window parent, final ICodePage codepage) {
+    public HexCharMapDialog(final ICodePage codepage) {
         assert codepage != null : new IllegalArgumentException("A codepage is needed!");
-
-        this.parent = parent;
 
         // we will use a collator here so that we can take advantage of the locales
         final Collator collator = Collator.getInstance();
@@ -83,18 +74,11 @@ public class HexCharMapDialog {
             }
         }
 
-        final Iterator<?> iterator = set.iterator();
-        hexListModel = new DefaultListModel();
-        while (iterator.hasNext()) {
-            final CollationKey keyc = (CollationKey) iterator.next();
-            hexListModel.addElement(keyc.getSourceString());
+        for (final CollationKey keyc : set) {
+            hexList.getItems().add(keyc.getSourceString());
         }
-
-        hexList = new JList(hexListModel);
-
-        hexList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        hexList.setSelectedIndex(0);
-
+        hexList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        hexList.getSelectionModel().selectFirst();
     }
 
     /**
@@ -103,33 +87,17 @@ public class HexCharMapDialog {
      * @return a String, containing the selected character OR null, if nothing was selected
      */
     public String showModal() {
+        final BorderPane scp = new BorderPane();
+        scp.setCenter(hexList);
 
-        final JScrollPane listScrollPane = new JScrollPane(hexList);
-        listScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        listScrollPane.setSize(40, 100);
-
-        final JPanel srp = new JPanel();
-        srp.setLayout(new BorderLayout());
-        srp.add(listScrollPane, BorderLayout.CENTER);
-
-        final String[] options = {LangTool.getString("hm.optInsert"), LangTool.getString("hm.optCancel")};
-
-        final int result = JOptionPane.showOptionDialog(
-                SwingToFxUtils.SHARED_FRAME,   // the parent that the dialog blocks
-                new Object[]{srp},                // the dialog message array
-                LangTool.getString("hm.title"),    // the title of the dialog window
-                JOptionPane.DEFAULT_OPTION,        // option type
-                JOptionPane.INFORMATION_MESSAGE,      // message type
-                null,                              // optional icon, use null to use the default icon
-                options,                           // options string array, will be made into buttons//
-                options[0]                         // option that should be made into a default button
-        );
-
-        if (result == 0) {
-            final String selval = (String) hexList.getSelectedValue();
-            return selval.substring(selval.length() - 1);
+        final Alert dialog = UiUtils.createInputDialog(scp, LangTool.getString("hm.optInsert"),
+                LangTool.getString("hm.optCancel"));
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setTitle(LangTool.getString("hm.title"));
+        if (dialog.showAndWait().orElse(null) == ButtonType.OK) {
+            final String selval = hexList.getSelectionModel().getSelectedItem();
+            return selval == null ? null : selval.substring(selval.length() - 1);
         }
         return null;
     }
-
 }

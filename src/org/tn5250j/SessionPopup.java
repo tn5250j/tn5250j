@@ -386,7 +386,7 @@ public class SessionPopup {
     }
 
     private void showHexMap() {
-        final HexCharMapDialog dlg = new HexCharMapDialog(sessiongui.getWindow(), vt.getCodePage());
+        final HexCharMapDialog dlg = new HexCharMapDialog(vt.getCodePage());
         final String key = dlg.showModal();
         if (key != null) {
             screen.sendKeys(key);

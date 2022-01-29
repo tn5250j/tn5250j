@@ -19,6 +19,8 @@ import org.tn5250j.GlobalConfigure;
 import org.tn5250j.SessionGui;
 import org.tn5250j.gui.UiUtils;
 
+import javafx.application.Platform;
+
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
     private static JPythonInterpreterDriver _instance;
@@ -96,7 +98,7 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
                     try {
                         _interpreter.execfile(s2);
                     } catch (final PyException pse) {
-                        UiUtils.showError(pse, "Error in script " + s2);
+                        Platform.runLater(() -> UiUtils.showError(pse, "Error in script " + s2));
                     } finally {
                         session.setMacroRunning(false);
                     }
