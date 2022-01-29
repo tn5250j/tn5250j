@@ -25,87 +25,98 @@
  */
 package org.tn5250j.keyboard.configure;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.CollationKey;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.encoding.ICodePage;
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
-import org.tn5250j.keyboard.KeyStrokeHelper;
 import org.tn5250j.keyboard.KeyStroker;
 import org.tn5250j.scripting.InterpreterDriverManager;
-import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.system.OperatingSystem;
 
+import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Window;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 
-public class KeyConfigure extends JDialog implements ActionListener {
-
-    private static final long serialVersionUID = -421661235666776519L;
+public class KeyConfigureController implements Initializable {
+    private static final SortedMap<Integer, String> colorMap = new TreeMap<Integer, String>();
 
     private final KeyMnemonicResolver keyMnemonicResolver = new KeyMnemonicResolver();
 
-    private JPanel keyPanel = new JPanel();
-    private JPanel options = new JPanel();
-    private JTextArea strokeDesc = new JTextArea();
-    private JTextArea strokeDescAlt = new JTextArea();
-    private JLabel strokeLocation = new JLabel();
-    private JLabel strokeLocationAlt = new JLabel();
-    private JList functions;
-    private JDialog dialog;
+    @FXML
+    private BorderPane view;
+    @FXML
+    private TitledBorderedPane mapToPanel;
+    @FXML
+    private TitledBorderedPane descriptionPanel;
+
+    @FXML
+    private TextField strokeDesc;
+    @FXML
+    private TextField strokeDescAlt;
+    @FXML
+    private Label strokeLocation;
+    @FXML
+    private Label strokeLocationAlt;
+
+    @FXML
+    private ListView<Object> functions;
+    @FXML
+    private ComboBox<String> whichKeys;
+
+    @FXML
+    private Button primaryKeyMapButton;
+    @FXML
+    private Button primaryRemoveButton;
+    @FXML
+    private Button doneButton;
+    @FXML
+    private Button altKeyMapButton;
+    @FXML
+    private Button altRemoveButton;
+
     private boolean mods;
     private String[] macrosList;
-    private DefaultListModel lm = new DefaultListModel();
     private boolean macros;
     private boolean special;
     private ICodePage codePage;
     private boolean isLinux;
     private boolean isAltGr;
     private boolean altKey;
-
-    private static final SortedMap<Integer, String> colorMap = new TreeMap<Integer, String>();
 
     static {
         colorMap.put(0x20, "Green");
@@ -139,9 +150,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         colorMap.put(0x3E, "Blue UL");
     }
 
-    public KeyConfigure(final Window parent, final String[] macros, final ICodePage cp) {
-
-        super(SwingToFxUtils.SHARED_FRAME);
+    public KeyConfigureController(final String[] macros, final ICodePage cp) {
 
         codePage = cp;
         macrosList = macros;
@@ -151,213 +160,93 @@ public class KeyConfigure extends JDialog implements ActionListener {
         }
 
         try {
-            jbInit();
-            pack();
+            KeyMapper.init();
         } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    void jbInit() throws Exception {
-
-        // create some reusable borders and layouts
-        final BorderLayout borderLayout = new BorderLayout();
-
-        KeyMapper.init();
-
-
-        keyPanel.setLayout(borderLayout);
-        keyPanel.add(createFunctionsPanel(), BorderLayout.WEST);
-
-        keyPanel.add(createMappingPanel(), BorderLayout.CENTER);
-
-        // add the panels to our dialog
-        getContentPane().add(keyPanel, BorderLayout.CENTER);
-        getContentPane().add(options, BorderLayout.SOUTH);
-
+    @Override
+    public void initialize(final URL location, final ResourceBundle resources) {
+        initFunctionsPanel();
+        initMappingPanel();
 
         // add option buttons to options panel
-        addOptButton(LangTool.getString("key.labelDone", "Done"), "DONE", options, true);
-
-        this.setModal(true);
-        this.setTitle(LangTool.getString("key.title"));
-
-        // pack it and center it on the screen
-        pack();
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final Dimension frameSize = getSize();
-        if (frameSize.height > screenSize.height)
-            frameSize.height = screenSize.height;
-        if (frameSize.width > screenSize.width)
-            frameSize.width = screenSize.width;
-        setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-
-        // now show the world what we can do
-        setVisible(true);
-
+        initOptButton(doneButton, LangTool.getString("key.labelDone", "Done"), "DONE", true);
     }
 
-    private JPanel createFunctionsPanel() {
-
-        functions = new JList(lm);
-
+    private void initFunctionsPanel() {
         // add list selection listener to our functions list so that we
         //   can display the mapped key(s) to the function when a new
         //   function is selected.
-        functions.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(final ListSelectionEvent lse) {
-                if (!lse.getValueIsAdjusting()) {
-                    setKeyDescription(functions.getSelectedIndex());
-                }
+        final ListChangeListener<Object> listener = e -> {
+            final Object selectedItem = functions.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                setKeyDescription(selectedItem);
             }
-        });
+        };
+
+        functions.getSelectionModel().getSelectedItems().addListener(listener);
 
         loadList(LangTool.getString("key.labelKeys"));
 
-        functions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        final JScrollPane functionsScroll = new JScrollPane(functions);
+        functions.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        final JPanel fp = new JPanel();
+        whichKeys.getItems().add(LangTool.getString("key.labelKeys"));
+        whichKeys.getItems().add(LangTool.getString("key.labelMacros"));
+        whichKeys.getItems().add(LangTool.getString("key.labelSpecial"));
 
-        final JComboBox whichKeys = new JComboBox();
-        whichKeys.addItem(LangTool.getString("key.labelKeys"));
-        whichKeys.addItem(LangTool.getString("key.labelMacros"));
-        whichKeys.addItem(LangTool.getString("key.labelSpecial"));
-
-        whichKeys.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-
-                final JComboBox cb = (JComboBox) e.getSource();
-                loadList((String) cb.getSelectedItem());
+        whichKeys.getSelectionModel().selectFirst();
+        whichKeys.setOnAction(e -> {
+            final String value = whichKeys.getValue();
+            if (value != null) {
+                loadList(value);
             }
         });
 
-        fp.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("key.labelDesc")));
-        fp.setLayout(new BoxLayout(fp, BoxLayout.Y_AXIS));
-
-        fp.add(whichKeys);
-        fp.add(functionsScroll);
-
-        return fp;
-
+        descriptionPanel.setTitle(LangTool.getString("key.labelDesc"));
     }
 
-    private JPanel createMappingPanel() {
+    private void initMappingPanel() {
 
         // set the descriptions defaults
-        strokeDesc.setColumns(30);
-        strokeDesc.setBackground(functions.getBackground());
         strokeDesc.setEditable(false);
-
-        strokeDescAlt.setColumns(30);
-        strokeDescAlt.setBackground(functions.getBackground());
         strokeDescAlt.setEditable(false);
 
         // create main panel
-        final JPanel dp = new JPanel();
-        dp.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("key.labelMapTo")));
-
-        dp.setLayout(new BoxLayout(dp, BoxLayout.Y_AXIS));
-
-        // create primary map panel
-        final JPanel primeKeyMapPanel = new JPanel();
-        primeKeyMapPanel.setLayout(new BorderLayout());
-
-        // create key description panel
-        final JPanel primeKeyPanel = new JPanel();
-
-        primeKeyPanel.setLayout(new AlignLayout(3, 5, 5));
-
-        primeKeyPanel.add(strokeDesc);
+        mapToPanel.setTitle(LangTool.getString("key.labelMapTo"));
 
         // add the option buttons
-        addOptButton(LangTool.getString("key.labelMap", "Map Key"), "MAP-Prime",
-                primeKeyPanel, true);
-        addOptButton(LangTool.getString("key.labelRemove", "Remove"), "REMOVE-Prime",
-                primeKeyPanel, true);
-
-        // add the description to primary map panel
-        primeKeyMapPanel.add(primeKeyPanel, BorderLayout.NORTH);
-
-        // create the location description panel
-        final JPanel loc1 = new JPanel();
-        loc1.setLayout(new BorderLayout());
-        loc1.add(strokeLocation, BorderLayout.NORTH);
-
-        // add the location description panel to the primary map panel
-        primeKeyMapPanel.add(loc1, BorderLayout.CENTER);
-
-
-        // create the alternate map panel
-        final JPanel altKeyMapPanel = new JPanel();
-        altKeyMapPanel.setLayout(new BorderLayout());
+        initOptButton(primaryKeyMapButton, LangTool.getString("key.labelMap", "Map Key"), "MAP-Prime", true);
+        initOptButton(primaryRemoveButton, LangTool.getString("key.labelRemove", "Remove"), "REMOVE-Prime", true);
 
         // create the alternate description panel
-        final JPanel altKeyPanel = new JPanel();
-        altKeyPanel.setLayout(new AlignLayout(3, 5, 5));
-
-        altKeyPanel.add(strokeDescAlt);
-
         // add the options to the description panel
-        addOptButton(LangTool.getString("key.labelMap", "Map Key"), "MAP-Alt",
-                altKeyPanel, true);
-        addOptButton(LangTool.getString("key.labelRemove", "Remove"), "REMOVE-Alt",
-                altKeyPanel, true);
-
-        // add the description panel to the alternate map panel
-        altKeyMapPanel.add(altKeyPanel, BorderLayout.NORTH);
-
-        // create the alternate location description panel
-        final JPanel locAlt = new JPanel();
-        locAlt.setLayout(new BorderLayout());
-        locAlt.add(strokeLocationAlt, BorderLayout.NORTH);
-
-        // add the alternate location description panel to alternate map panel
-        altKeyMapPanel.add(locAlt, BorderLayout.CENTER);
-
-        // add the map panels for display
-        dp.add(primeKeyMapPanel);
-        dp.add(altKeyMapPanel);
-
-        return dp;
+        initOptButton(altKeyMapButton, LangTool.getString("key.labelMap", "Map Key"), "MAP-Alt", true);
+        initOptButton(altRemoveButton, LangTool.getString("key.labelRemove", "Remove"), "REMOVE-Alt", true);
     }
 
-    private void setKeyDescription(final int index) {
-
-        // This try and catch is to fix a problem in JDK1.4-betas
-        try {
-            if (!macros && !special) {
-
-                final KeyDescription kd = (KeyDescription) lm.getElementAt(index);
-
-                setKeyInformation(keyMnemonicResolver.getMnemonics()[kd.getIndex()]);
-            } else {
-                if (macros) {
-                    final Object o = lm.getElementAt(index);
-                    if (o instanceof String) {
-                        System.out.println((String) o);
-                        setKeyInformation((String) o);
-                    } else if (o instanceof Macro) {
-
-                        final Macro m = (Macro) o;
-                        setKeyInformation(m.getFullName());
-                    }
-                }
-
-                if (special) {
-                    System.out.println((String) lm.getElementAt(index));
-                    final String k = parseSpecialCharacter((String) lm.getElementAt(index));
-                    setKeyInformation(k);
+    private void setKeyDescription(final Object item) {
+        if (!macros && !special) {
+            final KeyDescription kd = (KeyDescription) item;
+            setKeyInformation(keyMnemonicResolver.getMnemonics()[kd.getIndex()]);
+        } else {
+            if (macros) {
+                if (item instanceof String) {
+                    System.out.println((String) item);
+                    setKeyInformation((String) item);
+                } else if (item instanceof Macro) {
+                    final Macro m = (Macro) item;
+                    setKeyInformation(m.getFullName());
                 }
             }
-        } catch (final ArrayIndexOutOfBoundsException ar) {
-            System.out.println("ar at index " + index + " - " + ar.getMessage());
-        }
 
+            if (special) {
+                System.out.println(item);
+                final String k = parseSpecialCharacter((String) item);
+                setKeyInformation(k);
+            }
+        }
     }
 
     private void setKeyInformation(String keyDesc) {
@@ -418,33 +307,33 @@ public class KeyConfigure extends JDialog implements ActionListener {
     }
 
     private void loadList(final String which) {
-
-        lm.clear();
-        lm.removeAllElements();
-
+        functions.getItems().clear();
 
         if (which.equals(LangTool.getString("key.labelKeys"))) {
-            final Vector<KeyDescription> lk = new Vector<KeyDescription>(keyMnemonicResolver.getMnemonics().length);
-            for (int x = 0; x < keyMnemonicResolver.getMnemonics().length; x++) {
-                lk.addElement(new KeyDescription(LangTool.getString("key." + keyMnemonicResolver.getMnemonics()[x]), x));
+            final List<KeyDescription> keys = new LinkedList<>();
+            int index = 0;
+            for (final String key : keyMnemonicResolver.getMnemonics()) {
+                keys.add(new KeyDescription(LangTool.getString("key." + key), index));
+                index++;
             }
 
-            Collections.sort(lk, new KeyDescriptionCompare());
+            Collections.sort(keys, new KeyDescriptionCompare());
+            functions.getItems().addAll(keys);
 
-            for (int x = 0; x < keyMnemonicResolver.getMnemonics().length; x++) {
-                lm.addElement(lk.get(x));
-            }
             macros = false;
             special = false;
         } else {
             if (which.equals(LangTool.getString("key.labelMacros"))) {
-                final Vector<String> macrosVector = new Vector<String>();
-                if (macrosList != null)
+                final List<Object> macrosVector = new LinkedList<>();
+                if (macrosList != null) {
                     for (int x = 0; x < macrosList.length; x++) {
                         macrosVector.add(macrosList[x]);
                     }
+                }
+
                 scriptDir("scripts", macrosVector);
-                loadListModel(lm, macrosVector, null, 0);
+                loadListModel(macrosVector, null, 0);
+
                 macros = true;
                 special = false;
             } else {
@@ -476,10 +365,8 @@ public class KeyConfigure extends JDialog implements ActionListener {
                     }
                 }
 
-                final Iterator<CollationKey> iterator = set.iterator();
-                while (iterator.hasNext()) {
-                    final CollationKey keyc = iterator.next();
-                    lm.addElement(keyc.getSourceString());
+                for (final CollationKey keyc : set) {
+                    functions.getItems().add(keyc.getSourceString());
                 }
 
                 macros = false;
@@ -487,8 +374,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
             }
         }
-        if (!lm.isEmpty())
-            functions.setSelectedIndex(0);
+        if (!functions.getItems().isEmpty()) {
+            functions.getSelectionModel().selectFirst();
+        }
     }
 
     private void supportAplColorCodesInSEU(final Collator collator, final StringBuffer sb, final Set<CollationKey> set) {
@@ -525,122 +413,73 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return s;
     }
 
-    private JButton addOptButton(final String text,
-                                 final String ac,
-                                 final Container container,
-                                 final boolean enabled) {
-
-        final JButton button = new JButton(text);
-        button.setEnabled(enabled);
-        button.setActionCommand(ac);
-        button.addActionListener(this);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(button);
-
-        return button;
+    private void initOptButton(final Button button, final String text, final String ac, final boolean enabled) {
+        button.setDisable(!enabled);
+        button.setUserData(ac);
+        button.setOnAction(this::actionPerformed);
+        button.setText(text);
     }
 
-    @Override
-    public void actionPerformed(final ActionEvent e) {
+    private void actionPerformed(final ActionEvent e) {
+        final Object cmd = ((Button) e.getSource()).getUserData();
 
-        if (e.getActionCommand().equals("DONE")) {
+        if ("DONE".equals(cmd)) {
             if (mods) {
                 KeyMapper.saveKeyMap();
                 KeyMapper.fireKeyChangeEvent();
             }
-            setVisible(false);
-        }
-
-        if (e.getActionCommand().equals("MAP")) {
+            closeOwnedWindow();
+        } else if ("MAP".equals(cmd)) {
             mapIt();
-        }
-        if (e.getActionCommand().equals("REMOVE")) {
+        } else if ("REMOVE".equals(cmd)) {
             removeIt();
-        }
-
-        if (e.getActionCommand().equals("MAP-Prime")) {
+        } else if ("MAP-Prime".equals(cmd)) {
             altKey = false;
             mapIt();
-        }
-        if (e.getActionCommand().equals("REMOVE-Prime")) {
+        } else if ("REMOVE-Prime".equals(cmd)) {
             altKey = false;
             removeIt();
-        }
-
-        if (e.getActionCommand().equals("MAP-Alt")) {
+        } else if ("MAP-Alt".equals(cmd)) {
             altKey = true;
             mapIt();
-        }
-        if (e.getActionCommand().equals("REMOVE-Alt")) {
+        } else if ("REMOVE-Alt".equals(cmd)) {
             altKey = true;
             removeIt();
         }
+    }
 
+    private void closeOwnedWindow() {
+        view.getScene().getWindow().hide();
     }
 
     private void mapIt() {
+        final DialogPane dialogPane = new DialogPane();
+        dialogPane.getButtonTypes().add(ButtonType.CLOSE);
+        dialogPane.setHeaderText("");
 
-        final Object[] message = new Object[1];
+        final KeyGetter kg = new KeyGetter();
+        kg.setTextFill(Color.BLUE);
+        kg.setText(LangTool.getString("key.labelMessage") + "functions");
 
-        final JPanel kgp = new JPanel();
-        final KeyGetterInterface kg = getMeAKeyProcessor();
-        kg.setForeground(Color.blue);
-        message[0] = kgp;
+        dialogPane.setContent(kg);
 
-        String function;
+        UiUtils.changeButtonText(dialogPane, ButtonType.CLOSE, LangTool.getString("key.labelClose"));
 
-        if (functions.getSelectedValue() instanceof String)
-            function = (String) functions.getSelectedValue();
-        else if (functions.getSelectedValue() instanceof Macro) {
-            function = ((Macro) functions.getSelectedValue()).toString();
-        } else
-            function = ((KeyDescription) functions.getSelectedValue()).toString();
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(LangTool.getString("sa.title"));
 
-        kg.setText(LangTool.getString("key.labelMessage") +
-                function);
-        kgp.add(kg);
-
-        final String[] options = new String[1];
-        options[0] = LangTool.getString("key.labelClose");
-
-        final JOptionPane opain = new JOptionPane(message,
-                JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,        // option type
-                null,
-                options,
-                null);
-        //options[0]);
-
-        dialog = opain.createDialog(this, getTitle());
-
+        dialog.setDialogPane(dialogPane);
+        dialog.setWidth(400);
+        dialog.setHeight(400);
         kg.setDialog(dialog);
+        kg.requestFocus();
 
-        // add window listener to the dialog so that we can place focus on the
-        //   key getter label instead of default and set the new key value when
-        //   the window is closed.
-        dialog.addWindowListener(new WindowAdapter() {
-            boolean gotFocus = false;
-
-            @Override
-            public void windowClosed(final WindowEvent we) {
-                final KeyEvent ke = KeyStrokeHelper.toFxKeyEvent(kg.keyevent, null);
-                if (isAvailable(ke))
-                    setNewKeyStrokes(ke);
-            }
-
-            @Override
-            public void windowActivated(final WindowEvent we) {
-                // Once window gets focus, set initial focus to our KeyGetter
-                //    component
-                if (!gotFocus) {
-                    kg.grabFocus();
-                    gotFocus = true;
-                }
+        dialog.setOnCloseRequest(e -> {
+            if (isAvailable(kg.keyevent)) {
+                setNewKeyStrokes(kg.keyevent);
             }
         });
-
-        dialog.setVisible(true);
-
+        dialog.show();
     }
 
     private boolean isAvailable(final KeyEvent ke) {
@@ -655,18 +494,12 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
         if (exists) {
 
-            final Object[] args = {getKeyDescription(ke)};
+            final String message = LangTool.messageFormat("messages.mapKeyWarning", getKeyDescription(ke));
+            final Alert alert = new Alert(AlertType.WARNING, message, ButtonType.YES, ButtonType.NO);
+            alert.setTitle(LangTool.getString("key.labelKeyExists"));
+            alert.setHeaderText("");
 
-            final int result = JOptionPane.showConfirmDialog(this,
-                    LangTool.messageFormat("messages.mapKeyWarning", args),
-                    LangTool.getString("key.labelKeyExists"),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-
-            if (result == JOptionPane.YES_OPTION)
-                return true;
-            else
-                return false;
+            return alert.showAndWait().orElse(null) == ButtonType.YES;
         }
         return !exists;
     }
@@ -686,13 +519,9 @@ public class KeyConfigure extends JDialog implements ActionListener {
         return desc;
     }
 
-    private KeyGetterInterface getMeAKeyProcessor() {
-        return new KeyGetter();
-    }
-
     private void removeIt() {
         if (!macros && !special) {
-            final int index = ((KeyDescription) functions.getSelectedValue()).getIndex();
+            final int index = ((KeyDescription) functions.getSelectionModel().getSelectedItem()).getIndex();
 
             String function = keyMnemonicResolver.getMnemonics()[index];
 
@@ -706,7 +535,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
         } else {
 
             if (macros) {
-                final Object o = functions.getSelectedValue();
+                final Object o = functions.getSelectionModel().getSelectedItem();
                 String name;
                 if (o instanceof Macro) {
                     name = ((Macro) o).getFullName();
@@ -722,7 +551,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
             }
             if (special) {
                 String k = "";
-                k += ((String) functions.getSelectedValue()).charAt(7);
+                k += ((String) functions.getSelectionModel().getSelectedItem()).charAt(7);
                 if (altKey)
                     k += KeyStroker.altSuffix;
 
@@ -737,7 +566,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
     private void setNewKeyStrokes(final KeyEvent ke) {
 
         if (!macros && !special) {
-            final int index = ((KeyDescription) functions.getSelectedValue()).getIndex();
+            final int index = ((KeyDescription) functions.getSelectionModel().getSelectedItem()).getIndex();
             String stroke = keyMnemonicResolver.getMnemonics()[index];
 
             if (altKey)
@@ -753,7 +582,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
         } else {
             if (macros) {
-                final Object o = functions.getSelectedValue();
+                final Object o = functions.getSelectionModel().getSelectedItem();
                 String macro;
                 if (o instanceof Macro)
                     macro = ((Macro) o).getFullName();
@@ -774,8 +603,8 @@ public class KeyConfigure extends JDialog implements ActionListener {
             }
 
             if (special) {
-                System.out.println((String) functions.getSelectedValue());
-                String k = parseSpecialCharacter((String) functions.getSelectedValue());
+                System.out.println((String) functions.getSelectionModel().getSelectedItem());
+                String k = parseSpecialCharacter((String) functions.getSelectionModel().getSelectedItem());
 
                 if (altKey)
                     k += KeyStroker.altSuffix;
@@ -832,7 +661,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
     }
 
 
-    public static void scriptDir(final String pathName, final Vector scripts) {
+    public static void scriptDir(final String pathName, final List<Object> scripts) {
 
         final File root = new File(pathName);
 
@@ -856,7 +685,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
      * @param path
      * @param directory
      */
-    private static void loadScripts(final Vector vector,
+    private static void loadScripts(final List<Object> vector,
                                     final String path,
                                     final File directory) {
 
@@ -875,13 +704,13 @@ public class KeyConfigure extends JDialog implements ActionListener {
                 /* do nothing! */
                 continue;
             } else if (file.isDirectory()) {
-                final Vector<String> subvector = new Vector<String>();
-                subvector.addElement(fileName.replace('_', ' '));
+                final List<Object> subvector = new LinkedList<>();
+                subvector.add(fileName.replace('_', ' '));
                 loadScripts(subvector, path + fileName + '/', file);
                 // if we do not want empty directories to show up uncomment this
                 //    line.  It is uncommented here.
                 if (subvector.size() != 1)
-                    vector.addElement(subvector);
+                    vector.add(subvector);
             } else {
                 if (InterpreterDriverManager.isScriptSupported(fileName)) {
                     String fn = fileName.replace('_', ' ');
@@ -891,7 +720,7 @@ public class KeyConfigure extends JDialog implements ActionListener {
                     }
 
                     macro = new Macro(fn, file.getAbsolutePath(), fileName);
-                    vector.addElement(macro);
+                    vector.add(macro);
                 }
             }
         }
@@ -900,38 +729,31 @@ public class KeyConfigure extends JDialog implements ActionListener {
 
     /**
      * Load the ListModel with the scripts from the vector of macros provided
-     *
-     * @param menu
      * @param vector
      * @param start
+     * @param menu
      */
-    private static void loadListModel(final DefaultListModel lm,
-                                      final Vector vector,
+    private void loadListModel(final List<Object> vector,
                                       final String prefix,
                                       final int start) {
 
-        for (int i = start; i < vector.size(); i++) {
-            final Object obj = vector.elementAt(i);
+        for (final Object obj : vector) {
             if (obj instanceof Macro) {
-                final Macro m = (Macro) obj;
-                m.setPrefix(prefix);
-                lm.addElement(m);
-            } else if (obj instanceof Vector) {
-                final Vector subvector = (Vector) obj;
-                final String name = (String) subvector.elementAt(0);
-                if (prefix != null)
-                    loadListModel(lm, subvector, prefix + '/' + name + '/', 1);
-                else
-                    loadListModel(lm, subvector, name + '/', 1);
-            } else {
-                if (obj instanceof String) {
-
-                    lm.addElement(obj);
-
+                ((Macro) obj).setPrefix(prefix);
+                functions.getItems().add(obj);
+            } else if (obj instanceof List) {
+                @SuppressWarnings("unchecked")
+                final List<Object> subvector = (List<Object>) obj;
+                final String name = (String) subvector.get(0);
+                if (prefix != null) {
+                    loadListModel(subvector, prefix + '/' + name + '/', 1);
+                } else {
+                    loadListModel(subvector, name + '/', 1);
                 }
+            } else if (obj instanceof String) {
+                functions.getItems().add(obj);
             }
         }
-
     }
 
     private static class Macro {
@@ -993,5 +815,4 @@ public class KeyConfigure extends JDialog implements ActionListener {
         }
 
     }
-
 }

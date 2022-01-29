@@ -8,17 +8,15 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.tn5250j.gui.ControllerWithView;
 import org.tn5250j.gui.UiUtils;
-import org.tn5250j.sessionsettings.AbstractAttributesController;
 
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
@@ -84,29 +82,20 @@ public class DevTools {
         return frame;
     }
 
-    public static ButtonType showInDialog(final AbstractAttributesController controller, final String template) {
+    public static ButtonType showInDialog(final ControllerWithView controller, final String template) {
         final Dialog<ButtonType> dialog = createDialog(controller, template);
+        dialog.setTitle("Demo");
         return dialog.showAndWait().orElse(null);
     }
 
-    public static Dialog<ButtonType> createDialog(final AbstractAttributesController controller,
+    public static Dialog<ButtonType> createDialog(final Object controller,
             final String template) {
-        final FXMLLoader loader = UiUtils.createLoader(template);
-        loader.setControllerFactory(cls -> {
-            return controller;
-        });
-
-        try {
-            loader.load();
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to load template", e);
-        }
+        final Parent parent = UiUtils.loadTempalte(controller, template);
 
         final Dialog<ButtonType> dialog = new Dialog<>();
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        dialog.setTitle("Demo");
-        dialog.getDialogPane().setContent(controller.getView());
         dialog.setResizable(true);
+        dialog.getDialogPane().setContent(parent);
         return dialog;
     }
 

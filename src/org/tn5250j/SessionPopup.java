@@ -58,10 +58,11 @@ import java.util.Map;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.HexCharMapDialog;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.actions.EmulatorAction;
-import org.tn5250j.keyboard.configure.KeyConfigure;
+import org.tn5250j.keyboard.configure.KeyConfigureController;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.LoadMacroMenu;
@@ -72,6 +73,7 @@ import org.tn5250j.tools.XTFRFile;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -398,12 +400,18 @@ public class SessionPopup {
     }
 
     private void mapMeKeys() {
+        final KeyConfigureController controller;
         if (Macronizer.isMacrosExist()) {
             final String[] macrosList = Macronizer.getMacroList();
-            new KeyConfigure(sessiongui.getWindow(), macrosList, vt.getCodePage());
+            controller = new KeyConfigureController(macrosList, vt.getCodePage());
         } else {
-            new KeyConfigure(sessiongui.getWindow(), null, vt.getCodePage());
+            controller = new KeyConfigureController(null, vt.getCodePage());
         }
+
+        final FXMLLoader loader = UiUtils.createLoader("/fxml/KeyConfigurePane.fxml");
+        loader.setControllerFactory(cls -> controller);
+        UiUtils.showDialog(sessiongui.getWindow(), loader, LangTool.getString("key.title"), null);
+
         sessiongui.getFocusForMe();
     }
 

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+
+<BorderPane
+    fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	fx:controller="org.tn5250j.keyboard.configure.KeyConfigureController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<left>
+       	<TitledBorderedPane fx:id="descriptionPanel" title="??descriptionPanel??" labelPosition="TOP_LEFT">
+       		<content>
+       			<BorderPane>
+       				<top>
+		       			<VBox alignment="CENTER" fillWidth="true">
+						<style>
+						  -fx-padding: 0 0 0.5em 0;
+						</style>
+		       				<ComboBox fx:id = "whichKeys" maxWidth="Infinity"/>
+		       			</VBox>
+       				</top>
+       				<center>
+       					<ListView fx:id = "functions" />
+       				</center>
+       			</BorderPane>
+       		</content>
+       	</TitledBorderedPane>
+	</left>
+	<center>
+       	<TitledBorderedPane fx:id="mapToPanel" title="??mapToPanel??" labelPosition="TOP_LEFT">
+       		<content>
+	         	<GridPane hgap="10" vgap="10">
+	         		<VBox 
+						GridPane.columnIndex="0"
+						GridPane.rowIndex="0"
+						GridPane.hgrow="ALWAYS"
+						GridPane.vgrow="ALWAYS"
+						GridPane.halignment="LEFT"
+						alignment="TOP_LEFT"
+						spacing="5"
+	         		>
+	         			<GridPane>
+	         				<TextField
+	         					fx:id = "strokeDesc"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="ALWAYS"
+								GridPane.vgrow="NEVER"
+	         				/>
+	         				<Button
+	         					fx:id = "primaryKeyMapButton"
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.vgrow="NEVER"
+	         				/>
+	         				<Button
+	         					fx:id = "primaryRemoveButton"
+								GridPane.columnIndex="2"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.vgrow="NEVER"
+	         				/>
+	         			</GridPane>
+	         			<Label fx:id = "strokeLocation"/>
+	         		</VBox>
+	         		<VBox 
+						GridPane.columnIndex="0"
+						GridPane.rowIndex="1"
+						GridPane.hgrow="ALWAYS"
+						GridPane.vgrow="ALWAYS"
+						GridPane.halignment="LEFT"
+						alignment="TOP_LEFT"
+						spacing="5"
+	         		>
+	         			<GridPane>
+	         				<TextField
+	         					fx:id = "strokeDescAlt"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="ALWAYS"
+								GridPane.vgrow="NEVER"
+	         				/>
+	         				<Button
+	         					fx:id = "altKeyMapButton"
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.vgrow="NEVER"
+	         				/>
+	         				<Button
+	         					fx:id = "altRemoveButton"
+								GridPane.columnIndex="2"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.vgrow="NEVER"
+	         				/>
+	         			</GridPane>
+	         			<Label fx:id = "strokeLocationAlt"/>
+	         		</VBox>
+	         	</GridPane>
+       		</content>
+       	</TitledBorderedPane>
+	</center>
+	<bottom>
+		<HBox alignment="CENTER">
+			<style>
+			  -fx-padding: 1em 1em 1em 1em;
+			</style>
+			<Button fx:id = "doneButton"/>
+		</HBox>
+	</bottom>
+</BorderPane>

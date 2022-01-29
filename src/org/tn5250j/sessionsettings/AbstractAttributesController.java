@@ -26,18 +26,18 @@
 package org.tn5250j.sessionsettings;
 
 import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.ControllerWithView;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 
 /**
  * Base class for all attribute panels
  */
-public abstract class AbstractAttributesController implements Initializable {
+public abstract class AbstractAttributesController implements ControllerWithView, Initializable {
     private static final String nodePrefix = "sa.node";
 
     private String name;
@@ -135,9 +135,4 @@ public abstract class AbstractAttributesController implements Initializable {
         changes.firePropertyChange(this, name, getStringProperty(name), value);
         setProperty(name, value);
     }
-
-    /**
-     * @return view.
-     */
-    public abstract Region getView();
 }

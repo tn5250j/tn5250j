@@ -31,6 +31,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -91,6 +92,24 @@ public final class UiUtils {
                 });
             }
         });
+    }
+
+    /**
+     * @param controller controller.
+     * @param template template.
+     * @return loader.
+     */
+    public static Parent loadTempalte(final Object controller, final String template) {
+        final FXMLLoader loader = UiUtils.createLoader(template);
+        loader.setControllerFactory(cls -> {
+            return controller;
+        });
+
+        try {
+            return loader.load();
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to load template", e);
+        }
     }
 
     public static FXMLLoader createLoader(final String fxml) {
@@ -253,10 +272,10 @@ public final class UiUtils {
         final Alert alert = new Alert(AlertType.CONFIRMATION);
 
         if (okButtonText != null) {
-            changeButtonText(alert, ButtonType.OK, okButtonText);
+            changeButtonText(alert.getDialogPane(), ButtonType.OK, okButtonText);
         }
         if (canceButtonText != null) {
-            changeButtonText(alert, ButtonType.CANCEL, canceButtonText);
+            changeButtonText(alert.getDialogPane(), ButtonType.CANCEL, canceButtonText);
         }
 
         alert.getDialogPane().setContent(content);
@@ -264,8 +283,8 @@ public final class UiUtils {
         return alert;
     }
 
-    public static void changeButtonText(final Alert alert, final ButtonType button, final String text) {
-        ((Button) alert.getDialogPane().lookupButton(button)).setText(text);
+    public static void changeButtonText(final DialogPane dialogPane, final ButtonType button, final String text) {
+        ((Button) dialogPane.lookupButton(button)).setText(text);
     }
 
     public static void showError(final Throwable exc, final String title) {

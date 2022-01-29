@@ -43,7 +43,7 @@ public final class LangTool {
         init("tn5250jMsgs");
     }
 
-    public static void init(Locale l) {
+    public static void init(final Locale l) {
         if (labels != null)
             return;
 
@@ -51,35 +51,35 @@ public final class LangTool {
         init("tn5250jMsgs");
     }
 
-    public static void init(String initMsgFile) {
+    public static void init(final String initMsgFile) {
         if (labels != null)
             return;
 
         try {
             labels = ResourceBundle.getBundle(initMsgFile, locale);
-        } catch (MissingResourceException mre) {
+        } catch (final MissingResourceException mre) {
             System.out.println(mre.getLocalizedMessage());
         }
     }
 
-    public static String getString(String key) {
+    public static String getString(final String key) {
         try {
             return labels.getString(key);
-        } catch (MissingResourceException mre) {
+        } catch (final MissingResourceException mre) {
             System.out.println(mre.getLocalizedMessage());
             return key;
         }
     }
 
-    public static String getString(String key, String defaultString) {
+    public static String getString(final String key, final String defaultString) {
         try {
             return labels.getString(key);
-        } catch (MissingResourceException mre) {
+        } catch (final MissingResourceException mre) {
             return defaultString;
         }
     }
 
-    public static String messageFormat(String key, Object[] args) {
+    public static String messageFormat(final String key, final Object... args) {
         return MessageFormat.format(getString(key), args);
     }
 
