@@ -21,57 +21,126 @@
 
 package org.tn5250j.gui;
 
-import java.awt.*;
-
-import javax.swing.JFrame;
-
 import org.tn5250j.tools.GUIGraphicsUtils;
 
-/**
- * Convenient base class for all TN5250j windows/frames.
- * Supports the standard application icon and a {@link #centerFrame()} method.
- * <br><br>
- * Direct known subclasses:
- * <ul>
- * <li>{@link org.tn5250j.interfaces.GUIViewInterface}</li>
- * <li>{@link org.tn5250j.mailtools.SendEMailDialog}</li>
- * <li>{@link org.tn5250j.spoolfile.SpoolExporter}</li>
- * <li>{@link org.tn5250j.spoolfile.SpoolExportWizard}</li>
- * <li>{@link org.tn5250j.tools.XTFRFile}</li>
- * </ul>
- */
-public class GenericTn5250JFrame extends JFrame {
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
-    private static final long serialVersionUID = 7349671770294342782L;
+/**
+ * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
+ *
+ */
+public class GenericTn5250JFrame {
 
     protected boolean packFrame = false;
+    protected final Stage stage = new Stage();
 
     public GenericTn5250JFrame() {
         super();
-        java.util.List<Image> icons = GUIGraphicsUtils.getApplicationIcons();
-        setIconImages(icons);
-        new AppleApplicationTools().tryToSetDockIconImages(icons);
+        stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
     }
 
-    public void centerFrame() {
+    public void centerStage() {
+        if (packFrame) {
+            stage.sizeToScene();
+        }
 
-        if (packFrame)
-            pack();
-        else
-            validate();
+        final Rectangle2D bounds = Screen.getPrimary().getBounds();
 
-        //Center the window
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = getSize();
-        if (frameSize.height > screenSize.height)
-            frameSize.height = screenSize.height;
-        if (frameSize.width > screenSize.width)
-            frameSize.width = screenSize.width;
+        final double w = Math.min(stage.getWidth(), bounds.getWidth());
+        final double h = Math.min(stage.getHeight(), bounds.getHeight());
+        stage.setWidth(w);
+        stage.setHeight(h);
 
-        setLocation((screenSize.width - frameSize.width) / 2,
-                (screenSize.height - frameSize.height) / 2);
-
-
+        stage.setX((bounds.getWidth() - w) / 2);
+        stage.setY((bounds.getHeight() - h) / 2);
     }
 
+    /**
+     * @return width of stage
+     */
+    public double getWidth() {
+        return stage.getWidth();
+    }
+
+    /**
+     * @return height of stage
+     */
+    public double getHeight() {
+        return stage.getHeight();
+    }
+
+    /**
+     * @param width width
+     * @param height height
+     */
+    public void setSize(final double width, final double height) {
+        stage.setWidth(width);
+        stage.setHeight(height);
+    }
+
+    /**
+     * @param x x coordinate.
+     * @param y y coordinate.
+     */
+    public void setLocation(final double x, final double y) {
+        stage.setX(x);
+        stage.setY(y);
+    }
+
+    /**
+     * @return x coordinate.
+     */
+    public double getX() {
+        return stage.getX();
+    }
+
+    /**
+     * @return y coordinate.
+     */
+    public double getY() {
+        return stage.getY();
+    }
+
+    /**
+     * @return true if the scene is visible.
+     */
+    public boolean isVisible() {
+        return stage != null && stage.isShowing();
+    }
+
+    /**
+     * @param visible
+     */
+    public void setVisible(final boolean visible) {
+        if (visible) {
+            stage.show();
+        } else {
+            stage.hide();
+        }
+    }
+
+    /**
+     * @param cursor cursor to set.
+     */
+    public void setCursor(final Cursor cursor) {
+        stage.getScene().getRoot().setCursor(cursor);
+    }
+
+    /**
+     * @return window.
+     */
+    public Window getWindow() {
+        return stage;
+    }
+
+    /**
+     * closes the stage
+     */
+    public void dispose() {
+        stage.close();
+    }
 }

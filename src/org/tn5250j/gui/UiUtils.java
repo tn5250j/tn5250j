@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import javax.swing.SwingUtilities;
 
+import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Platform;
@@ -22,14 +23,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -88,6 +94,24 @@ public final class UiUtils {
         });
     }
 
+    /**
+     * @param controller controller.
+     * @param template template.
+     * @return loader.
+     */
+    public static Parent loadTempalte(final Object controller, final String template) {
+        final FXMLLoader loader = UiUtils.createLoader(template);
+        loader.setControllerFactory(cls -> {
+            return controller;
+        });
+
+        try {
+            return loader.load();
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to load template", e);
+        }
+    }
+
     public static FXMLLoader createLoader(final String fxml) {
         final FXMLLoader loader = new FXMLLoader();
         final URL xmlUrl = UiUtils.class.getResource(fxml);
@@ -134,6 +158,7 @@ public final class UiUtils {
             }
 
             final Stage stage = new Stage();
+            stage.getIcons().addAll(GUIGraphicsUtils.getApplicationIconsFx());
             stage.setScene(new Scene(parent));
             stage.setTitle(title);
 
@@ -185,7 +210,6 @@ public final class UiUtils {
         return (int) Math.ceil(d);
     }
 
-
     public static Font deriveFont(final Font f, final double size) {
         return new Font(f.getName(), size);
     }
@@ -198,8 +222,7 @@ public final class UiUtils {
         g.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
     }
 
-
-    public static void setBackground(final Pane node, final Color bg) {
+    public static void setBackground(final Region node, final Color bg) {
         node.setBackground(new Background(new BackgroundFill(
                 bg, CornerRadii.EMPTY, Insets.EMPTY)));
     }
@@ -222,5 +245,57 @@ public final class UiUtils {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * @param call callable.
+     */
+    public static void runInFx(final Callable<?> call) {
+        try {
+            if (Platform.isFxApplicationThread()) {
+                call.call();
+            }
+
+            Platform.runLater(() -> {
+                try {
+                    call.call();
+                } catch (final Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Alert createInputDialog(final Node content, final String okButtonText, final String canceButtonText) {
+        final Alert alert = new Alert(AlertType.CONFIRMATION);
+
+        if (okButtonText != null) {
+            changeButtonText(alert.getDialogPane(), ButtonType.OK, okButtonText);
+        }
+        if (canceButtonText != null) {
+            changeButtonText(alert.getDialogPane(), ButtonType.CANCEL, canceButtonText);
+        }
+
+        alert.getDialogPane().setContent(content);
+        alert.setHeaderText("");
+        return alert;
+    }
+
+    public static void changeButtonText(final DialogPane dialogPane, final ButtonType button, final String text) {
+        ((Button) dialogPane.lookupButton(button)).setText(text);
+    }
+
+    public static void showError(final Throwable exc, final String title) {
+        showError(exc.getMessage() == null ? exc.toString() : exc.getMessage(), title);
+    }
+
+    public static void showError(final String message, final String title) {
+        final Alert alert = new Alert(AlertType.ERROR);
+        alert.setContentText(message);
+        alert.setTitle(title);
+        alert.setHeaderText("");
+        alert.showAndWait();
     }
 }

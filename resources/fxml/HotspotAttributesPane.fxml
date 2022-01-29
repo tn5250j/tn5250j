@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+
+<BorderPane
+    fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	fx:controller="org.tn5250j.sessionsettings.HotspotAttributesController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<VBox alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 0 1em 1em 1em;
+			</style>
+        	<TitledBorderedPane fx:id="hotSpotEnablementPane" title="??cursorSize??" labelPosition="TOP_LEFT">
+        		<content>
+	       			<HBox alignment="CENTER">
+	       				<CheckBox fx:id = "hsCheck"/>
+	       			</HBox>
+        		</content>
+        	</TitledBorderedPane>
+        	<TitledBorderedPane fx:id="hotSpotAssignmentsPane" title="??blink??" labelPosition="TOP_LEFT">
+        		<content>
+        			<VBox alignment="CENTER_LEFT">
+			         	<GridPane hgap="10" vgap="10">
+							<!-- first row -->
+							<Label text="??hsMoreLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="0"
+								GridPane.halignment="LEFT"
+								fx:id="hsMoreLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="20"
+								fx:id="hsMore"/>
+			         	
+							<!-- second row -->
+							<Label text="??hsBottomLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="1"
+								GridPane.halignment="LEFT"
+								fx:id = "hsBottomLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="1"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="20"
+								fx:id="hsBottom"/>
+			         	</GridPane>
+        			</VBox>
+        		</content>
+        	</TitledBorderedPane>
+		</VBox>
+	</top>
+</BorderPane>

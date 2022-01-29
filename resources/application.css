@@ -5,6 +5,10 @@
    /* play around with this value when changing the title font to get a vertically centered title */
 }
 
+.not-opaque {
+  -fx-background-color: -fx-background;
+}
+
 .bordered-titled-border {
   -fx-content-display: top;
   -fx-border-insets: 1em 0 0 0;
@@ -45,3 +49,23 @@
 .system-dialog-tab {
     -fx-padding: 0.5em 0.5em 0.5em 0.5em;
 }
+
+.arrow-down, .arrow-left, .arrow-right, .arrow-up {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    /*-fx-background-radius: 16px; */
+}
+
+.arrow-down {
+    -fx-graphic: url("arrow-down-24.png");
+}
+.arrow-left {
+    -fx-graphic: url("arrow-left-24.png");
+}
+.arrow-right {
+    -fx-graphic: url("arrow-right-24.png");
+}
+.arrow-up {
+    -fx-graphic: url("arrow-up-24.png");
+}
+

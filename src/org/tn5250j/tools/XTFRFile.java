@@ -63,7 +63,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -87,12 +86,14 @@ import org.tn5250j.event.FTPStatusEvent;
 import org.tn5250j.event.FTPStatusListener;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.GenericTn5250JFrameSwing;
-import org.tn5250j.gui.TN5250jFileChooser;
-import org.tn5250j.gui.TN5250jFileFilter;
+import org.tn5250j.gui.TN5250jFileFilterBuilder;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sql.AS400Xtfr;
 import org.tn5250j.sql.SqlWizard;
-import org.tn5250j.tools.filters.XTFRFileFilter;
+import org.tn5250j.tools.filters.XTFRFileFilterBuilder;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 public class XTFRFile
         extends GenericTn5250JFrameSwing
@@ -128,16 +129,16 @@ public class XTFRFile
     boolean emailIt;
 
     tnvt vt;
-    XTFRFileFilter htmlFilter;
-    XTFRFileFilter KSpreadFilter;
-    XTFRFileFilter OOFilter;
-    XTFRFileFilter ExcelFilter;
-    XTFRFileFilter DelimitedFilter;
-    XTFRFileFilter FixedWidthFilter;
+    XTFRFileFilterBuilder htmlFilter;
+    XTFRFileFilterBuilder KSpreadFilter;
+    XTFRFileFilterBuilder OOFilter;
+    XTFRFileFilterBuilder ExcelFilter;
+    XTFRFileFilterBuilder DelimitedFilter;
+    XTFRFileFilterBuilder FixedWidthFilter;
     //   XTFRFileFilter ExcelWorkbookFilter;
 
     // default file filter used.
-    XTFRFileFilter fileFilter;
+    XTFRFileFilterBuilder fileFilter;
 
     ProgressMonitor pm;
     JProgressBar progressBar;
@@ -148,14 +149,15 @@ public class XTFRFile
     JLabel note;
     ProgressOptionPane monitor;
     JDialog dialog;
-    XTFRFileFilter filter;
+    XTFRFileFilterBuilder filter;
     SessionGui session;
+    private final Window parent;
 
     static String messageProgress;
 
-    public XTFRFile(final Frame parent, final tnvt pvt, final SessionGui session) {
+    public XTFRFile(final tnvt pvt, final SessionGui session) {
 
-        this(parent, pvt, session, null);
+        this(pvt, session, null);
 //		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 //		this.session = session;
 //		vt = pvt;
@@ -180,10 +182,12 @@ public class XTFRFile
 //		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
-    public XTFRFile(final Frame parent, final tnvt pvt, final SessionGui session, final Properties XTFRProps) {
+    public XTFRFile(final tnvt pvt, final SessionGui session, final Properties XTFRProps) {
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         this.session = session;
+        this.parent = session.getWindow();
+
         vt = pvt;
         ftpProtocol = new FTP5250Prot(vt);
         ftpProtocol.addFTPStatusListener(this);
@@ -209,25 +213,25 @@ public class XTFRFile
 
     private void initFileFilters() {
         htmlFilter =
-                new XTFRFileFilter(
+                new XTFRFileFilterBuilder(
                         new String[]{"html", "htm"},
                         "Hyper Text Markup Language");
         htmlFilter.setOutputFilterName(
                 "org.tn5250j.tools.filters.HTMLOutputFilter");
-        KSpreadFilter = new XTFRFileFilter("ksp", "KSpread KDE Spreadsheet");
+        KSpreadFilter = new XTFRFileFilterBuilder("ksp", "KSpread KDE Spreadsheet");
         KSpreadFilter.setOutputFilterName(
                 "org.tn5250j.tools.filters.KSpreadOutputFilter");
-        OOFilter = new XTFRFileFilter("sxc", "OpenOffice");
+        OOFilter = new XTFRFileFilterBuilder("sxc", "OpenOffice");
         OOFilter.setOutputFilterName(
                 "org.tn5250j.tools.filters.OpenOfficeOutputFilter");
-        ExcelFilter = new XTFRFileFilter("xls", "Excel");
+        ExcelFilter = new XTFRFileFilterBuilder("xls", "Excel");
         ExcelFilter.setOutputFilterName(
                 "org.tn5250j.tools.filters.ExcelOutputFilter");
         DelimitedFilter =
-                new XTFRFileFilter(new String[]{"csv", "tab"}, "Delimited");
+                new XTFRFileFilterBuilder(new String[]{"csv", "tab"}, "Delimited");
         DelimitedFilter.setOutputFilterName(
                 "org.tn5250j.tools.filters.DelimitedOutputFilter");
-        FixedWidthFilter = new XTFRFileFilter("txt", "Fixed Width");
+        FixedWidthFilter = new XTFRFileFilterBuilder("txt", "Fixed Width");
         FixedWidthFilter.setOutputFilterName(
                 "org.tn5250j.tools.filters.FixedWidthOutputFilter");
         //      ExcelWorkbookFilter = new XTFRFileFilter("xls", "Excel 95 97 XP 2000");
@@ -281,7 +285,6 @@ public class XTFRFile
 
         final SendEMailDialog semd =
                 new SendEMailDialog(
-                        (Frame) (this.getParent()),
                         session,
                         localFile.getText());
 
@@ -473,7 +476,7 @@ public class XTFRFile
 //		return htmlFilter;
 //	}
 
-    private XTFRFileFilter getFilterByDescription() {
+    private XTFRFileFilterBuilder getFilterByDescription() {
 
         final String desc = (String) fileFormat.getSelectedItem();
 
@@ -558,29 +561,20 @@ public class XTFRFile
      */
     private void getPCFile() {
 
-        final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
         // set the file filters for the file chooser
         filter = getFilterByDescription();
 
-        pcFileChooser.addChoosableFileFilter(filter);
+        pcFileChooser.setSelectedExtensionFilter(filter.buildFilter());
 
-        final int ret = pcFileChooser.showSaveDialog(this);
+        final File file = pcFileChooser.showSaveDialog(parent);
 
         // check to see if something was actually chosen
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            final File file = pcFileChooser.getSelectedFile();
-            filter = null;
-            if (pcFileChooser.getFileFilter() instanceof XTFRFileFilter)
-                filter = (XTFRFileFilter) pcFileChooser.getFileFilter();
-            else
-                filter = htmlFilter;
-
+        if (file != null) {
             localFile.setText(filter.setExtension(file));
-
         }
-
     }
 
     /**
@@ -1072,21 +1066,18 @@ public class XTFRFile
         final Properties xtfrProps = new Properties();
         xtfrProps.setProperty("xtfr.destination", "FROM");
         this.saveXTFRFields(xtfrProps);
-        final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
         // set the file filters for the file chooser
-        final TN5250jFileFilter filter = new TN5250jFileFilter("dtf", "Transfer from AS/400");
+        final TN5250jFileFilterBuilder filter = new TN5250jFileFilterBuilder("dtf", "Transfer from AS/400");
 
-        pcFileChooser.addChoosableFileFilter(filter);
+        pcFileChooser.setSelectedExtensionFilter(filter.buildFilter());
 
-        final int ret = pcFileChooser.showSaveDialog(this);
+        File file = pcFileChooser.showSaveDialog(parent);
 
         // check to see if something was actually chosen
-        if (ret == JFileChooser.APPROVE_OPTION) {
-
-            File file = pcFileChooser.getSelectedFile();
-
+        if (file != null) {
             file = new File(filter.setExtension(file));
 
             try {
@@ -1099,10 +1090,7 @@ public class XTFRFile
             } catch (final FileNotFoundException fnfe) {
             } catch (final IOException ioe) {
             }
-
-
         }
-
     }
 
     private void loadXTFRInfo() {
@@ -1110,20 +1098,18 @@ public class XTFRFile
         final Properties xtfrProps = new Properties();
 //      xtfrProps.setProperty("xtfr.destination","FROM");
 //      this.saveXTFRFields(xtfrProps);
-        final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
         // set the file filters for the file chooser
-        final TN5250jFileFilter filter = new TN5250jFileFilter("dtf", "Transfer from AS/400");
+        final TN5250jFileFilterBuilder filter = new TN5250jFileFilterBuilder("dtf", "Transfer from AS/400");
 
-        pcFileChooser.addChoosableFileFilter(filter);
+        pcFileChooser.setSelectedExtensionFilter(filter.buildFilter());
 
-        final int ret = pcFileChooser.showOpenDialog(this);
+        final File file = pcFileChooser.showOpenDialog(parent);
 
         // check to see if something was actually chosen
-        if (ret == JFileChooser.APPROVE_OPTION) {
-
-            final File file = pcFileChooser.getSelectedFile();
+        if (file != null) {
 
             try {
                 final FileInputStream in = new FileInputStream(file);
@@ -1134,8 +1120,6 @@ public class XTFRFile
             } catch (final FileNotFoundException fnfe) {
             } catch (final IOException ioe) {
             }
-
-
         }
 
         if (xtfrProps.containsKey("xtfr.destination") &&
@@ -1143,7 +1127,6 @@ public class XTFRFile
 
             this.initXTFRFields(xtfrProps);
         }
-
     }
 
     /** Listens to the use query check boxe */

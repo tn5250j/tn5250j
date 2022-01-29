@@ -11,15 +11,15 @@
 
 package org.tn5250j.scripting;
 
-import java.awt.Component;
 import java.io.File;
-
-import javax.swing.JOptionPane;
 
 import org.python.core.PyException;
 import org.python.util.PythonInterpreter;
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.SessionGui;
+import org.tn5250j.gui.UiUtils;
+
+import javafx.application.Platform;
 
 public class JPythonInterpreterDriver implements InterpreterDriver {
 
@@ -85,7 +85,6 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
             throws InterpreterDriver.InterpreterException {
 
         try {
-            final Component s1 = (Component) session;
             final String s2 = scriptFile;
 
             session.setMacroRunning(true);
@@ -95,13 +94,11 @@ public class JPythonInterpreterDriver implements InterpreterDriver {
 //               PySystemState.initialize(System.getProperties(),null, new String[] {""},this.getClass().getClassLoader());
 
                     _interpreter = new PythonInterpreter();
-                    _interpreter.set("_session", s1);
+                    _interpreter.set("_session", session);
                     try {
                         _interpreter.execfile(s2);
-                    } catch (final org.python.core.PySyntaxError pse) {
-                        JOptionPane.showMessageDialog(s1, pse, "Error in script " + s2, JOptionPane.ERROR_MESSAGE);
-                    } catch (final org.python.core.PyException pse) {
-                        JOptionPane.showMessageDialog(s1, pse, "Error in script " + s2, JOptionPane.ERROR_MESSAGE);
+                    } catch (final PyException pse) {
+                        Platform.runLater(() -> UiUtils.showError(pse, "Error in script " + s2));
                     } finally {
                         session.setMacroRunning(false);
                     }

@@ -27,31 +27,27 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.DEBUG;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Display session attributes
  */
 public class DebugAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public DebugAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 DEBUG.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.O, KeyCombination.ALT_DOWN),
                 keyMap);
 
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.toggleDebug();
     }
 }

@@ -25,140 +25,123 @@ package org.tn5250j.sessionsettings;
  * Boston, MA 02111-1307 USA
  */
 
-import org.tn5250j.SessionConfig;
-import org.tn5250j.tools.LangTool;
-
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Enumeration;
+import java.io.IOException;
 import java.util.Properties;
 
-public class SessionSettings extends JDialog {
+import org.tn5250j.SessionConfig;
+import org.tn5250j.gui.UiUtils;
+import org.tn5250j.tools.LangTool;
 
-    private static final long serialVersionUID = 1L;
-    private final String fileName;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+public class SessionSettings extends DialogPane {
     private final Properties props;
-    private JPanel jpm = new JPanel(new BorderLayout());
+    private BorderPane jpm = new BorderPane();
 
     private final SessionConfig changes;
 
-    private JTree tree = new JTree();
-    private CardLayout cardLayout;
-    private JPanel jp;
+    private TreeView<AbstractAttributesController> tree = new TreeView<>();
+    private final Stage parent;
 
-    public SessionSettings(Frame parent, SessionConfig config) {
-        super(parent);
+    @SuppressWarnings("deprecation")
+    public SessionSettings(final Stage parent, final SessionConfig config) {
+        super();
+        this.parent = parent;
+        getButtonTypes().addAll(ButtonType.YES, ButtonType.APPLY, ButtonType.CANCEL);
 
-        parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        parent.getScene().getRoot().setCursor(Cursor.WAIT);
 
-        this.fileName = config.getConfigurationResource();
         this.props = config.getProperties();
         changes = config;
 
-        try {
-            jbInit();
-            parent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        jbInit();
+        parent.getScene().getRoot().setCursor(Cursor.DEFAULT);
     }
 
     /**
      * Component initialization
      */
-    private void jbInit() throws Exception {
+    private void jbInit() {
 
         // define default
-        jp = new JPanel();
-        cardLayout = new CardLayout();
-        jp.setLayout(cardLayout);
-
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        Enumeration<?> e = root.children();
-        Object child;
-        while (e.hasMoreElements()) {
-            child = e.nextElement();
-            Object obj = ((DefaultMutableTreeNode) child).getUserObject();
-            if (obj instanceof AttributesPanel) {
-                jp.add((AttributesPanel) obj, obj.toString());
-            }
-        }
+        final StackPane jp = new StackPane();
 
         //Create the nodes.
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode(fileName);
-        createNodes(top);
+        tree.setShowRoot(false);
+        tree.setRoot(new TreeItem<AbstractAttributesController>(null));
+        tree.getRoot().setExpanded(true);
+        createNodes(jp);
 
-        //Create a tree that allows one selection at a time.
-        tree = new JTree(top);
-
-        tree.getSelectionModel().setSelectionMode
-                (TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-        //Listen for when the selection changes.
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                        tree.getLastSelectedPathComponent();
-
-                if (node == null)
-                    return;
-                showPanel(node.getUserObject());
-            }
-        });
-
+        tree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tree.getSelectionModel().selectedItemProperty().addListener((src, old, value) -> treeSelectionChanged(value));
 
         // define tree selection panel
-        JPanel jsp = new JPanel();
-        jsp.setBackground(Color.white);
-        jsp.add(tree);
+        final BorderPane jsp = new BorderPane(tree);
+        UiUtils.setBackground(jsp, Color.WHITE);
 
-        jpm.add(jp, BorderLayout.EAST);
-        jpm.add(jsp, BorderLayout.WEST);
+        jpm.setLeft(jsp);
+        jpm.setRight(jp);
 
-        cardLayout.first(jp);
-
-
+        setContent(jpm);
+        tree.getSelectionModel().selectFirst();
     }
 
-    private void showPanel(Object node) {
-
-        cardLayout.show(jp, node.toString());
+    private void treeSelectionChanged(final TreeItem<AbstractAttributesController> item) {
+        item.getValue().getView().toFront();
     }
 
-    private void createNodes(DefaultMutableTreeNode top) {
-        createNode(top, new ColorAttributesPanel(changes));
-        createNode(top, new DisplayAttributesPanel(changes));
-        createNode(top, new CursorAttributesPanel(changes));
-        createNode(top, new FontAttributesPanel(changes));
-        createNode(top, new TabAttributesPanel(changes));
-        createNode(top, new SignoffAttributesPanel(changes));
-        createNode(top, new OnConnectAttributesPanel(changes));
-        createNode(top, new MouseAttributesPanel(changes));
-        createNode(top, new HotspotAttributesPanel(changes));
-        createNode(top, new KeypadAttributesPanel(changes));
-        createNode(top, new PrinterAttributesPanel(changes));
-        createNode(top, new ErrorResetAttributesPanel(changes));
-
+    private void createNodes(final StackPane top) {
+        createNode(top, loadFromTemplate(new ColorAttributesController(changes), "/fxml/ColorAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new DisplayAttributesController(changes), "/fxml/DisplayAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new CursorAttributesController(changes), "/fxml/CursorAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new FontAttributesController(changes), "/fxml/FontAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new TabAttributesController(changes), "/fxml/TabAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new SignoffAttributesController(changes), "/fxml/SignoffAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new OnConnectAttributesController(changes), "/fxml/OnConnectAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new MouseAttributesController(changes), "/fxml/MouseAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new HotspotAttributesController(changes), "/fxml/HotspotAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new KeypadAttributesController(changes), "/fxml/KeypadAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new PrinterAttributesController(changes), "/fxml/PrinterAttributesPane.fxml"));
+        createNode(top, loadFromTemplate(new ErrorResetAttributesController(changes), "/fxml/ErrorResetAttributesPane.fxml"));
     }
 
-    private void createNode(DefaultMutableTreeNode top, AttributesPanel ap) {
-
-        top.add(new DefaultMutableTreeNode(ap));
-        jp.add(ap, ap.toString());
-
+    private AbstractAttributesController loadFromTemplate(final AbstractAttributesController controller, final String tpl) {
+        try {
+            final FXMLLoader loader = UiUtils.createLoader(tpl);
+            loader.setControllerFactory(cls -> controller);
+            loader.load();
+            return controller;
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to load template: " + tpl, e);
+        }
     }
 
-    protected final String getStringProperty(String prop) {
+    private void createNode(final StackPane top, final AbstractAttributesController controller) {
+        final Region view = controller.getView();
+        top.getChildren().add(view);
+
+        final TreeItem<AbstractAttributesController> item = new TreeItem<>(controller);
+        tree.getRoot().getChildren().add(item);
+    }
+
+    protected final String getStringProperty(final String prop) {
 
         if (props.containsKey(prop))
             return (String) props.get(prop);
@@ -167,10 +150,10 @@ public class SessionSettings extends JDialog {
 
     }
 
-    protected final String getStringProperty(String prop, String defaultValue) {
+    protected final String getStringProperty(final String prop, final String defaultValue) {
 
         if (props.containsKey(prop)) {
-            String p = (String) props.get(prop);
+            final String p = (String) props.get(prop);
             if (p.length() > 0)
                 return p;
             else
@@ -180,119 +163,68 @@ public class SessionSettings extends JDialog {
 
     }
 
-    protected final void setProperty(String key, String val) {
+    protected final void setProperty(final String key, final String val) {
         props.setProperty(key, val);
     }
 
-    public Properties getProperties() {
-
+    public Properties getAllProperties() {
         return props;
     }
 
+    @Override
+    protected Node createButton(final ButtonType buttonType) {
+        Button button = (Button) super.createButton(buttonType);
+
+        if (buttonType == ButtonType.APPLY) {
+            //change returned button for remove closers
+            button = new Button();
+            button.setText(LangTool.getString("sa.optApply"));
+        } else if (buttonType == ButtonType.CANCEL) {
+            button.setText(LangTool.getString("sa.optCancel"));
+        } else if (buttonType == ButtonType.YES) {
+            button.setText(LangTool.getString("sa.optSave"));
+        }
+
+        return button;
+    }
+
     public void showIt() {
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(LangTool.getString("sa.title"));
+        dialog.initOwner(parent);
 
-        Object[] message = new Object[1];
-        message[0] = jpm;
-        String[] options = {LangTool.getString("sa.optApply"),
-                LangTool.getString("sa.optCancel"),
-                LangTool.getString("sa.optSave")
-        };
-
-        final JOptionPane saOptionPane = new JOptionPane(
-                message,                           // the dialog message array
-                JOptionPane.PLAIN_MESSAGE,   // message type
-                JOptionPane.YES_NO_CANCEL_OPTION,        // option type
-                null,                              // optional icon, use null to use the default icon
-                options,                           // options string array, will be made into buttons//
-                options[1]                         // option that should be made into a default button
-        );
-
-        setTitle(LangTool.getString("sa.title"));
-        setModal(true);
-        setContentPane(saOptionPane);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent we) {
-
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.resultProperty().addListener((src, old, value) -> {
+            SessionSettings.this.setCursor(Cursor.WAIT);
+            try {
+                doOptionStuff(value);
+            } finally {
+                SessionSettings.this.setCursor(Cursor.DEFAULT);
             }
         });
 
-        saOptionPane.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent e) {
-                        String prop = e.getPropertyName();
-                        if (isVisible()
-                                && (e.getSource() == saOptionPane)
-                                && (prop.equals(JOptionPane.VALUE_PROPERTY) ||
-                                prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
-
-                            saOptionPane.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-                            doOptionStuff(saOptionPane);
-
-                            saOptionPane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        }
-                    }
-                });
-
-        pack();
-
-        //Center the dialog
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension dialogSize = getSize();
-        if (dialogSize.height > screenSize.height)
-            dialogSize.height = screenSize.height;
-        if (dialogSize.width > screenSize.width)
-            dialogSize.width = screenSize.width;
-        setLocation((screenSize.width - dialogSize.width) / 2,
-                (screenSize.height - dialogSize.height) / 2);
-
-        setVisible(true);
-
+        dialog.setDialogPane(this);
+        dialog.setResizable(true); //FIXME possible better to comment it
+        Platform.runLater(dialog::show);
     }
 
-    private void doOptionStuff(JOptionPane optionPane) {
-        // Warning, do not cast to String, because it also can be Integer!
-        Object result = optionPane.getValue();
-
-        if (LangTool.getString("sa.optApply").equals(result)) {
-
+    private void doOptionStuff(final ButtonType result) {
+        if (result == ButtonType.APPLY) {
             applyAttributes();
-            optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-
-        }
-        if (LangTool.getString("sa.optCancel").equals(result)) {
-            setVisible(false);
-            dispose();
-        }
-        if (LangTool.getString("sa.optSave").equals(result)) {
-
+        } else if (result == ButtonType.OK) {
             if (props.containsKey("saveme")) {
                 props.remove("saveme");
             }
             changes.saveSessionProps();
-            setVisible(false);
-            dispose();
         }
     }
 
     private void applyAttributes() {
-
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-        Enumeration<?> e = root.children();
-        Object child;
-        while (e.hasMoreElements()) {
-            child = e.nextElement();
-            Object obj = ((DefaultMutableTreeNode) child).getUserObject();
-            if (obj instanceof AttributesPanel) {
-                ((AttributesPanel) obj).applyAttributes();
-            }
+        final ObservableList<TreeItem<AbstractAttributesController>> children = tree.getRoot().getChildren();
+        for (final TreeItem<AbstractAttributesController> item : children) {
+            item.getValue().applyAttributes();
         }
 
         setProperty("saveme", "yes");
-
     }
-
 }

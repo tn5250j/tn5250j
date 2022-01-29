@@ -25,24 +25,24 @@
  */
 package org.tn5250j.tools;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import org.tn5250j.SessionGui;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.scripting.InterpreterDriverManager;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 
 public class Macronizer {
 
@@ -187,66 +187,30 @@ public class Macronizer {
     }
 
     public static void showRunScriptDialog(final SessionGui session) {
+        final TextField text = new TextField();
+        final BorderPane borderPane = new BorderPane();
 
-        final JPanel rsp = new JPanel();
-        rsp.setLayout(new BorderLayout());
-        final JLabel jl = new JLabel("Enter script to run");
-        final JTextField rst = new JTextField();
-        rsp.add(jl, BorderLayout.NORTH);
-        rsp.add(rst, BorderLayout.CENTER);
-        final Object[] message = new Object[1];
-        message[0] = rsp;
-        final String[] options = {"Run", "Cancel"};
+        final Label label = new Label("Enter script to run");
+        borderPane.setLeft(label);
+        BorderPane.setAlignment(label, Pos.CENTER);
+        BorderPane.setMargin(label, new Insets(0, 5, 0, 0));
 
-        final JOptionPane pane = new JOptionPane(
-                message,                           // the dialog message array
-                JOptionPane.QUESTION_MESSAGE,      // message type
-                JOptionPane.DEFAULT_OPTION,        // option type
-                null,                              // optional icon, use null to use the default icon
-                options,                           // options string array, will be made into buttons//
-                options[0]);                       // option that should be made into a default button
+        borderPane.setCenter(text);
+        BorderPane.setAlignment(text, Pos.CENTER);
 
+        final HBox content = new HBox(borderPane);
 
-        // create a dialog wrapping the pane
-        final JDialog dialog = pane.createDialog((Component) session, // parent frame
-                "Run Script"  // dialog title
-        );
-
-        // add the listener that will set the focus to
-        // the desired option
-        dialog.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(final WindowEvent e) {
-                super.windowOpened(e);
-
-                // now we're setting the focus to the desired component
-                // it's not the best solution as it depends on internals
-                // of the OptionPane class, but you can use it temporarily
-                // until the bug gets fixed
-                // also you might want to iterate here thru the set of
-                // the buttons and pick one to call requestFocus() for it
-
-                rst.requestFocus();
-            }
-        });
-        dialog.setVisible(true);
+        final Alert alert = UiUtils.createInputDialog(content, "Run", "Cancel");
+        alert.setTitle("Run Script");
 
         // now we can process the value selected
-        // now we can process the value selected
-        // if its Integer, the user most likely hit escape
-        final Object myValue = pane.getValue();
-        if (!(myValue instanceof Integer)) {
-            final String value = (String) myValue;
-
-            if (value.equals(options[0])) {
-                // send option along with system request
-                if (rst.getText().length() > 0) {
-                    invoke(rst.getText(), session);
-                }
+        if (alert.showAndWait().orElse(null) == ButtonType.OK) {
+            final String value = text.getText();
+            // send option along with system request
+            if (value.length() > 0) {
+                invoke(value, session);
             }
         }
-
-
     }
 
     public final static void invoke(String macro, final SessionGui session) {
@@ -274,9 +238,7 @@ public class Macronizer {
                 "emulator.settingsDirectory") +
                 "scripts");
 
-
         return directory.isDirectory() || directory2.isDirectory();
 
     }
-
 }

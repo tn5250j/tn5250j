@@ -21,8 +21,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import org.tn5250j.Session5250;
-import org.tn5250j.SessionPanel;
 import org.tn5250j.tools.GUIGraphicsUtils;
 
 import javafx.application.Application;
@@ -109,10 +107,6 @@ public class SwingToFxUtils {
         final Scene scene = new Scene(node);
         fxPane.setScene(scene);
         return fxPane;
-    }
-
-    public static SessionPanel createSessionPanel(final Session5250 session) {
-        return UiUtils.runInFxAndWait(() -> new SessionPanel(session));
     }
     public static Color fromAwtColor(final java.awt.Color c) {
         return Color.rgb(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha() / 255.);

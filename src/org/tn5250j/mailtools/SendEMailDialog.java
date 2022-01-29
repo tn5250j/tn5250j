@@ -26,9 +26,7 @@
  */
 package org.tn5250j.mailtools;
 
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -40,7 +38,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -54,9 +51,13 @@ import org.tn5250j.SessionGui;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.gui.GenericTn5250JFrameSwing;
-import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.encoder.EncodeComponent;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 /**
  * Send E-Mail dialog
@@ -81,35 +82,26 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
     boolean sendScreen;
     SendEMail sendEMail;
     Thread myThread = new Thread(this);
+    private final Window parent;
 
     /**
      * Constructor to send the screen information
-     *
-     * @param parent
      * @param session
      * @param sendScreen
      */
-    public SendEMailDialog(final Frame parent, final SessionGui session) {
-        this(parent, session, true);
+    public SendEMailDialog(final SessionGui session) {
+        this(session, true);
     }
 
     /**
      * Constructor to send the screen information
-     *
-     * @param parent
      * @param session
      */
-    public SendEMailDialog(final Frame parent, final SessionGui session, final boolean sendScreen) {
+    public SendEMailDialog(final SessionGui session, final boolean sendScreen) {
         super();
+        this.parent = session.getWindow();
         if (!isEMailAvailable()) {
-
-            JOptionPane.showMessageDialog(
-                    parent,
-                    LangTool.getString("messages.noEmailAPI"),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE,
-                    null);
-
+            UiUtils.showError(LangTool.getString("messages.noEmailAPI"), "Error");
         } else {
 
             this.session = session;
@@ -127,7 +119,7 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
                 // setup the dialog options
                 setOptions(options);
 
-                result = JOptionPane.showOptionDialog(parent,
+                result = JOptionPane.showOptionDialog(SwingToFxUtils.SHARED_FRAME,
                         // the parent that the dialog blocks
                         message, // the dialog message array
                         LangTool.getString("em.title"),
@@ -226,7 +218,7 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
 
                                 EncodeComponent.encode(
                                         EncodeComponent.PNG,
-                                        (Component) session,
+                                        session,
                                         f);
                                 sendEMail.setFileName(f.getName());
                             } catch (final Exception ex) {
@@ -261,16 +253,15 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
 
     /**
      * Constructor to send a file
-     *
-     * @param parent
      * @param session
      */
-    public SendEMailDialog(final Frame parent, final SessionGui session, final String fileName) {
+    public SendEMailDialog(final SessionGui session, final String fileName) {
+        this.parent = session.getWindow();
 
         if (!isEMailAvailable()) {
 
             JOptionPane.showMessageDialog(
-                    parent,
+                    SwingToFxUtils.SHARED_FRAME,
                     LangTool.getString("messages.noEmailAPI"),
                     "Error",
                     JOptionPane.ERROR_MESSAGE,
@@ -288,7 +279,7 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
 
                 // setup the dialog options
                 setOptions(options);
-                result = JOptionPane.showOptionDialog(parent,
+                result = JOptionPane.showOptionDialog(SwingToFxUtils.SHARED_FRAME,
                         // the parent that the dialog blocks
                         message, // the dialog message array
                         LangTool.getString("em.titleFileTransfer"),
@@ -342,7 +333,7 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
      * Send the e-mail on its way.
      * @param sem
      */
-    private void sendIt(final Frame parent, final SendEMail sem) {
+    private void sendIt(final Window parent, final SendEMail sem) {
 
 //      setSendEMail(sem);
 
@@ -426,15 +417,10 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
      *
      * @param parent
      */
-    private void configureSMTP(Frame parent) {
-
-        if (parent == null)
-            parent = new JFrame();
-
+    private void configureSMTP(final Window parent) {
         final SMTPConfig smtp = new SMTPConfig(parent, "", true);
         smtp.setVisible(true);
         smtp.dispose();
-
     }
 
     /**
@@ -634,14 +620,13 @@ public class SendEMailDialog extends GenericTn5250JFrameSwing implements Runnabl
     }
 
     private void browse_actionPerformed(final ActionEvent e) {
-        final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
-        final int ret = pcFileChooser.showOpenDialog(new JFrame());
+        final File file = pcFileChooser.showOpenDialog(parent);
 
         // check to see if something was actually chosen
-        if (ret == TN5250jFileChooser.APPROVE_OPTION) {
-            final File file = pcFileChooser.getSelectedFile();
+        if (file != null) {
             fileName = file.getName();
             attachmentName.setText(file.toString());
         }

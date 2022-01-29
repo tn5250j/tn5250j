@@ -31,6 +31,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
@@ -337,7 +339,7 @@ public class Screen5250 {
      * @param formatOption formatting option to use
      * @return vector string of numberic values
      */
-    public final Vector<Double> sumThem(final boolean formatOption, final Rectangle2D area) {
+    public final List<Double> sumThem(final boolean formatOption, final Rectangle2D area) {
 
         final StringBuilder sb = new StringBuilder();
         final Rect workR = new Rect();
@@ -360,7 +362,7 @@ public class Screen5250 {
 
         df.setDecimalFormatSymbols(dfs);
 
-        final Vector<Double> sumVector = new Vector<Double>();
+        final List<Double> sumVector = new LinkedList<Double>();
 
         // loop through all the screen characters to send them to the clip board
         int m = workR.x;

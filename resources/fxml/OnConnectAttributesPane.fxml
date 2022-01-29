@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+    fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	fx:controller="org.tn5250j.sessionsettings.OnConnectAttributesController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<VBox  alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 0 1em 1em 1em;
+			</style>
+        	<TitledBorderedPane fx:id="titledPane" title="??titledPane??" labelPosition="TOP_LEFT">
+        		<content>
+        			<HBox alignment="CENTER">
+        				<TextField fx:id = "connectMacro" prefColumnCount="30"/>
+        			</HBox>
+        		</content>
+        	</TitledBorderedPane>
+		</VBox>
+	</top>
+</BorderPane>

@@ -27,31 +27,26 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.TOGGLE_CONNECTION;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Toggle connection from/to connected
  */
 public class ToggleConnectionAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public ToggleConnectionAction(final SessionGui session, final KeyMapper keyMap) {
         super(session,
                 TOGGLE_CONNECTION.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.X, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.toggleConnection();
     }
 }

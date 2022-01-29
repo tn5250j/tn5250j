@@ -28,7 +28,6 @@ package org.tn5250j.mailtools;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -43,8 +42,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
+
+import javafx.stage.Window;
 
 public class SMTPConfig extends JDialog {
 
@@ -73,12 +75,12 @@ public class SMTPConfig extends JDialog {
 
     private static final String smtpFileName = "SMTPProperties.cfg";
 
-    public SMTPConfig(Frame frame, String title, boolean modal) {
-        super(frame, title, modal);
+    public SMTPConfig(final Window frame, final String title, final boolean modal) {
+        super(SwingToFxUtils.SHARED_FRAME, title, modal);
         try {
             jbInit();
             pack();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -103,7 +105,8 @@ public class SMTPConfig extends JDialog {
         optDone.setPreferredSize(new Dimension(100, 27));
         optDone.setText(LangTool.getString("em.optDone"));
         optDone.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 optDone_actionPerformed(e);
             }
         });
@@ -111,7 +114,8 @@ public class SMTPConfig extends JDialog {
         optCancel.setPreferredSize(new Dimension(100, 27));
         optCancel.setText(LangTool.getString("em.optCancelLabel"));
         optCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
                 optCancel_actionPerformed(e);
             }
         });
@@ -211,8 +215,8 @@ public class SMTPConfig extends JDialog {
         pack();
 
         //Center the window
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension frameSize = getSize();
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Dimension frameSize = getSize();
         if (frameSize.height > screenSize.height)
             frameSize.height = screenSize.height;
         if (frameSize.width > screenSize.width)
@@ -252,7 +256,7 @@ public class SMTPConfig extends JDialog {
      * @param name Configuration file name
      * @return true if the configuration file was loaded
      */
-    private boolean loadConfig(String name) throws Exception {
+    private boolean loadConfig(final String name) throws Exception {
 
         SMTPProperties =
                 ConfigureFactory.getInstance().getProperties("smtp", smtpFileName);
@@ -263,7 +267,7 @@ public class SMTPConfig extends JDialog {
             return false;
     }
 
-    private void optDone_actionPerformed(ActionEvent e) {
+    private void optDone_actionPerformed(final ActionEvent e) {
 
         SMTPProperties.setProperty("mail.smtp.host", fieldHost.getText());
         SMTPProperties.setProperty("mail.smtp.port", fieldPort.getText());
@@ -273,7 +277,7 @@ public class SMTPConfig extends JDialog {
         // file name
         SMTPProperties.setProperty("fileName", fieldFileName.getText());
 
-        for (Enumeration<?> x = SMTPProperties.propertyNames();
+        for (final Enumeration<?> x = SMTPProperties.propertyNames();
              x.hasMoreElements();
         )
             System.out.println(SMTPProperties.get(x.nextElement()));
@@ -286,7 +290,7 @@ public class SMTPConfig extends JDialog {
 
     }
 
-    void optCancel_actionPerformed(ActionEvent e) {
+    void optCancel_actionPerformed(final ActionEvent e) {
 
         this.setVisible(false);
 

@@ -25,39 +25,36 @@
  */
 package org.tn5250j.keyboard.actions;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.OptionAccessFactory;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyCodeCombination;
 
 /**
  * Base class for all emulator actions
  */
-public abstract class EmulatorAction extends AbstractAction {
-
-    private static final long serialVersionUID = 1L;
+public abstract class EmulatorAction implements EventHandler<ActionEvent> {
     // content pane to be used if needed by subclasses
     protected SessionGui session;
+    private final String name;
 
     public EmulatorAction(final SessionGui session, final String name) {
-
-        super(name);
+        this.name = name;
         this.session = session;
     }
 
-    public EmulatorAction(final SessionGui session, final String name, final KeyStroke ks, final KeyMapper keyMap) {
+    public EmulatorAction(final SessionGui session, final String name, final KeyCodeCombination ks, final KeyMapper keyMap) {
 
         this(session, name);
 
         setKeyStroke(name, ks, keyMap);
     }
 
-    protected void setKeyStroke(final String action, KeyStroke ks, final KeyMapper keyMap) {
+    protected void setKeyStroke(final String action, KeyCodeCombination ks, final KeyMapper keyMap) {
 
         if (OptionAccessFactory.getInstance().isRestrictedOption(action))
             return;
@@ -66,19 +63,26 @@ public abstract class EmulatorAction extends AbstractAction {
             ks = KeyMapper.getKeyStroke(action);
         }
 
-        final JComponent session = (JComponent) this.session;
-        session.getInputMap().put(ks, action);
-        session.getActionMap().put(action, this);
+        this.session.addKeyAction(ks, this);
 
         // check for alternate
         if (KeyMapper.isKeyStrokeDefined(action + ".alt2")) {
             ks = KeyMapper.getKeyStroke(action + ".alt2");
-            session.getInputMap().put(ks, action);
-            session.getActionMap().put(action, this);
+            this.session.addKeyAction(ks, this);
         }
+    }
 
+    public String getName() {
+        return name;
     }
 
     @Override
-    abstract public void actionPerformed(ActionEvent e);
+    public void handle(final ActionEvent e) {
+        UiUtils.runInFx(() -> {
+            handle();
+            return null;
+        });
+    }
+
+    protected abstract void handle();
 }

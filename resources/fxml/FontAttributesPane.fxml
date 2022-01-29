@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+
+<BorderPane
+    fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	fx:controller="org.tn5250j.sessionsettings.FontAttributesController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<VBox alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 0 1em 1em 1em;
+			</style>
+			
+        	<TitledBorderedPane fx:id="fontPanel" title="??font??" labelPosition="TOP_LEFT">
+        		<content>
+					<VBox alignment="CENTER">
+	        			<HBox alignment="CENTER" spacing="10">
+	        				<ComboBox fx:id = "fontsList"/>
+	        				<CheckBox fx:id = "useAntialias"/>
+	        			</HBox>
+					</VBox>
+        		</content>
+        	</TitledBorderedPane>
+        	<TitledBorderedPane fx:id="scalePanel" title="??roller??" labelPosition="TOP_LEFT">
+        		<content>
+        			<VBox alignment="CENTER_LEFT">
+			         	<GridPane hgap="10" vgap="10">
+							<!-- first row -->
+							<Label text="??verticalScaleLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="0"
+								GridPane.halignment="LEFT"
+								fx:id="verticalScaleLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text="1.2"
+								fx:id="verticalScale"/>
+			         	
+							<!-- second row -->
+							<Label text="??horizontalScaleLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="1"
+								GridPane.halignment="LEFT"
+								fx:id = "horizontalScaleLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="1"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text = "1.0"
+								fx:id="horizontalScale"/>
+			         	
+							<!-- third row -->
+							<Label text="??pointSizeLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="2"
+								GridPane.halignment="LEFT"
+								fx:id = "pointSizeLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="2"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text = "0"
+								fx:id="pointSize"/>
+			         	</GridPane>
+        			</VBox>
+        		</content>
+        	</TitledBorderedPane>
+		</VBox>
+	</top>
+</BorderPane>

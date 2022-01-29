@@ -27,39 +27,33 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.QUICK_MAIL;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.JFrame;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.mailtools.SendEMailDialog;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+
 /**
  * Quick Email Action
  */
 public class QuickEmailAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public QuickEmailAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 QUICK_MAIL.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.F, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         final Runnable emailIt = new Runnable() {
             @Override
             public void run() {
-                new SendEMailDialog((JFrame) SwingUtilities.getRoot((Component) session),
-                        session, false);
+                new SendEMailDialog(session, false);
             }
 
         };

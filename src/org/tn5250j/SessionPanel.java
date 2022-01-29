@@ -29,11 +29,10 @@ import static org.tn5250j.keyboard.KeyMnemonic.ENTER;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_DOWN;
 import static org.tn5250j.keyboard.KeyMnemonic.PAGE_UP;
 
-import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
-import java.util.Vector;
-
-import javax.swing.JOptionPane;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.tn5250j.event.EmulatorActionEvent;
 import org.tn5250j.event.EmulatorActionListener;
@@ -45,12 +44,12 @@ import org.tn5250j.event.SessionJumpListener;
 import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.ConfirmTabCloseDialog;
 import org.tn5250j.gui.ResizablePane;
 import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonicSerializer;
 import org.tn5250j.keyboard.KeyboardHandler;
+import org.tn5250j.keyboard.actions.EmulatorAction;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sessionsettings.SessionSettings;
 import org.tn5250j.tools.LangTool;
@@ -58,7 +57,7 @@ import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -68,10 +67,15 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -81,15 +85,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * A host GUI session
  * (Hint: old name was SessionGUI)
  */
-public class SessionPanel extends JFXPanel implements
+public class SessionPanel extends BorderPane implements
         SessionGui, SessionConfigListener, SessionListener {
-    private static final long serialVersionUID = 1L;
-
     private boolean firstScreen;
     private char[] signonSave;
 
@@ -99,8 +103,8 @@ public class SessionPanel extends JFXPanel implements
     private final RubberBand rubberband = new RubberBand(this);
     private KeypadPanel keypadPanel;
     private String newMacName;
-    private Vector<SessionJumpListener> sessionJumpListeners = null;
-    private Vector<EmulatorActionListener> actionListeners = null;
+    private final List<SessionJumpListener> sessionJumpListeners = new CopyOnWriteArrayList<>();
+    private final List<EmulatorActionListener> actionListeners = new CopyOnWriteArrayList<>();
     private boolean macroRunning;
     private boolean stopMacro;
     private boolean doubleClick;
@@ -111,15 +115,14 @@ public class SessionPanel extends JFXPanel implements
 
     private final TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    private BorderPane root;
-
     private final Canvas canvas = new Canvas();
     private final CompoundCursor cursor = new CompoundCursor();
+    private final Map<KeyCodeCombination, EmulatorAction> keyActions = new ConcurrentHashMap<>();
 
     public SessionPanel(final Session5250 session) {
         this.keypadPanel = new KeypadPanel(session.getConfiguration().getConfig());
         this.session = session;
-        this.keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
+        this.keyHandler = KeyboardHandler.getKeyboardHandlerInstance(this);
 
         sesConfig = session.getConfiguration();
 
@@ -132,6 +135,8 @@ public class SessionPanel extends JFXPanel implements
 
         session.getConfiguration().addSessionConfigListener(this);
         session.addSessionListener(this);
+
+        addEventHandler(KeyEvent.ANY, this::processKeyEvent);
     }
 
     //Component initialization
@@ -139,15 +144,9 @@ public class SessionPanel extends JFXPanel implements
         session.setGUI(this);
         screen = session.getScreen();
 
-        setLayout(new BorderLayout(0, 0));
-
-        root = new BorderPane();
-        final Scene sc = new Scene(root);
-        setScene(sc);
-
         final VBox vbox = new VBox();
         vbox.setAlignment(Pos.CENTER);
-        root.setCenter(vbox);
+        setCenter(vbox);
 
         final HBox hbox = new HBox();
         hbox.setAlignment(Pos.CENTER);
@@ -161,16 +160,16 @@ public class SessionPanel extends JFXPanel implements
 
         hbox.getChildren().add(container);
 
-        root.widthProperty().addListener((src, old, value) -> resizeMe());
-        root.heightProperty().addListener((src, old, value) -> resizeMe());
+        widthProperty().addListener((src, old, value) -> resizeMe());
+        heightProperty().addListener((src, old, value) -> resizeMe());
 
         installMouseListeners(container);
         rubberband.startListen(container);
 
-        keyHandler = KeyboardHandler.getKeyboardHandlerInstance(session);
+        keyHandler = KeyboardHandler.getKeyboardHandlerInstance(this);
 
         guiGraBuf = new GuiGraphicBuffer(screen, this, sesConfig, canvas, cursor);
-        UiUtils.setBackground(root, guiGraBuf.getBackground());
+        UiUtils.setBackground(this, guiGraBuf.getBackground());
 
         final double width;
         final double height;
@@ -196,7 +195,7 @@ public class SessionPanel extends JFXPanel implements
         });
 
         keypadPanel.setVisible(sesConfig.getConfig().isKeypadEnabled());
-        root.setBottom(keypadPanel);
+        setBottom(keypadPanel);
 
         this.requestFocus();
 
@@ -207,7 +206,7 @@ public class SessionPanel extends JFXPanel implements
     private void installMouseListeners(final Pane container) {
         container.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
-                actionPopup(e.getX(), e.getY());
+                actionPopup(e.getScreenX(), e.getScreenY());
             }
         });
         container.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -263,13 +262,41 @@ public class SessionPanel extends JFXPanel implements
         }
     }
 
-    @Override
-    public void processKeyEvent(final KeyEvent evt) {
-
+    private void processKeyEvent(final KeyEvent evt) {
         keyHandler.processKeyEvent(evt);
 
-        if (!evt.isConsumed())
-            super.processKeyEvent(evt);
+        if (!evt.isConsumed()) {
+            final EmulatorAction action = getKeyAction(evt);
+            if (action != null) {
+                action.handle(new ActionEvent(this, null));
+                evt.consume();
+            }
+        }
+    }
+
+    @Override
+    public void addKeyAction(final KeyCodeCombination ks, final EmulatorAction emulatorAction) {
+        keyActions.put(ks, emulatorAction);
+    }
+
+    @Override
+    public void clearKeyActions() {
+        keyActions.clear();
+    }
+
+    @Override
+    public Map<KeyCodeCombination, EmulatorAction> getKeyActions() {
+        return keyActions;
+    }
+
+    @Override
+    public EmulatorAction getKeyAction(final KeyEvent event) {
+        for (final Map.Entry<KeyCodeCombination, EmulatorAction> e : keyActions.entrySet()) {
+            if (e.getKey().match(event)) {
+                return e.getValue();
+            }
+        }
+        return null;
     }
 
     public void sessionPanelScrolled(final ScrollEvent e) {
@@ -283,7 +310,7 @@ public class SessionPanel extends JFXPanel implements
 
     @Override
     public void sendScreenEMail() {
-        new SendEMailDialog(SwingToFxUtils.SHARED_FRAME, this);
+        new SendEMailDialog(this);
     }
 
     /**
@@ -335,9 +362,9 @@ public class SessionPanel extends JFXPanel implements
     }
 
     private void dispatchEvent(final EventType<MouseEvent> type, final double x, final double y) {
-        final MouseEvent e = new MouseEvent(root, root, type, x, y, x, y, MouseButton.PRIMARY,
+        final MouseEvent e = new MouseEvent(this, this, type, x, y, x, y, MouseButton.PRIMARY,
                 1, false, false, false, false, true, false, false, true, false, false, null);
-        Event.fireEvent(root, e);
+        Event.fireEvent(this, e);
     }
 
     /**
@@ -370,9 +397,16 @@ public class SessionPanel extends JFXPanel implements
         boolean result = true;
         if (session.getConfiguration().isPropertyExists("confirmTabClose")) {
             this.requestFocus();
-            final ConfirmTabCloseDialog tabclsdlg = new ConfirmTabCloseDialog(this);
             if (YES.equals(session.getConfiguration().getStringProperty("confirmTabClose"))) {
-                if (!tabclsdlg.show()) {
+                final Alert tabclsdlg = new Alert(AlertType.CONFIRMATION);
+                tabclsdlg.setTitle(LangTool.getString("sa.confirmTabClose"));
+                tabclsdlg.setContentText("Are you sure you want to close this tab?");
+
+                tabclsdlg.getButtonTypes().add(ButtonType.CLOSE);
+                tabclsdlg.getButtonTypes().add(ButtonType.CANCEL);
+
+                tabclsdlg.showAndWait();
+                if (tabclsdlg.getResult() != ButtonType.CLOSE) {
                     result = false;
                 }
             }
@@ -392,14 +426,18 @@ public class SessionPanel extends JFXPanel implements
         if (sesConfig.isPropertyExists("confirmSignoff") &&
                 YES.equals(getStringProperty("confirmSignoff"))) {
             this.requestFocus();
-            final int result = JOptionPane.showConfirmDialog(
-                    this.getParent(),            // the parent that the dialog blocks
-                    LangTool.getString("messages.signOff"),  // the dialog message array
-                    LangTool.getString("cs.title"),    // the title of the dialog window
-                    JOptionPane.CANCEL_OPTION        // option type
-            );
 
-            if (result == 0) {
+            final Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle(LangTool.getString("cs.title"));
+            alert.setContentText(LangTool.getString("messages.signOff"));
+            alert.getButtonTypes().clear();
+            alert.getButtonTypes().add(ButtonType.OK);
+            alert.getButtonTypes().add(ButtonType.CANCEL);
+
+            alert.initOwner(getScene().getWindow());
+
+            alert.showAndWait();
+            if (alert.getResult() != ButtonType.CANCEL) {
                 return true;
             }
 
@@ -434,10 +472,10 @@ public class SessionPanel extends JFXPanel implements
         }
 
         if ("mouseWheel".equals(configName)) {
-            root.removeEventHandler(ScrollEvent.SCROLL, scroller);
+            removeEventHandler(ScrollEvent.SCROLL, scroller);
 
             if (YES.equals(configEvent.getNewValue())) {
-                root.addEventHandler(ScrollEvent.SCROLL, scroller);
+                addEventHandler(ScrollEvent.SCROLL, scroller);
             }
         }
 
@@ -516,12 +554,11 @@ public class SessionPanel extends JFXPanel implements
      */
     private void fireSessionJump(final int dir) {
         if (sessionJumpListeners != null) {
-            final int size = sessionJumpListeners.size();
             final SessionJumpEvent jumpEvent = new SessionJumpEvent(this);
             jumpEvent.setJumpDirection(dir);
-            for (int i = 0; i < size; i++) {
-                final SessionJumpListener target = sessionJumpListeners.elementAt(i);
-                target.onSessionJump(jumpEvent);
+
+            for (final SessionJumpListener l : sessionJumpListeners) {
+                l.onSessionJump(jumpEvent);
             }
         }
     }
@@ -534,9 +571,7 @@ public class SessionPanel extends JFXPanel implements
     protected void fireEmulatorAction(final int action) {
 
         if (actionListeners != null) {
-            final int size = actionListeners.size();
-            for (int i = 0; i < size; i++) {
-                final EmulatorActionListener target = actionListeners.elementAt(i);
+            for (final EmulatorActionListener target : actionListeners) {
                 final EmulatorActionEvent sae = new EmulatorActionEvent(this);
                 sae.setAction(action);
                 target.onEmulatorAction(sae);
@@ -595,7 +630,7 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public void actionAttributes() {
-        new SessionSettings(SwingToFxUtils.SHARED_FRAME, sesConfig).showIt();
+        new SessionSettings((Stage) getScene().getWindow(), sesConfig).showIt();
         getFocusForMe();
     }
 
@@ -611,12 +646,10 @@ public class SessionPanel extends JFXPanel implements
                     new org.tn5250j.spoolfile.SpoolExporter(session.getVT(), this);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
-            JOptionPane.showMessageDialog(SwingToFxUtils.SHARED_FRAME,
-                    LangTool.getString("messages.noAS400Toolbox"),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE, null);
+            final Alert tabclsdlg = new Alert(AlertType.ERROR);
+            tabclsdlg.setTitle(LangTool.getString("sa.confirmTabClose"));
+            tabclsdlg.setContentText(LangTool.getString("messages.noAS400Toolbox"));
         }
-
     }
 
     @Override
@@ -636,11 +669,11 @@ public class SessionPanel extends JFXPanel implements
 
     @Override
     public void startRecordingMe() {
+        final TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(LangTool.getString("macro.title"));
+        dialog.setHeaderText(LangTool.getString("macro.message"));
 
-        String macName = JOptionPane.showInputDialog(null,
-                LangTool.getString("macro.message"),
-                LangTool.getString("macro.title"),
-                JOptionPane.PLAIN_MESSAGE);
+        String macName = dialog.showAndWait().orElse(null);
         if (macName != null) {
             macName = macName.trim();
             if (macName.length() > 0) {
@@ -662,8 +695,7 @@ public class SessionPanel extends JFXPanel implements
 
     @Override
     public Dimension2D getDrawingSize() {
-
-        final Bounds r = root.getBoundsInLocal();
+        final Bounds r = getBoundsInLocal();
         double height = r.getHeight();
         if (keypadPanel.isVisible())
             //	         r.height -= (int)(keyPad.getHeight() * 1.25);
@@ -715,7 +747,7 @@ public class SessionPanel extends JFXPanel implements
      * @return vector string of numeric values
      */
     @Override
-    public final Vector<Double> sumThem(final boolean which) {
+    public final List<Double> sumThem(final boolean which) {
         log.debug("Summing");
         return screen.sumThem(which, getBoundingArea());
     }
@@ -741,12 +773,7 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public synchronized void addSessionJumpListener(final SessionJumpListener listener) {
-
-        if (sessionJumpListeners == null) {
-            sessionJumpListeners = new java.util.Vector<SessionJumpListener>(3);
-        }
-        sessionJumpListeners.addElement(listener);
-
+        sessionJumpListeners.add(listener);
     }
 
     /**
@@ -756,11 +783,7 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public synchronized void removeSessionJumpListener(final SessionJumpListener listener) {
-        if (sessionJumpListeners == null) {
-            return;
-        }
-        sessionJumpListeners.removeElement(listener);
-
+        sessionJumpListeners.remove(listener);
     }
 
     /**
@@ -770,11 +793,7 @@ public class SessionPanel extends JFXPanel implements
      */
     @Override
     public synchronized void addEmulatorActionListener(final EmulatorActionListener listener) {
-
-        if (actionListeners == null) {
-            actionListeners = new java.util.Vector<EmulatorActionListener>(3);
-        }
-        actionListeners.addElement(listener);
+        actionListeners.remove(listener);
 
     }
 
@@ -784,11 +803,7 @@ public class SessionPanel extends JFXPanel implements
      * @param listener The EmulatorActionListener to be removed
      */
     public synchronized void removeEmulatorActionListener(final EmulatorActionListener listener) {
-        if (actionListeners == null) {
-            return;
-        }
-        actionListeners.removeElement(listener);
-
+        actionListeners.add(listener);
     }
 
     @Override
@@ -963,22 +978,26 @@ public class SessionPanel extends JFXPanel implements
 
     @Override
     public boolean isEnabled() {
-//        return !isDisable();
-        return super.isEnabled();
+        return !isDisable();
     }
 
     @Override
     public void setDefaultCursor() {
-        root.setCursor(Cursor.DEFAULT);
+        setCursor(Cursor.DEFAULT);
     }
 
     @Override
     public void setWaitCursor() {
-        root.setCursor(Cursor.WAIT);
+        setCursor(Cursor.WAIT);
     }
 
     @Override
     public KeyboardHandler getKeyHandler() {
         return keyHandler;
+    }
+
+    @Override
+    public Window getWindow() {
+        return getScene().getWindow();
     }
 }

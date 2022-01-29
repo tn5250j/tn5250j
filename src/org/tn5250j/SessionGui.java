@@ -4,6 +4,7 @@
 package org.tn5250j;
 
 import java.util.List;
+import java.util.Map;
 
 import org.tn5250j.event.EmulatorActionListener;
 import org.tn5250j.event.SessionJumpListener;
@@ -11,10 +12,14 @@ import org.tn5250j.event.SessionListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.keyboard.KeyboardHandler;
+import org.tn5250j.keyboard.actions.EmulatorAction;
 
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.Window;
 
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
@@ -105,10 +110,16 @@ public interface SessionGui {
     boolean isMacroRunning();
     void setStopMacroRequested();
     void startRecordingMe();
-    KeyboardHandler getKeyHandler();
     List<Double> sumThem(boolean which);
     void connect();
-    void addEmulatorActionListener(EmulatorActionListener listener);
     Point2D translateStart(Point2D start);
     Point2D translateEnd(Point2D end);
+    Window getWindow();
+
+    KeyboardHandler getKeyHandler();
+    void addEmulatorActionListener(EmulatorActionListener listener);
+    void addKeyAction(KeyCodeCombination ks, EmulatorAction emulatorAction);
+    void clearKeyActions();
+    EmulatorAction getKeyAction(KeyEvent e);
+    Map<KeyCodeCombination, EmulatorAction> getKeyActions();
 }

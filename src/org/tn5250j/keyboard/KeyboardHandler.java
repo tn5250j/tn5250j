@@ -26,25 +26,19 @@
 
 package org.tn5250j.keyboard;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.KeyChangeListener;
 import org.tn5250j.framework.tn5250.Screen5250;
 import org.tn5250j.tools.system.OperatingSystem;
 
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
+
 /**
  *
  */
-public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeListener {
+public abstract class KeyboardHandler implements KeyChangeListener {
 
     protected Session5250 session;
     protected SessionGui sessionGui;
@@ -61,11 +55,11 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
      * Creates a new keyboard handler.
      * @param session The session that will be sent the keys
      */
-    public KeyboardHandler(final Session5250 session) {
+    public KeyboardHandler(final SessionGui gui) {
 
-        this.session = session;
-        this.screen = session.getScreen();
-        sessionGui = session.getGUI();
+        this.session = gui.getSession();
+        this.screen = gui.getScreen();
+        sessionGui = gui;
 
 //      String os = System.getProperty("os.name");
 //      if (os.toLowerCase().indexOf("linux") != -1) {
@@ -73,6 +67,8 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
 //         isLinux = true;
 //      }
 
+        //isLinux = OperatingSystem.isUnix();
+        //Always use is linux flag because JavaFX does not support AlgGr
         isLinux = OperatingSystem.isUnix();
 
         keyMap = new KeyMapper();
@@ -86,35 +82,22 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
 
     }
 
-    public static KeyboardHandler getKeyboardHandlerInstance(final Session5250 session) {
-
+    public static KeyboardHandler getKeyboardHandlerInstance(final SessionGui session) {
         return new DefaultKeyboardHandler(session);
     }
 
     abstract void initKeyBindings();
 
-    protected InputMap getInputMap() {
-
-        return ((JComponent) sessionGui).getInputMap();
-    }
-
-    protected ActionMap getActionMap() {
-
-        return ((JComponent) sessionGui).getActionMap();
-    }
-
     @Override
     public void onKeyChanged() {
-
-        getInputMap().clear();
-        getActionMap().clear();
+        sessionGui.clearKeyActions();
         initKeyBindings();
 
     }
 
     public abstract boolean isKeyStrokeDefined(String accelKey);
 
-    public abstract KeyStroke getKeyStroke(String accelKey);
+    public abstract KeyCodeCombination getKeyStroke(String accelKey);
 
     public String getRecordBuffer() {
         return recordBuffer.toString();
@@ -147,22 +130,8 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
         keyMap.removeKeyChangeListener(this);
     }
 
-    protected boolean emulatorAction(final KeyStroke ks, final KeyEvent e) {
-
-        if (sessionGui == null)
-            return false;
-
-        final InputMap map = getInputMap();
-        final ActionMap am = getActionMap();
-
-        if (map != null && am != null && sessionGui.isEnabled()) {
-            final Object binding = map.get(ks);
-            final Action action = (binding == null) ? null : am.get(binding);
-            if (action != null) {
-                return true;
-            }
-        }
-        return false;
+    protected boolean emulatorAction(final KeyEvent e) {
+        return sessionGui != null && sessionGui.isEnabled() && sessionGui.getKeyAction(e) != null;
     }
 
 
@@ -170,18 +139,5 @@ public abstract class KeyboardHandler extends KeyAdapter implements KeyChangeLis
      * Utility method, calls one of <code>keyPressed()</code>,
      * <code>keyReleased()</code>, or <code>keyTyped()</code>.
      */
-    public void processKeyEvent(final KeyEvent evt) {
-        switch (evt.getID()) {
-            case KeyEvent.KEY_TYPED:
-                keyTyped(evt);
-                break;
-            case KeyEvent.KEY_PRESSED:
-                keyPressed(evt);
-                break;
-            case KeyEvent.KEY_RELEASED:
-                keyReleased(evt);
-                break;
-        }
-    }
-
+    public abstract void processKeyEvent(final KeyEvent evt);
 }

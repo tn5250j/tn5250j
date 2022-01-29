@@ -42,7 +42,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -54,7 +53,7 @@ import org.tn5250j.SessionGui;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
 import org.tn5250j.gui.GenericTn5250JFrameSwing;
-import org.tn5250j.gui.TN5250jFileChooser;
+import org.tn5250j.gui.TN5250jFileFilterBuilder;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.mailtools.SendEMailDialog;
@@ -73,6 +72,8 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
+
+import javafx.stage.FileChooser;
 
 /**
  *
@@ -550,28 +551,25 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      */
     private void getPCFile() {
 
-        final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
         // set the file filters for the file chooser
-        ExportFileFilter filter;
+        TN5250jFileFilterBuilder filter;
 
         if (((String) cvtType.getSelectedItem()).equals(LangTool.getString("spool.toPDF")))
-            filter = new ExportFileFilter("pdf", "PDF Files");
+            filter = new TN5250jFileFilterBuilder("pdf", "PDF Files");
         else
-            filter = new ExportFileFilter("txt", "Text Files");
+            filter = new TN5250jFileFilterBuilder("txt", "Text Files");
 
-        pcFileChooser.addChoosableFileFilter(filter);
+        pcFileChooser.setSelectedExtensionFilter(filter.buildFilter());
 
-        final int ret = pcFileChooser.showSaveDialog(this);
+        final File file = pcFileChooser.showSaveDialog(session.getWindow());
 
         // check to see if something was actually chosen
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            final File file = pcFileChooser.getSelectedFile();
+        if (file != null) {
             pcPathInfo.setText(filter.setExtension(file));
-
         }
-
     }
 
     /**
@@ -607,18 +605,17 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      */
     private void getEditor() {
 
-        final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
 
-        final int ret = pcFileChooser.showOpenDialog(this);
+        final File file = pcFileChooser.showOpenDialog(session.getWindow());
 
         // check to see if something was actually chosen
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            final File file = pcFileChooser.getSelectedFile();
+        if (file != null) {
             try {
                 editor.setText(file.getCanonicalPath());
             } catch (final IOException e) {
-
+                e.printStackTrace();
             }
         }
     }
@@ -668,8 +665,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      */
     private void emailMe() {
 
-        final SendEMailDialog semd = new SendEMailDialog(this,
-                session, conicalPath);
+        final SendEMailDialog semd = new SendEMailDialog(session, conicalPath);
 
     }
 

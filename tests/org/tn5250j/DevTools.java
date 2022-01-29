@@ -3,6 +3,7 @@
  */
 package org.tn5250j;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -11,31 +12,44 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.tn5250j.gui.ControllerWithView;
+import org.tn5250j.gui.UiUtils;
+
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.stage.Stage;
 
 /**
  * @author Vyacheslav Soldatov <vyacheslav.soldatov@inbox.ru>
  *
  */
 public class DevTools {
+    private static final String LOCALHOST = "127.0.0.1";
+
     public static SessionBean createSessionBean() throws Exception {
         final Session5250 session = createSession();
         return createSessionBean(session);
     }
 
     public static Session5250 createSession() {
-        final String system = "127.0.0.1"; // TODO: your IP/hostname
-
-        final SessionConfig config = new SessionConfig(system, system);
+        final SessionConfig config = createSessionConfig();
         config.setProperty("font", "Lucida Sans Typewriter Regular"); // example config
 
-        final Session5250 session = new Session5250(new Properties(), system, system, config);
-        return session;
+        return new Session5250(new Properties(), LOCALHOST, LOCALHOST, config);
+    }
+
+    public static SessionConfig createSessionConfig() {
+        return new SessionConfig(LOCALHOST, LOCALHOST);
     }
 
     public static SessionBean createSessionBean(final Session5250 session) throws UnknownHostException {
         final SessionBean sessionBean = new SessionBean(session);
 
-        sessionBean.setHostName("127.0.0.1");
+        sessionBean.setHostName(LOCALHOST);
         sessionBean.setCodePage("Cp273");
         sessionBean.setNoSaveConfigFile();
         sessionBean.setScreenSize("27x132");
@@ -44,7 +58,7 @@ public class DevTools {
         return sessionBean;
     }
 
-    public static JFrame createClosableFrame(final String title, final Runnable closingListener) {
+    public static JFrame createClosableSwingFrame(final String title, final Runnable closingListener) {
         final JFrame frame = new JFrame(title);
 
         final Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
@@ -58,11 +72,45 @@ public class DevTools {
             new WindowAdapter() {
                 @Override
                 public void windowClosing(final WindowEvent e) {
-                    closingListener.run();
+                    if (closingListener != null) {
+                        closingListener.run();
+                    }
                 }
             }
         );
 
         return frame;
+    }
+
+    public static ButtonType showInDialog(final ControllerWithView controller, final String template) {
+        final Dialog<ButtonType> dialog = createDialog(controller, template);
+        dialog.setTitle("Demo");
+        return dialog.showAndWait().orElse(null);
+    }
+
+    public static Dialog<ButtonType> createDialog(final Object controller,
+            final String template) {
+        final Parent parent = UiUtils.loadTempalte(controller, template);
+
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setContent(parent);
+        return dialog;
+    }
+
+    public static Stage createClosableFxFrame(final String title, final Parent node) {
+        final Stage frame = new Stage();
+        frame.setTitle(title);
+        frame.setScene(new Scene(node));
+        return frame;
+    }
+
+    public static void showInFrame(final JPanel panel) {
+        final JFrame frame = createClosableSwingFrame(LOCALHOST, null);
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.getContentPane().add(panel, BorderLayout.CENTER);
+
+        frame.setVisible(true);
     }
 }

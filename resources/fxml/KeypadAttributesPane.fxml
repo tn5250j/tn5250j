@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.shape.Box?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.GridPane?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.control.TextField?>
+
+<BorderPane
+    fx:id="view"
+	fx:controller="org.tn5250j.sessionsettings.KeypadAttributesController"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<style>
+	  -fx-padding: 0 0.5em 1em 0.5em;
+	</style>
+	<top>
+		<TitledBorderedPane fx:id = "enableKeyPadPanel" labelPosition="TOP_LEFT">
+			<HBox alignment="CENTER">
+				<style>
+				  -fx-padding: 0.5em 0.5em 0.5em 0.5em;
+				</style>
+				<GridPane vgap="5" hgap="5">
+					<CheckBox 
+						GridPane.columnIndex="0"
+						GridPane.rowIndex="0"
+						GridPane.columnSpan = "2"
+						GridPane.fillWidth = "true"
+						GridPane.halignment="CENTER"
+						fx:id = "keyPadEnable"/>
+					<Label 
+						GridPane.columnIndex="0"
+						GridPane.rowIndex="1"
+						GridPane.halignment="CENTER"
+						fx:id = "fontSizeLabel"/>
+					<TextField 
+						GridPane.columnIndex="1"
+						GridPane.rowIndex="1"
+						GridPane.halignment="CENTER"
+						prefColumnCount="3"
+						fx:id = "fontSize" />
+				</GridPane>
+			</HBox>
+		</TitledBorderedPane>
+	</top>
+	<center>
+		<TitledBorderedPane fx:id ="visibleButtonsPanel" title="??visibleButtonsPanel??">
+			<BorderPane >
+				<style>
+				  -fx-padding: 1em 0.5em 0.5em 0.5em;
+				</style>
+				<center>
+					<GridPane hgap="5">
+						<!-- second row -->
+						<ListView fx:id="availableButtonsList"
+							GridPane.columnIndex="0"
+							GridPane.rowIndex="1"
+							GridPane.hgrow="ALWAYS"
+							GridPane.vgrow="ALWAYS"
+							/>
+						<VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1" >
+							<Button fx:id="moveUpButton" styleClass="arrow-up" scaleX="0.85" scaleY="0.85"/>
+							<Button fx:id="toRightButton" styleClass="arrow-right" scaleX="0.85" scaleY="0.85"/>
+							<Button fx:id="toLeftButton" styleClass="arrow-left" scaleX="0.85" scaleY="0.85"/>
+							<Button fx:id="moveDownButton" styleClass="arrow-down" scaleX="0.85" scaleY="0.85"/>
+						</VBox>
+						<ListView fx:id="configuredButtonsList"
+							GridPane.columnIndex="2"
+							GridPane.rowIndex="1"
+							GridPane.hgrow="ALWAYS"
+							GridPane.vgrow="ALWAYS"
+							/>
+					</GridPane>
+				</center>
+				<bottom>
+					<HBox alignment="CENTER">
+						<style>
+						  -fx-padding: 1em 0 0 0;
+						</style>
+						<Button fx:id = "resetButton"/>
+					</HBox>
+				</bottom>
+			</BorderPane>
+		</TitledBorderedPane>
+	</center>
+</BorderPane>

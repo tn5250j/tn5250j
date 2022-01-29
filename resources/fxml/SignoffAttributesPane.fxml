@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+
+<BorderPane
+    fx:id="view"
+	stylesheets="application.css"
+	styleClass="not-opaque"
+	fx:controller="org.tn5250j.sessionsettings.SignoffAttributesController"
+	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<VBox alignment="CENTER" spacing="10">
+			<style>
+			  -fx-padding: 0 1em 1em 1em;
+			</style>
+			
+        	<TitledBorderedPane fx:id="parametersPane" title="??parametersPane??" labelPosition="TOP_LEFT">
+        		<content>
+        			<HBox alignment="CENTER">
+        				<CheckBox fx:id = "signoffCheck"/>
+        			</HBox>
+        		</content>
+        	</TitledBorderedPane>
+        	<TitledBorderedPane fx:id="regionPane" title="??regionPane??" labelPosition="TOP_LEFT">
+        		<content>
+        			<VBox alignment="CENTER_LEFT">
+			         	<GridPane hgap="10" vgap="10">
+							<!-- first row -->
+							<Label text="??vfromRowLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="0"
+								GridPane.halignment="LEFT"
+								fx:id="fromRowLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text="1"
+								fx:id="fromRow"/>
+			         	
+							<!-- second row -->
+							<Label text="??fromColLabel??"
+								GridPane.columnIndex="2"
+								GridPane.rowIndex="0"
+								GridPane.halignment="LEFT"
+								fx:id = "fromColLabel"/>
+							<TextField
+								GridPane.columnIndex="3"
+								GridPane.rowIndex="0"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text = "1"
+								fx:id="fromCol"/>
+			         	
+							<!-- third row -->
+							<Label text="??toRowLabel??"
+								GridPane.columnIndex="0"
+								GridPane.rowIndex="1"
+								GridPane.halignment="LEFT"
+								fx:id = "toRowLabel"/>
+							<TextField
+								GridPane.columnIndex="1"
+								GridPane.rowIndex="1"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text = "24"
+								fx:id="toRow"/>
+
+							<Label text="??toColLabel??"
+								GridPane.columnIndex="2"
+								GridPane.rowIndex="1"
+								GridPane.halignment="LEFT"
+								fx:id = "toColLabel"/>
+							<TextField
+								GridPane.columnIndex="3"
+								GridPane.rowIndex="1"
+								GridPane.hgrow="NEVER"
+								GridPane.halignment="LEFT"
+								prefColumnCount="5"
+								text = "80"
+								fx:id="toCol"/>
+			         	</GridPane>
+        			</VBox>
+        		</content>
+        	</TitledBorderedPane>
+		</VBox>
+	</top>
+</BorderPane>

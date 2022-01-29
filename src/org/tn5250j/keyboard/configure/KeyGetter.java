@@ -25,23 +25,40 @@
  */
 package org.tn5250j.keyboard.configure;
 
-import java.awt.event.KeyEvent;
-
+import org.tn5250j.keyboard.KeyStrokeHelper;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javafx.event.EventType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 /**
  * This class extends label so that we can display text as well as capture
  * the key stroke(s) to assign to keys.
  */
-public class KeyGetter extends KeyGetterInterface {
-
-    private static final long serialVersionUID = 1691732474472874354L;
-
+public class KeyGetter extends Label {
     private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(KeyGetter.class);
+
+    KeyEvent keyevent;
+    boolean isAltGr;
+    Dialog<ButtonType> dialog;
+
+    public void setDialog(final Dialog<ButtonType> dialog) {
+
+        this.dialog = dialog;
+
+    }
 
     public KeyGetter() {
         super();
+
+        setOnKeyPressed(this::processVTKeyPressed);
+        setOnKeyReleased(this::processVTKeyReleased);
+        setOnKeyTyped(this::processVTKeyTyped);
     }
 
     /*
@@ -51,29 +68,25 @@ public class KeyGetter extends KeyGetterInterface {
      * but if you put them in a String, the characters
      * afterward won't show up in the text area.)
      */
-    private void displayInfo(KeyEvent e) {
+    private void displayInfo(final KeyEvent e) {
 
-        String charString, keyCodeString, modString, tmpString, isString,
-                locString, typeStr;
+        String charString, keyCodeString, modString, tmpString, isString;
+        String typeStr;
 
-        switch (e.getID()) {
-            case KeyEvent.KEY_PRESSED:
-                typeStr = "KEY_PRESSED";
-                break;
-            case KeyEvent.KEY_RELEASED:
-                typeStr = "KEY_RELEASED";
-                break;
-            case KeyEvent.KEY_TYPED:
-                typeStr = "KEY_TYPED";
-                break;
-            default:
-                typeStr = "unknown type";
+        final EventType<KeyEvent> type = e.getEventType();
+        if (type == KeyEvent.KEY_TYPED) {
+            typeStr = "KEY_PRESSED";
+        } else if (type == KeyEvent.KEY_PRESSED) {
+            typeStr = "KEY_RELEASED";
+        } else if (type == KeyEvent.KEY_RELEASED) {
+            typeStr = "KEY_TYPED";
+        } else {
+            typeStr = "unknown type";
         }
 
-        char c = e.getKeyChar();
-        int keyCode = e.getKeyCode();
-        int modifiers = e.getModifiers();
-        int location = e.getKeyLocation();
+        final char c = e.getCharacter().charAt(0);
+        final KeyCode keyCode = e.getCode();
+        final int modifiers = KeyStrokeHelper.getModifiersFlag(e);
 
         if (Character.isISOControl(c)) {
             charString = "key character = "
@@ -83,21 +96,16 @@ public class KeyGetter extends KeyGetterInterface {
                     + c + "'";
         }
 
-        keyCodeString = "key code = " + keyCode
-                + " ("
-                + KeyEvent.getKeyText(keyCode)
-                + ")";
-        if (keyCode == KeyEvent.VK_PREVIOUS_CANDIDATE) {
-
+        keyCodeString = "key code = " + keyCode + " (" + e.getText() + ")";
+        if (keyCode == KeyCode.PREVIOUS_CANDIDATE) {
             keyCodeString += " previous candidate ";
-
         }
 
-        if (keyCode == KeyEvent.VK_DEAD_ABOVEDOT ||
-                keyCode == KeyEvent.VK_DEAD_ABOVERING ||
-                keyCode == KeyEvent.VK_DEAD_ACUTE ||
-                keyCode == KeyEvent.VK_DEAD_BREVE ||
-                keyCode == KeyEvent.VK_DEAD_CIRCUMFLEX
+        if (keyCode == KeyCode.DEAD_ABOVEDOT ||
+                keyCode == KeyCode.DEAD_ABOVERING ||
+                keyCode == KeyCode.DEAD_ACUTE ||
+                keyCode == KeyCode.DEAD_BREVE ||
+                keyCode == KeyCode.DEAD_CIRCUMFLEX
 
         ) {
 
@@ -106,37 +114,15 @@ public class KeyGetter extends KeyGetterInterface {
         }
 
         modString = "modifiers = " + modifiers;
-        tmpString = KeyEvent.getKeyModifiersText(modifiers);
+        tmpString = KeyStrokeHelper.getKeyModifiersText(e);
         if (tmpString.length() > 0) {
             modString += " (" + tmpString + ")";
         } else {
             modString += " (no modifiers)";
         }
 
-        locString = "location = (UNKNOWN)";
-
-        switch (location) {
-            case KeyEvent.KEY_LOCATION_LEFT:
-                locString = "location = " + location + " (LEFT)";
-                break;
-            case KeyEvent.KEY_LOCATION_NUMPAD:
-                locString = "location = " + location + " (NUM_PAD)";
-                break;
-            case KeyEvent.KEY_LOCATION_RIGHT:
-                locString = "location = " + location + " (RIGHT)";
-                break;
-            case KeyEvent.KEY_LOCATION_STANDARD:
-                locString = "location = " + location + " (STANDARD)";
-                break;
-            default:
-                locString = "location = " + location + " (UNKNOWN)";
-                break;
-
-        }
-
-        isString = "isKeys = isActionKey (" + e.isActionKey() + ")" +
+        isString = "isKeys = isActionKey (" + KeyStrokeHelper.isActionKey(e) + ")" +
                 " isAltDown (" + e.isAltDown() + ")" +
-                " isAltGraphDown (" + e.isAltGraphDown() + ")" +
                 " isAltGraphDownLinux (" + isAltGr + ")" +
                 " isControlDown (" + e.isControlDown() + ")" +
                 " isMetaDown (" + e.isMetaDown() + ")" +
@@ -148,29 +134,28 @@ public class KeyGetter extends KeyGetterInterface {
                     + "    " + charString + "\n"
                     + "    " + keyCodeString + "\n"
                     + "    " + modString + "\n"
-                    + "    " + locString + "\n"
                     + "    " + isString + "\n");
         }
 
     }
 
-    void processVTKeyPressed(KeyEvent e) {
+    void processVTKeyPressed(final KeyEvent e) {
 
         displayInfo(e);
-        int keyCode = e.getKeyCode();
+        final KeyCode keyCode = e.getCode();
 
-        if (isLinux && keyCode == KeyEvent.VK_ALT_GRAPH) {
+        if (keyCode == KeyCode.ALT_GRAPH) {
 
             isAltGr = true;
         }
 
         // be careful with the control key
-        if (keyCode == KeyEvent.VK_UNDEFINED ||
-                keyCode == KeyEvent.VK_CAPS_LOCK ||
-                keyCode == KeyEvent.VK_SHIFT ||
-                keyCode == KeyEvent.VK_ALT ||
-                keyCode == KeyEvent.VK_ALT_GRAPH ||
-                keyCode == KeyEvent.VK_CONTROL
+        if (keyCode == KeyCode.UNDEFINED ||
+                keyCode == KeyCode.CAPS ||
+                keyCode == KeyCode.SHIFT ||
+                keyCode == KeyCode.ALT ||
+                keyCode == KeyCode.ALT_GRAPH ||
+                keyCode == KeyCode.CONTROL
         ) {
 
             return;
@@ -180,57 +165,49 @@ public class KeyGetter extends KeyGetterInterface {
         if (!e.isAltDown() ||
                 !e.isShiftDown() ||
                 !e.isControlDown() ||
-                keyCode != KeyEvent.VK_CONTROL &&  // be careful about removing this line
-                        !e.isActionKey()) {
+                keyCode != KeyCode.CONTROL &&  // be careful about removing this line
+                        !KeyStrokeHelper.isActionKey(e)) {
 
 //            if (keyCode == KeyEvent.VK_ESCAPE ||
 //               keyCode == KeyEvent.VK_CONTROL ||
 //               keyCode == KeyEvent.VK_BACK_SPACE) {
 //               displayInfo(e,"Pressed added");
             keyevent = e;
-            dialog.setVisible(false);
-            dialog.dispose();
-//            }
+            dialog.close();
         }
     }
 
-    void processVTKeyTyped(KeyEvent e) {
+    void processVTKeyTyped(final KeyEvent e) {
 
         displayInfo(e);
-        int keycode = e.getKeyCode();
+        final KeyCode keycode = e.getCode();
         if (e.isAltDown() ||
                 e.isShiftDown() ||
                 e.isControlDown() ||
-                e.isActionKey() ||
-                keycode == KeyEvent.VK_CONTROL) {
+                KeyStrokeHelper.isActionKey(e) ||
+                keycode == KeyCode.CONTROL) {
 
             keyevent = e;
-//            displayInfo(e,"Released added ");
-            dialog.setVisible(false);
-            dialog.dispose();
+            dialog.close();
         }
-
     }
 
-    void processVTKeyReleased(KeyEvent e) {
+    void processVTKeyReleased(final KeyEvent e) {
         displayInfo(e);
-        if (isLinux && e.getKeyCode() == KeyEvent.VK_ALT_GRAPH) {
+        if (e.getCode() == KeyCode.ALT_GRAPH) {
 
             isAltGr = false;
         }
-        int keycode = e.getKeyCode();
+        final KeyCode keycode = e.getCode();
         if (e.isAltDown() ||
                 e.isShiftDown() ||
                 e.isControlDown() ||
-                e.isActionKey() ||
-                keycode == KeyEvent.VK_CONTROL) {
+                KeyStrokeHelper.isActionKey(e) ||
+                keycode == KeyCode.CONTROL) {
 
 
             keyevent = e;
-//            displayInfo(e,"Released added");
-            dialog.setVisible(false);
-            dialog.dispose();
+            dialog.close();
         }
     }
-
 }

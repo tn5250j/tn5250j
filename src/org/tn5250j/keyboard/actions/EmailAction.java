@@ -27,30 +27,27 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.E_MAIL;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Display session attributes
  */
 public class EmailAction extends EmulatorAction {
 
-    private static final long serialVersionUID = 1L;
-
     public EmailAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 E_MAIL.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.E, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.sendScreenEMail();
     }
 }

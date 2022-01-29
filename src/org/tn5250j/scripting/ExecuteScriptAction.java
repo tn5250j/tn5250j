@@ -10,36 +10,39 @@
 
 package org.tn5250j.scripting;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
-public class ExecuteScriptAction extends AbstractAction {
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
-    private static final long serialVersionUID = 181938308216785668L;
+public class ExecuteScriptAction implements EventHandler<ActionEvent> {
+
     private static final transient TN5250jLogger LOG = TN5250jLogFactory.getLogger(ExecuteScriptAction.class);
 
-    private String _scriptFile;
+    private String scriptFile;
     private SessionGui ses;
+    private final String name;
 
     public ExecuteScriptAction(final String name, final String scriptFile, final SessionGui session) {
-        super(name);
-        _scriptFile = scriptFile;
+        this.name = name;
+        this.scriptFile = scriptFile;
         ses = session;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle(final ActionEvent event) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Invoking " + _scriptFile);
+            LOG.debug("Invoking " + scriptFile);
         }
 
         try {
-            InterpreterDriverManager.executeScriptFile(ses, _scriptFile);
+            InterpreterDriverManager.executeScriptFile(ses, scriptFile);
         } catch (final InterpreterDriver.InterpreterException ex) {
             ses.setMacroRunning(false);
             System.out.println(ex);

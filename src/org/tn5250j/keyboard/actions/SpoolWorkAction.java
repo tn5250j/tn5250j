@@ -27,30 +27,26 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.SPOOL_FILE;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Work with spooled file
  */
 public class SpoolWorkAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public SpoolWorkAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 SPOOL_FILE.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.W, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.actionSpool();
     }
 }

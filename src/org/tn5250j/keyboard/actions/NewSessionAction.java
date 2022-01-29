@@ -27,30 +27,26 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.OPEN_NEW;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * New Session emulator action to open new sessions
  */
 public class NewSessionAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public NewSessionAction(final SessionGui session, final KeyMapper keyMap) {
         super(session,
                 OPEN_NEW.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.N, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.startNewSession();
     }
 }

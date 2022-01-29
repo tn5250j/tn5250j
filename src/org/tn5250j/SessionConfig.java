@@ -64,8 +64,6 @@ import java.util.StringTokenizer;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.swing.JOptionPane;
-
 import org.tn5250j.event.SessionConfigEvent;
 import org.tn5250j.event.SessionConfigListener;
 import org.tn5250j.gui.UiUtils;
@@ -76,7 +74,12 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.paint.Color;
+import javafx.stage.Window;
 
 /**
  * A host session configuration object
@@ -156,7 +159,7 @@ public class SessionConfig {
         sesProps.setProperty("saveme", "");
     }
 
-    public void saveSessionProps(final java.awt.Container parent) {
+    public void saveSessionProps(final Parent parent) {
 
         if (sesProps.containsKey("saveme")) {
 
@@ -167,9 +170,20 @@ public class SessionConfig {
                     LangTool.getString("messages.saveSettings"),
                     args);
 
-            final int result = JOptionPane.showConfirmDialog(parent, message);
+            final Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setContentText(message);
+            alert.getButtonTypes().add(ButtonType.APPLY);
+            alert.getButtonTypes().add(ButtonType.CANCEL);
 
-            if (result == JOptionPane.OK_OPTION) {
+            final Window window = parent.getScene().getWindow();
+            if (window == null) {
+                alert.initOwner(window);
+            }
+
+            alert.showAndWait();
+            final ButtonType result = alert.getResult();
+
+            if (result == ButtonType.APPLY) {
                 saveSessionProps();
             }
         }

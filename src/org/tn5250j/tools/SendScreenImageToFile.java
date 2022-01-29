@@ -26,26 +26,25 @@
 
 package org.tn5250j.tools;
 
-import java.awt.Frame;
 import java.io.File;
 
-import javax.swing.JFileChooser;
-
 import org.tn5250j.SessionGui;
-import org.tn5250j.gui.TN5250jFileChooser;
 import org.tn5250j.tools.encoder.EncodeComponent;
-import org.tn5250j.tools.filters.XTFRFileFilter;
+import org.tn5250j.tools.filters.XTFRFileFilterBuilder;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 public class SendScreenImageToFile {
 
     SessionGui session;
     //  Change sent by Luc - LDC to pass a parent frame like the other dialogs
-    Frame parent;
+    Window parent;
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-    public SendScreenImageToFile(final Frame parent, final SessionGui ses) {
+    public SendScreenImageToFile(final Window parent, final SessionGui ses) {
 
         session = ses;
         this.parent = parent;
@@ -69,35 +68,26 @@ public class SendScreenImageToFile {
     private void getPCFile() {
 
         final String workingDir = System.getProperty("user.dir");
-        final TN5250jFileChooser pcFileChooser = new TN5250jFileChooser(workingDir);
+        final FileChooser pcFileChooser = new FileChooser();
+        pcFileChooser.setInitialFileName(workingDir);
 
-        final XTFRFileFilter pngFilter = new XTFRFileFilter("png", "Portable Network Graphics");
+        final XTFRFileFilterBuilder pngFilter = new XTFRFileFilterBuilder("png", "Portable Network Graphics");
+        pcFileChooser.setSelectedExtensionFilter(pngFilter.buildFilter());
 
-        pcFileChooser.setFileFilter(pngFilter);
-
-        final int ret = pcFileChooser.showSaveDialog(parent);
+        File file = pcFileChooser.showSaveDialog(parent);
 
         // check to see if something was actually chosen
-        if (ret == JFileChooser.APPROVE_OPTION) {
-
-            File file;
-
+        if (file != null) {
             try {
-                if (!pcFileChooser.getSelectedFile().getCanonicalPath().endsWith(".png"))
-                    file = new File(pcFileChooser.getSelectedFile().getCanonicalPath()
-                            + ".png");
-                else
-                    file = pcFileChooser.getSelectedFile();
-
+                if (!file.getCanonicalPath().endsWith(".png")) {
+                    file = new File(file.getCanonicalPath() + ".png");
+                }
 
                 EncodeComponent.encode(EncodeComponent.PNG, session, file);
             } catch (final Exception e) {
                 log.warn("Error generating PNG exception caught: " + e.getMessage());
 
             }
-
         }
-
     }
-
 }

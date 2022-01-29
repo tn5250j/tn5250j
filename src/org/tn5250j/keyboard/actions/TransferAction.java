@@ -27,35 +27,27 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.FILE_TRANSFER;
 
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.tools.XTFRFile;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Display session attributes
  */
 public class TransferAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public TransferAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 FILE_TRANSFER.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.T, KeyCombination.ALT_DOWN),
                 keyMap);
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
-        new XTFRFile((Frame) SwingUtilities.getRoot((Component) session),
-                session.getVT(), session);
+    public void handle() {
+        new XTFRFile(session.getVT(), session);
     }
 }

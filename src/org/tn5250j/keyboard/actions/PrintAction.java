@@ -27,31 +27,27 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.PRINT_SCREEN;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Display session attributes
  */
 public class PrintAction extends EmulatorAction {
-
-    private static final long serialVersionUID = 1L;
-
     public PrintAction(final SessionGui sessionGui, final KeyMapper keyMap) {
         super(sessionGui,
                 PRINT_SCREEN.mnemonic,
-                KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_MASK),
+                new KeyCodeCombination(KeyCode.P, KeyCombination.ALT_DOWN),
                 keyMap);
 
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void handle() {
         session.printMe();
     }
 }

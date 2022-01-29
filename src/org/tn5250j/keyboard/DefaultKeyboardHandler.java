@@ -26,11 +26,6 @@
 
 package org.tn5250j.keyboard;
 
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
-import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.actions.AttributesAction;
 import org.tn5250j.keyboard.actions.CloseAction;
@@ -53,6 +48,11 @@ import org.tn5250j.keyboard.actions.SpoolWorkAction;
 import org.tn5250j.keyboard.actions.ToggleConnectionAction;
 import org.tn5250j.keyboard.actions.TransferAction;
 
+import javafx.event.EventType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
+
 /**
  * The default keyboard input handler.
  */
@@ -63,7 +63,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
      *
      * @param session The session to which the keys should be sent
      */
-    DefaultKeyboardHandler(final Session5250 session) {
+    DefaultKeyboardHandler(final SessionGui session) {
         super(session);
     }
 
@@ -74,7 +74,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
     }
 
     @Override
-    public KeyStroke getKeyStroke(final String accelKey) {
+    public KeyCodeCombination getKeyStroke(final String accelKey) {
         return KeyMapper.getKeyStroke(accelKey);
     }
 
@@ -88,9 +88,8 @@ class DefaultKeyboardHandler extends KeyboardHandler {
     protected void displayInfo(final KeyEvent e, final String s) {
         String charString, keyCodeString, modString, tmpString, isString;
 
-        final char c = e.getKeyChar();
-        final int keyCode = e.getKeyCode();
-        final int modifiers = e.getModifiers();
+        final KeyCode keyCode = e.getCode();
+        final char c = e.getCharacter().charAt(0);
 
         if (Character.isISOControl(c)) {
             charString = "key character = "
@@ -102,19 +101,19 @@ class DefaultKeyboardHandler extends KeyboardHandler {
 
         keyCodeString = "key code = " + keyCode
                 + " ("
-                + KeyEvent.getKeyText(keyCode)
+                + e.getText()
                 + ")";
-        if (keyCode == KeyEvent.VK_PREVIOUS_CANDIDATE) {
+        if (keyCode == KeyCode.PREVIOUS_CANDIDATE) {
 
             keyCodeString += " previous candidate ";
 
         }
 
-        if (keyCode == KeyEvent.VK_DEAD_ABOVEDOT ||
-                keyCode == KeyEvent.VK_DEAD_ABOVERING ||
-                keyCode == KeyEvent.VK_DEAD_ACUTE ||
-                keyCode == KeyEvent.VK_DEAD_BREVE ||
-                keyCode == KeyEvent.VK_DEAD_CIRCUMFLEX
+        if (keyCode == KeyCode.DEAD_ABOVEDOT ||
+                keyCode == KeyCode.DEAD_ABOVERING ||
+                keyCode == KeyCode.DEAD_ACUTE ||
+                keyCode == KeyCode.DEAD_BREVE ||
+                keyCode == KeyCode.DEAD_CIRCUMFLEX
 
         ) {
 
@@ -122,30 +121,27 @@ class DefaultKeyboardHandler extends KeyboardHandler {
 
         }
 
-        modString = "modifiers = " + modifiers;
-        tmpString = KeyEvent.getKeyModifiersText(modifiers);
+        modString = "modifiers = " + KeyStrokeHelper.getModifiersFlag(e);
+        tmpString = KeyStrokeHelper.getKeyModifiersText(e);
         if (tmpString.length() > 0) {
             modString += " (" + tmpString + ")";
         } else {
             modString += " (no modifiers)";
         }
 
-        isString = "isKeys = isActionKey (" + e.isActionKey() + ")" +
+        isString = "isKeys = isActionKey (" + KeyStrokeHelper.isActionKey(e) + ")" +
                 " isAltDown (" + e.isAltDown() + ")" +
-                " isAltGraphDown (" + e.isAltGraphDown() + ")" +
+                // " isAltGraphDown (" + e.isAltGraphDown() + ")" + // not supported in FX
                 " isAltGraphDownLinux (" + isAltGr + ")" +
                 " isControlDown (" + e.isControlDown() + ")" +
                 " isMetaDown (" + e.isMetaDown() + ")" +
                 " isShiftDown (" + e.isShiftDown() + ")";
 
-
-        final String newline = "\n";
-        System.out.println(s + newline
-                + "    " + charString + newline
-                + "    " + keyCodeString + newline
-                + "    " + modString + newline
-                + "    " + isString + newline);
-
+        System.out.println(s + "\n"
+                + "    " + charString + "\n"
+                + "    " + keyCodeString + "\n"
+                + "    " + modString + "\n"
+                + "    " + isString + "\n");
     }
 
     /**
@@ -155,10 +151,8 @@ class DefaultKeyboardHandler extends KeyboardHandler {
     @Override
     void initKeyBindings() {
 
-        if (session.getGUI() == null)
+        if (sessionGui == null)
             return;
-
-        final SessionGui sessionGui = session.getGUI();
 
         new NewSessionAction(sessionGui, keyMap);
         new ToggleConnectionAction(sessionGui, keyMap);
@@ -194,44 +188,38 @@ class DefaultKeyboardHandler extends KeyboardHandler {
         if (evt.isConsumed())
             return;
 
-        switch (evt.getID()) {
-            case KeyEvent.KEY_TYPED:
-                processVTKeyTyped(evt);
-                break;
-            case KeyEvent.KEY_PRESSED:
-                processVTKeyPressed(evt);
-                break;
-            case KeyEvent.KEY_RELEASED:
-                processVTKeyReleased(evt);
-                break;
-        }
+        final EventType<KeyEvent> type = evt.getEventType();
 
+        if (type == KeyEvent.KEY_TYPED) {
+            processVTKeyTyped(evt);
+        } else if (type == KeyEvent.KEY_PRESSED) {
+            processVTKeyPressed(evt);
+        } else if (type == KeyEvent.KEY_RELEASED) {
+            processVTKeyReleased(evt);
+        }
     }
 
     private void processVTKeyPressed(final KeyEvent e) {
 
 
         keyProcessed = true;
-        final int keyCode = e.getKeyCode();
+        final KeyCode keyCode = e.getCode();
 
-        if (isLinux && keyCode == KeyEvent.VK_ALT_GRAPH) {
+        if (isLinux && keyCode == KeyCode.ALT_GRAPH) {
 
             isAltGr = true;
         }
 
-        if (keyCode == KeyEvent.VK_CAPS_LOCK ||
-                keyCode == KeyEvent.VK_SHIFT ||
-                keyCode == KeyEvent.VK_ALT ||
-                keyCode == KeyEvent.VK_ALT_GRAPH
+        if (keyCode == KeyCode.CAPS ||
+                keyCode == KeyCode.SHIFT ||
+                keyCode == KeyCode.ALT ||
+                keyCode == KeyCode.ALT_GRAPH
         ) {
 
             return;
         }
 
-        final KeyStroke ks = KeyStroke.getKeyStroke(e.getKeyCode(), e.getModifiers(), false);
-
-        if (emulatorAction(ks, e)) {
-
+        if (emulatorAction(e)) {
             return;
         }
 
@@ -268,7 +256,7 @@ class DefaultKeyboardHandler extends KeyboardHandler {
 
     private void processVTKeyTyped(final KeyEvent e) {
 
-        final char kc = e.getKeyChar();
+        final char kc = getKeyChar(e);
 //      displayInfo(e,"Typed processed " + keyProcessed);
         // Hack to make german umlauts work under Linux
         // The problem is that these umlauts don't generate a keyPressed event
@@ -276,8 +264,8 @@ class DefaultKeyboardHandler extends KeyboardHandler {
         // so we check if it's a letter (with or without shift) and skip return
         if (isLinux) {
 
-            if (!((Character.isLetter(kc) || kc == '\u20AC') && (e.getModifiers() == 0
-                    || e.getModifiers() == KeyEvent.SHIFT_MASK))) {
+            if (!((Character.isLetter(kc) || kc == '\u20AC') && (!hasModifiers(e)
+                    || e.isShiftDown()))) {
 
                 if (Character.isISOControl(kc) || keyProcessed) {
                     return;
@@ -297,15 +285,25 @@ class DefaultKeyboardHandler extends KeyboardHandler {
         e.consume();
     }
 
+    private char getKeyChar(final KeyEvent e) {
+        return e.getCharacter().charAt(0);
+    }
+
+    private boolean hasModifiers(final KeyEvent e) {
+        return e.isAltDown()
+                || e.isControlDown()
+                || e.isMetaDown()
+                || e.isShiftDown()
+                || e.isShortcutDown();
+    }
+
     private void processVTKeyReleased(final KeyEvent e) {
 
-
-        if (isLinux && e.getKeyCode() == KeyEvent.VK_ALT_GRAPH) {
-
+        if (isLinux && e.getCode() == KeyCode.ALT_GRAPH) {
             isAltGr = false;
         }
 
-        if (Character.isISOControl(e.getKeyChar()) || keyProcessed || e.isConsumed())
+        if (Character.isISOControl(getKeyChar(e)) || keyProcessed || e.isConsumed())
             return;
 
         final String s = KeyMapper.getKeyStrokeText(e);
@@ -325,5 +323,4 @@ class DefaultKeyboardHandler extends KeyboardHandler {
         if (keyProcessed)
             e.consume();
     }
-
 }
