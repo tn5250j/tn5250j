@@ -52,6 +52,7 @@ import org.tn5250j.keyboard.KeyboardHandler;
 import org.tn5250j.keyboard.actions.EmulatorAction;
 import org.tn5250j.mailtools.SendEMailDialog;
 import org.tn5250j.sessionsettings.SessionSettings;
+import org.tn5250j.spoolfile.SpoolExporter;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.Macronizer;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -642,8 +643,7 @@ public class SessionPanel extends BorderPane implements
     public void actionSpool() {
 
         try {
-            final org.tn5250j.spoolfile.SpoolExporterSwing spooler =
-                    new org.tn5250j.spoolfile.SpoolExporterSwing(session.getVT(), this);
+            final SpoolExporter spooler = new SpoolExporter(session.getVT(), this);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
             final Alert tabclsdlg = new Alert(AlertType.ERROR);

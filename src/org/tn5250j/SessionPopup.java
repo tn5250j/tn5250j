@@ -64,6 +64,7 @@ import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.actions.EmulatorAction;
 import org.tn5250j.keyboard.configure.KeyConfigureController;
 import org.tn5250j.mailtools.SendEMailDialog;
+import org.tn5250j.spoolfile.SpoolExporter;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.LoadMacroMenu;
 import org.tn5250j.tools.Macronizer;
@@ -437,13 +438,10 @@ public class SessionPopup {
 
     private void doMeSpool() {
         try {
-            final org.tn5250j.spoolfile.SpoolExporterSwing spooler =
-                    new org.tn5250j.spoolfile.SpoolExporterSwing(vt, sessiongui);
+            final SpoolExporter spooler = new SpoolExporter(vt, sessiongui);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
-            final Alert alert = new Alert(AlertType.ERROR);
-            alert.setContentText(LangTool.getString("messages.noAS400Toolbox"));
-            alert.showAndWait();
+            UiUtils.showError(LangTool.getString("messages.noAS400Toolbox"), null);
         }
         sessiongui.getFocusForMe();
     }

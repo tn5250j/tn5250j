@@ -25,67 +25,67 @@
  */
 package org.tn5250j.spoolfile;
 
-import java.awt.event.*;
-import javax.swing.*;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 
-import org.tn5250j.tools.AlignLayout;
-import org.tn5250j.event.ToggleDocumentListener;
-import org.tn5250j.gui.ToggleDocument;
+public class UserDataTabPanel extends GridPane implements QueueFilterInterface {
 
-public class UserDataTabPanel extends JPanel implements QueueFilterInterface,
-        ToggleDocumentListener {
-
-    private static final long serialVersionUID = 1L;
-    JRadioButton all;
-    JRadioButton select;
-    JTextField userData;
+    RadioButton all;
+    RadioButton select;
+    TextField userData;
 
     public UserDataTabPanel() {
-        try {
-            jbInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        setHgap(5);
+        setVgap(5);
+        setStyle("-fx-padding: 0.5em 0 0 0;");
+
+        all = new RadioButton("All");
+        all.setSelected(false);
+
+        select = new RadioButton("User");
+        select.setSelected(true);
+
+        userData = new TextField();
+        userData.setPrefColumnCount(15);
+//      userData.setEnabled(false);
+        userData.textProperty().addListener((src, old, value) -> textChanged(userData));
+
+        final ToggleGroup bg = new ToggleGroup();
+        bg.getToggles().add(all);
+        bg.getToggles().add(select);
+
+        getChildren().add(all);
+
+        getChildren().add(select);
+        getChildren().add(userData);
+
+        setGridConstrains(all, 0, 0, 2);
+        setGridConstrains(select, 1, 0, 1);
+        setGridConstrains(userData, 1, 1, 1);
     }
 
-    void jbInit() throws Exception {
+    private void setGridConstrains(final Node node, final int row, final int column, final int colSpan) {
+        GridPane.setColumnIndex(node, column);
+        GridPane.setRowIndex(node, row);
+        GridPane.setColumnSpan(node, colSpan);
+        GridPane.setHalignment(node, HPos.LEFT);
+    }
 
-        setLayout(new AlignLayout(2, 5, 5));
-
-        all = new JRadioButton("All");
-
-        all.setSelected(true);
-
-        select = new JRadioButton("User Data");
-        select.setSelected(false);
-        select.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                select_itemStateChanged(e);
-            }
-        });
-
-        userData = new JTextField(15);
-//      userData.setEnabled(false);
-        ToggleDocument td = new ToggleDocument();
-        td.addToggleDocumentListener(this);
-        userData.setDocument(td);
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(all);
-        bg.add(select);
-
-        add(all);
-        add(new JLabel(""));
-        add(select);
-        add(userData);
-
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
+    private void textChanged(final TextField textField) {
+        final String text = textField.getText();
+        if (text != null && !text.isEmpty()) {
+            select.setSelected(true);
+        }
     }
 
     /**
      * Reset to default value(s)
      */
+    @Override
     public void reset() {
 
 //      userData.setEnabled(false);
@@ -94,23 +94,7 @@ public class UserDataTabPanel extends JPanel implements QueueFilterInterface,
 
     }
 
-    void select_itemStateChanged(ItemEvent e) {
-//      if (select.isSelected())
-//         userData.setEnabled(true);
-//      else
-//         userData.setEnabled(false);
-    }
-
-    public void toggleNotEmpty() {
-
-        select.setSelected(true);
-
-    }
-
-    public void toggleEmpty() {
-
-    }
-
+    @Override
     public String getUserData() {
         if (all.isSelected())
             return "";
@@ -118,7 +102,7 @@ public class UserDataTabPanel extends JPanel implements QueueFilterInterface,
             return userData.getText().trim();
     }
 
-    public void setUserData(String filter) {
+    public void setUserData(final String filter) {
 
         userData.setText(filter);
     }

@@ -292,17 +292,19 @@ public final class UiUtils {
     }
 
     public static void showError(final String message, final String title) {
-        final Alert alert = new Alert(AlertType.ERROR);
-        alert.setContentText(message);
-        alert.setTitle(title);
-        alert.setHeaderText("");
-        alert.showAndWait();
+        showAlert(message, title, AlertType.ERROR);
     }
 
     public static void showWarning(final String message, final String title) {
-        final Alert alert = new Alert(AlertType.WARNING);
+        showAlert(message, title, AlertType.WARNING);
+    }
+
+    private static void showAlert(final String message, final String title, final AlertType alertType) {
+        final Alert alert = new Alert(alertType);
         alert.setContentText(message);
-        alert.setTitle(title);
+        if (title != null) {
+            alert.setTitle(title);
+        }
         alert.setHeaderText("");
         alert.showAndWait();
     }

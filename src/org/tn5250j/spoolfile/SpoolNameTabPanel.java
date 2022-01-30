@@ -25,91 +25,70 @@
  */
 package org.tn5250j.spoolfile;
 
-import java.awt.event.*;
-import javax.swing.*;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 
-import org.tn5250j.tools.AlignLayout;
-
-import org.tn5250j.event.ToggleDocumentListener;
-import org.tn5250j.gui.ToggleDocument;
-
-public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface,
-        ToggleDocumentListener {
-
-    private static final long serialVersionUID = 1L;
-    JRadioButton all;
-    JRadioButton select;
-    JTextField spoolName;
+public class SpoolNameTabPanel extends GridPane implements QueueFilterInterface {
+    private final RadioButton all;
+    private final RadioButton select;
+    private final TextField spoolName;
 
     public SpoolNameTabPanel() {
-        try {
-            jbInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+        setHgap(5);
+        setVgap(5);
+        setStyle("-fx-padding: 0.5em 0 0 0;");
 
-    void jbInit() throws Exception {
-
-        setLayout(new AlignLayout(2, 5, 5));
-
-        all = new JRadioButton("All");
-
+        all = new RadioButton("All");
         all.setSelected(true);
 
-        select = new JRadioButton("Spool Name");
+        select = new RadioButton("Spool Name");
         select.setSelected(false);
-        select.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                select_itemStateChanged(e);
-            }
-        });
 
-        spoolName = new JTextField(15);
-        ToggleDocument td = new ToggleDocument();
-        td.addToggleDocumentListener(this);
-        spoolName.setDocument(td);
+        spoolName = new TextField();
+        spoolName.setPrefColumnCount(15);
+        spoolName.textProperty().addListener((src, old, value) -> textChanged(spoolName));
 
-//      spoolName.setEnabled(false);
+        final ToggleGroup bg = new ToggleGroup();
+        bg.getToggles().add(all);
+        bg.getToggles().add(select);
 
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(all);
-        bg.add(select);
+        getChildren().add(all);
 
-        add(all);
-        add(new JLabel(""));
-        add(select);
-        add(spoolName);
+        getChildren().add(select);
+        getChildren().add(spoolName);
 
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        setGridConstrains(all, 0, 0, 2);
+        setGridConstrains(select, 1, 0, 1);
+        setGridConstrains(spoolName, 1, 1, 1);
+    }
 
+    private void setGridConstrains(final Node node, final int row, final int column, final int colSpan) {
+        GridPane.setColumnIndex(node, column);
+        GridPane.setRowIndex(node, row);
+        GridPane.setColumnSpan(node, colSpan);
+        GridPane.setHalignment(node, HPos.LEFT);
+    }
+
+    private void textChanged(final TextField textField) {
+        final String text = textField.getText();
+        if (text != null && !text.isEmpty()) {
+            select.setSelected(true);
+        }
     }
 
     /**
      * Reset to default value(s)
      */
+    @Override
     public void reset() {
 
 //      spoolName.setEnabled(false);
         spoolName.setText("");
         all.setSelected(true);
-
-    }
-
-    void select_itemStateChanged(ItemEvent e) {
-//      if (select.isSelected())
-//         spoolName.setEnabled(true);
-//      else
-//         spoolName.setEnabled(false);
-    }
-
-    public void toggleNotEmpty() {
-
-        select.setSelected(true);
-
-    }
-
-    public void toggleEmpty() {
 
     }
 
@@ -120,7 +99,7 @@ public class SpoolNameTabPanel extends JPanel implements QueueFilterInterface,
             return spoolName.getText().trim();
     }
 
-    public void setSpoolName(String filter) {
+    public void setSpoolName(final String filter) {
 
         spoolName.setText(filter);
     }

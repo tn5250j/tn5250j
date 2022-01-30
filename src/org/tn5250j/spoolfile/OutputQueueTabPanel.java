@@ -25,71 +25,71 @@ package org.tn5250j.spoolfile;
  * Boston, MA 02111-1307 USA
  */
 
-import java.awt.event.*;
-import javax.swing.*;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 
-import org.tn5250j.tools.*;
-import org.tn5250j.event.ToggleDocumentListener;
-import org.tn5250j.gui.ToggleDocument;
-
-public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface,
-        ToggleDocumentListener {
-
-    private static final long serialVersionUID = 1L;
-    JRadioButton all;
-    JRadioButton select;
-    JTextField queue;
-    JTextField library;
+public class OutputQueueTabPanel extends GridPane implements QueueFilterInterface {
+    RadioButton all;
+    RadioButton select;
+    TextField queue;
+    TextField library;
 
     public OutputQueueTabPanel() {
-        try {
-            jbInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+        setHgap(5);
+        setVgap(5);
+        setStyle("-fx-padding: 0.5em 0 0 0;");
 
-    void jbInit() throws Exception {
-
-        setLayout(new AlignLayout(2, 5, 5));
-
-        all = new JRadioButton("All");
+        all = new RadioButton("All");
         all.setSelected(true);
 
-        select = new JRadioButton("Select Output Queue");
-        select.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                select_itemStateChanged(e);
-            }
-        });
+        select = new RadioButton("Select Output Queue");
 
-        library = new JTextField(10);
-        ToggleDocument td1 = new ToggleDocument();
-        td1.addToggleDocumentListener(this);
-        library.setDocument(td1);
-        queue = new JTextField(10);
-        ToggleDocument td2 = new ToggleDocument();
-        td2.addToggleDocumentListener(this);
-        queue.setDocument(td2);
+        library = new TextField();
+        library.setPrefColumnCount(10);
+        library.textProperty().addListener((src, old, value) -> textChanged(library));
 
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(all);
-        bg.add(select);
+        queue = new TextField();
+        queue.setPrefColumnCount(10);
+        queue.textProperty().addListener((src, old, value) -> textChanged(queue));
 
-        add(all);
-        add(new JLabel(""));
-        add(select);
-        add(queue);
-        add(new JLabel("Output queue library"));
-        add(library);
+        final ToggleGroup bg = new ToggleGroup();
+        bg.getToggles().add(all);
+        bg.getToggles().add(select);
 
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        getChildren().add(all);
+        getChildren().add(select);
+        getChildren().add(queue);
 
+        final Label queueLabel = new Label("Output queue library");
+        getChildren().add(queueLabel);
+        getChildren().add(library);
+
+
+        setGridConstrains(all, 0, 0, 2);
+
+        setGridConstrains(select, 1, 0, 1);
+        setGridConstrains(queue, 1, 1, 1);
+
+        setGridConstrains(queueLabel, 2, 0, 1);
+        setGridConstrains(library, 2, 1, 1);
+    }
+
+    private void setGridConstrains(final Node node, final int row, final int column, final int colSpan) {
+        GridPane.setColumnIndex(node, column);
+        GridPane.setRowIndex(node, row);
+        GridPane.setColumnSpan(node, colSpan);
+        GridPane.setHalignment(node, HPos.LEFT);
     }
 
     /**
      * Reset to default value(s)
      */
+    @Override
     public void reset() {
 
         library.setText("");
@@ -98,25 +98,11 @@ public class OutputQueueTabPanel extends JPanel implements QueueFilterInterface,
 
     }
 
-    void select_itemStateChanged(ItemEvent e) {
-//      if (select.isSelected()) {
-//         queue.setEnabled(true);
-//         library.setEnabled(true);
-//      }
-//      else {
-//         queue.setEnabled(false);
-//         library.setEnabled(false);
-//      }
-    }
-
-    public void toggleNotEmpty() {
-
-        select.setSelected(true);
-
-    }
-
-    public void toggleEmpty() {
-
+    private void textChanged(final TextField textField) {
+        final String text = textField.getText();
+        if (text != null && !text.isEmpty()) {
+            select.setSelected(true);
+        }
     }
 
     public String getQueue() {

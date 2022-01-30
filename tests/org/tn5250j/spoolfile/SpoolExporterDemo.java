@@ -5,7 +5,6 @@ package org.tn5250j.spoolfile;
 
 import org.tn5250j.SessionGuiAdapter;
 import org.tn5250j.encoding.builtin.CCSID1025;
-import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.tools.LangTool;
 
 import javafx.application.Application;
@@ -28,9 +27,8 @@ public class SpoolExporterDemo extends Application {
         cp.init();
 
         final SessionGuiAdapter gui = new SessionGuiAdapter();
-        final tnvt tvt = new tnvt(gui.getSession(), gui.getScreen(), true, true);
 
-        final SpoolExporter dialog = new SpoolExporter(tvt, gui);
+        final SpoolExporter dialog = new SpoolExporter(gui.getVT(), gui);
         dialog.setVisible(true);
     }
 }

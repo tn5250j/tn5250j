@@ -49,7 +49,6 @@ import com.ibm.as400.vaccess.SpooledFileViewer;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.embed.swing.SwingNode;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -201,12 +200,12 @@ public class SpoolExporter extends GenericTn5250JFrame {
     }
 
     private Pane createFilterPanel() {
-
         // create filter panel
         final TitledBorderedPane fp = new TitledBorderedPane();
         fp.setTitle(LangTool.getString("spool.filterTitle"));
 
         final BorderPane content = new BorderPane();
+        content.setStyle("-fx-padding: 1em 0 0 0;");
         fp.getChildren().add(content);
 
         filter = new SpoolFilterPane();
@@ -214,7 +213,7 @@ public class SpoolExporter extends GenericTn5250JFrame {
         // create button selection panel
         final VBox vbox = new VBox();
         vbox.setAlignment(Pos.CENTER);
-        vbox.setStyle("-fx-padding: 0 0.5em 0.5em 0.5em;");
+        vbox.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
 
         final HBox bp = new HBox();
         bp.setAlignment(Pos.CENTER);
@@ -234,14 +233,9 @@ public class SpoolExporter extends GenericTn5250JFrame {
         bp.getChildren().add(resetAll);
         resetAll.setOnAction(e -> filter.resetAll());
 
-        //TODO change to FX
-        final SwingNode swing = new SwingNode();
-        swing.setContent(filter);
+        filter.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
 
-        final BorderPane nodeWrapper = new BorderPane(swing);
-        nodeWrapper.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
-
-        content.setCenter(nodeWrapper);
+        content.setCenter(filter);
         content.setBottom(vbox);
 
         return fp;

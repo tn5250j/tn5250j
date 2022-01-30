@@ -25,45 +25,44 @@ package org.tn5250j.spoolfile;
  * Boston, MA 02111-1307 USA
  */
 
-import javax.swing.JTabbedPane;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 
-public class SpoolFilterPane extends JTabbedPane {
+public class SpoolFilterPane extends TabPane {
 
-    private static final long serialVersionUID = 1L;
     private UserTabPanel user;
     private OutputQueueTabPanel queue;
-    //   private JobTabPanel job;
     private SpoolNameTabPanel spoolName;
     private UserDataTabPanel userData;
 
     public SpoolFilterPane() {
-        try {
-            jbInit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+        setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+        getStyleClass().add("etched-border");
 
-    private void jbInit() throws Exception {
         user = new UserTabPanel();
         queue = new OutputQueueTabPanel();
-//      job = new JobTabPanel();
         spoolName = new SpoolNameTabPanel();
         userData = new UserDataTabPanel();
 
         this.addTab("User", user);
         this.addTab("Output Queue", queue);
-//      this.addTab("Job",job);
         this.addTab("Spool Name", spoolName);
         this.addTab("User Data", userData);
+    }
 
+    private Tab addTab(final String title, final QueueFilterInterface content) {
+        final Tab tab = new Tab(title);
+        tab.setContent((Node) content);
+        getTabs().add(tab);
+        return tab;
     }
 
     public String getUser() {
         return user.getUser();
     }
 
-    public void setUser(String filter) {
+    public void setUser(final String filter) {
         user.setUser(filter);
         setSelectedComponent(user);
     }
@@ -92,12 +91,13 @@ public class SpoolFilterPane extends JTabbedPane {
 
     }
 
+    @Override
     public String getUserData() {
         return userData.getUserData();
 
     }
 
-    public void setUserData(String filter) {
+    public void setUserData(final String filter) {
 
         userData.setUserData(filter);
         setSelectedComponent(userData);
@@ -108,25 +108,34 @@ public class SpoolFilterPane extends JTabbedPane {
 
     }
 
-    public void setSpoolName(String filter) {
-
+    public void setSpoolName(final String filter) {
         spoolName.setSpoolName(filter);
         setSelectedComponent(spoolName);
+    }
+
+    private void setSelectedComponent(final QueueFilterInterface filter) {
+        for (final Tab tab : getTabs()) {
+            if (tab.getContent() == filter) {
+                getSelectionModel().select(tab);
+                break;
+            }
+        }
     }
 
     /**
      * Reset the values in the current panel to default values
      */
     public void resetCurrent() {
-        ((QueueFilterInterface) this.getSelectedComponent()).reset();
+        ((QueueFilterInterface) this.getSelectionModel().getSelectedItem().getContent()).reset();
     }
 
     /**
      * Reset the values in all filter panels to default values
      */
     public void resetAll() {
-        for (int x = 0; x < this.getTabCount(); x++) {
-            ((QueueFilterInterface) this.getComponent(x)).reset();
+        for (final Tab tab : getTabs()) {
+            final QueueFilterInterface filter = (QueueFilterInterface) tab.getContent();
+            filter.reset();
         }
     }
 }

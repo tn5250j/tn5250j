@@ -25,90 +25,70 @@
  */
 package org.tn5250j.spoolfile;
 
-import java.awt.event.*;
-import javax.swing.*;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 
-import org.tn5250j.tools.AlignLayout;
-import org.tn5250j.event.ToggleDocumentListener;
-import org.tn5250j.gui.ToggleDocument;
+public class UserTabPanel extends GridPane implements QueueFilterInterface {
 
-public class UserTabPanel extends JPanel implements QueueFilterInterface,
-        ToggleDocumentListener {
-
-    private static final long serialVersionUID = 1L;
-    JRadioButton all;
-    JRadioButton select;
-    JTextField user;
-    ;
+    private final RadioButton all;
+    private final RadioButton select;
+    private final TextField user;
 
     public UserTabPanel() {
-        try {
-            jbInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+        setHgap(5);
+        setVgap(5);
+        setStyle("-fx-padding: 0.5em 0 0 0;");
 
-    void jbInit() throws Exception {
-
-        setLayout(new AlignLayout(2, 5, 5));
-
-        all = new JRadioButton("All");
-
+        all = new RadioButton("All");
         all.setSelected(false);
 
-        select = new JRadioButton("User");
+        select = new RadioButton("User");
         select.setSelected(true);
-        select.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                select_itemStateChanged(e);
-            }
-        });
 
-        user = new JTextField("*CURRENT", 15);
-        ToggleDocument td = new ToggleDocument();
-        td.addToggleDocumentListener(this);
-        user.setDocument(td);
+        user = new TextField("*CURRENT");
+        user.setPrefColumnCount(15);
+        user.textProperty().addListener((src, old, value) -> textChanged(user));
         user.setText("*CURRENT");
 
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(all);
-        bg.add(select);
+        final ToggleGroup bg = new ToggleGroup();
+        bg.getToggles().add(all);
+        bg.getToggles().add(select);
 
-        add(all);
-        add(new JLabel(""));
-        add(select);
-        add(user);
+        getChildren().add(all);
 
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        getChildren().add(select);
+        getChildren().add(user);
 
+        setGridConstrains(all, 0, 0, 2);
+        setGridConstrains(select, 1, 0, 1);
+        setGridConstrains(user, 1, 1, 1);
+    }
+
+    private void setGridConstrains(final Node node, final int row, final int column, final int colSpan) {
+        GridPane.setColumnIndex(node, column);
+        GridPane.setRowIndex(node, row);
+        GridPane.setColumnSpan(node, colSpan);
+        GridPane.setHalignment(node, HPos.LEFT);
+    }
+
+    private void textChanged(final TextField textField) {
+        final String text = textField.getText();
+        if (text != null && !text.isEmpty()) {
+            select.setSelected(true);
+        }
     }
 
     /**
      * Reset to default value(s)
      */
+    @Override
     public void reset() {
-
-//      user.setEnabled(true);
         user.setText("*CURRENT");
         select.setSelected(true);
-
-    }
-
-    void select_itemStateChanged(ItemEvent e) {
-//      if (select.isSelected())
-//         user.setEnabled(true);
-//      else
-//         user.setEnabled(false);
-    }
-
-    public void toggleNotEmpty() {
-
-        select.setSelected(true);
-
-    }
-
-    public void toggleEmpty() {
 
     }
 
@@ -119,7 +99,7 @@ public class UserTabPanel extends JPanel implements QueueFilterInterface,
             return user.getText().trim();
     }
 
-    public void setUser(String filter) {
+    public void setUser(final String filter) {
 
         user.setText(filter);
     }
