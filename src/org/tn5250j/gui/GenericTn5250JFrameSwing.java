@@ -35,8 +35,8 @@ import org.tn5250j.tools.GUIGraphicsUtils;
  * <ul>
  * <li>{@link org.tn5250j.interfaces.GUIViewInterface}</li>
  * <li>{@link org.tn5250j.mailtools.SendEMailDialog}</li>
- * <li>{@link org.tn5250j.spoolfile.SpoolExporter}</li>
- * <li>{@link org.tn5250j.spoolfile.SpoolExportWizard}</li>
+ * <li>{@link org.tn5250j.spoolfile.SpoolExporterSwing}</li>
+ * <li>{@link org.tn5250j.spoolfile.SpoolExportWizardSwing}</li>
  * <li>{@link org.tn5250j.tools.XTFRFile}</li>
  * </ul>
  */

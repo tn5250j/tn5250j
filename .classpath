@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/development/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/activation.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/itext.jar"/>
-	<classpathentry kind="lib" path="lib/runtime/jt400.jar"/>
+	<classpathentry kind="lib" path="lib/runtime/jt400.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1643459198014/source/jt400-jdk8-10.5-sources.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jython.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/jythonlib.jar"/>
 	<classpathentry kind="lib" path="lib/runtime/kunststoff.jar"/>

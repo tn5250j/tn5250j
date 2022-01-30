@@ -298,4 +298,12 @@ public final class UiUtils {
         alert.setHeaderText("");
         alert.showAndWait();
     }
+
+    public static void showWarning(final String message, final String title) {
+        final Alert alert = new Alert(AlertType.WARNING);
+        alert.setContentText(message);
+        alert.setTitle(title);
+        alert.setHeaderText("");
+        alert.showAndWait();
+    }
 }

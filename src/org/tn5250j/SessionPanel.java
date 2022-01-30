@@ -642,8 +642,8 @@ public class SessionPanel extends BorderPane implements
     public void actionSpool() {
 
         try {
-            final org.tn5250j.spoolfile.SpoolExporter spooler =
-                    new org.tn5250j.spoolfile.SpoolExporter(session.getVT(), this);
+            final org.tn5250j.spoolfile.SpoolExporterSwing spooler =
+                    new org.tn5250j.spoolfile.SpoolExporterSwing(session.getVT(), this);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
             final Alert tabclsdlg = new Alert(AlertType.ERROR);

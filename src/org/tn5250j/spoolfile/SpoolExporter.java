@@ -25,80 +25,69 @@
  */
 package org.tn5250j.spoolfile;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumn;
 
 import org.tn5250j.SessionGui;
+import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.framework.tn5250.tnvt;
-import org.tn5250j.gui.DefaultSortTableModel;
-import org.tn5250j.gui.GenericTn5250JFrameSwing;
-import org.tn5250j.gui.JSortTable;
+import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
 
 import com.ibm.as400.access.AS400;
-import com.ibm.as400.access.PrintObject;
 import com.ibm.as400.access.PrintObjectListEvent;
 import com.ibm.as400.access.PrintObjectListListener;
 import com.ibm.as400.access.SpooledFile;
 import com.ibm.as400.access.SpooledFileList;
 import com.ibm.as400.vaccess.SpooledFileViewer;
 
-public class SpoolExporter extends GenericTn5250JFrameSwing {
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingNode;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
-    private static final long serialVersionUID = 1L;
+public class SpoolExporter extends GenericTn5250JFrame {
+
     SpoolFilterPane filter;
-    // custom table model
-    SpoolTableModel stm;
-
-    // The scroll pane that holds the table.
-    JScrollPane scrollPane;
-
-    // ListSelectionModel of our custom table.
-    ListSelectionModel rowSM;
 
     // table of spools to work on
-    JSortTable spools;
+    private final TableView<SpooledFileBean> spools = new TableView<>();
 
     // status line
-    JLabel status;
+    private final Label status = new Label();
 
     // AS400 connection
     AS400 system;
 
     // Connection vt
-    tnvt vt;
-    SessionGui session;
-
-    Vector data = new Vector();
-    Vector row = new Vector();
-    Vector names = new Vector();
+    private final tnvt vt;
+    private final SessionGui session;
 
     SpooledFileList splfList;
 
@@ -116,175 +105,146 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
 
     private void jbInit() throws Exception {
 
-        this.setTitle(LangTool.getString("spool.title"));
+        final BorderPane content = new BorderPane();
 
-        this.setIconImages(GUIGraphicsUtils.getApplicationIcons());
+        final Scene scene = new Scene(content);
+        scene.getStylesheets().add("/application.css");
+        stage.setScene(scene);
 
-        this.getContentPane().add(createFilterPanel(), BorderLayout.NORTH);
+        stage.setTitle(LangTool.getString("spool.title"));
 
-        // get an instance of our table model
-        stm = new SpoolTableModel();
+        content.setTop(createFilterPanel());
 
-        // create a table using our custom table model
-        spools = new JSortTable(stm);
-
-        TableColumn column = null;
-
-        for (int x = 0; x < stm.getColumnCount(); x++) {
-            column = spools.getColumnModel().getColumn(x);
-            column.setPreferredWidth(stm.getColumnPreferredSize(x));
-
-        }
-
-        spools.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//        UiUtils.setBackground(spools, Color.WHITE);
+        spools.setTableMenuButtonVisible(true);
+        spools.getColumns().addAll(createColumns());
 
         // create our mouse listener on the table
-        spools.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-                spools_mouseClicked(e);
-            }
-
-            @Override
-            public void mousePressed(final MouseEvent event) {
-                if (SwingUtilities.isRightMouseButton(event))
-                    showPopupMenu(event);
-            }
-
-            @Override
-            public void mouseReleased(final MouseEvent event) {
-                if (SwingUtilities.isRightMouseButton(event))
-                    showPopupMenu(event);
-            }
-
-        });
-
-        spools.setShowGrid(false);
+        spools.addEventHandler(MouseEvent.MOUSE_CLICKED, this::spools_mouseClicked);
+        spools.addEventHandler(MouseEvent.MOUSE_PRESSED, this::showPopupMenu);
         //Create the scroll pane and add the table to it.
-        scrollPane = new JScrollPane(spools);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        spools.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        spools.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // setup the number of rows we should be working with
-        spools.setPreferredScrollableViewportSize(
-                new Dimension(
-                        spools.getPreferredScrollableViewportSize().width,
-                        spools.getFontMetrics(spools.getFont()).getHeight() * 8)
-        );
+        content.setCenter(spools);
 
-        scrollPane.getViewport().setBackground(spools.getBackground());
-        scrollPane.setBackground(spools.getBackground());
+        status.setText("0 " + LangTool.getString("spool.count"));
+        status.getStyleClass().add("etched-border");
 
-        //Setup our selection model listener
-        rowSM = spools.getSelectionModel();
-        rowSM.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(final ListSelectionEvent e) {
-
-                //Ignore extra messages.
-                if (e.getValueIsAdjusting())
-                    return;
-
-                final ListSelectionModel lsm =
-                        (ListSelectionModel) e.getSource();
-
-            }
-        });
-
-        rowSM.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        this.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-
-        status = new JLabel("0 " + LangTool.getString("spool.count"));
-        status.setBorder(BorderFactory.createEtchedBorder());
-        this.getContentPane().add(status, BorderLayout.SOUTH);
+        status.setMaxWidth(Double.POSITIVE_INFINITY);
+        content.setBottom(status);
 
         packFrame = true;
-        this.centerFrame();
 
-//      pack();
-//
-//      //Center the window
-//      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//      Dimension frameSize = getSize();
-//      if (frameSize.height > screenSize.height)
-//         frameSize.height = screenSize.height;
-//      if (frameSize.width > screenSize.width)
-//         frameSize.width = screenSize.width;
-//
-//      setLocation((screenSize.width - frameSize.width) / 2,
-//                     (screenSize.height - frameSize.height) / 2);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent event) {
-                // close the spool file list
-//            if (splfList != null)
-//               splfList.close();
-
-                // close the system connection
-                if (system != null) {
-                    // close the spool file list if allocated
-                    if (splfList != null) {
-                        splfList.close();
-                        splfList = null;
-                    }
-
-                    system.disconnectAllServices();
+        stage.setOnCloseRequest(e -> {
+            // close the system connection
+            if (system != null) {
+                // close the spool file list if allocated
+                if (splfList != null) {
+                    splfList.close();
+                    splfList = null;
                 }
-                setVisible(false);
-                dispose();
+
+                system.disconnectAllServices();
             }
         });
     }
 
-    private JPanel createFilterPanel() {
+    private List<TableColumn<SpooledFileBean, ?>> createColumns() {
+        final List<TableColumn<SpooledFileBean, ?>> columns = new LinkedList<>();
+
+        //  Spool Name|100"
+        columns.add(createTableColumn(bean -> bean.getPropertySpoolName(), "Spool Name", 100, 0));
+        //  Spool Number|90"
+        columns.add(createTableColumn(bean -> bean.getPropertyNumber(), "Spool Number", 90, 1));
+        //  Job Name|100|"
+        columns.add(createTableColumn(bean -> bean.getPropertyJobName(), "Job Name", 100, 2));
+        //  Job User|100"
+        columns.add(createTableColumn(bean -> bean.getPropertyJobUser(), "Job User", 100, 3));
+        //  Job Number|90"
+        columns.add(createTableColumn(bean -> bean.getPropertyjobNumber(), "Job Number", 90, 4));
+        //  Queue|200"
+        columns.add(createTableColumn(bean -> bean.getPropertyQueue(), "Queue", 200, 5));
+        //  User Data|100"
+        columns.add(createTableColumn(bean -> bean.getPropertyUserData(), "User Data", 100, 6));
+        //  Status|100"
+        columns.add(createTableColumn(bean -> bean.getPropertyStatus(), "Status", 100, 7));
+        //  Total Pages|90"
+        columns.add(createTableColumn(bean -> bean.getPropertyTotalPages(), "Total Pages", 90, 8));
+        //  Current Page|90"
+        columns.add(createTableColumn(bean -> bean.getPropertyCurrentPage(), "Current Page", 90, 9));
+        //  Copies|90"
+        columns.add(createTableColumn(bean -> bean.getPropertyCopies(), "Copies", 90, 10));
+        //  Form Type|100"
+        columns.add(createTableColumn(bean -> bean.getPropertyFormType(), "Form Type", 100, 11));
+        //  Priority|40"
+        columns.add(createTableColumn(bean -> bean.getPropertyPriority(), "Priority", 40, 12));
+        //  Creation Date/Time|175"
+        columns.add(createTableColumn(bean -> bean.getPropertyCreationDate(), "Creation Date/Time", 175, 13));
+        //  Size|120";
+        columns.add(createTableColumn(bean -> bean.getPropertySize(), "Size", 120, 14));
+
+        return columns;
+    }
+
+    private <V> TableColumn<SpooledFileBean, V> createTableColumn(
+            final Function<SpooledFileBean, ObservableValue<V>> accessor,
+            final String title, final int prefSize, final int initColumnNumber) {
+        final TableColumn<SpooledFileBean, V> col = new TableColumn<>(title);
+        col.setPrefWidth(prefSize);
+        col.setEditable(false);
+        col.setSortable(true);
+        col.setCellValueFactory(t -> accessor.apply(t.getValue()));
+        col.setResizable(true);
+        col.setUserData(initColumnNumber);
+        return col;
+    }
+
+    private Pane createFilterPanel() {
 
         // create filter panel
-        final JPanel fp = new JPanel();
-        fp.setLayout(new BorderLayout());
-        fp.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("spool.filterTitle")));
+        final TitledBorderedPane fp = new TitledBorderedPane();
+        fp.setTitle(LangTool.getString("spool.filterTitle"));
+
+        final BorderPane content = new BorderPane();
+        fp.getChildren().add(content);
 
         filter = new SpoolFilterPane();
 
         // create button selection panel
-        final JPanel bp = new JPanel();
-        final JButton load = new JButton(LangTool.getString("spool.load"));
-        final JButton resetAll = new JButton(LangTool.getString("spool.resetAll"));
-        final JButton reset = new JButton(LangTool.getString("spool.resetPanel"));
+        final VBox vbox = new VBox();
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setStyle("-fx-padding: 0 0.5em 0.5em 0.5em;");
 
-        bp.add(load);
-        load.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                runLoader();
-            }
-        });
+        final HBox bp = new HBox();
+        bp.setAlignment(Pos.CENTER);
+        vbox.getChildren().add(bp);
+        bp.setSpacing(5.);
 
-        bp.add(reset);
+        final Button load = new Button(LangTool.getString("spool.load"));
+        final Button resetAll = new Button(LangTool.getString("spool.resetAll"));
+        final Button reset = new Button(LangTool.getString("spool.resetPanel"));
 
-        reset.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                filter.resetCurrent();
-            }
-        });
+        bp.getChildren().add(load);
+        load.setOnAction(e -> runLoader());
 
-        bp.add(resetAll);
-        resetAll.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                filter.resetAll();
-            }
-        });
+        bp.getChildren().add(reset);
+        reset.setOnAction(e -> filter.resetCurrent());
 
-        fp.add(filter, BorderLayout.CENTER);
-        fp.add(bp, BorderLayout.SOUTH);
+        bp.getChildren().add(resetAll);
+        resetAll.setOnAction(e -> filter.resetAll());
+
+        //TODO change to FX
+        final SwingNode swing = new SwingNode();
+        swing.setContent(filter);
+
+        final BorderPane nodeWrapper = new BorderPane(swing);
+        nodeWrapper.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
+
+        content.setCenter(nodeWrapper);
+        content.setBottom(vbox);
 
         return fp;
-
     }
 
     private void runLoader() {
@@ -301,17 +261,16 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
     }
 
     private void loadSpoolFiles() {
+        spools.setCursor(Cursor.WAIT);
 
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//      SpooledFileList splfList = null;
         if (splfList != null) {
-            splfList.removePrintObjectListListener(stm);
+            splfList.removePrintObjectListListener(listener);
             splfList.close();
             splfList = null;
         }
 
         // clear our data
-        data.clear();
+        spools.getItems().clear();
 
         try {
             updateStatus(LangTool.getString("spool.working"));
@@ -331,225 +290,18 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
             if (filter.getUserData().length() > 0)
                 splfList.setUserDataFilter(filter.getUserData());
 
-            // retrieve the output queues
-//         splfList.openSynchronously();
-
-            // if we have something update the status
-//         if (splfList != null) {
-//            final int count = splfList.size();
-//            updateStatus(count + " " + LangTool.getString("spool.count"));
-//         }
-
-            // load the data into our sortable data model
-//         int numProcessed = loadDataModel(splfList);
-
-            // set the spool list to be displayed
-            stm.setDataVector(data, names);
-
-            // make sure we make the column names fit correct size
-            TableColumn column = null;
-
-            for (int x = 0; x < stm.getColumnCount(); x++) {
-                column = spools.getColumnModel().getColumn(x);
-                column.setPreferredWidth(stm.getColumnPreferredSize(x));
-
-            }
-
+            splfList.addPrintObjectListListener(listener);
             splfList.openAsynchronously();
-            splfList.addPrintObjectListListener(stm);
 
             // if we have something update the status
             if (splfList != null) {
                 updateStatus(splfList.size() + " " + LangTool.getString("spool.count"));
             }
 
-//         splfList.close();
-
         } catch (final Exception erp) {
+            spools.setCursor(Cursor.DEFAULT);
             updateStatus(erp.getMessage(), true);
         }
-
-//      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-    }
-
-    /**
-     * Load the data model vectors with the information from the Spooled File List
-     *
-     * @param splfList Spooled File List to load from
-     */
-//      private int loadDataModel(SpooledFileList splfList) {
-//
-//         // clear our data
-//         data.clear();
-//
-//         // if there is nothing then do nothing
-//         if (splfList == null)
-//            return 0;
-//
-//         int splfListSize = splfList.size();
-//
-//         // if we have no spooled files then display nothing
-//         if (splfListSize <= 0)
-//            return 0;
-//
-//         String text = status.getText();
-//
-//         boolean spoolFilter = filter.getSpoolName().length() > 0;
-//         String spoolName = filter.getSpoolName();
-//         int numSpooled = splfList.size();
-//         int numProcessed = 0;
-//
-//         // iterate throw the spooled file list and load the values into our
-//         //  data vector
-//         int count = 0;
-//         Enumeration enumm = (splfList.getObjects());
-//         while(enumm.hasMoreElements()) {
-//            SpooledFile p = (SpooledFile)enumm.nextElement();
-//            Vector row = new Vector();
-//
-//            updateStatus(text + " " + ++count + " of " + numSpooled);
-//
-//            if (spoolFilter && !spoolName.equals(p.getName()))
-//               continue;
-//
-//            numProcessed++;
-//
-//            row.add(p.getName());
-//
-//            loadIntegerAttribute(p, row, PrintObject.ATTR_SPLFNUM);
-//            loadStringAttribute(p, row, PrintObject.ATTR_JOBNAME);
-//            loadStringAttribute(p, row, PrintObject.ATTR_JOBUSER);
-//            loadStringAttribute(p, row, PrintObject.ATTR_JOBNUMBER);
-//            loadStringAttribute(p, row, PrintObject.ATTR_OUTPUT_QUEUE);
-//            loadStringAttribute(p, row, PrintObject.ATTR_USERDATA);
-//            loadStringAttribute(p, row, PrintObject.ATTR_SPLFSTATUS);
-//            loadIntegerAttribute(p, row, PrintObject.ATTR_PAGES);
-//            loadIntegerAttribute(p, row, PrintObject.ATTR_CURPAGE);
-//            loadIntegerAttribute(p, row, PrintObject.ATTR_COPIES);
-//            loadStringAttribute(p, row, PrintObject.ATTR_FORMTYPE);
-//            loadStringAttribute(p, row, PrintObject.ATTR_OUTPTY);
-//            loadCreateDateTime(p, row);
-//            loadIntegerAttribute(p, row, PrintObject.ATTR_NUMBYTES);
-//
-//            // now add our row of columns into our data
-//            data.add(row);
-//         }
-//
-//         return numProcessed;
-//      }
-
-    /**
-     * Load a Printer Object string attribute into our row vector
-     *
-     * @param p
-     * @param row
-     * @param attribute
-     */
-    private void loadStringAttribute(final SpooledFile p, final Vector row, final int attribute) {
-        try {
-            row.add(p.getStringAttribute(attribute));
-        } catch (final Exception ex) {
-//         System.out.println(ex.getMessage());
-            row.add("Attribute Not supported");
-        }
-    }
-
-    /**
-     * Load a Printer Object integer/numeric attribute into our row vector
-     *
-     * @param p
-     * @param row
-     * @param attribute
-     */
-    private void loadIntegerAttribute(final SpooledFile p, final Vector row, final int attribute) {
-        try {
-            row.add(p.getIntegerAttribute(attribute));
-        } catch (final Exception ex) {
-//         System.out.println(ex.getMessage());
-            row.add("Attribute Not supported");
-        }
-    }
-
-    /**
-     * Format the create date and time into a string to be used
-     * @param p
-     * @param row
-     */
-    private void loadCreateDateTime(final SpooledFile p, final Vector row) {
-
-        try {
-            final String datetime = formatDate(p.getStringAttribute(PrintObject.ATTR_DATE)) +
-                    " " +
-                    formatTime(p.getStringAttribute(PrintObject.ATTR_TIME));
-            row.add(datetime);
-        } catch (final Exception ex) {
-//         System.out.println(ex.getMessage());
-            row.add("Attribute Not supported");
-        }
-    }
-
-    /**
-     * Format the date string from the string passed
-     *    format is cyymmdd
-     *    c  - century -  0 1900
-     *                   1 2000
-     *    yy -  year
-     *    mm -  month
-     *    dd -  day
-     *
-     * @param dateString String in the format as above
-     * @return formatted date string
-     */
-    static String formatDate(final String dateString) {
-
-        if (dateString != null) {
-
-            final char[] dateArray = dateString.toCharArray();
-            // check if the length is correct length for formatting the string should
-            //  be in the format cyymmdd where
-            //    c = 0 -> 19
-            //    c = 1 -> 20
-            if (dateArray.length != 7)
-                return dateString;
-
-            final StringBuffer db = new StringBuffer(10);
-
-            // this will strip out the starting century char as described above
-            db.append(dateArray, 1, 6);
-
-            // now we find out what the century byte was and insert the correct
-            //  2 char number century in the buffer.
-            if (dateArray[0] == '0')
-                db.insert(0, "19");
-            else
-                db.insert(0, "20");
-
-            db.insert(4, '/'); // add the first date seperator
-            db.insert(7, '/'); // add the second date seperator
-            return db.toString();
-        } else
-            return "";
-
-    }
-
-    /**
-     * Format the time string with separator of ':'
-     *
-     * @param timeString
-     * @return
-     */
-    static String formatTime(final String timeString) {
-
-        if (timeString != null) {
-
-            final StringBuffer tb = new StringBuffer(timeString);
-
-            tb.insert(tb.length() - 2, ':');
-            tb.insert(tb.length() - 5, ':');
-            return tb.toString();
-        } else
-            return "";
-
     }
 
     /**
@@ -557,120 +309,57 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * @param me
      */
     private void showPopupMenu(final MouseEvent me) {
+        if (me.getButton() != MouseButton.SECONDARY) {
+            return;
+        }
+        final TableCell<?, ?> cell = getCell(me);
+        if (cell == null) {
+            return;
+        }
 
-        final JPopupMenu jpm = new JPopupMenu();
-        final JMenuItem menuItem;
-        Action action;
+        final ContextMenu popup = new ContextMenu();
 
-        final int row = spools.rowAtPoint(me.getPoint());
-        final int col = spools.convertColumnIndexToModel(
-                spools.columnAtPoint(me.getPoint()));
-//      System.out.println(" column clicked " + col);
+        final int row = cell.getTableRow().getIndex();
+        final int col = (Integer) cell.getTableColumn().getUserData();
+
+        //      System.out.println(" column clicked " + col);
 //      System.out.println(" column clicked to model " + spools.convertColumnIndexToModel(col));
+        popup.getItems().add(createMenuItem("spool.optionView", cmd -> {
+            System.out.println(row + " is selected ");
+            spools.setCursor(Cursor.WAIT);
+            Platform.runLater(() -> displayViewer(getSpooledFile(row)));
+        }));
 
-        action = new AbstractAction(LangTool.getString("spool.optionView")) {
-            private static final long serialVersionUID = 1L;
+        popup.getItems().add(createMenuItem("spool.optionProps", cmd -> UiUtils.showWarning("Not Available yet", "Not yet")));
+        popup.getItems().add(new SeparatorMenuItem());
 
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                System.out.println(row + " is selected ");
-                spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                SwingUtilities.invokeLater(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                displayViewer(getSpooledFile(row));
-                            }
-                        }
-                );
-            }
-        };
-
-        jpm.add(action);
-
-        action = new AbstractAction(LangTool.getString("spool.optionProps")) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-
-                JOptionPane.showMessageDialog(null, "Not Available yet", "Not yet",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        };
-        jpm.add(action);
-
-        jpm.addSeparator();
-        action = new AbstractAction(LangTool.getString("spool.optionExport")) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final SpoolExportWizard sew = new SpoolExportWizard(getSpooledFile(row),
-                        session);
-                sew.setVisible(true);
-            }
-        };
-
-        jpm.add(action);
-        jpm.addSeparator();
+        popup.getItems().add(createMenuItem("spool.optionProps", cmd -> {
+            final SpoolExportWizardSwing sew = new SpoolExportWizardSwing(getSpooledFile(row),
+                    session);
+            sew.setVisible(true);
+        }));
+        popup.getItems().add(new SeparatorMenuItem());
 
         switch (col) {
             case 0:
             case 3:
             case 6:
-                action = new AbstractAction(LangTool.getString("spool.labelFilter")) {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void actionPerformed(final ActionEvent e) {
-                        setFilter(row, col);
-                    }
-                };
-
-                jpm.add(action);
-                jpm.addSeparator();
+                popup.getItems().add(createMenuItem("spool.labelFilter", cmd -> setFilter(row, col)));
+                popup.getItems().add(new SeparatorMenuItem());
                 break;
         }
 
-        action = new AbstractAction(LangTool.getString("spool.optionHold")) {
-            private static final long serialVersionUID = 1L;
+        popup.getItems().add(createMenuItem("spool.optionHold", cmd -> doSpoolStuff(getSpooledFile(row), cmd)));
+        popup.getItems().add(createMenuItem("spool.optionRelease", cmd -> doSpoolStuff(getSpooledFile(row), cmd)));
+        popup.getItems().add(createMenuItem("spool.optionDelete", cmd -> doSpoolStuff(getSpooledFile(row), cmd)));
 
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-
-                doSpoolStuff(getSpooledFile(row), e.getActionCommand());
-
-            }
-        };
-        jpm.add(action);
-
-        action = new AbstractAction(LangTool.getString("spool.optionRelease")) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-
-                doSpoolStuff(getSpooledFile(row), e.getActionCommand());
-            }
-        };
-
-        jpm.add(action);
-
-        action = new AbstractAction(LangTool.getString("spool.optionDelete")) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-
-                doSpoolStuff(getSpooledFile(row), e.getActionCommand());
-            }
-        };
-
-        jpm.add(action);
-
-        GUIGraphicsUtils.positionPopup(spools, jpm, me.getX(), me.getY());
-
+        popup.show(this.getWindow(), me.getScreenX(), me.getScreenY());
+    }
+    private MenuItem createMenuItem(final String key, final Consumer<String> action) {
+        final String name = LangTool.getString(key);
+        final MenuItem mi = new MenuItem(name);
+        mi.setOnAction(e -> action.accept(name));
+        return mi;
     }
 
     /**
@@ -680,16 +369,8 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * @return Spooled File of selected row
      */
     private SpooledFile getSpooledFile(final int row) {
-
-        final Vector rows = (Vector) data.get(row);
-        final SpooledFile splf = new SpooledFile(system,
-                (String) rows.get(0), // splf name
-                ((Integer) rows.get(1)).intValue(), // splf number
-                (String) rows.get(2), // job name
-                (String) rows.get(3), // job user
-                (String) rows.get(4));   // job number
-
-        return splf;
+        final SpooledFileBean bean = this.spools.getItems().get(row);
+        return bean.getFile();
     }
 
     /**
@@ -719,17 +400,12 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      */
     void spools_mouseClicked(final MouseEvent e) {
         if (e.getClickCount() > 1) {
-            final int row = spools.rowAtPoint(e.getPoint());
-            spools.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            SwingUtilities.invokeLater(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            displayViewer(getSpooledFile(row));
-                        }
-                    }
-            );
-
+            final TableCell<?, ?> cell = getCell(e);
+            if (cell != null) {
+                final int row = cell.getTableRow().getIndex();
+                spools.setCursor(Cursor.WAIT);
+                Platform.runLater(() -> displayViewer(getSpooledFile(row)));
+            }
         }
     }
 
@@ -739,13 +415,13 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * @param splf SpooledFile to view
      */
     private void displayViewer(final SpooledFile splf) {
-
+        //FIXME change to FX
         // Create the spooled file viewer
         final SpooledFileViewer sfv = new SpooledFileViewer(splf, 1);
         try {
             sfv.load();
             final JFrame viewer = new JFrame(LangTool.getString("spool.viewerTitle"));
-            viewer.setIconImage(this.getIconImage());
+            viewer.setIconImages(GUIGraphicsUtils.getApplicationIcons());
 
             viewer.getContentPane().add(sfv);
             viewer.pack();
@@ -754,7 +430,7 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
             updateStatus(exc.getMessage(), true);
         }
 
-        spools.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        spools.setCursor(Cursor.DEFAULT);
     }
 
     /**
@@ -764,24 +440,22 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * @param col
      */
     private void setFilter(final int row, final int col) {
+        final SpooledFileBean bean = spools.getItems().get(row);
 
         switch (col) {
-
             case 0:
-                filter.setSpoolName((String) spools.getModel().getValueAt(row, col));
+                filter.setSpoolName(bean.getSpoolName());
                 break;
             case 3:
-                filter.setUser((String) spools.getModel().getValueAt(row, col));
+                filter.setUser(bean.getJobUser());
                 break;
             case 6:
-                filter.setUserData((String) spools.getModel().getValueAt(row, col));
+                filter.setUserData(bean.getUserData());
                 break;
             default:
                 break;
 
         }
-        System.out.println((String) spools.getModel().getValueAt(row, col));
-
     }
 
     /**
@@ -792,21 +466,14 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * @param error Whether it is an error message or not
      */
     private void updateStatus(final String stat, final boolean error) {
-
-        if (error)
-            status.setForeground(Color.red);
-        else
-            status.setForeground(Color.black);
-
-        SwingUtilities.invokeLater(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        status.setText(stat);
-                    }
-                }
-        );
-
+        Platform.runLater(() -> {
+            if (error) {
+                status.setTextFill(Color.RED);
+            } else {
+                status.setTextFill(Color.BLACK);
+            }
+            status.setText(stat);
+        });
     }
 
     /**
@@ -815,7 +482,6 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * @param stat Message to display
      */
     private void updateStatus(final String stat) {
-
         updateStatus(stat, false);
     }
 
@@ -824,154 +490,53 @@ public class SpoolExporter extends GenericTn5250JFrameSwing {
      * attributes.
      *
      */
-    class SpoolTableModel extends DefaultSortTableModel implements PrintObjectListListener {
-
-        private static final long serialVersionUID = 1L;
-        String[] cols;
-        int[] colsSizes;
-
-        final String colLayout = "Spool Name|100|Spool Number|90|Job Name|100|Job User|100|Job Number|90|Queue|200|User Data|100|Status|100|Total Pages|90|Current Page|90|Copies|90|Form Type|100|Priority|40|Creation Date/Time|175|Size|120";
-
-        /**
-         * Constructor
-         */
-        public SpoolTableModel() {
-
-            super();
-            final StringTokenizer stringtokenizer = new StringTokenizer(colLayout, "|");
-
-            // allocate the column sizes array
-            colsSizes = new int[stringtokenizer.countTokens() / 2];
-            // allocate the column names array
-            cols = new String[stringtokenizer.countTokens() / 2];
-            int i = 0;
-            while (stringtokenizer.hasMoreTokens()) {
-                cols[i] = stringtokenizer.nextToken();
-                colsSizes[i++] = Integer.parseInt(stringtokenizer.nextToken());
-            }
-
-        }
-
-        @Override
-        public int getColumnCount() {
-            return cols.length;
-        }
-
-        @Override
-        public String getColumnName(final int col) {
-            return cols[col];
-        }
-
-        public int getColumnPreferredSize(final int col) {
-            return colsSizes[col];
-        }
-
-        /**
-         * Override to not allow any rows to be editable
-         *
-         * @param row
-         * @param col
-         */
-        @Override
-        public boolean isCellEditable(final int row, final int col) {
-
-            return false;
-        }
+    private final PrintObjectListListener listener = new PrintObjectListListener() {
 
         @Override
         public void listClosed(final PrintObjectListEvent e) {
-//                System.out.println("list closed");
-
-            SwingUtilities.invokeLater(new Thread() {
-                @Override
-                public void run() {
-                    fireTableDataChanged();
-                }
-            });
         }
 
         @Override
         public void listCompleted(final PrintObjectListEvent e) {
-//                System.out.println("list completed");
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-            SwingUtilities.invokeLater(new Thread() {
-                @Override
-                public void run() {
-                    fireTableDataChanged();
-                }
-            });
+            spools.setCursor(Cursor.DEFAULT);
         }
 
         @Override
         public void listErrorOccurred(final PrintObjectListEvent e) {
-
             System.err.println("list error occurred : " + e.getException().getMessage());
-
-            SwingUtilities.invokeLater(new Thread() {
-                @Override
-                public void run() {
-                    fireTableDataChanged();
-                }
-            });
         }
 
         @Override
         public void listObjectAdded(final PrintObjectListEvent e) {
-//         System.out.println("list object added");
             final boolean spoolFilter = filter.getSpoolName().length() > 0;
             final String spoolName = filter.getSpoolName();
             final SpooledFile p = (SpooledFile) e.getObject();
-
-            final Vector row = new Vector();
 
             // do not process if the name is not equal to the filter.
             if (spoolFilter && !spoolName.equals(p.getName()))
                 return;
 
-            row.add(p.getName());
+            spools.getItems().add(new SpooledFileBean(p));
 
-            loadIntegerAttribute(p, row, PrintObject.ATTR_SPLFNUM);
-            loadStringAttribute(p, row, PrintObject.ATTR_JOBNAME);
-            loadStringAttribute(p, row, PrintObject.ATTR_JOBUSER);
-            loadStringAttribute(p, row, PrintObject.ATTR_JOBNUMBER);
-            loadStringAttribute(p, row, PrintObject.ATTR_OUTPUT_QUEUE);
-            loadStringAttribute(p, row, PrintObject.ATTR_USERDATA);
-            loadStringAttribute(p, row, PrintObject.ATTR_SPLFSTATUS);
-            loadIntegerAttribute(p, row, PrintObject.ATTR_PAGES);
-            loadIntegerAttribute(p, row, PrintObject.ATTR_CURPAGE);
-            loadIntegerAttribute(p, row, PrintObject.ATTR_COPIES);
-            loadStringAttribute(p, row, PrintObject.ATTR_FORMTYPE);
-            loadStringAttribute(p, row, PrintObject.ATTR_OUTPTY);
-            loadCreateDateTime(p, row);
-            loadIntegerAttribute(p, row, PrintObject.ATTR_NUMBYTES);
-
-            //  We need to synchronize here so we will not get any errors if the
-            //   user hits a column header to sort by.
-            synchronized (data) {
-                // now add our row of columns into our data
-                data.add(row);
-            }
-
-            SwingUtilities.invokeLater(new Thread() {
-                @Override
-                public void run() {
-                    fireTableDataChanged();
-                    updateStatus(data.size() + " " + LangTool.getString("spool.count"));
-                }
+            Platform.runLater(() -> {
+                updateStatus(spools.getItems().size() + " " + LangTool.getString("spool.count"));
             });
         }
 
         @Override
         public void listOpened(final PrintObjectListEvent e) {
             System.out.println("list opened");
-            SwingUtilities.invokeLater(new Thread() {
-                @Override
-                public void run() {
-                    fireTableDataChanged();
-                }
-            });
         }
-    }
+    };
 
+    private TableCell<?, ?> getCell(final MouseEvent e) {
+        final Point2D p = new Point2D(e.getSceneX(), e.getSceneY());
+        for (final Node n : spools.lookupAll(".table-cell")) {
+            if (n.contains(n.sceneToLocal(p))) {
+                return (TableCell<?,?>) n;
+            }
+        }
+
+        return null;
+    }
 }

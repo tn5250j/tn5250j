@@ -437,8 +437,8 @@ public class SessionPopup {
 
     private void doMeSpool() {
         try {
-            final org.tn5250j.spoolfile.SpoolExporter spooler =
-                    new org.tn5250j.spoolfile.SpoolExporter(vt, sessiongui);
+            final org.tn5250j.spoolfile.SpoolExporterSwing spooler =
+                    new org.tn5250j.spoolfile.SpoolExporterSwing(vt, sessiongui);
             spooler.setVisible(true);
         } catch (final NoClassDefFoundError ncdfe) {
             final Alert alert = new Alert(AlertType.ERROR);
