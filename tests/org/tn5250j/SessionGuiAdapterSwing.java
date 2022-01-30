@@ -46,7 +46,12 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
     private final List<EmulatorActionListener> actionListeners = new CopyOnWriteArrayList<>();
     private final Map<KeyCodeCombination, EmulatorAction> keyActions = new ConcurrentHashMap<>();
 
+    private final Session5250 session;
+    private final tnvt tvt;
+
     public SessionGuiAdapterSwing() {
+        session = DevTools.createSession();
+        this.tvt = new tnvt(session, getScreen(), true, true);
         keyHandler = KeyboardHandler.getKeyboardHandlerInstance(this);
     }
 
@@ -71,7 +76,7 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
 
     @Override
     public Session5250 getSession() {
-        return null;
+        return session;
     }
 
     @Override
@@ -117,7 +122,7 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
 
     @Override
     public tnvt getVT() {
-        return null;
+        return tvt;
     }
 
     @Override
@@ -127,7 +132,7 @@ public class SessionGuiAdapterSwing extends JPanel implements SessionGui {
 
     @Override
     public Screen5250 getScreen() {
-        return null;
+        return session.getScreen();
     }
 
     @Override
