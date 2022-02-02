@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.connectdialog.TitledBorderedPane;
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
 import javafx.fxml.FXML;

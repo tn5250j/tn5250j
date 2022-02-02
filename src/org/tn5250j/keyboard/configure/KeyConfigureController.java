@@ -43,8 +43,8 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.encoding.ICodePage;
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.keyboard.KeyMnemonicResolver;

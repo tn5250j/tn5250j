@@ -21,44 +21,44 @@
 
 package org.tn5250j.gui;
 
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 /**
  * Class to create and manage a <i>Wizard</i> style framework.  Create and add
  * <code>WizardPages</code> and add <code>WizardListener</code>'s for all your Wizard fun.
  */
-public class Wizard extends JPanel {
-
-    private static final long serialVersionUID = 1L;
-    /**
-     * layout used
-     */
-    protected CardLayout cardLayout;
+public class Wizard {
     /**
      * list of wizard listeners registered with the bean
      */
-    transient protected Vector<WizardListener> listeners;
+    protected final List<WizardListener> listeners = new LinkedList<>();
+    private final Map<WizardPage, Integer> childIndexes = new HashMap<>();
+    private WizardPage currentPage;
+    private final BorderPane content = new BorderPane();
+    private final StackPane stackPane = new StackPane();
 
     /**
      * Create a <code>Wizard</code> component.
      */
     public Wizard() {
-        setLayout(new CardLayout());
-        cardLayout = (CardLayout) getLayout();
-        addContainerListener(containerListener);
+        super();
+        stackPane.setMaxHeight(Double.POSITIVE_INFINITY);
+        stackPane.setMaxWidth(Double.POSITIVE_INFINITY);
+        content.setCenter(stackPane);
     }
 
     /**
@@ -68,8 +68,21 @@ public class Wizard extends JPanel {
      * @see #first
      * @see #last
      */
-    public void show(String name) {
-        cardLayout.show(this, name);
+    public void show(final String name) {
+        for (final WizardPage node : getWizardPages()) {
+            if (node.getName().equals(name)) {
+                setCurrentPage(node);
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param wp new current page.
+     */
+    private void setCurrentPage(final WizardPage wp) {
+        currentPage = wp;
+        wp.toFront();
     }
 
     /**
@@ -79,7 +92,16 @@ public class Wizard extends JPanel {
      * @see #show
      */
     public void first() {
-        cardLayout.first(this);
+        getPage(0).toFront();
+    }
+
+    private WizardPage getPage(final int index) {
+        for (final WizardPage node : getWizardPages()) {
+            if (childIndexes.get(node).intValue() == index) {
+                return node;
+            }
+        }
+        return null;
     }
 
     /**
@@ -89,7 +111,7 @@ public class Wizard extends JPanel {
      * @see #show
      */
     public void last() {
-        cardLayout.last(this);
+        getPage(childIndexes.size() - 1).toFront();
     }
 
     /**
@@ -100,27 +122,18 @@ public class Wizard extends JPanel {
      * @see #cancel
      */
     public boolean next() {
-        boolean is_last_page = false;
-        Component current_page = null,
-                next_page = null;
+        final List<WizardPage> pages = getWizardPages();
+        final int index = pages.indexOf(currentPage);
 
-        int ncomponents = getComponentCount();
-        for (int i = 0; i < ncomponents; i++) {
-            Component comp = getComponent(i);
-            if (comp.isVisible()) {
-                current_page = comp;
-                if (i == ncomponents - 1) {
-                    is_last_page = true;
-                    next_page = getComponent(0);
-                } else {
-                    next_page = getComponent(i + 1);
-                }
-                break;
-            }
+        final boolean isLastPage = index == pages.size() - 1;
+
+        final WizardPage nextPage = isLastPage ? null : pages.get(index + 1);
+        if (nextPage == null) {
+            return false;
         }
 
-        WizardEvent event = new WizardEvent(this, current_page, next_page,
-                is_last_page, !is_last_page);
+        final WizardEvent event = new WizardEvent(this, currentPage, nextPage,
+                isLastPage, !isLastPage);
 
         // in the preceding constructor, by default, we want
         // to prevent wraparound to first card from the
@@ -130,11 +143,8 @@ public class Wizard extends JPanel {
         //
         // post nextBegin event
         //
-        Enumeration<WizardListener> e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.nextBegin(event);
+        for (final WizardListener l : listeners) {
+            l.nextBegin(event);
         }
 
         if (event.getAllowChange() == false) {
@@ -144,20 +154,13 @@ public class Wizard extends JPanel {
         //
         // advance to the next page unless a new page has been specified
         //
-        if (next_page != event.getNewPage()) {
-            cardLayout.show(this, event.getNewPage().getName());
-        } else {
-            cardLayout.next(this);
-        }
+        setCurrentPage(event.getNewPage());
 
         //
         // Post nextComplete event
         //
-        e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.nextComplete(event);
+        for (final WizardListener l : listeners) {
+            l.nextComplete(event);
         }
 
         return true;
@@ -171,68 +174,43 @@ public class Wizard extends JPanel {
      * @see #cancel
      */
     public boolean previous() {
-        boolean is_last_page = false;
-        boolean is_first_page = false;
-        Component current_page = null,
-                previous_page = null;
+        final List<WizardPage> pages = getWizardPages();
+        final int index = pages.indexOf(currentPage);
 
-        int ncomponents = getComponentCount();
-        for (int i = 0; i < ncomponents; i++) {
-            Component comp = getComponent(i);
-            if (comp.isVisible()) {
-                current_page = comp;
-                if (i == ncomponents - 1) {
-                    is_last_page = true;
-                }
-                if (i == 0) {
-                    previous_page = getComponent(ncomponents - 1);
-                    is_first_page = true;
-                } else {
-                    previous_page = getComponent(i - 1);
-                }
-                break;
-            }
+        final boolean isLastPage = index == pages.size() - 1;
+        final boolean isFirstPage = index == 0;
+
+        final WizardPage previousPage = isFirstPage ? null : pages.get(index - 1);
+        if (previousPage == null) {
+            return false;
         }
 
-        WizardEvent event = new WizardEvent(this, current_page, previous_page,
-                is_last_page, !is_first_page);
+        final WizardEvent event = new WizardEvent(this, currentPage, previousPage,
+                isLastPage, !isFirstPage);
+
         // in the preceding constructor, by default, we want
         // to prevent wraparound to the last card from the
         // first card so we set "allow_change" to be the
         // opposite of "is_first_page"
 
-        Enumeration<WizardListener> e;
-        //
-        // post previousBegin event
-        //
-        e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.previousBegin(event);
+        for (final WizardListener l : listeners) {
+            //
+            // post previousBegin event
+            //
+            l.previousBegin(event);
         }
 
-        if (event.getAllowChange() == false) {
+        if (!event.getAllowChange()) {
             return false;
         }
 
-        //
-        // Advance to previous page unless a new page has been specified
-        //
-        if (previous_page != event.getNewPage()) {
-            cardLayout.show(this, event.getNewPage().getName());
-        } else {
-            cardLayout.previous(this);
-        }
+        setCurrentPage(event.getNewPage());
 
         //
         // Post previousComplete event
         //
-        e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.previousComplete(event);
+        for (final WizardListener l : listeners) {
+            l.previousComplete(event);
         }
         return true;
     }
@@ -245,23 +223,15 @@ public class Wizard extends JPanel {
      * @see #cancel
      */
     public boolean finish() {
-        boolean is_last_page = false;
-        Component comp = getCurrentPage();
-        if (comp == getComponent(getComponentCount() - 1)) {
-            is_last_page = true;
-        }
-
-        WizardEvent event = new WizardEvent(this, comp, null,
-                is_last_page, true);
+        final WizardPage comp = getCurrentPage();
+        final WizardEvent event = new WizardEvent(this, comp, null,
+                isLastPage(comp), true);
 
         //
         // Post finished event
         //
-        Enumeration<WizardListener> e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.finished(event);
+        for (final WizardListener l : listeners) {
+            l.finished(event);
         }
 
         return event.getAllowChange();
@@ -275,23 +245,15 @@ public class Wizard extends JPanel {
      * @see #finish
      */
     public boolean cancel() {
-        boolean is_last_page = false;
-        Component comp = getCurrentPage();
-        if (comp == getComponent(getComponentCount() - 1)) {
-            is_last_page = true;
-        }
-
-        WizardEvent event = new WizardEvent(this, comp, null,
-                is_last_page, true);
+        final WizardPage comp = getCurrentPage();
+        final WizardEvent event = new WizardEvent(this, comp, null,
+                isLastPage(comp), true);
 
         //
         // Post Canceled event
         //
-        Enumeration<WizardListener> e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.canceled(event);
+        for (final WizardListener l : listeners) {
+            l.canceled(event);
         }
 
         return event.getAllowChange();
@@ -306,66 +268,42 @@ public class Wizard extends JPanel {
      * @see #cancel
      */
     public void help() {
-        boolean is_last_page = false;
-        Component comp = getCurrentPage();
-        if (comp == getComponent(getComponentCount() - 1)) {
-            is_last_page = true;
-        }
-
-        WizardEvent event = new WizardEvent(this, comp, null,
-                is_last_page, true);
+        final WizardPage comp = getCurrentPage();
+        final WizardEvent event = new WizardEvent(this, comp, null, isLastPage(comp), true);
         //
         // Post Help event
         //
-        Enumeration<WizardListener> e = listeners.elements();
-        for (; e.hasMoreElements(); ) {
-            WizardListener listener =
-                    e.nextElement();
-            listener.help(event);
+        for (final WizardListener l : listeners) {
+            l.help(event);
         }
+    }
+
+    private boolean isLastPage(final WizardPage comp) {
+        if (comp == null) {
+            return false;
+        }
+        return childIndexes.get(comp).intValue() == childIndexes.size() - 1;
     }
 
     /**
      * Retrieves the current visible page.
      */
-    protected Component getCurrentPage() {
-        int ncomponents = getComponentCount();
-        for (int i = 0; i < ncomponents; i++) {
-            Component comp = getComponent(i);
-            if (comp.isVisible()) {
-                return comp;
-            }
-        }
-
-        return null;
+    protected WizardPage getCurrentPage() {
+        return currentPage;
     }
 
     /**
      * Adds a new <code>WizardListener</code> to the list.
      */
-    public void addWizardListener(WizardListener l) {
-        if (listeners == null)
-            listeners = new Vector<WizardListener>(3);
-
+    public void addWizardListener(final WizardListener l) {
         listeners.add(l);
     }
 
     /**
      * Removes a <code>ValidateListener</code> from the list.
      */
-    public void removeWizardListener(WizardListener l) {
-        if (listeners == null) {
-            return;
-        }
-        listeners.removeElement(l);
-    }
-
-    /**
-     * Adds a page child.
-     */
-    public Component add(Component page) {
-        add(page, page.getName());
-        return page;
+    public void removeWizardListener(final WizardListener l) {
+        listeners.remove(l);
     }
 
     /**
@@ -375,11 +313,7 @@ public class Wizard extends JPanel {
      *
      * @see #next
      */
-    transient protected ActionListener nextListener = new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            next();
-        }
-    };
+    protected final EventHandler<ActionEvent> nextListener = e -> next();
 
     /**
      * A listener on the "previous" button that is implemented as an anonymous
@@ -388,11 +322,7 @@ public class Wizard extends JPanel {
      *
      * @see #previous
      */
-    transient protected ActionListener previousListener = new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            previous();
-        }
-    };
+    protected final EventHandler<ActionEvent> previousListener = e -> previous();
 
     /**
      * A listener on the "finish" button that is implemented as an anonymous
@@ -401,11 +331,7 @@ public class Wizard extends JPanel {
      *
      * @see #finish
      */
-    transient protected ActionListener finishListener = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-            finish();
-        }
-    };
+    protected final EventHandler<ActionEvent> finishListener = e -> finish();
 
     /**
      * A listener on the "cancel" button that is implemented as an anonymous
@@ -414,11 +340,7 @@ public class Wizard extends JPanel {
      *
      * @see #cancel
      */
-    transient protected ActionListener cancelListener = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-            cancel();
-        }
-    };
+    protected final EventHandler<ActionEvent> cancelListener = e -> cancel();
 
     /**
      * A listener on the "help" button that is implemented as an anonymous
@@ -427,73 +349,76 @@ public class Wizard extends JPanel {
      *
      * @see #help
      */
-    transient protected ActionListener helpListener = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-            help();
+    protected final EventHandler<ActionEvent> helpListener = e -> help();
+
+    private void startListen(final Button button, final EventHandler<ActionEvent> handler) {
+        if (button != null) {
+            button.setOnAction(handler);
         }
-    };
+    }
 
+    private void stopListen(final Button button) {
+        if (button != null) {
+            button.setOnAction(null);
+        }
+    }
 
-    /**
-     * Container listner that listens for new pages that are added, and adds
-     * listeners to the buttons of the children so that the container knows
-     * when to post the proper "Wizard" events.
-     */
-    transient protected ContainerListener containerListener
-            = new ContainerListener() {
-        public void componentAdded(ContainerEvent e) {
-            if (e.getChild() instanceof WizardPage) {
-                WizardPage wp = (WizardPage) e.getChild();
-                JButton b;
-                b = wp.getNextButton();
-                if (b != null) {
-                    b.addActionListener(nextListener);
-                }
-                b = wp.getPreviousButton();
-                if (b != null) {
-                    b.addActionListener(previousListener);
-                }
-                b = wp.getFinishButton();
-                if (b != null) {
-                    b.addActionListener(finishListener);
-                }
-                b = wp.getCancelButton();
-                if (b != null) {
-                    b.addActionListener(cancelListener);
-                }
-                b = wp.getHelpButton();
-                if (b != null) {
-                    b.addActionListener(helpListener);
-                }
+    public void add(final WizardPage wp) {
+        stackPane.getChildren().add(wp);
+        startListen(wp.getNextButton(), nextListener);
+        startListen(wp.getPreviousButton(), previousListener);
+        startListen(wp.getFinishButton(), finishListener);
+        startListen(wp.getCancelButton(), cancelListener);
+        startListen(wp.getHelpButton(), helpListener);
+
+        childIndexes.put(wp, getWizardPagesCount() - 1);
+    }
+
+    public void remove(final WizardPage wp) {
+        stackPane.getChildren().remove(wp);
+        if (currentPage == wp) {
+            currentPage = null;
+        }
+
+        stopListen(wp.getNextButton());
+        stopListen(wp.getPreviousButton());
+        stopListen(wp.getFinishButton());
+        stopListen(wp.getCancelButton());
+        stopListen(wp.getHelpButton());
+
+        childIndexes.remove(wp);
+
+        //reset orders
+        final List<WizardPage> nodes = getWizardPages();
+
+        int index = 0;
+        for (final WizardPage n : nodes) {
+            childIndexes.put(n, index);
+            index++;
+        }
+    }
+
+    private List<WizardPage> getWizardPages() {
+        final List<WizardPage> pages = new LinkedList<>();
+        for (final Node node : stackPane.getChildren()) {
+            if (node instanceof WizardPage) {
+                pages.add((WizardPage) node);
             }
         }
-
-        public void componentRemoved(ContainerEvent e) {
-            if (e.getChild() instanceof WizardPage) {
-                WizardPage wp = (WizardPage) e.getChild();
-                JButton b;
-                b = wp.getNextButton();
-                if (b != null) {
-                    b.removeActionListener(nextListener);
-                }
-                b = wp.getPreviousButton();
-                if (b != null) {
-                    b.removeActionListener(previousListener);
-                }
-                b = wp.getFinishButton();
-                if (b != null) {
-                    b.removeActionListener(finishListener);
-                }
-                b = wp.getCancelButton();
-                if (b != null) {
-                    b.removeActionListener(cancelListener);
-                }
-                b = wp.getHelpButton();
-                if (b != null) {
-                    b.removeActionListener(helpListener);
-                }
+        pages.sort((n1, n2) -> childIndexes.get(n1).compareTo(childIndexes.get(n2)));
+        return pages;
+    }
+    private int getWizardPagesCount() {
+        int count = 0;
+        for (final Node node : stackPane.getChildren()) {
+            if (node instanceof WizardPage) {
+                count++;
             }
         }
-    };
+        return count;
+    }
 
+    public Pane getView() {
+        return content;
+    }
 }

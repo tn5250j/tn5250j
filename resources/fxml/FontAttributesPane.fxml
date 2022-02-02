@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import org.tn5250j.gui.TitledBorderedPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -12,7 +12,7 @@
 <BorderPane
     fx:id="view"
 	stylesheets="application.css"
-	styleClass="not-opaque"
+	styleClass="opaque"
 	fx:controller="org.tn5250j.sessionsettings.FontAttributesController"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 	<top>

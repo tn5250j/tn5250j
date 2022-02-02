@@ -20,20 +20,20 @@
  */
 package org.tn5250j.event;
 
-import org.tn5250j.gui.WizardPage;
+import java.awt.Component;
 
 /**
  * The event object for Wizard pages.
  */
-public class WizardEvent extends java.util.EventObject {
+public class WizardEventSwing extends java.util.EventObject {
 
     private static final long serialVersionUID = 1L;
-    protected WizardPage currentPage;
-    protected WizardPage newPage;
+    protected Component currentPage;
+    protected Component newPage;
     protected boolean isLastPage;
     protected boolean allowChange;
 
-    public WizardEvent(final Object source, final WizardPage current_page, final WizardPage new_page,
+    public WizardEventSwing(final Object source, final Component current_page, final Component new_page,
                        final boolean is_last_page, final boolean allow_change) {
 
         super(source);
@@ -67,21 +67,21 @@ public class WizardEvent extends java.util.EventObject {
     /**
      * Returns the next page.
      */
-    public WizardPage getNewPage() {
+    public Component getNewPage() {
         return newPage;
     }
 
     /**
      * Sets the next page.
      */
-    public void setNewPage(final WizardPage p) {
+    public void setNewPage(final Component p) {
         newPage = p;
     }
 
     /**
      * Returns the current page on which the <code>JCWizardEvent</code> occured.
      */
-    public WizardPage getCurrentPage() {
+    public Component getCurrentPage() {
         return currentPage;
     }
 

@@ -20,25 +20,19 @@
  */
 package org.tn5250j.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.Action;
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.BoxLayout;
-import javax.swing.Box;
-
 import org.tn5250j.tools.LangTool;
+
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  * Class to create and manage a Wizard style framework for you.
  */
-public class WizardPage extends JPanel {
+public class WizardPage extends BorderPane {
 
-    private static final long serialVersionUID = 1L;
     static public final int NO_BUTTONS = 0x00;
     static public final int PREVIOUS = 0x01;
     static public final int NEXT = 0x02;
@@ -47,168 +41,117 @@ public class WizardPage extends JPanel {
     static public final int HELP = 0x10;
     static public final int ALL = PREVIOUS | NEXT | FINISH | CANCEL | HELP;
 
-    protected JButton previousButton;
-    protected JButton nextButton;
-    protected JButton finishButton;
-    protected JButton cancelButton;
-    protected JButton helpButton;
-
-    private Action nextAction;
-    private Action previousAction;
-    private Action finishAction;
-    private Action cancelAction;
-    private Action helpAction;
+    protected Button previousButton;
+    protected Button nextButton;
+    protected Button finishButton;
+    protected Button cancelButton;
+    protected Button helpButton;
 
     protected static final int GROUP_SPACING = 10;
     protected static final int MARGIN = 10;
     protected static final int BUTTON_SPACING = 5;
 
-    // Box containing the buttons used
-    protected JPanel buttonPanel;
-    protected JSeparator separator;
-
     // Pane returned by getContentPane.  This is the pane the
     // developer adds his/her code to.
-    protected Container contentPane;
+    protected BorderPane contentPane;
+    private String name;
 
     public WizardPage() {
         this(ALL);
     }
 
-    public WizardPage(int button_flags) {
+    public WizardPage(final int button_flags) {
+        getStylesheets().add("/application.css");
+        getStyleClass().add("opaque");
 
-        // set layout as a vertical column
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 //      setLayout(new BorderLayout());
 //      Box pageBox = Box.createVerticalBox();
-        contentPane = new JPanel();
+        contentPane = new BorderPane();
 
         // add the pages contentpane to our wizard page
-        add(contentPane);
+        setCenter(contentPane);
 
         // lets add some glue here but it still does not stop the separator from
         //  moving up and down.
-        add(Box.createGlue());
-
-        // create the separator between the panels
-        JSeparator js = new JSeparator();
-        js.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        add(js);
-        add(Box.createRigidArea(new Dimension(10, 10)));
+        //add(Box.createGlue());
 
         // create the box for the buttons with an x-axis
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setName("buttonPanel");
-        buttonPanel.add(Box.createHorizontalGlue());
-        add(buttonPanel);
+        final VBox buttonsVbox = new VBox();
+        buttonsVbox.setStyle("-fx-padding: 0.5em 0.5em 0.5em 0.5em;");
+        buttonsVbox.setAlignment(Pos.BOTTOM_RIGHT);
 
-        if (button_flags == 0) {
-            // no buttons to add :-(
-            return;
-        }
+        final HBox buttonPanel = new HBox();
+        buttonPanel.setAlignment(Pos.BOTTOM_RIGHT);
+        buttonPanel.setSpacing(5.);
+        buttonsVbox.getChildren().add(buttonPanel);
+
+        setBottom(buttonsVbox);
 
         if ((button_flags & PREVIOUS) != 0) {
-            previousAction = new AbstractAction(LangTool.getString("wiz.previous")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                }
-            };
-
-            previousButton = new JButton(previousAction);
-            buttonPanel.add(Box.createRigidArea(new Dimension(GROUP_SPACING, 0)));
-            buttonPanel.add(previousButton);
+            previousButton = createButton("wiz.previous");
+            buttonPanel.getChildren().add(previousButton);
         }
 
         if ((button_flags & NEXT) != 0) {
-            nextAction = new AbstractAction(LangTool.getString("wiz.next")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                }
-            };
-
-            nextButton = new JButton(nextAction);
-            buttonPanel.add(Box.createRigidArea(new Dimension(BUTTON_SPACING, 0)));
-            buttonPanel.add(nextButton);
+            nextButton = createButton("wiz.next");
+            buttonPanel.getChildren().add(nextButton);
         }
 
         if ((button_flags & FINISH) != 0) {
-            finishAction = new AbstractAction(LangTool.getString("wiz.finish")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                }
-            };
-            finishButton = new JButton(finishAction);
-            buttonPanel.add(Box.createRigidArea(new Dimension(BUTTON_SPACING, 0)));
-            buttonPanel.add(finishButton);
+            finishButton = createButton("wiz.finish");
+            buttonPanel.getChildren().add(finishButton);
         }
 
         if ((button_flags & CANCEL) != 0) {
-            cancelAction = new AbstractAction(LangTool.getString("wiz.cancel")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                }
-            };
-
-            cancelButton = new JButton(cancelAction);
-            buttonPanel.add(Box.createRigidArea(new Dimension(GROUP_SPACING, 0)));
-            buttonPanel.add(cancelButton);
-            buttonPanel.add(Box.createRigidArea(new Dimension(MARGIN, 0)));
+            cancelButton = createButton("wiz.cancel");
+            buttonPanel.getChildren().add(cancelButton);
         }
+
         if ((button_flags & HELP) != 0) {
-            helpAction = new AbstractAction(LangTool.getString("wiz.help")) {
-                private static final long serialVersionUID = 1L;
-
-                public void actionPerformed(ActionEvent e) {
-                }
-            };
-
-            helpButton = new JButton(helpAction);
+            helpButton = createButton("wiz.help");
+            buttonPanel.getChildren().add(helpButton);
         }
     }
 
-    public JButton getNextButton() {
+    private Button createButton(final String labelKey) {
+        final Button button = new Button(LangTool.getString(labelKey));
+        // TODO add styling
+        return button;
+    }
+
+    public Button getNextButton() {
         return nextButton;
     }
 
-    public JButton getPreviousButton() {
+    public Button getPreviousButton() {
         return previousButton;
     }
 
-    public JButton getFinishButton() {
+    public Button getFinishButton() {
         return finishButton;
     }
 
-    public JButton getCancelButton() {
+    public Button getCancelButton() {
         return cancelButton;
     }
 
-    public JButton getHelpButton() {
+    public Button getHelpButton() {
         return helpButton;
-    }
-
-    public void setContentPane(Container new_pane) {
-        if (new_pane == null) {
-            throw new NullPointerException("content pane must be non-null");
-        }
-        // rip out all components and rebuild
-        removeAll();
-        contentPane = new_pane;
-        add(contentPane);
-        add(new JSeparator());
-        add(buttonPanel);
     }
 
     /**
      * Overrides normal getContentPane to provide specially
      * managed area
      */
-    public Container getContentPane() {
+    public BorderPane getContentPane() {
         return contentPane;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 }

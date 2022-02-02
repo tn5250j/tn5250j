@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import org.tn5250j.gui.TitledBorderedPane?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>

@@ -11,14 +11,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.layout.GridPane?>
-<?import org.tn5250j.connectdialog.TitledBorderedPane?>
+<?import org.tn5250j.gui.TitledBorderedPane?>
 <?import javafx.scene.control.TextField?>
 
 <BorderPane
     fx:id="view"
 	fx:controller="org.tn5250j.sessionsettings.KeypadAttributesController"
 	stylesheets="application.css"
-	styleClass="not-opaque"
+	styleClass="opaque"
 	xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
 	<style>
 	  -fx-padding: 0 0.5em 1em 0.5em;

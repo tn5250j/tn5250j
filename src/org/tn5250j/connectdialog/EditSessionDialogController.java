@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;

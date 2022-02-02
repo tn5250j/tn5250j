@@ -5,7 +5,7 @@
    /* play around with this value when changing the title font to get a vertically centered title */
 }
 
-.not-opaque {
+.opaque {
   -fx-background-color: -fx-background;
 }
 

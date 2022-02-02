@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.tn5250j.connectdialog;
+package org.tn5250j.gui;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

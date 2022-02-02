@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.connectdialog.TitledBorderedPane;
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.LangTool;

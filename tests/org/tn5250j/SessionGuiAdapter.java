@@ -376,6 +376,6 @@ public class SessionGuiAdapter extends Pane implements SessionGui {
     }
     @Override
     public Window getWindow() {
-        return getScene().getWindow();
+        return getScene() == null ? null : getScene().getWindow();
     }
 }

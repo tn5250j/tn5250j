@@ -52,7 +52,6 @@ public class UserTabPanel extends GridPane implements QueueFilterInterface {
         user = new TextField("*CURRENT");
         user.setPrefColumnCount(15);
         user.textProperty().addListener((src, old, value) -> textChanged(user));
-        user.setText("*CURRENT");
 
         final ToggleGroup bg = new ToggleGroup();
         bg.getToggles().add(all);

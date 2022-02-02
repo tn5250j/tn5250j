@@ -30,8 +30,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.tools.LangTool;
 
 import javafx.fxml.FXML;

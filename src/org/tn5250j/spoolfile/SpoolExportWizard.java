@@ -1,63 +1,22 @@
 package org.tn5250j.spoolfile;
 
-/**
- * Title: SpoolExportWizard.java
- * Copyright:   Copyright (c) 2002
- * Company:
- *
- * @author Kenneth J. Pouncey
- * @version 0.1
- * <p>
- * Description:
- * <p>
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA
- */
-
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import org.tn5250j.SessionGui;
 import org.tn5250j.event.WizardEvent;
 import org.tn5250j.event.WizardListener;
-import org.tn5250j.gui.GenericTn5250JFrameSwing;
+import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.SwingToFxUtils;
 import org.tn5250j.gui.TN5250jFileFilterBuilder;
+import org.tn5250j.gui.TitledBorderedPane;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.gui.Wizard;
 import org.tn5250j.gui.WizardPage;
 import org.tn5250j.mailtools.SendEMailDialog;
-import org.tn5250j.tools.AlignLayout;
 import org.tn5250j.tools.LangTool;
 
 import com.ibm.as400.access.AS400;
@@ -73,62 +32,60 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
 
+import javafx.application.Platform;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 
 /**
  *
  */
-public class SpoolExportWizard extends GenericTn5250JFrameSwing implements WizardListener {
+public class SpoolExportWizard extends GenericTn5250JFrame implements WizardListener {
+    BorderPane contentPane;
+    Label statusBar = new Label();
 
-    private static final long serialVersionUID = 1L;
-    JPanel contentPane;
-    JLabel statusBar = new JLabel();
-
-    JPanel spoolPanel = new JPanel();
-    JPanel spoolData = new JPanel();
-    JPanel spoolOptions = new JPanel();
+    BorderPane spoolPanel = new BorderPane();
+    GridPane spoolData = createGridPane();
+    BorderPane spoolOptions = new BorderPane();
 
     JPanel destPanel = new JPanel();
-    JLabel labelSpooledFile = new JLabel();
-    JLabel spooledFile = new JLabel();
-    JLabel labelJobName = new JLabel();
-    JLabel jobName = new JLabel();
-    JLabel labelUser = new JLabel();
-    JLabel user = new JLabel();
-    JLabel labelNumber = new JLabel();
-    JLabel number = new JLabel();
-    JLabel labelFileNumber = new JLabel();
-    JLabel spooledFileNumber = new JLabel();
-    JLabel labelSystem = new JLabel();
-    JLabel systemName = new JLabel();
-    JLabel labelPages = new JLabel();
-    JLabel pages = new JLabel();
 
-    JComboBox cvtType;
-    JTextField pcPathInfo;
-    JTextField ifsPathInfo;
-    JButton pcSave;
-    JButton ifsSave;
+    ComboBox<String> cvtType;
+    TextField pcPathInfo;
+    TextField ifsPathInfo;
+    Button pcSave;
+    Button ifsSave;
 
-    JRadioButton pc;
-    JRadioButton ifs;
-    JRadioButton email;
+    RadioButton pc;
+    RadioButton ifs;
+    RadioButton email;
 
     // PDF Properties
-    JTextField title;
-    JTextField subject;
-    JTextField author;
+    TextField title;
+    TextField subject;
+    TextField author;
 
     // PDF Options
-    JTextField fontSize;
-    JComboBox pageSize;
-    JRadioButton portrait;
-    JRadioButton landscape;
+    TextField fontSize;
+    ComboBox<String> pageSize;
+    RadioButton portrait;
+    RadioButton landscape;
 
     // Text Options
-    JCheckBox openAfter;
-    JTextField editor;
-    JButton getEditor;
+    CheckBox openAfter;
+    TextField editor;
+    Button getEditor;
 
     // Spooled File
     SpooledFile splfile;
@@ -136,15 +93,15 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
     // Session object
     SessionGui session;
 
-    JPanel twoPDF;
-    JPanel twoText;
+    BorderPane twoPDF;
+    BorderPane twoText;
 
     // Wizard
     Wizard wizard;
     WizardPage page;
     WizardPage pagePDF;
     WizardPage pageText;
-    JButton nextButton;
+    Button nextButton;
 
     // pdf variables
     private PdfWriter bos;
@@ -162,21 +119,12 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
     private Thread workingThread;
 
     //Construct the frame
-    public SpoolExportWizard(final SpooledFile splfile, final SessionGui session) {
-
-        enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+    public SpoolExportWizard(final SpooledFile splfile, final SessionGui session) throws Exception {
         this.splfile = splfile;
         this.session = session;
 
-        try {
-            jbInit();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    //Component initialization
-    private void jbInit() throws Exception {
+        final BorderPane contentPane = new BorderPane();
+        stage.setScene(new Scene(contentPane));
 
         // create ourselves a new wizard
         wizard = new Wizard();
@@ -185,7 +133,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
         wizard.addWizardListener(this);
 
         // add our wizard to the frame
-        this.getContentPane().add(wizard);
+        contentPane.setCenter(wizard.getView());
 
         // create the first wizard page
         page = new WizardPage(WizardPage.NEXT |
@@ -195,13 +143,13 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
 
         page.setName(LangTool.getString("spool.titlePage1"));
 
-        setTitle(page.getName());
+        stage.setTitle(page.getName());
 
         // get the next button so we can set it enabled or disabled depending
         // on output type.
         nextButton = page.getNextButton();
 
-        page.getContentPane().add(pageOne(), BorderLayout.CENTER);
+        page.getContentPane().setCenter(pageOne());
 
         wizard.add(page);
 
@@ -211,7 +159,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
                 WizardPage.HELP);
         pagePDF.setName(LangTool.getString("spool.titlePage2PDF"));
 
-        pagePDF.getContentPane().add(pageTwoPDF(), BorderLayout.CENTER);
+        pagePDF.getContentPane().setCenter(pageTwoPDF());
         wizard.add(pagePDF);
 
         pageText = new WizardPage(WizardPage.PREVIOUS |
@@ -220,22 +168,10 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
                 WizardPage.HELP);
         pageText.setName(LangTool.getString("spool.titlePage2Txt"));
 
-        pageText.getContentPane().add(pageTwoText(), BorderLayout.CENTER);
+        pageText.getContentPane().setCenter(pageTwoText());
         wizard.add(pageText);
 
-        pack();
-
-        //Center the window
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final Dimension frameSize = getSize();
-        if (frameSize.height > screenSize.height)
-            frameSize.height = screenSize.height;
-        if (frameSize.width > screenSize.width)
-            frameSize.width = screenSize.width;
-
-        setLocation((screenSize.width - frameSize.width) / 2,
-                (screenSize.height - frameSize.height) / 2);
-
+        wizard.show(page.getName());
     }
 
     /**
@@ -243,60 +179,119 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      *
      * @return
      */
-    private JPanel pageTwoPDF() {
+    private BorderPane pageTwoPDF() {
 
-        twoPDF = new JPanel();
+        twoPDF = new BorderPane();
 
-        twoPDF.setLayout(new BorderLayout());
+        final TitledBorderedPane docPropsBorder = new TitledBorderedPane();
+        docPropsBorder.setTitle(LangTool.getString("spool.labelProps"));
 
-        final JPanel docProps = new JPanel();
+        final GridPane docProps = createGridPane();
+        docPropsBorder.setContent(docProps);
 
-        docProps.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("spool.labelProps")));
+        title = new TextField();
+        addPdfProperty(docProps, "spool.labelPropsTitle", title, 0);
 
-        docProps.setLayout(new AlignLayout(2, 5, 5));
+        subject = new TextField();
+        addPdfProperty(docProps, "spool.labelPropsSubject", subject, 1);
 
-        docProps.add(new JLabel(LangTool.getString("spool.labelPropsTitle")));
-        docProps.add(title = new JTextField(40));
-        docProps.add(new JLabel(LangTool.getString("spool.labelPropsSubject")));
-        docProps.add(subject = new JTextField(40));
-        docProps.add(new JLabel(LangTool.getString("spool.labelPropsAuthor")));
-        docProps.add(author = new JTextField(40));
+        author = new TextField();
+        addPdfProperty(docProps, "spool.labelPropsAuthor", author, 2);
 
-        final JPanel options = new JPanel();
+        final TitledBorderedPane optionsBorder = new TitledBorderedPane();
+        optionsBorder.setTitle(LangTool.getString("spool.labelOpts"));
 
-        options.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("spool.labelOpts")));
-        options.setLayout(new AlignLayout(2, 5, 5));
+        final GridPane options = createGridPane();
+        optionsBorder.setContent(options);
 
-        options.add(new JLabel(LangTool.getString("spool.labelOptsFontSize")));
-        options.add(fontSize = new JTextField(5));
+        //font size
+        options.getChildren().add(setDefaultConstraints(
+                new Label(LangTool.getString("spool.labelOptsFontSize")), 0, 0));
 
-        options.add(new JLabel(LangTool.getString("spool.labelOptsPageSize")));
-        options.add(pageSize = new JComboBox());
+        fontSize = new TextField();
+        fontSize.setPrefColumnCount(5);
+        setDefaultConstraints(fontSize, 0, 1);
+        options.getChildren().add(fontSize);
 
-        pageSize.addItem("A3");
-        pageSize.addItem("A4");
-        pageSize.addItem("A5");
-        pageSize.addItem("LETTER");
-        pageSize.addItem("LEGAL");
-        pageSize.addItem("LEDGER");
+        //page size
+        options.getChildren().add(setDefaultConstraints(
+                new Label(LangTool.getString("spool.labelOptsPageSize")), 1, 0));
 
-        options.add(portrait =
-                new JRadioButton(LangTool.getString("spool.labelOptsPortrait")));
-        options.add(landscape =
-                new JRadioButton(LangTool.getString("spool.labelOptsLandscape")));
+        pageSize = new ComboBox<String>();
+        setDefaultConstraints(pageSize, 1, 1);
+        options.getChildren().add(pageSize);
 
-        final ButtonGroup orientation = new ButtonGroup();
-        orientation.add(portrait);
-        orientation.add(landscape);
+        pageSize.getItems().add("A3");
+        pageSize.getItems().add("A4");
+        pageSize.getItems().add("A5");
+        pageSize.getItems().add("LETTER");
+        pageSize.getItems().add("LEGAL");
+        pageSize.getItems().add("LEDGER");
+        pageSize.getSelectionModel().select(1);
+
+        // prortrait / landscape
+        portrait = new RadioButton(LangTool.getString("spool.labelOptsPortrait"));
+        setDefaultConstraints(portrait, 2, 0);
+        options.getChildren().add(portrait);
+
+        landscape = new RadioButton(LangTool.getString("spool.labelOptsLandscape"));
+        setDefaultConstraints(landscape, 2, 1);
+        options.getChildren().add(landscape);
+
+        final ToggleGroup orientation = new ToggleGroup();
+        orientation.getToggles().add(portrait);
+        orientation.getToggles().add(landscape);
 
         landscape.setSelected(true);
 
-        twoPDF.add(docProps, BorderLayout.NORTH);
-        twoPDF.add(options, BorderLayout.CENTER);
+        twoPDF.setTop(docPropsBorder);
+        twoPDF.setCenter(optionsBorder);
 
         return twoPDF;
+    }
+
+    private static GridPane createGridPane() {
+        final GridPane gridPane = new GridPane();
+        gridPane.setHgap(5.);
+        gridPane.setVgap(5.);
+        return gridPane;
+    }
+
+    private static void addPdfProperty(final GridPane container, final String labelKey,
+            final TextField textField, final int row) {
+
+        final Label label = new Label();
+        label.setText(LangTool.getString(labelKey));
+        setDefaultConstraints(label, row, 0);
+        container.getChildren().add(label);
+
+        textField.setPrefColumnCount(40);
+        setDefaultConstraints(textField, row, 1);
+        GridPane.setHgrow(textField, Priority.ALWAYS);
+
+        container.getChildren().add(textField);
+    }
+
+    private static void addSpoolDataRow(final GridPane container, final String leftLabelKey,
+            final String rightLabelText, final int row) {
+        final Label leftLabel = new Label();
+        leftLabel.setText(LangTool.getString(leftLabelKey));
+        setDefaultConstraints(leftLabel, row, 0);
+
+        container.getChildren().add(leftLabel);
+
+        final Label rightLabel = new Label();
+        rightLabel.setText(rightLabelText);
+        setDefaultConstraints(rightLabel, row, 1);
+
+        container.getChildren().add(rightLabel);
+    }
+
+    private static Node setDefaultConstraints(final Node component, final int row, final int column) {
+        GridPane.setRowIndex(component, row);
+        GridPane.setColumnIndex(component, column);
+        GridPane.setHalignment(component, HPos.LEFT);
+        return component;
     }
 
     /**
@@ -304,205 +299,136 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      *
      * @return
      */
-    private JPanel pageTwoText() {
+    private BorderPane pageTwoText() {
 
-        twoText = new JPanel();
+        twoText = new BorderPane();
 
-        twoText.setLayout(new BorderLayout());
+        final TitledBorderedPane textPropsBorder = new TitledBorderedPane();
+        textPropsBorder.setTitle(LangTool.getString("spool.labelTextProps"));
 
-        final JPanel textProps = new JPanel();
+        final GridPane textProps = createGridPane();
+        textPropsBorder.setContent(textProps);
 
-        textProps.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("spool.labelTextProps")));
+        openAfter = new CheckBox(LangTool.getString("spool.labelUseExternal"));
+        setDefaultConstraints(openAfter, 0, 0);
+        GridPane.setColumnSpan(openAfter, 2);
 
-        textProps.setLayout(new AlignLayout(2, 5, 5));
+        textProps.getChildren().add(openAfter);
 
-        textProps.add(openAfter =
-                new JCheckBox(LangTool.getString("spool.labelUseExternal")));
-        textProps.add(new JLabel());
-        textProps.add(editor = new JTextField(30));
-        getEditor = new JButton("Browse");
+        editor = new TextField();
+        editor.setPrefColumnCount(30);
+        setDefaultConstraints(editor, 1, 0);
+        GridPane.setHgrow(editor, Priority.ALWAYS);
 
-        getEditor.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                getEditor();
-            }
-        });
-        textProps.add(getEditor);
+        textProps.getChildren().add(editor);
+
+        getEditor = new Button("Browse");
+        setDefaultConstraints(getEditor, 1, 1);
+        getEditor.setOnAction(e -> getEditor());
+
+        textProps.getChildren().add(getEditor);
 
         // see if we have an external viewer defined and if we use it or not
         if (session.getSession().getConfiguration().isPropertyExists("useExternal"))
-            openAfter.setEnabled(true);
+            openAfter.setDisable(false);
 
         if (session.getSession().getConfiguration().isPropertyExists("externalViewer"))
             editor.setText(session.getSession().getConfiguration().getStringProperty("externalViewer"));
 
-        twoText.add(textProps, BorderLayout.CENTER);
+        twoText.setCenter(textPropsBorder);
 
         return twoText;
     }
 
-    /**
-     * Create the first page of the export wizard
-     *
-     * @return
-     * @throws Exception
-     */
-    private JPanel pageOne() throws Exception {
+    private BorderPane pageOne() throws Exception {
 
-        contentPane = new JPanel();
+        contentPane = new BorderPane();
 
-        contentPane.setLayout(new BorderLayout());
-        statusBar.setText(" ");
-        statusBar.setBorder(BorderFactory.createEtchedBorder());
+        statusBar.setText("   ");
+        statusBar.setMaxWidth(Double.POSITIVE_INFINITY);
+        statusBar.getStyleClass().add("etched-border");
 
-        spoolPanel.setLayout(new BorderLayout());
-
-        contentPane.add(spoolPanel, BorderLayout.CENTER);
-        contentPane.add(statusBar, BorderLayout.SOUTH);
+        contentPane.setCenter(spoolPanel);
+        contentPane.setBottom(statusBar);
 
         // create the labels to be used for the spooled file data
-        labelSpooledFile.setText(LangTool.getString("spool.labelSpooledFile"));
-        labelJobName.setText(LangTool.getString("spool.labelJobName"));
-        labelUser.setText(LangTool.getString("spool.labelJobUser"));
-        labelNumber.setText(LangTool.getString("spool.labelJobNumber"));
-        labelFileNumber.setText(LangTool.getString("spool.labelSpoolNumber"));
-        labelSystem.setText(LangTool.getString("spool.labelSystem"));
-        labelPages.setText(LangTool.getString("spool.labelPages"));
-
-        spoolData.setLayout(new AlignLayout(2, 5, 5));
-        spoolData.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("spool.labelSpoolInfo")));
+        final TitledBorderedPane spoolDataTitle = new TitledBorderedPane();
+        spoolDataTitle.setTitle(LangTool.getString("spool.labelSpoolInfo"));
+        spoolDataTitle.setContent(spoolData);
+        spoolData.setHgap(5);
+        spoolData.setVgap(5);
 
         // create the data fields to be used for the spooled file data
-        spooledFile.setText(splfile.getName());
-        jobName.setText(splfile.getJobName());
-        user.setText(splfile.getJobUser());
-        spooledFileNumber.setText(Integer.toString(splfile.getNumber()));
-        number.setText(splfile.getJobNumber());
-        systemName.setText(splfile.getSystem().getSystemName());
-        pages.setText(splfile.getIntegerAttribute(SpooledFile.ATTR_PAGES).toString());
+        addSpoolDataRow(spoolData, "spool.labelSystem", splfile.getSystem().getSystemName(), 0);
+        addSpoolDataRow(spoolData, "spool.labelSpooledFile", splfile.getName(), 1);
+        addSpoolDataRow(spoolData, "spool.labelJobName", splfile.getJobName(), 2);
+        addSpoolDataRow(spoolData, "spool.labelJobUser", splfile.getJobUser(), 3);
+        addSpoolDataRow(spoolData, "spool.labelJobNumber", splfile.getJobNumber(), 4);
+        addSpoolDataRow(spoolData, "spool.labelSpoolNumber", Integer.toString(splfile.getNumber()), 5);
+        addSpoolDataRow(spoolData, "spool.labelPages", splfile.getIntegerAttribute(SpooledFile.ATTR_PAGES).toString(), 6);
 
-        spoolData.add(labelSystem, null);
-        spoolData.add(systemName, null);
-        spoolData.add(labelSpooledFile, null);
-        spoolData.add(spooledFile, null);
-        spoolData.add(labelJobName, null);
-        spoolData.add(jobName, null);
-        spoolData.add(labelUser, null);
-        spoolData.add(user, null);
-        spoolData.add(labelNumber, null);
-        spoolData.add(number, null);
-        spoolData.add(labelFileNumber, null);
-        spoolData.add(spooledFileNumber, null);
-        spoolData.add(labelPages, null);
-        spoolData.add(pages, null);
-
-        spoolPanel.add(spoolOptions, BorderLayout.SOUTH);
+        spoolPanel.setBottom(spoolOptions);
 
         // set the spool export panel
-        spoolPanel.add(spoolData, BorderLayout.CENTER);
+        spoolPanel.setCenter(spoolDataTitle);
 
-        spoolOptions.setLayout(new BorderLayout());
+        final TitledBorderedPane spoolInfoBorder = new TitledBorderedPane();
+        spoolInfoBorder.setTitle(LangTool.getString("spool.labelExportInfo"));
 
-        final JPanel spoolInfo = new JPanel();
+        final GridPane spoolInfo = createGridPane();
+        spoolInfoBorder.setContent(spoolInfo);
 
-        final AlignLayout alignMe2 = new AlignLayout(3, 5, 5);
-        spoolInfo.setLayout(alignMe2);
-        spoolInfo.setBorder(BorderFactory.createTitledBorder(
-                LangTool.getString("spool.labelExportInfo")));
+        spoolInfo.getChildren().add(setDefaultConstraints(new Label(LangTool.getString("spool.labelFormat")), 0, 0));
 
-        cvtType = new JComboBox();
+        cvtType = new ComboBox<String>();
+        cvtType.getItems().add(LangTool.getString("spool.toPDF"));
+        cvtType.getItems().add(LangTool.getString("spool.toText"));
+        cvtType.getSelectionModel().selectFirst();
 
-        cvtType.addItem(LangTool.getString("spool.toPDF"));
-        cvtType.addItem(LangTool.getString("spool.toText"));
+        setDefaultConstraints(cvtType, 0, 1);
+        GridPane.setHgrow(cvtType, Priority.ALWAYS);
+        spoolInfo.getChildren().add(cvtType);
 
-//         cvtType.addItemListener(new java.awt.event.ItemListener() {
-//            public void itemStateChanged(ItemEvent e) {
-//   //            if (((String)cvtType.getSelectedItem()).equals(
-//   //                                          LangTool.getString("spool.toText"))) {
-//   //               twoText.setVisible(true);
-//   //               twoPDF.setVisible(false);
-//   //            }
-//   //            else {
-//   //               twoText.setVisible(false);
-//   //               twoPDF.setVisible(true);
-//   //            }
-//            }
-//         });
+        pc = new RadioButton(LangTool.getString("spool.labelPCPath"));
+        spoolInfo.getChildren().add(setDefaultConstraints(pc, 1, 0));
 
-        spoolInfo.add(new JLabel(LangTool.getString("spool.labelFormat")));
-        spoolInfo.add(cvtType);
-        spoolInfo.add(new JLabel(""));
+        pcPathInfo = new TextField();
+        pcPathInfo.setPrefColumnCount(30);
+        GridPane.setHgrow(pcPathInfo, Priority.ALWAYS);
+        spoolInfo.getChildren().add(setDefaultConstraints(pcPathInfo, 1, 1));
 
-        pc = new JRadioButton(LangTool.getString("spool.labelPCPath"));
-        pcPathInfo = new JTextField(30);
+        pcSave = new Button("...");
+        pcSave.setOnAction(e -> getPCFile());
+        spoolInfo.getChildren().add(setDefaultConstraints(pcSave, 1, 2));
 
-        pcSave = new JButton("...");
+        ifs = new RadioButton(LangTool.getString("spool.labelIFSPath"));
+        spoolInfo.getChildren().add(setDefaultConstraints(ifs, 2, 0));
 
-        pcSave.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                getPCFile();
-            }
-        });
+        ifsPathInfo = new TextField();
+        ifsPathInfo.setPrefColumnCount(30);
+        setDefaultConstraints(ifsPathInfo, 2, 1);
+        GridPane.setHgrow(ifsPathInfo, Priority.ALWAYS);
+        spoolInfo.getChildren().add(ifsPathInfo);
 
-        spoolInfo.add(pc);
-        spoolInfo.add(pcPathInfo);
-        spoolInfo.add(pcSave);
+        ifsSave = new Button("...");
+        ifsSave.setOnAction(e -> getIFSFile());
+        spoolInfo.getChildren().add(setDefaultConstraints(ifsSave, 2, 2));
 
-        ifs = new JRadioButton(LangTool.getString("spool.labelIFSPath"));
-        ifsPathInfo = new JTextField(30);
+        email = new RadioButton(LangTool.getString("spool.labelEmail"));
+        spoolInfo.getChildren().add(setDefaultConstraints(email, 3, 0));
 
-        ifsSave = new JButton("...");
+        final ToggleGroup bg = new ToggleGroup();
+        bg.getToggles().add(pc);
+        bg.getToggles().add(ifs);
+        bg.getToggles().add(email);
 
-        ifsSave.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                getIFSFile();
-            }
-        });
-
-        spoolInfo.add(ifs);
-        spoolInfo.add(ifsPathInfo);
-        spoolInfo.add(ifsSave);
-
-        email = new JRadioButton(LangTool.getString("spool.labelEmail"));
-
-        spoolInfo.add(email);
-        spoolInfo.add(new JLabel(""));
-        spoolInfo.add(new JLabel(""));
-
-        final ButtonGroup bg = new ButtonGroup();
-        bg.add(pc);
-        bg.add(ifs);
-        bg.add(email);
-
-        pc.addItemListener(new java.awt.event.ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                doItemStateChanged(e);
-            }
-        });
-
-        ifs.addItemListener(new java.awt.event.ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                doItemStateChanged(e);
-            }
-        });
-
-        email.addItemListener(new java.awt.event.ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent e) {
-                doItemStateChanged(e);
-            }
-        });
+        pc.selectedProperty().addListener((src, old, value) -> doItemStateChanged(value));
+        ifs.selectedProperty().addListener((src, old, value) -> doItemStateChanged(value));
+        email.selectedProperty().addListener((src, old, value) -> doItemStateChanged(value));
 
         pc.setSelected(true);
 
-        spoolOptions.add(spoolInfo, BorderLayout.CENTER);
+        spoolOptions.setCenter(spoolInfoBorder);
 
         return contentPane;
     }
@@ -510,26 +436,26 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
     /**
      * React on the state change for radio buttons
      *
-     * @param e Item event to react to
+     * @param value selection state
      */
-    private void doItemStateChanged(final ItemEvent e) {
+    private void doItemStateChanged(final Boolean value) {
 
-        pcPathInfo.setEnabled(false);
-        ifsPathInfo.setEnabled(false);
-        pcSave.setEnabled(false);
-        ifsSave.setEnabled(false);
+        pcPathInfo.setDisable(true);
+        ifsPathInfo.setDisable(true);
+        pcSave.setDisable(true);
+        ifsSave.setDisable(true);
 
-        if (e.getStateChange() == ItemEvent.SELECTED) {
+        if (Boolean.TRUE.equals(value)) {
             if (pc.isSelected()) {
-                pcPathInfo.setEnabled(true);
-                pcSave.setEnabled(true);
-                pcPathInfo.grabFocus();
+                pcPathInfo.setDisable(false);
+                pcSave.setDisable(false);
+                pcPathInfo.requestFocus();
             }
 
             if (ifs.isSelected()) {
-                ifsPathInfo.setEnabled(true);
-                ifsSave.setEnabled(true);
-                ifsPathInfo.grabFocus();
+                ifsPathInfo.setDisable(false);
+                ifsSave.setDisable(false);
+                ifsPathInfo.requestFocus();
             }
         }
     }
@@ -557,7 +483,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
         // set the file filters for the file chooser
         TN5250jFileFilterBuilder filter;
 
-        if (((String) cvtType.getSelectedItem()).equals(LangTool.getString("spool.toPDF")))
+        if (cvtType.getValue().equals(LangTool.getString("spool.toPDF")))
             filter = new TN5250jFileFilterBuilder("pdf", "PDF Files");
         else
             filter = new TN5250jFileFilterBuilder("txt", "Text Files");
@@ -577,14 +503,14 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      */
     private void getIFSFile() {
 
-        final IFSFileDialog fd = new IFSFileDialog(this, "Save As", splfile.getSystem());
+        final IFSFileDialog fd = new IFSFileDialog(SwingToFxUtils.SHARED_FRAME, "Save As", splfile.getSystem());
         final com.ibm.as400.vaccess.FileFilter[] filterList =
                 new com.ibm.as400.vaccess.FileFilter[2];
         filterList[0] = new com.ibm.as400.vaccess.FileFilter("All files (*.*)",
                 "*.*");
 
         // Set up the filter based on the type of export specifed
-        if (cvtType.getSelectedIndex() == 0) {
+        if (cvtType.getSelectionModel().getSelectedIndex() == 0) {
             filterList[1] = new com.ibm.as400.vaccess.FileFilter("PDF files (*.pdf)",
                     "*.pdf");
         } else {
@@ -621,18 +547,6 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
     }
 
     /**
-     * Overridden so we can exit when window is closed
-     */
-    @Override
-    protected void processWindowEvent(final WindowEvent e) {
-        super.processWindowEvent(e);
-        if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-            this.setVisible(false);
-            this.dispose();
-        }
-    }
-
-    /**
      * Export the spool file
      */
     private void doExport() {
@@ -642,7 +556,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
 
         workingThread = null;
 
-        if (cvtType.getSelectedIndex() == 0)
+        if (cvtType.getSelectionModel().getSelectedIndex() == 0)
             workingThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -664,9 +578,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
      * E-mail the information after export
      */
     private void emailMe() {
-
-        final SendEMailDialog semd = new SendEMailDialog(session, conicalPath);
-
+        new SendEMailDialog(session, conicalPath);
     }
 
     /**
@@ -687,13 +599,13 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
 
             // Create an AS400 object.  The system name was passed
             // as the first command line argument.
-            final AS400 system = new AS400(systemName.getText());
+            final AS400 system = new AS400(splfile.getSystem().getSystemName());
 
-            final String splfName = spooledFile.getText();
-            final int splfNumber = Integer.parseInt(spooledFileNumber.getText());
-            final String _jobName = jobName.getText();
-            final String _jobUser = user.getText();
-            final String _jobNumber = number.getText();
+            final String splfName = splfile.getName();
+            final int splfNumber = splfile.getNumber();
+            final String _jobName = splfile.getJobName();
+            final String _jobUser = splfile.getJobUser();
+            final String _jobNumber = splfile.getJobNumber();
 
             final SpooledFile splF = new SpooledFile(system,
                     splfName,
@@ -800,8 +712,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
                     // print a stack trace
                     t.printStackTrace();
                     // throw up the message error
-                    JOptionPane.showMessageDialog(this, t.getMessage(), "error",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiUtils.showError(t.getMessage(), "error");
                 }
 
             }
@@ -932,20 +843,19 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
             String fileName = "";
 
             // if pdf then change to pdf extenstion
-            if (cvtType.getSelectedIndex() == 0)
+            if (cvtType.getSelectionModel().getSelectedIndex() == 0)
                 suffix = ".pdf";
-
 
             // for e-mailing setup a temporary file
             if (email.isSelected()) {
                 final File dir = new File(System.getProperty("user.dir"));
 
                 //  setup the temp file name
-                final String tempFile = spooledFile.getText().trim() + '_' +
-                        jobName.getText().trim() + '_' +
-                        user.getText().trim() + '_' +
-                        spooledFileNumber.getText().trim() + '_' +
-                        number.getText().trim();
+                final String tempFile = splfile.getName().trim() + '_' +
+                        splfile.getJobName().trim() + '_' +
+                        splfile.getJobUser().trim() + '_' +
+                        splfile.getNumber() + '_' +
+                        splfile.getJobNumber().trim();
 
                 // create the temporary file
                 final File f = File.createTempFile(tempFile, suffix, dir);
@@ -969,7 +879,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
             }
 
             // if not PDF then this is all we have to do so return
-            if (cvtType.getSelectedIndex() > 0)
+            if (cvtType.getSelectionModel().getSelectedIndex() > 0)
                 return;
 
             // On pdf's then we need to create a PDF document
@@ -1007,7 +917,7 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
                     document.addSubject(subject.getText());
 
                 // set the page sizes and the page orientation
-                final String ps = (String) pageSize.getSelectedItem();
+                final String ps = pageSize.getValue();
 
                 if (ps.equals("A3")) {
                     if (portrait.isSelected())
@@ -1066,50 +976,48 @@ public class SpoolExportWizard extends GenericTn5250JFrameSwing implements Wizar
     }
 
     private void updateStatus(final String stat) {
-
-        SwingUtilities.invokeLater(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        statusBar.setText(stat);
-                    }
-                }
-        );
-
+        Platform.runLater(() -> statusBar.setText(stat));
     }
 
     @Override
     public void nextBegin(final WizardEvent e) {
+        removeStatusBarAlways();
+
 //      System.out.println(e.getCurrentPage().getName() + " Next Begin");
-        if (((String) cvtType.getSelectedItem()).equals(
-                LangTool.getString("spool.toText"))) {
-            twoText.add(statusBar, BorderLayout.SOUTH);
+        if (cvtType.getValue().equals(LangTool.getString("spool.toText"))) {
+            twoText.setBottom(statusBar);
             e.setNewPage(pageText);
         } else {
-            twoPDF.add(statusBar, BorderLayout.SOUTH);
+            twoPDF.setBottom(statusBar);
             e.setNewPage(pagePDF);
-
         }
-
     }
 
     @Override
     public void nextComplete(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Next Complete");
-        setTitle(e.getNewPage().getName());
+        stage.setTitle(e.getNewPage().getName());
     }
 
     @Override
     public void previousBegin(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Prev Begin");
         e.setNewPage(page);
-        contentPane.add(statusBar, BorderLayout.SOUTH);
+
+        removeStatusBarAlways();
+        contentPane.setBottom(statusBar);
+    }
+
+    private void removeStatusBarAlways() {
+        twoText.getChildren().remove(statusBar);
+        twoPDF.getChildren().remove(statusBar);
+        contentPane.getChildren().remove(statusBar);
     }
 
     @Override
     public void previousComplete(final WizardEvent e) {
 //      System.out.println(e.getCurrentPage().getName() + " Prev Complete");
-        setTitle(e.getNewPage().getName());
+        stage.setTitle(e.getNewPage().getName());
     }
 
     @Override

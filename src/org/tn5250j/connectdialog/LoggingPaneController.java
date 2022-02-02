@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.LangTool;
 import org.tn5250j.tools.logging.TN5250jLogFactory;

@@ -33,9 +33,9 @@ import java.util.function.Function;
 import javax.swing.JFrame;
 
 import org.tn5250j.SessionGui;
-import org.tn5250j.connectdialog.TitledBorderedPane;
 import org.tn5250j.framework.tn5250.tnvt;
 import org.tn5250j.gui.GenericTn5250JFrame;
+import org.tn5250j.gui.TitledBorderedPane;
 import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.LangTool;
@@ -328,9 +328,14 @@ public class SpoolExporter extends GenericTn5250JFrame {
         popup.getItems().add(new SeparatorMenuItem());
 
         popup.getItems().add(createMenuItem("spool.optionProps", cmd -> {
-            final SpoolExportWizardSwing sew = new SpoolExportWizardSwing(getSpooledFile(row),
-                    session);
-            sew.setVisible(true);
+            SpoolExportWizard sew;
+            try {
+                sew = new SpoolExportWizard(getSpooledFile(row),
+                        session);
+                sew.setVisible(true);
+            } catch (final Exception e) {
+                UiUtils.showError(e, "Error");
+            }
         }));
         popup.getItems().add(new SeparatorMenuItem());
 
