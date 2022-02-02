@@ -25,13 +25,13 @@
  */
 package org.tn5250j.sessionsettings;
 
-import java.awt.Rectangle;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.tn5250j.SessionConfig;
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.framework.tn5250.Rect;
 import org.tn5250j.gui.TitledBorderedPane;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.tools.LangTool;
 
 import javafx.fxml.FXML;
@@ -106,7 +106,7 @@ class SignoffAttributesController extends AbstractAttributesController {
 
     private void loadRegion() {
 
-        final Rectangle region = SwingToFxUtils.toAwtRectangle(getRectangleProperty("signOnRegion"));
+        final Rect region = UiUtils.toRect(getRectangleProperty("signOnRegion"));
 
         if (region.x == 0)
             fromRow.setText("1");

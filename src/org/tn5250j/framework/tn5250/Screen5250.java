@@ -37,7 +37,7 @@ import java.util.Vector;
 
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.event.ScreenListener;
-import org.tn5250j.gui.SwingToFxUtils;
+import org.tn5250j.gui.UiUtils;
 import org.tn5250j.keyboard.KeyMnemonic;
 import org.tn5250j.keyboard.KeyMnemonicResolver;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
@@ -342,8 +342,7 @@ public class Screen5250 {
     public final List<Double> sumThem(final boolean formatOption, final Rectangle2D area) {
 
         final StringBuilder sb = new StringBuilder();
-        final Rect workR = new Rect();
-        workR.setBounds(SwingToFxUtils.toAwtRectangle(area));
+        final Rect workR = UiUtils.toRect(area);
 
         log.debug("Summing");
 

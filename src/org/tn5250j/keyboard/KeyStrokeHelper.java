@@ -9,14 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.KeyStroke;
-
 import org.tn5250j.Temporary;
 
 import javafx.event.EventTarget;
 import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
@@ -433,28 +430,5 @@ public class KeyStrokeHelper {
     static char keyCharToEmbedKeyChar(final char ch) {
         // Convert Swing LF character to Fx CR character.
         return ch == '\n' ? '\r' : ch;
-    }
-
-    @Temporary
-    public static KeyStroke toKeyStroke(final KeyCodeCombination e) {
-        int mask = 0;
-        if (e.getShift() != null)
-            mask |= SHIFT_MASK;
-        if (e.getControl() != null)
-            mask |= CTRL_MASK;
-        if (e.getAlt() != null)
-            mask |= ALT_MASK;
-        if (e.getMeta() != null)
-            mask |= META_MASK;
-        return KeyStroke.getKeyStroke(getIntCode(e.getCode()), mask, false);
-    }
-
-    private static int getIntCode(final KeyCode code) {
-        for (final Map.Entry<Integer, KeyCode> e : codes.entrySet()) {
-            if (e.getValue() == code) {
-                return e.getKey();
-            }
-        }
-        return 0;
     }
 }

@@ -20,33 +20,33 @@
  */
 package org.tn5250j.framework.common;
 
-import java.util.*;
-import java.awt.event.*;
-import javax.swing.Timer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.tn5250j.Session5250;
-import org.tn5250j.tools.logging.*;
 import org.tn5250j.interfaces.SessionsInterface;
+import org.tn5250j.tools.logging.TN5250jLogFactory;
+import org.tn5250j.tools.logging.TN5250jLogger;
 
 
 /**
  * Contains a collection of Session objects. This list is a static snapshot
  * of the list of Session objects available at the time of the snapshot.
  */
-public class Sessions implements SessionsInterface, ActionListener {
+public class Sessions implements SessionsInterface {
 
-    private List<Session5250> sessions = null;
+    private List<Session5250> sessions = new ArrayList<Session5250>();
     private int count = 0;
-    private Timer heartBeater;
+    private final Timer heartBeater = new Timer();
 
     private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
     public Sessions() {
-
-        sessions = new ArrayList<Session5250>();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void sendHeartBeat() {
 
         Session5250 ses;
         for (int x = 0; x < sessions.size(); x++) {
@@ -58,26 +58,28 @@ public class Sessions implements SessionsInterface, ActionListener {
                         log.debug(" sent heartbeat to " + ses.getSessionName());
                     }
                 }
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 log.warn(ex.getMessage());
             }
         }
 
     }
 
-    protected void addSession(Session5250 newSession) {
+    protected void addSession(final Session5250 newSession) {
         sessions.add(newSession);
         log.debug("adding Session: " + newSession.getSessionName());
         if (newSession.isSendKeepAlive() && heartBeater == null) {
-            heartBeater = new Timer(15000, this);
-//         heartBeater = new Timer(3000,this);
-            heartBeater.start();
-
+            this.heartBeater.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    sendHeartBeat();
+                }
+            }, 0, 15000);
         }
         ++count;
     }
 
-    protected void removeSession(Session5250 session) {
+    protected void removeSession(final Session5250 session) {
         if (session != null) {
             log.debug("Removing session: " + session.getSessionName());
             if (session.isConnected())
@@ -87,30 +89,33 @@ public class Sessions implements SessionsInterface, ActionListener {
         }
     }
 
-    protected void removeSession(String sessionName) {
+    protected void removeSession(final String sessionName) {
         log.debug("Remove session by name: " + sessionName);
         removeSession(item(sessionName));
 
     }
 
-    protected void removeSession(int index) {
+    protected void removeSession(final int index) {
         log.debug("Remove session by index: " + index);
 //      removeSession((SessionGUI)(((Session5250)item(index)).getGUI()));
         removeSession(item(index));
     }
 
+    @Override
     public int getCount() {
 
         return count;
     }
 
-    public Session5250 item(int index) {
+    @Override
+    public Session5250 item(final int index) {
 
         return sessions.get(index);
 
     }
 
-    public Session5250 item(String sessionName) {
+    @Override
+    public Session5250 item(final String sessionName) {
 
         Session5250 s = null;
         int x = 0;
@@ -129,7 +134,7 @@ public class Sessions implements SessionsInterface, ActionListener {
 
     }
 
-    public Session5250 item(Session5250 sessionObject) {
+    public Session5250 item(final Session5250 sessionObject) {
 
         Session5250 s = null;
         int x = 0;
@@ -149,16 +154,15 @@ public class Sessions implements SessionsInterface, ActionListener {
     }
 
     public ArrayList<Session5250> getSessionsList() {
-        ArrayList<Session5250> newS = new ArrayList<Session5250>(sessions.size());
+        final ArrayList<Session5250> newS = new ArrayList<Session5250>(sessions.size());
         for (int x = 0; x < sessions.size(); x++)
             newS.add(sessions.get(x));
         return newS;
     }
 
+    @Override
     public void refresh() {
 
 
     }
-
-
 }

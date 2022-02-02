@@ -27,12 +27,11 @@ package org.tn5250j.keyboard.actions;
 
 import static org.tn5250j.keyboard.KeyMnemonic.QUICK_MAIL;
 
-import javax.swing.SwingUtilities;
-
 import org.tn5250j.SessionGui;
 import org.tn5250j.keyboard.KeyMapper;
 import org.tn5250j.mailtools.SendEMailDialog;
 
+import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -50,13 +49,6 @@ public class QuickEmailAction extends EmulatorAction {
 
     @Override
     public void handle() {
-        final Runnable emailIt = new Runnable() {
-            @Override
-            public void run() {
-                new SendEMailDialog(session, false);
-            }
-
-        };
-        SwingUtilities.invokeLater(emailIt);
+        Platform.runLater(() -> new SendEMailDialog(session, false));
     }
 }

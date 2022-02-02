@@ -34,10 +34,10 @@ import java.awt.Rectangle;
  */
 public class Rect {
 
-    /* default */ int x;
-    /* default */ int y;
-    /* default */ int height;
-    /* default */ int width;
+    /* default */ public int x;
+    /* default */ public int y;
+    /* default */ public int height;
+    /* default */ public int width;
 
     public Rect() {
     }

@@ -19,7 +19,6 @@
  */
 package org.tn5250j.framework;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +36,6 @@ import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.swing.JFrame;
-
 import org.tn5250j.GlobalConfigure;
 import org.tn5250j.Session5250;
 import org.tn5250j.SessionGui;
@@ -52,6 +49,9 @@ import org.tn5250j.gui.UiUtils;
 import org.tn5250j.interfaces.ConfigureFactory;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
+
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 
 public class Tn5250jController extends Thread {
@@ -256,15 +256,20 @@ public class Tn5250jController extends Thread {
     }
 
     public Screen5250 startSession(final String name) {
-        final JFrame frame = new JFrame();
         final String args[] = new String[15];
         parseArgs((String) sesprops.get(name), args);
         final Properties fin = convertToProps(args);
+
         final Session5250 newses = manager.openSession(fin, null, name);
-        final SessionGui newGui = UiUtils.runInFxAndWait(() -> new SessionPanel(newses));
-        frame.getContentPane().add((Component) newGui);
-        frame.setBounds(50, 50, 960, 700);
-        frame.setVisible(true);
+
+        UiUtils.runInFxAndWait(() -> {
+            final SessionPanel gui = new SessionPanel(newses);
+
+            final Stage stage = new Stage();
+            stage.setScene(new Scene(gui));
+            return gui;
+        });
+
         newses.connect();
         return newses.getScreen();
     }

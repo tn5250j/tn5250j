@@ -2193,41 +2193,7 @@ public class GUIGraphicsUtils {
                 sw = (int) k.getStringBounds("W", f).getWidth() + 2;
                 sh = (int) (k.getStringBounds("y", f).getHeight() +
                         l.getDescent() + l.getLeading());
-                if (
-                        w < sw || h < sh) {
-                    //               (w < (int)k.getStringBounds("W",f).getWidth() + 2) ||
-                    //                  h < (int)(k.getStringBounds("y",f).getHeight() +
-                    //                        l.getDescent() + l.getLeading())
-
-                    //               ) {
-
-                    //                  if (w != sw && h != sh) {
-                    //                     k = font.deriveFont(--j);
-                    //                     k = k.deriveFont( at );
-                    //                     sw = (int)k.getStringBounds("W",f).getWidth() + 2;
-                    //                     sh = (int)(k.getStringBounds("y",f).getHeight() +
-                    //                           l.getDescent() + l.getLeading());
-                    //                  }
-                    //   //               if (h > w) {
-                    //   //                  if (w <= sw) {
-                    //   //                     sch += (float)sw / (float)sh;
-                    //   //
-                    //   //                  }
-                    //   //                  else if (h < sh) {
-                    //   //                     scw = (float)sh / (float)sw;
-                    //   //
-                    //   //                  }
-                    //                  if (sh > sw) {
-                    //
-                    //   //                  sch = 1.0f / (((float)sh * (float)(numRows + 2 )) / (float)height);
-                    //                     sch = (float)((float)sh / (float)sw);
-                    //                  }
-                    //                     // width, height
-                    //                     at.scale( scw, sch );
-                    //                     // now apply the scale to the font
-                    //                     k = k.deriveFont( at );
-                    //     //             }
-
+                if (w < sw || h < sh) {
                     break;
                 }
             }

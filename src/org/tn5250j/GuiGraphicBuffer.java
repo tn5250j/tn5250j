@@ -34,6 +34,7 @@ import org.tn5250j.tools.GUIGraphicsUtils;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
 
+import javafx.application.Platform;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
@@ -616,6 +617,13 @@ public class GuiGraphicBuffer extends AbstractGuiGraphicBuffer {
 
     @Override
     public void onOIAChanged(final ScreenOIA changedOIA, final int change) {
+        Platform.runLater(() -> onOIAChanged(changedOIA));
+    }
+
+    /**
+     * @param changedOIA
+     */
+    private void onOIAChanged(final ScreenOIA changedOIA) {
         final GraphicsContext g2d = getContext();
 
         switch (changedOIA.getLevel()) {
