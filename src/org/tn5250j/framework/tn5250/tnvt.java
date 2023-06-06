@@ -2195,6 +2195,10 @@ public final class tnvt implements Runnable {
      * <p>
      * This section is modeled after the rfc1205 - 5250 Telnet Interface section
      * 5.3
+     * <p>
+     * See WRITE STRUCTURED FIELD (WSF) Command (15-130) in 5494 Remote Control
+     * Unit - Functions Reference SC30-3533-04 for example Query and Query
+     * Response commands
      *
      * @throws IOException
      */
@@ -2205,9 +2209,11 @@ public final class tnvt implements Runnable {
         abyte0[0] = 0; // Cursor Row/column (set to zero)
         abyte0[1] = 0; //           ""
         abyte0[2] = -120; // X'88' inbound write structure Field aid
+        // query response starts here
         if (enhanced == true) {
             abyte0[3] = 0; // 0x003D (61) length of query response
-            abyte0[4] = 64; //       "" see note below ?????????
+                           //             including length bytes
+            abyte0[4] = 61; //       "" see note below ?????????
         } else {
             abyte0[3] = 0; // 0x003A (58) length of query response
             abyte0[4] = 58; //       ""
