@@ -27,6 +27,9 @@ package org.tn5250j;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
@@ -669,8 +672,31 @@ public class My5250 implements BootListener, SessionListener, EmulatorActionList
         int width = Integer.parseInt(tokenizer.nextToken());
         int height = Integer.parseInt(tokenizer.nextToken());
 
-        frame.setLocation(x, y);
+        Rectangle targetBounds = new Rectangle(x, y, width, height);
+
         frame.setSize(width, height);
+
+        if (isFrameLocationVisible(targetBounds)) {
+            frame.setLocation(x, y);
+        } else {
+            // Saved coordinates don't fit the current monitor layout; reset to a safe default.
+            frame.centerFrame();
+        }
+    }
+
+    private boolean isFrameLocationVisible(Rectangle frameBounds) {
+        // Check the frame center point against all available screens.
+        int centerX = frameBounds.x + frameBounds.width / 2;
+        int centerY = frameBounds.y + frameBounds.height / 2;
+
+        GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        for (GraphicsDevice device : graphicsEnvironment.getScreenDevices()) {
+            Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
+            if (screenBounds.contains(centerX, centerY)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
