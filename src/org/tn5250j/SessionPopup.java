@@ -375,6 +375,9 @@ public class SessionPopup {
                     };
                 }
                 macMenu.add(action);
+                // Reload Macros
+                Macronizer.reloadMacros();
+                // Get Macros
                 if (Macronizer.isMacrosExist()) {
                     // this will add a sorted list of the macros to the macro menu
                     addMacros(macMenu);
@@ -565,7 +568,6 @@ public class SessionPopup {
     }
 
     private void addMacros(JMenu menu) {
-
         LoadMacroMenu.loadMacros(sessiongui, menu);
     }
 
