@@ -273,7 +273,7 @@ public class SessionPopup {
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        vt.hostPrint(1);
+                        vt.hostPrint();
                     }
                 };
                 kbMenu.add(createMenuItem(action, PRINT));
