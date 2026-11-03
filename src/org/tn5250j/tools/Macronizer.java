@@ -57,32 +57,35 @@ public class Macronizer {
 
     }
 
+    public static void reloadMacros(){
+        ConfigureFactory.getInstance().reloadSettings();
+        macros = ConfigureFactory.getInstance().getProperties(ConfigureFactory.MACROS);
+    }
+
     private static boolean loadMacros() {
 
         macros = ConfigureFactory.getInstance().getProperties(ConfigureFactory.MACROS);
-        if (macros != null && macros.size() > 0)
+        if (macros != null && !macros.isEmpty())
             return true;
 
         return checkScripts();
     }
 
-    private final static void saveMacros() {
+    private static void saveMacros() {
 
         ConfigureFactory.getInstance().saveSettings(
                 ConfigureFactory.MACROS, "------ Macros --------");
     }
 
-    public final static boolean isMacrosExist() {
+    public static boolean isMacrosExist() {
         return macrosExist;
     }
 
-    public final static int getNumOfMacros() {
-
+    public static int getNumOfMacros() {
         return macros.size();
-
     }
 
-    public final static String[] getMacroList() {
+    public static String[] getMacroList() {
 
         String[] macroList = new String[macros.size()];
         Set<Object> macroSet = macros.keySet();
@@ -98,7 +101,7 @@ public class Macronizer {
         return macroList;
     }
 
-    public final static String getMacroByNumber(int num) {
+    public static String getMacroByNumber(int num) {
         String mac = "macro" + num + ".";
 
         Set<Object> macroSet = macros.keySet();
@@ -113,7 +116,7 @@ public class Macronizer {
         return null;
     }
 
-    public final static String getMacroByName(String name) {
+    public static String getMacroByName(String name) {
 
         Set<Object> macroSet = macros.keySet();
         Iterator<Object> macroIterator = macroSet.iterator();
@@ -127,7 +130,7 @@ public class Macronizer {
         return null;
     }
 
-    public final static void removeMacroByName(String name) {
+    public static void removeMacroByName(String name) {
 
         Set<Object> macroSet = macros.keySet();
         Iterator<Object> macroIterator = macroSet.iterator();
@@ -151,7 +154,7 @@ public class Macronizer {
      * @param name
      * @param keyStrokes
      */
-    public final static void setMacro(String name, String keyStrokes) {
+    public static void setMacro(String name, String keyStrokes) {
 
         int x = 0;
 
@@ -175,8 +178,7 @@ public class Macronizer {
         } else {
             // If it did not exist and get replaced then we need to find the next
             //  available slot to place the macro in.
-            while (getMacroByNumber(++x) != null) {
-            }
+            while (getMacroByNumber(++x) != null);
 
             macros.put("macro" + x + "." + name, keyStrokes);
             macrosExist = true;
@@ -238,7 +240,7 @@ public class Macronizer {
 
             if (value.equals(options[0])) {
                 // send option along with system request
-                if (rst.getText().length() > 0) {
+                if (!rst.getText().isEmpty()) {
                     invoke(rst.getText(), session);
                 }
             }
@@ -247,7 +249,7 @@ public class Macronizer {
 
     }
 
-    public final static void invoke(String macro, SessionPanel session) {
+    public static void invoke(String macro, SessionPanel session) {
 
         String keys = getMacroByName(macro);
         if (keys != null)
