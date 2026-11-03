@@ -9,3 +9,5 @@ build.*.properties
 .project
 .pydevproject
 .DS_Store
+/target/
+/mcp/target/

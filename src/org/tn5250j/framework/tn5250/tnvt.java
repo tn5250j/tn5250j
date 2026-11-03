@@ -27,6 +27,7 @@ import org.tn5250j.Session5250;
 import org.tn5250j.TN5250jConstants;
 import org.tn5250j.encoding.CharMappings;
 import org.tn5250j.encoding.ICodePage;
+import org.tn5250j.event.AidListener;
 import org.tn5250j.framework.transport.SocketConnector;
 import org.tn5250j.tools.logging.TN5250jLogFactory;
 import org.tn5250j.tools.logging.TN5250jLogger;
@@ -36,9 +37,11 @@ import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -127,6 +130,8 @@ public final class tnvt implements Runnable {
     private boolean firstScreen;
     private String sslType;
     private WTDSFParser sfParser;
+    // sendAidKey runs on both the session thread and the EDT
+    private final List<AidListener> aidListeners = new CopyOnWriteArrayList<AidListener>();
 
     /**
      * @param session
@@ -455,7 +460,24 @@ public final class tnvt implements Runnable {
 
     }
 
+    public void addAidListener(AidListener listener) {
+        aidListeners.add(listener);
+    }
+
+    public void removeAidListener(AidListener listener) {
+        aidListeners.remove(listener);
+    }
+
     public final boolean sendAidKey(int aid) {
+        // before any state changes, so listeners see the input as the user left it
+        for (AidListener listener : aidListeners) {
+            // a failing observer must not stop the key reaching the host
+            try {
+                listener.onAidKey(aid);
+            } catch (RuntimeException e) {
+                log.warn("AidListener failed: " + e.getMessage());
+            }
+        }
 
         if (screen52.isStatusErrorCode()) {
             screen52.restoreErrorLine();

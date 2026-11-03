@@ -16,3 +16,12 @@ The original developer wanted it to work on different operating systems, thus Ja
 ## Hosting
 
 The project was previous hosted at [sourceforge.net](https://sourceforge.net/projects/tn5250j/). But since 2016 has been migrated to GitHub.
+
+## Optional MCP launcher
+
+The `mcp/` subproject provides a separate Java 17+ executable that opens a live terminal
+window with a loopback-only MCP server and transaction recorder. The core remains Java 8
+compatible, and the normal desktop entry point is still `org.tn5250j.My5250`.
+
+See [the MCP README](mcp/README.md) for prerequisites, the build/test commands, startup,
+tools, recording behavior, and security details.
