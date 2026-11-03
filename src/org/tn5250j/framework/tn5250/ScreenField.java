@@ -290,6 +290,14 @@ public class ScreenField {
 
 	}
 
+	/**
+	 * @return true if the field's Modified Data Tag is set, i.e. the host
+	 *         will receive this field's contents on the next read
+	 */
+	public boolean isModified() {
+		return mdt;
+	}
+
 	protected void setMDT() {
 
 		// get the first field of a continued edit field if it is continued
