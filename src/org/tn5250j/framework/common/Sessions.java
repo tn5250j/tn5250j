@@ -33,134 +33,132 @@ import org.tn5250j.interfaces.SessionsInterface;
  * Contains a collection of Session objects. This list is a static snapshot
  * of the list of Session objects available at the time of the snapshot.
  */
-public class Sessions implements SessionsInterface,ActionListener {
+public class Sessions implements SessionsInterface, ActionListener {
 
-   private List<Session5250> sessions = null;
-   private int count = 0;
-   private Timer heartBeater;
+    private List<Session5250> sessions = null;
+    private int count = 0;
+    private Timer heartBeater;
 
-   private TN5250jLogger  log = TN5250jLogFactory.getLogger (this.getClass());
+    private TN5250jLogger log = TN5250jLogFactory.getLogger(this.getClass());
 
-   public Sessions() {
+    public Sessions() {
 
-      sessions = new ArrayList<Session5250>();
-   }
+        sessions = new ArrayList<Session5250>();
+    }
 
-   public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
 
-      Session5250 ses;
-      for (int x = 0; x < sessions.size(); x++) {
-         try {
-            ses = sessions.get(x);
-            if (ses.isConnected() && ses.isSendKeepAlive()) {
-               ses.getVT().sendHeartBeat();
-               if (log.isDebugEnabled()) {
-            	   log.debug(" sent heartbeat to " +  ses.getSessionName());
-               }
+        Session5250 ses;
+        for (int x = 0; x < sessions.size(); x++) {
+            try {
+                ses = sessions.get(x);
+                if (ses.isConnected() && ses.isSendKeepAlive()) {
+                    ses.getVT().sendHeartBeat();
+                    if (log.isDebugEnabled()) {
+                        log.debug(" sent heartbeat to " + ses.getSessionName());
+                    }
+                }
+            } catch (Exception ex) {
+                log.warn(ex.getMessage());
             }
-         }
-         catch (Exception ex) {
-            log.warn(ex.getMessage());
-         }
-      }
+        }
 
-   }
+    }
 
-   protected void addSession(Session5250 newSession) {
-      sessions.add(newSession);
-      log.debug("adding Session: "+newSession.getSessionName());
-      if (newSession.isSendKeepAlive() && heartBeater == null) {
-         heartBeater = new Timer(15000,this);
+    protected void addSession(Session5250 newSession) {
+        sessions.add(newSession);
+        log.debug("adding Session: " + newSession.getSessionName());
+        if (newSession.isSendKeepAlive() && heartBeater == null) {
+            heartBeater = new Timer(15000, this);
 //         heartBeater = new Timer(3000,this);
-         heartBeater.start();
+            heartBeater.start();
 
-      }
-      ++count;
-   }
+        }
+        ++count;
+    }
 
-	protected void removeSession(Session5250 session) {
-		if (session != null) {
-			log.debug("Removing session: " + session.getSessionName());
-			if (session.isConnected())
-				session.disconnect();
-			sessions.remove(session);
-			--count;
-		}
-	}
+    protected void removeSession(Session5250 session) {
+        if (session != null) {
+            log.debug("Removing session: " + session.getSessionName());
+            if (session.isConnected())
+                session.disconnect();
+            sessions.remove(session);
+            --count;
+        }
+    }
 
-   protected void removeSession(String sessionName) {
-      log.debug("Remove session by name: "+sessionName);
-      removeSession(item(sessionName));
+    protected void removeSession(String sessionName) {
+        log.debug("Remove session by name: " + sessionName);
+        removeSession(item(sessionName));
 
-   }
+    }
 
-   protected void removeSession(int index) {
-   	  log.debug("Remove session by index: "+index);
+    protected void removeSession(int index) {
+        log.debug("Remove session by index: " + index);
 //      removeSession((SessionGUI)(((Session5250)item(index)).getGUI()));
-      removeSession(item(index));
-   }
+        removeSession(item(index));
+    }
 
-   public int getCount() {
+    public int getCount() {
 
-      return count;
-   }
+        return count;
+    }
 
-   public Session5250 item (int index) {
+    public Session5250 item(int index) {
 
-      return sessions.get(index);
+        return sessions.get(index);
 
-   }
+    }
 
-   public Session5250 item (String sessionName) {
+    public Session5250 item(String sessionName) {
 
-      Session5250 s = null;
-      int x = 0;
+        Session5250 s = null;
+        int x = 0;
 
-      while (x < sessions.size()) {
+        while (x < sessions.size()) {
 
-         s = sessions.get(x);
+            s = sessions.get(x);
 
-         if (s.getSessionName().equals(sessionName))
-            return s;
+            if (s.getSessionName().equals(sessionName))
+                return s;
 
-         x++;
-      }
+            x++;
+        }
 
-      return null;
+        return null;
 
-   }
+    }
 
-   public Session5250 item (Session5250 sessionObject) {
+    public Session5250 item(Session5250 sessionObject) {
 
-      Session5250 s = null;
-      int x = 0;
+        Session5250 s = null;
+        int x = 0;
 
-      while (x < sessions.size()) {
+        while (x < sessions.size()) {
 
-         s = sessions.get(x);
+            s = sessions.get(x);
 
-         if (s.equals(sessionObject))
-            return s;
+            if (s.equals(sessionObject))
+                return s;
 
-         x++;
-      }
+            x++;
+        }
 
-      return null;
+        return null;
 
-   }
+    }
 
-   public ArrayList<Session5250> getSessionsList() {
-      ArrayList<Session5250> newS = new ArrayList<Session5250>(sessions.size());
-      for (int x = 0; x < sessions.size(); x++)
-         newS.add(sessions.get(x));
-      return newS;
-   }
+    public ArrayList<Session5250> getSessionsList() {
+        ArrayList<Session5250> newS = new ArrayList<Session5250>(sessions.size());
+        for (int x = 0; x < sessions.size(); x++)
+            newS.add(sessions.get(x));
+        return newS;
+    }
 
-   public void refresh() {
+    public void refresh() {
 
 
-
-   }
+    }
 
 
 }

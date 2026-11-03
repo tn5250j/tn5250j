@@ -3,11 +3,11 @@ package org.tn5250j.mcp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tn5250j.TN5250jConstants;
+import org.tn5250j.keyboard.KeyMnemonic;
 
 /**
  * Maps a 5250 AID byte to the sendKeys mnemonic that produces it, e.g. 0xF1 to "[enter]".
- * Built from tn5250j's mnemonic tables, where AID-generating keys use the AID byte as their value.
+ * Built from tn5250j's KeyMnemonic table, where AID-generating keys use the AID byte as their value.
  */
 public final class AidNames {
 
@@ -24,10 +24,9 @@ public final class AidNames {
 
     private static Map<Integer, String> buildNames() {
         Map<Integer, String> names = new HashMap<>();
-        for (int index = 0; index < TN5250jConstants.mnemonicValue.length; index++) {
-            int aid = TN5250jConstants.mnemonicValue[index];
-            if (aid <= MAX_AID_BYTE) {
-                names.put(aid, TN5250jConstants.mnemonicData[index]);
+        for (KeyMnemonic key : KeyMnemonic.values()) {
+            if (key.value <= MAX_AID_BYTE) {
+                names.put(key.value, key.mnemonic);
             }
         }
         return Map.copyOf(names);

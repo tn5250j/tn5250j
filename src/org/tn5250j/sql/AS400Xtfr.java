@@ -4,26 +4,26 @@ package org.tn5250j.sql;
  * Title: AS400Xtfr.java
  * Copyright:   Copyright (c) 2002
  * Company:
- * @author  Kenneth J. Pouncey
+ *
+ * @author Kenneth J. Pouncey
  * @version 0.5
- *
+ * <p>
  * Description:
- *
+ * <p>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307 USA
- *
  */
 
 import java.io.FileNotFoundException;
@@ -49,78 +49,76 @@ import org.tn5250j.tools.filters.OutputFilterInterface;
 
 public class AS400Xtfr {
 
-   private boolean loggedIn;
-   private String hostName;
-   private int timeout = 50000;
-   private boolean connected;
-   private ArrayList ffd;
-   private tnvt vt;
-   private Vector<FTPStatusListener> listeners;
-   private FTPStatusEvent status;
-   private boolean aborted;
-   private char decChar;
-   private OutputFilterInterface ofi;
-   private Thread getThread;
-   private String user;
-   private String pass;
-   private Connection connection;
+    private boolean loggedIn;
+    private String hostName;
+    private int timeout = 50000;
+    private boolean connected;
+    private ArrayList ffd;
+    private tnvt vt;
+    private Vector<FTPStatusListener> listeners;
+    private FTPStatusEvent status;
+    private boolean aborted;
+    private char decChar;
+    private OutputFilterInterface ofi;
+    private Thread getThread;
+    private String user;
+    private String pass;
+    private Connection connection;
 
-   public AS400Xtfr (tnvt v) {
-      vt = v;
-      status = new FTPStatusEvent(this);
-      // obtain the decimal separator for the machine locale
-      DecimalFormat formatter =
-            (DecimalFormat)NumberFormat.getInstance(Locale.getDefault());
+    public AS400Xtfr(tnvt v) {
+        vt = v;
+        status = new FTPStatusEvent(this);
+        // obtain the decimal separator for the machine locale
+        DecimalFormat formatter =
+                (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 
-      decChar = formatter.getDecimalFormatSymbols().getDecimalSeparator();
-   }
+        decChar = formatter.getDecimalFormatSymbols().getDecimalSeparator();
+    }
 
-   public void setOutputFilter (OutputFilterInterface o) {
-      ofi = o;
-   }
+    public void setOutputFilter(OutputFilterInterface o) {
+        ofi = o;
+    }
 
-   public void setDecimalChar(char dec) {
-      decChar = dec;
-   }
+    public void setDecimalChar(char dec) {
+        decChar = dec;
+    }
 
-   /**
-    * Set up ftp sockets and connect to an as400
-    */
-   public boolean connect(String host) {
+    /**
+     * Set up ftp sockets and connect to an as400
+     */
+    public boolean connect(String host) {
 
-      connection   = null;
-      hostName = host.toUpperCase();
+        connection = null;
+        hostName = host.toUpperCase();
 
-      try {
-         printFTPInfo("Connecting to " + hostName);
+        try {
+            printFTPInfo("Connecting to " + hostName);
 
-         Driver driver2 = (Driver)Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
-         DriverManager.registerDriver(driver2);
+            Driver driver2 = (Driver) Class.forName("com.ibm.as400.access.AS400JDBCDriver").newInstance();
+            DriverManager.registerDriver(driver2);
 
-         // Get a connection to the database.  Since we do not
-         // provide a user id or password, a prompt will appear.
-         // modified the connection string to add the translate binary = true
-         //   as suggested from Luca
-         connection = DriverManager.getConnection ("jdbc:as400://" + hostName +
-                                                   ";decimal separator=" +
-                                                   decChar +
-                                                ";extended metadata=true;translate binary=true",
-                                                      user,pass);
+            // Get a connection to the database.  Since we do not
+            // provide a user id or password, a prompt will appear.
+            // modified the connection string to add the translate binary = true
+            //   as suggested from Luca
+            connection = DriverManager.getConnection("jdbc:as400://" + hostName +
+                            ";decimal separator=" +
+                            decChar +
+                            ";extended metadata=true;translate binary=true",
+                    user, pass);
 
-         printFTPInfo("jdbc:as400://" + hostName +
-                        ";decimal separator=" +
-                        decChar +
-                        ";extended metadata=true;translate binary=true");
+            printFTPInfo("jdbc:as400://" + hostName +
+                    ";decimal separator=" +
+                    decChar +
+                    ";extended metadata=true;translate binary=true");
 
-         fireInfoEvent();
-         printFTPInfo("Connected to " + hostName);
-         return true;
-      }
-      catch (NoClassDefFoundError ncdf) {
-         printFTPInfo("Error: JDBC Driver not found.  Please check classpath." );
+            fireInfoEvent();
+            printFTPInfo("Connected to " + hostName);
+            return true;
+        } catch (NoClassDefFoundError ncdf) {
+            printFTPInfo("Error: JDBC Driver not found.  Please check classpath.");
 
-      }
-      catch (Exception e) {
+        } catch (Exception e) {
 //         JOptionPane.showMessageDialog(this,
 //                           "Error: " + e.getMessage() + "\n\n" +
 //                           "There was an error connecting to host "
@@ -129,21 +127,21 @@ public class AS400Xtfr {
 //                           "the command STRHOSTSVR",
 //                           "Host connection error",
 //                           JOptionPane.ERROR_MESSAGE);
-         printFTPInfo("Error: " + e.getMessage() + "\n\n" +
-                           "There was an error connecting to host "
-                           + host.toUpperCase() +
-                           "\n\nPlease make sure that you run " +
-                           "the command STRHOSTSVR");
+            printFTPInfo("Error: " + e.getMessage() + "\n\n" +
+                    "There was an error connecting to host "
+                    + host.toUpperCase() +
+                    "\n\nPlease make sure that you run " +
+                    "the command STRHOSTSVR");
 
-         System.out.println ( "Exception while retrieving data : " + e.getMessage());
-      }
-      return false;
-   }
+            System.out.println("Exception while retrieving data : " + e.getMessage());
+        }
+        return false;
+    }
 
-   /**
-    * Send quit command to ftp server and close connections
-    */
-   public void disconnect() {
+    /**
+     * Send quit command to ftp server and close connections
+     */
+    public void disconnect() {
 //      try {
 //         if (isConnected()) {
 //            executeCommand("QUIT");
@@ -154,259 +152,259 @@ public class AS400Xtfr {
 //         }
 //      }
 //      catch(Exception _ex) { }
-   }
+    }
 
-   /**
-    * returns whether or not the system is connected to an AS400 or not
-    */
-   public boolean isConnected() {
+    /**
+     * returns whether or not the system is connected to an AS400 or not
+     */
+    public boolean isConnected() {
 
-      return connected;
-   }
+        return connected;
+    }
 
-   /**
-    * Add a FTPStatusListener to the listener list.
-    *
-    * @param listener  The FTPStatusListener to be added
-    */
-   public synchronized void addFTPStatusListener(FTPStatusListener listener) {
+    /**
+     * Add a FTPStatusListener to the listener list.
+     *
+     * @param listener  The FTPStatusListener to be added
+     */
+    public synchronized void addFTPStatusListener(FTPStatusListener listener) {
 
-      if (listeners == null) {
-          listeners = new java.util.Vector<FTPStatusListener>(3);
-      }
-      listeners.addElement(listener);
+        if (listeners == null) {
+            listeners = new java.util.Vector<FTPStatusListener>(3);
+        }
+        listeners.addElement(listener);
 
-   }
+    }
 
-   /**
-    * Notify all registered listeners of the FTPStatusEvent.
-    *
-    */
-   private void fireStatusEvent() {
+    /**
+     * Notify all registered listeners of the FTPStatusEvent.
+     *
+     */
+    private void fireStatusEvent() {
 
-      if (listeners != null) {
-         int size = listeners.size();
-         for (int i = 0; i < size; i++) {
-            FTPStatusListener target =
-                    listeners.elementAt(i);
-            target.statusReceived(status);
-         }
-      }
-   }
+        if (listeners != null) {
+            int size = listeners.size();
+            for (int i = 0; i < size; i++) {
+                FTPStatusListener target =
+                        listeners.elementAt(i);
+                target.statusReceived(status);
+            }
+        }
+    }
 
-   /**
-    * Notify all registered listeners of the command status.
-    *
-    */
-   private void fireCommandEvent() {
+    /**
+     * Notify all registered listeners of the command status.
+     *
+     */
+    private void fireCommandEvent() {
 
-      if (listeners != null) {
-         int size = listeners.size();
-         for (int i = 0; i < size; i++) {
-            FTPStatusListener target =
-                    listeners.elementAt(i);
-            target.commandStatusReceived(status);
-         }
-      }
-   }
+        if (listeners != null) {
+            int size = listeners.size();
+            for (int i = 0; i < size; i++) {
+                FTPStatusListener target =
+                        listeners.elementAt(i);
+                target.commandStatusReceived(status);
+            }
+        }
+    }
 
-   /**
-    * Notify all registered listeners of the file information status.
-    *
-    */
-   private void fireInfoEvent() {
+    /**
+     * Notify all registered listeners of the file information status.
+     *
+     */
+    private void fireInfoEvent() {
 
-      if (listeners != null) {
-         int size = listeners.size();
-         for (int i = 0; i < size; i++) {
-            FTPStatusListener target =
-                    listeners.elementAt(i);
-            target.fileInfoReceived(status);
-         }
-      }
-   }
+        if (listeners != null) {
+            int size = listeners.size();
+            for (int i = 0; i < size; i++) {
+                FTPStatusListener target =
+                        listeners.elementAt(i);
+                target.fileInfoReceived(status);
+            }
+        }
+    }
 
-   /**
-    * Remove a FTPStatusListener from the listener list.
-    *
-    * @param listener  The FTPStatusListener to be removed
-    */
-   public synchronized void removeFTPStatusListener(FTPStatusListener listener) {
-      if (listeners == null) {
-          return;
-      }
-      listeners.removeElement(listener);
+    /**
+     * Remove a FTPStatusListener from the listener list.
+     *
+     * @param listener  The FTPStatusListener to be removed
+     */
+    public synchronized void removeFTPStatusListener(FTPStatusListener listener) {
+        if (listeners == null) {
+            return;
+        }
+        listeners.removeElement(listener);
 
-   }
+    }
 
-   /**
-    * Send the user id and password to the connected host
-    *
-    * @param user  The user name
-    * @param password  The password of the user
-    */
-   public boolean login(String user, String passWord) {
+    /**
+     * Send the user id and password to the connected host
+     *
+     * @param user  The user name
+     * @param password  The password of the user
+     */
+    public boolean login(String user, String passWord) {
 
-      aborted = false;
-      loggedIn = true;
+        aborted = false;
+        loggedIn = true;
 
-      this.user = user;
-      this.pass = passWord;
+        this.user = user;
+        this.pass = passWord;
 
-      return true;
-   }
+        return true;
+    }
 
-   /**
-    * Returns whether a field is selected for output or not
-    *
-    */
-   public boolean isFieldSelected(int which) {
+    /**
+     * Returns whether a field is selected for output or not
+     *
+     */
+    public boolean isFieldSelected(int which) {
 
-      FileFieldDef ffD = (FileFieldDef)ffd.get(which);
-      return ffD.isWriteField();
+        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        return ffD.isWriteField();
 
-   }
+    }
 
-   /**
-    * Select all the fields for output
-    */
-   protected void selectAll() {
+    /**
+     * Select all the fields for output
+     */
+    protected void selectAll() {
 
-      FileFieldDef f;
-      for (int x = 0; x < ffd.size(); x++) {
-         f = (FileFieldDef)ffd.get(x);
-         f.setWriteField(true);
-      }
+        FileFieldDef f;
+        for (int x = 0; x < ffd.size(); x++) {
+            f = (FileFieldDef) ffd.get(x);
+            f.setWriteField(true);
+        }
 
-   }
+    }
 
-   /**
-    * Unselect all fields for output.  This is a convenience method to unselect
-    * all fields for a file that will only need to output a couple of fields
-    */
-   protected void selectNone() {
-      FileFieldDef f;
-      for (int x = 0; x < ffd.size(); x++) {
-         f = (FileFieldDef)ffd.get(x);
-         f.setWriteField(false);
-      }
+    /**
+     * Unselect all fields for output.  This is a convenience method to unselect
+     * all fields for a file that will only need to output a couple of fields
+     */
+    protected void selectNone() {
+        FileFieldDef f;
+        for (int x = 0; x < ffd.size(); x++) {
+            f = (FileFieldDef) ffd.get(x);
+            f.setWriteField(false);
+        }
 
-   }
+    }
 
-   /**
-    * Returns whether there are any fields selected or not
-    */
-   public boolean isFieldsSelected() {
+    /**
+     * Returns whether there are any fields selected or not
+     */
+    public boolean isFieldsSelected() {
 
-      FileFieldDef f;
-      for (int x = 0; x < ffd.size(); x++) {
-         f = (FileFieldDef)ffd.get(x);
-         if (f.isWriteField())
-            return true;
-      }
-      return false;
-   }
+        FileFieldDef f;
+        for (int x = 0; x < ffd.size(); x++) {
+            f = (FileFieldDef) ffd.get(x);
+            if (f.isWriteField())
+                return true;
+        }
+        return false;
+    }
 
-   /**
-    * Convenience method to select or unselect a field for output
-    */
-   public void setFieldSelected(int which,boolean value) {
+    /**
+     * Convenience method to select or unselect a field for output
+     */
+    public void setFieldSelected(int which, boolean value) {
 
-      FileFieldDef ffD = (FileFieldDef)ffd.get(which);
-      ffD.setWriteField(value);
+        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        ffD.setWriteField(value);
 
-   }
+    }
 
-   /**
-    * Convenience method to return the name of a field
-    */
-   public String getFieldName(int which) {
+    /**
+     * Convenience method to return the name of a field
+     */
+    public String getFieldName(int which) {
 
-      FileFieldDef ffD = (FileFieldDef)ffd.get(which);
-      return ffD.getFieldName();
+        FileFieldDef ffD = (FileFieldDef) ffd.get(which);
+        return ffD.getFieldName();
 
-   }
+    }
 
-   /**
-    * Returns the number of fields in the File Field Definition array of fields
-    * returned from the DSPFFD command
-    */
-   public int getNumberOfFields() {
+    /**
+     * Returns the number of fields in the File Field Definition array of fields
+     * returned from the DSPFFD command
+     */
+    public int getNumberOfFields() {
 
-      return ffd.size();
-   }
+        return ffd.size();
+    }
 
-   /**
-    * Transfer the file information to an output file
-    */
-   public boolean getFile(String remoteFile, String localFile, String statement,
+    /**
+     * Transfer the file information to an output file
+     */
+    public boolean getFile(String remoteFile, String localFile, String statement,
                            boolean useInternal) {
 
-      boolean flag = true;
+        boolean flag = true;
 
-      if(connection == null) {
-         printFTPInfo("Not connected to any server!");
-         return false;
-      }
+        if (connection == null) {
+            printFTPInfo("Not connected to any server!");
+            return false;
+        }
 
-      final String localFileF = localFile;
-      final String query = statement;
-      final boolean internal = useInternal;
+        final String localFileF = localFile;
+        final String query = statement;
+        final boolean internal = useInternal;
 
 
-      Runnable getRun = new Runnable () {
+        Runnable getRun = new Runnable() {
 
             // set the thread to run.
             public void run() {
-               try {
+                try {
 
-                  DatabaseMetaData dmd = connection.getMetaData ();
+                    DatabaseMetaData dmd = connection.getMetaData();
 
-                  // Execute the query.
-                  Statement select = connection.createStatement ();
+                    // Execute the query.
+                    Statement select = connection.createStatement();
 
-                  ResultSet rs = select.executeQuery (query);
-                  ResultSetMetaData rsmd = rs.getMetaData();
+                    ResultSet rs = select.executeQuery(query);
+                    ResultSetMetaData rsmd = rs.getMetaData();
 
-                  int numCols = rsmd.getColumnCount();
+                    int numCols = rsmd.getColumnCount();
 
 
-                  ResultSet rsd = dmd.getColumns(null,"VISIONR","CXREF",null);
+                    ResultSet rsd = dmd.getColumns(null, "VISIONR", "CXREF", null);
 
-                  while (rsd.next ()) {
+                    while (rsd.next()) {
 
-                     System.out.println(rsd.getString(12));
-                  }
+                        System.out.println(rsd.getString(12));
+                    }
 
-                  if (ffd != null) {
-                     ffd.clear();
-                     ffd = null;
-                  }
+                    if (ffd != null) {
+                        ffd.clear();
+                        ffd = null;
+                    }
 
-                  ffd = new ArrayList();
+                    ffd = new ArrayList();
 
-                  printFTPInfo("Number of columns: " + rsmd.getColumnCount());
+                    printFTPInfo("Number of columns: " + rsmd.getColumnCount());
 
-                  for (int x = 1; x <= numCols; x++) {
+                    for (int x = 1; x <= numCols; x++) {
 
-                     printFTPInfo("Column " + x + ": " + rsmd.getColumnLabel(x) +
-                                                   " " + rsmd.getColumnName(x) +
-                                                   " " + rsmd.getColumnType(x) +
-                                                   " " + rsmd.getColumnTypeName(x) +
-                                                   " " + rsmd.getPrecision(x) +
-                                                   " " + rsmd.getScale(x) +
-                                                   " cn " + rsmd.getCatalogName(x) +
-                                                   " tn " + rsmd.getTableName(x) +
-                                                   " sn " + rsmd.getSchemaName(x));
+                        printFTPInfo("Column " + x + ": " + rsmd.getColumnLabel(x) +
+                                " " + rsmd.getColumnName(x) +
+                                " " + rsmd.getColumnType(x) +
+                                " " + rsmd.getColumnTypeName(x) +
+                                " " + rsmd.getPrecision(x) +
+                                " " + rsmd.getScale(x) +
+                                " cn " + rsmd.getCatalogName(x) +
+                                " tn " + rsmd.getTableName(x) +
+                                " sn " + rsmd.getSchemaName(x));
 
-                        FileFieldDef ffDesc = new FileFieldDef(vt,decChar);
+                        FileFieldDef ffDesc = new FileFieldDef(vt, decChar);
 
                         if (internal)
-                           // WHFLDI  Field name internal
-                           ffDesc.setFieldName(rsmd.getColumnName(x) );
+                            // WHFLDI  Field name internal
+                            ffDesc.setFieldName(rsmd.getColumnName(x));
                         else
-                           // WHFLD  Field name text description
-                           ffDesc.setFieldName(rsmd.getColumnLabel(x));
+                            // WHFLD  Field name text description
+                            ffDesc.setFieldName(rsmd.getColumnLabel(x));
 
                         ffDesc.setNeedsTranslation(false);
                         // WHFOBO  Field starting offset
@@ -419,14 +417,14 @@ public class AS400Xtfr {
                         ffDesc.setDecPositions(Integer.toString(rsmd.getScale(x)));
                         // WHFLDT  Field type
                         switch (rsmd.getColumnType(x)) {
-                           case 2:
-                              ffDesc.setFieldType("S");
-                              break;
-                           case 3:
-                              ffDesc.setFieldType("P");
-                              break;
-                           default:
-                              ffDesc.setFieldType(" ");
+                            case 2:
+                                ffDesc.setFieldType("S");
+                                break;
+                            case 3:
+                                ffDesc.setFieldType("P");
+                                break;
+                            default:
+                                ffDesc.setFieldType(" ");
                         }
 
                         // WHFTXT  Text description
@@ -436,79 +434,77 @@ public class AS400Xtfr {
 
                         ffd.add(ffDesc);
 
-                  }
+                    }
 
-                  writeHeader(localFileF);
+                    writeHeader(localFileF);
 
-                  int processed = 0;
-                  // Iterate throught the rows in the result set and output
-                  // the columns for each row.
-                  StringBuffer rb = new StringBuffer();
+                    int processed = 0;
+                    // Iterate throught the rows in the result set and output
+                    // the columns for each row.
+                    StringBuffer rb = new StringBuffer();
 
-                  while (rs.next () && !aborted) {
-                     for (int x = 1; x <= numCols; x++) {
-                        ((FileFieldDef)ffd.get(x - 1)).setFieldData(rs.getString(x));
-                     }
-                     status.setCurrentRecord(processed++);
-                     status.setFileLength(processed + 1);
-                     rb.setLength(0);
-                     ofi.parseFields(null,ffd,rb);
-                     fireStatusEvent();
+                    while (rs.next() && !aborted) {
+                        for (int x = 1; x <= numCols; x++) {
+                            ((FileFieldDef) ffd.get(x - 1)).setFieldData(rs.getString(x));
+                        }
+                        status.setCurrentRecord(processed++);
+                        status.setFileLength(processed + 1);
+                        rb.setLength(0);
+                        ofi.parseFields(null, ffd, rb);
+                        fireStatusEvent();
 //                     System.out.println(" record > " + processed);
-                  }
+                    }
 
-                  printFTPInfo("Transfer Successful ");
+                    printFTPInfo("Transfer Successful ");
 
-                  status.setCurrentRecord(processed);
-                  status.setFileLength(processed);
-                  fireStatusEvent();
-                  writeFooter();
-               }
-               catch(SQLException sqle) {
-                  printFTPInfo("SQL Exception ! " + sqle.getMessage());
-               }
+                    status.setCurrentRecord(processed);
+                    status.setFileLength(processed);
+                    fireStatusEvent();
+                    writeFooter();
+                } catch (SQLException sqle) {
+                    printFTPInfo("SQL Exception ! " + sqle.getMessage());
+                }
 //               catch(InterruptedException iioe) {
 //                  printFTPInfo("Interrupted! " + iioe.getMessage());
 //               }
-               catch(FileNotFoundException fnfe) {
-                  printFTPInfo("File Not found Exception ! " + fnfe.getMessage());
-               }
+                catch (FileNotFoundException fnfe) {
+                    printFTPInfo("File Not found Exception ! " + fnfe.getMessage());
+                }
 
 //               catch(Exception _ex) {
 //                  printFTPInfo("Error! " + _ex);
 //                  System.out.println(_ex.printStackTrace());
 //               }
-               finally {
+                finally {
 
-                  // Clean up.
-                  try {
-                      if (connection != null)
-                          connection.close ();
-                  }
-                  catch (SQLException e) {
-                      // Ignore.
-                  }
+                    // Clean up.
+                    try {
+                        if (connection != null)
+                            connection.close();
+                    } catch (SQLException e) {
+                        // Ignore.
+                    }
 
-                  if (ffd != null) {
-                     ffd.clear();
-                     ffd = null;
-                  }
+                    if (ffd != null) {
+                        ffd.clear();
+                        ffd = null;
+                    }
 
-                  // Clean up the memory a little
-                  System.gc();
-               }
+                    // Clean up the memory a little
+                    System.gc();
+                }
 
             }
-         };
+        };
 
-      getThread = new Thread(getRun);
-      getThread.start();
+        getThread = new Thread(getRun);
+        getThread.start();
 
-      return flag;
+        return flag;
 
-   }
+    }
 
-/* *** NEVER USED ********************************************************** */
+    /* *** NEVER USED ********************************************************** */
 //   private void loadFields() {
 //
 //
@@ -657,7 +653,7 @@ public class AS400Xtfr {
 //      ofi.parseFields(cByte,ffd,rb);
 //   }
 
-/* *** NEVER USED ********************************************************** */
+    /* *** NEVER USED ********************************************************** */
 //   /**
 //    * Abort the current file transfer
 //    */
@@ -666,35 +662,35 @@ public class AS400Xtfr {
 //      aborted = true;
 //   }
 
-   /**
-    * Print ftp command events and responses
-    */
-   private void printFTPInfo(String msgText) {
+    /**
+     * Print ftp command events and responses
+     */
+    private void printFTPInfo(String msgText) {
 
-      status.setMessage(msgText);
-      fireCommandEvent();
+        status.setMessage(msgText);
+        fireCommandEvent();
 
-   }
+    }
 
-   /**
-    * Write the html header of the output file
-    */
-   private void writeHeader(String fileName) throws
-                           FileNotFoundException {
+    /**
+     * Write the html header of the output file
+     */
+    private void writeHeader(String fileName) throws
+            FileNotFoundException {
 
-      ofi.createFileInstance(fileName);
+        ofi.createFileInstance(fileName);
 
-      ofi.writeHeader(fileName,hostName,ffd,decChar);
+        ofi.writeHeader(fileName, hostName, ffd, decChar);
 
-   }
+    }
 
-   /**
-    * write the footer of the html output
-    */
-   private void writeFooter() {
+    /**
+     * write the footer of the html output
+     */
+    private void writeFooter() {
 
-      ofi.writeFooter(ffd);
+        ofi.writeFooter(ffd);
 
-   }
+    }
 
 }

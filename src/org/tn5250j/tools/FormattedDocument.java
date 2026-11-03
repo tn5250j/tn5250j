@@ -6,7 +6,7 @@ import java.text.*;
 
 public class FormattedDocument extends PlainDocument {
     private static final long serialVersionUID = 1L;
-	private Format format;
+    private Format format;
 
     public FormattedDocument(Format f) {
         format = f;
@@ -18,7 +18,7 @@ public class FormattedDocument extends PlainDocument {
 
 
     public void insertString(int offs, String str, AttributeSet a)
-        throws BadLocationException {
+            throws BadLocationException {
 
         String currentText = getText(0, getLength());
         String beforeOffset = currentText.substring(0, offs);
@@ -26,12 +26,12 @@ public class FormattedDocument extends PlainDocument {
         String proposedResult = beforeOffset + str + afterOffset;
 
         try {
-               format.parseObject(proposedResult);
-               super.insertString(offs, str, a);
+            format.parseObject(proposedResult);
+            super.insertString(offs, str, a);
         } catch (ParseException e) {
             Toolkit.getDefaultToolkit().beep();
             System.err.println("insertString: could not parse: "
-                               + proposedResult);
+                    + proposedResult);
         }
     }
 
@@ -39,7 +39,7 @@ public class FormattedDocument extends PlainDocument {
         String currentText = getText(0, getLength());
         String beforeOffset = currentText.substring(0, offs);
         String afterOffset = currentText.substring(len + offs,
-                                                   currentText.length());
+                currentText.length());
         String proposedResult = beforeOffset + afterOffset;
 
         try {

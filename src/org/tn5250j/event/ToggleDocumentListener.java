@@ -22,7 +22,8 @@ package org.tn5250j.event;
 
 public interface ToggleDocumentListener {
 
-   public void toggleNotEmpty();
-   public void toggleEmpty();
+    public void toggleNotEmpty();
+
+    public void toggleEmpty();
 
 }

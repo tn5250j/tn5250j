@@ -1,7 +1,10 @@
-<installation version="1.0">
+<izpack:installation version="5.0"
+                     xmlns:izpack="http://izpack.org/schema/installation"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://izpack.org/schema/installation http://izpack.org/schema/5.0/izpack-installation-5.0.xsd">
     <info>
         <appname>tn5250j</appname>
-        <appversion>0.7.6</appversion>
+        <appversion>0.8.0-beta2</appversion>
         <authors>
             <author email="kjp1@users.sourceforge.net" name="Kenneth J. Pouncey"/>
 			<author email="master_jaf@users.sourceforge.net" name="Martin Kirst"/>
@@ -21,8 +24,9 @@
 			<author email="tacticaljack@users.sourceforge.net" name="R.D.Ginsburg"/>
 			<author email="wvl@users.sourceforge.net" name="Wim Van Leuven"/>
 			<author email="yebob@users.sourceforge.net" name="yebob"/>
+			<author email="n/a" name="SaschaS93"/>
         </authors>
-        <url>http://tn5250j.sourceforge.net</url>
+        <url>http://tn5250j.org</url>
     </info>
     <guiprefs height="480" resizable="no" width="640"/>
     <locale>
@@ -35,7 +39,7 @@
         <res src="installer/COPYING" id="LicencePanel.licence"/>
         <res src="installer/installShortcutSpec.xml" id="shortcutSpec.xml"/>
         <res src="installer/NativeLAF" id="useNativeLAF"/>
-		<res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>        
+        <res src="installer/tn5250jSplash.jpg" id="installer.langsel.img"/>
     </resources>
     <panels>
         <panel classname="HelloPanel"/>
@@ -99,6 +103,10 @@
             <file targetdir="$INSTALL_PATH" src="installer/applet.txt"/>
         </pack>
     </packs>
-    <native name="ShellLink.dll" type="izpack"/>
-    <native name="ShellLink_x64.dll" type="izpack"/>
-</installation>
+    <natives>
+      <native name="WinSetupAPI.dll" type="izpack"/>
+      <native name="WinSetupAPI_x64.dll" type="izpack"/>
+      <native name="ShellLink.dll" type="izpack"/>
+      <native name="ShellLink_x64.dll" type="izpack"/>
+    </natives>
+</izpack:installation>

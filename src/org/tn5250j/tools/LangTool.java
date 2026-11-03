@@ -1,4 +1,5 @@
-/**
+package org.tn5250j.tools;
+/*
  * Title: tn5250J
  * Copyright:   Copyright (c) 2001
  * Company:
@@ -23,103 +24,63 @@
  * Boston, MA 02111-1307 USA
  *
  */
-package org.tn5250j.tools;
 
 import java.text.MessageFormat;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public final class LangTool {
 
-   static Locale locale;
-   static ResourceBundle labels = null;
+    private static Locale locale;
+    private static ResourceBundle labels = null;
 
-   public static void init() {
-      if (labels != null)
-         return;
+    public static void init() {
+        if (labels != null)
+            return;
 
-      locale = Locale.getDefault();
-//      System.out.println(locale);
-      init("tn5250jMsgs");
-   }
+        locale = Locale.getDefault();
+        init("tn5250jMsgs");
+    }
 
-   public static void init(Locale l) {
-      if (labels != null)
-         return;
+    public static void init(Locale l) {
+        if (labels != null)
+            return;
 
-      locale = l;
-//      System.out.println(locale);
-      init("tn5250jMsgs");
-   }
+        locale = l;
+        init("tn5250jMsgs");
+    }
 
-   public static void init(String initMsgFile) {
-      if (labels != null)
-         return;
+    public static void init(String initMsgFile) {
+        if (labels != null)
+            return;
 
-      try {
-         labels = ResourceBundle.getBundle(initMsgFile,locale);
-      }
-      catch (MissingResourceException mre) {
-         System.out.println(mre.getLocalizedMessage());
-      }
+        try {
+            labels = ResourceBundle.getBundle(initMsgFile, locale);
+        } catch (MissingResourceException mre) {
+            System.out.println(mre.getLocalizedMessage());
+        }
+    }
 
-   }
+    public static String getString(String key) {
+        try {
+            return labels.getString(key);
+        } catch (MissingResourceException mre) {
+            System.out.println(mre.getLocalizedMessage());
+            return key;
+        }
+    }
 
-   public static String getString(String key) {
+    public static String getString(String key, String defaultString) {
+        try {
+            return labels.getString(key);
+        } catch (MissingResourceException mre) {
+            return defaultString;
+        }
+    }
 
-      try {
-         return labels.getString(key);
-      }
-      catch (MissingResourceException mre) {
-         System.out.println(mre.getLocalizedMessage());
-         return key;
-      }
-
-   }
-
-   public static String getString(String key, String defaultString) {
-
-
-      try {
-         return labels.getString(key);
-      }
-      catch (MissingResourceException mre) {
-//         System.out.println(mre.getLocalizedMessage());
-         return defaultString;
-      }
-
-   }
-
-   public static String messageFormat (String key,Object[] args) {
-
-      return MessageFormat.format(getString(key),args);
-
-
-   }
-
-   // helper method for now
-   static void iterateKeys() {
-
-      try {
-         ResourceBundle labels = ResourceBundle.getBundle("tn5250jMsgs",locale);
-
-         Enumeration<String> bundleKeys = labels.getKeys();
-
-         while (bundleKeys.hasMoreElements()) {
-            String key = bundleKeys.nextElement();
-            String value  = labels.getString(key);
-            System.out.println("key = " + key + ", " +
-              "value = " + value);
-         }
-      }
-      catch (MissingResourceException mre) {
-         System.out.println(mre.getLocalizedMessage());
-      }
-
-   }
-
-
+    public static String messageFormat(String key, Object[] args) {
+        return MessageFormat.format(getString(key), args);
+    }
 
 }

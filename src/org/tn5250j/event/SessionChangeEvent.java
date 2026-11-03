@@ -4,36 +4,36 @@ import java.util.EventObject;
 
 public class SessionChangeEvent extends EventObject {
 
-   private static final long serialVersionUID = 1L;
-   
-   public SessionChangeEvent(Object obj){
-      super(obj);
+    private static final long serialVersionUID = 1L;
 
-   }
+    public SessionChangeEvent(Object obj) {
+        super(obj);
 
-   public SessionChangeEvent(Object obj, String s) {
-      super(obj);
-      message = s;
-   }
+    }
 
-   public String getMessage() {
-      return message;
-   }
+    public SessionChangeEvent(Object obj, String s) {
+        super(obj);
+        message = s;
+    }
 
-   public void setMessage(String s) {
-      message = s;
-   }
+    public String getMessage() {
+        return message;
+    }
 
-   public int getState() {
+    public void setMessage(String s) {
+        message = s;
+    }
 
-      return state;
-   }
+    public int getState() {
 
-   public void setState(int s) {
+        return state;
+    }
 
-      state = s;
-   }
+    public void setState(int s) {
 
-   private String message;
-   private int state;
+        state = s;
+    }
+
+    private String message;
+    private int state;
 }

@@ -11,4 +11,3 @@ win.contentPane.add(label)
 win.show()
 
 print "---------------- tn5250j test script end -------------"
-

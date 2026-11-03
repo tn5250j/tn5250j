@@ -2,9 +2,29 @@
  Enhancements/Change Log for Tn5250j
 ===============================================================================
 
+--- v0.8.0 beta3 ----------------------------------------------------- ??/??/2021 ---
+
+FIX: [Bugfix] Issue #52: Custom logger implementation corrected and added test for it
+
+--- v0.8.0 beta2 ----------------------------------------------------- 24/04/2021 ---
+
+A Java Runtime v1.8 or newer is required from now on!
+
+ADD: double byte DBCS support for CCSID 930, EXPERIMENTAL!
+ADD: font size of keypad is configurable
+ADD: buttons to be shown in keypad are configurable
+ADD: izpack 5.x update and now create start menu shortcuts - Thanks to Justin Dearing (https://sourceforge.net/p/tn5250j/patches/11/)
+ADD: set Dock icon on Mac OSX
+FIX: STRPCMD was cut to 120 chars, instead of 123 allowed - Thanks to Roberto Bizzozero (https://github.com/tn5250j/tn5250j/pull/7)
+CHG: rename PF1..PF24 button names to F1..F24, because this reflects keyboard layout ;)
+CHG: upgraded to use IzPack 5.x packager
+CHG: update JTOpen 10.5
+CHG: many refactorings of internal classes and code, which improved readability and reduced complexity but might lead to broken API. If so, please fill an issue on GitHub.
+
 --- v0.7.6 ----------------------------------------------------- 20/10/2015 ---
 
-FIX: bug the ArrayIndexOutOfBoundsException, reason was wrong decrementing the counter (again, as in #1222)
+FIX: bug the ArrayIndexOutOfBoundsException, which causes screen freeze (again, as in #1222 or bug #187)
+FIX: Updated JarBundler and fixes for Mac OSX (Thanks to Christian Gut)
 
 --- v0.7.5 ----------------------------------------------------- 21/02/2015 ---
 
@@ -37,7 +57,7 @@ FIX: Wrong keyboard mapping for CCSID 870-pl and 870-sk
 FIX: Reworked tab close & session close, now unified handling on all events
 FIX: Charset for CCSID 1141, according to http://www-01.ibm.com/software/globalization/cs/cs00695.html
 FIX: Updated JarBundler and fixed tnicon.icns (Thanks to Christian Gut)
-FIX: bug id:3469004 (Scrolling Problem) - Thanks to Frank Töpfer
+FIX: bug id:3469004 (Scrolling Problem) - Thanks to Frank Tï¿½pfer
 FIX: Updated IzPack installation - Thanks to sgonzalez3884
 CHG: New default option use Enter instead of Ctrl key (See feature request ID: 3161670 and poll on mailing list in 01/2011)
 CHG: New default option use 'mouse wheel: send page up/down'
@@ -46,7 +66,7 @@ CHG: Simplified internal mouse wheel scroll implementation, discarded older JRE 
 CHG: When selecting areas with mouse, always start a new rectangle
 CHG: Internal code page conversions (charset mappings) refactored
 DEL: Dropped internal source code for older JRE support (older than 1.4.2)
-DEL: Finally dropped broken MDI implementation 
+DEL: Finally dropped broken MDI implementation
 
 --- v0.6.3 ----------------------------------------------------- 25/05/2011 ---
 
@@ -105,7 +125,7 @@ CHG: lot of internal code reworked
 
 18/06/2005  New release with a whole lot enhancements.  Do not remember them all
             read the Readme.txt file for more information
-            
+
 13/03/2004  Fixed some field exit problems.
 
 15/02/2004  Well we have not kept this up to date at all.  Hopefully
@@ -1347,5 +1367,3 @@ Sourceforge at https://sourceforge.net/projects/tn5250j/
 
 
 Enjoy!
-
-

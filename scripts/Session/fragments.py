@@ -32,7 +32,7 @@ def Trim(old):
 
 def Enter(old):
 	return old + '[enter]'
-	
+
 class SerializedList(io.Serializable):
 	"Only used to serialize the list"
 
@@ -41,11 +41,11 @@ class SerializedList(io.Serializable):
 
 class ActiveSession:
 	"Get the active session"
-	
+
   	def __init__(self, _session):
 		self.sessionManager = _session.getSessionManager()
 		self._getSessions()
-		
+
 	def _getSessions(self):
 		"Get the current existing sessions"
 		self.sessions = self.sessionManager.getSessions()
@@ -117,7 +117,7 @@ class Fragments(swing.JFrame):
 		myPanel.add(swing.JButton('Refresh', actionPerformed=self.RefreshSessions))
 		myPanel.add(swing.JButton('Save',    actionPerformed=self.SaveValue))
 		myPanel.add(swing.JButton('Restore', actionPerformed=self.RstValue))
-		
+
 		self.contentPane.add(myTopPanel, awt.BorderLayout.NORTH)
 		self.contentPane.add(myMidPanel, awt.BorderLayout.CENTER)
 		self.contentPane.add(myPanel,    awt.BorderLayout.SOUTH)
@@ -183,7 +183,7 @@ class Fragments(swing.JFrame):
 			for line in fp.readlines():
 				self.myListModel.addElement(line)
 			fp.close()
-			
+
 	def main(self):
 		"The main method"
 		self.setVisible(1)

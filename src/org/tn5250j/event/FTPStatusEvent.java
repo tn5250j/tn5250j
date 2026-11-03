@@ -4,65 +4,68 @@ import java.util.EventObject;
 
 public class FTPStatusEvent extends EventObject {
 
-   private static final long serialVersionUID = 1L;
-public FTPStatusEvent(Object obj){
-      super(obj);
-   }
+    private static final long serialVersionUID = 1L;
 
-   public FTPStatusEvent(Object obj, String s) {
-      super(obj);
-      message = s;
-      messageType = OK;
-   }
+    public FTPStatusEvent(Object obj) {
+        super(obj);
+    }
 
-   public FTPStatusEvent(Object obj, String s, int messageType) {
-      super(obj);
-      message = s;
-      this.messageType = messageType;
-   }
+    public FTPStatusEvent(Object obj, String s) {
+        super(obj);
+        message = s;
+        messageType = OK;
+    }
 
-   public String getMessage() {
-      return message;
-   }
+    public FTPStatusEvent(Object obj, String s, int messageType) {
+        super(obj);
+        message = s;
+        this.messageType = messageType;
+    }
 
-   public void setMessage(String s) {
-      message = s;
-   }
+    public String getMessage() {
+        return message;
+    }
 
-   public int getMessageType() {
-      return messageType;
-   }
+    public void setMessage(String s) {
+        message = s;
+    }
 
-   public void setMessageType(int type) {
-      messageType = type;
-   }
+    public int getMessageType() {
+        return messageType;
+    }
 
-   public int getFileLength() {
+    public void setMessageType(int type) {
+        messageType = type;
+    }
 
-      return fileLength;
-   }
-   public void setFileLength(int len) {
+    public int getFileLength() {
 
-      fileLength = len;
-   }
+        return fileLength;
+    }
 
-   public int getCurrentRecord() {
+    public void setFileLength(int len) {
 
-      return currentRecord;
-   }
+        fileLength = len;
+    }
 
-   public void setCurrentRecord(int current) {
+    public int getCurrentRecord() {
 
-      currentRecord = current;
-   }
-   private String message;
-   private int fileLength;
-   private int currentRecord;
-   private int messageType;
+        return currentRecord;
+    }
 
-   static final int OK = 0;
-   static final int ERROR = 1;
-   static final int ERROR_NULLS_ALLOWED = 2;
+    public void setCurrentRecord(int current) {
+
+        currentRecord = current;
+    }
+
+    private String message;
+    private int fileLength;
+    private int currentRecord;
+    private int messageType;
+
+    static final int OK = 0;
+    static final int ERROR = 1;
+    static final int ERROR_NULLS_ALLOWED = 2;
 
 
 }

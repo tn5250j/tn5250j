@@ -89,12 +89,12 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
             self.setDefaultCloseOperation(swing.WindowConstants.EXIT_ON_CLOSE) # JDK1.4?
             self.setLocation(275, 150)
         except:
-            None 
+            None
     def run(self, server, name, *passw):
         self.as400 = acc.AS400(server, name, *passw)
 
         # Get user profile descriptions==> usrDct
-        rUsrLst = rsc.RUserList(self.as400)  
+        rUsrLst = rsc.RUserList(self.as400)
         rUsrLst.open()
         rUsrLst.waitForComplete()
         self.usrDct = {}
@@ -106,8 +106,8 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
                 tmp_usrText = tmp_rUsr.getAttributeValue(rsc.RUser.TEXT_DESCRIPTION)
                 self.usrDct[key_usr] = tmp_usrText
         rUsrLst.close()
-        
-        # Interactive job list      
+
+        # Interactive job list
         self.jobLst = rsc.RJobList(self.as400)
         self.jobLst.setSelectionValue(rsc.RJobList.PRIMARY_JOB_STATUSES, \
                                       rsc.RJob.JOB_STATUS_ACTIVE)
@@ -146,13 +146,13 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
             try:
                 dq.write(user, "%s:%s"%(curUsr, 'Logged Out'))
             except:
-                None        
+                None
         self.sessionManager = _session.getSessionManager()
         self.sessions = self.sessionManager.getSessions()
         self.sessList = self.sessions.getSessionsList()
         for x in self.sessList:
             self.sessionManager.closeSession(x)
-        # _session.closeSession() 
+        # _session.closeSession()
     def windowActivated(self, event):
         None
     def windowDeactivated(self, event):
@@ -192,7 +192,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
             if not self.jobDct.has_key(key_usr):
                 self.jobDct[key_usr] = tmp_job
         self.jobLst.close()
-        
+
         keys = self.usrDct.keys()
         keys.sort()
         self.users.addItem("ALL TRASH: Vuilnisbak")
@@ -312,7 +312,7 @@ class Chat400(swing.JFrame, awt.event.WindowListener):
         self.polchat.start()
 
         self.show()
-        
+
 def fillWithValues(row,col,width,sb):
     sPos = ((row - 1) * screen.getCols()) + (col - 1)
     while width > 0:

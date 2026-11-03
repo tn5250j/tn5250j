@@ -36,26 +36,32 @@ import org.tn5250j.gui.GenericTn5250JFrame;
  */
 public abstract class GUIViewInterface extends GenericTn5250JFrame {
 
-   private static final long serialVersionUID = 1L;
-   protected static My5250 me;
-   protected static int sequence;
-   protected int frameSeq;
+    private static final long serialVersionUID = 1L;
+    protected static My5250 me;
+    protected static int sequence;
+    protected int frameSeq;
 
-   public GUIViewInterface(My5250 m) {
-      super();
-      me = m;
-   }
+    public GUIViewInterface(My5250 m) {
+        super();
+        me = m;
+    }
 
-   public int getFrameSequence() {
-      return frameSeq;
-   }
+    public int getFrameSequence() {
+        return frameSeq;
+    }
 
-   public abstract void addSessionView(String descText, SessionPanel session);
-   public abstract void removeSessionView(SessionPanel targetSession);
-   public abstract boolean containsSession(SessionPanel session);
-   public abstract int getSessionViewCount();
-   public abstract SessionPanel getSessionAt(int index);
-   public abstract void onSessionJump(SessionJumpEvent jumpEvent);
-   public abstract void onSessionChanged(SessionChangeEvent changeEvent);
+    public abstract void addSessionView(String descText, SessionPanel session);
+
+    public abstract void removeSessionView(SessionPanel targetSession);
+
+    public abstract boolean containsSession(SessionPanel session);
+
+    public abstract int getSessionViewCount();
+
+    public abstract SessionPanel getSessionAt(int index);
+
+    public abstract void onSessionJump(SessionJumpEvent jumpEvent);
+
+    public abstract void onSessionChanged(SessionChangeEvent changeEvent);
 
 }

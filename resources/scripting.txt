@@ -96,6 +96,5 @@ You can interract with the emulator such as:
 
  10. Or from the popup menu all the scripts in the directory should appear
      in the macros sub menu
-     
-Enjoy!!!
 
+Enjoy!!!

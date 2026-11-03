@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 
-<shortcuts>
+<izpack:shortcuts version="5.0"
+                  xmlns:izpack="http://izpack.org/schema/shortcuts"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://izpack.org/schema/shortcuts http://izpack.org/schema/5.0/izpack-shortcuts-5.0.xsd">
 
-  <programGroup defaultName="tn5250j" location="applications"/>
+  <skipIfNotSupported />
+
+  <programGroup defaultName="tn5250j" location="startMenu"/>
 
   <shortcut
      name="tn5250j"
      programGroup="yes"
      desktop="yes"
      applications="no"
-     startMenu="no"
+     startMenu="yes"
      startup="no"
      target="$INSTALL_PATH\bin\tn5250j.bat"
      workingDirectory="$INSTALL_PATH\lib"
@@ -17,24 +22,17 @@
      description="A 5250 Telnet emulator written in Java"
      iconFile="$INSTALL_PATH\bin\icons\tn5250j-icon.ico"
      iconIndex="0"
-     initialState="noShow">
-
-     <createForPack name="Core"/>
-
-   </shortcut>
+     initialState="noShow"/>
 
    <shortcut
      name="Uninstaller"
      programGroup="yes"
      desktop="no"
      applications="no"
-     startMenu="no"
+     startMenu="yes"
      startup="no"
      target="$INSTALL_PATH\Uninstaller\uninstaller.jar"
      commandLine=""
-     description="tn5250j uninstaller">
+     description="tn5250j uninstaller"/>
 
-     <createForPack name="Core" />
-   </shortcut>
-
-</shortcuts>
+</izpack:shortcuts>
